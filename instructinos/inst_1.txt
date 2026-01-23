@@ -1,0 +1,137 @@
+You are a senior software engineer.
+
+Your task is to build a minimal, reliable news collection module
+for a stock trading MVP.
+
+This project is NOT about trading logic.
+It is ONLY about collecting and structuring market news
+so that another system (LLM) can make trading decisions.
+
+DO NOT optimize or add trading intelligence.
+DO NOT invent data.
+Focus on correctness, simplicity, and debuggability.
+
+==============================
+PROJECT GOAL
+==============================
+
+Build a small Python project that:
+
+1. Fetches recent stock market news from free, public sources
+2. Normalizes the news into a clean JSON format
+3. Saves one JSON file per day
+4. Can be run with a single command
+
+==============================
+DATA SOURCES (REQUIRED)
+==============================
+
+1) Google News RSS
+   - Use keyword-based RSS feeds
+   - Example keywords:
+     - "NVDA stock"
+     - "AAPL earnings"
+     - "MSFT guidance"
+     - "US stock market"
+     - "Federal Reserve rates"
+
+2) SEC RSS
+   - Fetch recent filings
+   - Focus on:
+     - 8-K
+     - 10-Q
+     - 10-K
+
+Do NOT scrape websites directly.
+Use RSS only.
+
+==============================
+OUTPUT FORMAT
+==============================
+
+Each news item must be a JSON object with the following fields:
+
+{
+  "source": "google_news | sec",
+  "title": "string",
+  "summary": "string",
+  "url": "string",
+  "published_at": "ISO-8601 timestamp (UTC)",
+  "tickers": ["list", "of", "uppercase", "tickers"],
+  "raw_source": "RSS feed URL"
+}
+
+Notes:
+- `tickers` can be extracted using simple keyword matching
+  (e.g. NVDA, AAPL, MSFT, SPY)
+- Accuracy > completeness
+- It is OK if some items have empty tickers
+
+==============================
+FILE STRUCTURE
+==============================
+
+Create the following structure:
+
+news_collector/
+├── fetch_news.py        # main entry point
+├── sources.py           # RSS source definitions
+├── parser.py            # RSS parsing & normalization
+├── tickers.py           # simple ticker extraction
+├── requirements.txt
+├── README.md
+└── data/
+    └── news_YYYYMMDD.json
+
+==============================
+FUNCTIONAL REQUIREMENTS
+==============================
+
+- `python fetch_news.py` must:
+  1. Fetch all sources
+  2. Parse and normalize items
+  3. Deduplicate by (title + url)
+  4. Sort by published_at descending
+  5. Save output to data/news_YYYYMMDD.json
+
+- The script must:
+  - Log progress to stdout
+  - Continue running if one source fails
+  - Never crash on malformed RSS items
+
+==============================
+TECH CONSTRAINTS
+==============================
+
+- Python 3.10+
+- Use only common libraries:
+  - feedparser
+  - requests
+  - python-dateutil
+- No database
+- No async required
+- No external APIs requiring keys
+
+==============================
+NON-GOALS (IMPORTANT)
+==============================
+
+- Do NOT add sentiment analysis
+- Do NOT add trading logic
+- Do NOT rank or score news importance
+- Do NOT call any LLM
+
+This module is ONLY responsible for clean, auditable input data.
+
+==============================
+DELIVERABLE
+==============================
+
+When finished, the project must satisfy:
+
+1. `pip install -r requirements.txt`
+2. `python fetch_news.py`
+3. A valid JSON file is created in /data
+4. The code is readable and easy to extend later
+
+If any assumption is required, make it explicit in README.md.
