@@ -26,14 +26,20 @@ This project collects recent stock market news from free, public RSS sources and
 - Watchlist-based filtering
 - Event keyword filtering (earnings, guidance, etc.)
 - Automatic logging of filtering statistics
+- **Trend-following signals** using 20-day breakout system (deterministic, no ML)
+- **LLM-powered investment advisor** using OpenAI for actionable recommendations
 
 ## Requirements
 
 - Python 3.10+
+- OpenAI API key (for investment advice feature)
 - Dependencies listed in `requirements.txt`:
   - `feedparser` - RSS feed parsing
   - `requests` - HTTP requests
   - `python-dateutil` - Date parsing and normalization
+  - `openai` - OpenAI API client for investment advice
+  - `yfinance` - Market data for trend signals
+  - `pandas` - Data manipulation for technical analysis
 
 ## Installation
 
@@ -41,8 +47,17 @@ This project collects recent stock market news from free, public RSS sources and
 # Install dependencies
 pip install -r requirements.txt
 
+# Set your OpenAI API key
+export OPENAI_API_KEY=your_api_key_here
+
 # Run the complete pipeline
 python run_pipeline.py
+```
+
+**Windows users:**
+```bash
+# Set environment variable on Windows
+set OPENAI_API_KEY=your_api_key_here
 ```
 
 ## Usage
@@ -52,6 +67,7 @@ python run_pipeline.py
 Run the complete pipeline with a single command:
 
 ```bash
+export OPENAI_API_KEY=your_api_key_here
 python run_pipeline.py
 ```
 
@@ -64,6 +80,10 @@ This will:
 6. Apply hygiene filters and save to `data/clean_news_YYYYMMDD.json`
 7. Apply trade-focused filters and save to `data/clean_trade_news_YYYYMMDD.json`
 8. Display filtering statistics for both pipelines
+9. **Generate trend signals using 20-day breakout system**
+10. Save trend signals to `data/trend_signals_YYYYMMDD.json`
+11. **Analyze trade news + trend signals with LLM and get investment advice**
+12. Save investment advice to `data/investment_advice_YYYYMMDD.json` (or prompt to `data/llm_prompt_YYYYMMDD.txt`)
 
 ### Advanced Usage (Individual Scripts)
 
@@ -86,6 +106,8 @@ news_collector/
 ├── run_pipeline.py             # Unified pipeline (recommended)
 ├── fetch_news.py               # News collection only
 ├── clean_news.py               # Filtering only
+├── trend_signals.py            # 20-day breakout trend signals
+├── llm_advisor.py              # OpenAI integration for investment advice
 ├── sources.py                  # RSS source definitions
 ├── parser.py                   # RSS parsing & normalization
 ├── tickers.py                  # Simple ticker extraction
@@ -93,9 +115,13 @@ news_collector/
 ├── requirements.txt            # Python dependencies
 ├── README.md                  # This file
 └── data/                      # Output directory
-    ├── news_YYYYMMDD.json              # Raw collected news
-    ├── clean_news_YYYYMMDD.json        # Hygiene-filtered news
-    └── clean_trade_news_YYYYMMDD.json  # Trade-focused filtered news
+    ├── news_YYYYMMDD.json                # Raw collected news
+    ├── clean_news_YYYYMMDD.json          # Hygiene-filtered news
+    ├── clean_trade_news_YYYYMMDD.json    # Trade-focused filtered news
+    ├── trend_signals_YYYYMMDD.json       # Technical trend signals
+    ├── llm_prompt_YYYYMMDD.txt           # LLM prompt (if not calling API)
+    ├── investment_advice_YYYYMMDD.json   # LLM investment advice (if calling API)
+    └── open_positions.json               # Current portfolio positions
 ```
 
 ## Output Format
@@ -169,6 +195,140 @@ The filtering pipeline logs detailed statistics:
 ```
 
 All filtering is deterministic and does not use any LLMs or machine learning.
+
+## Trend Signal Module
+
+The trend signal module generates technical trading signals using a simple 20-day breakout system. This is completely separate from news analysis and provides pure price-action signals.
+
+### System Rules
+
+**Entry Signal (Breakout):**
+- Today's close > highest high of previous 20 trading days
+
+**Exit Signal (Breakdown):**
+- Today's close < lowest low of previous 20 trading days
+
+**Hard Stop (annotation only):**
+- -12% from entry price (for reference, not execution)
+
+### Trading Universe
+
+The module analyzes tickers from:
+1. WATCHLIST defined in [filter.py](news_collector/filter.py)
+2. Current positions in `data/open_positions.json`
+3. Union of both (all unique tickers)
+
+### Data Source
+
+- Uses `yfinance` to download daily OHLCV data
+- Lookback: 60 calendar days for reliable 20-day rolling windows
+- Gracefully handles missing data (skips with warning)
+
+### Output Format
+
+Saved to `data/trend_signals_YYYYMMDD.json`:
+
+```json
+{
+  "generated_at": "2026-02-14T10:30:00",
+  "asof_date": "2026-02-14",
+  "window": 20,
+  "universe": ["NVDA", "META", "AMD", ...],
+  "signals": {
+    "NVDA": {
+      "close": 123.45,
+      "20d_high": 125.00,
+      "20d_low": 110.00,
+      "breakout": false,
+      "breakdown": false,
+      "position": {
+        "shares": 41,
+        "avg_cost": 102.17,
+        "unrealized_pnl_pct": 0.2078,
+        "distance_to_hard_stop_pct": 0.1200,
+        "hard_stop_price": 89.91
+      }
+    }
+  }
+}
+```
+
+### Position Context
+
+If a ticker is held (found in `open_positions.json`), the signal includes:
+- **shares**: Current position size
+- **avg_cost**: Average entry price
+- **unrealized_pnl_pct**: Current profit/loss percentage
+- **distance_to_hard_stop_pct**: Distance to -12% stop from avg_cost
+- **hard_stop_price**: Actual stop price level
+
+### Characteristics
+
+- **Deterministic**: No machine learning or optimization
+- **Pure technical**: Does NOT use news or fundamentals
+- **Simple**: Single rule-based system
+- **Transparent**: All calculations visible in output
+
+### Running Standalone
+
+```bash
+python trend_signals.py
+```
+
+This generates signals for the current universe and saves to the daily output file.
+
+## LLM Investment Advisor
+
+After filtering the trade news and generating trend signals, the pipeline combines all inputs for comprehensive investment analysis.
+
+### Features
+
+The LLM advisor analyzes:
+- Your current portfolio positions (from `data/open_positions.json`)
+- Recent trade-filtered news (last 72 hours, event-driven)
+- Technical trend signals (20-day breakout system, price-action)
+- Event significance and impact on holdings
+
+### Output Format
+
+The advice is saved to `data/investment_advice_YYYYMMDD.json`:
+
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "advice": "Investment advice text...",
+  "token_usage": {
+    "prompt_tokens": 1234,
+    "completion_tokens": 567,
+    "total_tokens": 1801
+  }
+}
+```
+
+### Investment Advice Structure
+
+The LLM provides:
+1. **Key Insights**: Most important developments for your portfolio
+2. **Risk Assessment**: Immediate risks or concerns for current positions
+3. **Actionable Recommendations**:
+   - HOLD: Positions to maintain
+   - REDUCE/TRIM: Positions to reduce
+   - WATCH: Positions needing close monitoring
+   - OPPORTUNITIES: Potential buying opportunities
+4. **Priority Actions**: What to do first (in order)
+
+### Configuration
+
+- **Model**: Default is `gpt-4o` (latest and most capable, configurable in [llm_advisor.py](news_collector/llm_advisor.py))
+- **API Key**: Set via `OPENAI_API_KEY` environment variable
+- **Temperature**: 0.3 (lower for more focused, consistent advice)
+- **Max Tokens**: 2000 (configurable)
+
+### Skipping LLM Analysis
+
+The LLM advisor is skipped if:
+- No trade-filtered news items are found
+- `OPENAI_API_KEY` environment variable is not set
 
 ## Data Sources
 

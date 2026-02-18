@@ -2,13 +2,15 @@
 """
 Unified news collection and filtering pipeline.
 
-This script combines news fetching and filtering into a single command:
+This script combines news fetching, filtering, and LLM analysis into a single command:
 1. Fetches news from all RSS sources
 2. Applies hygiene filtering
 3. Applies trade-focused filtering
-4. Saves all outputs
+4. Gets investment advice from OpenAI (requires OPENAI_API_KEY env var)
+5. Saves all outputs
 
 Usage:
+    export OPENAI_API_KEY=your_api_key_here
     python run_pipeline.py
 """
 
@@ -21,6 +23,8 @@ from datetime import datetime
 from sources import get_all_sources
 from parser import parse_feed, deduplicate_items, sort_items_by_date
 from filter import apply_hygiene_filters, apply_trade_filters
+from llm_advisor import get_investment_advice, save_advice
+from trend_signals import generate_trend_signals, save_trend_signals
 
 
 # Configure logging
@@ -197,6 +201,97 @@ def main():
         print_stats(trade_stats, "Trade Filtering Results")
 
         # =====================================================
+        # STEP 4: TREND SIGNAL GENERATION
+        # =====================================================
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("STEP 4: Generating Trend Signals (20-day breakout)")
+        logger.info("=" * 60)
+
+        trend_output = f"data/trend_signals_{today}.json"
+        trend_signals = None
+
+        try:
+            trend_signals = generate_trend_signals()
+            save_trend_signals(trend_signals, trend_output)
+
+            print()
+            print("=" * 60)
+            print("  TREND SIGNALS GENERATED")
+            print("=" * 60)
+            print(f"  Tickers analyzed:     {len(trend_signals.get('universe', []))}")
+            print(f"  Signals generated:    {len(trend_signals.get('signals', {}))}")
+
+            # Count breakouts and breakdowns
+            breakouts = sum(1 for s in trend_signals.get('signals', {}).values() if s.get('breakout'))
+            breakdowns = sum(1 for s in trend_signals.get('signals', {}).values() if s.get('breakdown'))
+
+            print(f"  Breakouts detected:   {breakouts}")
+            print(f"  Breakdowns detected:  {breakdowns}")
+            print("=" * 60)
+            print()
+
+        except Exception as e:
+            logger.error(f"Failed to generate trend signals: {e}")
+            print()
+            print("=" * 60)
+            print("  TREND SIGNALS: FAILED")
+            print("=" * 60)
+            print(f"  Error: {e}")
+            print("=" * 60)
+            print()
+
+        # =====================================================
+        # STEP 5: LLM INVESTMENT ADVISOR
+        # =====================================================
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("STEP 5: Getting Investment Advice from LLM")
+        logger.info("=" * 60)
+
+        advice_output = f"data/investment_advice_{today}.json"
+
+        if len(trade_items) == 0:
+            logger.warning("No trade-filtered news items. Skipping LLM advisor.")
+            print()
+            print("=" * 60)
+            print("  LLM ADVISOR: SKIPPED")
+            print("=" * 60)
+            print("  Reason: No trade-filtered news items found")
+            print("=" * 60)
+            print()
+        else:
+            result = get_investment_advice(trade_items, trend_signals=trend_signals)
+
+            if result["success"]:
+                print()
+                print("=" * 60)
+                print("  INVESTMENT ADVICE")
+                print("=" * 60)
+                print()
+                print(result["advice"])
+                print()
+                print("=" * 60)
+                if result["token_usage"]:
+                    print(f"  Tokens used: {result['token_usage']['total_tokens']} "
+                          f"(prompt: {result['token_usage']['prompt_tokens']}, "
+                          f"completion: {result['token_usage']['completion_tokens']})")
+                print("=" * 60)
+                print()
+
+                # Save advice to file
+                save_advice(result["advice"], advice_output, result["token_usage"])
+            else:
+                logger.error(f"LLM advisor failed: {result['error']}")
+                print()
+                print("=" * 60)
+                print("  LLM ADVISOR: FAILED")
+                print("=" * 60)
+                print(f"  Error: {result['error']}")
+                print("=" * 60)
+                print()
+
+        # =====================================================
         # SUMMARY
         # =====================================================
         print()
@@ -211,6 +306,13 @@ def main():
         print()
         print(f"  Trade-filtered:        {trade_output}")
         print(f"                         ({len(trade_items)} items)")
+        print()
+        if trend_signals and os.path.exists(trend_output):
+            print(f"  Trend signals:         {trend_output}")
+            print(f"                         ({len(trend_signals.get('signals', {}))} tickers)")
+            print()
+        if len(trade_items) > 0 and os.path.exists(f"data/investment_advice_{today}.json"):
+            print(f"  Investment advice:     data/investment_advice_{today}.json")
         print("=" * 60)
         print()
 
