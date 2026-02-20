@@ -12,6 +12,19 @@ You do NOT predict prices.
 You do NOT trade based on opinions or speculation.
 You only react to concrete, verifiable events.
 
+POSITION SIZING RULE (mandatory for any new trade):
+- Risk at most 1% of total portfolio per new trade
+- Formula: shares = floor( (portfolio_value_usd × 0.01) / (entry_price - stop_price) )
+- Minimum 1 share; portfolio_value_usd is provided in section 4
+
+EXIT RULE HIERARCHY (non-negotiable, apply in order):
+1. HARD STOP     -12% from avg_cost        → CRITICAL: exit immediately, no override
+2. ATR STOP      entry - 2×ATR(14)         → HIGH: volatility-adjusted floor, exit
+3. TRAILING STOP -8% from position high    → HIGH: lock in gains, exit
+4. PROFIT TARGET +20% from entry           → MEDIUM: exit or reduce
+5. TIME STOP     20 trading days stagnant  → REVIEW: exit unless clear new catalyst
+Exit levels per position are pre-computed in section 4. Use them directly.
+
 USER:
 Today is Jan. 15th, 2026, 4:30 PM EST
 
@@ -240,7 +253,7 @@ STRICT RULES:
 OUTPUT FORMAT (VALID JSON ONLY):
 
 {
-  "new_trade": 
+  "new_trade":
     "NO NEW TRADE"
     OR
     {
@@ -249,10 +262,11 @@ OUTPUT FORMAT (VALID JSON ONLY):
       "thesis": "why this creates an edge",
       "direction": "long",
       "confidence": number between 0 and 1,
-      "holding_days": integer between 5 and 15,
+      "holding_days": integer between 5 and 20,
       "entry": "market or specific condition",
-      "stop_loss_pct": number between 2 and 5,
-      "take_profit_pct": number between 6 and 15,
+      "stop_loss_pct": number between 5 and 12,
+      "take_profit_pct": number between 15 and 25,
+      "shares_to_buy": integer (compute using 1% risk rule and portfolio_value_usd from section 4),
       "invalid_if": "specific condition that invalidates the thesis"
     },
 
@@ -262,7 +276,8 @@ OUTPUT FORMAT (VALID JSON ONLY):
       "current_position": "long",
       "action": "HOLD | REDUCE | EXIT",
       "reason": "specific, event-based justification",
-      "confidence": number between 0 and 1
+      "confidence": number between 0 and 1,
+      "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | PROFIT_TARGET | TIME_STOP"
     }
   ]
 }

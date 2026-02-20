@@ -140,18 +140,61 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         count=1
     )
 
-    # Add trend signals if available (append after news section)
+    # Add trend signals if available (insert before TASK A)
     if trend_signals and trend_signals.get('signals'):
         trend_json = json.dumps(trend_signals.get('signals', {}), indent=2)
         trend_section = f"\n\n3) TREND SIGNALS (20-day breakout, technical analysis):\n{trend_json}\n"
 
-        # Find the position to insert (after the news section, before TASK A)
         task_a_pos = user_message.find("TASK A")
         if task_a_pos != -1:
             user_message = user_message[:task_a_pos] + trend_section + "\n" + user_message[task_a_pos:]
         else:
-            # Fallback: append at the end
             user_message += trend_section
+
+    # Add position management section (insert before TASK A, after trend signals)
+    portfolio_value = open_positions.get('portfolio_value_usd') if open_positions else None
+    pos_mgmt_data = {
+        "portfolio_value_usd": portfolio_value,
+        "risk_per_trade_pct": 0.01,
+        "sizing_note": (
+            "shares = floor(portfolio_value_usd * 0.01 / (entry_price - stop_price))"
+            if portfolio_value
+            else "Set portfolio_value_usd in open_positions.json to enable position sizing"
+        ),
+        "exit_rules": {
+            "hard_stop_pct":      -0.12,
+            "atr_stop_multiplier": 2.0,
+            "trailing_stop_pct":  -0.08,
+            "profit_target_pct":   0.20,
+            "time_stop_days":      20,
+        },
+        "positions_requiring_attention": [],
+    }
+
+    # Collect positions with triggered exit signals from trend signals
+    if trend_signals and trend_signals.get('signals'):
+        for ticker, sig in trend_signals['signals'].items():
+            pos_ctx = sig.get('position', {})
+            exit_sigs = pos_ctx.get('exit_signals', {})
+            if exit_sigs.get('any_triggered'):
+                pos_mgmt_data['positions_requiring_attention'].append({
+                    "ticker":          ticker,
+                    "current_price":   sig['close'],
+                    "urgency":         "CRITICAL" if exit_sigs['critical_exit'] else "HIGH",
+                    "triggered_rules": exit_sigs['triggered_rules'],
+                })
+
+    pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)
+    pos_mgmt_section = (
+        f"\n\n4) POSITION MANAGEMENT (pre-computed rules — use these directly):\n"
+        f"{pos_mgmt_json}\n"
+    )
+
+    task_a_pos = user_message.find("TASK A")
+    if task_a_pos != -1:
+        user_message = user_message[:task_a_pos] + pos_mgmt_section + "\n" + user_message[task_a_pos:]
+    else:
+        user_message += pos_mgmt_section
 
     return system_message, user_message
 

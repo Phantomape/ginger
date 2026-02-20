@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Import the watchlist from filter module
 from filter import WATCHLIST
+from position_manager import compute_atr, compute_exit_levels, evaluate_exit_signals
 
 
 def load_open_positions(filepath="../data/open_positions.json"):
@@ -131,12 +132,16 @@ def compute_breakout_signals(data, window=20):
         # Breakdown: today's close < lowest low of previous 20 days
         breakdown = latest_close < low_20d
 
+        # Compute ATR for volatility-adjusted stop sizing
+        atr = compute_atr(data)
+
         return {
             "close": round(latest_close, 2),
             "20d_high": round(high_20d, 2),
             "20d_low": round(low_20d, 2),
             "breakout": breakout,
-            "breakdown": breakdown
+            "breakdown": breakdown,
+            "atr": atr,
         }
 
     except Exception as e:
@@ -144,14 +149,15 @@ def compute_breakout_signals(data, window=20):
         return None
 
 
-def compute_position_context(ticker, latest_close, open_positions):
+def compute_position_context(ticker, latest_close, open_positions, atr=None):
     """
-    Compute position context if ticker is held.
+    Compute position context if ticker is held, including exit levels and signals.
 
     Args:
         ticker (str): Ticker symbol
         latest_close (float): Current close price
         open_positions (dict): Open positions data
+        atr (float): Optional ATR value for volatility-adjusted stop
 
     Returns:
         dict: Position context or None
@@ -169,17 +175,19 @@ def compute_position_context(ticker, latest_close, open_positions):
 
             # Compute unrealized PnL %
             unrealized_pnl_pct = (latest_close - avg_cost) / avg_cost
+            market_value_usd = round(shares * latest_close, 2)
 
-            # Compute distance to hard stop (-12% from avg_cost)
-            hard_stop_price = avg_cost * 0.88  # -12%
-            distance_to_hard_stop_pct = (latest_close - hard_stop_price) / latest_close
+            # Compute exit levels and evaluate triggered signals
+            exit_levels = compute_exit_levels(avg_cost, atr)
+            exit_signals = evaluate_exit_signals(latest_close, avg_cost, exit_levels)
 
             return {
                 "shares": shares,
                 "avg_cost": round(avg_cost, 2),
+                "market_value_usd": market_value_usd,
                 "unrealized_pnl_pct": round(unrealized_pnl_pct, 4),
-                "distance_to_hard_stop_pct": round(distance_to_hard_stop_pct, 4),
-                "hard_stop_price": round(hard_stop_price, 2)
+                "exit_levels": exit_levels,
+                "exit_signals": exit_signals,
             }
 
     return None
@@ -221,8 +229,10 @@ def generate_trend_signals(universe=None, window=20, lookback_days=60):
                 logger.warning(f"Skipping {ticker}: insufficient data for signals")
                 continue
 
-            # Add position context if ticker is held
-            position_context = compute_position_context(ticker, signal["close"], open_positions)
+            # Add position context if ticker is held (pass ATR for volatility-adjusted stop)
+            position_context = compute_position_context(
+                ticker, signal["close"], open_positions, atr=signal.get("atr")
+            )
             if position_context:
                 signal["position"] = position_context
 

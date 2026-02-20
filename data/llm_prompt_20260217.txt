@@ -1,0 +1,434 @@
+================================================================================
+SYSTEM MESSAGE
+================================================================================
+
+You are a conservative portfolio decision agent for a retail trading account.
+
+Your primary objective is capital preservation.
+You prefer inaction unless there is a clear, event-driven reason to act.
+
+You manage TWO decisions:
+1) Whether to open any NEW positions
+2) Whether to change any EXISTING positions
+
+You do NOT predict prices.
+You do NOT trade based on opinions or speculation.
+You only react to concrete, verifiable events.
+
+================================================================================
+USER MESSAGE
+================================================================================
+
+Today is Feb. 17, 2026, 07:33 PM EST
+
+You are given:
+
+1) CURRENT OPEN POSITIONS (manually entered, may be approximate):
+{
+    "account": "moomoo_sg",
+    "positions": [
+        {
+            "ticker": "NVDA",
+            "direction": "long",
+            "shares": 41,
+            "avg_cost": 102.17,
+            "risk_notes": "Core AI holding, prefer to hold unless thesis clearly broken"
+        },
+        {
+            "ticker": "META",
+            "direction": "long",
+            "shares": 7,
+            "avg_cost": 705.311,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "AMD",
+            "direction": "long",
+            "shares": 7,
+            "avg_cost": 27.595,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "QQQ",
+            "direction": "long",
+            "shares": 6.5,
+            "avg_cost": 611.063,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "TSLA",
+            "direction": "long",
+            "shares": 11,
+            "avg_cost": 266.782,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "MCD",
+            "direction": "long",
+            "shares": 22,
+            "avg_cost": 300.347,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "CRDO",
+            "direction": "long",
+            "shares": 2,
+            "avg_cost": 100,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "IAU",
+            "direction": "long",
+            "shares": 48,
+            "avg_cost": 74.696,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "NFLX",
+            "direction": "long",
+            "shares": 80,
+            "avg_cost": 94.89,
+            "risk_notes": "Core holding"
+        },
+        {
+            "ticker": "APP",
+            "direction": "long",
+            "shares": 4,
+            "avg_cost": 600,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "GOOG",
+            "direction": "long",
+            "shares": 19,
+            "avg_cost": 287.699,
+            "risk_notes": "Core holding"
+        },
+        {
+            "ticker": "COIN",
+            "direction": "long",
+            "shares": 13,
+            "avg_cost": 262.654,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        },
+        {
+            "ticker": "MU",
+            "direction": "long",
+            "shares": 2,
+            "avg_cost": 400,
+            "risk_notes": "Swing position, OK to reduce before earnings"
+        }
+    ]
+}
+
+2) RECENT, PRE-FILTERED STOCK NEWS (last 72h, watchlist only):
+[
+  {
+    "source": "google_news",
+    "title": "\u201c46% Upside Potential\u201d: Here\u2019s Why This Top Analyst Is Bullish on Nvidia Stock (NVDA) ahead of Q4 Earnings - TipRanks",
+    "summary": "\u201c46% Upside Potential\u201d: Here\u2019s Why This Top Analyst Is Bullish on Nvidia Stock (NVDA) ahead of Q4 Earnings&nbsp;&nbsp;TipRanks",
+    "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOUDBQaThITllQeFZDT0M4aGp1anA4RVduelRUcGtnU3d4OEROOVlvQ1pHSENUU0E1T1V6aHM2anpYLWwwV0dlQmR3NmhYTTFobnBjTS15SmVXYUpWa0Ixa0Z1ZWIxaHFFOUg3Z0tta1lsRTV1SDZlRFdSV2RIbVNFUmpIYld2c3FsT04xejBYRUhvUmphdU5rQWlQMTcyZEZOQmZGZFRQX1M2Q1ItVGJkbnJIVEEwS2J4dHF3V2Z1bkg?oc=5",
+    "published_at": "2026-02-17T21:56:47+00:00",
+    "tickers": [
+      "NVDA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NVDA+stock&hl=en-US&gl=US&ceid=US:en"
+  },
+  {
+    "source": "google_news",
+    "title": "Mizuho Securities Cuts Price Target for MSTR, COIN, HOOD Stocks - CoinGape",
+    "summary": "Mizuho Securities Cuts Price Target for MSTR, COIN, HOOD Stocks&nbsp;&nbsp;CoinGape",
+    "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOZDdLZFYySDZTSEY5SXNvQWdOMHZHTVV2ZllWUnNFUjl1RU9BeDJLY1U2SU5abXp4QWYwVmxfS0ZjY0NLMlpnSE1DdURveWpibjRTclVNbGVwbmxtVGxzbEwyQnRnaXZub2JHaDh1cWlRT21VT2xyLWFLZ1hJREdKN3BjTTM0Ynlta2xuYWl6Ylp4UzFUbGFBV2RaWQ?oc=5",
+    "published_at": "2026-02-17T15:51:29+00:00",
+    "tickers": [
+      "COIN"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en"
+  },
+  {
+    "source": "google_news",
+    "title": "Meta Stock Price Target 2026: Analyst Forecasts $838-$935 Target - Intellectia AI",
+    "summary": "Meta Stock Price Target 2026: Analyst Forecasts $838-$935 Target&nbsp;&nbsp;Intellectia AI",
+    "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBISWF3Z00yNy1ERmZCcUFyQTFPRUJKcFdmakJ3czQwWENVSVdyNU1ROTltU3pBVUR4TjlJRVFyUEdIVVdjUm51aWQ4WWFDNVhHQmFvMC1Ubzd0UXBicGZidFRDdzYtWU0?oc=5",
+    "published_at": "2026-02-17T10:52:34+00:00",
+    "tickers": [
+      "META"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en"
+  },
+  {
+    "source": "google_news",
+    "title": "MSFT, GOOG and AMZN Forecast \u2013 Major Tech Stocks Looking to Recover After President\u2019s Day - FXEmpire",
+    "summary": "MSFT, GOOG and AMZN Forecast \u2013 Major Tech Stocks Looking to Recover After President\u2019s Day&nbsp;&nbsp;FXEmpire",
+    "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPUWQzX19OcmtGX1dzem5zQkI0RFZ5SmV2cHRVbDRiVGttTHJES0NLSWZtcVZyVFZZdzc2cEMxeXFZdXhMQS1LUHRrNDAyeFJZVnQ1NWFMYWg5bUIwSnNUbEFRTWxEUnVtTEFZeV92ZnlncFZvQzhDdUVZQ2poUkN5Q1hxc3hyOHFGM0xUOHJnTDBkTThJMGZleTBid0dKcXpYQllQYWw5SmdpVW90Sk1CY0RHNUhnam1aNjZIWllxczJZVDdpNVFCckdWc256YzRlZFE?oc=5",
+    "published_at": "2026-02-16T14:20:00+00:00",
+    "tickers": [
+      "MSFT",
+      "GOOG",
+      "AMZN"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=GOOG+stock&hl=en-US&gl=US&ceid=US:en"
+  },
+  {
+    "source": "google_news",
+    "title": "Nvidia\u2019s Week: UBS Raises Target, Hyperscaler Spending Holds, AMD Stumbles - 24/7 Wall St.",
+    "summary": "Nvidia\u2019s Week: UBS Raises Target, Hyperscaler Spending Holds, AMD Stumbles&nbsp;&nbsp;24/7 Wall St.",
+    "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQN1ZnS1VESzJmbm5CeUdOZGIwMVNFSE85eG5tNzFaYWF3V0tGcnZFSi1JQmdRYlRaamxUYlZ2ZVRrTmRxYjR2aFByV1d6eHV1UGk3SDVWd19Xa3UwQ0luRGd6OHRWTE1ld0ZCbUFraE1TNTh0aFFTNlF3MjY5SnhsQmNyeFhiOTNUbDNUajJFUFBucnpIbTdHcTFCTjlsbWRyNHpCQUN3SnFVaGpCSHFaREpJcUo?oc=5",
+    "published_at": "2026-02-15T12:50:49+00:00",
+    "tickers": [
+      "AMD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en"
+  },
+  {
+    "source": "google_news",
+    "title": "McDonald\u2019s stock: MCD pulls back from $335 high as Argus upgrades; traders watch new McCaf\u00e9 drinks - TechStock\u00b2",
+    "summary": "McDonald\u2019s stock: MCD pulls back from $335 high as Argus upgrades; traders watch new McCaf\u00e9 drinks&nbsp;&nbsp;TechStock\u00b2",
+    "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQMkhsU3Q1Q2JLUTV3Rm0yalZiYmhYNGNURXU5VnIyY1dlUkpzdUF3ZUJGcExQVHFydDFMUW53Q3FkbTFFRVhVWTJvakliV09jc3NNbVlNRTNCLUJRV1RNV0kwM0g0OUt0QmNySGEwWUt3LW1XalpVcTcwNEhJQlpSeXdzX0xIbzNJOXlUMnVyMElwLXgzdWtDQ3VtUWdJRndqaVYwOVp5YW5wQXpsUEU2eDQ1S0k4QQ?oc=5",
+    "published_at": "2026-02-14T22:31:00+00:00",
+    "tickers": [
+      "MCD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MCD+stock&hl=en-US&gl=US&ceid=US:en"
+  }
+]
+
+
+
+3) TREND SIGNALS (20-day breakout, technical analysis):
+{
+  "AMD": {
+    "close": 203.08,
+    "20d_high": 266.96,
+    "20d_low": 190.72,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 7,
+      "avg_cost": 27.59,
+      "unrealized_pnl_pct": 6.3593,
+      "distance_to_hard_stop_pct": 0.8804,
+      "hard_stop_price": 24.28
+    }
+  },
+  "APP": {
+    "close": 376.38,
+    "20d_high": 615.27,
+    "20d_low": 359.0,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 4,
+      "avg_cost": 600,
+      "unrealized_pnl_pct": -0.3727,
+      "distance_to_hard_stop_pct": -0.4028,
+      "hard_stop_price": 528.0
+    }
+  },
+  "COIN": {
+    "close": 166.02,
+    "20d_high": 243.19,
+    "20d_low": 139.36,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 13,
+      "avg_cost": 262.65,
+      "unrealized_pnl_pct": -0.3679,
+      "distance_to_hard_stop_pct": -0.3922,
+      "hard_stop_price": 231.14
+    }
+  },
+  "CRDO": {
+    "close": 124.8,
+    "20d_high": 158.87,
+    "20d_low": 94.19,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 2,
+      "avg_cost": 100,
+      "unrealized_pnl_pct": 0.248,
+      "distance_to_hard_stop_pct": 0.2949,
+      "hard_stop_price": 88.0
+    }
+  },
+  "GOOG": {
+    "close": 302.82,
+    "20d_high": 350.15,
+    "20d_low": 303.9,
+    "breakout": false,
+    "breakdown": true,
+    "position": {
+      "shares": 19,
+      "avg_cost": 287.7,
+      "unrealized_pnl_pct": 0.0526,
+      "distance_to_hard_stop_pct": 0.1639,
+      "hard_stop_price": 253.18
+    }
+  },
+  "IAU": {
+    "close": 91.82,
+    "20d_high": 104.4,
+    "20d_low": 85.44,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 48,
+      "avg_cost": 74.7,
+      "unrealized_pnl_pct": 0.2292,
+      "distance_to_hard_stop_pct": 0.2841,
+      "hard_stop_price": 65.73
+    }
+  },
+  "MCD": {
+    "close": 327.62,
+    "20d_high": 335.67,
+    "20d_low": 302.45,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 22,
+      "avg_cost": 300.35,
+      "unrealized_pnl_pct": 0.0908,
+      "distance_to_hard_stop_pct": 0.1933,
+      "hard_stop_price": 264.31
+    }
+  },
+  "META": {
+    "close": 639.29,
+    "20d_high": 744.0,
+    "20d_low": 600.0,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 7,
+      "avg_cost": 705.31,
+      "unrealized_pnl_pct": -0.0936,
+      "distance_to_hard_stop_pct": 0.0291,
+      "hard_stop_price": 620.67
+    }
+  },
+  "MU": {
+    "close": 399.78,
+    "20d_high": 455.5,
+    "20d_low": 352.04,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 2,
+      "avg_cost": 400,
+      "unrealized_pnl_pct": -0.0006,
+      "distance_to_hard_stop_pct": 0.1195,
+      "hard_stop_price": 352.0
+    }
+  },
+  "NFLX": {
+    "close": 77.0,
+    "20d_high": 89.9,
+    "20d_low": 75.23,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 80,
+      "avg_cost": 94.89,
+      "unrealized_pnl_pct": -0.1885,
+      "distance_to_hard_stop_pct": -0.0845,
+      "hard_stop_price": 83.5
+    }
+  },
+  "NVDA": {
+    "close": 184.97,
+    "20d_high": 194.49,
+    "20d_low": 171.03,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 41,
+      "avg_cost": 102.17,
+      "unrealized_pnl_pct": 0.8104,
+      "distance_to_hard_stop_pct": 0.5139,
+      "hard_stop_price": 89.91
+    }
+  },
+  "QQQ": {
+    "close": 601.3,
+    "20d_high": 636.6,
+    "20d_low": 594.76,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 6.5,
+      "avg_cost": 611.06,
+      "unrealized_pnl_pct": -0.016,
+      "distance_to_hard_stop_pct": 0.1057,
+      "hard_stop_price": 537.74
+    }
+  },
+  "TSLA": {
+    "close": 410.63,
+    "20d_high": 452.43,
+    "20d_low": 387.53,
+    "breakout": false,
+    "breakdown": false,
+    "position": {
+      "shares": 11,
+      "avg_cost": 266.78,
+      "unrealized_pnl_pct": 0.5392,
+      "distance_to_hard_stop_pct": 0.4283,
+      "hard_stop_price": 234.77
+    }
+  }
+}
+
+TASK A — NEW POSITIONS:
+- Decide whether to open any NEW positions based ONLY on the news provided.
+- Generate at most ONE new trade.
+- If there is no clear, asymmetric, event-driven opportunity, say "NO NEW TRADE".
+
+TASK B — EXISTING POSITIONS REVIEW:
+- For EACH existing position, decide exactly ONE action:
+  HOLD, REDUCE, or EXIT.
+
+STRICT RULES:
+- Prefer HOLD over REDUCE, and REDUCE over EXIT.
+- Do NOT short or reverse positions.
+- Do NOT act on general market noise.
+- Analyst opinions alone are weak signals.
+- If position data is incomplete or uncertain, prefer HOLD.
+
+OUTPUT FORMAT (VALID JSON ONLY):
+
+{
+  "new_trade": 
+    "NO NEW TRADE"
+    OR
+    {
+      "ticker": "string",
+      "event": "what specifically happened",
+      "thesis": "why this creates an edge",
+      "direction": "long",
+      "confidence": number between 0 and 1,
+      "holding_days": integer between 5 and 15,
+      "entry": "market or specific condition",
+      "stop_loss_pct": number between 2 and 5,
+      "take_profit_pct": number between 6 and 15,
+      "invalid_if": "specific condition that invalidates the thesis"
+    },
+
+  "position_actions": [
+    {
+      "ticker": "string",
+      "current_position": "long",
+      "action": "HOLD | REDUCE | EXIT",
+      "reason": "specific, event-based justification",
+      "confidence": number between 0 and 1
+    }
+  ]
+}
+
+IMPORTANT:
+- Output JSON only
+- If no new trade exists, explicitly output "NO NEW TRADE"
+- Fewer actions are better than more
+- Inaction is a valid and often optimal outcome
