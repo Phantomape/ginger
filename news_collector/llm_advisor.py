@@ -152,22 +152,41 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             user_message += trend_section
 
     # Add position management section (insert before TASK A, after trend signals)
+    from position_manager import compute_portfolio_heat
+
     portfolio_value = open_positions.get('portfolio_value_usd') if open_positions else None
+
+    # Extract current prices from trend signals for heat calculation
+    current_prices = {}
+    if trend_signals and trend_signals.get('signals'):
+        current_prices = {t: s.get('close') for t, s in trend_signals['signals'].items()
+                         if s.get('close') is not None}
+
+    # Portfolio heat
+    heat = None
+    if portfolio_value and open_positions:
+        try:
+            heat = compute_portfolio_heat(open_positions, current_prices, portfolio_value)
+        except Exception as e:
+            logger.warning(f"Failed to compute portfolio heat: {e}")
+
+    # Market regime from trend signals
+    regime = trend_signals.get('market_regime', {}) if trend_signals else {}
+
     pos_mgmt_data = {
-        "portfolio_value_usd": portfolio_value,
-        "risk_per_trade_pct": 0.01,
+        "market_regime": {
+            "regime":  regime.get("regime", "UNKNOWN"),
+            "note":    regime.get("note", ""),
+            "indices": regime.get("indices", {}),
+        },
+        "portfolio_heat": heat if heat else {
+            "note": "Set portfolio_value_usd in open_positions.json to enable heat tracking"
+        },
         "sizing_note": (
             "shares = floor(portfolio_value_usd * 0.01 / (entry_price - stop_price))"
             if portfolio_value
             else "Set portfolio_value_usd in open_positions.json to enable position sizing"
         ),
-        "exit_rules": {
-            "hard_stop_pct":      -0.12,
-            "atr_stop_multiplier": 2.0,
-            "trailing_stop_pct":  -0.08,
-            "profit_target_pct":   0.20,
-            "time_stop_days":      20,
-        },
         "positions_requiring_attention": [],
     }
 
@@ -186,7 +205,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)
     pos_mgmt_section = (
-        f"\n\n4) POSITION MANAGEMENT (pre-computed rules — use these directly):\n"
+        f"\n\n4) POSITION MANAGEMENT (pre-computed — use these directly):\n"
         f"{pos_mgmt_json}\n"
     )
 

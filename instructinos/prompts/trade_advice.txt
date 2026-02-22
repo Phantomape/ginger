@@ -19,11 +19,34 @@ POSITION SIZING RULE (mandatory for any new trade):
 
 EXIT RULE HIERARCHY (non-negotiable, apply in order):
 1. HARD STOP     -12% from avg_cost        → CRITICAL: exit immediately, no override
+   (If override_stop_active=true in exit_levels, that manual price is used instead)
 2. ATR STOP      entry - 2×ATR(14)         → HIGH: volatility-adjusted floor, exit
-3. TRAILING STOP -8% from position high    → HIGH: lock in gains, exit
+3. TRAILING STOP -8% from 20-day high      → HIGH: lock in gains, exit
 4. PROFIT TARGET +20% from entry           → MEDIUM: exit or reduce
 5. TIME STOP     20 trading days stagnant  → REVIEW: exit unless clear new catalyst
 Exit levels per position are pre-computed in section 4. Use them directly.
+
+LEGACY BASIS WARNING:
+Positions with legacy_basis=true have unrealized_pnl_pct > 100%. Their avg_cost
+is so far below the current price that fixed-% stops from avg_cost are meaningless.
+For these positions:
+- Ignore PROFIT_TARGET (it was exceeded long ago — not actionable)
+- Focus ONLY on: trailing_stop_from_20d_high and drawdown_from_20d_high_pct
+- If drawdown_from_20d_high_pct < -8%, treat as TRAILING_STOP → REDUCE or EXIT
+- If override_stop_price is not set, be conservative: drawdown > -15% → EXIT
+The real risk for legacy positions is how much they have fallen from their recent peak,
+NOT how far they are from the original entry price.
+
+MARKET REGIME RULE (check section 4 before any new trade):
+- BULL    (both SPY + QQQ above 200-day MA) → new long positions permitted
+- NEUTRAL (mixed signals)                   → no new positions unless conviction > 0.85
+- BEAR    (both below 200-day MA)           → output "NO NEW TRADE" unconditionally
+                                              bias all existing positions toward REDUCE/EXIT
+
+PORTFOLIO HEAT RULE (check section 4 before any new trade):
+- If can_add_new_positions = false          → output "NO NEW TRADE" unconditionally
+- Portfolio heat = total capital at risk / portfolio value
+- Cap is 10%: do not open new positions if heat is already at or above cap
 
 USER:
 Today is Jan. 15th, 2026, 4:30 PM EST

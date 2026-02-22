@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 # Import the watchlist from filter module
 from filter import WATCHLIST
 from position_manager import compute_atr, compute_exit_levels, evaluate_exit_signals
+from regime import compute_market_regime
 
 
 def load_open_positions(filepath="../data/open_positions.json"):
@@ -149,7 +150,7 @@ def compute_breakout_signals(data, window=20):
         return None
 
 
-def compute_position_context(ticker, latest_close, open_positions, atr=None):
+def compute_position_context(ticker, latest_close, open_positions, atr=None, high_20d=None):
     """
     Compute position context if ticker is held, including exit levels and signals.
 
@@ -158,6 +159,7 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None):
         latest_close (float): Current close price
         open_positions (dict): Open positions data
         atr (float): Optional ATR value for volatility-adjusted stop
+        high_20d (float): 20-day high used as high_water_mark for trailing stop
 
     Returns:
         dict: Position context or None
@@ -177,18 +179,65 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None):
             unrealized_pnl_pct = (latest_close - avg_cost) / avg_cost
             market_value_usd = round(shares * latest_close, 2)
 
-            # Compute exit levels and evaluate triggered signals
-            exit_levels = compute_exit_levels(avg_cost, atr)
-            exit_signals = evaluate_exit_signals(latest_close, avg_cost, exit_levels)
+            # Positions with >100% gain from avg_cost: avg_cost-based stops are
+            # historical artifacts. Risk management should focus on protecting
+            # gains from recent highs, not from the original entry.
+            legacy_basis = unrealized_pnl_pct > 1.0
 
-            return {
+            # Resolve stop price:
+            # 1. Prefer manually set override_stop_price from open_positions.json
+            # 2. For legacy positions (PnL > 100%) with no manual override,
+            #    auto-compute a rolling stop at -12% from the current close.
+            #    This is far more meaningful than -12% from an old avg_cost
+            #    (e.g. AMD avg_cost $27 → default stop $24, useless at $200).
+            manual_override = pos.get("override_stop_price")
+            if manual_override:
+                override_stop     = manual_override
+                stop_source       = "manual"
+            elif legacy_basis:
+                from position_manager import HARD_STOP_PCT
+                override_stop     = round(latest_close * (1 - HARD_STOP_PCT), 2)
+                stop_source       = "auto_rolling"   # -12% from today's close
+            else:
+                override_stop     = None
+                stop_source       = "default"        # -12% from avg_cost
+
+            # Compute exit levels.
+            # For legacy positions pass current_price so ATR stop = current_price - 2×ATR
+            # instead of the meaningless avg_cost - 2×ATR (e.g. AMD: $27 - $21 = $6).
+            exit_levels = compute_exit_levels(
+                avg_cost, atr,
+                override_stop_price=override_stop,
+                current_price=latest_close if legacy_basis else None,
+            )
+
+            # Use 20d_high as high_water_mark so trailing stop detects drawdowns
+            # from recent peaks, not just from avg_cost.
+            exit_signals = evaluate_exit_signals(
+                latest_close, avg_cost, exit_levels,
+                high_water_mark=high_20d
+            )
+
+            result = {
                 "shares": shares,
                 "avg_cost": round(avg_cost, 2),
                 "market_value_usd": market_value_usd,
                 "unrealized_pnl_pct": round(unrealized_pnl_pct, 4),
+                "legacy_basis": legacy_basis,
+                "stop_source": stop_source,
                 "exit_levels": exit_levels,
                 "exit_signals": exit_signals,
             }
+
+            if high_20d is not None:
+                from position_manager import TRAILING_STOP_PCT
+                result["trailing_stop_from_20d_high"] = round(high_20d * (1 - TRAILING_STOP_PCT), 2)
+                result["drawdown_from_20d_high_pct"] = round((latest_close - high_20d) / high_20d, 4)
+
+            if override_stop:
+                result["effective_stop_price"] = override_stop
+
+            return result
 
     return None
 
@@ -229,9 +278,13 @@ def generate_trend_signals(universe=None, window=20, lookback_days=60):
                 logger.warning(f"Skipping {ticker}: insufficient data for signals")
                 continue
 
-            # Add position context if ticker is held (pass ATR for volatility-adjusted stop)
+            # Add position context if ticker is held
+            # Pass ATR for volatility-adjusted stop and 20d_high as high_water_mark
+            # so trailing stop can detect drawdowns from recent peaks
             position_context = compute_position_context(
-                ticker, signal["close"], open_positions, atr=signal.get("atr")
+                ticker, signal["close"], open_positions,
+                atr=signal.get("atr"),
+                high_20d=signal.get("20d_high"),
             )
             if position_context:
                 signal["position"] = position_context
@@ -243,12 +296,22 @@ def generate_trend_signals(universe=None, window=20, lookback_days=60):
             logger.error(f"Failed to process {ticker}: {e}")
             continue
 
+    # Compute market regime (SPY + QQQ vs 200-day MA)
+    logger.info("Computing market regime (SPY/QQQ vs 200-day MA)...")
+    try:
+        regime = compute_market_regime()
+        logger.info(f"Market regime: {regime['regime']}")
+    except Exception as e:
+        logger.error(f"Failed to compute market regime: {e}")
+        regime = {"regime": "UNKNOWN", "note": f"Regime check failed: {e}", "indices": {}}
+
     return {
         "generated_at": datetime.now().isoformat(),
         "asof_date": today,
         "universe": universe,
         "window": window,
-        "signals": signals
+        "market_regime": regime,
+        "signals": signals,
     }
 
 

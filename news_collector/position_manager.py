@@ -15,13 +15,14 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 # Rule parameters
-RISK_PER_TRADE_PCT  = 0.01   # Risk 1% of total portfolio per new trade
-HARD_STOP_PCT       = 0.12   # -12% hard stop from avg_cost
-PROFIT_TARGET_PCT   = 0.20   # +20% profit target from entry
-TRAILING_STOP_PCT   = 0.08   # -8% trailing stop from position high-water mark
-TIME_STOP_DAYS      = 20     # Exit review after 20 trading days
-ATR_MULTIPLIER      = 2.0    # Stop = entry - 2 × ATR
-ATR_PERIOD          = 14     # Standard ATR lookback
+RISK_PER_TRADE_PCT    = 0.01   # Risk 1% of total portfolio per new trade
+HARD_STOP_PCT         = 0.12   # -12% hard stop from avg_cost
+PROFIT_TARGET_PCT     = 0.20   # +20% profit target from entry
+TRAILING_STOP_PCT     = 0.08   # -8% trailing stop from position high-water mark
+TIME_STOP_DAYS        = 20     # Exit review after 20 trading days
+ATR_MULTIPLIER        = 2.0    # Stop = entry - 2 × ATR
+ATR_PERIOD            = 14     # Standard ATR lookback
+MAX_PORTFOLIO_HEAT    = 0.10   # Max 10% of portfolio at risk simultaneously
 
 
 def compute_atr(data, period=ATR_PERIOD):
@@ -110,31 +111,47 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
         return None
 
 
-def compute_exit_levels(avg_cost, atr=None):
+def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_price=None):
     """
     Compute all exit price levels for a held position.
 
     Args:
         avg_cost (float): Average cost / entry price
         atr (float): Optional ATR value for volatility-adjusted stop
+        override_stop_price (float): Hard stop override (used for legacy positions).
+            For auto_rolling stops this equals current_price × 0.88.
+        current_price (float): Current market price — used as ATR reference for
+            legacy positions so that atr_stop = current_price - 2×ATR instead of
+            the meaningless avg_cost - 2×ATR (e.g. AMD: $27 - $21 = $6).
 
     Returns:
         dict: Exit levels with prices and percentages
     """
-    hard_stop     = round(avg_cost * (1 - HARD_STOP_PCT), 2)
+    if override_stop_price:
+        hard_stop     = round(override_stop_price, 2)
+        hard_stop_pct = round((hard_stop - avg_cost) / avg_cost, 4)
+    else:
+        hard_stop     = round(avg_cost * (1 - HARD_STOP_PCT), 2)
+        hard_stop_pct = -HARD_STOP_PCT
+
     profit_target = round(avg_cost * (1 + PROFIT_TARGET_PCT), 2)
 
     levels = {
         "hard_stop_price":     hard_stop,
-        "hard_stop_pct":       -HARD_STOP_PCT,
+        "hard_stop_pct":       hard_stop_pct,
         "profit_target_price": profit_target,
         "profit_target_pct":   PROFIT_TARGET_PCT,
         "trailing_stop_pct":   TRAILING_STOP_PCT,
         "time_stop_days":      TIME_STOP_DAYS,
     }
+    if override_stop_price:
+        levels["override_stop_active"] = True
 
     if atr is not None:
-        atr_stop = round(avg_cost - ATR_MULTIPLIER * atr, 2)
+        # For legacy positions (override active), base ATR stop on current_price.
+        # For normal positions, base on avg_cost (the actual entry price).
+        atr_ref  = current_price if (override_stop_price and current_price) else avg_cost
+        atr_stop = round(atr_ref - ATR_MULTIPLIER * atr, 2)
         levels["atr_stop_price"] = atr_stop
         levels["atr_stop_pct"]   = round((atr_stop - avg_cost) / avg_cost, 4)
 
@@ -220,4 +237,96 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
         "critical_exit":   any(t["urgency"] == "CRITICAL" for t in triggered),
         "high_urgency":    any(t["urgency"] in ("CRITICAL", "HIGH") for t in triggered),
         "triggered_rules": triggered,
+    }
+
+
+def compute_portfolio_heat(open_positions, current_prices, portfolio_value):
+    """
+    Calculate total portfolio risk exposure (portfolio heat).
+
+    For each position:
+        at_risk_usd = shares × max(0, current_price - hard_stop_price)
+
+    Portfolio heat = Σ(at_risk_usd) / portfolio_value
+
+    If heat >= MAX_PORTFOLIO_HEAT (10%), no new positions should be added.
+
+    Args:
+        open_positions (dict): Open positions data (from open_positions.json)
+        current_prices (dict): {ticker: current_close_price}
+        portfolio_value (float): Total portfolio value in USD
+
+    Returns:
+        dict: Heat metrics including per-position breakdown and overall verdict
+    """
+    if not open_positions or not portfolio_value or portfolio_value <= 0:
+        return None
+
+    position_breakdown = []
+    total_at_risk_usd  = 0.0
+
+    for pos in open_positions.get("positions", []):
+        ticker   = pos.get("ticker")
+        shares   = pos.get("shares", 0)
+        avg_cost = pos.get("avg_cost", 0)
+
+        if not ticker or avg_cost <= 0 or shares <= 0:
+            continue
+
+        # Use live price if available, fall back to avg_cost
+        current_price = current_prices.get(ticker, avg_cost)
+
+        # Use same stop logic as compute_exit_levels / trend_signals:
+        #   legacy positions (PnL > 100%): rolling stop = current_price × 0.88
+        #   manual override takes precedence if set in open_positions.json
+        #   normal positions: avg_cost × 0.88
+        manual_override    = pos.get("override_stop_price")
+        unrealized_pnl_pct = (current_price - avg_cost) / avg_cost if avg_cost > 0 else 0
+        legacy             = unrealized_pnl_pct > 1.0
+
+        if manual_override:
+            hard_stop = manual_override
+            stop_src  = "manual"
+        elif legacy:
+            hard_stop = current_price * (1 - HARD_STOP_PCT)
+            stop_src  = "auto_rolling"
+        else:
+            hard_stop = avg_cost * (1 - HARD_STOP_PCT)
+            stop_src  = "default"
+
+        # Amount lost if price drops to hard stop from current price
+        at_risk_per_share = max(0.0, current_price - hard_stop)
+        at_risk_usd       = shares * at_risk_per_share
+        at_risk_pct       = at_risk_usd / portfolio_value
+
+        total_at_risk_usd += at_risk_usd
+
+        position_breakdown.append({
+            "ticker":         ticker,
+            "shares":         shares,
+            "current_price":  round(current_price, 2),
+            "hard_stop_price":round(hard_stop, 2),
+            "stop_source":    stop_src,
+            "at_risk_usd":    round(at_risk_usd, 2),
+            "at_risk_pct":    round(at_risk_pct, 4),
+        })
+
+    heat_pct           = total_at_risk_usd / portfolio_value
+    can_add_positions  = heat_pct < MAX_PORTFOLIO_HEAT
+
+    if can_add_positions:
+        heat_note = (f"Heat {heat_pct*100:.1f}% < {MAX_PORTFOLIO_HEAT*100:.0f}% cap — "
+                     f"new positions permitted")
+    else:
+        heat_note = (f"Heat {heat_pct*100:.1f}% >= {MAX_PORTFOLIO_HEAT*100:.0f}% cap — "
+                     f"NO new positions until existing risk is reduced")
+
+    return {
+        "portfolio_value_usd":   portfolio_value,
+        "total_at_risk_usd":     round(total_at_risk_usd, 2),
+        "portfolio_heat_pct":    round(heat_pct, 4),
+        "max_heat_pct":          MAX_PORTFOLIO_HEAT,
+        "can_add_new_positions": can_add_positions,
+        "heat_note":             heat_note,
+        "position_breakdown":    position_breakdown,
     }
