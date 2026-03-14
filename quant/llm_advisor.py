@@ -152,7 +152,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             user_message += trend_section
 
     # Add position management section (insert before TASK A, after trend signals)
-    from position_manager import compute_portfolio_heat
+    # Use portfolio_engine (8% cap) not position_manager (10% cap)
+    from portfolio_engine import compute_portfolio_heat
 
     portfolio_value = open_positions.get('portfolio_value_usd') if open_positions else None
 
@@ -191,16 +192,20 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     }
 
     # Collect positions with triggered exit signals from trend signals
+    _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1}
     if trend_signals and trend_signals.get('signals'):
         for ticker, sig in trend_signals['signals'].items():
             pos_ctx = sig.get('position', {})
             exit_sigs = pos_ctx.get('exit_signals', {})
-            if exit_sigs.get('any_triggered'):
+            rules = exit_sigs.get('triggered_rules', [])
+            if exit_sigs.get('any_triggered') and rules:
+                # Derive true max urgency from triggered rules (not just CRITICAL/HIGH binary)
+                max_urgency = max(rules, key=lambda r: _urgency_rank.get(r['urgency'], 0))['urgency']
                 pos_mgmt_data['positions_requiring_attention'].append({
                     "ticker":          ticker,
                     "current_price":   sig['close'],
-                    "urgency":         "CRITICAL" if exit_sigs['critical_exit'] else "HIGH",
-                    "triggered_rules": exit_sigs['triggered_rules'],
+                    "urgency":         max_urgency,
+                    "triggered_rules": rules,
                 })
 
     pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)

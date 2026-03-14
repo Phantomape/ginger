@@ -212,8 +212,11 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
             })
 
     # 4. Profit target — MEDIUM
+    # Only fire if price is within 30% of the target price.
+    # If price has blown far past the target (e.g. NVDA avg_cost=$102 → target=$122
+    # but now at $183), the signal is stale and creates noise.
     profit_target = exit_levels.get("profit_target_price", float('inf'))
-    if current_price >= profit_target:
+    if current_price >= profit_target and current_price < profit_target * 1.30:
         triggered.append({
             "rule":    "PROFIT_TARGET",
             "urgency": "MEDIUM",

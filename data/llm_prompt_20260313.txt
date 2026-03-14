@@ -1,0 +1,1214 @@
+================================================================================
+SYSTEM MESSAGE
+================================================================================
+
+你是一个保守的零售交易账户组合决策代理。
+
+你的首要目标是资本保全。
+你倾向于不行动，除非有明确的、事件驱动的理由才出手。
+
+你管理两类决策：
+1) 是否开设任何新仓位
+2) 是否调整任何现有仓位
+
+你不预测价格。
+你不基于观点或猜测交易。
+你只对具体的、可验证的事件或已确认的技术信号作出反应。
+
+交易频率控制：
+- 默认偏向 NO TRADE
+- 若信号质量不足或信息不完整 → NO NEW TRADE
+- 每日最多生成一笔新交易
+
+仓位规模规则（所有新交易均须遵守）：
+- 每笔新交易最多风险组合总值的 1%
+- 计算公式：股数 = floor( (portfolio_value_usd × 0.01) / (entry_price - stop_price) )
+- 最少 1 股；portfolio_value_usd 在第 4 节提供
+
+期望值门槛（Expected Value Gate）：
+- 若 reward_risk_ratio < 2.0 → 禁止开仓
+- reward_risk_ratio = (target_price - entry_price) / (entry_price - stop_price)
+
+出场规则优先级（不可违反，按顺序执行）：
+1. 硬止损     价格 ≤ exit_levels 中的 hard_stop_price   → 紧急：立即出场，不得覆盖
+   (hard_stop_price = override_stop_price（若已设定）；否则 legacy_basis 时为 current_price×0.88；否则为 avg_cost×0.88)
+2. ATR止损    价格 ≤ exit_levels 中的 atr_stop_price    → 高：波动调整底线，出场
+3. 移动止损   价格 ≤ trailing_stop_from_20d_high        → 高：锁定收益，出场
+4. 止盈目标   达到 profit_target → REDUCE 50% 仓位（保留赢家）
+5. 时间止损   20个交易日停滞不前                         → 审查：除非有新催化剂，否则出场
+各持仓的出场价位已在第 4 节预先计算好，直接使用。
+
+历史低成本持仓警告（Legacy Basis）：
+legacy_basis=true 的持仓，unrealized_pnl_pct > 100%。其 avg_cost 远低于当前价，基于 avg_cost 的固定百分比止损已无意义。
+对于此类持仓：
+- 完全忽略 PROFIT_TARGET（早已超越，不再具有操作意义）
+- 忽略基于 avg_cost 的止损；只关注：trailing_stop_from_20d_high 和 drawdown_from_20d_high_pct
+- 若 drawdown_from_20d_high_pct < -8%，视为 TRAILING_STOP → 减仓或出场
+- 若未设置 override_stop_price，保守处理：回撤 > -15% → 出场
+这类持仓的真实风险是距近期高点的回撤幅度，而非距原始建仓价的距离。
+
+市场方向规则（开新仓前先查第 4 节）：
+- 牛市    (SPY + QQQ 均在 200 日均线上方) → 允许开新多仓
+- 中性    (信号混合)                       → 不开新仓，除非置信度 > 0.85
+- 熊市    (均在 200 日均线下方)             → 无条件输出 "NO NEW TRADE"
+                                              现有持仓偏向减仓/出场
+
+组合热度规则（开新仓前先查第 4 节）：
+- 若 can_add_new_positions = false           → 无条件输出 "NO NEW TRADE"
+- 热度上限见第 4 节 portfolio_heat.max_heat_pct（当前为 8%）
+- 若热度已达到或超过上限，不得开新仓
+
+行业集中度控制（Sector Concentration Risk）
+若新交易属于与现有最大仓位相同的行业：
+且该行业组合权重 > 40%
+→ 禁止新仓（避免高度相关风险）
+
+================================================================================
+USER MESSAGE
+================================================================================
+
+今天是 Jan. 15th, 2026, 4:30 PM EST
+
+你收到以下信息：
+
+1) 当前持仓（手动录入，可能为近似值）：
+{
+    "as_of": "2026-01-23",
+    "account": "moomoo_sg",
+    "positions": [
+        {
+            "ticker": "NVDA",
+            "direction": "long",
+            "shares": 41,
+            "avg_cost": 102.17,
+            "risk_notes": "核心 AI 持仓，除非逻辑明显破坏否则倾向持有"
+        },
+        {
+            "ticker": "META",
+            "direction": "long",
+            "shares": 7,
+            "avg_cost": 705.311,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "AMD",
+            "direction": "long",
+            "shares": 7,
+            "avg_cost": 27.595,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "QQQ",
+            "direction": "long",
+            "shares": 6.5,
+            "avg_cost": 611.063,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "TSLA",
+            "direction": "long",
+            "shares": 11,
+            "avg_cost": 266.782,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "MCD",
+            "direction": "long",
+            "shares": 22,
+            "avg_cost": 300.347,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "CRDO",
+            "direction": "long",
+            "shares": 2,
+            "avg_cost": 100,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "IAU",
+            "direction": "long",
+            "shares": 48,
+            "avg_cost": 74.696,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "NFLX",
+            "direction": "long",
+            "shares": 80,
+            "avg_cost": 94.89,
+            "risk_notes": "核心持仓"
+        },
+        {
+            "ticker": "APP",
+            "direction": "long",
+            "shares": 4,
+            "avg_cost": 600,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "GOOG",
+            "direction": "long",
+            "shares": 19,
+            "avg_cost": 287.699,
+            "risk_notes": "核心持仓"
+        },
+        {
+            "ticker": "COIN",
+            "direction": "long",
+            "shares": 13,
+            "avg_cost": 262.654,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        },
+        {
+            "ticker": "MU",
+            "direction": "long",
+            "shares": 2,
+            "avg_cost": 400,
+            "risk_notes": "波段仓位，财报前可以减仓"
+        }
+    ]
+}
+
+2) 近期精选股票新闻（过去 72 小时，仅自选股）：
+新闻使用方式
+
+新闻不作为主要交易信号来源。
+
+新闻仅用于：
+
+1) 验证信号
+2) 过滤风险
+3) 识别重大事件
+
+示例：
+
+trend signal
++ 负面新闻
+→ 拒绝交易
+
+只有以下重大事件才允许单独触发交易：
+
+- earnings beat
+- guidance raise
+- regulatory approval
+- confirmed M&A
+
+普通新闻不得单独触发交易。
+
+[
+  {
+    "source": "google_news",
+    "title": "示例标题",
+    "tickers": ["NVDA"],
+    "published_at": "2026-01-15T12:00:00+00:00"
+  }
+]
+
+--------------------------------------------------------------------------------
+
+财报风险窗口规则
+
+若 days_to_earnings ≤ 3：
+
+→ 禁止开新仓
+
+除非：
+
+earnings_event_long 信号明确存在。
+
+原因：
+财报前波动极高，不具备可预测性。
+
+--------------------------------------------------------------------------------
+
+波动率过滤规则
+
+若：
+
+ATR / price > 0.05
+
+说明市场波动异常。
+
+→ 禁止开新仓。
+
+--------------------------------------------------------------------------------
+
+信号质量评分（Trade Quality Score）
+
+每个交易信号必须计算：
+
+score = 
+    0.35 × trend_score
+    +0.25 × breakout_strength
+    +0.20 × volume_spike
+    +0.20 × earnings_revision_signal
+
+若 score < 0.75：
+
+→ NO NEW TRADE
+
+--------------------------------------------------------------------------------
+
+新仓信号来源
+
+有效信号来源：
+
+(a) 量化信号
+    breakout_long
+    trend_long
+    earnings_event_long
+
+(b) 支持新闻（仅用于确认）
+
+quant + supporting news
+→ 最高置信度
+
+quant alone
+→ 需要 confidence ≥ 0.80
+
+news alone
+→ 禁止开仓
+
+--------------------------------------------------------------------------------
+
+冷却机制（Loss Streak Control）
+
+若最近 3 笔交易全部亏损：
+
+→ 暂停新交易 3 个交易日
+
+--------------------------------------------------------------------------------
+
+核心原则
+
+优先级：
+
+1 风险控制
+2 减少错误
+3 保留赢家
+4 最后才是寻找新机会
+
+最优行为通常是：
+
+NO NEW TRADE
+
+--------------------------------------------------------------------------------
+
+任务 A — 新仓位：
+- 步骤 1 — 门槛检查：若第 4 节 can_add_new_positions=false，立即输出 "NO NEW TRADE"，跳过任务 A 的所有后续分析。
+- 步骤 2 — 信号来源：同时考虑技术信号（第 3 节）和新闻催化剂（第 2 节）。
+  有效信号来源：
+    (a) 量化信号，置信度 ≥ 0.70 — breakout_long、trend_long 或 earnings_event_long
+    (b) 明确的事件驱动新闻催化剂（财报超预期、重大评级上调、并购、监管批准）
+  最高置信度 = 量化信号 (a) + 支持新闻 (b) 对同一标的共同指向。
+  单独量化信号 (a) 在置信度 ≥ 0.80 时已足够。
+  单独新闻 (b) 较弱 — 需要高置信度事件且无技术破位。
+- 步骤 3 — 最多生成一笔新交易。
+  若无明确的不对称建仓机会，输出 "NO NEW TRADE"。
+
+任务 B — 现有持仓审查：
+- 对每个现有持仓，决定且只决定一个操作：HOLD（持有）、REDUCE（减仓）或 EXIT（出场）。
+- REDUCE 需指定 shares_to_sell（部分出场：通常为持仓的 25%、33% 或 50%）。
+
+严格规则：
+- 优先 HOLD，其次 REDUCE，最后 EXIT。
+- 不得做空或反向建仓。
+- 不得仅凭市场噪音或分析师观点单独行动。
+- 若出场规则已触发（第 4 节 positions_requiring_attention），必须处理——不得在不提供明确理由的情况下对紧急（CRITICAL）持仓选择 HOLD。
+- 若持仓数据不完整或不确定，优先选择 HOLD。
+
+输出格式（仅输出合法 JSON）：
+
+{
+  "new_trade":
+    "NO NEW TRADE"
+    OR
+    {
+      "ticker": "string",
+      "signal_source": "quant | news | quant+news",
+      "event": "具体催化剂：新闻标题或量化信号类型 (trend_long / breakout_long / earnings_event_long)",
+      "thesis": "为何此机会具有优势",
+      "direction": "long",
+      "confidence": 0到1之间的数字,
+      "holding_days": 5到20之间的整数,
+      "entry_price": 数字（使用第 3 节的当前收盘价）,
+      "stop_price": 数字（绝对价格——entry_price 减去 1.5×ATR（来自第 3 节），或入场价下方 5-12%）,
+      "target_price": 数字（绝对价格——entry_price 加上 3×ATR，或入场价上方 15-25%）,
+      "shares_to_buy": 整数（floor(portfolio_value_usd × 0.01 / (entry_price - stop_price))）,
+      "invalid_if": "使逻辑无效的具体条件"
+    },
+
+  "position_actions": [
+    {
+      "ticker": "string",
+      "current_position": "long",
+      "action": "HOLD | REDUCE | EXIT",
+      "reason": "具体的、基于规则的理由，引用 exit_levels 或新闻",
+      "confidence": 0到1之间的数字,
+      "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | PROFIT_TARGET | TIME_STOP | APPROACHING_HARD_STOP",
+      "shares_to_sell": 整数或null
+    }
+  ]
+}
+
+重要说明：
+- 只输出 JSON，不要 markdown 代码块，前后不要有任何文字。
+- action=REDUCE 时 shares_to_sell 为必填（不得为 null）；action=HOLD 或 EXIT 时必须为 null。
+- 若无新交易，new_trade 设为字符串 "NO NEW TRADE"（不是对象）。
+- 操作越少越好，不行动是合法且往往最优的结果。
+- position_actions 必须包含所有持仓——即使操作为 HOLD。
+
+
+3) TREND SIGNALS (20-day breakout, technical analysis):
+{
+  "AMD": {
+    "close": 193.39,
+    "20d_high": 218.46,
+    "20d_low": 188.22,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 8.8706,
+    "above_200ma": true,
+    "momentum_10d_pct": -0.0341,
+    "volume_spike": false,
+    "trend_score": 0.2,
+    "days_to_earnings": 53,
+    "position": {
+      "shares": 7,
+      "avg_cost": 27.59,
+      "market_value_usd": 1353.73,
+      "unrealized_pnl_pct": 6.0082,
+      "legacy_basis": true,
+      "stop_source": "auto_rolling",
+      "exit_levels": {
+        "hard_stop_price": 170.18,
+        "hard_stop_pct": 5.1671,
+        "profit_target_price": 33.11,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "override_stop_active": true,
+        "atr_stop_price": 175.65,
+        "atr_stop_pct": 5.3653
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "TRAILING_STOP",
+            "urgency": "HIGH",
+            "message": "Price 193.39 <= trailing stop 200.98 (8% from high 218.46)"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 200.98,
+      "drawdown_from_20d_high_pct": -0.1148,
+      "effective_stop_price": 170.18
+    }
+  },
+  "APP": {
+    "close": 458.67,
+    "20d_high": 520.36,
+    "20d_low": 359.0,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 28.9536,
+    "above_200ma": false,
+    "momentum_10d_pct": 0.055,
+    "volume_spike": false,
+    "trend_score": 0.2,
+    "days_to_earnings": 54,
+    "position": {
+      "shares": 4,
+      "avg_cost": 600,
+      "market_value_usd": 1834.68,
+      "unrealized_pnl_pct": -0.2355,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 528.0,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 720.0,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 542.09,
+        "atr_stop_pct": -0.0965
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": true,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "HARD_STOP",
+            "urgency": "CRITICAL",
+            "message": "Price 458.67 <= hard stop 528.00"
+          },
+          {
+            "rule": "ATR_STOP",
+            "urgency": "HIGH",
+            "message": "Price 458.67 <= ATR stop 542.09"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 478.73,
+      "drawdown_from_20d_high_pct": -0.1186
+    }
+  },
+  "COIN": {
+    "close": 195.53,
+    "20d_high": 213.5,
+    "20d_low": 139.36,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 12.4131,
+    "above_200ma": false,
+    "momentum_10d_pct": 0.1119,
+    "volume_spike": false,
+    "trend_score": 0.2,
+    "days_to_earnings": 55,
+    "position": {
+      "shares": 13,
+      "avg_cost": 262.65,
+      "market_value_usd": 2541.89,
+      "unrealized_pnl_pct": -0.2556,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 231.14,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 315.18,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 237.83,
+        "atr_stop_pct": -0.0945
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": true,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "HARD_STOP",
+            "urgency": "CRITICAL",
+            "message": "Price 195.53 <= hard stop 231.14"
+          },
+          {
+            "rule": "ATR_STOP",
+            "urgency": "HIGH",
+            "message": "Price 195.53 <= ATR stop 237.83"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 196.42,
+      "drawdown_from_20d_high_pct": -0.0842
+    }
+  },
+  "CRDO": {
+    "close": 117.69,
+    "20d_high": 132.49,
+    "20d_low": 92.6,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 9.1715,
+    "above_200ma": false,
+    "momentum_10d_pct": 0.0483,
+    "volume_spike": false,
+    "trend_score": 0.2,
+    "days_to_earnings": 80,
+    "position": {
+      "shares": 2,
+      "avg_cost": 100,
+      "market_value_usd": 235.38,
+      "unrealized_pnl_pct": 0.1769,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 88.0,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 120.0,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 81.66,
+        "atr_stop_pct": -0.1834
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "TRAILING_STOP",
+            "urgency": "HIGH",
+            "message": "Price 117.69 <= trailing stop 121.89 (8% from high 132.49)"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 121.89,
+      "drawdown_from_20d_high_pct": -0.1117
+    }
+  },
+  "GOOG": {
+    "close": 301.46,
+    "20d_high": 319.23,
+    "20d_low": 293.93,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 7.441,
+    "above_200ma": true,
+    "momentum_10d_pct": -0.0313,
+    "volume_spike": false,
+    "trend_score": 0.4,
+    "days_to_earnings": 41,
+    "position": {
+      "shares": 19,
+      "avg_cost": 287.7,
+      "market_value_usd": 5727.74,
+      "unrealized_pnl_pct": 0.0478,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 253.18,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 345.24,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 272.82,
+        "atr_stop_pct": -0.0517
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "trailing_stop_from_20d_high": 293.69,
+      "drawdown_from_20d_high_pct": -0.0557
+    }
+  },
+  "IAU": {
+    "close": 94.38,
+    "20d_high": 100.81,
+    "20d_low": 91.28,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 2.0513,
+    "above_200ma": true,
+    "momentum_10d_pct": -0.0473,
+    "volume_spike": false,
+    "trend_score": 0.4,
+    "days_to_earnings": null,
+    "position": {
+      "shares": 48,
+      "avg_cost": 74.7,
+      "market_value_usd": 4530.24,
+      "unrealized_pnl_pct": 0.2635,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 65.73,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 89.64,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 70.59,
+        "atr_stop_pct": -0.055
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": [
+          {
+            "rule": "PROFIT_TARGET",
+            "urgency": "MEDIUM",
+            "message": "Price 94.38 >= profit target 89.64"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 92.75,
+      "drawdown_from_20d_high_pct": -0.0638
+    }
+  },
+  "MCD": {
+    "close": 326.46,
+    "20d_high": 339.85,
+    "20d_low": 318.37,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 5.3194,
+    "above_200ma": true,
+    "momentum_10d_pct": -0.0375,
+    "volume_spike": false,
+    "trend_score": 0.4,
+    "days_to_earnings": 48,
+    "position": {
+      "shares": 22,
+      "avg_cost": 300.35,
+      "market_value_usd": 7182.12,
+      "unrealized_pnl_pct": 0.0869,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 264.31,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 360.42,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 289.71,
+        "atr_stop_pct": -0.0354
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "trailing_stop_from_20d_high": 312.66,
+      "drawdown_from_20d_high_pct": -0.0394
+    }
+  },
+  "META": {
+    "close": 613.71,
+    "20d_high": 676.0,
+    "20d_low": 626.78,
+    "breakout": false,
+    "breakdown": true,
+    "atr": 19.4298,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.0532,
+    "volume_spike": true,
+    "trend_score": 0.2,
+    "days_to_earnings": 47,
+    "position": {
+      "shares": 7,
+      "avg_cost": 705.31,
+      "market_value_usd": 4295.97,
+      "unrealized_pnl_pct": -0.1299,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 620.67,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 846.37,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 666.45,
+        "atr_stop_pct": -0.0551
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": true,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "HARD_STOP",
+            "urgency": "CRITICAL",
+            "message": "Price 613.71 <= hard stop 620.67"
+          },
+          {
+            "rule": "ATR_STOP",
+            "urgency": "HIGH",
+            "message": "Price 613.71 <= ATR stop 666.45"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 621.92,
+      "drawdown_from_20d_high_pct": -0.0921
+    }
+  },
+  "MU": {
+    "close": 426.13,
+    "20d_high": 438.77,
+    "20d_low": 357.67,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 25.0423,
+    "above_200ma": true,
+    "momentum_10d_pct": 0.0334,
+    "volume_spike": false,
+    "trend_score": 0.6,
+    "days_to_earnings": 5,
+    "position": {
+      "shares": 2,
+      "avg_cost": 400,
+      "market_value_usd": 852.26,
+      "unrealized_pnl_pct": 0.0653,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 352.0,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 480.0,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 349.92,
+        "atr_stop_pct": -0.1252
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "trailing_stop_from_20d_high": 403.67,
+      "drawdown_from_20d_high_pct": -0.0288
+    }
+  },
+  "NFLX": {
+    "close": 95.31,
+    "20d_high": 100.19,
+    "20d_low": 75.01,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 2.7591,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.0097,
+    "volume_spike": false,
+    "trend_score": 0.0,
+    "days_to_earnings": 34,
+    "position": {
+      "shares": 80,
+      "avg_cost": 94.89,
+      "market_value_usd": 7624.8,
+      "unrealized_pnl_pct": 0.0044,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 83.5,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 113.87,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 89.37,
+        "atr_stop_pct": -0.0582
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "trailing_stop_from_20d_high": 92.17,
+      "drawdown_from_20d_high_pct": -0.0487
+    }
+  },
+  "NVDA": {
+    "close": 180.25,
+    "20d_high": 197.62,
+    "20d_low": 174.63,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 5.7359,
+    "above_200ma": true,
+    "momentum_10d_pct": 0.0173,
+    "volume_spike": false,
+    "trend_score": 0.4,
+    "days_to_earnings": 68,
+    "position": {
+      "shares": 41,
+      "avg_cost": 102.17,
+      "market_value_usd": 7390.25,
+      "unrealized_pnl_pct": 0.7642,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 89.91,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 122.6,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 90.7,
+        "atr_stop_pct": -0.1123
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "TRAILING_STOP",
+            "urgency": "HIGH",
+            "message": "Price 180.25 <= trailing stop 181.81 (8% from high 197.62)"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 181.81,
+      "drawdown_from_20d_high_pct": -0.0879
+    }
+  },
+  "QQQ": {
+    "close": 593.72,
+    "20d_high": 616.83,
+    "20d_low": 591.33,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 10.789,
+    "above_200ma": true,
+    "momentum_10d_pct": -0.0223,
+    "volume_spike": false,
+    "trend_score": 0.2,
+    "days_to_earnings": null,
+    "position": {
+      "shares": 6.5,
+      "avg_cost": 611.06,
+      "market_value_usd": 3859.18,
+      "unrealized_pnl_pct": -0.0284,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 537.74,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 733.28,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 589.49,
+        "atr_stop_pct": -0.0353
+      },
+      "exit_signals": {
+        "any_triggered": false,
+        "critical_exit": false,
+        "high_urgency": false,
+        "triggered_rules": []
+      },
+      "trailing_stop_from_20d_high": 567.48,
+      "drawdown_from_20d_high_pct": -0.0375
+    }
+  },
+  "TSLA": {
+    "close": 391.2,
+    "20d_high": 436.23,
+    "20d_low": 381.4,
+    "breakout": false,
+    "breakdown": false,
+    "atr": 13.4366,
+    "above_200ma": false,
+    "momentum_10d_pct": -0.0281,
+    "volume_spike": false,
+    "trend_score": 0.0,
+    "days_to_earnings": 39,
+    "position": {
+      "shares": 11,
+      "avg_cost": 266.78,
+      "market_value_usd": 4303.2,
+      "unrealized_pnl_pct": 0.4664,
+      "legacy_basis": false,
+      "stop_source": "default",
+      "exit_levels": {
+        "hard_stop_price": 234.77,
+        "hard_stop_pct": -0.12,
+        "profit_target_price": 320.14,
+        "profit_target_pct": 0.2,
+        "trailing_stop_pct": 0.08,
+        "time_stop_days": 20,
+        "atr_stop_price": 239.91,
+        "atr_stop_pct": -0.1007
+      },
+      "exit_signals": {
+        "any_triggered": true,
+        "critical_exit": false,
+        "high_urgency": true,
+        "triggered_rules": [
+          {
+            "rule": "TRAILING_STOP",
+            "urgency": "HIGH",
+            "message": "Price 391.20 <= trailing stop 401.33 (8% from high 436.23)"
+          },
+          {
+            "rule": "PROFIT_TARGET",
+            "urgency": "MEDIUM",
+            "message": "Price 391.20 >= profit target 320.14"
+          }
+        ]
+      },
+      "trailing_stop_from_20d_high": 401.33,
+      "drawdown_from_20d_high_pct": -0.1032
+    }
+  }
+}
+
+
+4) POSITION MANAGEMENT (pre-computed — use these directly):
+{
+  "market_regime": {
+    "regime": "BULL",
+    "note": "Both SPY and QQQ are above their 200-day MA. Trend is bullish. New long positions are permitted.",
+    "indices": {
+      "SPY": {
+        "ticker": "SPY",
+        "close": 662.29,
+        "ma200": 656.41,
+        "above_ma": true,
+        "pct_from_ma": 0.009
+      },
+      "QQQ": {
+        "ticker": "QQQ",
+        "close": 593.72,
+        "ma200": 590.15,
+        "above_ma": true,
+        "pct_from_ma": 0.006
+      }
+    }
+  },
+  "portfolio_heat": {
+    "portfolio_value_usd": 70000,
+    "total_at_risk_usd": 10763.13,
+    "portfolio_heat_pct": 0.1538,
+    "max_heat_pct": 0.08,
+    "can_add_new_positions": false,
+    "heat_note": "Heat 15.4% >= 8% cap \u2014 NO new positions \u2014 reduce existing risk first",
+    "position_breakdown": [
+      {
+        "ticker": "NVDA",
+        "shares": 41,
+        "current_price": 180.25,
+        "hard_stop": 89.91,
+        "stop_source": "default",
+        "at_risk_usd": 3703.96,
+        "at_risk_pct": 0.0529
+      },
+      {
+        "ticker": "META",
+        "shares": 7,
+        "current_price": 613.71,
+        "hard_stop": 620.67,
+        "stop_source": "default",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "AMD",
+        "shares": 7,
+        "current_price": 193.39,
+        "hard_stop": 170.18,
+        "stop_source": "auto_rolling",
+        "at_risk_usd": 162.45,
+        "at_risk_pct": 0.0023
+      },
+      {
+        "ticker": "QQQ",
+        "shares": 6.5,
+        "current_price": 593.72,
+        "hard_stop": 537.74,
+        "stop_source": "default",
+        "at_risk_usd": 363.9,
+        "at_risk_pct": 0.0052
+      },
+      {
+        "ticker": "TSLA",
+        "shares": 11,
+        "current_price": 391.2,
+        "hard_stop": 234.77,
+        "stop_source": "default",
+        "at_risk_usd": 1720.75,
+        "at_risk_pct": 0.0246
+      },
+      {
+        "ticker": "MCD",
+        "shares": 22,
+        "current_price": 326.46,
+        "hard_stop": 264.31,
+        "stop_source": "default",
+        "at_risk_usd": 1367.4,
+        "at_risk_pct": 0.0195
+      },
+      {
+        "ticker": "CRDO",
+        "shares": 2,
+        "current_price": 117.69,
+        "hard_stop": 88.0,
+        "stop_source": "default",
+        "at_risk_usd": 59.38,
+        "at_risk_pct": 0.0008
+      },
+      {
+        "ticker": "IAU",
+        "shares": 48,
+        "current_price": 94.38,
+        "hard_stop": 65.73,
+        "stop_source": "default",
+        "at_risk_usd": 1375.08,
+        "at_risk_pct": 0.0196
+      },
+      {
+        "ticker": "NFLX",
+        "shares": 80,
+        "current_price": 95.31,
+        "hard_stop": 83.5,
+        "stop_source": "default",
+        "at_risk_usd": 944.54,
+        "at_risk_pct": 0.0135
+      },
+      {
+        "ticker": "APP",
+        "shares": 4,
+        "current_price": 458.67,
+        "hard_stop": 528.0,
+        "stop_source": "default",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "GOOG",
+        "shares": 19,
+        "current_price": 301.46,
+        "hard_stop": 253.18,
+        "stop_source": "default",
+        "at_risk_usd": 917.41,
+        "at_risk_pct": 0.0131
+      },
+      {
+        "ticker": "COIN",
+        "shares": 13,
+        "current_price": 195.53,
+        "hard_stop": 231.14,
+        "stop_source": "default",
+        "at_risk_usd": 0.0,
+        "at_risk_pct": 0.0
+      },
+      {
+        "ticker": "MU",
+        "shares": 2,
+        "current_price": 426.13,
+        "hard_stop": 352.0,
+        "stop_source": "default",
+        "at_risk_usd": 148.26,
+        "at_risk_pct": 0.0021
+      }
+    ]
+  },
+  "sizing_note": "shares = floor(portfolio_value_usd * 0.01 / (entry_price - stop_price))",
+  "positions_requiring_attention": [
+    {
+      "ticker": "AMD",
+      "current_price": 193.39,
+      "urgency": "HIGH",
+      "triggered_rules": [
+        {
+          "rule": "TRAILING_STOP",
+          "urgency": "HIGH",
+          "message": "Price 193.39 <= trailing stop 200.98 (8% from high 218.46)"
+        }
+      ]
+    },
+    {
+      "ticker": "APP",
+      "current_price": 458.67,
+      "urgency": "CRITICAL",
+      "triggered_rules": [
+        {
+          "rule": "HARD_STOP",
+          "urgency": "CRITICAL",
+          "message": "Price 458.67 <= hard stop 528.00"
+        },
+        {
+          "rule": "ATR_STOP",
+          "urgency": "HIGH",
+          "message": "Price 458.67 <= ATR stop 542.09"
+        }
+      ]
+    },
+    {
+      "ticker": "COIN",
+      "current_price": 195.53,
+      "urgency": "CRITICAL",
+      "triggered_rules": [
+        {
+          "rule": "HARD_STOP",
+          "urgency": "CRITICAL",
+          "message": "Price 195.53 <= hard stop 231.14"
+        },
+        {
+          "rule": "ATR_STOP",
+          "urgency": "HIGH",
+          "message": "Price 195.53 <= ATR stop 237.83"
+        }
+      ]
+    },
+    {
+      "ticker": "CRDO",
+      "current_price": 117.69,
+      "urgency": "HIGH",
+      "triggered_rules": [
+        {
+          "rule": "TRAILING_STOP",
+          "urgency": "HIGH",
+          "message": "Price 117.69 <= trailing stop 121.89 (8% from high 132.49)"
+        }
+      ]
+    },
+    {
+      "ticker": "IAU",
+      "current_price": 94.38,
+      "urgency": "MEDIUM",
+      "triggered_rules": [
+        {
+          "rule": "PROFIT_TARGET",
+          "urgency": "MEDIUM",
+          "message": "Price 94.38 >= profit target 89.64"
+        }
+      ]
+    },
+    {
+      "ticker": "META",
+      "current_price": 613.71,
+      "urgency": "CRITICAL",
+      "triggered_rules": [
+        {
+          "rule": "HARD_STOP",
+          "urgency": "CRITICAL",
+          "message": "Price 613.71 <= hard stop 620.67"
+        },
+        {
+          "rule": "ATR_STOP",
+          "urgency": "HIGH",
+          "message": "Price 613.71 <= ATR stop 666.45"
+        }
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "current_price": 180.25,
+      "urgency": "HIGH",
+      "triggered_rules": [
+        {
+          "rule": "TRAILING_STOP",
+          "urgency": "HIGH",
+          "message": "Price 180.25 <= trailing stop 181.81 (8% from high 197.62)"
+        }
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "current_price": 391.2,
+      "urgency": "HIGH",
+      "triggered_rules": [
+        {
+          "rule": "TRAILING_STOP",
+          "urgency": "HIGH",
+          "message": "Price 391.20 <= trailing stop 401.33 (8% from high 436.23)"
+        },
+        {
+          "rule": "PROFIT_TARGET",
+          "urgency": "MEDIUM",
+          "message": "Price 391.20 >= profit target 320.14"
+        }
+      ]
+    }
+  ]
+}
+

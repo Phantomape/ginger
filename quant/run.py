@@ -1,0 +1,283 @@
+"""
+Unified Quant Pipeline — single daily entry point.
+
+Replaces both run_quant.py (technical signals) and run_pipeline.py (news + LLM).
+
+Steps:
+  1.  Load config (open_positions, universe)
+  2.  Market regime           — SPY/QQQ vs 200-day MA        (single call)
+  3.  OHLCV + earnings data   — 350 calendar days per ticker  (single download)
+  4.  Feature layer           — trend score, breakout, ATR, earnings features
+  5.  Position context        — exit levels / exit signals for held tickers
+  6.  Quant signals           — 3 strategies, risk enrichment, position sizing
+  7.  Quant report            — daily report + quant_signals_YYYYMMDD.json
+  8.  Fetch & filter news     — RSS sources → hygiene → trade filter
+  9.  LLM prompt              — save prompt to data/llm_prompt_YYYYMMDD.txt
+  10. Summary
+
+Usage:
+    cd d:/Github/ginger
+    python quant/run.py
+"""
+
+import json
+import logging
+import os
+from datetime import datetime
+
+
+# ── Logging ──────────────────────────────────────────────────────────────────
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s  %(levelname)-7s  %(name)s: %(message)s',
+    datefmt='%H:%M:%S',
+)
+log = logging.getLogger(__name__)
+
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
+def _save_json(obj, filepath):
+    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(obj, f, indent=2, ensure_ascii=False, default=str)
+    log.info(f"Saved → {filepath}")
+
+
+def _save_text(text, filepath):
+    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(text)
+    log.info(f"Saved → {filepath}")
+
+
+def _load_open_positions():
+    for path in [
+        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
+        'data/open_positions.json',
+    ]:
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    log.warning("open_positions.json not found")
+    return None
+
+
+def _print_section(title):
+    log.info("")
+    log.info("=" * 55)
+    log.info(f"  {title}")
+    log.info("=" * 55)
+
+
+# ── Main pipeline ─────────────────────────────────────────────────────────────
+
+def main():
+    today = datetime.now().strftime("%Y%m%d")
+
+    # ── Step 1: Config ────────────────────────────────────────────────────────
+    _print_section("STEP 1 — Loading config")
+
+    # Imports are inside main() so the module can be imported without side-effects
+    from data_layer         import get_universe, get_ohlcv, get_earnings_data
+    from feature_layer      import compute_features
+    from trend_signals      import compute_position_context, save_trend_signals
+    from signal_engine      import generate_signals
+    from risk_engine        import enrich_signals
+    from portfolio_engine   import size_signals, compute_portfolio_heat
+    from performance_engine import compute_metrics
+    from report_generator   import generate_daily_report, save_report
+
+    open_positions  = _load_open_positions()
+    portfolio_value = (open_positions or {}).get("portfolio_value_usd")
+    universe        = get_universe()
+    log.info(f"Universe ({len(universe)} tickers): {universe}")
+
+    # ── Step 2: Market Regime ─────────────────────────────────────────────────
+    _print_section("STEP 2 — Market regime")
+    try:
+        from regime import compute_market_regime
+        market_regime = compute_market_regime()
+        log.info(f"Regime: {market_regime['regime']}")
+    except Exception as e:
+        log.warning(f"Regime unavailable: {e}")
+        market_regime = {"regime": "UNKNOWN", "note": str(e), "indices": {}}
+
+    # ── Step 3: OHLCV + Earnings (single download per ticker) ────────────────
+    _print_section("STEP 3 — OHLCV + earnings data")
+    ohlcv_dict    = {}
+    earnings_dict = {}
+    for ticker in universe:
+        ohlcv_dict[ticker]    = get_ohlcv(ticker)        # 350 calendar days
+        earnings_dict[ticker] = get_earnings_data(ticker)
+
+    # ── Step 4: Feature Layer ─────────────────────────────────────────────────
+    _print_section("STEP 4 — Feature layer")
+    features_dict = {}
+    for ticker in universe:
+        features_dict[ticker] = compute_features(
+            ticker, ohlcv_dict[ticker], earnings_dict[ticker]
+        )
+    ok = sum(1 for f in features_dict.values() if f)
+    log.info(f"Features ready: {ok}/{len(universe)} tickers")
+
+    # ── Step 5: Position context (exit signals for held tickers) ─────────────
+    _print_section("STEP 5 — Position context")
+    # Build trend_signals dict with key names that llm_advisor.build_prompt() expects:
+    #   breakout_20d → breakout,  breakdown_20d → breakdown,
+    #   high_20d     → 20d_high,  low_20d       → 20d_low
+    trend_signals_signals = {}
+    for ticker, f in features_dict.items():
+        if f is None:
+            continue
+        sig = {
+            "close":            f["close"],
+            "20d_high":         f["high_20d"],
+            "20d_low":          f["low_20d"],
+            "breakout":         f["breakout_20d"],
+            "breakdown":        f["breakdown_20d"],
+            "atr":              f.get("atr"),
+            # Bonus keys for LLM context (not required by build_prompt, but useful)
+            "above_200ma":      f.get("above_200ma"),
+            "momentum_10d_pct": f.get("momentum_10d_pct"),
+            "volume_spike":     f.get("volume_spike"),
+            "trend_score":      f.get("trend_score"),
+            "days_to_earnings": f.get("days_to_earnings"),
+        }
+        # Add exit-level position context for held tickers
+        pos_ctx = compute_position_context(
+            ticker, f["close"], open_positions,
+            atr=f.get("atr"),
+            high_20d=f.get("high_20d"),
+        )
+        if pos_ctx:
+            sig["position"] = pos_ctx
+            log.info(f"{ticker}: position context added "
+                     f"(urgency={pos_ctx['exit_signals']['high_urgency']})")
+
+        trend_signals_signals[ticker] = sig
+
+    trend_signals_dict = {
+        "generated_at": datetime.now().isoformat(),
+        "asof_date":    datetime.now().strftime("%Y-%m-%d"),
+        "universe":     universe,
+        "market_regime": market_regime,
+        "signals":      trend_signals_signals,
+    }
+
+    # Save trend signals JSON (backward-compatible output)
+    trend_output = f"data/trend_signals_{today}.json"
+    save_trend_signals(trend_signals_dict, trend_output)
+
+    # ── Step 6: Quant signals ─────────────────────────────────────────────────
+    _print_section("STEP 6 — Quant signals")
+    signals = generate_signals(features_dict)
+    signals = enrich_signals(signals, features_dict)
+    log.info(f"Signals generated: {len(signals)}")
+
+    # Current prices for heat + sizing
+    current_prices = {
+        t: f["close"] for t, f in features_dict.items() if f and f.get("close")
+    }
+
+    portfolio_heat = None
+    if open_positions and portfolio_value:
+        portfolio_heat = compute_portfolio_heat(open_positions, current_prices, portfolio_value)
+        log.info(portfolio_heat["heat_note"])
+        if portfolio_heat["can_add_new_positions"] and portfolio_value:
+            signals = size_signals(signals, portfolio_value)
+    elif portfolio_value:
+        signals = size_signals(signals, portfolio_value)
+
+    metrics = compute_metrics()
+
+    # ── Step 7: Quant report ──────────────────────────────────────────────────
+    _print_section("STEP 7 — Quant report")
+    report = generate_daily_report(
+        signals        = signals,
+        features_dict  = features_dict,
+        portfolio_heat = portfolio_heat,
+        metrics        = metrics,
+        market_regime  = market_regime,
+        open_positions = open_positions,
+    )
+    print("\n" + report)
+    save_report(report)
+
+    _save_json({
+        "generated_at":   datetime.now().isoformat(),
+        "market_regime":  market_regime,
+        "portfolio_heat": portfolio_heat,
+        "signals":        signals,
+        "features":       features_dict,
+    }, f"data/quant_signals_{today}.json")
+
+    # ── Step 8: Fetch & filter news ───────────────────────────────────────────
+    _print_section("STEP 8 — News collection")
+    trade_items = []
+    try:
+        from sources import get_all_sources
+        from parser  import parse_feed, deduplicate_items, sort_items_by_date
+        from filter  import apply_hygiene_filters, apply_trade_filters
+
+        all_items  = []
+        sources    = get_all_sources()
+        log.info(f"Fetching from {len(sources)} RSS sources...")
+        for source in sources:
+            try:
+                items = parse_feed(source["url"], source["source_type"],
+                                   source.get("metadata", {}))
+                all_items.extend(items)
+            except Exception as e:
+                log.warning(f"Source {source['url']}: {e}")
+
+        sorted_items  = sort_items_by_date(deduplicate_items(all_items))
+        hygiene_items = apply_hygiene_filters(sorted_items)["items"]
+        trade_items   = apply_trade_filters(sorted_items)["items"]
+
+        _save_json(sorted_items,  f"data/news_{today}.json")
+        _save_json(hygiene_items, f"data/clean_news_{today}.json")
+        _save_json(trade_items,   f"data/clean_trade_news_{today}.json")
+
+        log.info(f"News: {len(sorted_items)} raw → {len(hygiene_items)} hygiene "
+                 f"→ {len(trade_items)} trade-filtered")
+    except Exception as e:
+        log.error(f"News collection failed: {e}")
+
+    # ── Step 9: LLM prompt ────────────────────────────────────────────────────
+    _print_section("STEP 9 — LLM prompt")
+    if not trade_items:
+        log.info("No trade-filtered news — skipping LLM prompt")
+    else:
+        try:
+            from llm_advisor import get_investment_advice, save_advice
+            result = get_investment_advice(
+                trade_items,
+                open_positions = open_positions,
+                trend_signals  = trend_signals_dict,
+                save_prompt_only = True,   # saves to data/llm_prompt_YYYYMMDD.txt
+            )
+            if result["success"]:
+                log.info(result["advice"])
+            else:
+                log.error(f"LLM advisor: {result['error']}")
+        except Exception as e:
+            log.error(f"LLM advisor failed: {e}")
+
+    # ── Step 10: Summary ──────────────────────────────────────────────────────
+    _print_section("PIPELINE COMPLETE")
+    log.info(f"  Tickers analyzed:   {len(universe)}")
+    log.info(f"  Signals generated:  {len(signals)}")
+    log.info(f"  News (trade):       {len(trade_items)}")
+    log.info(f"  Regime:             {market_regime['regime']}")
+    if portfolio_heat:
+        log.info(f"  Portfolio heat:     {portfolio_heat['portfolio_heat_pct']*100:.1f}%")
+    if metrics.get("total_trades", 0) > 0:
+        log.info(f"  P&L (realized):     ${metrics['total_pnl_usd']:,.2f}  "
+                 f"WR={metrics['win_rate']*100:.0f}%")
+    log.info("")
+
+
+if __name__ == "__main__":
+    main()

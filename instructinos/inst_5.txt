@@ -1,0 +1,265 @@
+AI-Assisted Quant Trading System – One Page Spec
+Objective
+
+Build a modular quantitative trading system that generates probabilistic trade ideas using a combination of:
+
+structural market signals
+
+earnings events
+
+trend signals
+
+The goal is not prediction, but to systematically trade small statistical edges with strict risk management.
+
+The system must prioritize:
+
+simplicity
+robustness
+measurable edge
+modular architecture
+
+Every strategy must be verifiable through P&L tracking.
+
+Core System Architecture
+
+The system contains six modules:
+
+Data Layer
+Feature Layer
+Signal Engine
+Portfolio Engine
+Risk Engine
+Performance Engine
+1. Data Layer
+
+Collect structured market and event data.
+
+Market Data
+
+Required:
+
+price (OHLCV)
+volume
+ATR volatility
+moving averages
+Earnings Data (Critical)
+
+Track earnings-related information:
+
+next earnings date
+consensus EPS estimate
+revenue estimate
+analyst revisions
+earnings history
+
+Purpose:
+
+Earnings events are one of the few persistent retail-accessible market edges.
+
+News Data
+
+Use the existing news collection system.
+
+News is used primarily for:
+
+context
+risk filtering
+event tagging
+
+Not for direct price prediction.
+
+2. Feature Layer
+
+Convert raw data into trading features.
+
+Trend Features
+price vs 200MA
+20-day breakout
+momentum score
+ATR expansion
+volume spike
+Earnings Features
+days_to_earnings
+EPS_estimate_revision
+historical earnings surprise
+earnings volatility
+
+Example feature output:
+
+{
+ ticker: "NVDA",
+ trend_score: 0.82,
+ breakout: true,
+ days_to_earnings: 12,
+ EPS_revision: +3.5%
+}
+3. Signal Engine
+
+Generate trade candidates from simple strategies.
+
+Avoid complex ML models.
+
+Strategies should rely on well-known market anomalies.
+
+Strategy A – Trend Following
+
+Conditions:
+
+price > 200MA
+20-day breakout
+volume spike
+
+Signal:
+
+trend_long
+Strategy B – Volatility Breakout
+
+Conditions:
+
+daily_range > 1.5 ATR
+resistance breakout
+volume expansion
+
+Signal:
+
+breakout_long
+Strategy C – Earnings Event Setup
+
+Conditions:
+
+earnings within 5–15 days
+positive analyst revisions
+strong price momentum
+
+Signal:
+
+earnings_event_long
+
+Signal Output Format:
+
+{
+ ticker,
+ strategy,
+ entry_price,
+ stop_price,
+ confidence_score
+}
+4. Portfolio Engine
+
+Convert signals into position sizes.
+
+Position sizing rule:
+
+risk_per_trade ≤ 1% portfolio
+
+Position size calculation:
+
+position_size = risk / (entry_price − stop_price)
+
+Maximum portfolio exposure:
+
+portfolio_heat ≤ 8%
+5. Risk Engine
+
+Every trade must include predefined risk controls.
+
+Required parameters:
+
+entry_price
+stop_loss
+position_size
+risk_reward_ratio
+
+Typical structure:
+
+entry = breakout price
+stop = entry − 1.5 ATR
+target = entry + 3 ATR
+
+Stop loss must always be enforced.
+
+6. Performance Engine (Critical)
+
+Track the real performance of the system.
+
+Each trade must record:
+
+trade_id
+ticker
+strategy
+entry_price
+exit_price
+position_size
+profit_loss
+holding_period
+
+Metrics to compute:
+
+win_rate
+average_win
+average_loss
+expected_value
+max_drawdown
+strategy_performance
+
+The system must evaluate strategies using realized P&L, not prediction accuracy.
+
+Daily System Output
+
+The system should produce a daily trade report.
+
+Example:
+
+Top Trade Candidates
+
+1 NVDA
+Strategy: trend
+Entry: 920
+Stop: 895
+Confidence: 0.78
+
+2 TSLA
+Strategy: breakout
+Entry: 215
+Stop: 202
+Confidence: 0.74
+
+Execution can initially be manual.
+
+Design Principles
+
+Prefer simple signals over complex models
+
+Focus on persistent structural edges
+
+Use strict risk control
+
+Track real P&L performance
+
+Improve strategies using measured results
+
+Future Extensions
+
+Possible improvements:
+
+options flow analysis
+ETF flow detection
+short interest signals
+automated execution
+backtesting engine
+Implementation Requirement
+
+Claude should implement the system as modular Python components:
+
+data collectors
+feature generator
+signal engine
+portfolio calculator
+risk manager
+performance tracker
+daily report generator
+
+Modules should be loosely coupled and easily extendable.
+
+Important Implementation Guidance
+Focus on building a simple, production-quality system with measurable trading edges rather than complex predictive models.
