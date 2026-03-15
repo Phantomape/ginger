@@ -21,6 +21,8 @@ SYSTEM:
 - 每笔新交易最多风险组合总值的 1%
 - 计算公式：股数 = floor( (portfolio_value_usd × 0.01) / (entry_price - stop_price) )
 - 最少 1 股；portfolio_value_usd 在第 4 节提供
+- 仓位上限：position_value = shares × entry_price 不得超过 portfolio_value_usd × 20%
+  若超过则将 shares 缩减至 floor( portfolio_value_usd × 0.20 / entry_price )
 
 期望值门槛（Expected Value Gate）：
 - 若 risk_reward_ratio < 2.0 → 禁止开仓
@@ -30,15 +32,16 @@ SYSTEM:
 1. 硬止损     价格 ≤ exit_levels 中的 hard_stop_price   → 紧急：立即出场，不得覆盖
    (hard_stop_price = override_stop_price（若已设定）；否则 legacy_basis 时为 current_price×0.88；否则为 avg_cost×0.88)
 2. ATR止损    价格 ≤ exit_levels 中的 atr_stop_price    → 高：波动调整底线，出场
+   (atr_stop_price = current_price − 1.5×ATR，基于当前价格而非建仓成本；盈利仓位该止损可能高于 hard_stop，以更早保护利润)
 3. 移动止损   价格 ≤ trailing_stop_from_20d_high        → 高：锁定收益，出场
-4. 止盈目标   达到 profit_target → REDUCE 50% 仓位（保留赢家）
-5. 时间止损   20个交易日停滞不前                         → 审查：除非有新催化剂，否则出场
+4. 止盈阶梯   20–30% 盈利 → REDUCE 50%；30–50% → HOLD（让赢家跑）；50%+ → REDUCE 25%
+5. 时间止损   45个交易日且涨幅不足目标的一半             → 审查：除非有新催化剂，否则出场
 各持仓的出场价位已在第 4 节预先计算好，直接使用。
 
 历史低成本持仓警告（Legacy Basis）：
 legacy_basis=true 的持仓，unrealized_pnl_pct > 100%。其 avg_cost 远低于当前价，基于 avg_cost 的固定百分比止损已无意义。
 对于此类持仓：
-- 完全忽略 PROFIT_TARGET（早已超越，不再具有操作意义）
+- 完全忽略 PROFIT_TARGET 和 PROFIT_LADDER（早已超越，不再具有操作意义）
 - 忽略基于 avg_cost 的止损；只关注：trailing_stop_from_20d_high 和 drawdown_from_20d_high_pct
 - 若 drawdown_from_20d_high_pct < -8%，视为 TRAILING_STOP → 减仓或出场
 - 若未设置 override_stop_price，保守处理：回撤 > -15% → 出场
@@ -275,11 +278,11 @@ USER:
       "thesis": "为何此机会具有优势",
       "direction": "long",
       "confidence": 0到1之间的数字,
-      "holding_days": 5到20之间的整数,
+      "holding_days": 5到30之间的整数,
       "entry_price": 数字（直接使用第 3a 节信号的 entry_price 字段）,
       "stop_price": 数字（直接使用第 3a 节信号的 stop_price 字段）,
       "target_price": 数字（直接使用第 3a 节信号的 target_price 字段）,
-      "shares_to_buy": 整数（floor(portfolio_value_usd × 0.01 / (entry_price - stop_price))）,
+      "shares_to_buy": 整数（按1%风险公式计算后取 min(result, floor(portfolio_value×0.20/entry_price))），
       "invalid_if": "使逻辑无效的具体条件"
     },
 
@@ -293,7 +296,7 @@ USER:
       "thesis": "为何此机会具有优势",
       "direction": "long",
       "confidence": 0到1之间的数字,
-      "holding_days": 5到20之间的整数,
+      "holding_days": 5到30之间的整数,
       "entry_price": 数字,
       "stop_price": 数字,
       "target_price": 数字,

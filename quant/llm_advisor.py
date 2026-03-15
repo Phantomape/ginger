@@ -183,7 +183,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             user_message += sections_3
 
     # Add position management section (insert before TASK A, after trend signals)
-    # Use portfolio_engine (8% cap) not position_manager (10% cap)
+    # Use portfolio_engine: it applies effective stops (ATR/trailing) not just hard stops,
+    # giving a more accurate heat reading for positions with large unrealised gains.
     from portfolio_engine import compute_portfolio_heat
 
     portfolio_value = open_positions.get('portfolio_value_usd') if open_positions else None
@@ -249,10 +250,18 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             if _urgency_rank.get(max_urgency, 0) < _min_surface_rank:
                 continue
             pos_mgmt_data['positions_requiring_attention'].append({
-                "ticker":          ticker,
-                "current_price":   sig['close'],
-                "urgency":         max_urgency,
-                "triggered_rules": rules,
+                "ticker":                      ticker,
+                "current_price":               sig['close'],
+                "urgency":                     max_urgency,
+                "triggered_rules":             rules,
+                # Pre-computed position data — LLM prompt says "直接使用" these fields
+                "shares":                      pos_ctx.get('shares'),
+                "avg_cost":                    pos_ctx.get('avg_cost'),
+                "unrealized_pnl_pct":          pos_ctx.get('unrealized_pnl_pct'),
+                "legacy_basis":                pos_ctx.get('legacy_basis'),
+                "exit_levels":                 pos_ctx.get('exit_levels'),
+                "trailing_stop_from_20d_high": pos_ctx.get('trailing_stop_from_20d_high'),
+                "drawdown_from_20d_high_pct":  pos_ctx.get('drawdown_from_20d_high_pct'),
             })
 
     pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)

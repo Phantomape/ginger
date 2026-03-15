@@ -6,7 +6,7 @@ Exit Rule Hierarchy (apply in priority order, no exceptions):
 2. ATR STOP      entry - 1.5×ATR(14)       → HIGH: volatility-adjusted floor
 3. TRAILING STOP -8% from position high    → HIGH: protect gains
 4. PROFIT TARGET +20% from entry           → MEDIUM: exit or partial reduce
-5. TIME STOP     20 trading days stagnant  → REVIEW: exit unless new catalyst
+5. TIME STOP     45 trading days stagnant  → REVIEW: exit unless new catalyst
 """
 
 import logging
@@ -16,10 +16,11 @@ logger = logging.getLogger(__name__)
 
 # Rule parameters
 RISK_PER_TRADE_PCT    = 0.01   # Risk 1% of total portfolio per new trade
+MAX_POSITION_PCT      = 0.20   # Single position capped at 20% of portfolio
 HARD_STOP_PCT         = 0.12   # -12% hard stop from avg_cost
 PROFIT_TARGET_PCT     = 0.20   # +20% profit target from entry
 TRAILING_STOP_PCT     = 0.08   # -8% trailing stop from position high-water mark
-TIME_STOP_DAYS        = 20     # Exit review after 20 trading days
+TIME_STOP_DAYS        = 45     # Exit review after 45 trading days (~9 weeks; trend strategies need time
 ATR_MULTIPLIER        = 1.5    # Stop = entry - 1.5 × ATR (matches signal_engine.py)
 ATR_PERIOD            = 14     # Standard ATR lookback
 MAX_PORTFOLIO_HEAT    = 0.08   # Max 8% of portfolio at risk simultaneously (per inst_5.txt)
@@ -92,6 +93,16 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
         risk_amount    = portfolio_value * risk_pct
         risk_per_share = entry_price - stop_price
         shares         = max(1, int(risk_amount / risk_per_share))  # round down, min 1
+
+        # Cap at MAX_POSITION_PCT — tight stops can produce oversized positions.
+        max_shares = max(1, int(portfolio_value * MAX_POSITION_PCT / entry_price))
+        if shares > max_shares:
+            logger.warning(
+                f"Position capped: {shares} → {max_shares} shares "
+                f"({MAX_POSITION_PCT*100:.0f}% portfolio cap, tight stop)"
+            )
+            shares = max_shares
+
         position_value = shares * entry_price
 
         return {
@@ -148,9 +159,12 @@ def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_pr
         levels["override_stop_active"] = True
 
     if atr is not None:
-        # For legacy positions (override active), base ATR stop on current_price.
-        # For normal positions, base on avg_cost (the actual entry price).
-        atr_ref  = current_price if (override_stop_price and current_price) else avg_cost
+        # Always base ATR stop on current_price when available — this makes the stop
+        # meaningful for winning positions (e.g. NVDA at $183: atr_stop=$174, not $93).
+        # Using avg_cost for a position with 80% unrealised gain produces a stop so
+        # far below market price that it never triggers, providing zero protection.
+        # Falls back to avg_cost only when current_price is not supplied (e.g. unit tests).
+        atr_ref  = current_price if current_price else avg_cost
         atr_stop = round(atr_ref - ATR_MULTIPLIER * atr, 2)
         levels["atr_stop_price"] = atr_stop
         levels["atr_stop_pct"]   = round((atr_stop - avg_cost) / avg_cost, 4)
@@ -212,18 +226,49 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
                             f"{high_water_mark:.2f})"),
             })
 
-    # 4. Profit target — MEDIUM
-    # Only fire if price is within 30% of the target price.
-    # If price has blown far past the target (e.g. NVDA avg_cost=$102 → target=$122
-    # but now at $183), the signal is stale and creates noise.
-    profit_target = exit_levels.get("profit_target_price", float('inf'))
-    if current_price >= profit_target and current_price < profit_target * 1.30:
-        triggered.append({
-            "rule":    "PROFIT_TARGET",
-            "urgency": "MEDIUM",
-            "message": (f"Price {current_price:.2f} >= profit target "
-                        f"{profit_target:.2f}"),
-        })
+    # 4+6. Profit-taking rules — non-overlapping ladder:
+    #   20–30% gain  → PROFIT_TARGET (MEDIUM)  → REDUCE 50%
+    #   30–50% gain  → PROFIT_LADDER_30 (LOW)  → HOLD remaining position
+    #   50%+  gain   → PROFIT_LADDER_50 (MEDIUM)→ REDUCE 25%
+    #
+    # PROFIT_LADDER rules are only checked when a LADDER threshold is reached.
+    # When a LADDER rule fires, PROFIT_TARGET is suppressed to avoid sending
+    # conflicting "REDUCE 50%" vs "HOLD" signals to the LLM.
+    ladder_fired = False
+    if not legacy_basis and avg_cost > 0:
+        pnl_pct = (current_price - avg_cost) / avg_cost
+        if pnl_pct >= 0.50:
+            triggered.append({
+                "rule":    "PROFIT_LADDER_50",
+                "urgency": "MEDIUM",
+                "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
+                            f"consider reducing 25% to lock in profits"),
+            })
+            ladder_fired = True
+        elif pnl_pct >= 0.30:
+            triggered.append({
+                "rule":    "PROFIT_LADDER_30",
+                "urgency": "LOW",
+                "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
+                            f"let winner run; re-evaluate at 50%"),
+            })
+            ladder_fired = True
+
+    # PROFIT_TARGET: only fire in the 20–30% range (before PROFIT_LADDER takes over).
+    # If a LADDER rule already fired (≥30% gain) suppress this to avoid contradiction.
+    # Also skip for legacy positions (pnl > 100%) — PROFIT_TARGET is meaningless
+    # when avg_cost is far below current price (e.g. AMD avg_cost $27, target $32).
+    # The 1.30× upper bound below provides implicit protection, but the explicit
+    # legacy_basis check is clearer and consistent with the PROFIT_LADDER guard above.
+    if not ladder_fired and not legacy_basis:
+        profit_target = exit_levels.get("profit_target_price", float('inf'))
+        if current_price >= profit_target and current_price < profit_target * 1.30:
+            triggered.append({
+                "rule":    "PROFIT_TARGET",
+                "urgency": "MEDIUM",
+                "message": (f"Price {current_price:.2f} >= profit target "
+                            f"{profit_target:.2f}"),
+            })
 
     # 5. Approaching hard stop — WARNING (within 3% above stop)
     if hard_stop > 0 and current_price > hard_stop:
@@ -236,35 +281,21 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
                             f"{hard_stop:.2f} — monitor closely"),
             })
 
-    # 6. Ladder profit-taking — MEDIUM / LOW
-    # Skip for legacy_basis positions (they use trailing stop exclusively).
-    if not legacy_basis and avg_cost > 0:
-        pnl_pct = (current_price - avg_cost) / avg_cost
-        if pnl_pct >= 0.50:
-            triggered.append({
-                "rule":    "PROFIT_LADDER_50",
-                "urgency": "MEDIUM",
-                "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
-                            f"consider reducing 25% to lock in profits"),
-            })
-        elif pnl_pct >= 0.30:
-            triggered.append({
-                "rule":    "PROFIT_LADDER_30",
-                "urgency": "LOW",
-                "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
-                            f"consider reducing 25%"),
-            })
-
-    # 7. Time stop — REVIEW (held too long without reaching profit target)
+    # 7. Time stop — REVIEW (stagnant position: held too long with insufficient progress).
+    # Only fires if price is below halfway between avg_cost and profit_target.
+    # Positions that have passed the halfway mark are "working" and get more time —
+    # a trade at +15% heading toward a +20% target is NOT stagnant, don't interrupt it.
     if days_held is not None and days_held >= TIME_STOP_DAYS:
         profit_target = exit_levels.get("profit_target_price", float("inf"))
-        if current_price < profit_target:
+        halfway = (avg_cost + profit_target) / 2 if avg_cost > 0 else 0
+        if current_price < halfway:
             triggered.append({
                 "rule":    "TIME_STOP",
                 "urgency": "REVIEW",
                 "message": (f"Position held ~{days_held} trading days "
-                            f"without reaching profit target "
-                            f"{profit_target:.2f} — exit unless new catalyst"),
+                            f"with insufficient progress — below halfway to target "
+                            f"{profit_target:.2f} (halfway={halfway:.2f}) — "
+                            f"exit unless new catalyst"),
             })
 
     return {

@@ -228,6 +228,7 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 latest_close, avg_cost, exit_levels,
                 high_water_mark=high_20d,
                 days_held=days_held,
+                legacy_basis=legacy_basis,
             )
 
             result = {

@@ -61,7 +61,7 @@ def _trade_quality_score(sig, features):
         TQS = 0.40 × confidence_score
             + 0.25 × trend_score           (0-1 from feature_layer)
             + 0.20 × vol_norm              (volume_spike_ratio / 2.0, capped at 1.0)
-            + 0.15 × momentum_norm         (abs(momentum_10d_pct) / 0.10, capped at 1.0)
+            + 0.15 × momentum_norm         (momentum_10d_pct / 0.10, clamped to [-1, 1])
 
     Returns:
         float: 0.0 – 1.0
@@ -69,12 +69,15 @@ def _trade_quality_score(sig, features):
     conf       = sig.get("confidence_score", 0)
     trend_sc   = (features or {}).get("trend_score") or 0
     vol_ratio  = (features or {}).get("volume_spike_ratio") or 0
-    momentum   = max(0.0, (features or {}).get("momentum_10d_pct") or 0)
+    momentum   = (features or {}).get("momentum_10d_pct") or 0
 
     vol_norm  = min(vol_ratio / 2.0, 1.0)
-    mom_norm  = min(momentum / 0.10, 1.0)
+    # Negative momentum actively penalises TQS — falling stocks should not be tradeable.
+    # Clamped to [-1, 1] so a -10% mover gets full -0.15 penalty (pushing TQS below 0.60).
+    mom_norm  = max(-1.0, min(momentum / 0.10, 1.0))
 
-    return round(0.40 * conf + 0.25 * trend_sc + 0.20 * vol_norm + 0.15 * mom_norm, 3)
+    tqs = 0.40 * conf + 0.25 * trend_sc + 0.20 * vol_norm + 0.15 * mom_norm
+    return round(max(0.0, min(tqs, 1.0)), 3)
 
 
 def enrich_signals(signals, features_dict):

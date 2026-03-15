@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 RISK_PER_TRADE_PCT = 0.01   # 1% portfolio risk per new trade
 MAX_PORTFOLIO_HEAT = 0.08   # 8% total heat cap (per inst_5.txt)
+MAX_POSITION_PCT   = 0.20   # Single position capped at 20% of portfolio
 HARD_STOP_PCT      = 0.12   # −12% from entry for heat calculation
 TRAILING_STOP_PCT  = 0.08   # mirrors position_manager.py
 ATR_STOP_MULT      = 1.5    # mirrors signal_engine.py
@@ -29,6 +30,9 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
         risk_per_share = entry_price − stop_price
         shares         = floor(risk_amount / risk_per_share)   (min 1)
 
+    Position is further capped at MAX_POSITION_PCT of portfolio to prevent
+    oversized positions when stop is very tight (e.g. Strategy B breakout_stop).
+
     Returns:
         dict or None
     """
@@ -41,6 +45,17 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
     risk_amount    = portfolio_value * risk_pct
     risk_per_share = entry_price - stop_price
     shares         = max(1, math.floor(risk_amount / risk_per_share))
+
+    # Cap at MAX_POSITION_PCT — tight stops (e.g. breakout_stop 1% below entry)
+    # can produce shares that represent 50-100% of portfolio; enforce hard limit.
+    max_shares     = max(1, math.floor(portfolio_value * MAX_POSITION_PCT / entry_price))
+    if shares > max_shares:
+        logger.warning(
+            f"Position capped: {shares} → {max_shares} shares "
+            f"({MAX_POSITION_PCT*100:.0f}% portfolio cap, tight stop)"
+        )
+        shares = max_shares
+
     position_value = shares * entry_price
 
     return {

@@ -109,7 +109,10 @@ def compute_trend_features(data):
         atr_expansion  = (round(today_range / avg_range_14d, 4)
                           if avg_range_14d and avg_range_14d > 0 else None)
 
-        # Volume spike: today vs 20-day avg
+        # Volume spike: today vs 20-day avg.
+        # Threshold 2.0× — research shows breakouts with ≥2× volume have
+        # significantly better follow-through than the 1.5× used previously.
+        # Strategy A docstring specifies "ratio > 2.0"; this matches.
         volume_spike_ratio = (round(volume / avg_vol_20, 4)
                               if avg_vol_20 and avg_vol_20 > 0 else None)
         volume_spike = bool(volume_spike_ratio is not None and volume_spike_ratio > 2.0)
@@ -118,7 +121,9 @@ def compute_trend_features(data):
         daily_range_vs_atr = (round(today_range / atr, 4)
                                if atr and atr > 0 else None)
 
-        # Trend score: simple fraction of bullish conditions that are True
+        # Trend score: fraction of bullish conditions that are True.
+        # None counts as False — stocks missing 200MA history (< 200 days) should NOT
+        # receive an inflated score from a shrinking denominator.
         bullish_checks = [
             above_200ma,
             breakout_20d,
@@ -126,8 +131,7 @@ def compute_trend_features(data):
             (momentum_10d_pct or 0) > 0,
             (price_vs_200ma_pct or 0) > 0.03,
         ]
-        valid_checks = [c for c in bullish_checks if c is not None]
-        trend_score  = round(sum(1 for c in valid_checks if c) / len(valid_checks), 2) if valid_checks else None
+        trend_score = round(sum(1 for c in bullish_checks if c is True) / len(bullish_checks), 2)
 
         return {
             "close":               round(close, 2),

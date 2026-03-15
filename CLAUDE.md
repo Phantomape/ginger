@@ -1,11 +1,14 @@
 # CLAUDE.md
 
-You are the coding agent for this repository.
+从最强大脑角度分析这个量化系统有什么问题影响赚钱概率？
 
-Rules:
+任务：
 
-1. Always run tests after making changes
-2. If tests fail, fix the errors
-3. Never remove working functionality
-4. Make minimal changes
-5. Continue until tests pass
+1. 阅读整个代码仓库
+2. 找出影响策略收益率的问题, 同时优化代码目录和代码可读性
+3. 修改对应的代码或LLM prompt
+4. 运行测试
+5. 如果测试失败，修复问题
+
+如果上一次尝试没有改善结果，请尝试不同策略。
+
