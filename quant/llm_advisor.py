@@ -107,12 +107,13 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     system_message = '\n'.join(system_lines).strip()
 
     # Build user message with dynamic data
-    # Replace date
+    # Replace date — template uses Chinese prefix "今天是"
+    import re
     today = datetime.now().strftime("%b. %d, %Y, %I:%M %p EST")
     user_message = '\n'.join(user_lines)
-    user_message = user_message.replace("Today is Jan. 15th, 2026, 4:30 PM EST", f"Today is {today}")
+    user_message = re.sub(r'今天是.*', f'今天是 {today}', user_message)
 
-    # Replace positions JSON (remove 'as_of' field since date is in "Today is..." format)
+    # Replace positions JSON (remove 'as_of' field since date is in "今天是..." line)
     if open_positions:
         positions_copy = open_positions.copy()
         positions_copy.pop('as_of', None)  # Remove as_of field if present
@@ -120,36 +121,66 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     else:
         positions_json = "{}"
 
-    # Find and replace the positions section using a lambda to avoid escape issues
-    import re
-    positions_pattern = r'1\) CURRENT OPEN POSITIONS.*?\n\{[\s\S]*?\n\}'
+    # Find and replace the positions section — template uses Chinese header "1) 当前持仓"
+    positions_pattern = r'1\) 当前持仓.*?\n\{[\s\S]*?\n\}'
     user_message = re.sub(
         positions_pattern,
-        lambda _: f'1) CURRENT OPEN POSITIONS (manually entered, may be approximate):\n{positions_json}',
+        lambda _: f'1) 当前持仓（手动录入，可能为近似值）：\n{positions_json}',
         user_message,
         count=1
     )
 
-    # Replace news JSON using a lambda to avoid escape issues
+    # Replace news JSON — template uses Chinese header "2) 近期精选股票新闻"
     news_json = json.dumps(trade_news, indent=2)
-    news_pattern = r'2\) RECENT, PRE-FILTERED STOCK NEWS.*?\n\[[\s\S]*?\n\]'
+    news_pattern = r'2\) 近期精选股票新闻.*?\n\[[\s\S]*?\n\]'
     user_message = re.sub(
         news_pattern,
-        lambda _: f'2) RECENT, PRE-FILTERED STOCK NEWS (last 72h, watchlist only):\n{news_json}',
+        lambda _: f'2) 近期精选股票新闻（过去 72 小时，仅自选股）：\n{news_json}',
         user_message,
         count=1
     )
 
-    # Add trend signals if available (insert before TASK A)
-    if trend_signals and trend_signals.get('signals'):
-        trend_json = json.dumps(trend_signals.get('signals', {}), indent=2)
-        trend_section = f"\n\n3) TREND SIGNALS (20-day breakout, technical analysis):\n{trend_json}\n"
+    # Build sections 3a (quant signals) + 3b (technical context for held positions).
+    # Only include tickers relevant to the decision — not the full 30-ticker universe.
+    sections_3 = ""
 
-        task_a_pos = user_message.find("TASK A")
+    # --- 3a: Pre-computed quant signals (new trade candidates) ---
+    quant_signals = trend_signals.get("quant_signals", []) if trend_signals else []
+    if quant_signals:
+        sections_3 += (
+            f"\n\n3a) 量化信号 QUANT SIGNALS（预计算完成，直接使用）：\n"
+            f"每条信号已含 strategy / entry_price / stop_price / target_price / "
+            f"risk_reward_ratio / trade_quality_score / confidence_score。\n"
+            f"{json.dumps(quant_signals, indent=2)}\n"
+        )
+    else:
+        sections_3 += "\n\n3a) 量化信号 QUANT SIGNALS：今日无满足条件的量化信号。\n"
+
+    # --- 3b: Technical context — only tickers with open positions that have triggered exits ---
+    raw_signals = trend_signals.get('signals', {}) if trend_signals else {}
+    attention_tickers = set()
+    for t, s in raw_signals.items():
+        pos_ctx = s.get('position', {})
+        if pos_ctx.get('exit_signals', {}).get('any_triggered'):
+            attention_tickers.add(t)
+    # Also include tickers that have quant signals
+    signal_tickers = {s["ticker"] for s in quant_signals}
+    relevant_tickers = attention_tickers | signal_tickers
+
+    if relevant_tickers:
+        filtered = {t: raw_signals[t] for t in relevant_tickers if t in raw_signals}
+        if filtered:
+            sections_3 += (
+                f"\n\n3b) 技术背景 TECHNICAL CONTEXT（仅含有信号或需关注的标的）：\n"
+                f"{json.dumps(filtered, indent=2)}\n"
+            )
+
+    if sections_3:
+        task_a_pos = user_message.find("任务 A")
         if task_a_pos != -1:
-            user_message = user_message[:task_a_pos] + trend_section + "\n" + user_message[task_a_pos:]
+            user_message = user_message[:task_a_pos] + sections_3 + "\n" + user_message[task_a_pos:]
         else:
-            user_message += trend_section
+            user_message += sections_3
 
     # Add position management section (insert before TASK A, after trend signals)
     # Use portfolio_engine (8% cap) not position_manager (10% cap)
@@ -157,17 +188,27 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     portfolio_value = open_positions.get('portfolio_value_usd') if open_positions else None
 
-    # Extract current prices from trend signals for heat calculation
-    current_prices = {}
+    # Extract current prices + effective-stop inputs from trend signals
+    current_prices   = {}
+    features_for_heat = {}
     if trend_signals and trend_signals.get('signals'):
-        current_prices = {t: s.get('close') for t, s in trend_signals['signals'].items()
-                         if s.get('close') is not None}
+        for t, s in trend_signals['signals'].items():
+            if s.get('close') is not None:
+                current_prices[t] = s['close']
+            # portfolio_engine needs atr + high_20d to compute effective stop
+            features_for_heat[t] = {
+                "atr":     s.get("atr"),
+                "high_20d": s.get("20d_high"),
+            }
 
-    # Portfolio heat
+    # Portfolio heat (using effective stops — ATR/trailing — not just avg_cost stop)
     heat = None
     if portfolio_value and open_positions:
         try:
-            heat = compute_portfolio_heat(open_positions, current_prices, portfolio_value)
+            heat = compute_portfolio_heat(
+                open_positions, current_prices, portfolio_value,
+                features_dict=features_for_heat,
+            )
         except Exception as e:
             logger.warning(f"Failed to compute portfolio heat: {e}")
 
@@ -191,22 +232,28 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "positions_requiring_attention": [],
     }
 
-    # Collect positions with triggered exit signals from trend signals
-    _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1}
+    # Collect positions with triggered exit signals from trend signals.
+    # LOW urgency (PROFIT_LADDER_30) is omitted — it would flood this list with every
+    # winner and dilute attention away from genuine CRITICAL/HIGH/MEDIUM signals.
+    _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1, "LOW": 0}
+    _min_surface_rank = 1   # MEDIUM and above only
     if trend_signals and trend_signals.get('signals'):
         for ticker, sig in trend_signals['signals'].items():
-            pos_ctx = sig.get('position', {})
+            pos_ctx   = sig.get('position', {})
             exit_sigs = pos_ctx.get('exit_signals', {})
-            rules = exit_sigs.get('triggered_rules', [])
-            if exit_sigs.get('any_triggered') and rules:
-                # Derive true max urgency from triggered rules (not just CRITICAL/HIGH binary)
-                max_urgency = max(rules, key=lambda r: _urgency_rank.get(r['urgency'], 0))['urgency']
-                pos_mgmt_data['positions_requiring_attention'].append({
-                    "ticker":          ticker,
-                    "current_price":   sig['close'],
-                    "urgency":         max_urgency,
-                    "triggered_rules": rules,
-                })
+            rules     = exit_sigs.get('triggered_rules', [])
+            if not (exit_sigs.get('any_triggered') and rules):
+                continue
+            max_urgency = max(rules, key=lambda r: _urgency_rank.get(r['urgency'], 0))['urgency']
+            # Only surface MEDIUM and above — skip positions that only have LOW triggers
+            if _urgency_rank.get(max_urgency, 0) < _min_surface_rank:
+                continue
+            pos_mgmt_data['positions_requiring_attention'].append({
+                "ticker":          ticker,
+                "current_price":   sig['close'],
+                "urgency":         max_urgency,
+                "triggered_rules": rules,
+            })
 
     pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)
     pos_mgmt_section = (
@@ -214,7 +261,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         f"{pos_mgmt_json}\n"
     )
 
-    task_a_pos = user_message.find("TASK A")
+    task_a_pos = user_message.find("任务 A")
     if task_a_pos != -1:
         user_message = user_message[:task_a_pos] + pos_mgmt_section + "\n" + user_message[task_a_pos:]
     else:

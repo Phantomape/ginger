@@ -3,7 +3,7 @@ Position sizing and exit rule computation for the trading system.
 
 Exit Rule Hierarchy (apply in priority order, no exceptions):
 1. HARD STOP     -12% from avg_cost        → CRITICAL: exit immediately
-2. ATR STOP      entry - 2×ATR(14)         → HIGH: volatility-adjusted floor
+2. ATR STOP      entry - 1.5×ATR(14)       → HIGH: volatility-adjusted floor
 3. TRAILING STOP -8% from position high    → HIGH: protect gains
 4. PROFIT TARGET +20% from entry           → MEDIUM: exit or partial reduce
 5. TIME STOP     20 trading days stagnant  → REVIEW: exit unless new catalyst
@@ -20,9 +20,9 @@ HARD_STOP_PCT         = 0.12   # -12% hard stop from avg_cost
 PROFIT_TARGET_PCT     = 0.20   # +20% profit target from entry
 TRAILING_STOP_PCT     = 0.08   # -8% trailing stop from position high-water mark
 TIME_STOP_DAYS        = 20     # Exit review after 20 trading days
-ATR_MULTIPLIER        = 2.0    # Stop = entry - 2 × ATR
+ATR_MULTIPLIER        = 1.5    # Stop = entry - 1.5 × ATR (matches signal_engine.py)
 ATR_PERIOD            = 14     # Standard ATR lookback
-MAX_PORTFOLIO_HEAT    = 0.10   # Max 10% of portfolio at risk simultaneously
+MAX_PORTFOLIO_HEAT    = 0.08   # Max 8% of portfolio at risk simultaneously (per inst_5.txt)
 
 
 def compute_atr(data, period=ATR_PERIOD):
@@ -159,7 +159,8 @@ def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_pr
 
 
 def evaluate_exit_signals(current_price, avg_cost, exit_levels,
-                           high_water_mark=None):
+                           high_water_mark=None, legacy_basis=False,
+                           days_held=None):
     """
     Evaluate which exit conditions are currently triggered.
 
@@ -233,6 +234,37 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
                 "urgency": "WARNING",
                 "message": (f"Only {distance_pct*100:.1f}% above hard stop "
                             f"{hard_stop:.2f} — monitor closely"),
+            })
+
+    # 6. Ladder profit-taking — MEDIUM / LOW
+    # Skip for legacy_basis positions (they use trailing stop exclusively).
+    if not legacy_basis and avg_cost > 0:
+        pnl_pct = (current_price - avg_cost) / avg_cost
+        if pnl_pct >= 0.50:
+            triggered.append({
+                "rule":    "PROFIT_LADDER_50",
+                "urgency": "MEDIUM",
+                "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
+                            f"consider reducing 25% to lock in profits"),
+            })
+        elif pnl_pct >= 0.30:
+            triggered.append({
+                "rule":    "PROFIT_LADDER_30",
+                "urgency": "LOW",
+                "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
+                            f"consider reducing 25%"),
+            })
+
+    # 7. Time stop — REVIEW (held too long without reaching profit target)
+    if days_held is not None and days_held >= TIME_STOP_DAYS:
+        profit_target = exit_levels.get("profit_target_price", float("inf"))
+        if current_price < profit_target:
+            triggered.append({
+                "rule":    "TIME_STOP",
+                "urgency": "REVIEW",
+                "message": (f"Position held ~{days_held} trading days "
+                            f"without reaching profit target "
+                            f"{profit_target:.2f} — exit unless new catalyst"),
             })
 
     return {

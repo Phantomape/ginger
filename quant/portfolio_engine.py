@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 RISK_PER_TRADE_PCT = 0.01   # 1% portfolio risk per new trade
 MAX_PORTFOLIO_HEAT = 0.08   # 8% total heat cap (per inst_5.txt)
 HARD_STOP_PCT      = 0.12   # −12% from entry for heat calculation
+TRAILING_STOP_PCT  = 0.08   # mirrors position_manager.py
+ATR_STOP_MULT      = 1.5    # mirrors signal_engine.py
 
 
 def compute_position_size(portfolio_value, entry_price, stop_price,
@@ -54,17 +56,29 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
     }
 
 
-def compute_portfolio_heat(open_positions, current_prices, portfolio_value):
+def compute_portfolio_heat(open_positions, current_prices, portfolio_value,
+                           features_dict=None):
     """
     Compute total portfolio risk exposure (portfolio heat).
 
     For each position:
-        at_risk_usd = shares × max(0, current_price − hard_stop_price)
+        at_risk_usd = shares × max(0, current_price − effective_stop)
 
-    Stop logic (mirrors news_collector/position_manager.py):
+    effective_stop = highest of: hard_stop, atr_stop, trailing_stop_from_20d_high.
+    Using the tightest (highest) stop reflects true current risk, not worst-case
+    cost-basis math. This prevents positions with large unrealised gains from
+    inflating heat far beyond their real downside exposure.
+
+    Stop logic for hard_stop baseline:
         manual override > auto_rolling (legacy PnL > 100%) > default (avg_cost × 0.88)
 
     Heat cap: 8%.
+
+    Args:
+        open_positions (dict): Open positions data
+        current_prices (dict): {ticker: current_close_price}
+        portfolio_value (float): Total portfolio value in USD
+        features_dict (dict): Optional {ticker: features} for ATR/high_20d lookups
 
     Returns:
         dict or None
@@ -98,17 +112,38 @@ def compute_portfolio_heat(open_positions, current_prices, portfolio_value):
             hard_stop = avg_cost * (1 - HARD_STOP_PCT)
             stop_src  = "default"
 
-        at_risk_usd    = shares * max(0.0, current_price - hard_stop)
+        # Tighten to ATR stop or trailing stop if features are available.
+        # effective_stop = max(hard_stop, atr_stop, trailing_stop)
+        # A higher stop means less at-risk USD — more accurate for big winners.
+        effective_stop = hard_stop
+        effective_src  = stop_src
+        f = (features_dict or {}).get(ticker)
+        if f:
+            atr     = f.get("atr")
+            high_20d = f.get("high_20d")
+            if atr and atr > 0:
+                atr_stop = current_price - ATR_STOP_MULT * atr
+                if atr_stop > effective_stop:
+                    effective_stop = round(atr_stop, 2)
+                    effective_src  = "atr"
+            if high_20d and high_20d > 0:
+                trailing_stop = high_20d * (1 - TRAILING_STOP_PCT)
+                if trailing_stop > effective_stop:
+                    effective_stop = round(trailing_stop, 2)
+                    effective_src  = "trailing"
+
+        at_risk_usd    = shares * max(0.0, current_price - effective_stop)
         total_at_risk += at_risk_usd
 
         breakdown.append({
-            "ticker":         ticker,
-            "shares":         shares,
-            "current_price":  round(current_price, 2),
-            "hard_stop":      round(hard_stop, 2),
-            "stop_source":    stop_src,
-            "at_risk_usd":    round(at_risk_usd, 2),
-            "at_risk_pct":    round(at_risk_usd / portfolio_value, 4),
+            "ticker":                ticker,
+            "shares":                shares,
+            "current_price":         round(current_price, 2),
+            "hard_stop":             round(hard_stop, 2),
+            "effective_stop":        round(effective_stop, 2),
+            "effective_stop_source": effective_src,
+            "at_risk_usd":           round(at_risk_usd, 2),
+            "at_risk_pct":           round(at_risk_usd / portfolio_value, 4),
         })
 
     heat_pct = total_at_risk / portfolio_value

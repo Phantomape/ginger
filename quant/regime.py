@@ -54,12 +54,19 @@ def _fetch_index(ticker, ma_period=MA_PERIOD):
         above_ma    = latest_close > latest_ma
         pct_from_ma = (latest_close - latest_ma) / latest_ma
 
+        # 10-day momentum — used for RS filter in signal_engine
+        momentum_10d_pct = None
+        if len(data) >= 11:
+            close_10d_ago    = _scalar(close.iloc[-11])
+            momentum_10d_pct = round((latest_close - close_10d_ago) / close_10d_ago, 4)
+
         return {
-            "ticker":      ticker,
-            "close":       round(latest_close, 2),
-            f"ma{ma_period}": round(latest_ma, 2),
-            "above_ma":    above_ma,
-            "pct_from_ma": round(pct_from_ma, 4),
+            "ticker":           ticker,
+            "close":            round(latest_close, 2),
+            f"ma{ma_period}":   round(latest_ma, 2),
+            "above_ma":         above_ma,
+            "pct_from_ma":      round(pct_from_ma, 4),
+            "momentum_10d_pct": momentum_10d_pct,
         }
 
     except Exception as e:

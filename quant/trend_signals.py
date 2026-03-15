@@ -211,11 +211,23 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 current_price=latest_close if legacy_basis else None,
             )
 
+            # Compute approximate trading days held (optional: requires entry_date in position).
+            days_held = None
+            entry_date_str = pos.get("entry_date")
+            if entry_date_str:
+                try:
+                    entry_dt = datetime.strptime(entry_date_str, "%Y-%m-%d").date()
+                    calendar_days = (datetime.now().date() - entry_dt).days
+                    days_held = max(0, int(calendar_days * 5 / 7))  # calendar → approx trading days
+                except Exception:
+                    pass
+
             # Use 20d_high as high_water_mark so trailing stop detects drawdowns
             # from recent peaks, not just from avg_cost.
             exit_signals = evaluate_exit_signals(
                 latest_close, avg_cost, exit_levels,
-                high_water_mark=high_20d
+                high_water_mark=high_20d,
+                days_held=days_held,
             )
 
             result = {

@@ -167,12 +167,20 @@ def main():
     }
 
     # Save trend signals JSON (backward-compatible output)
+    # quant_signals will be attached after Step 6 enrichment
     trend_output = f"data/trend_signals_{today}.json"
     save_trend_signals(trend_signals_dict, trend_output)
 
     # ── Step 6: Quant signals ─────────────────────────────────────────────────
     _print_section("STEP 6 — Quant signals")
-    signals = generate_signals(features_dict)
+
+    # Build market_context for RS filter: SPY 10d return vs each stock's 10d return.
+    spy_10d = market_regime.get("indices", {}).get("SPY", {}).get("momentum_10d_pct")
+    market_context = {"spy_10d_return": spy_10d}
+    if spy_10d is not None:
+        log.info(f"SPY 10d return: {spy_10d*100:.2f}% (RS filter active)")
+
+    signals = generate_signals(features_dict, market_context=market_context)
     signals = enrich_signals(signals, features_dict)
     log.info(f"Signals generated: {len(signals)}")
 
@@ -183,7 +191,11 @@ def main():
 
     portfolio_heat = None
     if open_positions and portfolio_value:
-        portfolio_heat = compute_portfolio_heat(open_positions, current_prices, portfolio_value)
+        # Pass features_dict so heat uses effective stops (ATR/trailing) not just avg_cost stop
+        portfolio_heat = compute_portfolio_heat(
+            open_positions, current_prices, portfolio_value,
+            features_dict=features_dict
+        )
         log.info(portfolio_heat["heat_note"])
         if portfolio_heat["can_add_new_positions"] and portfolio_value:
             signals = size_signals(signals, portfolio_value)
@@ -191,6 +203,10 @@ def main():
         signals = size_signals(signals, portfolio_value)
 
     metrics = compute_metrics()
+
+    # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
+    # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
+    trend_signals_dict["quant_signals"] = signals
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
@@ -247,23 +263,23 @@ def main():
 
     # ── Step 9: LLM prompt ────────────────────────────────────────────────────
     _print_section("STEP 9 — LLM prompt")
-    if not trade_items:
-        log.info("No trade-filtered news — skipping LLM prompt")
-    else:
-        try:
-            from llm_advisor import get_investment_advice, save_advice
-            result = get_investment_advice(
-                trade_items,
-                open_positions = open_positions,
-                trend_signals  = trend_signals_dict,
-                save_prompt_only = True,   # saves to data/llm_prompt_YYYYMMDD.txt
-            )
-            if result["success"]:
-                log.info(result["advice"])
-            else:
-                log.error(f"LLM advisor: {result['error']}")
-        except Exception as e:
-            log.error(f"LLM advisor failed: {e}")
+    # Always generate the prompt — quant signals and position management do not
+    # require news. On news-quiet days the prompt still surfaces exit signals
+    # and high-confidence quant signals that stand alone (confidence >= 0.85).
+    try:
+        from llm_advisor import get_investment_advice, save_advice
+        result = get_investment_advice(
+            trade_items,           # may be [] on quiet news days — that's fine
+            open_positions = open_positions,
+            trend_signals  = trend_signals_dict,
+            save_prompt_only = True,   # saves to data/llm_prompt_YYYYMMDD.txt
+        )
+        if result["success"]:
+            log.info(result["advice"])
+        else:
+            log.error(f"LLM advisor: {result['error']}")
+    except Exception as e:
+        log.error(f"LLM advisor failed: {e}")
 
     # ── Step 10: Summary ──────────────────────────────────────────────────────
     _print_section("PIPELINE COMPLETE")

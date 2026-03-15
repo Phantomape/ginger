@@ -95,6 +95,13 @@ def compute_trend_features(data):
         # ATR
         atr = _compute_atr(data)
 
+        # 52-week high and distance from it (quality of breakout context)
+        high_52w          = None
+        pct_from_52w_high = None
+        if len(data) >= 252:
+            high_52w          = _scalar(data['High'].iloc[-252:].max())
+            pct_from_52w_high = round((close - high_52w) / high_52w, 4)
+
         # ATR expansion: today's range vs 14-day avg range (excl today)
         today_range    = _scalar(data['High'].iloc[-1]) - _scalar(data['Low'].iloc[-1])
         prev14_ranges  = (data['High'] - data['Low']).iloc[-15:-1]
@@ -105,7 +112,7 @@ def compute_trend_features(data):
         # Volume spike: today vs 20-day avg
         volume_spike_ratio = (round(volume / avg_vol_20, 4)
                               if avg_vol_20 and avg_vol_20 > 0 else None)
-        volume_spike = bool(volume_spike_ratio is not None and volume_spike_ratio > 1.5)
+        volume_spike = bool(volume_spike_ratio is not None and volume_spike_ratio > 2.0)
 
         # Daily range vs ATR
         daily_range_vs_atr = (round(today_range / atr, 4)
@@ -137,6 +144,8 @@ def compute_trend_features(data):
             "volume_spike_ratio":  volume_spike_ratio,
             "daily_range_vs_atr":  daily_range_vs_atr,
             "trend_score":         trend_score,
+            "high_52w":            round(high_52w, 2) if high_52w else None,
+            "pct_from_52w_high":   pct_from_52w_high,
         }
 
     except Exception as e:
