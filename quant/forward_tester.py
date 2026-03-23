@@ -71,6 +71,107 @@ def get_close_price(ticker, target_date):
         return None, None
 
 
+def get_daily_prices_during_period(ticker, start_date, end_date):
+    """
+    Fetch daily Low and Close prices between start_date and end_date (inclusive).
+
+    Used to detect whether a stop-loss was hit during the evaluation window,
+    which pure endpoint comparison misses entirely.
+
+    Returns:
+        pd.DataFrame with columns [Low, Close, High] indexed by date, or None
+    """
+    try:
+        data = yf.download(
+            ticker,
+            start=pd.Timestamp(start_date),
+            end=pd.Timestamp(end_date) + pd.Timedelta(days=2),
+            progress=False,
+        )
+        if data.empty:
+            return None
+        # Flatten MultiIndex if present (yfinance quirk)
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+        required = ["High", "Low", "Close"]
+        if not all(c in data.columns for c in required):
+            return None
+        return data[required]
+    except Exception as e:
+        logger.warning(f"Failed to fetch daily prices for {ticker}: {e}")
+        return None
+
+
+def check_stop_or_target_hit(ticker, entry_date, entry_price, stop_price, target_price, n_days):
+    """
+    Scan daily prices during the evaluation window to determine if the stop or
+    target was hit before the end of the period.
+
+    The 10-day endpoint comparison in action_is_correct() is misleading when:
+    - A trade hit the stop on day 3 then recovered above entry by day 10
+      (shows "correct" but was actually a loss)
+    - A trade hit the target on day 5 then gave back gains by day 10
+      (shows "incorrect" but was actually a win)
+
+    Args:
+        ticker       (str):   Ticker symbol
+        entry_date   (date):  Date of recommendation (day 0)
+        entry_price  (float): Planned entry price
+        stop_price   (float): Stop-loss price
+        target_price (float): Profit-target price (or None if unknown)
+        n_days       (int):   Trading-day evaluation window
+
+    Returns:
+        dict: {
+            "stop_hit":       bool,
+            "stop_hit_day":   int or None,      # trading day index (1-based)
+            "stop_hit_price": float or None,    # low on the stop-hit day
+            "target_hit":     bool,
+            "target_hit_day": int or None,
+            "data_available": bool,
+        }
+    """
+    result = {
+        "stop_hit":       False,
+        "stop_hit_day":   None,
+        "stop_hit_price": None,
+        "target_hit":     False,
+        "target_hit_day": None,
+        "data_available": False,
+    }
+
+    # Fetch slightly beyond the window to cover weekends / holidays
+    window_end  = get_eval_date(entry_date, n_days)
+    daily       = get_daily_prices_during_period(ticker, entry_date, window_end)
+    if daily is None or daily.empty:
+        return result
+
+    result["data_available"] = True
+    # Only inspect trading days AFTER the recommendation date (day 1 onward)
+    future_days = daily[daily.index.date > entry_date]
+
+    for day_idx, (ts, row) in enumerate(future_days.iterrows(), start=1):
+        low   = float(row["Low"].item()   if hasattr(row["Low"],   "item") else row["Low"])
+        high  = float(row["High"].item()  if hasattr(row["High"],  "item") else row["High"])
+
+        # Stop hit: daily Low touches or breaches stop_price
+        if not result["stop_hit"] and stop_price and low <= stop_price:
+            result["stop_hit"]       = True
+            result["stop_hit_day"]   = day_idx
+            result["stop_hit_price"] = round(low, 4)
+
+        # Target hit: daily High reaches or exceeds target_price
+        if not result["target_hit"] and target_price and high >= target_price:
+            result["target_hit"]     = True
+            result["target_hit_day"] = day_idx
+
+        # Stop found first — subsequent target hit is irrelevant for this trade
+        if result["stop_hit"] and result["target_hit"]:
+            break
+
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Date helpers
 # ---------------------------------------------------------------------------
@@ -82,11 +183,14 @@ def get_eval_date(rec_date, n_trading_days=EVAL_DAYS):
 
 
 def parse_date_from_filename(filepath):
-    """Extract YYYYMMDD date from llm_output_YYYYMMDD.json filename."""
+    """Extract YYYYMMDD date from investment_advice_YYYYMMDD.json filename.
+
+    Also supports legacy llm_output_YYYYMMDD.json format.
+    Assumes the date is always the last underscore-delimited token before the extension.
+    """
     basename = os.path.basename(filepath)
-    # Expect: llm_output_YYYYMMDD.json
-    stem = os.path.splitext(basename)[0]          # llm_output_YYYYMMDD
-    date_str = stem.split("_")[-1]                # YYYYMMDD
+    stem = os.path.splitext(basename)[0]   # investment_advice_YYYYMMDD
+    date_str = stem.split("_")[-1]         # YYYYMMDD
     return datetime.strptime(date_str, "%Y%m%d").date()
 
 
@@ -94,14 +198,26 @@ def parse_date_from_filename(filepath):
 # Core evaluation
 # ---------------------------------------------------------------------------
 
-def action_is_correct(action, return_10d):
+def action_is_correct(action, return_10d, exit_rule=None):
     """
     Determine if the recommendation was directionally correct.
 
-    - EXIT / REDUCE: correct if price went DOWN  (protected capital)
+    - EXIT:          correct if price went DOWN  (protected capital)
+    - REDUCE (risk): correct if price went DOWN  (cut a losing/risky position)
+    - REDUCE (profit-taking): always correct — rule-triggered profit lock at a
+      planned level is correct regardless of subsequent price direction.
+      Rules that lock in profits: PROFIT_TARGET, SIGNAL_TARGET, PROFIT_LADDER_50,
+      PROFIT_LADDER_30.  Example: reducing NVDA at +20% (PROFIT_TARGET) is a
+      correct decision even if NVDA subsequently rises to +30%.
     - HOLD:          correct if price went UP or flat
     - NEW TRADE:     correct if price went UP     (long trade wins)
     """
+    PROFIT_LOCKING_RULES = {
+        "PROFIT_TARGET", "SIGNAL_TARGET", "PROFIT_LADDER_50", "PROFIT_LADDER_30"
+    }
+    if action == "REDUCE" and exit_rule in PROFIT_LOCKING_RULES:
+        # Profit-locking: rule fired at the planned target — always a correct execution
+        return True
     if action in ("EXIT", "REDUCE"):
         return return_10d < 0
     elif action == "HOLD":
@@ -135,8 +251,11 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         return None
 
     # Load LLM output
+    # save_advice() wraps the parsed JSON: {"advice_parsed": {...}, "advice_raw": ...}
+    # Support both the wrapped format and raw format for backwards-compatibility.
     with open(filepath, "r", encoding="utf-8") as f:
-        llm_data = json.load(f)
+        raw_data = json.load(f)
+    llm_data = raw_data.get("advice_parsed") or raw_data
 
     # Load avg_cost from open_positions for reference
     avg_costs = {}
@@ -179,7 +298,7 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
             continue
 
         return_10d  = (price_eval - price_rec) / price_rec
-        correct     = action_is_correct(action, return_10d)
+        correct     = action_is_correct(action, return_10d, exit_rule=rule)
         avg_cost    = avg_costs.get(ticker)
         pnl_vs_cost = ((price_rec - avg_cost) / avg_cost) if avg_cost else None
 
@@ -211,19 +330,55 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         price_eval, date_eval = get_close_price(ticker, eval_date)
 
         if price_rec is not None and price_eval is not None:
-            return_10d = (price_eval - price_rec) / price_rec
-            correct    = action_is_correct("NEW TRADE", return_10d)
+            return_10d      = (price_eval - price_rec) / price_rec
+            # Deduct round-trip execution cost (0.35%) to evaluate net profitability.
+            # Without cost: +0.2% looks "correct" for a long; actual net = -0.15% loss.
+            # This matches the cost model in performance_engine.py and trade_advice.txt.
+            ROUND_TRIP_COST = 0.0035
+            net_return_10d  = return_10d - ROUND_TRIP_COST  # long trade: cost reduces gain
+            correct         = action_is_correct("NEW TRADE", net_return_10d)
+
+            # Path analysis: check if stop or target was hit DURING the evaluation window.
+            # A trade that stops out on day 3 but recovers by day 10 shows as "correct"
+            # using endpoint-only comparison — this is a false positive.
+            stop_target_check = check_stop_or_target_hit(
+                ticker       = ticker,
+                entry_date   = rec_date,
+                entry_price  = new_trade.get("entry_price") or price_rec,
+                stop_price   = new_trade.get("stop_price"),
+                target_price = new_trade.get("target_price"),
+                n_days       = n_days,
+            )
+            # True profitability: if stop was hit first, the trade was a loss regardless
+            # of where the price ended up at the 10-day mark.
+            path_correct = correct
+            if stop_target_check.get("data_available"):
+                stop_day   = stop_target_check.get("stop_hit_day")
+                target_day = stop_target_check.get("target_hit_day")
+                if stop_target_check["stop_hit"] and (
+                    not stop_target_check["target_hit"]
+                    or (stop_day is not None and target_day is not None and stop_day < target_day)
+                ):
+                    # Stop was hit before (or without) target — actual trade result is a loss
+                    path_correct = False
+
             results["new_trade_result"] = {
-                "ticker":             ticker,
-                "direction":          direction,
-                "confidence":         confidence,
-                "thesis":             new_trade.get("thesis"),
-                "price_on_rec_date":  price_rec,
-                "price_on_eval_date": price_eval,
-                "return_10d_pct":     round(return_10d, 4),
-                "trade_correct":      correct,
-                "actual_rec_date":    str(date_rec),
-                "actual_eval_date":   str(date_eval),
+                "ticker":              ticker,
+                "direction":           direction,
+                "confidence":          confidence,
+                "thesis":              new_trade.get("thesis"),
+                "price_on_rec_date":   price_rec,
+                "price_on_eval_date":  price_eval,
+                "return_10d_pct":      round(return_10d, 4),
+                "net_return_10d_pct":  round(net_return_10d, 4),  # after 0.35% round-trip cost
+                "trade_correct":       correct,        # endpoint-only (original metric)
+                "path_correct":        path_correct,   # accounts for stop/target path
+                "stop_hit_during_period":  stop_target_check.get("stop_hit", False),
+                "stop_hit_day":            stop_target_check.get("stop_hit_day"),
+                "target_hit_during_period": stop_target_check.get("target_hit", False),
+                "target_hit_day":           stop_target_check.get("target_hit_day"),
+                "actual_rec_date":     str(date_rec),
+                "actual_eval_date":    str(date_eval),
             }
         else:
             results["new_trade_result"] = {"ticker": ticker, "error": "price data unavailable"}
@@ -304,7 +459,11 @@ def print_report(results):
         print(f"    Entry: ${nt['price_on_rec_date']:.2f} → "
               f"${nt['price_on_eval_date']:.2f}  "
               f"({nt['return_10d_pct']*100:+.2f}%)  "
-              f"{CORRECT_ICON.get(nt['trade_correct'], '?')}")
+              f"endpoint:{CORRECT_ICON.get(nt['trade_correct'], '?')}  "
+              f"path:{CORRECT_ICON.get(nt.get('path_correct'), '?')}")
+        stop_note   = f"stop hit day {nt['stop_hit_day']}"   if nt.get("stop_hit_during_period")   else "stop not hit"
+        target_note = f"target hit day {nt['target_hit_day']}" if nt.get("target_hit_during_period") else "target not hit"
+        print(f"    Path analysis: {stop_note} | {target_note}")
 
     # Summary
     s = results.get("summary", {})
@@ -358,10 +517,11 @@ def main():
     if args.file:
         files = [args.file]
     else:
-        pattern = os.path.join(DATA_DIR, "llm_output_*.json")
+        # Pipeline saves advice as investment_advice_YYYYMMDD.json
+        pattern = os.path.join(DATA_DIR, "investment_advice_*.json")
         files   = sorted(glob.glob(pattern))
         if not files:
-            print(f"No llm_output_*.json files found in {DATA_DIR}/")
+            print(f"No investment_advice_*.json files found in {DATA_DIR}/")
             return
 
     evaluated = 0

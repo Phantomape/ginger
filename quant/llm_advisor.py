@@ -187,9 +187,10 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # giving a more accurate heat reading for positions with large unrealised gains.
     from portfolio_engine import compute_portfolio_heat
 
-    portfolio_value = open_positions.get('portfolio_value_usd') if open_positions else None
+    stored_pv = open_positions.get('portfolio_value_usd') if open_positions else None
 
-    # Extract current prices + effective-stop inputs from trend signals
+    # Extract current prices + effective-stop inputs from trend signals first —
+    # these are needed for the live portfolio value calculation below.
     current_prices   = {}
     features_for_heat = {}
     if trend_signals and trend_signals.get('signals'):
@@ -201,6 +202,27 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "atr":     s.get("atr"),
                 "high_20d": s.get("20d_high"),
             }
+
+    # Auto-compute live portfolio value from current prices × shares.
+    # stored portfolio_value_usd can be stale, causing 2× heat inflation.
+    portfolio_value = stored_pv
+    if open_positions and open_positions.get("positions") and current_prices:
+        equity_pv = sum(
+            pos.get("shares", 0) * current_prices.get(pos.get("ticker", ""), pos.get("avg_cost", 0))
+            for pos in open_positions["positions"]
+            if pos.get("ticker") and pos.get("shares", 0) > 0
+        )
+        # Include cash so heat/sector/sizing reflect the full account (not just equity).
+        cash_usd = open_positions.get("cash_usd", 0) or 0
+        live_pv = equity_pv + cash_usd
+        if live_pv > 0:
+            portfolio_value = live_pv
+            if stored_pv and abs(live_pv - stored_pv) / stored_pv > 0.15:
+                logger.warning(
+                    f"Portfolio value drift: stored={stored_pv:,.0f}  "
+                    f"live={live_pv:,.0f} USD (equity={equity_pv:,.0f} + cash={cash_usd:,.0f}) — "
+                    f"using live value for heat/sector calculations."
+                )
 
     # Portfolio heat (using effective stops — ATR/trailing — not just avg_cost stop)
     heat = None
@@ -216,6 +238,61 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # Market regime from trend signals
     regime = trend_signals.get('market_regime', {}) if trend_signals else {}
 
+    # Sector concentration: compute per-sector market value and weight.
+    # The LLM prompt requires ">40% sector weight → block new positions in that sector"
+    # but previously had NO sector data — rule was enforced blindly from LLM training.
+    # Now we inject pre-computed weights so the rule can actually be enforced.
+    sector_weights = {}
+    if open_positions and portfolio_value and portfolio_value > 0:
+        try:
+            from risk_engine import SECTOR_MAP
+            sector_mv: dict = {}
+            total_mv = 0.0
+            for pos in open_positions.get("positions", []):
+                t_  = pos.get("ticker", "")
+                sh_ = pos.get("shares", 0)
+                px_ = current_prices.get(t_) or pos.get("avg_cost", 0)
+                mv_ = sh_ * px_
+                sec = SECTOR_MAP.get(t_, "Unknown")
+                sector_mv[sec] = sector_mv.get(sec, 0.0) + mv_
+                total_mv += mv_
+            if total_mv > 0:
+                # Use portfolio_value (total account incl. cash) as denominator,
+                # NOT total_mv (invested portion only).  When significant cash is
+                # held, total_mv << portfolio_value and sector weights are overstated
+                # by the ratio total_mv/portfolio_value, falsely triggering the
+                # >40% sector block and preventing valid new trades.
+                # portfolio_value > 0 is guaranteed by the outer if-guard on line 242.
+                sector_denom = portfolio_value
+                sector_weights = {
+                    sec: round(mv / sector_denom, 3)
+                    for sec, mv in sorted(sector_mv.items(), key=lambda x: -x[1])
+                }
+        except Exception as e:
+            logger.warning(f"Sector concentration calc failed: {e}")
+
+    # Data quality check: detect positions missing fields required for exit rules.
+    # entry_date  → required by TIME_STOP (45-day stagnation rule)
+    # target_price → required by SIGNAL_TARGET (3.5×ATR partial-exit rule)
+    # Without these, two exit rules silently never fire.
+    _data_warnings = []
+    if open_positions:
+        _missing_entry_date  = [p["ticker"] for p in open_positions.get("positions", [])
+                                 if p.get("ticker") and not p.get("entry_date")]
+        _missing_target_price = [p["ticker"] for p in open_positions.get("positions", [])
+                                  if p.get("ticker") and not p.get("target_price")]
+        if _missing_entry_date:
+            _data_warnings.append(
+                f"TIME_STOP disabled for {_missing_entry_date}: add 'entry_date': 'YYYY-MM-DD' "
+                "to each position in open_positions.json (45-day stagnation rule cannot fire)"
+            )
+        if _missing_target_price:
+            _data_warnings.append(
+                f"SIGNAL_TARGET disabled for {_missing_target_price}: add 'target_price' "
+                "from the original entry signal to each position in open_positions.json "
+                "(3.5×ATR partial-exit rule cannot fire, +7% to +20% zone has no exit guidance)"
+            )
+
     pos_mgmt_data = {
         "market_regime": {
             "regime":  regime.get("regime", "UNKNOWN"),
@@ -225,11 +302,15 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "portfolio_heat": heat if heat else {
             "note": "Set portfolio_value_usd in open_positions.json to enable heat tracking"
         },
+        "sector_concentration": sector_weights if sector_weights else {
+            "note": "Sector weights unavailable (missing portfolio_value_usd or current prices)"
+        },
         "sizing_note": (
             "shares = floor(portfolio_value_usd * 0.01 / (entry_price - stop_price))"
             if portfolio_value
             else "Set portfolio_value_usd in open_positions.json to enable position sizing"
         ),
+        "data_warnings": _data_warnings if _data_warnings else [],
         "positions_requiring_attention": [],
     }
 
@@ -249,7 +330,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             # Only surface MEDIUM and above — skip positions that only have LOW triggers
             if _urgency_rank.get(max_urgency, 0) < _min_surface_rank:
                 continue
-            pos_mgmt_data['positions_requiring_attention'].append({
+            entry = {
                 "ticker":                      ticker,
                 "current_price":               sig['close'],
                 "urgency":                     max_urgency,
@@ -262,7 +343,14 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "exit_levels":                 pos_ctx.get('exit_levels'),
                 "trailing_stop_from_20d_high": pos_ctx.get('trailing_stop_from_20d_high'),
                 "drawdown_from_20d_high_pct":  pos_ctx.get('drawdown_from_20d_high_pct'),
-            })
+            }
+            # Include days_to_earnings so LLM can apply the "dte ≤ 2 → reduce 50%"
+            # earnings pre-exit rule. Sourced from qp_features injected by run_pipeline.py
+            # (trend_signals.generate_trend_signals() doesn't fetch earnings data).
+            _dte = pos_ctx.get('days_to_earnings') or sig.get('days_to_earnings')
+            if _dte is not None:
+                entry["days_to_earnings"] = _dte
+            pos_mgmt_data['positions_requiring_attention'].append(entry)
 
     pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)
     pos_mgmt_section = (
@@ -276,10 +364,56 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     else:
         user_message += pos_mgmt_section
 
+    # Section 5: recent closed trades — required by the loss-streak cool-down rule.
+    # trade_advice.txt: "若第 5 节 recent_trades 中最近 3 笔交易全部亏损 → 暂停新交易 3 个交易日"
+    # Without this data the prompt rule says "ignore" and the cool-down NEVER fires.
+    # Providing the last 10 closed trades enables the LLM to apply the rule correctly.
+    recent_trades_section = ""
+    try:
+        from performance_engine import load_trades
+        all_trades    = load_trades()
+        closed_trades = [t for t in all_trades
+                         if t.get("status") == "closed" and t.get("profit_loss") is not None]
+        # Sort most-recent first, take last 10 for context
+        closed_sorted = sorted(closed_trades, key=lambda t: t.get("exit_date") or "", reverse=True)
+        last_trades   = closed_sorted[:10]
+        if last_trades:
+            trade_summary = [
+                {
+                    "ticker":      t["ticker"],
+                    "strategy":    t["strategy"],
+                    "exit_date":   t.get("exit_date"),
+                    "profit_loss": t["profit_loss"],
+                    "result":      "WIN" if t["profit_loss"] > 0 else "LOSS",
+                }
+                for t in last_trades
+            ]
+            recent_trades_section = (
+                f"\n\n5) RECENT TRADES (最近 {len(trade_summary)} 笔已关闭交易 — 供冷却机制判断):\n"
+                f"{json.dumps(trade_summary, indent=2)}\n"
+            )
+            logger.info(
+                f"Section 5: injected {len(trade_summary)} recent trades "
+                f"(last 3: {[t['result'] for t in trade_summary[:3]]})"
+            )
+        else:
+            recent_trades_section = (
+                "\n\n5) RECENT TRADES: 尚无已关闭交易记录。冷却机制不适用。\n"
+            )
+    except Exception as e:
+        logger.warning(f"Failed to load recent trades for section 5: {e}")
+        recent_trades_section = "\n\n5) RECENT TRADES: 数据不可用。冷却机制不适用。\n"
+
+    task_a_pos = user_message.find("任务 A")
+    if task_a_pos != -1:
+        user_message = user_message[:task_a_pos] + recent_trades_section + "\n" + user_message[task_a_pos:]
+    else:
+        user_message += recent_trades_section
+
     return system_message, user_message
 
 
-def get_investment_advice(trade_news, open_positions=None, trend_signals=None, model="gpt-4o", max_tokens=2000, save_prompt_only=True):
+def get_investment_advice(trade_news, open_positions=None, trend_signals=None, model="gpt-4o", max_tokens=4000, save_prompt_only=True):
     """
     Get investment advice from OpenAI based on filtered trade news and trend signals.
 
@@ -383,7 +517,7 @@ def get_investment_advice(trade_news, open_positions=None, trend_signals=None, m
                 }
             ],
             max_tokens=max_tokens,
-            temperature=0.3  # Lower temperature for more focused, consistent advice
+            temperature=0.1  # Near-zero for strict rule-following; 0.3 caused occasional rule violations
         )
 
         advice = response.choices[0].message.content

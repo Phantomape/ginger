@@ -36,7 +36,13 @@ def _scalar(x):
 
 
 def _compute_atr(data, period=ATR_PERIOD):
-    """Compute ATR via exponential smoothing (EWM)."""
+    """Compute ATR using Wilder's smoothing (alpha = 1/period).
+
+    Wilder's original formula uses alpha = 1/period ≈ 0.071 for period=14,
+    which is smoother than EWM(span=14) (alpha = 2/15 ≈ 0.133).  The slower
+    decay means a single high-volatility day has less impact on the ATR,
+    producing more stable stop prices and reducing position-sizing whipsaws.
+    """
     if len(data) < period + 1:
         return None
     high  = data['High']
@@ -47,7 +53,7 @@ def _compute_atr(data, period=ATR_PERIOD):
         (high - close.shift(1)).abs(),
         (low  - close.shift(1)).abs(),
     ], axis=1).max(axis=1)
-    atr_series = tr.ewm(span=period, adjust=False).mean()
+    atr_series = tr.ewm(alpha=1.0 / period, adjust=False).mean()
     return round(_scalar(atr_series.iloc[-1]), 4)
 
 
@@ -183,9 +189,20 @@ def compute_earnings_features(earnings_data):
         bool(avg_surprise > 0) if avg_surprise is not None else None
     )
 
-    # Is within earnings event window (5–15 days)?
+    # Is within earnings event window (6–8 days)?
+    # Research (Frazzini & Lamont 2007, Bernard & Thomas 1989) shows pre-earnings
+    # drift (PEAD) is most concentrated in the FINAL 5-7 days before the announcement.
+    #
+    # Execution lag correction (raised lower bound 5→6, upper bound 7→8):
+    #   Signals are generated AFTER today's close; actual entry is at NEXT-DAY OPEN.
+    #   If today's dte=5, entry occurs with dte=4 remaining — exactly the dangerous zone
+    #   where overnight gap risk (±8-15%) overwhelms the 1.5×ATR stop (≈ ±2-3%).
+    #   Adding +1 buffer: signal fires at dte=6-8 → entry executes with dte=5-7 remaining.
+    #   - Lower bound 6 (was 5): entry after 1 day lag → actual dte=5 (safe minimum)
+    #   - Upper bound 8 (was 7): entry after 1 day lag → actual dte=7 (no change in max)
+    #   - Beyond dte=8: random news flow noise dominates; too early for PEAD capture.
     dte = earnings_data.get("days_to_earnings")
-    features["earnings_event_window"] = bool(dte is not None and 5 <= dte <= 15)
+    features["earnings_event_window"] = bool(dte is not None and 6 <= dte <= 8)
 
     return features
 

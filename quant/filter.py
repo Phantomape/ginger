@@ -9,15 +9,46 @@ Implements filtering rules to clean and focus news items:
 - Deduplication by (ticker + source)
 """
 
+import json
 import logging
+import os
 from datetime import datetime, timedelta
 from dateutil import parser as date_parser
 import re
 
 logger = logging.getLogger(__name__)
 
-# Watchlist of tickers to focus on (from open_positions.json)
-WATCHLIST = ["NVDA", "META", "AMD", "QQQ", "TSLA", "MCD", "CRDO", "IAU", "NFLX", "APP", "GOOG", "COIN", "MU"]
+# Base watchlist — the minimum universe of tickers to track.
+# The effective watchlist (used at runtime) also includes any tickers held in
+# open_positions.json so news for new positions isn't silently filtered out.
+# Adding a ticker here ensures news is always captured, even before a position is opened.
+_BASE_WATCHLIST = ["NVDA", "META", "AMD", "QQQ", "TSLA", "MCD", "CRDO", "IAU", "NFLX", "APP", "GOOG", "COIN", "MU"]
+
+
+def _load_position_tickers():
+    """Load tickers from open_positions.json, return empty set if unavailable."""
+    for path in [
+        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
+        'data/open_positions.json',
+    ]:
+        if os.path.exists(path):
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                return {
+                    pos['ticker'].upper()
+                    for pos in data.get('positions', [])
+                    if pos.get('ticker')
+                }
+            except Exception:
+                pass
+    return set()
+
+
+# WATCHLIST = base tickers + any tickers currently held (loaded at import time).
+# This ensures that if the user opens a position in a ticker not in _BASE_WATCHLIST,
+# its news is still captured in the same pipeline run.
+WATCHLIST = sorted(set(_BASE_WATCHLIST) | _load_position_tickers())
 
 # Event keywords to keep (important trading signals)
 EVENT_KEYWORDS = [
@@ -25,9 +56,15 @@ EVENT_KEYWORDS = [
     "investigation", "approval", "downgrade", "upgrade", "raises", "cuts"
 ]
 
-# Market summary keywords to drop (generic market news)
+# Market summary keywords to drop (generic market-wide news, NOT stock-specific).
+# Keep phrases specific enough to avoid false positives:
+#   "market" alone is too broad — it matches "NVDA gains market share" or
+#   "Meta dominates ad market", both of which are valid stock catalysts.
+#   Use multi-word phrases that unambiguously describe index/macro summaries.
 MARKET_SUMMARY_KEYWORDS = [
-    "dow", "s&p", "nasdaq", "market", "stocks rally", "live updates"
+    "dow jones", "s&p 500", "nasdaq composite", "stock market today",
+    "market rally", "market selloff", "market wrap", "stocks rally",
+    "wall street today", "live updates", "markets live"
 ]
 
 

@@ -51,11 +51,17 @@ def get_universe():
     return sorted(universe)
 
 
-def get_ohlcv(ticker, lookback_days=350):
+def get_ohlcv(ticker, lookback_days=400):
     """
     Download daily OHLCV data for a ticker.
 
-    350 calendar days ≈ 250 trading days, enough for 200-day MA.
+    400 calendar days ≈ 276 trading days.
+    Raised from 350 (≈241 trading days) → 400 to ensure 52-week high
+    computation works reliably.  feature_layer.py requires len(data) ≥ 252
+    for pct_from_52w_high; at 350 calendar days only ~241 trading days were
+    returned (241 < 252), causing _near_52w_high() to always return False and
+    suppressing the +0.40 quality bonus on every signal.
+    At 400 calendar days: ~276 trading days > 252 — 52w high computed correctly.
 
     Returns:
         pd.DataFrame with columns [Open, High, Low, Close, Volume], or None

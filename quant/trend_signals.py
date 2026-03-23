@@ -150,7 +150,8 @@ def compute_breakout_signals(data, window=20):
         return None
 
 
-def compute_position_context(ticker, latest_close, open_positions, atr=None, high_20d=None):
+def compute_position_context(ticker, latest_close, open_positions, atr=None, high_20d=None,
+                             high_since_entry=None, prev_close=None):
     """
     Compute position context if ticker is held, including exit levels and signals.
 
@@ -159,7 +160,18 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
         latest_close (float): Current close price
         open_positions (dict): Open positions data
         atr (float): Optional ATR value for volatility-adjusted stop
-        high_20d (float): 20-day high used as high_water_mark for trailing stop
+        high_20d (float): 20-day high (for reporting and fallback trailing stop)
+        high_since_entry (float): True highest price since entry date.
+            When provided, used as the trailing stop high-water mark instead of
+            high_20d.  This prevents missed trailing-stop triggers when the
+            position peaked more than 20 trading days ago.
+            Example: NVDA peaked at $150 (35 days ago), high_20d=$142,
+            trailing stop should be $150×0.92=$138, not $142×0.92=$131.
+        prev_close (float): Previous trading day's closing price.
+            Used to compute daily_return_pct, which allows the LLM to detect
+            single-day gap events (e.g. post-earnings gap > +8% or < -5%).
+            Without this field the LLM cannot distinguish "position is up +20%
+            since entry" from "position gapped up +10% today after earnings."
 
     Returns:
         dict: Position context or None
@@ -202,6 +214,14 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 override_stop     = None
                 stop_source       = "default"        # -12% from avg_cost
 
+            # Read signal_target_price from open_positions.json ("target_price" field).
+            # When the user opens a trade they should record the signal's target_price
+            # (entry + 3.5×ATR from the quant signal) in open_positions.json.
+            # This enables the SIGNAL_TARGET exit rule which fires when price reaches
+            # the R:R-calibrated target, closing the +7% to +20% dead zone.
+            # Without this field, SIGNAL_TARGET is silently skipped.
+            signal_target_price = pos.get("target_price")
+
             # Compute exit levels.
             # For legacy positions pass current_price so ATR stop = current_price - 2×ATR
             # instead of the meaningless avg_cost - 2×ATR (e.g. AMD: $27 - $21 = $6).
@@ -209,6 +229,7 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 avg_cost, atr,
                 override_stop_price=override_stop,
                 current_price=latest_close if legacy_basis else None,
+                signal_target_price=signal_target_price,
             )
 
             # Compute approximate trading days held (optional: requires entry_date in position).
@@ -222,11 +243,15 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 except Exception:
                     pass
 
-            # Use 20d_high as high_water_mark so trailing stop detects drawdowns
-            # from recent peaks, not just from avg_cost.
+            # Use true high since entry as high_water_mark for trailing stop.
+            # Falls back to 20d high when entry_date is unavailable.
+            # Bug fix: using only 20d high misses peaks from >20 days ago,
+            # causing trailing stop to not trigger when it should.
+            trailing_hwm = high_since_entry if high_since_entry is not None else high_20d
+
             exit_signals = evaluate_exit_signals(
                 latest_close, avg_cost, exit_levels,
-                high_water_mark=high_20d,
+                high_water_mark=trailing_hwm,
                 days_held=days_held,
                 legacy_basis=legacy_basis,
             )
@@ -242,10 +267,26 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 "exit_signals": exit_signals,
             }
 
-            if high_20d is not None:
+            # Today's price change vs yesterday — enables LLM to detect gap events.
+            # Critical for post-earnings rules: "gap > +8% → REDUCE 50%",
+            # "gap < -5% → EXIT".  Without prev_close the LLM cannot distinguish
+            # a single-day gap from accumulated unrealised gain since entry.
+            if prev_close and prev_close > 0:
+                daily_return = round((latest_close - prev_close) / prev_close, 4)
+                result["prev_close"]       = round(prev_close, 2)
+                result["daily_return_pct"] = daily_return
+
+            if trailing_hwm is not None:
                 from position_manager import TRAILING_STOP_PCT
-                result["trailing_stop_from_20d_high"] = round(high_20d * (1 - TRAILING_STOP_PCT), 2)
-                result["drawdown_from_20d_high_pct"] = round((latest_close - high_20d) / high_20d, 4)
+                # Field names kept as trailing_stop_from_20d_high / drawdown_from_20d_high_pct
+                # for LLM prompt backwards-compatibility, but now computed from the
+                # true high-water mark (max of high_since_entry vs high_20d).
+                result["trailing_stop_from_20d_high"] = round(trailing_hwm * (1 - TRAILING_STOP_PCT), 2)
+                result["drawdown_from_20d_high_pct"] = round((latest_close - trailing_hwm) / trailing_hwm, 4)
+                if high_since_entry is not None and high_20d is not None:
+                    result["high_water_mark_source"] = (
+                        "entry_date_high" if high_since_entry >= high_20d else "20d_high"
+                    )
 
             if override_stop:
                 result["effective_stop_price"] = override_stop
@@ -255,7 +296,7 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
     return None
 
 
-def generate_trend_signals(universe=None, window=20, lookback_days=60):
+def generate_trend_signals(universe=None, window=20, lookback_days=350):
     """
     Generate trend signals for all tickers in universe.
 
@@ -291,13 +332,49 @@ def generate_trend_signals(universe=None, window=20, lookback_days=60):
                 logger.warning(f"Skipping {ticker}: insufficient data for signals")
                 continue
 
+            # Compute true high-water mark since entry date for accurate trailing stop.
+            # Bug: using only 20d_high misses peaks from >20 days ago, causing trailing
+            # stop to fail when position peaked more than 20 trading days back.
+            # Example: bought NVDA at $102, peaked at $150 (35d ago), now $137 →
+            #   20d_high=$142 → trailing=$130.64 (stop NOT triggered)
+            #   high_since_entry=$150 → trailing=$138   (stop correctly triggered)
+            high_since_entry = None
+            if open_positions and "positions" in open_positions:
+                for pos in open_positions["positions"]:
+                    if pos.get("ticker") == ticker:
+                        entry_date_str = pos.get("entry_date")
+                        if entry_date_str:
+                            try:
+                                entry_dt = pd.Timestamp(entry_date_str)
+                                data_since = data[data.index >= entry_dt]
+                                if not data_since.empty:
+                                    raw_high = data_since['High'].max()
+                                    high_since_entry = float(
+                                        raw_high.item() if hasattr(raw_high, 'item') else raw_high
+                                    )
+                            except Exception as exc:
+                                logger.debug(f"{ticker}: could not compute high_since_entry: {exc}")
+                        break
+
+            # Compute previous trading day's close for daily_return_pct.
+            # Required by LLM post-earnings gap rules: "gap > +8% → REDUCE 50%".
+            prev_close = None
+            if data is not None and len(data) >= 2:
+                try:
+                    prev_val = data['Close'].iloc[-2]
+                    prev_close = float(prev_val.item() if hasattr(prev_val, 'item') else prev_val)
+                except Exception:
+                    pass
+
             # Add position context if ticker is held
-            # Pass ATR for volatility-adjusted stop and 20d_high as high_water_mark
-            # so trailing stop can detect drawdowns from recent peaks
+            # Pass ATR for volatility-adjusted stop, high_since_entry for accurate
+            # trailing stop high-water mark, and 20d_high as fallback.
             position_context = compute_position_context(
                 ticker, signal["close"], open_positions,
                 atr=signal.get("atr"),
                 high_20d=signal.get("20d_high"),
+                high_since_entry=high_since_entry,
+                prev_close=prev_close,
             )
             if position_context:
                 signal["position"] = position_context

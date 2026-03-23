@@ -116,6 +116,64 @@ def print_stats(stats, title):
     print()
 
 
+def _validate_open_positions():
+    """
+    Validate open_positions.json for fields required by exit rules.
+    Prints actionable console warnings (not just log entries) when fields are missing.
+
+    Missing fields and their consequences:
+      entry_date   → TIME_STOP (45-day stagnation rule) DISABLED
+                     trailing stop HWM degrades to 20d-high (may miss peaks >20 days ago)
+      target_price → SIGNAL_TARGET (3.5×ATR partial-exit at R:R target) DISABLED
+                     +7% to +20% zone has no exit guidance; winners evaporate
+    """
+    for path in [
+        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
+        'data/open_positions.json',
+    ]:
+        if os.path.exists(path):
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    positions_data = json.load(f)
+                positions = positions_data.get('positions', [])
+
+                missing_entry_date   = [p['ticker'] for p in positions
+                                        if p.get('ticker') and not p.get('entry_date')]
+                missing_target_price = [p['ticker'] for p in positions
+                                        if p.get('ticker') and not p.get('target_price')]
+                missing_override_after_profit = []
+                for p in positions:
+                    avg_cost = p.get('avg_cost', 0)
+                    if avg_cost > 0 and not p.get('override_stop_price'):
+                        # We can't compute current price here; flag positions where
+                        # notes suggest a past PROFIT_TARGET trigger (heuristic only)
+                        notes = (p.get('risk_notes') or '').lower()
+                        if any(k in notes for k in ('profit', 'target', 'reduce', '止盈')):
+                            missing_override_after_profit.append(p['ticker'])
+
+                if missing_entry_date or missing_target_price:
+                    print()
+                    print("!" * 60)
+                    print("  ⚠  OPEN POSITIONS: MISSING REQUIRED FIELDS")
+                    print("!" * 60)
+                    if missing_entry_date:
+                        print(f"  TIME_STOP DISABLED for: {missing_entry_date}")
+                        print("  → Add \"entry_date\": \"YYYY-MM-DD\" to each position")
+                        print("    (45-day stagnation rule cannot fire; trailing stop")
+                        print("     high-water mark degrades to 20-day high)")
+                    if missing_target_price:
+                        print(f"  SIGNAL_TARGET DISABLED for: {missing_target_price}")
+                        print("  → Add \"target_price\": <value from 3a signal's target_price>")
+                        print("    (3.5×ATR partial-exit cannot fire; +7%–+20% zone has")
+                        print("     no exit guidance and winners may evaporate)")
+                    print("!" * 60)
+                    print()
+
+            except Exception as e:
+                logger.warning(f"Could not validate open_positions.json: {e}")
+            break
+
+
 def main():
     """
     Main function to run the complete news pipeline.
@@ -125,6 +183,11 @@ def main():
     print("  NEWS COLLECTION & FILTERING PIPELINE")
     print("=" * 60)
     print()
+
+    # Validate open positions fields before running — missing fields silently
+    # disable exit rules (TIME_STOP, SIGNAL_TARGET).  Print console warnings so
+    # users see the issue even without reading the LLM prompt JSON.
+    _validate_open_positions()
 
     # Generate filenames with today's date
     today = datetime.now().strftime("%Y%m%d")
@@ -201,41 +264,126 @@ def main():
         print_stats(trade_stats, "Trade Filtering Results")
 
         # =====================================================
-        # STEP 4: TREND SIGNAL GENERATION
+        # STEP 4: SIGNAL GENERATION (quant pipeline + position context)
         # =====================================================
         logger.info("")
         logger.info("=" * 60)
-        logger.info("STEP 4: Generating Trend Signals (20-day breakout)")
+        logger.info("STEP 4: Generating Signals (quant pipeline + position context)")
         logger.info("=" * 60)
 
         trend_output = f"data/trend_signals_{today}.json"
         trend_signals = None
 
         try:
+            # Run the legacy trend_signals pipeline for position context
+            # (exit levels, trailing stops, drawdown alerts for held positions).
             trend_signals = generate_trend_signals()
+
+            # Run the full quant pipeline to get strategy A/B/C signals with
+            # TQS, R:R, and risk enrichment — these are what the LLM needs under
+            # "3a) 量化信号".  The llm_advisor looks for the key "quant_signals".
+            try:
+                from data_layer    import get_universe, get_ohlcv, get_earnings_data
+                from feature_layer import compute_features
+                from signal_engine import generate_signals
+                from risk_engine   import enrich_signals
+                from portfolio_engine import size_signals
+                from regime        import compute_market_regime
+
+                qp_universe = get_universe()
+                qp_ohlcv    = {t: get_ohlcv(t)          for t in qp_universe}
+                qp_earnings = {t: get_earnings_data(t)   for t in qp_universe}
+                qp_features = {t: compute_features(t, qp_ohlcv[t], qp_earnings[t])
+                               for t in qp_universe}
+
+                qp_regime   = compute_market_regime()
+                mc = {"market_regime": qp_regime.get("regime", "")}
+                spy_data = qp_regime.get("indices", {}).get("SPY", {})
+                if spy_data.get("momentum_10d_pct") is not None:
+                    mc["spy_10d_return"] = spy_data["momentum_10d_pct"]
+
+                qp_signals = generate_signals(qp_features, market_context=mc)
+                qp_signals = enrich_signals(qp_signals, qp_features)
+
+                # Add position sizing using LIVE portfolio value (not stored value).
+                # open_positions.json portfolio_value_usd can be stale by months;
+                # using it causes persistent under-sizing (e.g. stored=$100k,
+                # live=$150k → shares sized for 0.67% risk instead of 1%).
+                # Mirror run_quant.py: compute live PV from current prices × shares.
+                from llm_advisor import load_open_positions as _load_pos
+                _open_pos = _load_pos()
+                _stored_pv = (_open_pos or {}).get("portfolio_value_usd")
+                _pv = _stored_pv
+                if _open_pos and _open_pos.get("positions"):
+                    _current_prices = {
+                        t: f["close"]
+                        for t, f in qp_features.items()
+                        if f and f.get("close") is not None
+                    }
+                    _equity_pv = sum(
+                        pos.get("shares", 0) * _current_prices.get(
+                            pos.get("ticker", ""), pos.get("avg_cost", 0)
+                        )
+                        for pos in _open_pos["positions"]
+                        if pos.get("ticker") and pos.get("shares", 0) > 0
+                    )
+                    _cash_usd = _open_pos.get("cash_usd", 0) or 0
+                    _live_pv = _equity_pv + _cash_usd
+                    if _live_pv > 0:
+                        if _stored_pv and abs(_live_pv - _stored_pv) / _stored_pv > 0.15:
+                            logger.warning(
+                                f"Portfolio value drift: stored={_stored_pv:,.0f}  "
+                                f"live={_live_pv:,.0f} USD — using live for sizing."
+                            )
+                        _pv = _live_pv
+                if _pv:
+                    qp_signals = size_signals(qp_signals, _pv)
+
+                # Inject quant signals into trend_signals so llm_advisor finds them
+                trend_signals["quant_signals"] = qp_signals
+                trend_signals["market_regime"]  = qp_regime
+
+                # Inject days_to_earnings from quant features into trend_signals
+                # position context for each held ticker.
+                # The LLM prompt rule "dte ≤ 2 → reduce 50% (earnings pre-exit)" requires
+                # this field in positions_requiring_attention — without it the rule is blind.
+                # trend_signals.generate_trend_signals() only downloads price data (no earnings),
+                # so dte is missing from the position context built there.
+                for _t, _sig in trend_signals.get("signals", {}).items():
+                    _dte = (qp_features.get(_t) or {}).get("days_to_earnings")
+                    if _dte is not None:
+                        _sig["days_to_earnings"] = _dte
+                        # Also propagate into position sub-dict if it exists
+                        if "position" in _sig:
+                            _sig["position"]["days_to_earnings"] = _dte
+
+                logger.info(f"Quant pipeline: {len(qp_signals)} signals generated")
+            except Exception as qe:
+                logger.error(f"Quant pipeline failed, LLM will see no quant signals: {qe}")
+
             save_trend_signals(trend_signals, trend_output)
 
             print()
             print("=" * 60)
-            print("  TREND SIGNALS GENERATED")
+            print("  SIGNALS GENERATED")
             print("=" * 60)
             print(f"  Tickers analyzed:     {len(trend_signals.get('universe', []))}")
-            print(f"  Signals generated:    {len(trend_signals.get('signals', {}))}")
+            print(f"  Position contexts:    {len(trend_signals.get('signals', {}))}")
+            print(f"  Quant signals (LLM):  {len(trend_signals.get('quant_signals', []))}")
 
-            # Count breakouts and breakdowns
-            breakouts = sum(1 for s in trend_signals.get('signals', {}).values() if s.get('breakout'))
+            # Count breakouts and breakdowns (from position context)
+            breakouts  = sum(1 for s in trend_signals.get('signals', {}).values() if s.get('breakout'))
             breakdowns = sum(1 for s in trend_signals.get('signals', {}).values() if s.get('breakdown'))
-
             print(f"  Breakouts detected:   {breakouts}")
             print(f"  Breakdowns detected:  {breakdowns}")
             print("=" * 60)
             print()
 
         except Exception as e:
-            logger.error(f"Failed to generate trend signals: {e}")
+            logger.error(f"Failed to generate signals: {e}")
             print()
             print("=" * 60)
-            print("  TREND SIGNALS: FAILED")
+            print("  SIGNALS: FAILED")
             print("=" * 60)
             print(f"  Error: {e}")
             print("=" * 60)
@@ -251,17 +399,39 @@ def main():
 
         advice_output = f"data/investment_advice_{today}.json"
 
-        if len(trade_items) == 0:
-            logger.warning("No trade-filtered news items. Skipping LLM advisor.")
+        # Run LLM if there are either trade news items OR standalone quant signals
+        # (confidence ≥ 0.85 signals don't require news confirmation).
+        # Previously: skip LLM when no trade news → missed breakout trades on quiet
+        # news days, which are often the cleanest technical setups.
+        has_quant_signals = bool(
+            trend_signals and trend_signals.get("quant_signals")
+        )
+        if len(trade_items) == 0 and not has_quant_signals:
+            logger.warning("No trade-filtered news and no quant signals. Skipping LLM advisor.")
             print()
             print("=" * 60)
             print("  LLM ADVISOR: SKIPPED")
             print("=" * 60)
-            print("  Reason: No trade-filtered news items found")
+            print("  Reason: No trade news and no quant signals")
             print("=" * 60)
             print()
         else:
-            result = get_investment_advice(trade_items, trend_signals=trend_signals)
+            if len(trade_items) == 0:
+                logger.info(
+                    f"No trade news but {len(trend_signals.get('quant_signals', []))} "
+                    "quant signal(s) present — running LLM for standalone signal evaluation"
+                )
+            # Auto-call the LLM API when OPENAI_API_KEY is present; otherwise save the
+            # prompt to a text file for manual review (cost-controlled development mode).
+            save_prompt_only = not bool(os.environ.get("OPENAI_API_KEY"))
+            if save_prompt_only:
+                logger.info(
+                    "OPENAI_API_KEY not set — saving prompt to file. "
+                    "Set OPENAI_API_KEY to enable automatic LLM advice."
+                )
+            result = get_investment_advice(
+                trade_items, trend_signals=trend_signals, save_prompt_only=save_prompt_only
+            )
 
             if result["success"]:
                 print()

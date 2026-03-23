@@ -15,8 +15,10 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 # Rule parameters
-RISK_PER_TRADE_PCT    = 0.01   # Risk 1% of total portfolio per new trade
-MAX_POSITION_PCT      = 0.20   # Single position capped at 20% of portfolio
+RISK_PER_TRADE_PCT    = 0.01     # Risk 1% of total portfolio per new trade
+MAX_POSITION_PCT      = 0.20     # Single position capped at 20% of portfolio
+ROUND_TRIP_COST_PCT   = 0.0035   # matches risk_engine.py and performance_engine.py
+EXEC_LAG_PCT          = 0.005    # +0.5% assumed next-day open gap (matches risk_engine.py)
 HARD_STOP_PCT         = 0.12   # -12% hard stop from avg_cost
 PROFIT_TARGET_PCT     = 0.20   # +20% profit target from entry
 TRAILING_STOP_PCT     = 0.08   # -8% trailing stop from position high-water mark
@@ -52,7 +54,10 @@ def compute_atr(data, period=ATR_PERIOD):
         tr3 = (low  - close.shift(1)).abs()
 
         true_range  = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
-        atr_series  = true_range.ewm(span=period, adjust=False).mean()
+        # Wilder's smoothing: alpha = 1/period (≈0.071 for period=14).
+        # More stable than EWM(span=period) (alpha=2/15≈0.133); reduces ATR
+        # spikes on single high-volatility days. Matches feature_layer.py.
+        atr_series  = true_range.ewm(alpha=1.0 / period, adjust=False).mean()
 
         atr_val = atr_series.iloc[-1]
         result  = float(atr_val.item() if hasattr(atr_val, 'item') else atr_val)
@@ -92,7 +97,12 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
 
         risk_amount    = portfolio_value * risk_pct
         risk_per_share = entry_price - stop_price
-        shares         = max(1, int(risk_amount / risk_per_share))  # round down, min 1
+        # Include execution cost AND exec_lag gap so the position is sized for TRUE 1% risk.
+        # Mirrors portfolio_engine.py — see detailed comment there for the arithmetic.
+        cost_per_share     = entry_price * ROUND_TRIP_COST_PCT
+        gap_per_share      = entry_price * EXEC_LAG_PCT
+        net_risk_per_share = risk_per_share + cost_per_share + gap_per_share
+        shares             = max(1, int(risk_amount / net_risk_per_share))  # round down, min 1
 
         # Cap at MAX_POSITION_PCT — tight stops can produce oversized positions.
         max_shares = max(1, int(portfolio_value * MAX_POSITION_PCT / entry_price))
@@ -112,6 +122,7 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
             "entry_price":                round(entry_price, 2),
             "stop_price":                 round(stop_price, 2),
             "risk_per_share":             round(risk_per_share, 2),
+            "net_risk_per_share":         round(net_risk_per_share, 4),
             "shares_to_buy":              shares,
             "position_value_usd":         round(position_value, 2),
             "position_pct_of_portfolio":  round(position_value / portfolio_value, 4),
@@ -122,7 +133,8 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
         return None
 
 
-def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_price=None):
+def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_price=None,
+                        signal_target_price=None):
     """
     Compute all exit price levels for a held position.
 
@@ -134,6 +146,13 @@ def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_pr
         current_price (float): Current market price — used as ATR reference for
             legacy positions so that atr_stop = current_price - 2×ATR instead of
             the meaningless avg_cost - 2×ATR (e.g. AMD: $27 - $21 = $6).
+        signal_target_price (float): Optional 3.5×ATR target from the original entry
+            signal (stored in open_positions.json as "target_price").  When provided,
+            enables the SIGNAL_TARGET exit rule: when price reaches this level the
+            original R:R is captured — suggest reducing 33% to lock in gains while
+            letting the remaining 67% ride toward the +20% PROFIT_TARGET.
+            Without this field the +7% to +20% range has no exit instruction, causing
+            winners to evaporate before PROFIT_TARGET fires.
 
     Returns:
         dict: Exit levels with prices and percentages
@@ -157,6 +176,13 @@ def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_pr
     }
     if override_stop_price:
         levels["override_stop_active"] = True
+
+    # Signal target: 3.5×ATR technical target from the original entry signal.
+    # Stored as "target_price" in open_positions.json by the user when opening a trade.
+    # This closes the +7% to +20% dead zone where previously no exit instruction existed.
+    if signal_target_price is not None and signal_target_price > avg_cost:
+        levels["signal_target_price"] = round(signal_target_price, 2)
+        levels["signal_target_pct"]   = round((signal_target_price - avg_cost) / avg_cost, 4)
 
     if atr is not None:
         # Always base ATR stop on current_price when available — this makes the stop
@@ -224,6 +250,29 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
                             f"{trailing_price:.2f} "
                             f"({TRAILING_STOP_PCT*100:.0f}% from high "
                             f"{high_water_mark:.2f})"),
+            })
+
+    # 3.5. Signal target: 3.5×ATR technical R:R captured — partial profit lock.
+    # Fires when price ≥ signal_target_price (stored in open_positions.json).
+    # Urgency LOW: suggests 33% reduction to lock the planned R:R while allowing
+    # the remaining 67% to run toward the PROFIT_TARGET (+20%).
+    # Only fires in the pre-PROFIT_TARGET range; once PROFIT_TARGET fires (20%+)
+    # the higher-urgency rule takes over and this check becomes redundant.
+    # Skipped for legacy_basis positions — their economics are completely different.
+    if (not legacy_basis
+            and "signal_target_price" in exit_levels
+            and avg_cost > 0):
+        sig_target = exit_levels["signal_target_price"]
+        profit_tgt = exit_levels.get("profit_target_price", float("inf"))
+        # Only fire before the +20% PROFIT_TARGET zone to avoid conflicting messages
+        if sig_target <= current_price < profit_tgt:
+            triggered.append({
+                "rule":    "SIGNAL_TARGET",
+                "urgency": "LOW",
+                "message": (f"Price {current_price:.2f} >= signal target "
+                            f"{sig_target:.2f} (+{exit_levels['signal_target_pct']*100:.1f}%) — "
+                            f"3.5×ATR R:R captured; consider reducing 33% to lock gains, "
+                            f"let remainder run to +20% target {profit_tgt:.2f}"),
             })
 
     # 4+6. Profit-taking rules — non-overlapping ladder:
@@ -306,93 +355,3 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
     }
 
 
-def compute_portfolio_heat(open_positions, current_prices, portfolio_value):
-    """
-    Calculate total portfolio risk exposure (portfolio heat).
-
-    For each position:
-        at_risk_usd = shares × max(0, current_price - hard_stop_price)
-
-    Portfolio heat = Σ(at_risk_usd) / portfolio_value
-
-    If heat >= MAX_PORTFOLIO_HEAT (10%), no new positions should be added.
-
-    Args:
-        open_positions (dict): Open positions data (from open_positions.json)
-        current_prices (dict): {ticker: current_close_price}
-        portfolio_value (float): Total portfolio value in USD
-
-    Returns:
-        dict: Heat metrics including per-position breakdown and overall verdict
-    """
-    if not open_positions or not portfolio_value or portfolio_value <= 0:
-        return None
-
-    position_breakdown = []
-    total_at_risk_usd  = 0.0
-
-    for pos in open_positions.get("positions", []):
-        ticker   = pos.get("ticker")
-        shares   = pos.get("shares", 0)
-        avg_cost = pos.get("avg_cost", 0)
-
-        if not ticker or avg_cost <= 0 or shares <= 0:
-            continue
-
-        # Use live price if available, fall back to avg_cost
-        current_price = current_prices.get(ticker, avg_cost)
-
-        # Use same stop logic as compute_exit_levels / trend_signals:
-        #   legacy positions (PnL > 100%): rolling stop = current_price × 0.88
-        #   manual override takes precedence if set in open_positions.json
-        #   normal positions: avg_cost × 0.88
-        manual_override    = pos.get("override_stop_price")
-        unrealized_pnl_pct = (current_price - avg_cost) / avg_cost if avg_cost > 0 else 0
-        legacy             = unrealized_pnl_pct > 1.0
-
-        if manual_override:
-            hard_stop = manual_override
-            stop_src  = "manual"
-        elif legacy:
-            hard_stop = current_price * (1 - HARD_STOP_PCT)
-            stop_src  = "auto_rolling"
-        else:
-            hard_stop = avg_cost * (1 - HARD_STOP_PCT)
-            stop_src  = "default"
-
-        # Amount lost if price drops to hard stop from current price
-        at_risk_per_share = max(0.0, current_price - hard_stop)
-        at_risk_usd       = shares * at_risk_per_share
-        at_risk_pct       = at_risk_usd / portfolio_value
-
-        total_at_risk_usd += at_risk_usd
-
-        position_breakdown.append({
-            "ticker":         ticker,
-            "shares":         shares,
-            "current_price":  round(current_price, 2),
-            "hard_stop_price":round(hard_stop, 2),
-            "stop_source":    stop_src,
-            "at_risk_usd":    round(at_risk_usd, 2),
-            "at_risk_pct":    round(at_risk_pct, 4),
-        })
-
-    heat_pct           = total_at_risk_usd / portfolio_value
-    can_add_positions  = heat_pct < MAX_PORTFOLIO_HEAT
-
-    if can_add_positions:
-        heat_note = (f"Heat {heat_pct*100:.1f}% < {MAX_PORTFOLIO_HEAT*100:.0f}% cap — "
-                     f"new positions permitted")
-    else:
-        heat_note = (f"Heat {heat_pct*100:.1f}% >= {MAX_PORTFOLIO_HEAT*100:.0f}% cap — "
-                     f"NO new positions until existing risk is reduced")
-
-    return {
-        "portfolio_value_usd":   portfolio_value,
-        "total_at_risk_usd":     round(total_at_risk_usd, 2),
-        "portfolio_heat_pct":    round(heat_pct, 4),
-        "max_heat_pct":          MAX_PORTFOLIO_HEAT,
-        "can_add_new_positions": can_add_positions,
-        "heat_note":             heat_note,
-        "position_breakdown":    position_breakdown,
-    }

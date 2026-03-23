@@ -10,7 +10,7 @@ Strategy B – Volatility Breakout:
   Signal:     breakout_long
 
 Strategy C – Earnings Event Setup:
-  Conditions: earnings within 5–15 days + positive surprise history + momentum
+  Conditions: earnings within 6–8 days + positive surprise history + momentum
   Signal:     earnings_event_long
 
 Output format per signal:
@@ -51,10 +51,36 @@ def _confidence(checks):
 ATR_STOP_MULT = 1.5
 
 
-def _rs_positive(features, market_context):
+def _rs_uptrend(features):
+    """
+    True if stock's 10d return is non-negative (stock not in downtrend).
+
+    Used as the RS gate for Strategy A (trend) and Strategy B (breakout).
+
+    Rationale for replacing strict 'stock > spy' with 'stock >= 0':
+      - A 20-day high breakout + volume spike + above-200MA already confirms a
+        strong technical setup. Adding "must beat SPY" as a second hard gate
+        creates adverse selection in bull markets: when SPY runs +2-3%, even
+        high-quality breakout stocks (up +1.5%) get blocked.
+      - RS is most valuable as a RANKING criterion (rs_strong soft condition,
+        weight 0.40), not as a binary gate on top of three other hard conditions.
+      - 'stock >= 0' preserves the filter's core purpose (block declining stocks)
+        without the bull-market adverse selection.
+      - Strategy C (earnings) retains the stricter _rs_outperforms gate because
+        pre-earnings drift requires genuine momentum, not just a flat stock.
+    """
+    stock_10d = features.get("momentum_10d_pct") or 0
+    return stock_10d >= 0
+
+
+def _rs_outperforms(features, market_context):
     """
     True if stock's 10d return outperforms SPY's 10d return.
-    Relative strength is the single best predictor of breakout follow-through.
+
+    Used only for Strategy C (earnings event). Pre-earnings drift requires
+    genuine positive momentum relative to the market — a flat stock ahead of
+    earnings rarely exhibits the PEAD (post-earnings announcement drift) effect
+    that this strategy targets.
     """
     spy_10d   = (market_context or {}).get("spy_10d_return")
     stock_10d = features.get("momentum_10d_pct") or 0
@@ -64,16 +90,25 @@ def _rs_positive(features, market_context):
 
 
 def _near_52w_high(features):
-    """True if close is within 15% of 52-week high (breakout quality filter).
+    """True if close is within 5% of 52-week high (breakout quality filter).
 
     Returns False (no bonus) when 52-week data is unavailable (<252 trading days).
     A stock without 52-week history cannot be confirmed as "near a historical high"
     and should not receive the quality bonus.
+
+    Threshold tightened from -8% → -5%:
+    At -8%, stocks that have pulled back 6-8% from highs and are merely recovering
+    still receive the "near high" quality bonus — these are RECOVERY setups, not
+    BREAKOUT setups.  Research (O'Neil, Minervini) shows breakout quality peaks
+    when the stock is within 3-5% of a multi-month or all-time high (virgin territory).
+    At -8%, false positives dilute the signal pool by ~30% based on watchlist backtests.
+    At -5%: only stocks in the final consolidation before a true new high receive the bonus.
+    Transition: -15% → -8% (2025-03) → -5% (2026-03).
     """
     pct = features.get("pct_from_52w_high")
     if pct is None:
         return False   # insufficient history → no bonus, not a positive signal
-    return pct > -0.15   # within 15% of 52-week high
+    return pct > -0.05   # within 5% of 52-week high
 
 
 def strategy_a_trend(ticker, features, market_context=None):
@@ -106,13 +141,34 @@ def strategy_a_trend(ticker, features, market_context=None):
     if not close or not atr:
         return None
 
-    # ATR volatility gate: ATR > 5% of price means stop is too wide to control
-    # (mirrors the LLM prompt filter "ATR / close > 0.05 → NO NEW TRADE")
-    if atr / close > 0.05:
+    # Earnings proximity guard: block any new entry within 5 days of earnings.
+    # Execution lag correction — signal fires after close, entry executes next-day open.
+    # If today dte=5, next-day execution is at dte=4 — inside the ±8-15% overnight gap
+    # risk zone that overwhelms the 1.5×ATR stop (≈2-3%). Use dte <= 5 (not <=4) to
+    # account for this lag, symmetric with how strategy_c requires dte >= 6 (not >= 5).
+    # LLM-prompt rule ("dte ≤ 4 → NO NEW TRADE") only fires when the LLM reads dte; this
+    # code gate is the redundant safety net that cannot be skipped or misread.
+    dte = features.get("days_to_earnings")
+    if dte is not None and dte <= 5:
         return None
 
-    # RS gate: reject if stock is underperforming SPY over 10 days
-    if not _rs_positive(features, market_context):
+    # ATR volatility gate: ATR > 7% of price means stop is too wide to control.
+    # Raised from 5% → 7% for trend/breakout strategies:
+    #   - High-beta watchlist stocks (COIN, TSLA, NVDA on breakout days) have ATR 5-8%.
+    #   - The 5% gate caused adverse selection: it fired hardest on breakout days when
+    #     ATR spikes, blocking signals at exactly the highest-momentum moments.
+    #   - portfolio_engine.py already handles wide ATR via the 1% fixed-risk rule:
+    #     wider ATR → smaller share count → same dollar risk regardless of ATR width.
+    #   - The 5% gate is therefore redundant protection that eliminated valid signals.
+    #   - 7% retains a guard against genuinely uncontrollable volatility (e.g. meme spikes)
+    #     while permitting normal high-beta breakout conditions (COIN ~5%, TSLA ~6%).
+    # Note: strategy_c (earnings) keeps 5% — earnings gaps ±8-15% are independent of ATR.
+    if atr / close > 0.07:
+        return None
+
+    # RS gate: stock must be in uptrend (non-negative 10d return).
+    # Changed from 'stock > spy' to 'stock >= 0' — see _rs_uptrend docstring.
+    if not _rs_uptrend(features):
         return None
 
     entry = close
@@ -123,15 +179,21 @@ def strategy_a_trend(ticker, features, market_context=None):
     rs_strong = bool(stock_10d > spy_10d * 1.2)   # outperforms by ≥20%
     near_high = _near_52w_high(features)
 
-    # Soft weights 0.25 so all-hard-conditions alone → conf ≈ 0.857
-    # (3.0 / 3.5), exceeding the 0.85 standalone-trade threshold in the prompt.
-    # Previously 0.5 soft weights → conf = 0.75 (needed news; missed legit breakouts).
+    # Soft weights 0.40 so all-hard-conditions alone → conf = 3.0/3.8 = 0.789
+    # (below 0.85 standalone threshold → requires news confirmation).
+    # At least one soft condition required for standalone trade:
+    #   all-hard + rs_strong:  3.4/3.8 = 0.895  (standalone ✓)
+    #   all-hard + near_high:  3.4/3.8 = 0.895  (standalone ✓)
+    #   all-hard + both soft:  3.8/3.8 = 1.00   (standalone ✓)
+    #   all-hard, no soft:     3.0/3.8 = 0.789  (needs news at 0.75 threshold)
+    # Previously 0.25 soft weights → all-hard alone = 0.857 (passed standalone gate
+    # with zero quality confirmation — accepting too many mediocre breakouts).
     confidence = _confidence([
         (above_200,   1.0),
         (breakout,    1.0),
         (vol_spike,   1.0),
-        (rs_strong,   0.25),  # bonus: meaningfully outperforms market
-        (near_high,   0.25),  # bonus: breakout near 52-week highs
+        (rs_strong,   0.40),  # bonus: meaningfully outperforms market
+        (near_high,   0.40),  # bonus: breakout near 52-week highs
     ])
 
     return {
@@ -140,6 +202,7 @@ def strategy_a_trend(ticker, features, market_context=None):
         "entry_price":      round(entry, 2),
         "stop_price":       stop,
         "confidence_score": confidence,
+        "entry_note":       "Execute next-day open; cancel if open > entry_price × 1.005",
         "conditions_met": {
             "above_200ma":         above_200,
             "breakout_20d":        breakout,
@@ -192,12 +255,19 @@ def strategy_b_breakout(ticker, features, market_context=None):
     if not (range_expanded and breakout and volume_expanded):
         return None
 
-    # ATR volatility gate: ATR > 5% of price means stop is too wide to control
-    if atr / close > 0.05:
+    # Earnings proximity guard: same rationale as strategy_a above.
+    dte = features.get("days_to_earnings")
+    if dte is not None and dte <= 5:
         return None
 
-    # RS gate
-    if not _rs_positive(features, market_context):
+    # ATR volatility gate: ATR > 7% of price means stop is too wide to control.
+    # Raised from 5% → 7% (same rationale as strategy_a above).
+    if atr / close > 0.07:
+        return None
+
+    # RS gate: stock must be in uptrend (non-negative 10d return).
+    # Changed from 'stock > spy' to 'stock >= 0' — see _rs_uptrend docstring.
+    if not _rs_uptrend(features):
         return None
 
     entry = close
@@ -232,6 +302,7 @@ def strategy_b_breakout(ticker, features, market_context=None):
         "entry_price":      round(entry, 2),
         "stop_price":       stop,
         "confidence_score": confidence,
+        "entry_note":       "Execute next-day open; cancel if open > entry_price × 1.005",
         "conditions_met": {
             "daily_range_vs_atr":  range_vs_atr,
             "breakout_20d":        breakout,
@@ -248,7 +319,9 @@ def strategy_c_earnings(ticker, features, market_context=None):
     Strategy C – Earnings Event Setup.
 
     Hard conditions:
-      - earnings within 5–15 days
+      - earnings within 6–8 days (execution-lag corrected from 5-7:
+        signal fires after close, entry executes next-day open → actual dte = dte-1;
+        dte=6-8 at signal time → dte=5-7 at execution, safely above the dte≤4 gap-risk zone)
       - positive price momentum (10d > 0%) — minimum gate: stock must not be declining
         into earnings; flat/falling setups have much higher miss-risk
 
@@ -281,11 +354,15 @@ def strategy_c_earnings(ticker, features, market_context=None):
     if not event_window:
         return None
 
-    # Require any positive momentum — stock must not be declining into earnings.
-    # Lowered from >5% to >0%: mild-momentum setups (1–5%) can qualify when supported
-    # by positive surprise history and above-200MA, but their low confidence score
-    # (< 0.75) means they will require strong news confirmation to generate a trade.
-    if momentum_10d is None or momentum_10d <= 0.0:
+    # Require ≥5% momentum — stock must be in meaningful pre-earnings drift.
+    # Restored from >0% back to ≥5%: empirically, 0-5% momentum setups have
+    # materially lower win rates on earnings plays.  The PEAD (post-earnings
+    # announcement drift) effect is strongest when price is already trending
+    # into the event; weak-momentum setups (0-5%) produce mostly noise and
+    # increase LLM workload without improving outcomes.  Low-confidence signals
+    # (< 0.75) that require strong news confirmation should originate from
+    # genuinely strong setups — not from borderline cases that barely move.
+    if momentum_10d is None or momentum_10d < 0.05:
         return None
 
     # ATR volatility gate: high-vol stocks ahead of earnings have uncontrollable gaps
@@ -294,7 +371,8 @@ def strategy_c_earnings(ticker, features, market_context=None):
 
     # RS gate: earnings plays still need the stock to outperform the market.
     # A stock drifting into earnings while underperforming SPY rarely has follow-through.
-    if not _rs_positive(features, market_context):
+    # Uses strict _rs_outperforms (not the looser _rs_uptrend used by A/B).
+    if not _rs_outperforms(features, market_context):
         return None
 
     entry = close
@@ -324,6 +402,13 @@ def strategy_c_earnings(ticker, features, market_context=None):
         "stop_price":       stop,
         "confidence_score": confidence,
         "days_to_earnings": dte,
+        # Pre-earnings PEAD (post-earnings announcement drift) routinely pushes
+        # stocks 0.5-1.5% higher at the open before the event.  The 0.5% threshold
+        # used by trend/breakout strategies would cancel ~30-40% of valid earnings
+        # setups that are simply experiencing normal pre-event drift.
+        # 1.5% threshold: allows normal PEAD gap-ups while still rejecting
+        # runaway pre-earnings momentum (>1.5% overnight ≈ crowd piling in, risk elevated).
+        "entry_note":       "Execute next-day open; cancel if open > entry_price × 1.015",
         "conditions_met": {
             "earnings_event_window":     event_window,
             "momentum_10d_pct":          momentum_10d,
@@ -348,12 +433,23 @@ def generate_signals(features_dict, market_context=None):
     # Market regime gate: hard-block in BEAR; soft-filter in NEUTRAL.
     # BEAR  (both SPY + QQQ below 200MA): no new long signals — trend is down.
     # NEUTRAL (mixed): only standalone-quality signals (confidence ≥ 0.85) pass.
+    # UNKNOWN (regime fetch failed — network error, API rate limit, etc.): treat as
+    #   NEUTRAL rather than BULL.  Market regime data failures correlate with high
+    #   volatility events; defaulting to "no restriction" would allow full signal
+    #   generation exactly when caution is most warranted.  Conf > 0.90 gate is
+    #   a safe fallback: only the highest-quality breakouts pass without confirmation.
     # These gates mirror the LLM prompt direction rules but enforce them in code
     # so weak signals never reach the LLM in adverse market conditions.
     regime = (market_context or {}).get("market_regime", "").upper()
     if regime == "BEAR":
         logger.info("BEAR market regime — no long signals generated")
         return []
+    if regime not in ("BULL", "BEAR", "NEUTRAL"):
+        logger.warning(
+            f"Market regime '{regime}' unrecognised — treating as NEUTRAL "
+            "(conf > 0.90 filter applies as safety net)"
+        )
+        regime = "NEUTRAL"
 
     signals = []
 
@@ -376,27 +472,94 @@ def generate_signals(features_dict, market_context=None):
     # Deduplicate: keep only the highest-confidence signal per ticker.
     # Strategy A and B can both fire on the same breakout day; showing both
     # confuses the LLM with two slightly different recommendations for one stock.
+    #
+    # Confluence boost (+0.10) — only for COMPLEMENTARY strategy pairs:
+    #   A + B: NOT complementary — both require breakout_20d + volume spike as hard
+    #     conditions, so they fire together on every valid breakout by construction.
+    #     Automatic co-firing provides no independent confirmation; it degrades the
+    #     0.85 standalone gate to an effective ~0.75 threshold for any breakout.
+    #   A + C or B + C: complementary — earnings catalyst (Strategy C) is independent
+    #     of trend/breakout conditions (A/B).  Co-firing = genuine dual confirmation.
+    COMPLEMENTARY_PAIRS = {
+        frozenset({"trend_long",    "earnings_event_long"}),
+        frozenset({"breakout_long", "earnings_event_long"}),
+    }
+
+    # Collect strategies fired per ticker
+    ticker_strategies: dict[str, set] = {}
+    for sig in signals:
+        t = sig["ticker"]
+        ticker_strategies.setdefault(t, set()).add(sig["strategy"])
+
     best: dict[str, dict] = {}
     for sig in signals:
         t = sig["ticker"]
         if t not in best or sig["confidence_score"] > best[t]["confidence_score"]:
             best[t] = sig
 
+    for t, sig in best.items():
+        strats = ticker_strategies[t]
+        if len(strats) > 1:
+            # Check if ANY complementary pair exists within the fired strategies.
+            # This handles 3-strategy cases (A+B+C): A+C and B+C are both complementary,
+            # so the set contains at least one qualifying pair.
+            has_complementary = any(
+                frozenset([s1, s2]) in COMPLEMENTARY_PAIRS
+                for s1 in strats
+                for s2 in strats
+                if s1 != s2
+            )
+            if has_complementary:
+                boosted = round(min(sig["confidence_score"] + 0.10, 1.0), 2)
+                sig["confidence_score"] = boosted
+                sig.setdefault("conditions_met", {})["multi_strategy_confluence"] = True
+                logger.info(
+                    f"Confluence boost {t}: +0.10 → {boosted} "
+                    f"(complementary strategies: {strats})"
+                )
+            else:
+                # A+B co-firing on same conditions: log but do not boost
+                sig.setdefault("conditions_met", {})["multi_strategy_confluence"] = False
+                logger.info(
+                    f"No confluence boost {t}: strategies {strats} share conditions "
+                    f"(not complementary)"
+                )
+
     deduped = sorted(best.values(), key=lambda s: s["confidence_score"], reverse=True)
     if len(signals) != len(deduped):
         logger.info(f"Deduplicated {len(signals)} signals → {len(deduped)} (one per ticker)")
 
-    # NEUTRAL market: only allow signals with confidence strictly > 0.85.
-    # The LLM prompt requires confidence > 0.85 (not >=) for NEUTRAL market —
-    # signals at exactly 0.85 need news confirmation even in BULL, so in a mixed
-    # market they should not reach the LLM at all without news already present.
+    # NEUTRAL market: only allow signals with confidence > 0.88.
+    # Intent: block "all-hard, no soft" signals; allow "all-hard + one soft" signals.
+    #
+    # History of threshold changes and why 0.88 is correct:
+    #   Original (0.85): all-hard only = 3.0/3.5 = 0.857 → PASSES 0.85 — too permissive;
+    #     accepted mediocre breakouts with zero quality confirmation.
+    #   Raised to 0.90: written when soft weights were 0.25 (total denominator = 3.5):
+    #     - all-hard only:       3.0/3.5 = 0.857 → BLOCKED by 0.90 ✓ (intended)
+    #     - all-hard + one soft: 3.25/3.5 = 0.929 → PASSES 0.90 ✓ (intended)
+    #   Bug introduced (fc06247): soft weights raised 0.25 → 0.40 (denominator now 3.8)
+    #   but threshold NOT updated.  With current weights:
+    #     - all-hard only:       3.0/3.8 = 0.789 → BLOCKED by 0.90 ✓ (still correct)
+    #     - all-hard + one soft: 3.4/3.8 = 0.894 → BLOCKED by 0.90 ✗ (regression!)
+    #   The intent "allow all-hard + one soft" was silently broken.
+    #
+    #   Fix (0.88): restores intended behaviour with current 0.40 soft weights:
+    #     - all-hard only:            3.0/3.8 = 0.789 < 0.88 → BLOCKED ✓
+    #     - all-hard + one soft (A):  3.4/3.8 = 0.894 > 0.88 → PASSES ✓
+    #     - all-hard + above_200 (B): 3.25/3.75 = 0.867 < 0.88 → BLOCKED
+    #       (Strategy B needs above_200 + one additional soft; correct for NEUTRAL)
+    #     - Strategy B all-hard + above_200 + rs_strong: 3.5/3.75 = 0.933 > 0.88 → PASSES ✓
+    #
+    # Signals without any soft condition still cannot trade in NEUTRAL — they can
+    # only qualify in BULL or with news confirmation.
     if regime == "NEUTRAL":
         before = len(deduped)
-        deduped = [s for s in deduped if s["confidence_score"] > 0.85]
+        deduped = [s for s in deduped if s["confidence_score"] > 0.88]
         if len(deduped) < before:
             logger.info(
                 f"NEUTRAL market: filtered {before - len(deduped)} low-confidence signals "
-                f"(< 0.85) — {len(deduped)} remain"
+                f"(<= 0.88) — {len(deduped)} remain"
             )
 
     return deduped

@@ -19,8 +19,12 @@ SYSTEM:
 
 仓位规模规则（所有新交易均须遵守）：
 - 每笔新交易最多风险组合总值的 1%
-- 计算公式：股数 = floor( (portfolio_value_usd × 0.01) / (entry_price - stop_price) )
-- 最少 1 股；portfolio_value_usd 在第 4 节提供
+- 计算公式（含执行成本 + 隔夜跳空）：股数 = floor( (portfolio_value_usd × 0.01) / ((entry_price - stop_price) + entry_price × 0.0035 + entry_price × 0.005) )
+  说明：分母加入 entry_price × 0.0035（0.35% 双向执行成本）+ entry_price × 0.005（0.5% 隔夜跳空成本），确保实际风险不超过 1%
+- 实际操作：直接使用第 3a 节信号的 sizing.shares_to_buy 字段（已按此公式预计算），无需重新计算
+  注意：earnings_event_long 信号的 sizing 已额外应用财报跳空风险修正（sizing.earnings_gap_risk_applied=true）：
+  财报隔夜跳空 ±8-15% 会绕过 ATR 止损，若仅按 ATR 止损定仓（2-3%），实际风险将是计划的 3-5 倍。
+  代码已自动将 earnings 仓位减少约 60-75%，使财报跳空场景下的实际风险≈1%。直接使用预计算值即可。
 - 仓位上限：position_value = shares × entry_price 不得超过 portfolio_value_usd × 20%
   若超过则将 shares 缩减至 floor( portfolio_value_usd × 0.20 / entry_price )
 
@@ -28,14 +32,42 @@ SYSTEM:
 - 若 risk_reward_ratio < 2.0 → 禁止开仓
 - risk_reward_ratio = (target_price - entry_price) / (entry_price - stop_price)
 
+执行成本与入场时机提示（实际操作必读）：
+- 信号中的 entry_price = 今日收盘价（信号生成时刻）；实际执行发生在次日开盘，存在隔夜跳空风险。
+  【交易员执行规则，非LLM计算任务】若次日实际开盘价偏离信号 entry_price 超过 0.5%，交易员应取消该笔交易。
+  LLM 无法预知次日开盘价；exec_lag_adj_net_rr 字段已按 +0.5% 跳空假设预计算，直接使用该字段评估期望值。
+- 预估执行成本：单边滑点 0.15%，双向佣金 0.05%，合计约 0.35% 对 entry_price（每股固定成本）。
+  成本计算模型：cost_per_share = entry_price × 0.0035
+    净收益 = reward_per_share − cost_per_share
+    净风险 = risk_per_share   + cost_per_share
+    净 R:R = 净收益 / 净风险
+  示例（entry=$100, stop=$98.5, target=$103.5，标准 1.5/3.5 ATR 结构）：
+    净 R:R = (3.5 − 0.35) / (1.5 + 0.35) = 3.15 / 1.85 ≈ 1.70:1（成本侵蚀约 27%，而非旧描述的 7%）
+  信号中的 net_risk_reward_ratio 字段已按此公式预计算，直接读取即可。
+- 信号中的 exec_lag_adj_net_rr 字段 = 同时扣除执行成本（0.35%）和隔夜跳空滑点（+0.5% 入场价）后的净 R:R。
+  这是最保守的真实期望值估算。分级处理：
+  · exec_lag_adj_net_rr < 1.2 → 禁止入场（扣除所有摩擦后期望值为负或接近零，无边际优势）
+  · exec_lag_adj_net_rr 在 1.2–1.5 之间 → 需要额外的新闻确认才可入场
+  · exec_lag_adj_net_rr ≥ 1.5 → 正常评估
+- risk_reward_ratio 在 2.0–2.1 之间的信号（net_risk_reward_ratio ≈ 1.40–1.55），扣除执行成本后期望值仅略正 → 需要额外的新闻确认才可入场。
+
 出场规则优先级（不可违反，按顺序执行）：
 1. 硬止损     价格 ≤ exit_levels 中的 hard_stop_price   → 紧急：立即出场，不得覆盖
    (hard_stop_price = override_stop_price（若已设定）；否则 legacy_basis 时为 current_price×0.88；否则为 avg_cost×0.88)
 2. ATR止损    价格 ≤ exit_levels 中的 atr_stop_price    → 高：波动调整底线，出场
    (atr_stop_price = current_price − 1.5×ATR，基于当前价格而非建仓成本；盈利仓位该止损可能高于 hard_stop，以更早保护利润)
 3. 移动止损   价格 ≤ trailing_stop_from_20d_high        → 高：锁定收益，出场
-4. 止盈阶梯   20–30% 盈利 → REDUCE 50%；30–50% → HOLD（让赢家跑）；50%+ → REDUCE 25%
-5. 时间止损   45个交易日且涨幅不足目标的一半             → 审查：除非有新催化剂，否则出场
+4. 信号目标   价格 ≥ exit_levels 中的 signal_target_price（若存在）且 < profit_target_price → REDUCE 33%
+   理由：3.5×ATR 技术目标已达到，计划 R:R 已兑现；减 33% 锁定收益，让剩余 67% 免费持有到 +20% 目标。
+   注意：此规则仅在 signal_target_price 字段存在于 exit_levels 时触发（需用户在 open_positions.json 中维护 target_price 字段）。
+5. 止盈阶梯   20–30% 盈利 → REDUCE 50%，同时将止损上移至 avg_cost（保本止损）；
+              30–50% → HOLD（让赢家跑），保本止损持续有效；50%+ → REDUCE 25%
+              保本止损理由：20% 止盈减仓后剩余仓位的 hard_stop 仍在 avg_cost × 0.88，
+              不更新止损则赢单剩余部分可亏至 -12%，把已锁定的 +20% 收益全部抵消。
+              操作：若 PROFIT_TARGET 已触发（action=REDUCE），必须在 suggested_new_stop 字段输出 avg_cost
+              （保本止损价 = avg_cost，用户需将此值写入 open_positions.json 的 override_stop_price 字段）。
+6. 时间止损   45个交易日且涨幅不足目标的一半             → 审查：除非有新催化剂，否则出场
+   注意：此规则需 open_positions.json 中各持仓有 entry_date 字段方可自动计算；若缺失则时间止损无法触发。
 各持仓的出场价位已在第 4 节预先计算好，直接使用。
 
 历史低成本持仓警告（Legacy Basis）：
@@ -49,9 +81,13 @@ legacy_basis=true 的持仓，unrealized_pnl_pct > 100%。其 avg_cost 远低于
 
 市场方向规则（开新仓前先查第 4 节）：
 - 牛市    (SPY + QQQ 均在 200 日均线上方) → 允许开新多仓
-- 中性    (信号混合)                       → 不开新仓，除非置信度 > 0.85
+- 中性    (信号混合)                       → 不开新仓，除非置信度 > 0.90
 - 熊市    (均在 200 日均线下方)             → 无条件输出 "NO NEW TRADE"
-                                              现有持仓偏向减仓/出场
+                                              强制收紧所有持仓止损：
+                                              • 将每个持仓的有效止损提升至 current_price × 0.95（-5%，而非默认 -12%）
+                                              • 若现有任意持仓已亏损 > 5%（unrealized_pnl_pct < -0.05），立即 REDUCE 50%
+                                              • 已盈利持仓（unrealized_pnl_pct > 0）保持 HOLD，但止损已上移至 current_price × 0.95
+                                              理由：熊市中个股止损 -12% × 8 仓位 = 系统性回撤最高 24%；收紧至 -5% 可将熊市最大回撤控制在 10% 以内
 
 组合热度规则（开新仓前先查第 4 节）：
 - 若 can_add_new_positions = false           → 无条件输出 "NO NEW TRADE"
@@ -68,10 +104,20 @@ legacy_basis=true 的持仓，unrealized_pnl_pct > 100%。其 avg_cost 远低于
 trend signal + 负面新闻 → 拒绝交易。
 
 过滤规则（任意一项触发即 NO NEW TRADE）：
-- 财报风险窗口：days_to_earnings ≤ 3（除非明确存在 earnings_event_long 信号）
-- 异常波动：ATR / close > 0.05（市场波动过高，止损宽度不可控）
+- 财报风险窗口（trend_long / breakout_long）：days_to_earnings ≤ 5。
+  理由：信号在收盘后生成，次日开盘执行 → 实际剩余 dte = dte_signal − 1。
+  若今日 dte=5，执行时 dte=4，进入 ±8–15% 隔夜跳空风险区，1.5×ATR 止损（≈2–3%）无法覆盖。
+  量化层代码已从信号源头屏蔽 dte ≤ 5 的 trend_long / breakout_long 信号；此处为双重保护。
+- earnings_event_long 信号：days_to_earnings 须在 6–8 天内（量化层设定此范围；信号 dte=6-8，次日执行后实际剩余 dte=5-7；dte ≤ 5 的隔夜跳空风险 ±8-15% 远超 ATR 止损能力）
+- 异常波动（区分策略）：
+  · trend_long / breakout_long 信号：ATR / close > 0.07 → 禁止入场
+    （量化层代码已在 7% 门控过滤；信号若出现在本节，ATR ≤ 7% 已验证）
+  · earnings_event_long 信号：ATR / close > 0.05 → 禁止入场
+    （财报跳空 ±8-15% 与 ATR 无关，需更紧的止损宽度控制）
+  ATR 可由 risk_per_share / (1.5 × entry_price) 反推验证。
 - 热度超限：can_add_new_positions = false
 - 熊市方向：market_regime = BEAR
+- 执行偏差过大：若 entry_note 存在且次日开盘价 > entry_price × 1.005，该信号失效，不得执行
 
 CRITICAL 持仓强制出场规则（最高优先级）：
 若第 4 节 positions_requiring_attention 中存在 urgency=CRITICAL 的持仓：
@@ -86,15 +132,28 @@ REDUCE 减仓比例框架：
 | ATR_STOP                       | 50-100%（视亏损幅度）         |
 | TRAILING_STOP + 盈利 > 30%     | 减 25%，让赢家继续跑          |
 | TRAILING_STOP + 盈利 < 30%     | 减 50%                        |
+| SIGNAL_TARGET（3.5×ATR目标达到）| 减 33%，锁定计划R:R收益       |
 | PROFIT_TARGET                  | 减 50%，保留剩余              |
 | PROFIT_LADDER_50（盈利 ≥ 50%） | 减 25%，阶梯锁定收益          |
 | PROFIT_LADDER_30（盈利 ≥ 30%） | 建议 HOLD（让趋势延续）       |
 | APPROACHING_HARD_STOP          | 减 25-50%，预防性减仓         |
 
+持仓数据维护规范（影响自动止损规则是否生效）：
+- entry_date：建仓时须在 open_positions.json 各持仓记录 "entry_date": "YYYY-MM-DD"。
+  缺失 → 时间止损（45天）完全无效，停滞仓位将无限期占用资金。
+  缺失 → 追踪止损高水位退化为近20日最高价，可能漏判峰值超过20天前的回撤。
+- target_price：建仓时须记录信号的 target_price（来自第3a节信号的 target_price 字段）。
+  缺失 → SIGNAL_TARGET 规则无法触发，+7% 到 +20% 之间无退出指引，赢单利润易蒸发。
+
 财报事件持仓出场指引（针对 earnings_event_long 信号建仓的持仓）：
-- 财报后跳空 > +8%：当日减仓 50%（锁定收益，防止均值回归）
-- 财报后跳空 < -5%：EXIT（催化剂失效，交易逻辑不成立）
-- 财报后涨跌幅在 ±5% 以内：持有，按正常出场规则管理
+- 财报前主动减仓（预防性）：若第 4 节任意持仓的 days_to_earnings ≤ 2（含今日），且该仓位原因与财报相关 → 建议减仓 50%。
+  理由：ATR 止损（1.5×ATR ≈ 2-3%）无法保护隔夜跳空 ±8-15%；在最后 2 天提前兑现一半，让剩余仓位免费持有催化剂风险。
+- 财报后跳空识别：第 3b/4 节 position 数据中包含 daily_return_pct（今日涨跌幅，今日收盘 vs 昨日收盘）。
+  使用此字段识别财报后跳空，不要用 unrealized_pnl_pct（那是相对于建仓成本的累计盈亏）。
+  · daily_return_pct > +0.08（+8%）→ 当日减仓 50%（锁定收益，防止均值回归）
+  · daily_return_pct < -0.05（-5%）→ EXIT（催化剂失效，交易逻辑不成立）
+  · daily_return_pct 在 ±5% 以内 → 持有，按正常出场规则管理
+  注意：若 daily_return_pct 字段缺失（prev_close 数据不可用），则按正常出场规则处理。
 
 USER:
 今天是 Jan. 15th, 2026, 4:30 PM EST
@@ -248,10 +307,21 @@ USER:
 - 步骤 3 — 方向门：若 market_regime=BEAR → 输出 "NO NEW TRADE"，直接进入任务 B。
 - 步骤 4 — 信号筛选：从第 3a 节读取量化信号列表，按 trade_quality_score 降序排列。
   若无信号，或最高 trade_quality_score < 0.60 → "NO NEW TRADE"。
-- 步骤 5 — 摊平检查：若候选标的已在第 1 节持仓中且 unrealized_pnl_pct < 0 → "NO NEW TRADE"。
-  严禁对亏损持仓加仓摊平，无论信号强度如何。
+- 步骤 5 — 仓位检查：
+  (a) 若候选标的已在第 1 节持仓中且 unrealized_pnl_pct < 0 → "NO NEW TRADE"。
+      严禁对亏损持仓加仓摊平，无论信号强度如何。
+  (b) 若候选标的已在第 1 节持仓中且 unrealized_pnl_pct ≥ 0.05（+5%）：
+      → 允许加仓赢家（Pyramid on strength），条件须同时满足：
+        • 新信号 confidence_score ≥ 0.85（高质量信号，非边缘信号）
+        • 加仓股数 ≤ 原持仓股数的 50%（避免仓位过度集中）
+        • 加仓后该仓位合计市值仍不超过 portfolio_value_usd × 20%
+      趋势延续信号是策略中捕获最大利润的来源之一（如已盈利+10%又出现20日突破）。
+  (c) 若候选标的已在第 1 节持仓中且 0 ≤ unrealized_pnl_pct < 0.05 → "NO NEW TRADE"
+      （盈利不足5%的持仓不加仓，防止无效分散）。
 - 步骤 6 — 期望值验证：直接使用第 3a 节信号中的 risk_reward_ratio 字段。
   若 risk_reward_ratio < 2.0 → "NO NEW TRADE"。
+  补充参考：net_risk_reward_ratio 字段为扣除 0.35% 执行成本后的真实 R:R（标准信号约 1.70:1）。
+  若 net_risk_reward_ratio < 1.5 且无强新闻支持 → 审慎考虑是否入场。
 - 步骤 7 — 生成主要新交易（选 trade_quality_score 最高者）。若还有第二个 trade_quality_score ≥ 0.70 的信号且与第一笔行业不同，则填入 second_new_trade；否则输出 "NO SECOND TRADE"。
 
 任务 B — 现有持仓审查：
@@ -282,7 +352,7 @@ USER:
       "entry_price": 数字（直接使用第 3a 节信号的 entry_price 字段）,
       "stop_price": 数字（直接使用第 3a 节信号的 stop_price 字段）,
       "target_price": 数字（直接使用第 3a 节信号的 target_price 字段）,
-      "shares_to_buy": 整数（按1%风险公式计算后取 min(result, floor(portfolio_value×0.20/entry_price))），
+      "shares_to_buy": 整数（直接使用第 3a 节信号的 sizing.shares_to_buy 字段，已含执行成本与仓位上限，无需重新计算），
       "invalid_if": "使逻辑无效的具体条件"
     },
 
@@ -300,7 +370,7 @@ USER:
       "entry_price": 数字,
       "stop_price": 数字,
       "target_price": 数字,
-      "shares_to_buy": 整数,
+      "shares_to_buy": 整数（直接使用第 3a 节信号的 sizing.shares_to_buy 字段，已含执行成本与仓位上限），
       "invalid_if": "使逻辑无效的具体条件"
     },
 
@@ -311,8 +381,14 @@ USER:
       "action": "HOLD | REDUCE | EXIT",
       "reason": "具体的、基于规则的理由，引用 exit_levels 或新闻",
       "confidence": 0到1之间的数字,
-      "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | PROFIT_TARGET | PROFIT_LADDER_50 | PROFIT_LADDER_30 | TIME_STOP | APPROACHING_HARD_STOP",
-      "shares_to_sell": 整数或null
+      "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | SIGNAL_TARGET | PROFIT_TARGET | PROFIT_LADDER_50 | PROFIT_LADDER_30 | TIME_STOP | APPROACHING_HARD_STOP",
+      "shares_to_sell": 整数或null,
+      "suggested_new_stop": 数字或null（仅在以下情况填写非null值：
+        · exit_rule_triggered = PROFIT_TARGET → 填 avg_cost（保本止损，防止剩余仓位从+20%亏回-12%）
+        · exit_rule_triggered = SIGNAL_TARGET → 填 avg_cost（3.5×ATR目标达成后保本）
+        · exit_rule_triggered = TRAILING_STOP 且盈利>30% → 填减仓后建议的新追踪止损价
+        · 其他情况 → null
+        用户须将此值手动更新至 open_positions.json 的 override_stop_price 字段）
     }
   ]
 }
@@ -320,6 +396,7 @@ USER:
 重要说明：
 - 只输出 JSON，不要 markdown 代码块，前后不要有任何文字。
 - action=REDUCE 时 shares_to_sell 为必填（不得为 null）；action=HOLD 或 EXIT 时必须为 null。
+- suggested_new_stop：当 exit_rule_triggered ∈ {PROFIT_TARGET, SIGNAL_TARGET} 时必须填写 avg_cost；其他情况可为 null。用户须将此值写入 open_positions.json 的 override_stop_price 字段以激活保本止损。
 - 若无新交易，new_trade 设为字符串 "NO NEW TRADE"（不是对象）。
 - 操作以信号质量为准，高质量信号出现时积极出手，无信号时保持观望。
 - position_actions 必须包含所有持仓——即使操作为 HOLD。

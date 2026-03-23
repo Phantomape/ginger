@@ -12,12 +12,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-RISK_PER_TRADE_PCT = 0.01   # 1% portfolio risk per new trade
-MAX_PORTFOLIO_HEAT = 0.08   # 8% total heat cap (per inst_5.txt)
-MAX_POSITION_PCT   = 0.20   # Single position capped at 20% of portfolio
-HARD_STOP_PCT      = 0.12   # −12% from entry for heat calculation
-TRAILING_STOP_PCT  = 0.08   # mirrors position_manager.py
-ATR_STOP_MULT      = 1.5    # mirrors signal_engine.py
+RISK_PER_TRADE_PCT      = 0.01     # 1% portfolio risk per new trade
+MAX_PORTFOLIO_HEAT      = 0.08     # 8% total heat cap (per inst_5.txt)
+MAX_POSITION_PCT        = 0.20     # Single position capped at 20% of portfolio
+HARD_STOP_PCT           = 0.12     # −12% from entry for heat calculation
+TRAILING_STOP_PCT       = 0.08     # mirrors position_manager.py
+ATR_STOP_MULT           = 1.5      # mirrors signal_engine.py
+ROUND_TRIP_COST_PCT     = 0.0035   # matches risk_engine.py and performance_engine.py
+EXEC_LAG_PCT            = 0.005    # +0.5% assumed next-day open gap (matches risk_engine.py)
+
+# Earnings gap risk override for Strategy C (earnings_event_long).
+# Overnight earnings gaps (±8-15%) bypass ATR stops entirely because they are
+# discontinuous events — the market opens at the gap price, never trading through
+# the stop.  Sizing based on the ATR stop (typically 2-3% of entry) produces
+# positions 3-5× too large: a planned 1% risk becomes 3-5% actual risk.
+# Using 8% as the effective risk distance brings actual earnings-gap exposure
+# in line with the 1% portfolio risk target.
+# The ATR stop is still displayed to the user for order-placement reference;
+# only the SIZING uses this gap-risk floor.
+EARNINGS_GAP_RISK_PCT   = 0.08     # 8% conservative floor for earnings-gap adverse scenario
 
 
 def compute_position_size(portfolio_value, entry_price, stop_price,
@@ -44,7 +57,22 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
 
     risk_amount    = portfolio_value * risk_pct
     risk_per_share = entry_price - stop_price
-    shares         = max(1, math.floor(risk_amount / risk_per_share))
+    # Include both execution cost AND exec_lag (next-day open gap) so the position
+    # is sized for TRUE 1% risk.
+    #
+    # Previous formula:  net_risk = (entry - stop) + entry × 0.0035
+    # Actual risk:       net_risk = (open  - stop) + open  × 0.0035
+    #                             = (entry + gap - stop) + (entry + gap) × 0.0035
+    #
+    # For a $100 stock, 3% ATR, 0.5% gap:
+    #   Old:  net_risk = $4.50 + $0.35 = $4.85  (1.00% of portfolio)
+    #   True: net_risk = $4.50 + $0.50 + $0.35 = $5.35  (1.10% of portfolio)
+    # Across 8 simultaneous positions the silent 10% overrun → 8.8% heat vs 8% cap.
+    # Including EXEC_LAG_PCT brings actual risk in line with the 1% target.
+    cost_per_share     = entry_price * ROUND_TRIP_COST_PCT
+    gap_per_share      = entry_price * EXEC_LAG_PCT
+    net_risk_per_share = risk_per_share + cost_per_share + gap_per_share
+    shares             = max(1, math.floor(risk_amount / net_risk_per_share))
 
     # Cap at MAX_POSITION_PCT — tight stops (e.g. breakout_stop 1% below entry)
     # can produce shares that represent 50-100% of portfolio; enforce hard limit.
@@ -65,6 +93,7 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
         "entry_price":               round(entry_price, 2),
         "stop_price":                round(stop_price, 2),
         "risk_per_share":            round(risk_per_share, 2),
+        "net_risk_per_share":        round(net_risk_per_share, 4),
         "shares_to_buy":             shares,
         "position_value_usd":        round(position_value, 2),
         "position_pct_of_portfolio": round(position_value / portfolio_value, 4),
@@ -183,6 +212,16 @@ def size_signals(signals, portfolio_value):
     """
     Add position_size dict to each signal.
 
+    For earnings_event_long signals, position sizing uses the LARGER of:
+      (a) ATR-based stop distance (entry − stop_price), or
+      (b) EARNINGS_GAP_RISK_PCT × entry_price  (conservative gap risk floor)
+
+    Earnings overnight gaps (±8-15%) are discontinuous events that bypass ATR
+    stops entirely.  Sizing off a 2-3% ATR stop when the true loss scenario is
+    an 8-15% gap produces positions 3-5× larger than the 1% risk target.
+    The effective_stop_for_sizing field documents the adjusted level; the
+    signal's stop_price (ATR-based) is preserved for actual order placement.
+
     Args:
         signals         (list[dict]): Enriched signals with stop_price
         portfolio_value (float):      Total portfolio value
@@ -192,10 +231,25 @@ def size_signals(signals, portfolio_value):
     """
     sized = []
     for sig in signals:
-        entry = sig.get("entry_price")
-        stop  = sig.get("stop_price")
+        entry    = sig.get("entry_price")
+        stop     = sig.get("stop_price")
+        strategy = sig.get("strategy", "")
         if entry and stop and portfolio_value:
-            sizing = compute_position_size(portfolio_value, entry, stop)
+            if strategy == "earnings_event_long":
+                # Gap risk dominates: size based on max(ATR stop dist, 8% gap risk).
+                # For typical ATR ≤ 5%: gap_risk = 8% > ATR stop ≤ 7.5% → gap floor applies.
+                # For ATR = 5% (near the 5% gate): max(7.5%, 8%) = 8% — gap floor applies.
+                # This reduces earnings position sizes by ~60-75% vs ATR-only sizing.
+                atr_risk  = entry - stop
+                gap_risk  = entry * EARNINGS_GAP_RISK_PCT
+                effective_stop = round(entry - max(atr_risk, gap_risk), 2)
+                sizing = compute_position_size(portfolio_value, entry, effective_stop)
+                if sizing:
+                    sizing["earnings_gap_risk_applied"]  = True
+                    sizing["gap_risk_pct"]               = EARNINGS_GAP_RISK_PCT
+                    sizing["effective_stop_for_sizing"]  = effective_stop
+            else:
+                sizing = compute_position_size(portfolio_value, entry, stop)
             if sizing:
                 sig = {**sig, "sizing": sizing}
         sized.append(sig)
