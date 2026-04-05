@@ -295,11 +295,20 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
             })
             ladder_fired = True
         elif pnl_pct >= 0.30:
+            # Suggest moving stop to avg_cost (breakeven) even when holding.
+            # A stock that jumps directly from +5% to +35% skips the PROFIT_TARGET
+            # zone (20-30%), so no breakeven stop was suggested by PROFIT_TARGET.
+            # Without this, the hard stop remains at avg_cost × 0.88 (-12%), meaning
+            # a +35% winner could give back 47% before the hard stop fires.
+            # The trailing stop provides better real-time protection, but the user's
+            # brokerage GTC stop order is likely still at the original -12% level.
             triggered.append({
                 "rule":    "PROFIT_LADDER_30",
                 "urgency": "LOW",
                 "message": (f"Unrealised gain {pnl_pct*100:.1f}% — "
-                            f"let winner run; re-evaluate at 50%"),
+                            f"let winner run; if override_stop_price not yet at "
+                            f"avg_cost ({avg_cost:.2f}), update it now for "
+                            f"breakeven protection (trailing stop also active)"),
             })
             ladder_fired = True
 

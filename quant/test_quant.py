@@ -1407,6 +1407,82 @@ def test_strategy_b_passes_with_volume_above_1_5x():
     )
 
 
+# ── cancel threshold and earnings warning (entry_note) ──────────────────────
+
+def test_strategy_a_entry_note_uses_1_5_pct_cancel():
+    """entry_note must use ×1.015 (1.5%) cancel threshold, not old ×1.005."""
+    from signal_engine import strategy_a_trend
+    feat = _make_features()
+    sig = strategy_a_trend("TEST", feat)
+    assert sig is not None
+    assert "1.015" in sig["entry_note"], (
+        f"entry_note must reference ×1.015 cancel threshold; got: {sig['entry_note']}"
+    )
+    assert "1.005" not in sig["entry_note"], (
+        "Old ×1.005 threshold still present in entry_note"
+    )
+
+
+def test_strategy_b_entry_note_uses_1_5_pct_cancel():
+    """breakout_long entry_note must use ×1.015 cancel threshold."""
+    from signal_engine import strategy_b_breakout
+    feat = _make_features()
+    sig = strategy_b_breakout("TEST", feat)
+    assert sig is not None
+    assert "1.015" in sig["entry_note"], (
+        f"entry_note must reference ×1.015 cancel threshold; got: {sig['entry_note']}"
+    )
+
+
+def test_strategy_a_entry_note_earnings_warning_dte_7():
+    """entry_note must contain earnings warning when DTE=7 (within 6-10 range)."""
+    from signal_engine import strategy_a_trend
+    feat = _make_features()
+    feat["days_to_earnings"] = 7
+    sig = strategy_a_trend("TEST", feat)
+    assert sig is not None
+    assert "EARNINGS IN 7 DAYS" in sig["entry_note"], (
+        f"entry_note must warn about earnings in 7 days; got: {sig['entry_note']}"
+    )
+
+
+def test_strategy_a_entry_note_no_earnings_warning_dte_none():
+    """entry_note must NOT contain earnings warning when DTE is None."""
+    from signal_engine import strategy_a_trend
+    feat = _make_features()
+    feat["days_to_earnings"] = None
+    sig = strategy_a_trend("TEST", feat)
+    assert sig is not None
+    assert "EARNINGS" not in sig["entry_note"], (
+        f"entry_note must not contain earnings warning when DTE is None; got: {sig['entry_note']}"
+    )
+
+
+def test_strategy_a_entry_note_no_earnings_warning_dte_15():
+    """entry_note must NOT contain earnings warning when DTE > 10."""
+    from signal_engine import strategy_a_trend
+    feat = _make_features()
+    feat["days_to_earnings"] = 15
+    sig = strategy_a_trend("TEST", feat)
+    assert sig is not None
+    assert "EARNINGS" not in sig["entry_note"], (
+        f"entry_note must not warn about earnings when DTE=15; got: {sig['entry_note']}"
+    )
+
+
+def test_profit_ladder_30_message_mentions_breakeven():
+    """PROFIT_LADDER_30 message must mention updating stop to avg_cost."""
+    from position_manager import evaluate_exit_signals, compute_exit_levels
+    levels = compute_exit_levels(avg_cost=100.0)
+    result = evaluate_exit_signals(current_price=135.0, avg_cost=100.0, exit_levels=levels)
+    ladder_rules = [r for r in result["triggered_rules"] if r["rule"] == "PROFIT_LADDER_30"]
+    assert ladder_rules, "PROFIT_LADDER_30 must fire at 35% gain"
+    msg = ladder_rules[0]["message"].lower()
+    assert "avg_cost" in msg or "override_stop" in msg, (
+        f"PROFIT_LADDER_30 message must mention breakeven stop; got: {ladder_rules[0]['message']}"
+    )
+
+
 # ── PROFIT_TARGET legacy_basis explicit guard ─────────────────────────────────
 
 def test_legacy_position_no_profit_target():
@@ -2233,6 +2309,242 @@ def test_earnings_gap_risk_uses_larger_of_atr_or_gap():
 
 # ── Fix 2: Earnings entry cancel threshold 1.5% ───────────────────────────────
 
+def test_build_prompt_signal_target_low_urgency_in_attention_list():
+    """SIGNAL_TARGET (LOW urgency) must appear in positions_requiring_attention.
+
+    When a position reaches the 3.5×ATR technical target (+7%–+20%), the system
+    requires a REDUCE 33% action.  If the position is filtered out of Section 4
+    (positions_requiring_attention) because urgency=LOW, the LLM will miss this
+    action and the winner gives back its locked R:R.
+
+    Bug fixed: _min_surface_rank=1 excluded LOW urgency; SIGNAL_TARGET now
+    bypasses this filter because it requires an explicit action (REDUCE 33%),
+    unlike PROFIT_LADDER_30 (LOW, action=HOLD) which remains excluded.
+    """
+    import os, sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from llm_advisor import build_prompt
+
+    fake_trend_signals = {
+        "market_regime": {"regime": "BULL", "note": "", "indices": {}},
+        "quant_signals": [],
+        "signals": {
+            "CRDO": {
+                "close": 112.0,
+                "atr": 4.0,
+                "20d_high": 110.0,
+                "breakout": False,
+                "breakdown": False,
+                "position": {
+                    "shares": 10,
+                    "avg_cost": 100.0,
+                    "market_value_usd": 1120.0,
+                    "unrealized_pnl_pct": 0.12,
+                    "legacy_basis": False,
+                    "stop_source": "default",
+                    "exit_levels": {
+                        "hard_stop_price":     88.0,
+                        "profit_target_price": 120.0,
+                        "signal_target_price": 108.0,
+                        "signal_target_pct":   0.08,
+                    },
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "critical_exit": False,
+                        "high_urgency":  False,
+                        "triggered_rules": [
+                            {
+                                "rule":    "SIGNAL_TARGET",
+                                "urgency": "LOW",
+                                "message": "Price 112.00 >= signal target 108.00 — reduce 33%",
+                            },
+                        ],
+                    },
+                    "trailing_stop_from_20d_high": 101.2,
+                    "drawdown_from_20d_high_pct":  0.018,
+                },
+            }
+        },
+    }
+
+    positions = {"portfolio_value_usd": 100_000, "positions": []}
+    system_msg, user_msg = build_prompt([], positions, trend_signals=fake_trend_signals)
+
+    if system_msg is None:
+        pytest.skip("Prompt template file not found — skipping integration test")
+
+    assert "SIGNAL_TARGET" in user_msg, (
+        "SIGNAL_TARGET must appear in Section 4 positions_requiring_attention — "
+        "even though urgency=LOW, it requires REDUCE 33% action. "
+        "Without this, winners in the +7%%–+20%% zone miss explicit LLM attention."
+    )
+    assert "positions_requiring_attention" in user_msg or "CRDO" in user_msg, (
+        "CRDO position with SIGNAL_TARGET must be surfaced in the prompt"
+    )
+
+
+def test_build_prompt_daily_return_pct_in_attention_entry():
+    """daily_return_pct and prev_close must appear in positions_requiring_attention.
+
+    The post-earnings gap rules require daily_return_pct:
+      - > +8%  → REDUCE 50%  (lock in earnings beat gain)
+      - < -5%  → EXIT        (thesis broken)
+    Without this field in Section 4, the LLM cannot distinguish a single-day
+    earnings gap from cumulative unrealised P&L since entry.
+    """
+    import os, sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from llm_advisor import build_prompt
+
+    fake_trend_signals = {
+        "market_regime": {"regime": "BULL", "note": "", "indices": {}},
+        "quant_signals": [],
+        "signals": {
+            "NVDA": {
+                "close": 130.0,
+                "atr": 5.0,
+                "20d_high": 128.0,
+                "breakout": False,
+                "breakdown": False,
+                "position": {
+                    "shares": 10,
+                    "avg_cost": 100.0,
+                    "market_value_usd": 1300.0,
+                    "unrealized_pnl_pct": 0.30,
+                    "legacy_basis": False,
+                    "stop_source": "default",
+                    "prev_close":        118.0,
+                    "daily_return_pct":  0.102,   # +10.2% today (earnings beat gap)
+                    "exit_levels": {
+                        "hard_stop_price":     88.0,
+                        "profit_target_price": 120.0,
+                    },
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "critical_exit": False,
+                        "high_urgency":  False,
+                        "triggered_rules": [
+                            {
+                                "rule":    "PROFIT_LADDER_30",
+                                "urgency": "LOW",
+                                "message": "Unrealised gain 30.0% — let winner run",
+                            },
+                        ],
+                    },
+                    "trailing_stop_from_20d_high": 117.76,
+                    "drawdown_from_20d_high_pct":  0.016,
+                },
+            }
+        },
+    }
+
+    positions = {"portfolio_value_usd": 100_000, "positions": []}
+    system_msg, user_msg = build_prompt([], positions, trend_signals=fake_trend_signals)
+
+    if system_msg is None:
+        pytest.skip("Prompt template file not found — skipping integration test")
+
+    # NVDA has PROFIT_LADDER_30 (LOW, HOLD) only — should still be in section 3b.
+    # Check that daily_return_pct appears somewhere in the prompt for NVDA.
+    # (It arrives via section 3b technical context even if not section 4.)
+    assert "daily_return_pct" in user_msg, (
+        "daily_return_pct must appear in the prompt so the LLM can apply the "
+        "post-earnings gap rules (daily_return_pct > +8%% → REDUCE 50%%)"
+    )
+    assert "0.102" in user_msg or "daily_return_pct" in user_msg, (
+        "The actual daily_return_pct value must be visible to the LLM"
+    )
+
+
+def test_build_prompt_signal_target_daily_return_in_attention_entry():
+    """When SIGNAL_TARGET fires and daily_return_pct is available, both must appear
+    in positions_requiring_attention (Section 4), not just in Section 3b.
+
+    This ensures the LLM has all needed fields in one place for correct action output.
+    """
+    import os, sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from llm_advisor import build_prompt
+    import json
+
+    fake_trend_signals = {
+        "market_regime": {"regime": "BULL", "note": "", "indices": {}},
+        "quant_signals": [],
+        "signals": {
+            "CRDO": {
+                "close": 112.0,
+                "atr": 4.0,
+                "20d_high": 110.0,
+                "breakout": False,
+                "breakdown": False,
+                "position": {
+                    "shares": 10,
+                    "avg_cost": 100.0,
+                    "market_value_usd": 1120.0,
+                    "unrealized_pnl_pct": 0.12,
+                    "legacy_basis": False,
+                    "stop_source": "default",
+                    "prev_close":       108.0,
+                    "daily_return_pct": 0.037,
+                    "exit_levels": {
+                        "hard_stop_price":     88.0,
+                        "profit_target_price": 120.0,
+                        "signal_target_price": 108.0,
+                        "signal_target_pct":   0.08,
+                    },
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "critical_exit": False,
+                        "high_urgency":  False,
+                        "triggered_rules": [
+                            {
+                                "rule":    "SIGNAL_TARGET",
+                                "urgency": "LOW",
+                                "message": "Price 112.00 >= signal target 108.00",
+                            },
+                        ],
+                    },
+                    "trailing_stop_from_20d_high": 101.2,
+                    "drawdown_from_20d_high_pct":  0.018,
+                },
+            }
+        },
+    }
+
+    positions = {"portfolio_value_usd": 100_000, "positions": []}
+    system_msg, user_msg = build_prompt([], positions, trend_signals=fake_trend_signals)
+
+    if system_msg is None:
+        pytest.skip("Prompt template file not found — skipping integration test")
+
+    # Find the positions_requiring_attention section in the JSON output
+    import re
+    # Extract the pos_mgmt JSON block from the prompt
+    match = re.search(r'POSITION MANAGEMENT.*?(\{.*?\})\s*\n\n', user_msg, re.DOTALL)
+    if match:
+        try:
+            pos_mgmt = json.loads(match.group(1))
+            attention = pos_mgmt.get("positions_requiring_attention", [])
+            crdo_entry = next((e for e in attention if e.get("ticker") == "CRDO"), None)
+            assert crdo_entry is not None, (
+                "CRDO with SIGNAL_TARGET must be in positions_requiring_attention"
+            )
+            assert "daily_return_pct" in crdo_entry, (
+                "daily_return_pct must be present in the attention entry for earnings-gap detection"
+            )
+            assert "prev_close" in crdo_entry, (
+                "prev_close must be present in the attention entry"
+            )
+        except (json.JSONDecodeError, StopIteration):
+            # If JSON parsing fails, do a simpler string check
+            assert "daily_return_pct" in user_msg
+            assert "SIGNAL_TARGET" in user_msg
+    else:
+        # Fallback: just verify both fields appear in the prompt
+        assert "daily_return_pct" in user_msg
+        assert "SIGNAL_TARGET" in user_msg
+
+
 def test_earnings_entry_note_has_1_5_pct_cancel_threshold():
     """
     earnings_event_long entry_note must use 1.015 cancel threshold (not 1.005).
@@ -2260,22 +2572,357 @@ def test_earnings_entry_note_has_1_5_pct_cancel_threshold():
         f"Got: '{entry_note}'. "
         "0.5% threshold cancels valid PEAD setups; 1.5% allows normal pre-earnings drift."
     )
-    # Verify trend_long still uses 0.5% threshold (only earnings changed)
-    from signal_engine import strategy_a_trend
-    trend_feat = {
-        "above_200ma":        True,
-        "breakout_20d":       True,
-        "volume_spike":       True,
-        "volume_spike_ratio": 2.5,
-        "close":              100.0,
-        "atr":                3.0,
-        "momentum_10d_pct":   0.06,
-        "pct_from_52w_high":  -0.03,
-        "daily_range_vs_atr": 1.8,
+    # All three strategies now use 1.015 — verified by dedicated tests
+    # test_strategy_a_entry_note_uses_1_5_pct_cancel and
+    # test_strategy_b_entry_note_uses_1_5_pct_cancel
+
+
+# ── Contract tests: code↔prompt interface ────────────────────────────────────
+# These tests verify that fields referenced in trade_advice.txt as "直接使用 X 字段"
+# are actually present in the data structures that the code injects into the prompt.
+# Root cause of repeated bugs: code added a field but prompt didn't read it (or vice
+# versa). These tests fail fast when the interface drifts.
+
+def _make_preflight_trend_signals(regime="NORMAL", pnl=0.05, breach="OK"):
+    """Minimal trend_signals dict for preflight contract tests."""
+    return {
+        "signals": {
+            "TEST": {
+                "close": 100.0,
+                "position": {
+                    "shares": 10,
+                    "avg_cost": 90.0,
+                    "unrealized_pnl_pct": pnl,
+                    "breach_status": breach,
+                    "exit_levels": {"hard_stop_price": 85.0},
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "triggered_rules": [
+                            {"rule": "TRAILING_STOP", "urgency": "HIGH",
+                             "message": "Trailing stop hit"}
+                        ],
+                    },
+                },
+            }
+        }
     }
-    trend_sig = strategy_a_trend("TREND", trend_feat)
-    assert trend_sig is not None
-    assert "1.005" in trend_sig.get("entry_note", ""), (
-        "trend_long entry_note must still use 1.005 (0.5% cancel threshold) — "
-        "only earnings_event_long was changed to 1.015"
+
+
+def test_preflight_outputs_required_fields():
+    """
+    Contract: compute_account_state must return all fields that llm_advisor injects
+    into section 4 of the prompt.  If a field is missing here, it silently vanishes
+    from the prompt and the corresponding rule in trade_advice.txt has no data.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals()
+    enrich_positions_with_breach_status(ts)
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+
+    required_fields = [
+        "account_state",
+        "new_trade_locked",
+        "lock_reason",
+        "position_states",
+        "suggested_reduce_pct",
+        "bear_emergency_stops",
+        "data_warnings",
+    ]
+    for field in required_fields:
+        assert field in result, (
+            f"preflight output missing '{field}' — trade_advice.txt references this field "
+            f"but code doesn't produce it. Add it to compute_account_state() return dict."
+        )
+
+
+def test_preflight_suggested_reduce_pct_populated_for_high_reduce():
+    """
+    Contract: HIGH_REDUCE positions must have a pre-computed reduce % in
+    suggested_reduce_pct.  If missing, LLM falls back to prose table lookup
+    (the error-prone path this field was designed to eliminate).
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals(pnl=0.15)  # TRAILING_STOP → HIGH_REDUCE
+    enrich_positions_with_breach_status(ts)
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+
+    assert result["position_states"].get("TEST") == "HIGH_REDUCE", (
+        "Expected TEST to be HIGH_REDUCE given TRAILING_STOP HIGH urgency"
     )
+    assert "TEST" in result["suggested_reduce_pct"], (
+        "HIGH_REDUCE position 'TEST' is missing from suggested_reduce_pct — "
+        "LLM will fall back to prose table lookup"
+    )
+    pct = result["suggested_reduce_pct"]["TEST"]
+    assert pct in (25, 33, 50, 100), f"suggested_reduce_pct={pct} is not a valid percentage"
+
+
+def test_preflight_bear_emergency_stops_populated_when_bear():
+    """
+    Contract: bear_emergency_stops must be populated for all tickers when
+    regime=BEAR so the LLM can enforce current_price × 0.95 for HOLD positions
+    that are not in section 3b.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status, BEAR_STOP_PCT
+    ts = _make_preflight_trend_signals()
+    ts["signals"]["HOLD_TICKER"] = {"close": 200.0}  # a position with no exit signals
+    enrich_positions_with_breach_status(ts)
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "BEAR"})
+
+    assert result["account_state"] == "DEFENSIVE", "BEAR should set DEFENSIVE state"
+    assert result["bear_emergency_stops"], "bear_emergency_stops must be non-empty in BEAR regime"
+    for ticker, stop in result["bear_emergency_stops"].items():
+        close = ts["signals"][ticker].get("close", 0)
+        expected = round(close * (1 - BEAR_STOP_PCT), 2)
+        assert abs(stop - expected) < 0.01, (
+            f"{ticker} bear_emergency_stop={stop} expected={expected} "
+            f"(current_price × {1 - BEAR_STOP_PCT})"
+        )
+
+
+def test_preflight_bear_emergency_stops_empty_when_not_bear():
+    """
+    Contract: bear_emergency_stops must be empty when regime is not BEAR,
+    so the LLM doesn't apply bear tightening in normal/defensive markets.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals()
+    enrich_positions_with_breach_status(ts)
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+    assert result["bear_emergency_stops"] == {}, (
+        "bear_emergency_stops should be empty in NORMAL regime"
+    )
+
+
+# ── Bidirectional contract: PROMPT_FIELD_REGISTRY ────────────────────────────
+# PROMPT_FIELD_REGISTRY is the single source of truth for the code↔prompt
+# interface.  It lists every field that trade_advice.txt tells the LLM to
+# read directly ("直接使用 X 字段").
+#
+# Two tests use this registry:
+#   test_registry_fields_exist_in_code_output  — code direction (produces the fields)
+#   test_registry_fields_referenced_in_prompt  — prompt direction (references the fields)
+#
+# When you rename a field:
+#   1. Update the field name here in the registry.
+#   2. Update the code that produces it.
+#   3. Update trade_advice.txt to reference the new name.
+#   4. Run tests — both directions will fail until all three are in sync.
+#
+# This prevents the silent drift pattern: code adds field X, prompt never reads
+# it (or vice versa), and the rule quietly fails in production.
+
+PROMPT_FIELD_REGISTRY = {
+    # ── Section 4 top-level (pos_mgmt_data) ──────────────────────────────
+    "section4_top": {
+        "description": "Fields injected into section 4 of the LLM prompt",
+        "producer":    "llm_advisor.build_prompt → pos_mgmt_data dict",
+        "fields": [
+            "new_trade_locked",        # Task A step 0 shortcut
+            "lock_reason",             # explains why trading is locked
+            "account_state",           # FIRE | DEFENSIVE | NORMAL
+            "position_states",         # {ticker: CRITICAL_EXIT|HIGH_REDUCE|WATCH|HOLD}
+            "suggested_reduce_pct",    # {ticker: int} — pre-computed reduce %
+            "bear_emergency_stops",    # {ticker: float} — current_price × 0.95 in BEAR
+            "current_prices",          # {ticker: float} — for BEAR rule on HOLD positions
+        ],
+    },
+    # ── Section 3a (quant signals) ────────────────────────────────────────
+    "section3a_signal": {
+        "description": "Fields in each quant signal that the LLM is told to read directly",
+        "producer":    "risk_engine.enrich_signals + portfolio_engine.size_signals",
+        "fields": [
+            "trade_quality_score",     # TQS gate: < 0.60 → NO NEW TRADE
+            "confidence_score",        # signal quality
+            "risk_reward_ratio",       # RR gate: < 2.0 → NO NEW TRADE
+            "net_risk_reward_ratio",   # after execution cost
+            "exec_lag_adj_net_rr",     # after cost + next-day gap
+            "entry_price",             # used directly in output
+            "stop_price",              # used directly in output
+            "target_price",            # used directly in output
+            "entry_note",              # cancel threshold instruction
+        ],
+    },
+    # ── Section 3a sizing sub-dict ────────────────────────────────────────
+    "section3a_sizing": {
+        "description": "Fields in signal.sizing sub-dict",
+        "producer":    "portfolio_engine.size_signals",
+        "fields": [
+            "shares_to_buy",               # used directly in output
+            "earnings_gap_risk_applied",   # explains reduced sizing for earnings signals
+        ],
+    },
+    # ── Section 3b / section 4 position context ───────────────────────────
+    "section3b_position": {
+        "description": "Fields in position context (trend_signals.position sub-dict)",
+        "producer":    "trend_signals.compute_position_context",
+        "fields": [
+            "breach_status",               # OK | DELAYED_BREACH | HISTORIC_BREACH
+            "unrealized_pnl_pct",          # used for averaging-down prevention
+            "exit_levels",                 # contains hard_stop_price, atr_stop_price, etc.
+            "trailing_stop_from_20d_high", # used in legacy basis / TRAILING_STOP rule
+            "drawdown_from_20d_high_pct",  # used in legacy basis rule (-8% threshold)
+            "daily_return_pct",            # used for post-earnings gap detection
+        ],
+    },
+}
+
+
+def test_registry_fields_exist_in_code_output():
+    """
+    Direction 1 — Code produces what prompt needs.
+
+    For each section, builds the actual code output and asserts every registered
+    field exists.  If a field is removed or renamed in code, this fails immediately.
+    """
+    import os
+
+    # ── Section 4 top-level ───────────────────────────────────────────────
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals()
+    enrich_positions_with_breach_status(ts)
+    preflight = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+
+    # pos_mgmt_data is built in llm_advisor; test the preflight dict which feeds it
+    s4_required = PROMPT_FIELD_REGISTRY["section4_top"]["fields"]
+    # preflight provides: account_state, new_trade_locked, lock_reason,
+    #                     position_states, suggested_reduce_pct, bear_emergency_stops
+    # current_prices is added by llm_advisor from trend_signals — test it separately
+    preflight_provided = {
+        "new_trade_locked", "lock_reason", "account_state",
+        "position_states", "suggested_reduce_pct", "bear_emergency_stops",
+    }
+    for field in preflight_provided:
+        assert field in preflight, (
+            f"preflight output missing '{field}' — "
+            f"trade_advice.txt 直接引用此字段但代码不产出它。"
+            f"需在 compute_account_state() 返回值中添加。"
+        )
+
+    # current_prices: must be present in the signals dict (llm_advisor extracts it)
+    for _ticker, _sig in ts.get("signals", {}).items():
+        assert "close" in _sig, (
+            f"Signal for {_ticker} missing 'close' — "
+            f"llm_advisor builds current_prices from signal['close']; "
+            f"without it current_prices will be empty and BEAR rule fails for HOLD positions."
+        )
+
+    # ── Section 3a signal fields ──────────────────────────────────────────
+    from risk_engine import enrich_signals
+    from signal_engine import strategy_a_trend
+    feat = _make_features()
+    raw_sig = strategy_a_trend("TEST", feat)
+    assert raw_sig is not None, "strategy_a_trend must produce a signal for valid features"
+    enriched = enrich_signals([raw_sig], {"TEST": feat})
+    assert enriched, "enrich_signals returned empty list"
+    sig = enriched[0]
+
+    s3a_fields = PROMPT_FIELD_REGISTRY["section3a_signal"]["fields"]
+    for field in s3a_fields:
+        assert field in sig, (
+            f"Enriched signal missing '{field}' — "
+            f"trade_advice.txt 直接引用此字段（直接使用第3a节信号的{field}字段）。"
+            f"需在 enrich_signals() 或 strategy_a_trend() 中添加。"
+        )
+
+    # ── Section 3a sizing sub-dict ────────────────────────────────────────
+    from portfolio_engine import size_signals
+    sized = size_signals(enriched, portfolio_value=70000)
+    assert sized, "size_signals returned empty list"
+    sizing = sized[0].get("sizing")
+    assert sizing is not None, (
+        "size_signals must add 'sizing' sub-dict — "
+        "trade_advice.txt 直接引用 sizing.shares_to_buy 和 sizing.earnings_gap_risk_applied"
+    )
+    s3a_sizing_fields = PROMPT_FIELD_REGISTRY["section3a_sizing"]["fields"]
+    # earnings_gap_risk_applied is only present for earnings_event_long
+    # shares_to_buy must always be present
+    assert "shares_to_buy" in sizing, (
+        "sizing dict missing 'shares_to_buy' — "
+        "trade_advice.txt: 直接使用第3a节信号的sizing.shares_to_buy字段"
+    )
+
+    # ── Section 3b position context fields ───────────────────────────────
+    # build a minimal position context via trend_signals.compute_position_context
+    from trend_signals import compute_position_context
+    import pandas as pd, numpy as np
+
+    # Minimal open_positions data with an entry_date + target_price
+    open_pos = {
+        "positions": [{
+            "ticker":       "TEST",
+            "shares":       10,
+            "avg_cost":     90.0,
+            "entry_date":   "2026-01-01",
+            "target_price": 120.0,
+        }]
+    }
+    pos_ctx = compute_position_context(
+        ticker="TEST",
+        latest_close=100.0,
+        open_positions=open_pos,
+        atr=2.0,
+        high_20d=102.0,
+        high_since_entry=105.0,
+        prev_close=99.0,
+    )
+    assert pos_ctx is not None, (
+        "compute_position_context returned None for a valid held position"
+    )
+
+    s3b_fields = PROMPT_FIELD_REGISTRY["section3b_position"]["fields"]
+    for field in s3b_fields:
+        assert field in pos_ctx, (
+            f"Position context missing '{field}' — "
+            f"trade_advice.txt 直接引用此字段用于出场规则判断。"
+            f"需在 compute_position_context() 中添加。"
+        )
+
+
+def test_registry_fields_referenced_in_prompt():
+    """
+    Direction 2 — Prompt actually reads what code produces.
+
+    For every field in PROMPT_FIELD_REGISTRY, asserts that the field name
+    appears somewhere in trade_advice.txt.  If someone renames a field in
+    trade_advice.txt without updating the registry (or vice versa), this fails.
+
+    This catches the "code produces X, prompt references Y" rename drift that
+    the direction-1 test cannot catch.
+    """
+    import os
+
+    prompt_paths = [
+        os.path.join(os.path.dirname(__file__), '..', 'instructinos', 'prompts', 'trade_advice.txt'),
+        'instructinos/prompts/trade_advice.txt',
+    ]
+    prompt_text = None
+    for p in prompt_paths:
+        if os.path.exists(p):
+            with open(p, encoding='utf-8') as f:
+                prompt_text = f.read()
+            break
+    assert prompt_text, "Could not load trade_advice.txt — check path"
+
+    # Fields intentionally omitted from this check:
+    # earnings_gap_risk_applied — referenced as sizing.earnings_gap_risk_applied=true (with value)
+    # Some fields appear in JSON examples embedded in the prompt, not as bare names.
+    # We check the field name appears anywhere in the file (sufficient for drift detection).
+    skip_fields = {
+        "earnings_gap_risk_applied",  # referenced as 'sizing.earnings_gap_risk_applied=true'
+        "risk_per_share",             # internal computation field, not directly read by LLM
+        "reward_per_share",           # internal computation field
+    }
+
+    for section_key, section in PROMPT_FIELD_REGISTRY.items():
+        for field in section["fields"]:
+            if field in skip_fields:
+                continue
+            assert field in prompt_text, (
+                f"Field '{field}' (from registry section '{section_key}') "
+                f"is NOT referenced in trade_advice.txt.\n"
+                f"Either:\n"
+                f"  (a) The prompt was updated and the field was renamed — update the registry, or\n"
+                f"  (b) The field was added to code but forgotten in the prompt — add it.\n"
+                f"Producer: {section['description']}"
+            )

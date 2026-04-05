@@ -196,13 +196,34 @@ def strategy_a_trend(ticker, features, market_context=None):
         (near_high,   0.40),  # bonus: breakout near 52-week highs
     ])
 
+    # Cancel threshold raised from ×1.005 (0.5%) → ×1.015 (1.5%).
+    # Rationale: strong institutional breakouts routinely gap 1-3% at the open
+    # (pre-market institutional accumulation after a clean technical close above
+    # the 20d high).  The 0.5% threshold filtered out exactly these high-conviction
+    # entries while accepting low-conviction setups that barely move overnight —
+    # the opposite of what a breakout strategy wants.  Earnings signals already
+    # use 1.5%; trend/breakout should be consistent.
+    # exec_lag_adj_net_rr is computed at +0.5% gap (conservative average); the
+    # 1.5% cancel cap is the MAXIMUM we'll tolerate, not the assumed average.
+    entry_note = "Execute next-day open; cancel if open > entry_price × 1.015"
+    if dte is not None and 6 <= dte <= 10:
+        # Position may be held 5-30 days, crossing the upcoming earnings event.
+        # Trend/breakout positions are sized for ATR risk (2-5%), NOT for the
+        # ±8-15% earnings gap — that protection is only for earnings_event_long.
+        # The trader MUST exit before earnings or face uncapped gap risk.
+        entry_note += (
+            f"; ⚠ EARNINGS IN {dte} DAYS — close this position at least "
+            f"2 trading days before earnings to avoid ±8-15% gap risk "
+            f"(overwhelms the 1.5×ATR stop)"
+        )
+
     return {
         "ticker":           ticker,
         "strategy":         "trend_long",
         "entry_price":      round(entry, 2),
         "stop_price":       stop,
         "confidence_score": confidence,
-        "entry_note":       "Execute next-day open; cancel if open > entry_price × 1.005",
+        "entry_note":       entry_note,
         "conditions_met": {
             "above_200ma":         above_200,
             "breakout_20d":        breakout,
@@ -296,13 +317,22 @@ def strategy_b_breakout(ticker, features, market_context=None):
         (above_200_bonus,  0.25),  # bonus: breakout in established uptrend
     ])
 
+    # Same cancel threshold as strategy_a: ×1.015 (1.5%) — see strategy_a comment.
+    entry_note = "Execute next-day open; cancel if open > entry_price × 1.015"
+    if dte is not None and 6 <= dte <= 10:
+        entry_note += (
+            f"; ⚠ EARNINGS IN {dte} DAYS — close this position at least "
+            f"2 trading days before earnings to avoid ±8-15% gap risk "
+            f"(overwhelms the 1.5×ATR stop)"
+        )
+
     return {
         "ticker":           ticker,
         "strategy":         "breakout_long",
         "entry_price":      round(entry, 2),
         "stop_price":       stop,
         "confidence_score": confidence,
-        "entry_note":       "Execute next-day open; cancel if open > entry_price × 1.005",
+        "entry_note":       entry_note,
         "conditions_met": {
             "daily_range_vs_atr":  range_vs_atr,
             "breakout_20d":        breakout,

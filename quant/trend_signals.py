@@ -256,6 +256,16 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 legacy_basis=legacy_basis,
             )
 
+            # Classify breach status: is the hard stop already ABOVE the current price?
+            # If so, the position is in a delayed/historic breach state — it should have
+            # been exited when the stop was first breached, not treated as a new trigger.
+            hard_stop_price = exit_levels.get("hard_stop_price", 0)
+            if hard_stop_price <= 0 or latest_close > hard_stop_price:
+                breach_status = "OK"
+            else:
+                gap_pct = (hard_stop_price - latest_close) / latest_close
+                breach_status = "HISTORIC_BREACH" if gap_pct >= 0.20 else "DELAYED_BREACH"
+
             result = {
                 "shares": shares,
                 "avg_cost": round(avg_cost, 2),
@@ -263,6 +273,7 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 "unrealized_pnl_pct": round(unrealized_pnl_pct, 4),
                 "legacy_basis": legacy_basis,
                 "stop_source": stop_source,
+                "breach_status": breach_status,
                 "exit_levels": exit_levels,
                 "exit_signals": exit_signals,
             }

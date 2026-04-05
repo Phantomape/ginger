@@ -132,10 +132,27 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     # Replace news JSON — template uses Chinese header "2) 近期精选股票新闻"
     news_json = json.dumps(trade_news, indent=2)
+    # Compute news quality summary so LLM doesn't need to scan all items to know if
+    # actionable news exists.  T3-only days are extremely common; the summary prevents
+    # T3 content from subtly influencing decisions even when rules say "ignore T3".
+    _tier_counts = {"T1": 0, "T2": 0, "T3": 0}
+    for _item in trade_news:
+        _tier_counts[_item.get("tier", "T3")] += 1
+    _has_actionable = _tier_counts["T1"] > 0 or _tier_counts["T2"] > 0
+    news_quality_summary = json.dumps({
+        "T1": _tier_counts["T1"],
+        "T2": _tier_counts["T2"],
+        "T3": _tier_counts["T3"],
+        "has_actionable_news": _has_actionable,
+        "note": "T3新闻为噪音，不得影响任何交易决策" if not _has_actionable else "",
+    })
     news_pattern = r'2\) 近期精选股票新闻.*?\n\[[\s\S]*?\n\]'
     user_message = re.sub(
         news_pattern,
-        lambda _: f'2) 近期精选股票新闻（过去 72 小时，仅自选股）：\n{news_json}',
+        lambda _: (
+            f'2) 近期精选股票新闻（过去 72 小时，仅自选股）：\n{news_json}\n\n'
+            f'news_quality_summary: {news_quality_summary}'
+        ),
         user_message,
         count=1
     )
@@ -293,7 +310,41 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "(3.5×ATR partial-exit rule cannot fire, +7% to +20% zone has no exit guidance)"
             )
 
+    # ── Preflight: compute machine states BEFORE data reaches LLM ──────────
+    # This converts raw flags (BEAR? heat%? CRITICAL exists?) into a single
+    # account_state verdict + per-position decision_state.  The LLM reads the
+    # verdict, not the raw flags — reducing the chance of conflicting rule
+    # interpretations and "优先HOLD"/"必须EXIT" contradictions.
+    from preflight_validator import enrich_positions_with_breach_status, compute_account_state
+    if trend_signals:
+        enrich_positions_with_breach_status(trend_signals)
+    preflight = compute_account_state(
+        trend_signals = trend_signals,
+        heat_data     = heat,
+        regime_data   = regime,
+    )
+    # Merge preflight data_warnings with the existing field-missing warnings
+    combined_warnings = (preflight.get("data_warnings") or []) + (_data_warnings or [])
+
     pos_mgmt_data = {
+        # ── Machine state summary (LLM reads this first) ──────────────────
+        "account_state":    preflight["account_state"],
+        "new_trade_locked": preflight["new_trade_locked"],
+        "lock_reason":      preflight["lock_reason"],
+        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | HIGH_REDUCE | WATCH | HOLD}
+        # Pre-computed reduce % for HIGH_REDUCE positions — LLM reads directly, no table lookup needed.
+        "suggested_reduce_pct": preflight["suggested_reduce_pct"],  # {ticker: int}
+        # Pre-computed BEAR emergency stops — LLM uses directly if regime=BEAR.
+        "bear_emergency_stops": preflight["bear_emergency_stops"],  # {ticker: float} empty if not BEAR
+        # Current prices for ALL held tickers — required by BEAR stop-tightening rule
+        # ("收紧至 current_price × 0.95") which applies to HOLD positions not in section 3b.
+        # Without this, BEAR tightening silently fails for AMD/GOOG/MCD/NFLX etc.
+        "current_prices":       {t: p for t, p in current_prices.items()
+                                 if open_positions and any(
+                                     pos.get("ticker") == t
+                                     for pos in open_positions.get("positions", [])
+                                 )},
+        # ── Market context ─────────────────────────────────────────────────
         "market_regime": {
             "regime":  regime.get("regime", "UNKNOWN"),
             "note":    regime.get("note", ""),
@@ -310,15 +361,23 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             if portfolio_value
             else "Set portfolio_value_usd in open_positions.json to enable position sizing"
         ),
-        "data_warnings": _data_warnings if _data_warnings else [],
+        "data_warnings": combined_warnings,
         "positions_requiring_attention": [],
     }
 
     # Collect positions with triggered exit signals from trend signals.
-    # LOW urgency (PROFIT_LADDER_30) is omitted — it would flood this list with every
-    # winner and dilute attention away from genuine CRITICAL/HIGH/MEDIUM signals.
+    # MEDIUM+ urgency is always surfaced.  LOW urgency rules are skipped unless the
+    # rule requires an action (REDUCE 33%) rather than monitoring (HOLD).
+    #
+    # SIGNAL_TARGET (LOW urgency) requires REDUCE 33% → always surface even when it
+    # is the only triggered rule.  Without this, winners reaching the +7%–+20% dead
+    # zone get no explicit LLM attention in section 4 and the REDUCE is missed.
+    #
+    # PROFIT_LADDER_30 (LOW urgency, action=HOLD) is still excluded — including it
+    # would flood section 4 with every +30% winner and dilute critical signals.
     _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1, "LOW": 0}
-    _min_surface_rank = 1   # MEDIUM and above only
+    _min_surface_rank = 1   # MEDIUM and above always surfaced
+    _action_required_low_rules = {"SIGNAL_TARGET"}   # LOW urgency but requires REDUCE
     if trend_signals and trend_signals.get('signals'):
         for ticker, sig in trend_signals['signals'].items():
             pos_ctx   = sig.get('position', {})
@@ -327,8 +386,11 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             if not (exit_sigs.get('any_triggered') and rules):
                 continue
             max_urgency = max(rules, key=lambda r: _urgency_rank.get(r['urgency'], 0))['urgency']
-            # Only surface MEDIUM and above — skip positions that only have LOW triggers
-            if _urgency_rank.get(max_urgency, 0) < _min_surface_rank:
+            # Include if MEDIUM+ urgency OR if an action-required LOW rule fired
+            has_action_required_low = any(
+                r["rule"] in _action_required_low_rules for r in rules
+            )
+            if _urgency_rank.get(max_urgency, 0) < _min_surface_rank and not has_action_required_low:
                 continue
             entry = {
                 "ticker":                      ticker,
@@ -343,6 +405,12 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "exit_levels":                 pos_ctx.get('exit_levels'),
                 "trailing_stop_from_20d_high": pos_ctx.get('trailing_stop_from_20d_high'),
                 "drawdown_from_20d_high_pct":  pos_ctx.get('drawdown_from_20d_high_pct'),
+                # Daily price change — required for post-earnings gap rules:
+                # "daily_return_pct > +8% → REDUCE 50%" and "< -5% → EXIT"
+                # Without this field the LLM cannot distinguish a single-day gap
+                # event from cumulative unrealised P&L since entry.
+                "daily_return_pct":            pos_ctx.get('daily_return_pct'),
+                "prev_close":                  pos_ctx.get('prev_close'),
             }
             # Include days_to_earnings so LLM can apply the "dte ≤ 2 → reduce 50%"
             # earnings pre-exit rule. Sourced from qp_features injected by run_pipeline.py

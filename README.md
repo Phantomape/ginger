@@ -1,348 +1,322 @@
-# Ginger — Modular Quant Trading System
+# Ginger — 量化辅助交易系统
 
-A modular quantitative trading system that generates probabilistic trade ideas using structural market signals, earnings events, and trend analysis. The goal is not prediction, but to systematically trade small statistical edges with strict risk management.
+每日运行一次，输出一个 AI 提示词文件。把文件粘贴到 ChatGPT 或 Claude，得到结构化的持仓决策 JSON。
 
-> **设计原则 / Design Principles:** Simple signals over complex models · Persistent structural edges · Strict risk control · Track real P&L
-
----
-
-## 目录 / Table of Contents
-
-- [系统架构 / Architecture](#系统架构--architecture)
-- [快速开始 / Quick Start](#快速开始--quick-start)
-- [模块说明 / Modules](#模块说明--modules)
-- [策略说明 / Strategies](#策略说明--strategies)
-- [风险规则 / Risk Rules](#风险规则--risk-rules)
-- [配置 / Configuration](#配置--configuration)
-- [输出文件 / Output Files](#输出文件--output-files)
-- [交易日志 / Trade Diary](#交易日志--trade-diary)
+> 设计原则：简单信号 · 严格风控 · 代码判断，LLM只做最终裁量
 
 ---
 
-## 系统架构 / Architecture
+## 目录
 
-```
-ginger/
-├── quant/                      # 核心模块 / Core modules
-│   ├── run.py                  # ★ 统一入口 / Unified entry point
-│   │
-│   ├── data_layer.py           # [1] 数据层 — OHLCV + 财报数据
-│   ├── feature_layer.py        # [2] 特征层 — 趋势/ATR/财报特征
-│   ├── signal_engine.py        # [3] 信号引擎 — 3种策略
-│   ├── risk_engine.py          # [4] 风险引擎 — 止损/止盈计算
-│   ├── portfolio_engine.py     # [5] 组合引擎 — 仓位大小/热度
-│   ├── performance_engine.py   # [6] 绩效引擎 — 交易日志/P&L
-│   ├── report_generator.py     # 日报生成器
-│   │
-│   ├── regime.py               # 市场方向 — SPY/QQQ vs 200日均线
-│   ├── position_manager.py     # 出场规则 — ATR止损/移动止损
-│   ├── trend_signals.py        # 持仓上下文 — 出场信号检测
-│   ├── llm_advisor.py          # LLM分析 — 构建AI提示词
-│   │
-│   ├── filter.py               # 新闻过滤 + 自选股列表 (WATCHLIST)
-│   ├── fetch_news.py           # RSS 新闻抓取
-│   ├── sources.py              # 新闻源列表
-│   ├── parser.py               # 新闻解析
-│   ├── clean_news.py           # 新闻清洗
-│   ├── forward_tester.py       # 前向测试验证
-│   │
-│   ├── run_pipeline.py         # (旧) 仅新闻+LLM流程
-│   └── run_quant.py            # (旧) 仅量化信号流程
-│
-├── data/                       # 所有输出文件
-│   ├── open_positions.json     # ★ 持仓配置 (需手动维护)
-│   ├── trades.json             # 交易日志 (自动生成)
-│   ├── quant_signals_YYYYMMDD.json
-│   ├── trend_signals_YYYYMMDD.json
-│   ├── report_YYYYMMDD.txt
-│   ├── llm_prompt_YYYYMMDD.txt
-│   └── ...
-│
-├── instructinos/
-│   └── prompts/
-│       └── trade_advice.txt    # LLM 系统提示词
-│
-└── news_collector/             # (已迁移到 quant/) 保留文档
-    ├── README.md
-    └── requirements.txt        # ★ 依赖列表
-```
+- [快速开始](#快速开始)
+- [持仓配置](#持仓配置)
+- [使用流程](#使用流程)
+- [系统架构](#系统架构)
+- [策略说明](#策略说明)
+- [风险规则](#风险规则)
+- [输出文件](#输出文件)
+- [开发与测试](#开发与测试)
 
 ---
 
-## 快速开始 / Quick Start
+## 快速开始
 
-### 安装依赖 / Install dependencies
+### 1. 安装依赖
 
 ```bash
 pip install -r news_collector/requirements.txt
 ```
 
-依赖 / Dependencies:
-```
-feedparser>=6.0
-requests>=2.31
-python-dateutil>=2.8
-openai>=1.0
-yfinance>=0.2.28
-pandas>=2.0
-```
+主要依赖：`yfinance` · `pandas` · `feedparser` · `python-dateutil` · `openai`
 
-### 配置持仓 / Configure positions
+### 2. 配置持仓
 
-编辑 `data/open_positions.json`，填入你的持仓和组合总市值：
+编辑 `data/open_positions.json`（见[持仓配置](#持仓配置)）
 
-Edit `data/open_positions.json` with your holdings and total portfolio value:
-
-```json
-{
-  "portfolio_value_usd": 70000,
-  "positions": [
-    {
-      "ticker": "NVDA",
-      "direction": "long",
-      "shares": 41,
-      "avg_cost": 102.17,
-      "risk_notes": "Core AI holding"
-    }
-  ]
-}
-```
-
-可选字段 / Optional field per position:
-- `"override_stop_price": 850.0` — 手动覆盖止损价 / Manual stop price override
-
-### 运行 / Run
+### 3. 运行
 
 ```bash
 cd d:/Github/ginger
 python quant/run.py
 ```
 
----
+### 4. 使用输出
 
-## 模块说明 / Modules
-
-| 模块 / Module | 职责 / Responsibility |
-|---|---|
-| `data_layer.py` | 下载 OHLCV (350天) + yfinance 财报数据 |
-| `feature_layer.py` | 计算趋势特征 (200MA、20日突破、ATR) 和财报特征 |
-| `signal_engine.py` | 运行3个策略，输出 `{ticker, strategy, entry, stop, confidence}` |
-| `risk_engine.py` | 添加目标价: `target = entry + 3×ATR`，R:R = 2:1 |
-| `portfolio_engine.py` | 仓位计算: `shares = floor(portfolio × 1% / (entry - stop))` |
-| `performance_engine.py` | 记录已开/已平仓交易，计算 win_rate、EV、最大回撤 |
-| `regime.py` | SPY+QQQ vs 200日MA → BULL / NEUTRAL / BEAR |
-| `position_manager.py` | 持仓出场规则: 硬止损、ATR止损、移动止损、止盈、时间止损 |
-| `trend_signals.py` | 为持仓计算出场信号，注入 LLM 提示词 |
-| `llm_advisor.py` | 整合所有数据生成 AI 提示词，保存到 `llm_prompt_YYYYMMDD.txt` |
-| `report_generator.py` | 生成每日文字报告 |
+打开 `data/llm_prompt_YYYYMMDD.txt`，复制全部内容，粘贴到 ChatGPT / Claude，获得持仓决策 JSON。
 
 ---
 
-## 策略说明 / Strategies
+## 持仓配置
 
-### Strategy A — Trend Following (趋势跟踪)
+编辑 `data/open_positions.json`：
 
-| 条件 / Condition | 描述 |
-|---|---|
-| `price > 200MA` | 股价在200日均线上方 |
-| `20-day breakout` | 今日收盘 > 过去20日最高价 |
-| `volume spike` | 今日成交量 > 20日均量 × 1.5 |
-
-信号 / Signal: `trend_long`
-
----
-
-### Strategy B — Volatility Breakout (波动突破)
-
-| 条件 / Condition | 描述 |
-|---|---|
-| `daily_range > 1.5 ATR` | 当日波幅超过 ATR 的1.5倍 |
-| `20-day breakout` | 突破20日新高 |
-| `volume expansion > 1.2×` | 成交量扩张 |
-
-信号 / Signal: `breakout_long`
-
----
-
-### Strategy C — Earnings Event Setup (财报事件)
-
-| 条件 / Condition | 描述 |
-|---|---|
-| `earnings within 5–15 days` | 财报在5到15天内 |
-| `momentum_10d > +2%` | 近10日涨幅 > 2% |
-| `positive surprise history` | 历史财报平均超预期 |
-
-信号 / Signal: `earnings_event_long`
-
----
-
-### 置信度计算 / Confidence Score
-
-每个信号的 `confidence_score` (0–1) 为各条件加权平均。核心条件权重 1.0，辅助条件权重 0.5。
-
-Each signal's `confidence_score` (0–1) is a weighted average of conditions. Core conditions weight 1.0, supporting conditions weight 0.5.
-
----
-
-## 风险规则 / Risk Rules
-
-### 开仓风险 / Entry Risk
-
-```
-stop_price  = entry − 1.5 × ATR(14)
-target      = entry + 3.0 × ATR(14)
-R:R ratio   = 2:1
-
-risk_amount = portfolio_value × 1%
-shares      = floor(risk_amount / (entry − stop))
-
-portfolio_heat_cap = 8%   (总组合最大风险敞口)
+```json
+{
+  "portfolio_value_usd": 70000,
+  "cash_usd": 5000,
+  "positions": [
+    {
+      "ticker": "NVDA",
+      "direction": "long",
+      "shares": 41,
+      "avg_cost": 102.17,
+      "entry_date": "2025-11-15",
+      "target_price": 145.00,
+      "risk_notes": "核心 AI 持仓"
+    }
+  ]
+}
 ```
 
-### 出场优先级 / Exit Rule Hierarchy
+**字段说明：**
 
-| 优先级 | 规则 | 触发条件 | 紧急程度 |
-|---|---|---|---|
-| 1 | **HARD STOP** | 价格 ≤ avg_cost × 0.88 | 🔴 CRITICAL |
-| 2 | **ATR STOP** | 价格 ≤ entry − 2×ATR | 🔴 HIGH |
-| 3 | **TRAILING STOP** | 价格 ≤ 20日高点 × 0.92 | 🟠 HIGH |
-| 4 | **PROFIT TARGET** | 价格 ≥ avg_cost × 1.20 | 🟡 MEDIUM |
-| 5 | **TIME STOP** | 持仓 ≥ 20 交易日无进展 | 🔵 REVIEW |
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `portfolio_value_usd` | 是 | 账户总市值（含现金），用于热度和定仓计算 |
+| `cash_usd` | 否 | 现金余额，用于计算实时组合价值 |
+| `ticker` | 是 | 股票代码（大写） |
+| `shares` | 是 | 持仓股数 |
+| `avg_cost` | 是 | 平均建仓成本 |
+| `entry_date` | 推荐 | 建仓日期 `YYYY-MM-DD`；缺失则时间止损（45天）无法触发 |
+| `target_price` | 推荐 | 原始信号目标价；缺失则 SIGNAL_TARGET 出场规则无法触发 |
+| `override_stop_price` | 否 | 手动覆盖止损价（用于保本止损：盈利 ≥ 20% 后将此值设为 avg_cost） |
 
-### Legacy 持仓处理 / Legacy Position Handling
-
-对于未实现盈利 > 100% 的持仓（如持有多年的仓位），`avg_cost` 已失去参考意义。系统自动切换到滚动止损模式：
-
-For positions with unrealized PnL > 100% (long-held positions), `avg_cost` loses meaning. The system automatically switches to rolling stop mode:
-
-```
-stop_source = "auto_rolling"
-hard_stop   = current_price × 0.88    (−12% from today, not from old cost)
-atr_stop    = current_price − 2×ATR   (ATR reference = current price)
-trailing    = 20d_high × 0.92          (−8% from recent peak)
-```
+**自选股列表**：编辑 `quant/filter.py` 中的 `_BASE_WATCHLIST`，加入你想追踪新闻的标的。已持仓标的自动纳入监控。
 
 ---
 
-## 配置 / Configuration
+## 使用流程
 
-### 自选股列表 / Watchlist
+### 每日操作（约 2 分钟）
 
-编辑 `quant/filter.py` 中的 `WATCHLIST`：
-
-Edit `WATCHLIST` in `quant/filter.py`:
-
-```python
-WATCHLIST = ["NVDA", "META", "AMD", "QQQ", "TSLA", "GOOG", "NFLX", ...]
+```
+python quant/run.py
+    ↓
+data/llm_prompt_YYYYMMDD.txt  ← 复制此文件内容
+    ↓
+粘贴到 ChatGPT / Claude
+    ↓
+获得 JSON 决策：new_trade + position_actions
+    ↓
+按输出操作（手动下单）
 ```
 
-### 关键参数 / Key Parameters
+### AI 输出格式
 
-| 参数 | 文件 | 默认值 | 说明 |
-|---|---|---|---|
-| `RISK_PER_TRADE_PCT` | `portfolio_engine.py` | `0.01` | 每笔交易风险 1% |
-| `MAX_PORTFOLIO_HEAT` | `portfolio_engine.py` | `0.08` | 组合最大热度 8% |
-| `HARD_STOP_PCT` | `position_manager.py` | `0.12` | 硬止损 -12% |
-| `TRAILING_STOP_PCT` | `position_manager.py` | `0.08` | 移动止损 -8% |
-| `PROFIT_TARGET_PCT` | `position_manager.py` | `0.20` | 止盈 +20% |
-| `ATR_PERIOD` | `position_manager.py` | `14` | ATR 周期 |
-| `ATR_STOP_MULT` | `risk_engine.py` | `1.5` | 开仓止损 = 1.5×ATR |
-| `ATR_TARGET_MULT` | `risk_engine.py` | `3.0` | 开仓目标 = 3.0×ATR |
+```json
+{
+  "new_trade": "NO NEW TRADE",
+  "second_new_trade": "NO SECOND TRADE",
+  "position_actions": [
+    {
+      "ticker": "NVDA",
+      "action": "HOLD",
+      "reason": "position_state=HOLD，无出场信号",
+      "exit_rule_triggered": "NONE",
+      "shares_to_sell": null,
+      "decision_mode": "forced_rule",
+      "data_quality": "clean",
+      "suggested_new_stop": null
+    },
+    {
+      "ticker": "APP",
+      "action": "EXIT",
+      "reason": "HISTORIC_BREACH：止损价远高于当前价，强制清仓",
+      "exit_rule_triggered": "HARD_STOP",
+      "shares_to_sell": null,
+      "decision_mode": "forced_rule",
+      "data_quality": "inconsistent",
+      "suggested_new_stop": null
+    }
+  ]
+}
+```
+
+**当 `suggested_new_stop` 非 null 时**，将该值写入对应持仓的 `override_stop_price` 字段，保本止损才会在下次运行时生效。
 
 ---
 
-## 输出文件 / Output Files
+## 系统架构
 
-每次运行 `python quant/run.py` 生成以下文件：
+```
+python quant/run.py
+│
+├── Step 1  open_positions.json       持仓 + 自选股
+├── Step 2  regime.py                 市场方向（SPY/QQQ vs 200日均线）
+├── Step 3  data_layer.py             OHLCV + 财报数据（yfinance）
+├── Step 4  feature_layer.py          趋势特征、ATR、财报特征
+├── Step 5  trend_signals.py          持仓出场信号检测
+│           preflight_validator.py    ← 预判断：account_state / position_states
+├── Step 6  signal_engine.py          三策略信号生成
+│           risk_engine.py            R:R / TQS / 止损止盈
+│           portfolio_engine.py       定仓 / 热度计算
+├── Step 7  report_generator.py       日报 → data/report_YYYYMMDD.txt
+├── Step 8  fetch_news.py + filter.py RSS 新闻 → 过滤 → T1/T2/T3 分层
+└── Step 9  llm_advisor.py            组装提示词 → data/llm_prompt_YYYYMMDD.txt
+```
 
-Running `python quant/run.py` produces:
+**关键设计：preflight_validator.py**
+
+在数据到达 LLM 之前，代码层预判断所有硬规则，注入 section 4：
+
+| 字段 | 含义 |
+|------|------|
+| `account_state` | `FIRE` / `DEFENSIVE` / `NORMAL` |
+| `new_trade_locked` | `true` 时 AI 直接输出 NO NEW TRADE，不分析新机会 |
+| `position_states` | `{ticker: CRITICAL_EXIT \| HIGH_REDUCE \| WATCH \| HOLD}` |
+| `suggested_reduce_pct` | `{ticker: 25\|33\|50\|100}` — HIGH_REDUCE 仓位的预计算减仓比例 |
+| `bear_emergency_stops` | `{ticker: float}` — BEAR 市场下每个仓位的紧急止损价 |
+| `current_prices` | `{ticker: float}` — 所有持仓的当日收盘价 |
+
+AI 读这些字段得出结论，不再做条件推理——减少了"LLM自行判断 vs 代码预判断"的不一致。
+
+---
+
+## 策略说明
+
+### Strategy A — 趋势跟踪 (trend_long)
+
+| 条件 | 说明 |
+|------|------|
+| 价格 > 200日均线 | 大趋势向上 |
+| 今日收盘 > 20日最高价 | 突破确认 |
+| 成交量 > 20日均量 × 1.5 | 放量支撑 |
+| 近10日涨幅 ≥ 0% | RS 门（非下跌股） |
+
+### Strategy B — 波动突破 (breakout_long)
+
+| 条件 | 说明 |
+|------|------|
+| 当日波幅 > 1.5 × ATR | 异常大阳线 |
+| 今日收盘 > 20日最高价 | 突破确认 |
+| 成交量 > 1.2 × 均量 | 量价配合 |
+
+### Strategy C — 财报事件 (earnings_event_long)
+
+| 条件 | 说明 |
+|------|------|
+| 财报在 6–8 天内 | 最佳 PEAD 窗口 |
+| 近10日涨幅 > SPY 同期 | 跑赢大盘（RS 强制门） |
+| 历史财报正向超预期 | 正向惊喜历史 |
+| ATR / 价格 ≤ 5% | 波动率控制 |
+
+**信号质量分（TQS）**：`0.40×confidence + 0.25×trend_score + 0.20×vol + 0.15×momentum`，< 0.60 丢弃。
+
+---
+
+## 风险规则
+
+### 开仓参数
+
+```
+止损    = entry − 1.5 × ATR
+目标    = entry + 3.5 × ATR       R:R ≈ 2.3:1
+定仓    = floor(portfolio × 1% / (entry − stop + 执行成本))
+热度上限 = 8%（全组合最大风险敞口）
+仓位上限 = portfolio × 20%
+```
+
+财报仓位额外缩减约 60–75%（用 max(ATR止损, 8%跳空风险) 定仓，防止财报缺口绕过止损）。
+
+### 出场规则优先级
+
+| 优先级 | 规则 | 触发 | 动作 |
+|--------|------|------|------|
+| 1 | HARD_STOP | 价格 ≤ hard_stop_price | EXIT |
+| 2 | ATR_STOP | 价格 ≤ current_price − 1.5×ATR | EXIT |
+| 3 | TRAILING_STOP | 价格 ≤ 20日高点 × 0.92 | EXIT / REDUCE |
+| 4 | SIGNAL_TARGET | 价格 ≥ 3.5×ATR 目标价 | REDUCE 33% |
+| 5 | PROFIT_TARGET | 盈利 ≥ 20% | REDUCE 50% + 保本止损 |
+| 6 | PROFIT_LADDER_50 | 盈利 ≥ 50% | REDUCE 25% |
+| 7 | TIME_STOP | ≥ 45 交易日且不足目标一半 | EXIT |
+
+### 市场方向
+
+| 状态 | 判断 | 行为 |
+|------|------|------|
+| BULL | SPY + QQQ 均在 200日均线上方 | 允许新多仓 |
+| NEUTRAL | 混合信号 | 仅 confidence ≥ 0.88 的信号可入场 |
+| BEAR | 均在 200日均线下方 | 禁止新仓；止损收紧至 current_price × 0.95 |
+
+---
+
+## 输出文件
+
+每次运行生成以下文件（`data/` 目录）：
 
 | 文件 | 说明 |
-|---|---|
-| `data/report_YYYYMMDD.txt` | 人类可读的每日量化报告 |
-| `data/quant_signals_YYYYMMDD.json` | 完整信号 + 特征数据 (JSON) |
-| `data/trend_signals_YYYYMMDD.json` | 趋势信号 + 持仓出场状态 (for LLM) |
-| `data/news_YYYYMMDD.json` | 原始新闻 |
-| `data/clean_trade_news_YYYYMMDD.json` | 过滤后新闻 (仅自选股事件) |
-| `data/llm_prompt_YYYYMMDD.txt` | AI 提示词 (复制到 ChatGPT / Claude 使用) |
-
-### 使用 LLM 提示词 / Using the LLM prompt
-
-`llm_prompt_YYYYMMDD.txt` 包含完整的系统提示 + 用户消息，可直接粘贴到任意 AI 对话框：
-
-The `llm_prompt_YYYYMMDD.txt` file contains a complete system + user message ready to paste into any AI chat:
-
-1. 打开 `data/llm_prompt_YYYYMMDD.txt`
-2. 复制全部内容
-3. 粘贴到 ChatGPT、Claude 等
-4. 获得结构化的投资建议 JSON
+|------|------|
+| `llm_prompt_YYYYMMDD.txt` | **★ 主输出** — 粘贴到 AI 使用 |
+| `report_YYYYMMDD.txt` | 人类可读日报（信号摘要） |
+| `quant_signals_YYYYMMDD.json` | 完整量化信号 JSON |
+| `trend_signals_YYYYMMDD.json` | 持仓出场信号 JSON |
+| `clean_trade_news_YYYYMMDD.json` | 过滤后新闻（含 tier 字段） |
+| `news_YYYYMMDD.json` | 原始新闻 |
 
 ---
 
-## 交易日志 / Trade Diary
+## 开发与测试
 
-`performance_engine.py` 维护 `data/trades.json` 记录已实现 P&L，用于策略验证。
+### 运行测试
 
-`performance_engine.py` maintains `data/trades.json` to track realized P&L for strategy validation.
+```bash
+cd d:/Github/ginger
+python -m pytest quant/test_quant.py -v
+```
+
+目前 **129 个测试**，含：
+- 策略逻辑（Strategy A/B/C 信号条件）
+- 风险计算（TQS、R:R、定仓）
+- 出场规则（止损、止盈、移动止损）
+- **Contract 测试**（代码↔提示词接口验证）
+
+### Contract 测试（防止代码与提示词漂移）
+
+`PROMPT_FIELD_REGISTRY` 是代码层与 `trade_advice.txt` 的接口契约：
 
 ```python
-from quant.performance_engine import open_trade, close_trade, compute_metrics
-
-# 开仓 / Open trade
-trade_id = open_trade(
-    ticker="NVDA", strategy="trend_long",
-    entry_price=920.0, stop_price=895.0, shares=15,
-    target_price=957.5
-)
-
-# 平仓 / Close trade
-close_trade(trade_id, exit_price=955.0)
-
-# 查看绩效 / View metrics
-metrics = compute_metrics()
-# → win_rate, avg_win, avg_loss, expected_value, max_drawdown, by_strategy
+# quant/test_quant.py
+PROMPT_FIELD_REGISTRY = {
+    "section4_top":      ["new_trade_locked", "position_states", "suggested_reduce_pct", ...],
+    "section3a_signal":  ["trade_quality_score", "exec_lag_adj_net_rr", "entry_note", ...],
+    "section3b_position":["breach_status", "daily_return_pct", "exit_levels", ...],
+}
 ```
 
-### 绩效指标 / Performance Metrics
+两个互锁测试：
+- `test_registry_fields_exist_in_code_output` — 代码必须产出 registry 里的每个字段
+- `test_registry_fields_referenced_in_prompt` — 提示词必须引用 registry 里的每个字段名
 
-| 指标 | 说明 |
-|---|---|
-| `win_rate` | 盈利交易比例 |
-| `avg_win_usd` | 平均盈利金额 |
-| `avg_loss_usd` | 平均亏损金额 |
-| `expected_value_usd` | 期望收益 = win_rate × avg_win + loss_rate × avg_loss |
-| `max_drawdown_usd` | 最大回撤 (已实现 P&L 曲线) |
-| `by_strategy` | 按策略分类的胜率和 P&L |
+改字段名时三处同步更新（代码 + registry + 提示词），测试失败即发现漂移。
 
-> **策略评估原则 / Evaluation Principle:** 系统使用已实现 P&L 而非预测准确率来评估策略优劣。
-> The system evaluates strategies using realized P&L, not prediction accuracy.
+### 文件结构
+
+```
+ginger/
+├── quant/
+│   ├── run.py                  # ★ 每日入口
+│   ├── data_layer.py           # OHLCV + 财报数据
+│   ├── feature_layer.py        # 特征计算
+│   ├── signal_engine.py        # 信号生成（3策略）
+│   ├── risk_engine.py          # R:R / TQS / 止损止盈
+│   ├── portfolio_engine.py     # 定仓 / 热度
+│   ├── performance_engine.py   # 交易日志 / P&L
+│   ├── trend_signals.py        # 持仓出场信号
+│   ├── preflight_validator.py  # 预判断状态机
+│   ├── regime.py               # 市场方向
+│   ├── llm_advisor.py          # 提示词构建
+│   ├── filter.py               # 新闻过滤 + 自选股
+│   ├── report_generator.py     # 日报生成
+│   └── test_quant.py           # 测试（含 contract 测试）
+│
+├── data/
+│   ├── open_positions.json     # ★ 持仓配置（手动维护）
+│   └── llm_prompt_YYYYMMDD.txt # ★ 每日 AI 提示词
+│
+└── instructinos/prompts/
+    └── trade_advice.txt        # LLM 系统提示词
+```
 
 ---
 
-## 市场方向过滤 / Market Regime Filter
-
-```
-BULL    → SPY & QQQ both above 200-day MA    → 允许开新多仓
-NEUTRAL → one above, one below               → 高度精选，避免新仓
-BEAR    → SPY & QQQ both below 200-day MA   → 禁止开新多仓，偏向减仓
-```
-
-BEAR 模式下，系统仍会生成信号供参考，但提示词会明确指示 AI 不建议新建仓位。
-
-In BEAR regime, signals are still generated for reference, but the LLM prompt explicitly instructs against new positions.
-
----
-
-## 未来扩展 / Future Extensions
-
-- [ ] 期权流量分析 / Options flow analysis
-- [ ] ETF 资金流向检测 / ETF flow detection
-- [ ] 空头兴趣信号 / Short interest signals
-- [ ] 自动执行 / Automated execution
-- [ ] 回测引擎 / Backtesting engine
-- [ ] 财报超预期数据集成 / Earnings surprise database
-- [ ] 相对强度排名 / Relative strength ranking
-
----
-
-*Built with Claude Code · Python 3.10+ · yfinance · pandas*
+*Python 3.10+ · yfinance · pandas · feedparser · openai*

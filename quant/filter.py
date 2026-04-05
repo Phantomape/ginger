@@ -67,6 +67,84 @@ MARKET_SUMMARY_KEYWORDS = [
     "wall street today", "live updates", "markets live"
 ]
 
+# ── News Tier Classification ─────────────────────────────────────────────────
+# Tier 1: Actionable hard events. Only T1 can independently trigger a trade.
+# Tier 2: Factual reporting from credible outlets. Can confirm signals.
+# Tier 3: Opinion, analysis, valuation, fund holdings. Noise for trading purposes.
+
+_T1_TITLE_KEYWORDS = [
+    "earnings beat", "earnings miss", "quarterly results", "quarterly earnings",
+    "guidance raise", "guidance cut", "guidance raised", "guidance lowered",
+    "merger", "acquisition", "acquired", "takeover", "buyout",
+    "fda approval", "fda approved", "regulatory approval", "approved by",
+    "sec filing", "sec charges", "doj charges", "antitrust",
+    "bankruptcy", "chapter 11", "chapter 7",
+    "dividend cut", "dividend raise", "dividend raised",
+    "ceo resign", "ceo fired", "ceo replaced", "executive departure",
+    "stock split", "share buyback", "buyback program",
+]
+
+_T2_SOURCES = {
+    "reuters", "bloomberg", "wsj", "wall street journal",
+    "financial times", "ft.com", "associated press", "ap news",
+    "cnbc", "marketwatch", "barrons", "the economist",
+}
+
+_T3_SOURCES = {
+    "seekingalpha", "seeking alpha", "marketbeat", "simply wall st", "simplywall",
+    "coinpaper", "motley fool", "benzinga", "finbold", "cryptoslate",
+    "tipranks", "thestreet", "zacks", "valueinvestorsclub",
+}
+
+_T3_TITLE_KEYWORDS = [
+    "valuation check", "price target", "analyst raises", "analyst cuts",
+    "raises stock holdings", "raises stock position", "raises shares",
+    "wealth management", "advisory group", "investment management raises",
+    "forecast:", "outlook:", "why we think", "we think that",
+    "issues underlying", "top picks", "buy these", "sell these",
+]
+
+
+def assign_news_tier(item: dict) -> str:
+    """
+    Classify a news item into Tier 1, 2, or 3.
+
+    T1 — Hard event: earnings, M&A, regulatory, bankruptcy, executive change.
+         Only T1 news can independently trigger a trade recommendation.
+    T2 — Factual reporting from a credible news outlet.
+         Can corroborate a quant signal but cannot stand alone.
+    T3 — Opinion, analysis, fund-holding disclosure, valuation commentary.
+         Treated as noise; must NOT influence trading decisions.
+
+    Returns:
+        "T1" | "T2" | "T3"
+    """
+    title  = (item.get("title") or "").lower()
+    source = (item.get("source") or item.get("raw_source") or "").lower()
+
+    # T1: hard event keywords in the headline
+    for kw in _T1_TITLE_KEYWORDS:
+        if kw in title:
+            return "T1"
+
+    # T3: known opinion/analysis sources
+    for s3 in _T3_SOURCES:
+        if s3 in source or s3 in title:
+            return "T3"
+
+    # T3: typical opinion/analysis headline patterns
+    for kw in _T3_TITLE_KEYWORDS:
+        if kw in title:
+            return "T3"
+
+    # T2: credible factual news source
+    for s2 in _T2_SOURCES:
+        if s2 in source:
+            return "T2"
+
+    # Default: T3 (unknown source — treat conservatively)
+    return "T3"
+
 
 def filter_by_recency(items, max_hours=72):
     """
@@ -385,7 +463,18 @@ def apply_trade_filters(items, watchlist=None):
     items, dropped = deduplicate_by_ticker_source(items)
     stats["dropped_duplicates"] = dropped
 
+    # Step 6: Assign news tier (T1/T2/T3) — downstream users (LLM prompt) use this
+    # to distinguish actionable hard events from opinion/analysis noise.
+    for item in items:
+        item["tier"] = assign_news_tier(item)
+
+    tier_counts = {"T1": 0, "T2": 0, "T3": 0}
+    for item in items:
+        tier_counts[item.get("tier", "T3")] += 1
+    logger.info(f"News tiers: T1={tier_counts['T1']} T2={tier_counts['T2']} T3={tier_counts['T3']}")
+
     stats["output_count"] = len(items)
+    stats["tier_counts"]  = tier_counts
 
     logger.info("=" * 50)
     logger.info(f"Trade filtering complete: {stats['input_count']} -> {stats['output_count']} items")
