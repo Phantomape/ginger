@@ -1092,23 +1092,80 @@ def test_strategy_a_passes_when_atr_at_limit():
 
 # ── Market regime gates ───────────────────────────────────────────────────────
 
-def test_generate_signals_empty_in_bear_market():
-    """BEAR market must suppress all signals regardless of signal quality."""
+def test_generate_signals_empty_in_bear_deep():
+    """BEAR_DEEP (both legs ≤ -5%) must suppress all signals."""
     from signal_engine import generate_signals
     feat = _make_features()   # all conditions met — strong signal
-    market_ctx = {"market_regime": "BEAR"}
-    sigs = generate_signals({"NVDA": feat}, market_context=market_ctx)
-    assert sigs == [], (
-        "BEAR regime must return empty signal list — no new long positions in downtrend"
+    # No pct_from_ma → safe fallback: treat as BEAR_DEEP
+    sigs_no_pct = generate_signals({"NVDA": feat}, market_context={"market_regime": "BEAR"})
+    assert sigs_no_pct == [], (
+        "BEAR regime without pct_from_ma must return [] (safe fallback = BEAR_DEEP)"
+    )
+    # Explicit BEAR_DEEP: both legs at -6%
+    sigs_deep = generate_signals(
+        {"NVDA": feat},
+        market_context={"market_regime": "BEAR",
+                        "spy_pct_from_ma": -0.06, "qqq_pct_from_ma": -0.08}
+    )
+    assert sigs_deep == [], (
+        "BEAR_DEEP (min_pct_from_ma=-8%) must return empty signal list"
     )
 
 
 def test_generate_signals_empty_in_bear_market_case_insensitive():
-    """BEAR check must be case-insensitive."""
+    """BEAR check must be case-insensitive — lowercase 'bear' treated as BEAR."""
     from signal_engine import generate_signals
     feat = _make_features()
     sigs = generate_signals({"NVDA": feat}, market_context={"market_regime": "bear"})
-    assert sigs == [], "BEAR regime check must be case-insensitive"
+    assert sigs == [], "BEAR regime check must be case-insensitive (no pct_from_ma → BEAR_DEEP)"
+
+
+def test_generate_signals_bear_shallow_allows_above_200ma_tickers():
+    """BEAR_SHALLOW: tickers above their own 200MA must not be blocked by signal_engine.
+
+    The sector+TQS filter is applied by run.py post-enrich, not here.
+    signal_engine only gates on above_200ma for BEAR_SHALLOW.
+    """
+    from signal_engine import generate_signals
+    feat_above = _make_features(above_200ma=True)
+    feat_below = _make_features(above_200ma=False)
+    mc = {"market_regime": "BEAR", "spy_pct_from_ma": -0.02, "qqq_pct_from_ma": -0.03}
+
+    sigs_above = generate_signals({"IAU": feat_above}, market_context=mc)
+    sigs_below = generate_signals({"GLD": feat_below}, market_context=mc)
+
+    assert len(sigs_above) >= 1, (
+        "BEAR_SHALLOW: ticker above its own 200MA must pass signal_engine "
+        "(sector+TQS filtered post-enrich by run.py)"
+    )
+    assert sigs_below == [], (
+        "BEAR_SHALLOW: ticker below its own 200MA must be blocked "
+        "(only uptrending defensive names are viable)"
+    )
+
+
+def test_generate_signals_bear_shallow_exact_boundary():
+    """BEAR_SHALLOW boundary: -5% is BEAR_DEEP (blocked), -4.99% is BEAR_SHALLOW (allowed)."""
+    from signal_engine import generate_signals
+    feat = _make_features(above_200ma=True)
+
+    sigs_at_boundary = generate_signals(
+        {"IAU": feat},
+        market_context={"market_regime": "BEAR",
+                        "spy_pct_from_ma": -0.05, "qqq_pct_from_ma": -0.03}
+    )
+    assert sigs_at_boundary == [], (
+        "Exactly -5% must be BEAR_DEEP — boundary is ≤ -5% → return []"
+    )
+
+    sigs_just_shallow = generate_signals(
+        {"IAU": feat},
+        market_context={"market_regime": "BEAR",
+                        "spy_pct_from_ma": -0.049, "qqq_pct_from_ma": -0.03}
+    )
+    assert len(sigs_just_shallow) >= 1, (
+        "-4.9% should be BEAR_SHALLOW — signal_engine allows above_200ma tickers through"
+    )
 
 
 def test_generate_signals_neutral_filters_low_confidence():
@@ -1169,6 +1226,45 @@ def test_generate_signals_bull_passes_all_quality_signals():
     sigs_no_ctx = generate_signals({"NVDA": feat})
     assert len(sigs_bull)   >= 1, "BULL regime must pass valid signals"
     assert len(sigs_no_ctx) >= 1, "No market_context must pass valid signals (default behavior)"
+
+
+def test_size_signals_respects_risk_pct_override():
+    """size_signals must pass risk_pct to compute_position_size.
+
+    NEUTRAL uses 0.75%, BEAR_SHALLOW uses 0.50%.  A 0.50% risk on a $70k portfolio
+    should produce ~half as many shares as the default 1.0% risk.
+    """
+    from portfolio_engine import size_signals, RISK_PER_TRADE_PCT
+
+    sig = {
+        "ticker":      "IAU",
+        "strategy":    "trend_long",
+        "entry_price": 100.0,
+        "stop_price":  97.0,   # 3% stop → clean signal
+        "confidence_score": 0.85,
+    }
+    portfolio = 70_000.0
+
+    sized_default = size_signals([sig], portfolio)[0]
+    sized_neutral = size_signals([sig], portfolio, risk_pct=0.0075)[0]
+    sized_shallow = size_signals([sig], portfolio, risk_pct=0.005)[0]
+
+    shares_default = sized_default["sizing"]["shares_to_buy"]
+    shares_neutral = sized_neutral["sizing"]["shares_to_buy"]
+    shares_shallow = sized_shallow["sizing"]["shares_to_buy"]
+
+    assert sized_neutral["sizing"]["risk_pct"] == 0.0075, (
+        "NEUTRAL sizing must record risk_pct=0.0075"
+    )
+    assert sized_shallow["sizing"]["risk_pct"] == 0.005, (
+        "BEAR_SHALLOW sizing must record risk_pct=0.005"
+    )
+    assert shares_neutral < shares_default, (
+        f"NEUTRAL shares ({shares_neutral}) must be < default ({shares_default})"
+    )
+    assert shares_shallow < shares_neutral, (
+        f"BEAR_SHALLOW shares ({shares_shallow}) must be < NEUTRAL ({shares_neutral})"
+    )
 
 
 def test_generate_signals_neutral_filter_strictly_greater_than_0_88():

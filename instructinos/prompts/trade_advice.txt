@@ -88,11 +88,16 @@ legacy_basis=true 的持仓，unrealized_pnl_pct > 100%。其 avg_cost 远低于
 - 中性    (信号混合)                       → 不开新仓，除非置信度 > 0.88
   （代码层已在 NEUTRAL 市场过滤掉 confidence ≤ 0.88 的信号；0.88 对应"全部硬条件 + 至少一个软条件"的质量标准，
    0.90 会错误拦截已通过代码质量门的有效信号）
-- 熊市    (均在 200 日均线下方)             → 无条件输出 "NO NEW TRADE"
+- 熊市-浅  (均在 200 日均线下方，但最差腿 > -5%) → 防御性板块专属（商品/医疗）
+                                              代码已在 enrich 后过滤：仅保留 sector ∈ {Commodities, Healthcare} 且
+                                              trade_quality_score ≥ 0.75 的信号，个股须在自身 200MA 之上
+                                              仓位风险已自动缩至 0.50%（见 sizing.risk_pct 字段）；无需手动调整
                                               强制收紧止损（直接读第 4 节 bear_emergency_stops 字段）：
                                               • bear_emergency_stops 已为每个持仓预计算好紧急止损价（current_prices[ticker] × 0.95）
                                               • 若任意持仓 unrealized_pnl_pct < -0.05（亏损 > 5%）→ 立即 REDUCE 50%
                                               • 已盈利持仓保持 HOLD，止损上移至 bear_emergency_stops[ticker]
+- 熊市-深  (均在 200 日均线下方，且最差腿 ≤ -5%) → 无条件输出 "NO NEW TRADE"（代码层已拦截所有信号）
+                                              强制收紧止损（同熊市-浅规则）
                                               理由：熊市中个股止损 -12% × 8 仓位 = 系统性回撤最高 24%；收紧至 -5% 可将熊市最大回撤控制在 10% 以内
 
 组合热度规则（开新仓前先查第 4 节）：
@@ -125,7 +130,7 @@ trend signal + T1 负面新闻 → 拒绝入场。
     （财报跳空 ±8-15% 与 ATR 无关，需更紧的止损宽度控制）
   ATR 可由 risk_per_share / (1.5 × entry_price) 反推验证。
 - 热度超限：can_add_new_positions = false
-- 熊市方向：market_regime = BEAR
+- 熊市方向：market_regime = BEAR（浅熊仅允许防御性板块信号；深熊无信号）
 - 执行偏差过大：若 entry_note 存在且次日开盘价 > entry_price × 1.015（trend_long/breakout_long），该信号失效，不得执行
   注：entry_note 字段已更新为 × 1.015；若信号中仍显示旧值 × 1.005，以 × 1.015 为准
 

@@ -34,14 +34,25 @@ SECTOR_MAP = {
     "META": "Technology", "GOOG": "Technology", "GOOGL": "Technology",
     "MSFT": "Technology", "AAPL": "Technology", "CRM":  "Technology",
     "NOW":  "Technology", "SNOW": "Technology", "DDOG": "Technology",
-    "APP":  "Technology",
+    "APP":  "Technology", "PLTR": "Technology",
     # Consumer Discretionary
     "TSLA": "Consumer Discretionary", "AMZN": "Consumer Discretionary",
     "MCD":  "Consumer Discretionary", "SBUX": "Consumer Discretionary",
+    "BKNG": "Consumer Discretionary",
     # Communication Services
-    "NFLX": "Communication Services",
-    # Financials / Crypto
-    "COIN": "Financials",
+    "NFLX": "Communication Services", "DIS":  "Communication Services",
+    "SPOT": "Communication Services",
+    # Financials
+    "COIN": "Financials", "V":    "Financials", "MA":   "Financials",
+    "GS":   "Financials", "JPM":  "Financials",
+    # Healthcare
+    "LLY":  "Healthcare", "NVO":  "Healthcare",
+    "UNH":  "Healthcare", "ISRG": "Healthcare",
+    # Energy
+    "XOM":  "Energy",     "CVX":  "Energy",
+    # Industrials
+    "CAT":  "Industrials", "DE":   "Industrials",
+    "GE":   "Industrials", "RTX":  "Industrials",
     # ETFs (broad market)
     "QQQ":  "ETF", "SPY": "ETF", "IWM": "ETF",
     # Commodities / Safe Haven

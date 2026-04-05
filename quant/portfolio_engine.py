@@ -208,7 +208,7 @@ def compute_portfolio_heat(open_positions, current_prices, portfolio_value,
     }
 
 
-def size_signals(signals, portfolio_value):
+def size_signals(signals, portfolio_value, risk_pct=None):
     """
     Add position_size dict to each signal.
 
@@ -225,10 +225,13 @@ def size_signals(signals, portfolio_value):
     Args:
         signals         (list[dict]): Enriched signals with stop_price
         portfolio_value (float):      Total portfolio value
+        risk_pct        (float|None): Override risk per trade (default: RISK_PER_TRADE_PCT=1%).
+                                      Pass 0.0075 for NEUTRAL, 0.005 for BEAR_SHALLOW.
 
     Returns:
         list[dict]: Signals with 'sizing' field added
     """
+    effective_risk_pct = risk_pct if risk_pct is not None else RISK_PER_TRADE_PCT
     sized = []
     for sig in signals:
         entry    = sig.get("entry_price")
@@ -243,13 +246,15 @@ def size_signals(signals, portfolio_value):
                 atr_risk  = entry - stop
                 gap_risk  = entry * EARNINGS_GAP_RISK_PCT
                 effective_stop = round(entry - max(atr_risk, gap_risk), 2)
-                sizing = compute_position_size(portfolio_value, entry, effective_stop)
+                sizing = compute_position_size(portfolio_value, entry, effective_stop,
+                                               risk_pct=effective_risk_pct)
                 if sizing:
                     sizing["earnings_gap_risk_applied"]  = True
                     sizing["gap_risk_pct"]               = EARNINGS_GAP_RISK_PCT
                     sizing["effective_stop_for_sizing"]  = effective_stop
             else:
-                sizing = compute_position_size(portfolio_value, entry, stop)
+                sizing = compute_position_size(portfolio_value, entry, stop,
+                                               risk_pct=effective_risk_pct)
             if sizing:
                 sig = {**sig, "sizing": sizing}
         sized.append(sig)

@@ -22,7 +22,36 @@ logger = logging.getLogger(__name__)
 # The effective watchlist (used at runtime) also includes any tickers held in
 # open_positions.json so news for new positions isn't silently filtered out.
 # Adding a ticker here ensures news is always captured, even before a position is opened.
-_BASE_WATCHLIST = ["NVDA", "META", "AMD", "QQQ", "TSLA", "MCD", "CRDO", "IAU", "NFLX", "APP", "GOOG", "COIN", "MU"]
+_BASE_WATCHLIST = [
+    # ── 科技 / Technology (持仓) ───────────────────────────────────────────
+    "NVDA", "META", "AMD", "CRDO", "APP", "GOOG", "MU",
+    # ── 科技 / Technology (备选) ───────────────────────────────────────────
+    "MSFT", "AAPL", "AVGO", "TSM",   # 大型科技/半导体
+    "PLTR", "DDOG", "NOW", "SNOW",   # 软件/云
+    # ── 消费 / Consumer Discretionary (持仓 + 备选) ───────────────────────
+    "TSLA", "MCD",
+    "AMZN", "BKNG",                  # 电商/旅游
+    # ── 通信 / Communication Services ─────────────────────────────────────
+    "NFLX",
+    "DIS", "SPOT",                   # 媒体/流媒体
+    # ── 金融 / Financials ─────────────────────────────────────────────────
+    "COIN",
+    "V", "MA", "GS",                 # 支付/投行
+    "JPM",                           # 银行
+    # ── 医疗 / Healthcare ─────────────────────────────────────────────────
+    "LLY", "NVO",                    # 制药/GLP-1
+    "UNH", "ISRG",                   # 医疗保险/机器人手术
+    # ── 能源 / Energy ─────────────────────────────────────────────────────
+    "XOM", "CVX",                    # 综合能源
+    # ── 工业 / Industrials ────────────────────────────────────────────────
+    "CAT", "DE",                     # 重型机械
+    "GE", "RTX",                     # 航空航天/国防
+    # ── 大宗商品/对冲 / Commodities & Hedges ─────────────────────────────
+    "IAU", "GLD",                    # 黄金
+    "SLV",                           # 白银
+    # ── ETF (市场方向参考) ────────────────────────────────────────────────
+    "QQQ", "SPY", "IWM",
+]
 
 
 def _load_position_tickers():

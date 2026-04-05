@@ -460,24 +460,57 @@ def generate_signals(features_dict, market_context=None):
     Returns:
         list[dict]: All triggered signals, sorted by confidence_score desc
     """
-    # Market regime gate: hard-block in BEAR; soft-filter in NEUTRAL.
-    # BEAR  (both SPY + QQQ below 200MA): no new long signals — trend is down.
-    # NEUTRAL (mixed): only standalone-quality signals (confidence ≥ 0.85) pass.
-    # UNKNOWN (regime fetch failed — network error, API rate limit, etc.): treat as
-    #   NEUTRAL rather than BULL.  Market regime data failures correlate with high
-    #   volatility events; defaulting to "no restriction" would allow full signal
-    #   generation exactly when caution is most warranted.  Conf > 0.90 gate is
-    #   a safe fallback: only the highest-quality breakouts pass without confirmation.
-    # These gates mirror the LLM prompt direction rules but enforce them in code
-    # so weak signals never reach the LLM in adverse market conditions.
-    regime = (market_context or {}).get("market_regime", "").upper()
+    # ── Market regime gate ───────────────────────────────────────────────────
+    # 4-tier system based on SPY + QQQ distance from 200-day MA:
+    #
+    #   BULL         : both above 200MA              → 1.0% risk, all sectors allowed
+    #   NEUTRAL      : mixed (one above, one below)  → 0.75% risk, conf > 0.88 filter
+    #   BEAR_SHALLOW : both below MA but > -5%       → 0.50% risk, individual above_200ma
+    #                                                   required; Commodities+Healthcare
+    #                                                   sector filter applied post-enrich
+    #                                                   in run.py (after sector+TQS added)
+    #   BEAR_DEEP    : both below MA and ≤ -5%        → return [] (no new positions)
+    #
+    # Rationale for BEAR split: the old binary return[] fires even at -0.5% below
+    # 200MA — a near-neutral reading where Commodities/Healthcare (negative-beta to
+    # tech drawdowns) continue to produce valid long signals.  BEAR_DEEP preserves
+    # the capital-protection behaviour at genuine drawdown depth (both legs ≤ -5%).
+    #
+    # UNKNOWN (regime fetch failed): treated as NEUTRAL.  Regime failures correlate
+    # with high-volatility events; defaulting to BULL would be dangerous.
+    regime     = (market_context or {}).get("market_regime", "").upper()
+    spy_pct    = (market_context or {}).get("spy_pct_from_ma")
+    qqq_pct    = (market_context or {}).get("qqq_pct_from_ma")
+    bear_shallow = False
+
     if regime == "BEAR":
-        logger.info("BEAR market regime — no long signals generated")
-        return []
+        if spy_pct is not None and qqq_pct is not None:
+            bear_depth = min(spy_pct, qqq_pct)
+            if bear_depth <= -0.05:
+                logger.info(
+                    f"BEAR_DEEP (both legs ≤ −5%, min={bear_depth:.1%}) — "
+                    "no long signals generated"
+                )
+                return []
+            # BEAR_SHALLOW: both below 200MA but neither leg past -5%
+            bear_shallow = True
+            logger.info(
+                f"BEAR_SHALLOW (both below 200MA, min={bear_depth:.1%}) — "
+                "generating candidates for individual above_200ma tickers; "
+                "Commodities+Healthcare sector filter and TQS≥0.75 applied after enrichment"
+            )
+        else:
+            # No pct_from_ma — safe fallback: treat as BEAR_DEEP
+            logger.info(
+                "BEAR regime (spy_pct_from_ma/qqq_pct_from_ma unavailable) — "
+                "no long signals generated (safe fallback)"
+            )
+            return []
+
     if regime not in ("BULL", "BEAR", "NEUTRAL"):
         logger.warning(
             f"Market regime '{regime}' unrecognised — treating as NEUTRAL "
-            "(conf > 0.90 filter applies as safety net)"
+            "(conf > 0.88 filter applies as safety net)"
         )
         regime = "NEUTRAL"
 
@@ -485,6 +518,13 @@ def generate_signals(features_dict, market_context=None):
 
     for ticker, features in features_dict.items():
         if features is None:
+            continue
+
+        # BEAR_SHALLOW: require individual stock above its own 200MA.
+        # Defensive sectors (Commodities, Healthcare) trend up even when SPY+QQQ
+        # are in a shallow drawdown — but only when the stock itself is in uptrend.
+        # This per-stock check avoids generating signals on falling defensive names.
+        if bear_shallow and not features.get("above_200ma"):
             continue
 
         for fn in [strategy_a_trend, strategy_b_breakout, strategy_c_earnings]:

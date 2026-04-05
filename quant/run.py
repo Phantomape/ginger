@@ -27,12 +27,32 @@ from datetime import datetime
 
 
 # ── Logging ──────────────────────────────────────────────────────────────────
+# colorlog adds ANSI colours: DEBUG=cyan, INFO=green, WARNING=yellow,
+# ERROR=red, CRITICAL=bold red.  Falls back to plain logging if unavailable.
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s  %(levelname)-7s  %(name)s: %(message)s',
-    datefmt='%H:%M:%S',
-)
+try:
+    import colorlog
+    _handler = colorlog.StreamHandler()
+    _handler.setFormatter(colorlog.ColoredFormatter(
+        fmt="%(asctime)s  %(log_color)s%(levelname)-7s%(reset)s  %(cyan)s%(name)s%(reset)s: %(message)s",
+        datefmt="%H:%M:%S",
+        log_colors={
+            "DEBUG":    "cyan",
+            "INFO":     "green",
+            "WARNING":  "yellow",
+            "ERROR":    "red",
+            "CRITICAL": "bold_red",
+        },
+    ))
+    logging.root.setLevel(logging.INFO)
+    logging.root.handlers = [_handler]
+except ImportError:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s  %(levelname)-7s  %(name)s: %(message)s",
+        datefmt="%H:%M:%S",
+    )
+
 log = logging.getLogger(__name__)
 
 
@@ -174,15 +194,68 @@ def main():
     # ── Step 6: Quant signals ─────────────────────────────────────────────────
     _print_section("STEP 6 — Quant signals")
 
-    # Build market_context for RS filter: SPY 10d return vs each stock's 10d return.
-    spy_10d = market_regime.get("indices", {}).get("SPY", {}).get("momentum_10d_pct")
-    market_context = {"spy_10d_return": spy_10d}
+    # Build market_context: regime + RS filter + pct_from_ma for BEAR tier detection.
+    spy_10d         = market_regime.get("indices", {}).get("SPY", {}).get("momentum_10d_pct")
+    spy_pct_from_ma = market_regime.get("indices", {}).get("SPY", {}).get("pct_from_ma")
+    qqq_pct_from_ma = market_regime.get("indices", {}).get("QQQ", {}).get("pct_from_ma")
+    market_context  = {
+        "market_regime":   market_regime.get("regime", "UNKNOWN"),
+        "spy_10d_return":  spy_10d,
+        "spy_pct_from_ma": spy_pct_from_ma,
+        "qqq_pct_from_ma": qqq_pct_from_ma,
+    }
     if spy_10d is not None:
         log.info(f"SPY 10d return: {spy_10d*100:.2f}% (RS filter active)")
+    if spy_pct_from_ma is not None and qqq_pct_from_ma is not None:
+        log.info(f"SPY vs 200MA: {spy_pct_from_ma*100:+.2f}%   "
+                 f"QQQ vs 200MA: {qqq_pct_from_ma*100:+.2f}%")
 
     signals = generate_signals(features_dict, market_context=market_context)
     signals = enrich_signals(signals, features_dict)
+
+    # ── BEAR_SHALLOW post-enrich filter ──────────────────────────────────────
+    # signal_engine already drops BEAR_DEEP (both ≤ -5%) and individual tickers
+    # that are below their own 200MA.  After enrich_signals adds sector and TQS,
+    # apply the two remaining BEAR_SHALLOW gates:
+    #   1. Sector allowlist: Commodities + Healthcare only (negative-beta to tech BEAR)
+    #   2. TQS ≥ 0.75: stricter quality bar to compensate for elevated macro risk
+    _regime_str = market_regime.get("regime", "").upper()
+    if (_regime_str == "BEAR"
+            and spy_pct_from_ma is not None
+            and qqq_pct_from_ma is not None
+            and min(spy_pct_from_ma, qqq_pct_from_ma) > -0.05):
+        _BEAR_SHALLOW_SECTORS = {"Commodities", "Healthcare"}
+        _before = len(signals)
+        signals = [
+            s for s in signals
+            if s.get("sector") in _BEAR_SHALLOW_SECTORS
+            and (s.get("trade_quality_score") or 0) >= 0.75
+        ]
+        log.info(
+            f"BEAR_SHALLOW filter: {_before} → {len(signals)} signals "
+            f"(Commodities+Healthcare only, TQS≥0.75)"
+        )
+
     log.info(f"Signals generated: {len(signals)}")
+
+    # ── Regime-adjusted risk per trade ───────────────────────────────────────
+    # Scale down position sizing in adverse regimes to reduce portfolio heat
+    # while keeping the trade structure (R:R, stop, target) unchanged.
+    #   BULL         : 1.00% (default)
+    #   NEUTRAL      : 0.75% — mixed market; reduce exposure, keep selectivity
+    #   BEAR_SHALLOW : 0.50% — both below MA; defensive-sector-only exposure
+    #   BEAR_DEEP    : N/A   — no signals generated
+    if _regime_str == "NEUTRAL":
+        _trade_risk_pct = 0.0075
+        log.info("NEUTRAL regime: position sizing at 0.75% risk per trade")
+    elif (_regime_str == "BEAR"
+          and spy_pct_from_ma is not None
+          and qqq_pct_from_ma is not None
+          and min(spy_pct_from_ma, qqq_pct_from_ma) > -0.05):
+        _trade_risk_pct = 0.005
+        log.info("BEAR_SHALLOW regime: position sizing at 0.50% risk per trade")
+    else:
+        _trade_risk_pct = None   # use portfolio_engine default (1.0%)
 
     # Current prices for heat + sizing
     current_prices = {
@@ -198,9 +271,9 @@ def main():
         )
         log.info(portfolio_heat["heat_note"])
         if portfolio_heat["can_add_new_positions"] and portfolio_value:
-            signals = size_signals(signals, portfolio_value)
+            signals = size_signals(signals, portfolio_value, risk_pct=_trade_risk_pct)
     elif portfolio_value:
-        signals = size_signals(signals, portfolio_value)
+        signals = size_signals(signals, portfolio_value, risk_pct=_trade_risk_pct)
 
     metrics = compute_metrics()
 
