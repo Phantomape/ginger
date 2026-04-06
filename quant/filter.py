@@ -79,10 +79,28 @@ def _load_position_tickers():
 # its news is still captured in the same pipeline run.
 WATCHLIST = sorted(set(_BASE_WATCHLIST) | _load_position_tickers())
 
-# Event keywords to keep (important trading signals)
+# Event keywords to keep (important trading signals).
+# IMPORTANT: filter_by_event_keywords runs BEFORE assign_news_tier.
+# Any T1-level event not in this list gets silently dropped and never
+# reaches tier classification — the LLM never sees it.
+# Keep this list in sync with _T1_TITLE_KEYWORDS below.
 EVENT_KEYWORDS = [
-    "earnings", "guidance", "forecast", "acquisition", "lawsuit",
-    "investigation", "approval", "downgrade", "upgrade", "raises", "cuts"
+    # Earnings & guidance
+    "earnings", "guidance", "forecast", "results",
+    # M&A / corporate actions
+    "acquisition", "merger", "buyout", "takeover",
+    "buyback", "repurchase", "split", "dividend",
+    # Regulatory / legal
+    "lawsuit", "investigation", "approval", "antitrust",
+    "recall", "restatement", "bankruptcy",
+    # Analyst actions
+    "downgrade", "upgrade",
+    # Direction words (catches "raises guidance", "cuts forecast", etc.)
+    "raises", "cuts", "lowers",
+    # Executive changes
+    "resign", "departure",
+    # Negative catalysts
+    "profit warning",
 ]
 
 # Market summary keywords to drop (generic market-wide news, NOT stock-specific).
@@ -102,15 +120,33 @@ MARKET_SUMMARY_KEYWORDS = [
 # Tier 3: Opinion, analysis, valuation, fund holdings. Noise for trading purposes.
 
 _T1_TITLE_KEYWORDS = [
+    # Earnings outcomes
     "earnings beat", "earnings miss", "quarterly results", "quarterly earnings",
+    "beats estimates", "beat estimates", "misses estimates", "miss estimates",
+    "preliminary results",
+    # Guidance — canonical and alternate phrasings
+    # "guidance raise/cut" covers "guidance raised/cut" (word order: adj after noun)
+    # "raises/cuts/lowers guidance" covers verb-first headlines (e.g. "NVDA raises guidance")
     "guidance raise", "guidance cut", "guidance raised", "guidance lowered",
+    "raises guidance", "cuts guidance", "lowers guidance",
+    "raises forecast", "cuts forecast", "lowers forecast",
+    "raises full-year", "lowers full-year",
+    # M&A
     "merger", "acquisition", "acquired", "takeover", "buyout",
+    # Regulatory / legal
     "fda approval", "fda approved", "regulatory approval", "approved by",
     "sec filing", "sec charges", "doj charges", "antitrust",
+    # Distress events
     "bankruptcy", "chapter 11", "chapter 7",
+    "profit warning",
+    # Dividends
     "dividend cut", "dividend raise", "dividend raised",
+    # Executive changes
     "ceo resign", "ceo fired", "ceo replaced", "executive departure",
-    "stock split", "share buyback", "buyback program",
+    # Corporate actions
+    "stock split", "reverse split", "share buyback", "buyback program",
+    # Product / supply-chain events
+    "product recall", "safety recall",
 ]
 
 _T2_SOURCES = {

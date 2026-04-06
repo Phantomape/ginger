@@ -73,13 +73,15 @@ def get_close_price(ticker, target_date):
 
 def get_daily_prices_during_period(ticker, start_date, end_date):
     """
-    Fetch daily Low and Close prices between start_date and end_date (inclusive).
+    Fetch daily OHLC prices between start_date and end_date (inclusive).
 
     Used to detect whether a stop-loss was hit during the evaluation window,
-    which pure endpoint comparison misses entirely.
+    which pure endpoint comparison misses entirely.  Open is required to
+    detect gap-through-stop fills: when a stock gaps below the stop at open,
+    execution occurs at the opening price, not at the stop price.
 
     Returns:
-        pd.DataFrame with columns [Low, Close, High] indexed by date, or None
+        pd.DataFrame with columns [Open, High, Low, Close] indexed by date, or None
     """
     try:
         data = yf.download(
@@ -93,7 +95,7 @@ def get_daily_prices_during_period(ticker, start_date, end_date):
         # Flatten MultiIndex if present (yfinance quirk)
         if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
-        required = ["High", "Low", "Close"]
+        required = ["Open", "High", "Low", "Close"]
         if not all(c in data.columns for c in required):
             return None
         return data[required]
@@ -151,14 +153,23 @@ def check_stop_or_target_hit(ticker, entry_date, entry_price, stop_price, target
     future_days = daily[daily.index.date > entry_date]
 
     for day_idx, (ts, row) in enumerate(future_days.iterrows(), start=1):
-        low   = float(row["Low"].item()   if hasattr(row["Low"],   "item") else row["Low"])
-        high  = float(row["High"].item()  if hasattr(row["High"],  "item") else row["High"])
+        open_p = float(row["Open"].item()  if hasattr(row["Open"],  "item") else row["Open"])
+        low    = float(row["Low"].item()   if hasattr(row["Low"],   "item") else row["Low"])
+        high   = float(row["High"].item()  if hasattr(row["High"],  "item") else row["High"])
 
         # Stop hit: daily Low touches or breaches stop_price
         if not result["stop_hit"] and stop_price and low <= stop_price:
-            result["stop_hit"]       = True
-            result["stop_hit_day"]   = day_idx
-            result["stop_hit_price"] = round(low, 4)
+            result["stop_hit"]     = True
+            result["stop_hit_day"] = day_idx
+            # Fill price depends on whether the stop was hit via a gap or intraday:
+            #   Gap-down (open < stop): market opens below stop → execution at open price.
+            #   Intraday stop (open >= stop): price drifts to stop during the session
+            #     → execution approximated at stop_price (limit/stop-limit order).
+            # Using low (the day's minimum) as fill would overstate the loss in both cases.
+            if open_p < stop_price:
+                result["stop_hit_price"] = round(open_p, 4)    # gap-fill: execution at open
+            else:
+                result["stop_hit_price"] = round(stop_price, 4)  # intraday fill at stop
 
         # Target hit: daily High reaches or exceeds target_price
         if not result["target_hit"] and target_price and high >= target_price:

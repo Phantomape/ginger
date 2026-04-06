@@ -247,8 +247,28 @@ def compute_account_state(
         new_trade_locked = True
         lock_reason = "CRITICAL positions present — resolve fire first"
     elif regime == "BEAR":
-        new_trade_locked = True
-        lock_reason = "BEAR market regime — no new long positions"
+        # Distinguish BEAR_SHALLOW (Commodities/Healthcare allowed) from BEAR_DEEP (fully locked).
+        # BEAR_SHALLOW: both below 200MA but neither leg past -5% — defensive sectors permitted.
+        # Without this check, new_trade_locked=True silently overrides the BEAR_SHALLOW rule
+        # in the prompt, blocking valid defensive-sector signals the code already filtered for.
+        _indices  = (regime_data or {}).get("indices", {})
+        _spy_pct  = _indices.get("SPY", {}).get("pct_from_ma")
+        _qqq_pct  = _indices.get("QQQ", {}).get("pct_from_ma")
+        _is_shallow = (
+            _spy_pct is not None and _qqq_pct is not None
+            and min(_spy_pct, _qqq_pct) > -0.05
+        )
+        if _is_shallow:
+            # BEAR_SHALLOW: signals are pre-filtered to Commodities/Healthcare in run.py.
+            # Let LLM apply the BEAR_SHALLOW rules rather than locking at program layer.
+            lock_reason = (
+                f"BEAR_SHALLOW (min leg {min(_spy_pct, _qqq_pct):.1%} > -5%) — "
+                "only Commodities/Healthcare signals permitted; other new trades blocked"
+            )
+            # new_trade_locked stays False — LLM enforces sector gate via BEAR_SHALLOW rules
+        else:
+            new_trade_locked = True
+            lock_reason = "BEAR_DEEP regime — no new long positions (both legs ≤ -5%)"
     elif not can_add:
         new_trade_locked = True
         lock_reason = f"Portfolio heat {heat_pct*100:.1f}% >= cap — reduce risk first"

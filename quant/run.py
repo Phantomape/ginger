@@ -25,6 +25,8 @@ import logging
 import os
 from datetime import datetime
 
+import pandas as pd
+
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 # colorlog adds ANSI colours: DEBUG=cyan, INFO=green, WARNING=yellow,
@@ -109,9 +111,10 @@ def main():
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
 
-    open_positions  = _load_open_positions()
-    portfolio_value = (open_positions or {}).get("portfolio_value_usd")
-    universe        = get_universe()
+    open_positions    = _load_open_positions()
+    _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
+    portfolio_value   = _stored_pv          # updated below after OHLCV is available
+    universe          = get_universe()
     log.info(f"Universe ({len(universe)} tickers): {universe}")
 
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
@@ -142,6 +145,37 @@ def main():
     ok = sum(1 for f in features_dict.values() if f)
     log.info(f"Features ready: {ok}/{len(universe)} tickers")
 
+    # ── Live portfolio value ─────────────────────────────────────────────────
+    # open_positions.json portfolio_value_usd is user-maintained and can be stale.
+    # Compute live PV from current_prices × shares to keep sizing accurate.
+    if open_positions and open_positions.get("positions"):
+        _current_px = {
+            t: f["close"] for t, f in features_dict.items()
+            if f and f.get("close") is not None
+        }
+        _equity = sum(
+            pos.get("shares", 0) * _current_px.get(
+                pos.get("ticker", ""), pos.get("avg_cost", 0)
+            )
+            for pos in open_positions["positions"]
+            if pos.get("ticker") and pos.get("shares", 0) > 0
+        )
+        _cash = (open_positions.get("cash_usd") or 0)
+        _live_pv = _equity + _cash
+        if _live_pv > 0:
+            if _stored_pv and abs(_live_pv - _stored_pv) / max(_stored_pv, 1) > 0.15:
+                log.warning(
+                    f"Portfolio value drift: stored={_stored_pv:,.0f}  "
+                    f"live={_live_pv:,.0f} USD — using live for sizing"
+                )
+            portfolio_value = _live_pv
+            log.info(f"Portfolio value: ${portfolio_value:,.0f} (live)")
+        else:
+            log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored)")
+    else:
+        if portfolio_value:
+            log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored, no positions)")
+
     # ── Step 5: Position context (exit signals for held tickers) ─────────────
     _print_section("STEP 5 — Position context")
     # Build trend_signals dict with key names that llm_advisor.build_prompt() expects:
@@ -165,11 +199,47 @@ def main():
             "trend_score":      f.get("trend_score"),
             "days_to_earnings": f.get("days_to_earnings"),
         }
+        # Compute prev_close for daily_return_pct (post-earnings gap detection).
+        # Required by LLM rules: "daily_return_pct > +8% → REDUCE 50%", "< -5% → EXIT".
+        # Without this the LLM cannot distinguish a single-day gap from cumulative PnL.
+        ohlcv = ohlcv_dict.get(ticker)
+        prev_close = None
+        if ohlcv is not None and len(ohlcv) >= 2:
+            try:
+                prev_val   = ohlcv['Close'].iloc[-2]
+                prev_close = float(prev_val.item() if hasattr(prev_val, 'item') else prev_val)
+            except Exception:
+                pass
+
+        # Compute high_since_entry for accurate trailing stop high-water mark.
+        # Bug: without this, trailing stop uses 20d high, missing peaks from >20 days ago.
+        # Example: stock peaked at $150 (35d ago), high_20d=$142 → trailing=$130.64 (wrong);
+        # high_since_entry=$150 → trailing=$138.00 (correct, would have triggered).
+        high_since_entry = None
+        if open_positions and ohlcv is not None:
+            for pos in open_positions.get('positions', []):
+                if pos.get('ticker') == ticker:
+                    entry_date_str = pos.get('entry_date')
+                    if entry_date_str:
+                        try:
+                            entry_dt    = pd.Timestamp(entry_date_str)
+                            data_since  = ohlcv[ohlcv.index >= entry_dt]
+                            if not data_since.empty:
+                                raw_high         = data_since['High'].max()
+                                high_since_entry = float(
+                                    raw_high.item() if hasattr(raw_high, 'item') else raw_high
+                                )
+                        except Exception:
+                            pass
+                    break
+
         # Add exit-level position context for held tickers
         pos_ctx = compute_position_context(
             ticker, f["close"], open_positions,
             atr=f.get("atr"),
             high_20d=f.get("high_20d"),
+            high_since_entry=high_since_entry,
+            prev_close=prev_close,
         )
         if pos_ctx:
             sig["position"] = pos_ctx
@@ -212,6 +282,14 @@ def main():
 
     signals = generate_signals(features_dict, market_context=market_context)
     signals = enrich_signals(signals, features_dict)
+
+    # Surface any signals dropped during enrichment (ATR missing, R:R too low)
+    from risk_engine import last_dropped_signals
+    if last_dropped_signals:
+        log.warning(
+            f"Dropped {len(last_dropped_signals)} signal(s) during enrichment: "
+            + "; ".join(f"{d['ticker']} — {d['reason']}" for d in last_dropped_signals)
+        )
 
     # ── BEAR_SHALLOW post-enrich filter ──────────────────────────────────────
     # signal_engine already drops BEAR_DEEP (both ≤ -5%) and individual tickers
@@ -284,12 +362,13 @@ def main():
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
     report = generate_daily_report(
-        signals        = signals,
-        features_dict  = features_dict,
-        portfolio_heat = portfolio_heat,
-        metrics        = metrics,
-        market_regime  = market_regime,
-        open_positions = open_positions,
+        signals          = signals,
+        features_dict    = features_dict,
+        portfolio_heat   = portfolio_heat,
+        metrics          = metrics,
+        market_regime    = market_regime,
+        open_positions   = open_positions,
+        dropped_signals  = last_dropped_signals or None,
     )
     print("\n" + report)
     save_report(report)

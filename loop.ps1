@@ -7,7 +7,7 @@ while ($iteration -lt $maxIterations) {
 
     Write-Host "Iteration $iteration"
 
-    $prompt = Get-Content CLAUDE2.md -Raw
+    $prompt = Get-Content CLAUDE3.md -Raw
     Write-Host "Prompt loaded"
 
     Write-Host "Running Claude..."

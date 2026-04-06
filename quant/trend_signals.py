@@ -307,14 +307,15 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
     return None
 
 
-def generate_trend_signals(universe=None, window=20, lookback_days=350):
+def generate_trend_signals(universe=None, window=20, lookback_days=400):
     """
     Generate trend signals for all tickers in universe.
 
     Args:
         universe (list): List of tickers (default: get from WATCHLIST + positions)
         window (int): Breakout window in days (default: 20)
-        lookback_days (int): Days of historical data to download (default: 60)
+        lookback_days (int): Days of historical data to download (default: 400)
+            Must be ≥ 400 to provide 276+ trading days for 52-week high computation.
 
     Returns:
         dict: Trend signals data

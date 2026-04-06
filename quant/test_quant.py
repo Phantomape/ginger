@@ -192,7 +192,7 @@ def test_strategy_b_fires_on_valid_signal():
 
 def test_strategy_b_blocked_without_volume():
     from signal_engine import strategy_b_breakout
-    feat = _make_features(volume_spike_ratio=1.0)  # below 1.2 threshold
+    feat = _make_features(volume_spike_ratio=1.0)  # below 1.5 threshold
     sig = strategy_b_breakout("TEST", feat)
     assert sig is None
 
@@ -1796,6 +1796,125 @@ def test_forward_tester_handles_wrapped_json():
             os.remove(dated_path)
 
 
+# ── forward_tester gap-fill price accuracy ───────────────────────────────────
+
+def test_check_stop_gap_fill_uses_open_not_low(monkeypatch):
+    """When stock gaps below the stop on open, stop_hit_price must be the open
+    price (the actual execution fill), NOT the daily low (which overstates the loss).
+
+    Scenario: Entry $100, stop $95.
+      Day 1: stock gaps down — opens at $92 (below stop), trades to low of $89.
+    Expected: stop_hit=True, stop_hit_price=$92.00 (gap fill at open, not $89 low).
+    """
+    import pandas as pd
+    from datetime import date
+    from forward_tester import check_stop_or_target_hit
+
+    entry_date   = date(2024, 1, 2)
+    # Simulated daily bars: day 0 = entry date (excluded), day 1 = first eval day
+    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
+    fake_data = pd.DataFrame({
+        "Open":  [100.0, 92.0],   # day 1 opens at $92 — gap through $95 stop
+        "High":  [101.0, 93.0],
+        "Low":   [ 99.0, 89.0],   # intraday low $89 — should NOT be used as fill
+        "Close": [100.0, 91.0],
+    }, index=idx)
+
+    import forward_tester
+    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
+                        lambda *args, **kwargs: fake_data)
+
+    result = check_stop_or_target_hit(
+        ticker       = "TEST",
+        entry_date   = entry_date,
+        entry_price  = 100.0,
+        stop_price   = 95.0,
+        target_price = 115.0,
+        n_days       = 10,
+    )
+
+    assert result["stop_hit"],     "Stop must be detected when day-low breaches stop"
+    assert result["stop_hit_day"] == 1
+    assert result["stop_hit_price"] == 92.0, (
+        f"Gap-fill stop must use open price $92 not day-low $89, "
+        f"got {result['stop_hit_price']}"
+    )
+
+
+def test_check_stop_intraday_fill_uses_stop_price(monkeypatch):
+    """When the stop is hit intraday (open above stop, low below stop),
+    stop_hit_price must approximate the stop price (limit fill), not the low.
+
+    Scenario: Entry $100, stop $95.
+      Day 1: opens at $97 (above stop), sells down to low $93.
+    Expected: stop_hit=True, stop_hit_price=$95.00 (stop-limit fill, not $93 low).
+    """
+    import pandas as pd
+    from datetime import date
+    from forward_tester import check_stop_or_target_hit
+
+    entry_date = date(2024, 1, 2)
+    idx = pd.to_datetime(["2024-01-02", "2024-01-03"])
+    fake_data = pd.DataFrame({
+        "Open":  [100.0, 97.0],   # opens above stop — no gap
+        "High":  [101.0, 97.5],
+        "Low":   [ 99.0, 93.0],   # sells through stop intraday
+        "Close": [100.0, 94.0],
+    }, index=idx)
+
+    import forward_tester
+    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
+                        lambda *args, **kwargs: fake_data)
+
+    result = check_stop_or_target_hit(
+        ticker       = "TEST",
+        entry_date   = entry_date,
+        entry_price  = 100.0,
+        stop_price   = 95.0,
+        target_price = 115.0,
+        n_days       = 10,
+    )
+
+    assert result["stop_hit"],     "Intraday stop must be detected when low < stop"
+    assert result["stop_hit_day"] == 1
+    assert result["stop_hit_price"] == 95.0, (
+        f"Intraday fill must be stop price $95 not day-low $93, "
+        f"got {result['stop_hit_price']}"
+    )
+
+
+def test_check_stop_not_hit_when_low_above_stop(monkeypatch):
+    """Stop must NOT be marked hit when daily Low remains above the stop price."""
+    import pandas as pd
+    from datetime import date
+    from forward_tester import check_stop_or_target_hit
+
+    entry_date = date(2024, 1, 2)
+    idx = pd.to_datetime(["2024-01-02", "2024-01-03", "2024-01-04"])
+    fake_data = pd.DataFrame({
+        "Open":  [100.0, 98.0, 99.0],
+        "High":  [101.0, 99.0, 105.0],
+        "Low":   [ 99.0, 96.0, 98.0],   # low stays at $96, above $95 stop
+        "Close": [100.0, 97.0, 103.0],
+    }, index=idx)
+
+    import forward_tester
+    monkeypatch.setattr(forward_tester, "get_daily_prices_during_period",
+                        lambda *args, **kwargs: fake_data)
+
+    result = check_stop_or_target_hit(
+        ticker       = "TEST",
+        entry_date   = entry_date,
+        entry_price  = 100.0,
+        stop_price   = 95.0,
+        target_price = 115.0,
+        n_days       = 10,
+    )
+
+    assert not result["stop_hit"],  "Stop must NOT fire when low stays above stop price"
+    assert result["stop_hit_price"] is None
+
+
 # ── UNKNOWN regime treated as NEUTRAL ────────────────────────────────────────
 
 def test_generate_signals_unknown_regime_treated_as_neutral():
@@ -2790,6 +2909,80 @@ def test_preflight_bear_emergency_stops_empty_when_not_bear():
     )
 
 
+def test_preflight_bear_shallow_does_not_lock_new_trade():
+    """
+    BEAR_SHALLOW (both below 200MA but min leg > -5%): new_trade_locked must be False.
+
+    Rationale: BEAR_SHALLOW allows new trades in Commodities/Healthcare (run.py filters
+    signals to those sectors).  Setting new_trade_locked=True for ALL BEAR regimes was
+    overriding this rule, silently preventing any new defensive-sector trade even when
+    valid signals existed and the code had already pre-filtered them.
+
+    The fix: check pct_from_ma in regime_data to distinguish shallow from deep.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals()
+    enrich_positions_with_breach_status(ts)
+    regime_data = {
+        "regime": "BEAR",
+        "indices": {
+            "SPY": {"pct_from_ma": -0.03},   # -3%: below MA but > -5%
+            "QQQ": {"pct_from_ma": -0.04},   # -4%: below MA but > -5%
+        },
+    }
+    result = compute_account_state(ts, heat_data={}, regime_data=regime_data)
+
+    assert result["account_state"] == "DEFENSIVE", (
+        "BEAR_SHALLOW must still be DEFENSIVE account_state (cautious posture)"
+    )
+    assert result["new_trade_locked"] is False, (
+        "BEAR_SHALLOW must NOT lock new_trade — Commodities/Healthcare signals are allowed. "
+        "new_trade_locked=True was overriding the BEAR_SHALLOW rule in trade_advice.txt."
+    )
+    assert "BEAR_SHALLOW" in result["lock_reason"], (
+        "lock_reason must mention BEAR_SHALLOW so LLM knows which rule applies"
+    )
+
+
+def test_preflight_bear_deep_still_locks_new_trade():
+    """
+    BEAR_DEEP (both below 200MA and min leg ≤ -5%): new_trade_locked must be True.
+
+    Defensive sectors are NOT permitted in BEAR_DEEP — the code returns no signals.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals()
+    enrich_positions_with_breach_status(ts)
+    regime_data = {
+        "regime": "BEAR",
+        "indices": {
+            "SPY": {"pct_from_ma": -0.06},   # -6%: past the -5% threshold
+            "QQQ": {"pct_from_ma": -0.08},
+        },
+    }
+    result = compute_account_state(ts, heat_data={}, regime_data=regime_data)
+
+    assert result["new_trade_locked"] is True, (
+        "BEAR_DEEP must lock new_trade — no signals should reach the LLM."
+    )
+    assert "BEAR_DEEP" in result["lock_reason"]
+
+
+def test_preflight_bear_no_pct_data_defaults_to_locked():
+    """
+    BEAR regime without pct_from_ma data (e.g. regime fetch failure): safe fallback
+    treats as BEAR_DEEP and locks new trades.
+    """
+    from preflight_validator import compute_account_state, enrich_positions_with_breach_status
+    ts = _make_preflight_trend_signals()
+    enrich_positions_with_breach_status(ts)
+    # regime_data has BEAR but no indices pct data
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "BEAR"})
+    assert result["new_trade_locked"] is True, (
+        "BEAR without pct_from_ma data must default to locked (safe fallback — assume BEAR_DEEP)"
+    )
+
+
 # ── Bidirectional contract: PROMPT_FIELD_REGISTRY ────────────────────────────
 # PROMPT_FIELD_REGISTRY is the single source of truth for the code↔prompt
 # interface.  It lists every field that trade_advice.txt tells the LLM to
@@ -3022,3 +3215,186 @@ def test_registry_fields_referenced_in_prompt():
                 f"  (b) The field was added to code but forgotten in the prompt — add it.\n"
                 f"Producer: {section['description']}"
             )
+
+
+# ── risk_engine dropped signals visibility ───────────────────────────────────
+
+def test_enrich_signals_populates_last_dropped_signals():
+    """Signals dropped by R:R gate must be recorded in last_dropped_signals.
+
+    Audit P0-3: previously these signals vanished silently; now callers can
+    surface them in reports and logs for transparency.
+    """
+    from risk_engine import enrich_signals, last_dropped_signals
+
+    # Create a signal that will be dropped due to missing ATR
+    sig_no_atr = {
+        "ticker": "FAKE", "strategy": "trend_long",
+        "entry_price": 100.0, "stop_price": 97.0, "confidence_score": 0.85,
+    }
+    features = {"FAKE": {"close": 100.0}}   # no ATR → signal dropped
+
+    result = enrich_signals([sig_no_atr], features)
+    assert result == [], "Signal with no ATR should be dropped"
+    assert len(last_dropped_signals) >= 1, (
+        "last_dropped_signals must be populated when signals are dropped"
+    )
+    assert last_dropped_signals[0]["ticker"] == "FAKE"
+    assert "ATR" in last_dropped_signals[0]["reason"]
+
+
+def test_enrich_signals_clears_dropped_on_each_call():
+    """last_dropped_signals must reset on each enrich_signals() call."""
+    from risk_engine import enrich_signals, last_dropped_signals
+
+    # First call: drop a signal
+    enrich_signals(
+        [{"ticker": "X", "strategy": "trend_long", "entry_price": 10, "stop_price": 9,
+          "confidence_score": 0.8}],
+        {"X": {"close": 10.0}},   # no ATR
+    )
+    assert len(last_dropped_signals) >= 1
+
+    # Second call: no signals → dropped list should be empty
+    enrich_signals([], {})
+    from risk_engine import last_dropped_signals as fresh
+    assert fresh == [], "last_dropped_signals must reset between calls"
+
+
+# ── filter.py news tier & event keyword coverage ──────────────────────────────
+
+def test_event_keywords_include_critical_t1_terms():
+    """EVENT_KEYWORDS must include all terms that protect T1 news from being pre-filtered.
+
+    filter_by_event_keywords runs BEFORE assign_news_tier. Any T1-level event not in
+    EVENT_KEYWORDS gets silently dropped and never receives a tier — the LLM never sees it.
+    This test documents the required terms so additions to T1_TITLE_KEYWORDS are reflected here.
+    """
+    from filter import EVENT_KEYWORDS
+    required = [
+        "merger",    # M&A not phrased as 'acquisition'
+        "buyback",   # share buyback programs
+        "bankruptcy", # distress events
+        "split",     # stock splits
+        "dividend",  # dividend changes (not just 'cuts'/'raises' phrasing)
+        "recall",    # product recalls
+        "resign",    # executive departures
+    ]
+    for term in required:
+        assert term in EVENT_KEYWORDS, (
+            f"'{term}' missing from EVENT_KEYWORDS — T1 news with this term "
+            f"gets dropped before tier classification (LLM never sees it)"
+        )
+
+
+def test_t1_keywords_include_alternate_guidance_phrasings():
+    """T1 keywords must cover 'raises guidance' (not just 'guidance raise').
+
+    Financial headlines use both word orders:
+      'guidance raise' (noun-first): 'Guidance raise signals confidence'  — COVERED
+      'raises guidance' (verb-first): 'NVDA raises guidance for fiscal year' — was MISSING
+
+    Without the verb-first form, a genuine guidance-raise catalyst from Reuters is
+    classified T2 (source-based) instead of T1, meaning the LLM cannot act on it
+    independently — it requires a concurrent quant signal.
+    """
+    from filter import _T1_TITLE_KEYWORDS
+    required_alternates = [
+        "raises guidance",
+        "cuts guidance",
+        "lowers guidance",
+        "profit warning",
+        "beats estimates",
+        "misses estimates",
+    ]
+    for kw in required_alternates:
+        assert kw in _T1_TITLE_KEYWORDS, (
+            f"'{kw}' missing from _T1_TITLE_KEYWORDS — "
+            f"headlines with this phrase are misclassified as T2/T3 "
+            f"and cannot independently trigger a trade"
+        )
+
+
+def test_t1_assignment_raises_guidance_headline():
+    """'NVDA raises guidance for fiscal year' must be classified T1."""
+    from filter import assign_news_tier
+    item = {
+        "title": "NVDA raises guidance for fiscal year 2026",
+        "source": "reuters",
+    }
+    tier = assign_news_tier(item)
+    assert tier == "T1", (
+        f"'raises guidance' headline classified as {tier} — "
+        "must be T1 (independent trade trigger). "
+        "Add 'raises guidance' to _T1_TITLE_KEYWORDS."
+    )
+
+
+def test_t1_assignment_profit_warning_headline():
+    """'Company issues profit warning' must be classified T1."""
+    from filter import assign_news_tier
+    item = {
+        "title": "Company issues profit warning citing macro headwinds",
+        "source": "bloomberg",
+    }
+    tier = assign_news_tier(item)
+    assert tier == "T1", (
+        f"'profit warning' headline classified as {tier} — "
+        "must be T1 (major negative catalyst)."
+    )
+
+
+def test_t1_assignment_buyback_headline():
+    """'META announces $50B share buyback' must pass event filter and be T1."""
+    from filter import assign_news_tier, filter_by_event_keywords
+    item = {
+        "title":   "META announces $50B share buyback program",
+        "summary": "",
+        "source":  "wsj",
+        "tickers": ["META"],
+        "published_at": "2026-04-05T10:00:00",
+    }
+    filtered, dropped = filter_by_event_keywords([item])
+    assert len(filtered) == 1, (
+        "Buyback headline was dropped by event keyword filter before tier assignment. "
+        "Add 'buyback' to EVENT_KEYWORDS."
+    )
+    tier = assign_news_tier(item)
+    assert tier == "T1", f"Share buyback headline classified as {tier} — must be T1."
+
+
+def test_t1_assignment_merger_headline():
+    """'Company merger with ...' must pass event filter and be T1."""
+    from filter import assign_news_tier, filter_by_event_keywords
+    item = {
+        "title":   "MSFT merger with gaming studio advances regulatory review",
+        "summary": "",
+        "source":  "reuters",
+        "tickers": ["MSFT"],
+        "published_at": "2026-04-05T10:00:00",
+    }
+    filtered, dropped = filter_by_event_keywords([item])
+    assert len(filtered) == 1, (
+        "Merger headline was dropped by event keyword filter. Add 'merger' to EVENT_KEYWORDS."
+    )
+    tier = assign_news_tier(item)
+    assert tier == "T1", f"Merger headline classified as {tier} — must be T1."
+
+
+def test_t1_assignment_bankruptcy_headline():
+    """'Company bankruptcy filing' must pass event filter and be T1."""
+    from filter import assign_news_tier, filter_by_event_keywords
+    item = {
+        "title":   "Retailer files for bankruptcy protection under chapter 11",
+        "summary": "",
+        "source":  "bloomberg",
+        "tickers": ["SPY"],
+        "published_at": "2026-04-05T10:00:00",
+    }
+    filtered, dropped = filter_by_event_keywords([item])
+    assert len(filtered) == 1, (
+        "Bankruptcy headline was dropped by event keyword filter. "
+        "Add 'bankruptcy' to EVENT_KEYWORDS."
+    )
+    tier = assign_news_tier(item)
+    assert tier == "T1", f"Bankruptcy headline classified as {tier} — must be T1."

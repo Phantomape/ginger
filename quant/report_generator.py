@@ -35,17 +35,19 @@ logger = logging.getLogger(__name__)
 
 
 def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
-                           metrics=None, market_regime=None, open_positions=None):
+                           metrics=None, market_regime=None, open_positions=None,
+                           dropped_signals=None):
     """
     Build a human-readable daily trade report string.
 
     Args:
-        signals        (list[dict]):  Enriched, sized signals
-        features_dict  (dict):        {ticker: features} for breakdown context
-        portfolio_heat (dict):        Output of portfolio_engine.compute_portfolio_heat()
-        metrics        (dict):        Output of performance_engine.compute_metrics()
-        market_regime  (dict):        Output of regime.compute_market_regime()
-        open_positions (dict):        Raw open_positions.json content
+        signals          (list[dict]):  Enriched, sized signals
+        features_dict    (dict):        {ticker: features} for breakdown context
+        portfolio_heat   (dict):        Output of portfolio_engine.compute_portfolio_heat()
+        metrics          (dict):        Output of performance_engine.compute_metrics()
+        market_regime    (dict):        Output of regime.compute_market_regime()
+        open_positions   (dict):        Raw open_positions.json content
+        dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
 
     Returns:
         str: Formatted report
@@ -90,6 +92,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
     lines.append("\n" + "-" * 60)
     lines.append("TOP TRADE CANDIDATES")
     lines.append("-" * 60)
+
+    if dropped_signals:
+        lines.append(f"\n  ⚠ {len(dropped_signals)} signal(s) dropped during enrichment:")
+        for d in dropped_signals:
+            lines.append(f"    {d['ticker']:6s}  {d.get('strategy','?'):22s}  → {d['reason']}")
 
     if not signals:
         lines.append("  No signals generated today.")

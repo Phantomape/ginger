@@ -297,19 +297,51 @@ def main():
                                for t in qp_universe}
 
                 qp_regime   = compute_market_regime()
-                mc = {"market_regime": qp_regime.get("regime", "")}
-                spy_data = qp_regime.get("indices", {}).get("SPY", {})
-                if spy_data.get("momentum_10d_pct") is not None:
-                    mc["spy_10d_return"] = spy_data["momentum_10d_pct"]
+                _spy_data = qp_regime.get("indices", {}).get("SPY", {})
+                _qqq_data = qp_regime.get("indices", {}).get("QQQ", {})
+                mc = {
+                    "market_regime":   qp_regime.get("regime", ""),
+                    "spy_10d_return":  _spy_data.get("momentum_10d_pct"),
+                    "spy_pct_from_ma": _spy_data.get("pct_from_ma"),
+                    "qqq_pct_from_ma": _qqq_data.get("pct_from_ma"),
+                }
 
                 qp_signals = generate_signals(qp_features, market_context=mc)
                 qp_signals = enrich_signals(qp_signals, qp_features)
+
+                # ── BEAR_SHALLOW post-enrich filter (mirrors run.py) ─────────
+                _regime_str = qp_regime.get("regime", "").upper()
+                _spy_pct = mc.get("spy_pct_from_ma")
+                _qqq_pct = mc.get("qqq_pct_from_ma")
+                if (_regime_str == "BEAR"
+                        and _spy_pct is not None and _qqq_pct is not None
+                        and min(_spy_pct, _qqq_pct) > -0.05):
+                    _BEAR_SHALLOW_SECTORS = {"Commodities", "Healthcare"}
+                    _before = len(qp_signals)
+                    qp_signals = [
+                        s for s in qp_signals
+                        if s.get("sector") in _BEAR_SHALLOW_SECTORS
+                        and (s.get("trade_quality_score") or 0) >= 0.75
+                    ]
+                    logger.info(
+                        f"BEAR_SHALLOW filter: {_before} → {len(qp_signals)} signals "
+                        f"(Commodities+Healthcare only, TQS≥0.75)"
+                    )
+
+                # ── Regime-adjusted risk per trade ───────────────────────────
+                if _regime_str == "NEUTRAL":
+                    _trade_risk_pct = 0.0075
+                elif (_regime_str == "BEAR"
+                      and _spy_pct is not None and _qqq_pct is not None
+                      and min(_spy_pct, _qqq_pct) > -0.05):
+                    _trade_risk_pct = 0.005
+                else:
+                    _trade_risk_pct = None   # default 1.0%
 
                 # Add position sizing using LIVE portfolio value (not stored value).
                 # open_positions.json portfolio_value_usd can be stale by months;
                 # using it causes persistent under-sizing (e.g. stored=$100k,
                 # live=$150k → shares sized for 0.67% risk instead of 1%).
-                # Mirror run_quant.py: compute live PV from current prices × shares.
                 from llm_advisor import load_open_positions as _load_pos
                 _open_pos = _load_pos()
                 _stored_pv = (_open_pos or {}).get("portfolio_value_usd")
@@ -337,7 +369,8 @@ def main():
                             )
                         _pv = _live_pv
                 if _pv:
-                    qp_signals = size_signals(qp_signals, _pv)
+                    qp_signals = size_signals(qp_signals, _pv,
+                                              risk_pct=_trade_risk_pct)
 
                 # Inject quant signals into trend_signals so llm_advisor finds them
                 trend_signals["quant_signals"] = qp_signals

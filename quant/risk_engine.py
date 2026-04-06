@@ -169,9 +169,13 @@ def enrich_signals(signals, features_dict):
         features_dict (dict):       {ticker: features} for ATR + TQS fields
 
     Returns:
-        list[dict]: Signals with risk fields + trade_quality_score added
+        list[dict]: Signals with risk fields + trade_quality_score added.
+        Dropped signals are stored in the module-level ``last_dropped_signals``
+        list so callers (run.py, report_generator) can surface them.
     """
     enriched = []
+    dropped  = []
+
     for sig in signals:
         ticker   = sig["ticker"]
         features = features_dict.get(ticker) or {}
@@ -182,6 +186,11 @@ def enrich_signals(signals, features_dict):
                 f"{ticker}: ATR unavailable — signal dropped. "
                 "LLM cannot size or gate without risk parameters (no stop/target/R:R)."
             )
+            dropped.append({
+                "ticker": ticker, "strategy": sig.get("strategy"),
+                "confidence": sig.get("confidence_score"),
+                "reason": "ATR unavailable",
+            })
             continue  # Drop: an incomplete signal is worse than no signal
 
         enriched_sig = enrich_signal_with_risk(sig, atr)
@@ -204,6 +213,12 @@ def enrich_signals(signals, features_dict):
                 f"{ticker}: signal dropped — exec_lag_adj_net_rr={exec_lag_rr:.2f} < 1.2 "
                 "(negative EV after overnight gap + round-trip cost)"
             )
+            dropped.append({
+                "ticker": ticker, "strategy": sig.get("strategy"),
+                "confidence": sig.get("confidence_score"),
+                "exec_lag_rr": exec_lag_rr,
+                "reason": f"exec_lag_adj_net_rr={exec_lag_rr:.2f} < 1.2",
+            })
             continue
 
         enriched_sig["trade_quality_score"] = _trade_quality_score(sig, features)
@@ -220,4 +235,20 @@ def enrich_signals(signals, features_dict):
             enriched_sig["days_to_earnings"] = dte
         enriched.append(enriched_sig)
 
+    # Store for inspection by callers (report_generator, run.py logging).
+    # Mutate in-place so that callers holding a reference to the list see updates.
+    last_dropped_signals.clear()
+    last_dropped_signals.extend(dropped)
+    if dropped:
+        logger.info(
+            f"Enrichment dropped {len(dropped)} signal(s): "
+            + ", ".join(f"{d['ticker']}({d['reason']})" for d in dropped)
+        )
+
     return enriched
+
+
+# Module-level storage for signals dropped during the last enrich_signals() call.
+# Callers can read this after enrich_signals() returns to surface dropped signals
+# in reports, logs, or LLM prompts.  Reset on each enrich_signals() invocation.
+last_dropped_signals: list[dict] = []
