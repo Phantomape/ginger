@@ -143,6 +143,12 @@ def _trade_quality_score(sig, features):
             + 0.20 × vol_norm              (volume_spike_ratio / 2.0, capped at 1.0)
             + 0.15 × momentum_norm         (momentum_10d_pct / 0.10, clamped to [-1, 1])
 
+    NOTE: Weights (0.40/0.25/0.20/0.15) are heuristic — chosen by domain intuition,
+    not calibrated against historical data.  Once the forward_tester accumulates 30+
+    trades per configuration, these weights should be calibrated by running a
+    single-parameter sweep via the backtester.  Until then, treat them as reasonable
+    defaults subject to revision.
+
     Returns:
         float: 0.0 – 1.0
     """
@@ -220,6 +226,20 @@ def enrich_signals(signals, features_dict):
                 "reason": f"exec_lag_adj_net_rr={exec_lag_rr:.2f} < 1.2",
             })
             continue
+
+        # Gap vulnerability: how tight is the stop relative to typical overnight gaps?
+        # Breakout stocks commonly gap 2-3% overnight.  A stop < 2% below entry
+        # means a gap-through-stop can turn a planned 1% risk into 8-15% loss.
+        # Surface a warning so the LLM can factor this into its decision; do NOT auto-reject.
+        _entry = enriched_sig["entry_price"]
+        gap_vuln = round((_entry - enriched_sig["stop_price"]) / _entry, 4) if _entry > 0 else 0
+        enriched_sig["gap_vulnerability_pct"] = gap_vuln
+        if gap_vuln < 0.02:
+            enriched_sig["gap_warning"] = (
+                f"Stop is only {gap_vuln*100:.1f}% below entry — typical overnight gaps "
+                "on breakout stocks are 2-3%.  A gap through the stop would cause a loss "
+                "far exceeding planned risk.  Consider widening stop or reducing size."
+            )
 
         enriched_sig["trade_quality_score"] = _trade_quality_score(sig, features)
         # Inject sector so LLM can enforce the 40% sector concentration rule.

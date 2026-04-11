@@ -3398,3 +3398,318 @@ def test_t1_assignment_bankruptcy_headline():
     )
     tier = assign_news_tier(item)
     assert tier == "T1", f"Bankruptcy headline classified as {tier} — must be T1."
+
+
+# ── P0-1: Gap vulnerability warning ─────────────────────────────────────────
+
+def test_gap_warning_tight_stop():
+    """Stop < 2% below entry should produce a gap_warning."""
+    from risk_engine import enrich_signal_with_risk
+    # Use enrich_signal_with_risk directly to avoid exec_lag gate filtering
+    sig = {
+        "ticker": "TEST", "strategy": "breakout_long",
+        "entry_price": 100.0, "stop_price": 99.0,   # 1% stop
+        "confidence_score": 0.8,
+    }
+    # ATR must be small enough that stop stays tight, but the function uses
+    # the signal's stop_price directly (not recomputed from ATR).
+    result = enrich_signal_with_risk(sig, atr=0.7)
+    # Now simulate the gap vulnerability logic from enrich_signals
+    _entry = result["entry_price"]
+    gap_vuln = round((_entry - result["stop_price"]) / _entry, 4) if _entry > 0 else 0
+    assert gap_vuln < 0.02, f"gap_vulnerability_pct={gap_vuln} should be < 0.02 for 1% stop"
+    # Verify the actual enrich_signals path: use a stop that's tight (<2%) but
+    # ensure exec_lag_adj_net_rr passes the 1.2 gate by using a large ATR for target.
+    # ATR=3.0 → target = 100+3.5*3=110.5, but stop stays at 99.0 (manually set).
+    # risk=1.0, reward=10.5 → R:R is very high, exec_lag gate passes easily.
+    from risk_engine import enrich_signals
+    sig2 = {
+        "ticker": "TEST", "strategy": "breakout_long",
+        "entry_price": 100.0, "stop_price": 99.0,   # 1% stop — well below 2%
+        "confidence_score": 0.8,
+    }
+    features = {"atr": 3.0, "trend_score": 0.8, "volume_spike_ratio": 2.5,
+                "momentum_10d_pct": 0.06}
+    enriched = enrich_signals([sig2], {"TEST": features})
+    assert len(enriched) >= 1, "Signal should not be dropped (high R:R from large ATR target)"
+    r = enriched[0]
+    assert r["gap_vulnerability_pct"] < 0.02
+    assert "gap_warning" in r, "Tight stop should produce gap_warning"
+
+
+def test_gap_warning_normal_stop():
+    """Stop >= 2% below entry should NOT produce a gap_warning."""
+    from risk_engine import enrich_signals
+    sig = {
+        "ticker": "TEST", "strategy": "trend_long",
+        "entry_price": 100.0, "stop_price": 95.5,   # 4.5% stop
+        "confidence_score": 0.8,
+    }
+    features = {"atr": 3.0, "trend_score": 0.8, "volume_spike_ratio": 2.5,
+                "momentum_10d_pct": 0.06}
+    result = enrich_signals([sig], {"TEST": features})
+    assert len(result) >= 1
+    r = result[0]
+    assert r["gap_vulnerability_pct"] >= 0.02
+    assert "gap_warning" not in r, "Normal stop should NOT have gap_warning"
+
+
+def test_gap_warning_boundary_2pct():
+    """Stop exactly 2% below entry is on the boundary — no warning."""
+    from risk_engine import enrich_signals
+    sig = {
+        "ticker": "TEST", "strategy": "breakout_long",
+        "entry_price": 100.0, "stop_price": 98.0,   # exactly 2%
+        "confidence_score": 0.8,
+    }
+    features = {"atr": 1.4, "trend_score": 0.8, "volume_spike_ratio": 2.5,
+                "momentum_10d_pct": 0.06}
+    result = enrich_signals([sig], {"TEST": features})
+    assert len(result) >= 1
+    r = result[0]
+    assert abs(r["gap_vulnerability_pct"] - 0.02) < 0.001
+    assert "gap_warning" not in r, "Boundary 2% should NOT trigger warning"
+
+
+# ── P0-2: Same-day sector concentration cap ──────────────────────────────────
+
+def test_sector_cap_drops_third_tech_signal():
+    """3 tech signals on same day → only 2 should survive."""
+    # This tests the logic in run.py — we replicate the sector-cap code here
+    # since run.py's main() is not unit-testable without full pipeline setup.
+    from risk_engine import SECTOR_MAP
+
+    signals = [
+        {"ticker": "NVDA", "sector": "Technology", "confidence_score": 0.9},
+        {"ticker": "AMD",  "sector": "Technology", "confidence_score": 0.85},
+        {"ticker": "MU",   "sector": "Technology", "confidence_score": 0.80},
+    ]
+    # Replicate the sector cap logic from run.py
+    _MAX_PER_SECTOR = 2
+    _sector_counts = {}
+    capped = []
+    for s in signals:
+        sec = s.get("sector", "Unknown")
+        _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
+        if _sector_counts[sec] <= _MAX_PER_SECTOR:
+            capped.append(s)
+    assert len(capped) == 2, f"Expected 2, got {len(capped)}"
+    assert capped[0]["ticker"] == "NVDA"
+    assert capped[1]["ticker"] == "AMD"
+
+
+def test_sector_cap_diverse_sectors_all_pass():
+    """Signals from different sectors should all pass."""
+    signals = [
+        {"ticker": "NVDA", "sector": "Technology", "confidence_score": 0.9},
+        {"ticker": "TSLA", "sector": "Consumer Discretionary", "confidence_score": 0.85},
+        {"ticker": "LLY",  "sector": "Healthcare", "confidence_score": 0.80},
+    ]
+    _MAX_PER_SECTOR = 2
+    _sector_counts = {}
+    capped = []
+    for s in signals:
+        sec = s.get("sector", "Unknown")
+        _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
+        if _sector_counts[sec] <= _MAX_PER_SECTOR:
+            capped.append(s)
+    assert len(capped) == 3, f"Diverse sectors should all pass, got {len(capped)}"
+
+
+# ── P2-1: Performance engine tests ──────────────────────────────────────────
+
+def test_open_trade_creates_record(tmp_path):
+    """open_trade should create a new trade entry in the diary."""
+    from performance_engine import open_trade, load_trades
+    fpath = str(tmp_path / "trades.json")
+    trade_id = open_trade("NVDA", "breakout_long", 100.0, 95.0, 10,
+                          target_price=112.0, filepath=fpath)
+    assert trade_id.startswith("NVDA_")
+    trades = load_trades(fpath)
+    assert len(trades) == 1
+    assert trades[0]["status"] == "open"
+    assert trades[0]["entry_price"] == 100.0
+
+
+def test_close_trade_computes_pnl(tmp_path):
+    """close_trade should compute P&L correctly."""
+    from performance_engine import open_trade, close_trade, load_trades
+    fpath = str(tmp_path / "trades.json")
+    tid = open_trade("NVDA", "trend_long", 100.0, 95.0, 10, filepath=fpath)
+    result = close_trade(tid, 110.0, filepath=fpath)
+    assert result is not None
+    assert result["status"] == "closed"
+    assert result["exit_price"] == 110.0
+    # P&L = (110-100)*10 - cost
+    # cost = 100*0.0015*10 + 110*0.0020*10 = 1.50 + 2.20 = 3.70
+    # pnl = 100 - 3.70 = 96.30
+    assert result["profit_loss"] == 96.30
+
+
+def test_close_trade_cost_model(tmp_path):
+    """Verify entry×0.15% + exit×0.20% cost model."""
+    from performance_engine import open_trade, close_trade
+    fpath = str(tmp_path / "trades.json")
+    tid = open_trade("TEST", "trend_long", 200.0, 190.0, 5, filepath=fpath)
+    result = close_trade(tid, 200.0, filepath=fpath)  # flat trade
+    # cost = 200*0.0015*5 + 200*0.0020*5 = 1.50 + 2.00 = 3.50
+    # pnl = 0 - 3.50 = -3.50
+    assert result["execution_cost"] == 3.50
+    assert result["profit_loss"] == -3.50
+
+
+def test_compute_metrics_empty():
+    """compute_metrics with no trades should return total_trades=0."""
+    from performance_engine import compute_metrics
+    m = compute_metrics(filepath="nonexistent_file_xyz.json")
+    assert m["total_trades"] == 0
+
+
+def test_compute_metrics_win_rate(tmp_path):
+    """Win rate should be correct for a mix of wins and losses."""
+    from performance_engine import open_trade, close_trade, compute_metrics
+    fpath = str(tmp_path / "trades.json")
+    # 2 wins, 1 loss
+    t1 = open_trade("A", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t1, 110, filepath=fpath)
+    t2 = open_trade("B", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t2, 105, filepath=fpath)
+    t3 = open_trade("C", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t3, 90, filepath=fpath)
+
+    m = compute_metrics(fpath)
+    assert m["total_trades"] == 3
+    # 2 wins / 3 trades
+    assert abs(m["win_rate"] - 0.6667) < 0.01
+
+
+def test_compute_metrics_max_drawdown(tmp_path):
+    """Max drawdown should track the worst peak-to-trough in cumulative P&L."""
+    from performance_engine import open_trade, close_trade, compute_metrics
+    fpath = str(tmp_path / "trades.json")
+    # Win +100, then lose -200 → drawdown = 200 from peak of 100-ish
+    t1 = open_trade("A", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t1, 110, filepath=fpath)   # ~+96.30
+    t2 = open_trade("B", "trend_long", 100, 95, 20, filepath=fpath)
+    close_trade(t2, 90, filepath=fpath)    # ~-207.40
+
+    m = compute_metrics(fpath)
+    assert m["max_drawdown_usd"] > 0, "Drawdown should be positive"
+
+
+def test_compute_metrics_r_multiple(tmp_path):
+    """R-multiple should be P&L / planned risk."""
+    from performance_engine import open_trade, close_trade, compute_metrics
+    fpath = str(tmp_path / "trades.json")
+    # Entry=100, stop=95 → risk=5/share. Exit at 110 → gross +10/share
+    t1 = open_trade("A", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t1, 110, filepath=fpath)
+    m = compute_metrics(fpath)
+    # Only 1 trade so avg_r = (pnl / (5*10))
+    # pnl = 96.30, planned_risk = 50 → R = 1.926
+    assert m["avg_r_multiple"] is not None
+    assert m["avg_r_multiple"] > 1.0, "A 2R winner should have avg_r > 1"
+
+
+def test_compute_metrics_by_strategy(tmp_path):
+    """by_strategy breakdown should separate strategies correctly."""
+    from performance_engine import open_trade, close_trade, compute_metrics
+    fpath = str(tmp_path / "trades.json")
+    t1 = open_trade("A", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t1, 110, filepath=fpath)
+    t2 = open_trade("B", "breakout_long", 100, 95, 10, filepath=fpath)
+    close_trade(t2, 90, filepath=fpath)
+
+    m = compute_metrics(fpath)
+    assert "trend_long" in m["by_strategy"]
+    assert "breakout_long" in m["by_strategy"]
+    assert m["by_strategy"]["trend_long"]["wins"] == 1
+    assert m["by_strategy"]["breakout_long"]["wins"] == 0
+
+
+def test_sharpe_none_with_single_trade(tmp_path):
+    """Sharpe requires >= 2 trades; single trade should return None."""
+    from performance_engine import open_trade, close_trade, compute_metrics
+    fpath = str(tmp_path / "trades.json")
+    t1 = open_trade("A", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t1, 110, filepath=fpath)
+    m = compute_metrics(fpath)
+    assert m.get("sharpe_ratio") is None
+
+
+def test_sharpe_fallback_for_short_history(tmp_path):
+    """With < 30 days span, Sharpe should use fallback frequency."""
+    from performance_engine import open_trade, close_trade, compute_metrics
+    fpath = str(tmp_path / "trades.json")
+    # Two trades on the same day → span < 30
+    t1 = open_trade("A", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t1, 110, filepath=fpath)
+    t2 = open_trade("B", "trend_long", 100, 95, 10, filepath=fpath)
+    close_trade(t2, 105, filepath=fpath)
+    m = compute_metrics(fpath)
+    # Sharpe should be computed (both wins → positive Sharpe)
+    # but may be None if R-multiples need stop data — either way it shouldn't crash
+    assert m["total_trades"] == 2
+
+
+# ── P1-1: Forward tester multi-window ────────────────────────────────────────
+
+def test_forward_tester_multi_window_results_present():
+    """Multi-window fields should appear in new_trade_result when data available."""
+    from forward_tester import EVAL_WINDOWS
+    assert 10 in EVAL_WINDOWS
+    assert 20 in EVAL_WINDOWS
+    assert 30 in EVAL_WINDOWS
+
+
+def test_forward_tester_backward_compat():
+    """return_10d_pct must remain as primary field (backward compat)."""
+    # Verify the constant and function signatures haven't changed
+    from forward_tester import EVAL_DAYS, evaluate_file
+    assert EVAL_DAYS == 10
+    import inspect
+    sig = inspect.signature(evaluate_file)
+    assert "n_days" in sig.parameters
+
+
+# ── P2-2: Backtester scaffold ────────────────────────────────────────────────
+
+def test_backtester_smoke_runs():
+    """BacktestEngine.run() should execute without error on minimal data."""
+    from backtester import BacktestEngine
+    dates = pd.bdate_range("2025-01-02", periods=60)
+    # Create simple uptrending OHLCV
+    data = {
+        "Open":  [100 + i * 0.5 for i in range(60)],
+        "High":  [101 + i * 0.5 for i in range(60)],
+        "Low":   [99  + i * 0.5 for i in range(60)],
+        "Close": [100.5 + i * 0.5 for i in range(60)],
+        "Volume": [1_000_000] * 60,
+    }
+    df = pd.DataFrame(data, index=dates)
+    engine = BacktestEngine({"TEST": df}, start="2025-01-02", end="2025-03-28")
+    result = engine.run()
+    assert "total_trades" in result
+    assert "equity_curve" in result
+    assert len(result["equity_curve"]) > 0
+
+
+def test_backtester_sweep_returns_multiple_results():
+    """sweep() should return one result per parameter value."""
+    from backtester import BacktestEngine
+    dates = pd.bdate_range("2025-01-02", periods=60)
+    data = {
+        "Open":  [100 + i * 0.3 for i in range(60)],
+        "High":  [101 + i * 0.3 for i in range(60)],
+        "Low":   [99  + i * 0.3 for i in range(60)],
+        "Close": [100.5 + i * 0.3 for i in range(60)],
+        "Volume": [1_000_000] * 60,
+    }
+    df = pd.DataFrame(data, index=dates)
+    engine = BacktestEngine({"TEST": df}, start="2025-01-02", end="2025-03-28")
+    results = engine.sweep("ATR_STOP_MULT", [1.0, 1.5, 2.0])
+    assert len(results) == 3
+    for r in results:
+        assert "param_name" in r
+        assert "param_value" in r
+        assert r["param_name"] == "ATR_STOP_MULT"

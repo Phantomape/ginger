@@ -33,8 +33,9 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-EVAL_DAYS = 10          # Default trading-day window
-DATA_DIR  = "data"
+EVAL_DAYS    = 10          # Default trading-day window
+EVAL_WINDOWS = [10, 20, 30]  # Multi-window evaluation (primary + extended)
+DATA_DIR     = "data"
 
 
 # ---------------------------------------------------------------------------
@@ -373,6 +374,32 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
                     # Stop was hit before (or without) target — actual trade result is a loss
                     path_correct = False
 
+            # Multi-window evaluation: compute returns at 20d and 30d windows
+            # when enough calendar time has passed.  Trend-following strategies
+            # expect 15-45 day holds; 10-day-only evaluation undervalues them.
+            multi_window = {}
+            for window in EVAL_WINDOWS:
+                if window == n_days:
+                    continue  # primary window already computed above
+                _w_eval_date = get_eval_date(rec_date, window)
+                if _w_eval_date > date.today():
+                    continue  # not enough time has passed
+                _w_price, _w_date = get_close_price(ticker, _w_eval_date)
+                if _w_price is not None and price_rec:
+                    _w_ret = (_w_price - price_rec) / price_rec
+                    multi_window[f"return_{window}d_pct"] = round(_w_ret, 4)
+                    # Extended path analysis for longer windows
+                    _w_check = check_stop_or_target_hit(
+                        ticker=ticker, entry_date=rec_date,
+                        entry_price=new_trade.get("entry_price") or price_rec,
+                        stop_price=new_trade.get("stop_price"),
+                        target_price=new_trade.get("target_price"),
+                        n_days=window,
+                    )
+                    if _w_check.get("target_hit") and not _w_check.get("stop_hit"):
+                        multi_window[f"target_hit_{window}d"] = True
+                        multi_window[f"target_hit_{window}d_day"] = _w_check.get("target_hit_day")
+
             results["new_trade_result"] = {
                 "ticker":              ticker,
                 "direction":           direction,
@@ -390,6 +417,7 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
                 "target_hit_day":           stop_target_check.get("target_hit_day"),
                 "actual_rec_date":     str(date_rec),
                 "actual_eval_date":    str(date_eval),
+                **multi_window,  # return_20d_pct, return_30d_pct when available
             }
         else:
             results["new_trade_result"] = {"ticker": ticker, "error": "price data unavailable"}
@@ -475,6 +503,14 @@ def print_report(results):
         stop_note   = f"stop hit day {nt['stop_hit_day']}"   if nt.get("stop_hit_during_period")   else "stop not hit"
         target_note = f"target hit day {nt['target_hit_day']}" if nt.get("target_hit_during_period") else "target not hit"
         print(f"    Path analysis: {stop_note} | {target_note}")
+        # Multi-window comparison
+        _mw_parts = []
+        for w in EVAL_WINDOWS:
+            key = f"return_{w}d_pct"
+            if key in nt:
+                _mw_parts.append(f"{w}d: {nt[key]*100:+.2f}%")
+        if _mw_parts:
+            print(f"    Multi-window:  {' | '.join(_mw_parts)}")
 
     # Summary
     s = results.get("summary", {})

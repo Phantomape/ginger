@@ -283,6 +283,33 @@ def main():
     signals = generate_signals(features_dict, market_context=market_context)
     signals = enrich_signals(signals, features_dict)
 
+    # ── Same-day sector concentration cap ─────────────────────────────────
+    # Multiple correlated signals can fire on the same day (e.g. 3 tech stocks).
+    # Entering all of them turns 3 independent 1% risks into one concentrated bet.
+    # Cap at 2 signals per sector; signals are already sorted by confidence from
+    # generate_signals(), so the top-2 per sector survive.
+    _MAX_PER_SECTOR = 2
+    _sector_counts: dict[str, int] = {}
+    _capped_signals = []
+    _dropped_sector = []
+    for s in signals:
+        sec = s.get("sector", "Unknown")
+        _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
+        if _sector_counts[sec] <= _MAX_PER_SECTOR:
+            _capped_signals.append(s)
+        else:
+            _dropped_sector.append(s)
+            log.warning(
+                f"{s['ticker']}: dropped — sector '{sec}' already has "
+                f"{_MAX_PER_SECTOR} signals today"
+            )
+    if _dropped_sector:
+        log.info(
+            f"Sector cap: {len(signals)} → {len(_capped_signals)} signals "
+            f"(dropped {len(_dropped_sector)} for concentration)"
+        )
+    signals = _capped_signals
+
     # Surface any signals dropped during enrichment (ATR missing, R:R too low)
     from risk_engine import last_dropped_signals
     if last_dropped_signals:
