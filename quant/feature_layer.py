@@ -193,16 +193,18 @@ def compute_earnings_features(earnings_data):
     # Research (Frazzini & Lamont 2007, Bernard & Thomas 1989) shows pre-earnings
     # drift (PEAD) is most concentrated in the FINAL 5-7 days before the announcement.
     #
-    # Execution lag correction (raised lower bound 5→6, upper bound 7→8):
-    #   Signals are generated AFTER today's close; actual entry is at NEXT-DAY OPEN.
-    #   If today's dte=5, entry occurs with dte=4 remaining — exactly the dangerous zone
-    #   where overnight gap risk (±8-15%) overwhelms the 1.5×ATR stop (≈ ±2-3%).
-    #   Adding +1 buffer: signal fires at dte=6-8 → entry executes with dte=5-7 remaining.
-    #   - Lower bound 6 (was 5): entry after 1 day lag → actual dte=5 (safe minimum)
-    #   - Upper bound 8 (was 7): entry after 1 day lag → actual dte=7 (no change in max)
-    #   - Beyond dte=8: random news flow noise dominates; too early for PEAD capture.
+    # NOTE: days_to_earnings is in TRADING DAYS (np.busday_count in data_layer),
+    # not calendar days.  This ensures weekend pipeline runs produce the same dte
+    # as the preceding Friday (no phantom dte decrease on Saturday/Sunday).
+    #
+    # Execution lag correction:
+    #   Signal fires after close → entry at next-day open → actual dte = dte - 1.
+    #   Window 4-6 trading days at signal → 3-5 trading days at execution.
+    #   - Lower bound 4 (was 6 calendar ≈ 4 trading): entry at dte=3 (safe minimum)
+    #   - Upper bound 6 (was 8 calendar ≈ 6 trading): entry at dte=5
+    #   - Beyond 6 trading days: too early for PEAD capture.
     dte = earnings_data.get("days_to_earnings")
-    features["earnings_event_window"] = bool(dte is not None and 6 <= dte <= 8)
+    features["earnings_event_window"] = bool(dte is not None and 4 <= dte <= 6)
 
     return features
 

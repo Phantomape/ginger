@@ -12,6 +12,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -134,7 +135,7 @@ def get_earnings_data(ticker):
                     if pd.notna(raw):
                         ed = raw.date() if hasattr(raw, 'date') else raw
                         result["next_earnings_date"] = str(ed)
-                        result["days_to_earnings"]   = (ed - today).days
+                        result["days_to_earnings"]   = int(np.busday_count(today, ed))
                 # Newer yfinance: dict
                 elif isinstance(cal, dict) and 'Earnings Date' in cal:
                     raw = cal['Earnings Date']
@@ -143,7 +144,7 @@ def get_earnings_data(ticker):
                     if pd.notna(raw):
                         ed = raw.date() if hasattr(raw, 'date') else raw
                         result["next_earnings_date"] = str(ed)
-                        result["days_to_earnings"]   = (ed - today).days
+                        result["days_to_earnings"]   = int(np.busday_count(today, ed))
         except Exception as e:
             logger.debug(f"{ticker}: calendar unavailable — {e}")
 
@@ -184,7 +185,7 @@ def get_earnings_data(ticker):
                     raw = upcoming.index[0]
                     ed  = raw.date() if hasattr(raw, 'date') else raw
                     result["next_earnings_date"] = str(ed)
-                    result["days_to_earnings"]   = (ed - today).days
+                    result["days_to_earnings"]   = int(np.busday_count(today, ed))
 
                 # EPS estimate from upcoming row
                 if ('EPS Estimate' in upcoming.columns

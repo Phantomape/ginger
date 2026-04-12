@@ -141,15 +141,13 @@ def strategy_a_trend(ticker, features, market_context=None):
     if not close or not atr:
         return None
 
-    # Earnings proximity guard: block any new entry within 5 days of earnings.
-    # Execution lag correction — signal fires after close, entry executes next-day open.
-    # If today dte=5, next-day execution is at dte=4 — inside the ±8-15% overnight gap
-    # risk zone that overwhelms the 1.5×ATR stop (≈2-3%). Use dte <= 5 (not <=4) to
-    # account for this lag, symmetric with how strategy_c requires dte >= 6 (not >= 5).
-    # LLM-prompt rule ("dte ≤ 4 → NO NEW TRADE") only fires when the LLM reads dte; this
-    # code gate is the redundant safety net that cannot be skipped or misread.
+    # Earnings proximity guard: block any new entry within 3 TRADING days of earnings.
+    # NOTE: days_to_earnings is in trading days (np.busday_count), not calendar days.
+    # Execution lag: signal fires after close → entry at next-day open → actual dte-1.
+    # If today dte=3, next-day execution at dte=2 — inside the ±8-15% overnight gap
+    # risk zone.  Use dte <= 3 (was ≤5 calendar ≈ 3-4 trading).
     dte = features.get("days_to_earnings")
-    if dte is not None and dte <= 5:
+    if dte is not None and dte <= 3:
         return None
 
     # ATR volatility gate: ATR > 7% of price means stop is too wide to control.
@@ -206,13 +204,14 @@ def strategy_a_trend(ticker, features, market_context=None):
     # exec_lag_adj_net_rr is computed at +0.5% gap (conservative average); the
     # 1.5% cancel cap is the MAXIMUM we'll tolerate, not the assumed average.
     entry_note = "Execute next-day open; cancel if open > entry_price × 1.015"
-    if dte is not None and 6 <= dte <= 10:
-        # Position may be held 5-30 days, crossing the upcoming earnings event.
+    if dte is not None and 4 <= dte <= 8:
+        # Position may be held days/weeks, crossing the upcoming earnings event.
         # Trend/breakout positions are sized for ATR risk (2-5%), NOT for the
         # ±8-15% earnings gap — that protection is only for earnings_event_long.
         # The trader MUST exit before earnings or face uncapped gap risk.
+        # NOTE: dte is in trading days (was 6-10 calendar → 4-8 trading).
         entry_note += (
-            f"; ⚠ EARNINGS IN {dte} DAYS — close this position at least "
+            f"; ⚠ EARNINGS IN {dte} TRADING DAYS — close this position at least "
             f"2 trading days before earnings to avoid ±8-15% gap risk "
             f"(overwhelms the 1.5×ATR stop)"
         )
@@ -278,7 +277,7 @@ def strategy_b_breakout(ticker, features, market_context=None):
 
     # Earnings proximity guard: same rationale as strategy_a above.
     dte = features.get("days_to_earnings")
-    if dte is not None and dte <= 5:
+    if dte is not None and dte <= 3:
         return None
 
     # ATR volatility gate: ATR > 7% of price means stop is too wide to control.
@@ -319,9 +318,9 @@ def strategy_b_breakout(ticker, features, market_context=None):
 
     # Same cancel threshold as strategy_a: ×1.015 (1.5%) — see strategy_a comment.
     entry_note = "Execute next-day open; cancel if open > entry_price × 1.015"
-    if dte is not None and 6 <= dte <= 10:
+    if dte is not None and 4 <= dte <= 8:
         entry_note += (
-            f"; ⚠ EARNINGS IN {dte} DAYS — close this position at least "
+            f"; ⚠ EARNINGS IN {dte} TRADING DAYS — close this position at least "
             f"2 trading days before earnings to avoid ±8-15% gap risk "
             f"(overwhelms the 1.5×ATR stop)"
         )
@@ -349,9 +348,9 @@ def strategy_c_earnings(ticker, features, market_context=None):
     Strategy C – Earnings Event Setup.
 
     Hard conditions:
-      - earnings within 6–8 days (execution-lag corrected from 5-7:
+      - earnings within 4–6 TRADING days (execution-lag corrected:
         signal fires after close, entry executes next-day open → actual dte = dte-1;
-        dte=6-8 at signal time → dte=5-7 at execution, safely above the dte≤4 gap-risk zone)
+        dte=4-6 at signal time → dte=3-5 at execution, safely above the dte≤2 gap-risk zone)
       - positive price momentum (10d > 0%) — minimum gate: stock must not be declining
         into earnings; flat/falling setups have much higher miss-risk
 

@@ -210,31 +210,144 @@ def parse_date_from_filename(filepath):
 # Core evaluation
 # ---------------------------------------------------------------------------
 
+PROFIT_LOCKING_RULES = frozenset({
+    "PROFIT_TARGET", "SIGNAL_TARGET", "PROFIT_LADDER_50", "PROFIT_LADDER_30",
+})
+
+# Timing tolerance: a profit-lock REDUCE is "timing_correct" when the sell price
+# is within this percent of the subsequent window's peak.  5% is the default
+# because the standard 3.5×ATR profit target sits roughly 3.5% above the 1.5×ATR
+# stop; leaving less than 5% on the table is within the natural noise band of
+# the trade structure.  Adjust only with evidence from forward_tester output.
+TIMING_TOLERANCE_PCT = 0.05
+
+
 def action_is_correct(action, return_10d, exit_rule=None):
     """
-    Determine if the recommendation was directionally correct.
+    Determine if the recommendation was DIRECTIONALLY correct.
+
+    This is a pure direction check — it does NOT evaluate timing quality.
+    For profit-locking REDUCEs (PROFIT_TARGET, SIGNAL_TARGET, PROFIT_LADDER_*),
+    the rule fired as designed so direction is always "correct"; but timing
+    quality (whether the exit left significant gain on the table) is a
+    separate metric computed by ``evaluate_profit_lock_timing()`` and
+    surfaced as ``timing_correct`` in ``evaluate_file()``.
 
     - EXIT:          correct if price went DOWN  (protected capital)
     - REDUCE (risk): correct if price went DOWN  (cut a losing/risky position)
-    - REDUCE (profit-taking): always correct — rule-triggered profit lock at a
-      planned level is correct regardless of subsequent price direction.
-      Rules that lock in profits: PROFIT_TARGET, SIGNAL_TARGET, PROFIT_LADDER_50,
-      PROFIT_LADDER_30.  Example: reducing NVDA at +20% (PROFIT_TARGET) is a
-      correct decision even if NVDA subsequently rises to +30%.
+    - REDUCE (profit-lock): always direction_correct — the rule executed at its
+      planned level.  Timing quality is graded separately.
     - HOLD:          correct if price went UP or flat
     - NEW TRADE:     correct if price went UP     (long trade wins)
     """
-    PROFIT_LOCKING_RULES = {
-        "PROFIT_TARGET", "SIGNAL_TARGET", "PROFIT_LADDER_50", "PROFIT_LADDER_30"
-    }
     if action == "REDUCE" and exit_rule in PROFIT_LOCKING_RULES:
-        # Profit-locking: rule fired at the planned target — always a correct execution
+        # Rule fired at planned target → direction correct by construction.
+        # Timing quality (early-exit cost) is graded by evaluate_profit_lock_timing.
         return True
     if action in ("EXIT", "REDUCE"):
         return return_10d < 0
     elif action == "HOLD":
         return return_10d >= 0
     return None     # unknown action type
+
+
+def evaluate_profit_lock_timing(ticker, rec_date, eval_date, sell_price,
+                                 avg_cost=None, tolerance_pct=TIMING_TOLERANCE_PCT,
+                                 _daily_override=None):
+    """
+    Grade timing quality of a profit-locking REDUCE.
+
+    A direction-correct profit lock can still be a mistake when the underlying
+    continues to run far past the exit price — the "cut your winners short"
+    failure mode of trend-following systems.  This helper quantifies how much
+    gain was left on the table by comparing the sell price to the highest High
+    in the evaluation window.
+
+    Metrics emitted:
+        foregone_gain_pct  = (max_high - sell_price) / sell_price
+            How much additional % move was left on the table, relative to the
+            sell price.  This is the headline "early-exit cost" metric.
+        peak_capture_pct   = (sell_price - avg_cost) / (max_high - avg_cost)
+            Of the hypothetical cost-to-peak move, what fraction was captured?
+            Requires avg_cost; falls back to (1 - foregone_gain_pct) capped to
+            [0,1] when avg_cost is unavailable.
+        timing_correct     = foregone_gain_pct < tolerance_pct
+            Boolean: was the sell near the window's peak?  Default tolerance 5%.
+
+    Args:
+        ticker        (str):        Ticker symbol
+        rec_date      (date):       Date the REDUCE recommendation was made
+        eval_date     (date):       End of evaluation window
+        sell_price    (float):      Price the profit lock executed at
+                                    (typically the rec_date close)
+        avg_cost      (float|None): Position's average cost, used for the
+                                    cost-to-peak peak_capture formulation
+        tolerance_pct (float):      foregone_gain_pct threshold for timing_correct
+        _daily_override (DataFrame|None): Injected prices for unit tests.  When
+                                    provided, skip the yfinance fetch and use
+                                    this DataFrame directly (must have a High
+                                    column and a DatetimeIndex).
+
+    Returns:
+        dict with keys:
+            data_available      (bool)
+            max_price_in_window (float|None)
+            peak_capture_pct    (float|None)
+            foregone_gain_pct   (float|None)
+            timing_correct      (bool|None)
+    """
+    result = {
+        "data_available":      False,
+        "max_price_in_window": None,
+        "peak_capture_pct":    None,
+        "foregone_gain_pct":   None,
+        "timing_correct":      None,
+    }
+    if sell_price is None or sell_price <= 0:
+        return result
+
+    if _daily_override is not None:
+        daily = _daily_override
+    else:
+        daily = get_daily_prices_during_period(ticker, rec_date, eval_date)
+    if daily is None or daily.empty:
+        return result
+
+    # Only inspect trading days AFTER the recommendation date (day 1 onward).
+    future = daily[daily.index.date > rec_date]
+    if future.empty:
+        return result
+
+    highs = future["High"]
+    max_high_raw = highs.max()
+    max_high = float(max_high_raw.item() if hasattr(max_high_raw, "item") else max_high_raw)
+
+    result["data_available"]      = True
+    result["max_price_in_window"] = round(max_high, 4)
+
+    if max_high <= sell_price:
+        # Stock never ran higher after the sell — timing was perfect.
+        result["peak_capture_pct"]  = 1.0
+        result["foregone_gain_pct"] = 0.0
+        result["timing_correct"]    = True
+        return result
+
+    foregone = (max_high - sell_price) / sell_price
+    result["foregone_gain_pct"] = round(foregone, 4)
+    result["timing_correct"]    = foregone < tolerance_pct
+
+    # Peak capture: cost-to-peak formulation when avg_cost is available.
+    # Example: avg_cost=$100, sell=$120, peak=$140 → captured (120-100)/(140-100) = 50%.
+    # When avg_cost is unavailable, fall back to 1 - foregone (a weaker but still
+    # directional indicator — goes to 0 as foregone gets large).
+    if avg_cost is not None and avg_cost > 0 and max_high > avg_cost:
+        peak_capture = (sell_price - avg_cost) / (max_high - avg_cost)
+        peak_capture = max(0.0, min(peak_capture, 1.0))
+    else:
+        peak_capture = max(0.0, 1.0 - foregone)
+    result["peak_capture_pct"] = round(peak_capture, 4)
+
+    return result
 
 
 def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
@@ -314,7 +427,7 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         avg_cost    = avg_costs.get(ticker)
         pnl_vs_cost = ((price_rec - avg_cost) / avg_cost) if avg_cost else None
 
-        results["position_results"].append({
+        position_entry = {
             "ticker":            ticker,
             "action":            action,
             "exit_rule":         rule,
@@ -324,10 +437,29 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
             "pnl_vs_cost_pct":   round(pnl_vs_cost, 4) if pnl_vs_cost is not None else None,
             "price_on_eval_date":price_eval,
             "return_10d_pct":    round(return_10d, 4),
-            "action_correct":    correct,
+            "action_correct":    correct,   # direction_correct (legacy name preserved)
             "actual_rec_date":   str(date_rec),
             "actual_eval_date":  str(date_eval),
-        })
+        }
+
+        # For profit-locking REDUCEs, also grade TIMING: did the sell fire
+        # near the window's peak, or did the stock run significantly higher?
+        # This surfaces the "cut winners short" failure mode that the old
+        # "action_correct = True" for all profit locks concealed.
+        if action == "REDUCE" and rule in PROFIT_LOCKING_RULES:
+            timing = evaluate_profit_lock_timing(
+                ticker     = ticker,
+                rec_date   = rec_date,
+                eval_date  = eval_date,
+                sell_price = price_rec,
+                avg_cost   = avg_cost,
+            )
+            position_entry["timing_correct"]      = timing["timing_correct"]
+            position_entry["peak_capture_pct"]    = timing["peak_capture_pct"]
+            position_entry["foregone_gain_pct"]   = timing["foregone_gain_pct"]
+            position_entry["max_price_in_window"] = timing["max_price_in_window"]
+
+        results["position_results"].append(position_entry)
 
     # ------------------------------------------------------------------
     # Evaluate new_trade (if any)
@@ -434,6 +566,31 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         hold_returns  = [r["return_10d_pct"] for r in valid if r["action"] == "HOLD"]
         exit_returns  = [r["return_10d_pct"] for r in valid if r["action"] in ("EXIT", "REDUCE")]
 
+        # Profit-lock timing rollup: scans REDUCEs that carried a timing_correct
+        # field (set only when exit_rule ∈ PROFIT_LOCKING_RULES).  Surfaces the
+        # "cut your winners short" cost that the legacy action_correct metric
+        # concealed by auto-marking profit locks as always right.
+        profit_lock_entries = [
+            r for r in valid
+            if r.get("timing_correct") is not None
+        ]
+        timing_correct_count  = sum(1 for r in profit_lock_entries if r["timing_correct"])
+        timing_accuracy_pct   = (round(timing_correct_count / len(profit_lock_entries) * 100, 1)
+                                 if profit_lock_entries else None)
+        foregone_values = sorted(
+            r["foregone_gain_pct"]
+            for r in profit_lock_entries
+            if r.get("foregone_gain_pct") is not None
+        )
+        if foregone_values:
+            mid = len(foregone_values) // 2
+            median_foregone = (foregone_values[mid]
+                               if len(foregone_values) % 2 == 1
+                               else (foregone_values[mid - 1] + foregone_values[mid]) / 2)
+            median_foregone_pct = round(median_foregone * 100, 2)
+        else:
+            median_foregone_pct = None
+
         results["summary"] = {
             "total_evaluated":          len(valid),
             "correct_calls":            correct_count,
@@ -446,6 +603,14 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
             "premature_exits":          sum(1 for r in valid
                                            if r["action"] in ("EXIT", "REDUCE")
                                            and r["return_10d_pct"] > 0),
+            # Direction vs. timing are now tracked separately.  direction_accuracy_pct
+            # is an alias for accuracy_pct so downstream tooling can migrate without
+            # breaking legacy consumers.
+            "direction_accuracy_pct":   round(accuracy * 100, 1),
+            "profit_lock_count":        len(profit_lock_entries),
+            "timing_correct_count":     timing_correct_count,
+            "timing_accuracy_pct":      timing_accuracy_pct,
+            "median_foregone_gain_pct": median_foregone_pct,
         }
 
     return results
@@ -517,7 +682,7 @@ def print_report(results):
     if s:
         print()
         print("  " + "-" * 68)
-        print(f"  Accuracy:         {s['correct_calls']}/{s['total_evaluated']} "
+        print(f"  Direction:        {s['correct_calls']}/{s['total_evaluated']} "
               f"correct  ({s['accuracy_pct']}%)")
         if s.get("avg_hold_return_pct") is not None:
             sign = "+" if s['avg_hold_return_pct'] >= 0 else ""
@@ -529,6 +694,16 @@ def print_report(results):
                   f"({s['exit_reduce_count']} positions)")
         if s.get("premature_exits", 0) > 0:
             print(f"  Premature exits:  {s['premature_exits']} position(s) rose after EXIT/REDUCE")
+        if s.get("profit_lock_count", 0) > 0:
+            tacc = s.get("timing_accuracy_pct")
+            mfg  = s.get("median_foregone_gain_pct")
+            tacc_str = f"{tacc}%" if tacc is not None else "N/A"
+            mfg_str  = f"{mfg:+.2f}%" if mfg is not None else "N/A"
+            print(f"  Profit-lock timing: {s.get('timing_correct_count', 0)}/"
+                  f"{s['profit_lock_count']} near peak ({tacc_str}), "
+                  f"median foregone gain {mfg_str}")
+            print(f"                    (timing ≠ direction: a rule-fired REDUCE can be "
+                  f"direction-correct yet still leave profit on the table)")
 
     print("=" * 72)
     print()

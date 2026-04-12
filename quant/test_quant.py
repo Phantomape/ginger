@@ -144,31 +144,31 @@ def test_strategy_a_rs_gate_allows_positive_stock_underperforming_spy():
 
 
 def test_strategy_a_blocked_when_near_earnings():
-    """Strategy A must be blocked when dte <= 5 (execution-lag-adjusted earnings proximity)."""
+    """Strategy A must be blocked when dte <= 3 (trading days, execution-lag-adjusted)."""
     from signal_engine import strategy_a_trend
-    # dte=5 at signal → dte=4 at next-day execution → inside ±8-15% gap risk zone
+    # dte=3 at signal → dte=2 at next-day execution → inside gap risk zone
     feat = _make_features()
-    feat["days_to_earnings"] = 5
+    feat["days_to_earnings"] = 3
     sig = strategy_a_trend("TEST", feat)
-    assert sig is None, "Strategy A must reject signals when dte <= 5 (execution at dte=4)"
+    assert sig is None, "Strategy A must reject signals when dte <= 3 (execution at dte=2)"
 
 
-def test_strategy_a_allowed_when_dte_is_6():
-    """Strategy A must allow signals when dte=6 (execution at dte=5, safe zone)."""
+def test_strategy_a_allowed_when_dte_is_4():
+    """Strategy A must allow signals when dte=4 (execution at dte=3, safe zone)."""
     from signal_engine import strategy_a_trend
     feat = _make_features()
-    feat["days_to_earnings"] = 6
+    feat["days_to_earnings"] = 4
     sig = strategy_a_trend("TEST", feat)
-    assert sig is not None, "Strategy A should not reject signals when dte=6 (safe execution window)"
+    assert sig is not None, "Strategy A should not reject signals when dte=4 (safe execution window)"
 
 
 def test_strategy_b_blocked_when_near_earnings():
-    """Strategy B must be blocked when dte <= 5 (same earnings-proximity rule as A)."""
+    """Strategy B must be blocked when dte <= 3 (trading days, same rule as A)."""
     from signal_engine import strategy_b_breakout
     feat = _make_features()
-    feat["days_to_earnings"] = 4
+    feat["days_to_earnings"] = 3
     sig = strategy_b_breakout("TEST", feat)
-    assert sig is None, "Strategy B must reject signals when dte <= 5"
+    assert sig is None, "Strategy B must reject signals when dte <= 3"
 
 
 def test_strategy_a_rs_gate_blocks_flat_negative_stock():
@@ -649,17 +649,19 @@ def test_compute_trend_features_trend_score_range():
 
 def test_compute_earnings_features_event_window():
     from feature_layer import compute_earnings_features
-    # dte=6: lower bound of new 6-8 window (accounts for next-day execution lag)
-    feat = compute_earnings_features({"days_to_earnings": 6, "avg_historical_surprise_pct": 0.05})
+    # dte=4: lower bound of 4-6 trading-day window
+    feat = compute_earnings_features({"days_to_earnings": 4, "avg_historical_surprise_pct": 0.05})
     assert feat["earnings_event_window"] is True
     assert feat["positive_surprise_history"] is True
-    # dte=5: was lower bound of old 5-7 window; now excluded because execution lag
-    # means actual entry has dte=4 remaining (dangerous gap risk zone)
-    feat5 = compute_earnings_features({"days_to_earnings": 5})
-    assert feat5["earnings_event_window"] is False, "dte=5 must be excluded (execution lag: entry at dte=4)"
-    # dte=4: too close — gap risk (excluded)
-    feat4 = compute_earnings_features({"days_to_earnings": 4})
-    assert feat4["earnings_event_window"] is False, "dte=4 must be excluded (gap risk)"
+    # dte=6: upper bound of 4-6 trading-day window
+    feat6 = compute_earnings_features({"days_to_earnings": 6})
+    assert feat6["earnings_event_window"] is True, "dte=6 must be inside window"
+    # dte=3: too close — gap risk (excluded)
+    feat3 = compute_earnings_features({"days_to_earnings": 3})
+    assert feat3["earnings_event_window"] is False, "dte=3 must be excluded (gap risk)"
+    # dte=7: outside window
+    feat7 = compute_earnings_features({"days_to_earnings": 7})
+    assert feat7["earnings_event_window"] is False, "dte=7 must be excluded (too early)"
 
 
 def test_compute_earnings_features_outside_window():
@@ -963,19 +965,28 @@ def test_build_prompt_news_is_replaced():
 
 # ── prompt TQS threshold check (integration) ─────────────────────────────────
 
-def test_prompt_tqs_threshold_is_0_60():
-    """The prompt must use TQS threshold 0.60, not the old 0.65."""
+def test_prompt_tqs_threshold_is_0_75():
+    """The prompt must use the raised TQS abstain threshold 0.75.
+
+    Previously 0.60 — raised as part of the 2026-04-11 abstain-first rewrite
+    (see test_prompt_abstain_first_framing_present below).  Lowering the
+    threshold without feedback-loop evidence is explicitly out of scope per
+    CLAUDE2.md.
+    """
     import os
     path = os.path.join(
         os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
-    assert "trade_quality_score < 0.60" in content, (
-        "Prompt still uses old TQS threshold. Expected '< 0.60'."
+    assert "trade_quality_score < 0.75" in content, (
+        "Prompt must use raised TQS threshold 0.75 (abstain-first rewrite)."
+    )
+    assert "trade_quality_score < 0.60" not in content, (
+        "Old TQS threshold 0.60 still present — should have been raised to 0.75."
     )
     assert "trade_quality_score < 0.65" not in content, (
-        "Old TQS threshold 0.65 still present in prompt."
+        "Ancient TQS threshold 0.65 still present in prompt."
     )
 
 
@@ -1531,14 +1542,14 @@ def test_strategy_b_entry_note_uses_1_5_pct_cancel():
 
 
 def test_strategy_a_entry_note_earnings_warning_dte_7():
-    """entry_note must contain earnings warning when DTE=7 (within 6-10 range)."""
+    """entry_note must contain earnings warning when DTE=7 (within 4-8 range)."""
     from signal_engine import strategy_a_trend
     feat = _make_features()
     feat["days_to_earnings"] = 7
     sig = strategy_a_trend("TEST", feat)
     assert sig is not None
-    assert "EARNINGS IN 7 DAYS" in sig["entry_note"], (
-        f"entry_note must warn about earnings in 7 days; got: {sig['entry_note']}"
+    assert "EARNINGS IN 7 TRADING DAYS" in sig["entry_note"], (
+        f"entry_note must warn about earnings in 7 trading days; got: {sig['entry_note']}"
     )
 
 
@@ -1555,7 +1566,7 @@ def test_strategy_a_entry_note_no_earnings_warning_dte_none():
 
 
 def test_strategy_a_entry_note_no_earnings_warning_dte_15():
-    """entry_note must NOT contain earnings warning when DTE > 10."""
+    """entry_note must NOT contain earnings warning when DTE > 8."""
     from signal_engine import strategy_a_trend
     feat = _make_features()
     feat["days_to_earnings"] = 15
@@ -1639,37 +1650,37 @@ def test_prompt_legacy_basis_excludes_profit_ladder():
 
 # ── New tests for F2/F3/F5/F6 fixes ──────────────────────────────────────────
 
-def test_earnings_window_bounds_are_6_to_8():
-    """Earnings event window must be 6-8 days (execution lag correction: lower 5→6, upper 7→8).
+def test_earnings_window_bounds_are_4_to_6():
+    """Earnings event window must be 4-6 TRADING days (execution lag corrected).
 
-    PEAD drift concentrates in the final 5-7 days before announcement.
+    days_to_earnings now uses np.busday_count (trading days, not calendar days).
+    PEAD drift concentrates in the final 3-5 trading days before announcement.
     Signals fire at close; execution is next-day open → 1-day execution lag.
-    Window shifted +1 to ensure ACTUAL entry has 5-7 days remaining:
-      signal dte=6 → entry dte=5 (safe minimum)
-      signal dte=8 → entry dte=7 (safe maximum)
-    dte≤5 removed: after execution lag, entry has ≤4 days remaining — dangerous
+      signal dte=4 → entry dte=3 (safe minimum)
+      signal dte=6 → entry dte=5 (safe maximum)
+    dte≤3 removed: after execution lag, entry has ≤2 trading days — dangerous
       overnight gap risk (±8-15%) overwhelms the ATR stop (1.5×ATR ≈ ±2-3%).
-    dte=9+ removed: entry has 8+ days remaining; too early for PEAD concentration.
+    dte=7+ removed: entry has 6+ trading days remaining; too early for PEAD.
     """
     from feature_layer import compute_earnings_features
-    # dte=6: new lower bound (after lag: entry at dte=5 — safe minimum)
+    # dte=4: lower bound (after lag: entry at dte=3 — safe minimum)
+    assert compute_earnings_features({"days_to_earnings": 4})["earnings_event_window"] is True
+    # dte=5: mid-window
+    assert compute_earnings_features({"days_to_earnings": 5})["earnings_event_window"] is True
+    # dte=6: upper bound (after lag: entry at dte=5 — safe maximum)
     assert compute_earnings_features({"days_to_earnings": 6})["earnings_event_window"] is True
-    # dte=7: mid-window
-    assert compute_earnings_features({"days_to_earnings": 7})["earnings_event_window"] is True
-    # dte=8: new upper bound (after lag: entry at dte=7 — safe maximum)
-    assert compute_earnings_features({"days_to_earnings": 8})["earnings_event_window"] is True
-    # dte=5: was lower bound of old 5-7 window; now excluded (after lag: entry dte=4 → gap risk)
-    assert compute_earnings_features({"days_to_earnings": 5})["earnings_event_window"] is False
-    # dte=4: too close — gap risk
-    assert compute_earnings_features({"days_to_earnings": 4})["earnings_event_window"] is False
-    # dte=3: too close — gap risk
+    # dte=3: too close — gap risk (after lag: entry dte=2)
     assert compute_earnings_features({"days_to_earnings": 3})["earnings_event_window"] is False
-    # dte=9: now outside upper bound (was dte=8+ in old window)
-    assert compute_earnings_features({"days_to_earnings": 9})["earnings_event_window"] is False
-    # dte=10: outside window
-    assert compute_earnings_features({"days_to_earnings": 10})["earnings_event_window"] is False
     # dte=2: too close
     assert compute_earnings_features({"days_to_earnings": 2})["earnings_event_window"] is False
+    # dte=1: too close
+    assert compute_earnings_features({"days_to_earnings": 1})["earnings_event_window"] is False
+    # dte=7: outside upper bound
+    assert compute_earnings_features({"days_to_earnings": 7})["earnings_event_window"] is False
+    # dte=8: outside window
+    assert compute_earnings_features({"days_to_earnings": 8})["earnings_event_window"] is False
+    # dte=10: well outside window
+    assert compute_earnings_features({"days_to_earnings": 10})["earnings_event_window"] is False
     # dte=15: well outside window
     assert compute_earnings_features({"days_to_earnings": 15})["earnings_event_window"] is False
 
@@ -1972,10 +1983,10 @@ def test_enrich_signals_injects_days_to_earnings_for_trend_signal():
     from signal_engine import strategy_a_trend
     from risk_engine import enrich_signals
 
-    # dte=3 is now blocked at the CODE level (dte <= 5 guard added to strategy_a/b).
+    # dte=3 is now blocked at the CODE level (dte <= 3 guard added to strategy_a/b).
     # Test the two-layer protection:
-    #   Layer 1: code gate blocks signals at dte <= 5
-    #   Layer 2: enrich_signals injects days_to_earnings for signals that do pass (dte > 5)
+    #   Layer 1: code gate blocks signals at dte <= 3
+    #   Layer 2: enrich_signals injects days_to_earnings for signals that do pass (dte > 3)
 
     # Layer 1: strategy_a blocks at dte=3 (code-level guard, not LLM-prompt-only)
     feat_danger = {**_make_features(), "days_to_earnings": 3}
@@ -3713,3 +3724,240 @@ def test_backtester_sweep_returns_multiple_results():
         assert "param_name" in r
         assert "param_value" in r
         assert r["param_name"] == "ATR_STOP_MULT"
+
+
+# ── forward_tester profit-lock timing quality ────────────────────────────────
+
+def test_forward_tester_profit_lock_reports_peak_capture():
+    """A profit-lock REDUCE that sells at +20% while the stock runs to +40%
+    must be direction_correct but timing_incorrect, with ≈16.7% foregone gain
+    and ≈50% peak capture (cost-to-peak formulation)."""
+    import pandas as pd
+    from datetime import date
+    from forward_tester import (
+        evaluate_profit_lock_timing, action_is_correct, PROFIT_LOCKING_RULES,
+    )
+
+    rec_date  = date(2024, 1, 2)
+    eval_date = date(2024, 1, 16)
+    # avg_cost $100, rule fires at $120 close → window High peaks at $140
+    idx = pd.to_datetime([
+        "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05",
+        "2024-01-08", "2024-01-09", "2024-01-10", "2024-01-11",
+        "2024-01-12", "2024-01-16",
+    ])
+    fake_daily = pd.DataFrame({
+        "Open":  [120.0, 122.0, 125.0, 128.0, 132.0, 135.0, 138.0, 139.0, 136.0, 130.0],
+        "High":  [121.0, 124.0, 127.0, 130.0, 134.0, 137.0, 140.0, 139.5, 138.0, 133.0],
+        "Low":   [119.0, 121.0, 124.0, 127.0, 131.0, 134.0, 137.0, 136.0, 130.0, 128.0],
+        "Close": [120.0, 123.0, 126.0, 129.0, 133.0, 136.0, 139.0, 137.0, 132.0, 131.0],
+    }, index=idx)
+
+    result = evaluate_profit_lock_timing(
+        ticker          = "TEST",
+        rec_date        = rec_date,
+        eval_date       = eval_date,
+        sell_price      = 120.0,
+        avg_cost        = 100.0,
+        _daily_override = fake_daily,
+    )
+
+    assert result["data_available"]      is True
+    assert result["max_price_in_window"] == 140.0
+    # foregone = (140 - 120) / 120 = 0.1667
+    assert result["foregone_gain_pct"]   == pytest.approx(0.1667, abs=1e-3)
+    # peak_capture = (120 - 100) / (140 - 100) = 0.5
+    assert result["peak_capture_pct"]    == pytest.approx(0.5,    abs=1e-3)
+    assert result["timing_correct"]      is False, (
+        "16.7% foregone gain is well above the 5% tolerance — must be flagged"
+    )
+
+    # Direction is still correct for a profit-locking reduce: rule fired as planned.
+    assert all(rule in PROFIT_LOCKING_RULES for rule in
+               ["PROFIT_TARGET", "SIGNAL_TARGET", "PROFIT_LADDER_50", "PROFIT_LADDER_30"])
+    assert action_is_correct("REDUCE", return_10d=0.0, exit_rule="PROFIT_TARGET") is True
+
+
+def test_forward_tester_profit_lock_timing_correct_when_near_peak():
+    """When a profit-lock sell is within 5% of the window's peak, timing_correct=True
+    and foregone_gain_pct < 0.05."""
+    import pandas as pd
+    from datetime import date
+    from forward_tester import evaluate_profit_lock_timing
+
+    rec_date  = date(2024, 1, 2)
+    eval_date = date(2024, 1, 16)
+    # Sell at $120, window High only reaches $121 (0.83% above sell → within 5%)
+    idx = pd.to_datetime([
+        "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05",
+        "2024-01-08", "2024-01-09",
+    ])
+    fake_daily = pd.DataFrame({
+        "Open":  [120.0, 120.2, 120.5, 120.8, 120.3, 119.5],
+        "High":  [120.8, 120.9, 121.0, 120.9, 120.4, 119.8],
+        "Low":   [119.5, 119.9, 120.1, 120.3, 119.7, 118.9],
+        "Close": [120.0, 120.3, 120.6, 120.4, 120.0, 119.0],
+    }, index=idx)
+
+    result = evaluate_profit_lock_timing(
+        ticker          = "TEST",
+        rec_date        = rec_date,
+        eval_date       = eval_date,
+        sell_price      = 120.0,
+        avg_cost        = 100.0,
+        _daily_override = fake_daily,
+    )
+
+    assert result["data_available"]      is True
+    assert result["max_price_in_window"] == 121.0
+    # foregone = (121 - 120) / 120 ≈ 0.00833
+    assert result["foregone_gain_pct"]   == pytest.approx(0.0083, abs=1e-3)
+    assert result["foregone_gain_pct"]   < 0.05
+    assert result["timing_correct"]      is True
+
+
+def test_forward_tester_non_profit_lock_reduce_still_uses_return_direction():
+    """REDUCE with a non-profit-lock rule (e.g., TRAILING_STOP) must still be
+    graded by the original return_direction logic — profit-lock special case
+    should not affect it."""
+    from forward_tester import action_is_correct, PROFIT_LOCKING_RULES
+
+    assert "TRAILING_STOP"         not in PROFIT_LOCKING_RULES
+    assert "EXIT"                  not in PROFIT_LOCKING_RULES
+    assert "APPROACHING_HARD_STOP" not in PROFIT_LOCKING_RULES
+
+    # Negative return → REDUCE for risk was correct (cut a loser)
+    assert action_is_correct("REDUCE", return_10d=-0.05, exit_rule="TRAILING_STOP") is True
+    # Positive return → reducing was wrong (price rose afterwards)
+    assert action_is_correct("REDUCE", return_10d= 0.05, exit_rule="TRAILING_STOP") is False
+    # Baseline REDUCE without any rule — same return-direction logic
+    assert action_is_correct("REDUCE", return_10d=-0.02) is True
+    assert action_is_correct("REDUCE", return_10d= 0.02) is False
+
+
+# ── import_advice.py manual-import helper ────────────────────────────────────
+
+def test_import_advice_parses_fenced_json(tmp_path):
+    """The import helper must extract JSON from markdown-fenced responses
+    (the typical ChatGPT/Claude web UI output) and write the wrapper format
+    forward_tester expects to data/investment_advice_<date>.json."""
+    import json
+    from import_advice import import_advice
+
+    raw_response = """Sure, here's my analysis for today.
+
+```json
+{
+  "new_trade": {
+    "ticker": "NVDA",
+    "signal_source": "trend_long",
+    "trade_quality_score": 0.82
+  },
+  "second_new_trade": "NO SECOND TRADE",
+  "position_actions": [
+    {"ticker": "AAPL", "action": "HOLD"},
+    {"ticker": "TSLA", "action": "REDUCE"}
+  ]
+}
+```
+
+Let me know if you want me to explain the NVDA thesis."""
+
+    out_path = import_advice(
+        date_str   = "20260410",
+        raw_text   = raw_response,
+        output_dir = str(tmp_path),
+    )
+    import os as _os
+    assert _os.path.exists(out_path)
+    assert _os.path.basename(out_path) == "investment_advice_20260410.json"
+
+    with open(out_path, encoding="utf-8") as f:
+        wrapper = json.load(f)
+
+    # save_advice wrapper format: {advice_raw, advice_parsed, token_usage, timestamp}
+    assert "advice_raw"     in wrapper
+    assert "advice_parsed"  in wrapper
+    assert "token_usage"    in wrapper
+    assert "timestamp"      in wrapper
+
+    parsed = wrapper["advice_parsed"]
+    assert isinstance(parsed, dict)
+    assert parsed["new_trade"]["ticker"] == "NVDA"
+    assert parsed["new_trade"]["signal_source"] == "trend_long"
+    assert len(parsed["position_actions"]) == 2
+    assert parsed["position_actions"][0]["ticker"] == "AAPL"
+
+
+def test_import_advice_warns_on_missing_keys(tmp_path, caplog):
+    """When the response is missing one of the required keys (new_trade /
+    position_actions), the helper must log a warning but still write the file
+    so partial captures aren't silently lost."""
+    import json
+    import logging
+    from import_advice import import_advice
+
+    # Missing position_actions
+    raw_response = '{"new_trade": "NO NEW TRADE"}'
+
+    with caplog.at_level(logging.WARNING, logger="import_advice"):
+        out_path = import_advice(
+            date_str   = "20260411",
+            raw_text   = raw_response,
+            output_dir = str(tmp_path),
+        )
+
+    # File still written
+    import os as _os
+    assert _os.path.exists(out_path)
+    with open(out_path, encoding="utf-8") as f:
+        wrapper = json.load(f)
+    assert wrapper["advice_parsed"]["new_trade"] == "NO NEW TRADE"
+
+    # Warning was logged
+    warning_msgs = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
+    assert any("position_actions" in m for m in warning_msgs), (
+        f"Expected a warning mentioning 'position_actions', got: {warning_msgs}"
+    )
+
+
+# ── trade_advice.txt abstain-first prompt regression ─────────────────────────
+
+def test_prompt_abstain_first_framing_present():
+    """The trade_advice.txt prompt must frame trading as abstain-first (default
+    NO NEW TRADE), enforce max one trade per day, require strict gating for any
+    second trade, and raise the TQS threshold to 0.75.  This regression test
+    locks in the 2026-04-11 rewrite so future filter-tuning sessions cannot
+    silently revert the quota framing."""
+    import os
+    path = os.path.join(
+        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+    )
+    with open(path, encoding="utf-8") as f:
+        content = f.read()
+
+    # Abstain-first framing
+    assert "默认 NO NEW TRADE" in content, (
+        "Prompt must contain '默认 NO NEW TRADE' — abstain-first framing."
+    )
+    assert "每日至多一笔" in content, (
+        "Prompt must contain '每日至多一笔' — single-trade default."
+    )
+
+    # Old quota language must be gone
+    assert "每日最多生成两笔" not in content, (
+        "Old two-trade quota language still present in prompt."
+    )
+
+    # Raised TQS threshold
+    assert "trade_quality_score < 0.75" in content
+    assert "trade_quality_score < 0.60" not in content
+
+    # Second-trade bar raised to 0.80
+    assert "trade_quality_score ≥ 0.80" in content, (
+        "Second-trade TQS floor must be raised to 0.80."
+    )
+    # Old 0.70 second-trade threshold must not be the gating language anymore
+    assert "trade_quality_score ≥ 0.70" not in content, (
+        "Old second-trade threshold 0.70 still present."
+    )
