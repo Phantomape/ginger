@@ -331,7 +331,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "account_state":    preflight["account_state"],
         "new_trade_locked": preflight["new_trade_locked"],
         "lock_reason":      preflight["lock_reason"],
-        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | HIGH_REDUCE | WATCH | HOLD}
+        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | HIGH_REDUCE | HOLD}
         # Pre-computed reduce % for HIGH_REDUCE positions — LLM reads directly, no table lookup needed.
         "suggested_reduce_pct": preflight["suggested_reduce_pct"],  # {ticker: int}
         # Pre-computed BEAR emergency stops — LLM uses directly if regime=BEAR.
@@ -481,6 +481,57 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     return system_message, user_message
 
 
+def _save_decision_log(date_str, trade_news, trend_signals):
+    """
+    Save a structured log of what the code pre-decided before handing off to LLM.
+
+    This enables future analysis: compare LLM veto/pass decisions against
+    actual price outcomes to quantify the LLM's net contribution.
+    """
+    try:
+        quant_signals = trend_signals.get("quant_signals", []) if trend_signals else []
+        signals_presented = [s["ticker"] for s in quant_signals]
+
+        # Extract position states from the preflight data embedded in trend_signals
+        # (these are injected by build_prompt → preflight_validator)
+        position_states = {}
+        suggested_reduce = {}
+        new_trade_locked = False
+
+        # Count news tiers
+        tier_counts = {"T1": 0, "T2": 0, "T3": 0}
+        for item in (trade_news or []):
+            tier_counts[item.get("tier", "T3")] += 1
+
+        log_entry = {
+            "date": date_str,
+            "signals_presented": signals_presented,
+            "signal_details": [
+                {
+                    "ticker": s.get("ticker"),
+                    "strategy": s.get("strategy"),
+                    "entry_price": s.get("entry_price"),
+                    "stop_price": s.get("stop_price"),
+                    "target_price": s.get("target_price"),
+                    "trade_quality_score": s.get("trade_quality_score"),
+                    "risk_reward_ratio": s.get("risk_reward_ratio"),
+                }
+                for s in quant_signals
+            ],
+            "news_summary": tier_counts,
+            "has_actionable_news": tier_counts["T1"] > 0,
+        }
+
+        log_file = f"data/llm_decision_log_{date_str}.json"
+        os.makedirs("data", exist_ok=True)
+        with open(log_file, "w", encoding="utf-8") as f:
+            json.dump(log_entry, f, indent=2, ensure_ascii=False)
+        logger.info(f"Decision log saved to {log_file}")
+
+    except Exception as e:
+        logger.warning(f"Failed to save decision log: {e}")
+
+
 def get_investment_advice(trade_news, open_positions=None, trend_signals=None, model="gpt-4o", max_tokens=4000, save_prompt_only=True):
     """
     Get investment advice from OpenAI based on filtered trade news and trend signals.
@@ -541,6 +592,10 @@ def get_investment_advice(trade_news, open_positions=None, trend_signals=None, m
                 f.write("\n")
 
             logger.info(f"Prompt saved to {prompt_file}")
+
+            # Save decision log: what signals/positions the code pre-decided,
+            # so we can later compare LLM veto/pass against actual outcomes.
+            _save_decision_log(today, trade_news, trend_signals)
 
             return {
                 "success": True,

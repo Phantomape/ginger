@@ -172,7 +172,10 @@ def compute_account_state(
         elif max_urgency == "HIGH":
             decision_state = "HIGH_REDUCE"
         elif max_urgency in ("WARNING", "MEDIUM"):
-            decision_state = "WATCH"
+            # Previously WATCH — sent to LLM for discretionary judgment.
+            # Now resolved by code: _suggested_reduce_pct() already handles
+            # APPROACHING_HARD_STOP, PROFIT_TARGET, PROFIT_LADDER_50.
+            decision_state = "HIGH_REDUCE"
         else:
             decision_state = "HOLD"
 

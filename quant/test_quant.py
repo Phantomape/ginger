@@ -842,19 +842,17 @@ def test_strategy_b_above_200ma_enables_standalone_trade():
 
 
 def test_prompt_exit_rule_4_uses_profit_ladder():
-    """Exit rule 4 must use the profit ladder (HOLD at 30-50%), not just REDUCE 50%."""
+    """Exit rules are now code-determined. Prompt must NOT contain exit rule details."""
     import os
     path = os.path.join(
         os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
-    assert "止盈目标   达到 profit_target → REDUCE 50% 仓位（保留赢家）" not in content, (
-        "Rule 4 oversimplifies profit-taking as always REDUCE 50%. "
-        "Must reference the profit ladder (30-50% HOLD) to prevent cutting winners short."
-    )
-    assert "止盈阶梯" in content, (
-        "Rule 4 must use '止盈阶梯' with HOLD band for 30-50% gains."
+    # Profit ladder logic is in position_manager.py + preflight_validator.py,
+    # NOT in the prompt. LLM just echoes code decisions.
+    assert "代码已决定" in content, (
+        "Prompt must indicate position actions are code-determined (代码已决定)."
     )
 
 
@@ -966,12 +964,11 @@ def test_build_prompt_news_is_replaced():
 # ── prompt TQS threshold check (integration) ─────────────────────────────────
 
 def test_prompt_tqs_threshold_is_0_75():
-    """The prompt must use the raised TQS abstain threshold 0.75.
+    """TQS threshold is now code-enforced (risk_engine.py), not in the prompt.
 
-    Previously 0.60 — raised as part of the 2026-04-11 abstain-first rewrite
-    (see test_prompt_abstain_first_framing_present below).  Lowering the
-    threshold without feedback-loop evidence is explicitly out of scope per
-    CLAUDE2.md.
+    The disaster-detector prompt redesign (2026-04) removed all quantitative
+    thresholds from the prompt.  TQS gating happens in the code pipeline before
+    signals reach the LLM.
     """
     import os
     path = os.path.join(
@@ -979,14 +976,12 @@ def test_prompt_tqs_threshold_is_0_75():
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
-    assert "trade_quality_score < 0.75" in content, (
-        "Prompt must use raised TQS threshold 0.75 (abstain-first rewrite)."
+    # Prompt must NOT contain TQS thresholds — they belong in code only
+    assert "trade_quality_score < 0.75" not in content, (
+        "TQS threshold should be code-enforced, not in prompt."
     )
     assert "trade_quality_score < 0.60" not in content, (
-        "Old TQS threshold 0.60 still present — should have been raised to 0.75."
-    )
-    assert "trade_quality_score < 0.65" not in content, (
-        "Ancient TQS threshold 0.65 still present in prompt."
+        "Old TQS threshold still present in prompt."
     )
 
 
@@ -1004,28 +999,31 @@ def test_prompt_no_anti_trade_bias():
 
 
 def test_prompt_position_cap_present():
-    """The prompt must include the 20% position cap to prevent oversized positions."""
+    """Position cap is now code-enforced (portfolio_engine.py MAX_POSITION_PCT).
+
+    The disaster-detector prompt doesn't need to mention the cap — sizing is
+    pre-computed before data reaches the LLM.
+    """
+    from position_manager import MAX_POSITION_PCT
+    assert MAX_POSITION_PCT == 0.20, (
+        "Position cap must be 20% in code (position_manager.MAX_POSITION_PCT)."
+    )
+
+
+def test_prompt_no_second_trade():
+    """Trade frequency is now code-controlled. Prompt must NOT offer second_new_trade.
+
+    The disaster-detector redesign (2026-04) moved trade frequency control to code.
+    LLM should not decide how many trades to make.
+    """
     import os
     path = os.path.join(
         os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
-    assert "20%" in content and "portfolio_value" in content.lower() or "portfolio_value_usd × 20%" in content, (
-        "Prompt must contain the 20% position cap to prevent oversized positions."
-    )
-
-
-def test_prompt_allows_second_trade():
-    """The prompt must mention second_new_trade to allow 2 trades per day."""
-    import os
-    path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
-    )
-    with open(path, encoding="utf-8") as f:
-        content = f.read()
-    assert "second_new_trade" in content, (
-        "Prompt does not support second_new_trade — still limited to 1 trade/day."
+    assert "second_new_trade" not in content, (
+        "Prompt should not contain second_new_trade — frequency is code-controlled."
     )
 
 
@@ -2411,17 +2409,19 @@ def test_exec_lag_included_in_position_sizing():
 
 
 def test_prompt_atr_gate_7pct_for_trend_breakout():
-    """LLM prompt SYSTEM section must specify 7% ATR limit for trend_long / breakout_long."""
+    """ATR gate is now code-enforced (signal_engine.py). Prompt must NOT contain ATR thresholds.
+
+    The disaster-detector redesign removed all quantitative thresholds from the prompt.
+    """
     from llm_advisor import build_prompt
 
     system_msg, _ = build_prompt([], None)
     if system_msg is None:
         pytest.skip("Prompt template not found")
 
-    # After fix: system message must reference 0.07 for trend/breakout signals
-    assert "0.07" in system_msg, (
-        "Prompt SYSTEM section must reference 0.07 ATR gate for trend_long/breakout_long — "
-        "code uses 7% but old prompt had 5%, causing LLM to reject valid high-beta breakouts."
+    # ATR gate must NOT be in the prompt — it's enforced in signal_engine.py
+    assert "0.05" not in system_msg and "0.07" not in system_msg, (
+        "Prompt SYSTEM section should not contain ATR thresholds — code-enforced."
     )
 
 
@@ -3021,7 +3021,7 @@ PROMPT_FIELD_REGISTRY = {
             "new_trade_locked",        # Task A step 0 shortcut
             "lock_reason",             # explains why trading is locked
             "account_state",           # FIRE | DEFENSIVE | NORMAL
-            "position_states",         # {ticker: CRITICAL_EXIT|HIGH_REDUCE|WATCH|HOLD}
+            "position_states",         # {ticker: CRITICAL_EXIT|HIGH_REDUCE|HOLD}
             "suggested_reduce_pct",    # {ticker: int} — pre-computed reduce %
             "bear_emergency_stops",    # {ticker: float} — current_price × 0.95 in BEAR
             "current_prices",          # {ticker: float} — for BEAR rule on HOLD positions
@@ -3205,13 +3205,35 @@ def test_registry_fields_referenced_in_prompt():
     assert prompt_text, "Could not load trade_advice.txt — check path"
 
     # Fields intentionally omitted from this check:
-    # earnings_gap_risk_applied — referenced as sizing.earnings_gap_risk_applied=true (with value)
-    # Some fields appear in JSON examples embedded in the prompt, not as bare names.
-    # We check the field name appears anywhere in the file (sufficient for drift detection).
+    # These fields are injected at runtime into the prompt as JSON data (sections 3a/3b/4)
+    # by build_prompt(), but are NOT referenced by name in the template prose.
+    # The "disaster detector" prompt redesign (2026-04) moved all quantitative decisions
+    # to code — the LLM reads the injected JSON data directly but the template doesn't
+    # mention field names.  The direction-1 test (test_registry_fields_exist_in_code_output)
+    # still verifies these fields exist in the code output.
     skip_fields = {
-        "earnings_gap_risk_applied",  # referenced as 'sizing.earnings_gap_risk_applied=true'
-        "risk_per_share",             # internal computation field, not directly read by LLM
-        "reward_per_share",           # internal computation field
+        "earnings_gap_risk_applied",   # sizing sub-field, referenced with value
+        "risk_per_share",              # internal computation field
+        "reward_per_share",            # internal computation field
+        # Section 4 fields — injected as JSON, not named in template prose
+        "lock_reason",
+        "account_state",
+        "bear_emergency_stops",
+        "current_prices",
+        # Section 3a fields — LLM reads JSON directly, template says "直接使用第3a节值"
+        "trade_quality_score",
+        "confidence_score",
+        "risk_reward_ratio",
+        "net_risk_reward_ratio",
+        "exec_lag_adj_net_rr",
+        "entry_note",
+        # Section 3b fields — injected as JSON for held positions
+        "breach_status",
+        "unrealized_pnl_pct",
+        "exit_levels",
+        "trailing_stop_from_20d_high",
+        "drawdown_from_20d_high_pct",
+        "daily_return_pct",
     }
 
     for section_key, section in PROMPT_FIELD_REGISTRY.items():
@@ -3946,12 +3968,12 @@ def test_import_advice_warns_on_missing_keys(tmp_path, caplog):
 
 # ── trade_advice.txt abstain-first prompt regression ─────────────────────────
 
-def test_prompt_abstain_first_framing_present():
-    """The trade_advice.txt prompt must frame trading as abstain-first (default
-    NO NEW TRADE), enforce max one trade per day, require strict gating for any
-    second trade, and raise the TQS threshold to 0.75.  This regression test
-    locks in the 2026-04-11 rewrite so future filter-tuning sessions cannot
-    silently revert the quota framing."""
+def test_prompt_disaster_detector_framing_present():
+    """The trade_advice.txt prompt must frame LLM as disaster detector, not trade advisor.
+
+    The 2026-04 redesign narrows LLM role to T1 negative news veto only.
+    All quantitative decisions (TQS, frequency, position actions) are code-enforced.
+    """
     import os
     path = os.path.join(
         os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
@@ -3959,28 +3981,33 @@ def test_prompt_abstain_first_framing_present():
     with open(path, encoding="utf-8") as f:
         content = f.read()
 
-    # Abstain-first framing
-    assert "默认 NO NEW TRADE" in content, (
-        "Prompt must contain '默认 NO NEW TRADE' — abstain-first framing."
+    # Disaster detector framing
+    assert "灾难检测器" in content, (
+        "Prompt must contain '灾难检测器' — LLM role is disaster detection only."
     )
-    assert "每日至多一笔" in content, (
-        "Prompt must contain '每日至多一笔' — single-trade default."
-    )
-
-    # Old quota language must be gone
-    assert "每日最多生成两笔" not in content, (
-        "Old two-trade quota language still present in prompt."
+    assert "唯一职责" in content, (
+        "Prompt must state LLM has only one responsibility."
     )
 
-    # Raised TQS threshold
-    assert "trade_quality_score < 0.75" in content
-    assert "trade_quality_score < 0.60" not in content
-
-    # Second-trade bar raised to 0.80
-    assert "trade_quality_score ≥ 0.80" in content, (
-        "Second-trade TQS floor must be raised to 0.80."
+    # No WATCH state — all position decisions are code-determined
+    assert "WATCH" not in content, (
+        "WATCH state should not appear in prompt — eliminated by code rules."
     )
-    # Old 0.70 second-trade threshold must not be the gating language anymore
-    assert "trade_quality_score ≥ 0.70" not in content, (
-        "Old second-trade threshold 0.70 still present."
+
+    # Position actions are pass-through
+    assert "代码已决定" in content, (
+        "Prompt must indicate position actions are code-determined."
+    )
+
+    # No quantitative thresholds in prompt
+    assert "trade_quality_score < 0.75" not in content, (
+        "TQS threshold should be in code, not prompt."
+    )
+    assert "trade_quality_score ≥ 0.80" not in content, (
+        "Second-trade TQS threshold should be in code, not prompt."
+    )
+
+    # No second_new_trade — frequency is code-controlled
+    assert "second_new_trade" not in content, (
+        "Trade frequency control should be in code, not prompt."
     )
