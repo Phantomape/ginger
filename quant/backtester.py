@@ -1,52 +1,51 @@
 """
-Walk-Forward Backtester — minimal execution loop for parameter validation.
+Signal-Level Backtester — replays historical OHLCV through the ACTUAL pipeline.
 
-Replays historical OHLCV data through the signal + risk pipeline day-by-day,
-simulates fills at next-day open (with exec_lag), and tracks equity curve.
+Unlike the previous simplified breakout heuristic, this backtester calls the
+real signal_engine.generate_signals() + risk_engine.enrich_signals() + all
+filter layers from run.py.  It assumes every signal that survives the full
+pipeline is executed at next-day open (with exec_lag), and tracks positions
+using the signal's stop_price and target_price.
 
-This is NOT an optimizer.  It provides a single-parameter sweep interface
-so that heuristic values (ATR multipliers, TQS weights, lookback periods)
-can be validated against observed data rather than pure guesswork.
+Strategy C (earnings) is excluded because historical earnings dates are
+unreliable via yfinance.  Only Strategy A (trend) and B (breakout) are tested.
 
 Usage:
-    from backtester import BacktestEngine
-
-    engine = BacktestEngine(ohlcv_dict, start="2025-01-01", end="2025-12-31")
-    results = engine.run()
-    print(results["sharpe"], results["max_drawdown_pct"])
-
-    # Single-parameter sweep
-    sweep_results = engine.sweep("ATR_STOP_MULT", [1.0, 1.5, 2.0])
+    cd d:/Github/ginger
+    python quant/backtester.py                        # default 6-month backtest
+    python quant/backtester.py --start 2025-06-01 --end 2025-12-31
+    python quant/backtester.py --sweep ATR_STOP_MULT 1.0 1.5 2.0
 """
 
+import json
 import logging
 import math
+import os
+import sys
 from datetime import datetime
 
 import pandas as pd
+import yfinance as yf
 
 logger = logging.getLogger(__name__)
 
-# Default config — mirrors production values from risk_engine / portfolio_engine
+# ── Defaults ────────────────────────────────────────────────────────────────
+
 DEFAULT_CONFIG = {
-    "ATR_STOP_MULT":       1.5,
-    "ATR_TARGET_MULT":     3.5,
-    "ROUND_TRIP_COST_PCT": 0.0035,
-    "EXEC_LAG_PCT":        0.005,
-    "RISK_PER_TRADE_PCT":  0.01,
-    "MAX_POSITIONS":       5,
     "INITIAL_CAPITAL":     100_000.0,
+    "MAX_POSITIONS":       5,
+    "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
 }
 
 
 class Position:
-    """Track a single open position."""
+    """Track a single open backtested position."""
 
     __slots__ = ("ticker", "entry_price", "stop_price", "target_price",
-                 "shares", "entry_date", "strategy")
+                 "shares", "entry_date", "strategy", "sector")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
-                 shares, entry_date, strategy):
+                 shares, entry_date, strategy, sector="Unknown"):
         self.ticker       = ticker
         self.entry_price  = entry_price
         self.stop_price   = stop_price
@@ -54,180 +53,336 @@ class Position:
         self.shares       = shares
         self.entry_date   = entry_date
         self.strategy     = strategy
+        self.sector       = sector
 
 
 class BacktestEngine:
     """
-    Minimal walk-forward backtester.
+    Walk-forward backtester using the real signal pipeline.
 
     Args:
-        ohlcv_dict (dict[str, pd.DataFrame]): {ticker: DataFrame with OHLCV + DatetimeIndex}
-        start      (str): Start date (YYYY-MM-DD)
-        end        (str): End date   (YYYY-MM-DD)
-        config     (dict): Override any key in DEFAULT_CONFIG
+        universe   (list[str]): Ticker symbols to test
+        start      (str):       Start date YYYY-MM-DD
+        end        (str):       End date YYYY-MM-DD
+        config     (dict):      Override any key in DEFAULT_CONFIG
     """
 
-    def __init__(self, ohlcv_dict, start=None, end=None, config=None):
-        self.ohlcv    = ohlcv_dict
+    def __init__(self, universe, start=None, end=None, config=None):
+        self.universe = universe
         self.config   = {**DEFAULT_CONFIG, **(config or {})}
         self.start    = pd.Timestamp(start) if start else None
         self.end      = pd.Timestamp(end)   if end   else None
 
+    def _download_data(self):
+        """Download OHLCV for universe + SPY + QQQ."""
+        all_tickers = list(set(self.universe + ["SPY", "QQQ"]))
+        lookback = self.config["LOOKBACK_CALENDAR_DAYS"]
+
+        # Determine download range: we need lookback days BEFORE start
+        if self.end:
+            dl_end = self.end + pd.Timedelta(days=5)  # buffer for next-day fill
+        else:
+            dl_end = pd.Timestamp.now()
+
+        if self.start:
+            dl_start = self.start - pd.Timedelta(days=lookback)
+        else:
+            dl_start = dl_end - pd.Timedelta(days=lookback + 180)
+
+        logger.info(f"Downloading {len(all_tickers)} tickers: "
+                    f"{dl_start.date()} → {dl_end.date()}")
+
+        ohlcv = {}
+        for ticker in all_tickers:
+            try:
+                df = yf.download(ticker, start=dl_start, end=dl_end,
+                                 progress=False)
+                if df is not None and not df.empty:
+                    # Flatten multi-level columns if present
+                    if isinstance(df.columns, pd.MultiIndex):
+                        df.columns = df.columns.get_level_values(0)
+                    ohlcv[ticker] = df
+                    logger.info(f"  {ticker}: {len(df)} rows")
+                else:
+                    logger.warning(f"  {ticker}: no data")
+            except Exception as e:
+                logger.warning(f"  {ticker}: download failed — {e}")
+
+        return ohlcv
+
     def run(self):
         """
-        Execute the backtest over the date range.
+        Execute the backtest.
 
         Returns:
-            dict: {
-                total_trades, wins, losses, win_rate,
-                total_pnl, sharpe, max_drawdown_pct,
-                equity_curve (list of (date_str, equity)),
-            }
+            dict: {total_trades, wins, losses, win_rate, total_pnl, sharpe,
+                   max_drawdown_pct, equity_curve, trades, signals_generated,
+                   signals_survived, survival_rate}
         """
-        capital    = self.config["INITIAL_CAPITAL"]
-        equity     = capital
-        positions  = []          # list[Position]
-        closed     = []          # list[dict] — closed trade records
-        equity_curve = []
+        from feature_layer    import compute_features
+        from signal_engine    import generate_signals
+        from risk_engine      import enrich_signals
+        from portfolio_engine import size_signals, ROUND_TRIP_COST_PCT, EXEC_LAG_PCT
+        from regime           import compute_market_regime
 
-        # Build unified date index from all tickers
-        all_dates = set()
-        for df in self.ohlcv.values():
-            if df is not None and not df.empty:
-                all_dates.update(df.index)
-        all_dates = sorted(all_dates)
+        ohlcv_all = self._download_data()
+        if not ohlcv_all:
+            return {"error": "No data downloaded"}
+
+        # Build unified trading-day index from SPY
+        spy_df = ohlcv_all.get("SPY")
+        if spy_df is None or spy_df.empty:
+            return {"error": "SPY data unavailable — cannot determine trading days"}
+
+        all_dates = sorted(spy_df.index)
         if self.start:
-            all_dates = [d for d in all_dates if d >= self.start]
+            sim_dates = [d for d in all_dates if d >= self.start]
+        else:
+            sim_dates = all_dates[-126:]  # default: last ~6 months
         if self.end:
-            all_dates = [d for d in all_dates if d <= self.end]
+            sim_dates = [d for d in sim_dates if d <= self.end]
 
-        if len(all_dates) < 2:
-            return {"error": "Insufficient data for backtest"}
+        if len(sim_dates) < 2:
+            return {"error": "Insufficient simulation dates"}
 
-        for i, today in enumerate(all_dates):
-            # -- Check exits on today's prices --
+        logger.info(f"Simulating {len(sim_dates)} trading days: "
+                    f"{sim_dates[0].date()} → {sim_dates[-1].date()}")
+
+        # State
+        capital       = self.config["INITIAL_CAPITAL"]
+        equity        = capital
+        positions     = []          # list[Position]
+        closed        = []          # list[dict]
+        equity_curve  = []
+        total_signals_generated = 0
+        total_signals_survived  = 0
+
+        for day_idx, today in enumerate(sim_dates):
+
+            # ── 1. Check exits on today's prices ────────────────────────────
             still_open = []
             for pos in positions:
-                df = self.ohlcv.get(pos.ticker)
+                df = ohlcv_all.get(pos.ticker)
                 if df is None or today not in df.index:
                     still_open.append(pos)
                     continue
 
-                row  = df.loc[today]
-                low  = float(row["Low"].item()  if hasattr(row["Low"],  "item") else row["Low"])
-                high = float(row["High"].item() if hasattr(row["High"], "item") else row["High"])
-                opn  = float(row["Open"].item() if hasattr(row["Open"], "item") else row["Open"])
-                cls  = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
+                row = df.loc[today]
+                opn  = float(row["Open"].item()  if hasattr(row["Open"],  "item") else row["Open"])
+                low  = float(row["Low"].item()   if hasattr(row["Low"],   "item") else row["Low"])
+                high = float(row["High"].item()  if hasattr(row["High"],  "item") else row["High"])
 
-                exit_price = None
+                exit_price  = None
                 exit_reason = None
 
-                # Stop hit
+                # Stop hit (gap-fill or intraday)
                 if pos.stop_price and low <= pos.stop_price:
                     exit_price = opn if opn < pos.stop_price else pos.stop_price
                     exit_reason = "stop"
                 # Target hit
                 elif pos.target_price and high >= pos.target_price:
-                    exit_price = pos.target_price
+                    exit_price  = pos.target_price
                     exit_reason = "target"
 
                 if exit_price is not None:
-                    cost = exit_price * self.config["ROUND_TRIP_COST_PCT"] * pos.shares
+                    cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
                     pnl  = (exit_price - pos.entry_price) * pos.shares - cost
                     equity += pnl
                     closed.append({
                         "ticker":      pos.ticker,
                         "strategy":    pos.strategy,
+                        "sector":      pos.sector,
                         "entry_price": pos.entry_price,
                         "exit_price":  round(exit_price, 2),
                         "shares":      pos.shares,
                         "pnl":         round(pnl, 2),
                         "exit_reason": exit_reason,
-                        "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, 'date') else str(pos.entry_date),
-                        "exit_date":   str(today.date()) if hasattr(today, 'date') else str(today),
+                        "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
+                        "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
                     })
                 else:
                     still_open.append(pos)
 
             positions = still_open
 
-            # -- Generate signals & enter new positions (simplified) --
-            # Use a basic breakout heuristic: close > 20-day high & volume spike
-            if i < 20 or len(positions) >= self.config["MAX_POSITIONS"]:
-                equity_curve.append((str(today.date()) if hasattr(today, 'date') else str(today), round(equity, 2)))
+            # ── 2. Generate signals using the REAL pipeline ─────────────────
+            # Skip if at max positions
+            if len(positions) >= self.config["MAX_POSITIONS"]:
+                equity_curve.append((str(today.date()), round(equity, 2)))
                 continue
 
-            for ticker, df in self.ohlcv.items():
-                if df is None or today not in df.index:
+            # Compute features for each ticker using data up to today
+            features_dict = {}
+            for ticker in self.universe:
+                df = ohlcv_all.get(ticker)
+                if df is None:
                     continue
+                # Slice up to today (inclusive) — no future data
+                data_slice = df.loc[:today]
+                if len(data_slice) < 21:
+                    continue
+                features_dict[ticker] = compute_features(ticker, data_slice, None)
+
+            # Compute market regime from historical SPY/QQQ
+            regime_ohlcv = {}
+            for idx_ticker in ["SPY", "QQQ"]:
+                df = ohlcv_all.get(idx_ticker)
+                if df is not None:
+                    regime_ohlcv[idx_ticker] = df.loc[:today]
+
+            regime_result = compute_market_regime(ohlcv_override=regime_ohlcv)
+            regime_str    = regime_result.get("regime", "UNKNOWN")
+            spy_pct       = regime_result.get("indices", {}).get("SPY", {}).get("pct_from_ma")
+            qqq_pct       = regime_result.get("indices", {}).get("QQQ", {}).get("pct_from_ma")
+            spy_10d       = regime_result.get("indices", {}).get("SPY", {}).get("momentum_10d_pct")
+
+            market_context = {
+                "market_regime":   regime_str,
+                "spy_10d_return":  spy_10d,
+                "spy_pct_from_ma": spy_pct,
+                "qqq_pct_from_ma": qqq_pct,
+            }
+
+            # Generate signals (Strategy A + B; C skipped because earnings=None)
+            signals = generate_signals(features_dict, market_context=market_context)
+            total_signals_generated += len(signals)
+
+            # Enrich with risk parameters
+            signals = enrich_signals(signals, features_dict)
+
+            # Sector concentration cap (same as run.py)
+            _MAX_PER_SECTOR = 2
+            _sector_counts = {}
+            _capped = []
+            for s in signals:
+                sec = s.get("sector", "Unknown")
+                _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
+                if _sector_counts[sec] <= _MAX_PER_SECTOR:
+                    _capped.append(s)
+            signals = _capped
+
+            # BEAR_SHALLOW post-enrich filter (same as run.py)
+            if (regime_str == "BEAR"
+                    and spy_pct is not None and qqq_pct is not None
+                    and min(spy_pct, qqq_pct) > -0.05):
+                signals = [
+                    s for s in signals
+                    if s.get("sector") in {"Commodities", "Healthcare"}
+                    and (s.get("trade_quality_score") or 0) >= 0.75
+                ]
+
+            # Regime-adjusted risk per trade
+            if regime_str == "NEUTRAL":
+                risk_pct = 0.0075
+            elif (regime_str == "BEAR"
+                  and spy_pct is not None and qqq_pct is not None
+                  and min(spy_pct, qqq_pct) > -0.05):
+                risk_pct = 0.005
+            else:
+                risk_pct = None  # default 1%
+
+            # Size signals
+            signals = size_signals(signals, equity, risk_pct=risk_pct)
+            total_signals_survived += len(signals)
+
+            # ── 3. Enter positions at next-day open ─────────────────────────
+            slots = self.config["MAX_POSITIONS"] - len(positions)
+            for sig in signals[:slots]:
+                ticker = sig["ticker"]
+                # Skip if already holding
                 if any(p.ticker == ticker for p in positions):
-                    continue  # already holding
-                if len(positions) >= self.config["MAX_POSITIONS"]:
-                    break
-
-                lookback = df.loc[:today].tail(21)
-                if len(lookback) < 21:
                     continue
 
-                row   = df.loc[today]
-                close = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
-                high_20d = float(lookback["High"].iloc[:-1].max())
-
-                # Simple breakout condition
-                if close <= high_20d:
+                sizing = sig.get("sizing")
+                if not sizing or not sizing.get("shares_to_buy"):
                     continue
 
-                # Compute ATR
-                _lb = lookback.tail(15)
-                if len(_lb) < 2:
-                    continue
-                _highs = _lb["High"].values.flatten()
-                _lows  = _lb["Low"].values.flatten()
-                _closes = _lb["Close"].values.flatten()
-                _tr = []
-                for j in range(1, len(_highs)):
-                    h = float(_highs[j])
-                    l = float(_lows[j])
-                    pc = float(_closes[j-1])
-                    _tr.append(max(h - l, abs(h - pc), abs(l - pc)))
-                atr = sum(_tr) / len(_tr) if _tr else 0
-                if atr <= 0:
+                shares = sizing["shares_to_buy"]
+                stop   = sig.get("stop_price")
+                target = sig.get("target_price")
+
+                if not stop or not target:
                     continue
 
-                stop   = round(close - self.config["ATR_STOP_MULT"] * atr, 2)
-                target = round(close + self.config["ATR_TARGET_MULT"] * atr, 2)
-                risk   = close - stop
-                if risk <= 0:
+                # Fill at next-day open
+                df = ohlcv_all.get(ticker)
+                if df is None:
                     continue
 
-                # Next-day open fill with exec lag
-                if i + 1 < len(all_dates):
-                    next_day = all_dates[i + 1]
-                    if next_day in df.index:
-                        fill_row = df.loc[next_day]
-                        fill_price = float(fill_row["Open"].item() if hasattr(fill_row["Open"], "item") else fill_row["Open"])
-                    else:
-                        fill_price = close * (1 + self.config["EXEC_LAG_PCT"])
-                else:
-                    fill_price = close * (1 + self.config["EXEC_LAG_PCT"])
+                future_dates = [d for d in all_dates if d > today]
+                fill_price = None
+                fill_date  = None
+                for nd in future_dates[:3]:  # look ahead up to 3 days for fill
+                    if nd in df.index:
+                        fill_row = df.loc[nd]
+                        fill_price = float(
+                            fill_row["Open"].item()
+                            if hasattr(fill_row["Open"], "item")
+                            else fill_row["Open"]
+                        )
+                        fill_date = nd
+                        break
 
-                # Position sizing: risk 1% of equity
-                risk_dollars = equity * self.config["RISK_PER_TRADE_PCT"]
-                adj_risk     = fill_price - stop
-                if adj_risk <= 0:
+                if fill_price is None:
                     continue
-                shares = max(1, int(risk_dollars / adj_risk))
+
+                # Cancel if gap too large (>1.5% above signal entry)
+                signal_entry = sig.get("entry_price", fill_price)
+                if fill_price > signal_entry * 1.015:
+                    continue
 
                 positions.append(Position(
-                    ticker=ticker, entry_price=round(fill_price, 2),
-                    stop_price=stop, target_price=target,
-                    shares=shares, entry_date=next_day if i + 1 < len(all_dates) else today,
-                    strategy="breakout_long",
+                    ticker=ticker,
+                    entry_price=round(fill_price, 2),
+                    stop_price=stop,
+                    target_price=target,
+                    shares=shares,
+                    entry_date=fill_date,
+                    strategy=sig.get("strategy", "unknown"),
+                    sector=sig.get("sector", "Unknown"),
                 ))
 
-            equity_curve.append((str(today.date()) if hasattr(today, 'date') else str(today), round(equity, 2)))
+            # Mark-to-market equity
+            mtm = capital
+            for t in closed:
+                mtm += t["pnl"]  # realized
+            for pos in positions:
+                df = ohlcv_all.get(pos.ticker)
+                if df is not None and today in df.index:
+                    row = df.loc[today]
+                    cls = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
+                    mtm += (cls - pos.entry_price) * pos.shares
+                # If no price, unrealized = 0
 
-        # -- Compute metrics --
+            equity_curve.append((str(today.date()), round(mtm, 2)))
+
+        # ── Force-close remaining positions at last day's close ─────────────
+        last_day = sim_dates[-1]
+        for pos in positions:
+            df = ohlcv_all.get(pos.ticker)
+            if df is not None and last_day in df.index:
+                row = df.loc[last_day]
+                exit_price = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
+            else:
+                exit_price = pos.entry_price  # flat
+
+            cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
+            pnl  = (exit_price - pos.entry_price) * pos.shares - cost
+            equity += pnl
+            closed.append({
+                "ticker":      pos.ticker,
+                "strategy":    pos.strategy,
+                "sector":      pos.sector,
+                "entry_price": pos.entry_price,
+                "exit_price":  round(exit_price, 2),
+                "shares":      pos.shares,
+                "pnl":         round(pnl, 2),
+                "exit_reason": "end_of_backtest",
+                "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
+                "exit_date":   str(last_day.date()),
+            })
+
+        # ── Compute metrics ─────────────────────────────────────────────────
         wins   = [t for t in closed if t["pnl"] > 0]
         losses = [t for t in closed if t["pnl"] <= 0]
         total  = len(closed)
@@ -242,7 +397,7 @@ class BacktestEngine:
             if dd > max_dd:
                 max_dd = dd
 
-        # Sharpe from trade P&L
+        # Sharpe from trade P&L (annualized assuming ~30 trades/year)
         pnl_series = [t["pnl"] for t in closed]
         if len(pnl_series) >= 2:
             mean_pnl = sum(pnl_series) / len(pnl_series)
@@ -252,38 +407,156 @@ class BacktestEngine:
         else:
             sharpe = None
 
+        survival_rate = (round(total_signals_survived / total_signals_generated, 4)
+                         if total_signals_generated > 0 else 0)
+
         return {
-            "total_trades":    total,
-            "wins":            len(wins),
-            "losses":          len(losses),
-            "win_rate":        round(len(wins) / total, 4) if total else 0,
-            "total_pnl":       round(sum(t["pnl"] for t in closed), 2),
-            "sharpe":          sharpe,
-            "max_drawdown_pct": round(max_dd, 4),
-            "equity_curve":    equity_curve,
-            "trades":          closed,
+            "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
+            "trading_days":        len(sim_dates),
+            "total_trades":        total,
+            "wins":                len(wins),
+            "losses":              len(losses),
+            "win_rate":            round(len(wins) / total, 4) if total else 0,
+            "total_pnl":           round(sum(t["pnl"] for t in closed), 2),
+            "sharpe":              sharpe,
+            "max_drawdown_pct":    round(max_dd, 4),
+            "signals_generated":   total_signals_generated,
+            "signals_survived":    total_signals_survived,
+            "survival_rate":       survival_rate,
+            "equity_curve":        equity_curve,
+            "trades":              closed,
         }
 
     def sweep(self, param_name, values):
         """
-        Single-parameter sweep: run the backtest for each value of param_name.
+        Single-parameter sweep: varies a config key across values.
 
-        Args:
-            param_name (str):   Key in DEFAULT_CONFIG to vary
-            values     (list):  Values to test
+        Currently supports MAX_POSITIONS and INITIAL_CAPITAL.
+        For signal engine parameters (ATR multipliers etc.), modify the
+        source module constants before running — this backtester calls them
+        directly rather than passing config overrides.
 
         Returns:
-            list[dict]: One result dict per value, with 'param_value' added
+            list[dict]: One result dict per value
         """
         results = []
         for val in values:
             cfg = {**self.config, param_name: val}
-            engine = BacktestEngine(self.ohlcv, start=str(self.start.date()) if self.start else None,
-                                    end=str(self.end.date()) if self.end else None, config=cfg)
+            engine = BacktestEngine(
+                self.universe,
+                start=str(self.start.date()) if self.start else None,
+                end=str(self.end.date()) if self.end else None,
+                config=cfg,
+            )
             result = engine.run()
             result["param_name"]  = param_name
             result["param_value"] = val
             results.append(result)
-            logger.info(f"Sweep {param_name}={val}: trades={result.get('total_trades',0)} "
-                        f"pnl={result.get('total_pnl',0):.2f} sharpe={result.get('sharpe')}")
+            logger.info(
+                f"Sweep {param_name}={val}: trades={result.get('total_trades', 0)} "
+                f"pnl={result.get('total_pnl', 0):.2f} sharpe={result.get('sharpe')}"
+            )
         return results
+
+
+# ── CLI ─────────────────────────────────────────────────────────────────────
+
+def _print_results(results):
+    """Pretty-print backtest results to console."""
+    print("\n" + "=" * 60)
+    print("  SIGNAL-LEVEL BACKTEST RESULTS")
+    print("=" * 60)
+    print(f"  Period:            {results['period']}")
+    print(f"  Trading days:      {results['trading_days']}")
+    print(f"  Total trades:      {results['total_trades']}")
+    print(f"  Wins / Losses:     {results['wins']} / {results['losses']}")
+    print(f"  Win rate:          {results['win_rate']*100:.1f}%")
+    print(f"  Total PnL:         ${results['total_pnl']:,.2f}")
+    print(f"  Sharpe:            {results['sharpe']}")
+    print(f"  Max drawdown:      {results['max_drawdown_pct']*100:.2f}%")
+    print(f"  Signals generated: {results['signals_generated']}")
+    print(f"  Signals survived:  {results['signals_survived']}")
+    print(f"  Survival rate:     {results['survival_rate']*100:.1f}%")
+    print("=" * 60)
+
+    if results.get("trades"):
+        print("\n  TRADE LOG:")
+        print(f"  {'Ticker':<8} {'Strategy':<20} {'Entry':>8} {'Exit':>8} "
+              f"{'PnL':>10} {'Reason':<12} {'Dates'}")
+        print("  " + "-" * 90)
+        for t in results["trades"]:
+            print(f"  {t['ticker']:<8} {t['strategy']:<20} "
+                  f"${t['entry_price']:>7.2f} ${t['exit_price']:>7.2f} "
+                  f"${t['pnl']:>9.2f} {t['exit_reason']:<12} "
+                  f"{t['entry_date']} → {t['exit_date']}")
+    print()
+
+
+def main():
+    import argparse
+
+    # Ensure quant/ is on sys.path
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s  %(levelname)-7s  %(name)s: %(message)s",
+        datefmt="%H:%M:%S",
+    )
+
+    parser = argparse.ArgumentParser(description="Signal-level backtester")
+    parser.add_argument("--start", type=str, default=None,
+                        help="Start date YYYY-MM-DD (default: 6 months ago)")
+    parser.add_argument("--end", type=str, default=None,
+                        help="End date YYYY-MM-DD (default: today)")
+    parser.add_argument("--sweep", nargs="+", default=None,
+                        help="Parameter sweep: PARAM_NAME val1 val2 ...")
+    args = parser.parse_args()
+
+    # Default: last 6 months
+    if not args.start:
+        args.start = (pd.Timestamp.now() - pd.Timedelta(days=180)).strftime("%Y-%m-%d")
+    if not args.end:
+        args.end = pd.Timestamp.now().strftime("%Y-%m-%d")
+
+    # Universe from data_layer
+    try:
+        from data_layer import get_universe
+        universe = get_universe()
+    except Exception:
+        from filter import WATCHLIST
+        universe = list(WATCHLIST)
+
+    engine = BacktestEngine(universe, start=args.start, end=args.end)
+
+    if args.sweep and len(args.sweep) >= 2:
+        param_name = args.sweep[0]
+        values = [float(v) for v in args.sweep[1:]]
+        results_list = engine.sweep(param_name, values)
+        for r in results_list:
+            print(f"\n--- {param_name} = {r['param_value']} ---")
+            _print_results(r)
+    else:
+        results = engine.run()
+
+        if "error" in results:
+            print(f"ERROR: {results['error']}")
+            sys.exit(1)
+
+        _print_results(results)
+
+        # Save results
+        out_path = os.path.join(script_dir, "..", "data",
+                                f"backtest_results_{datetime.now().strftime('%Y%m%d')}.json")
+        os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+
+        save_data = {k: v for k, v in results.items() if k != "equity_curve"}
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(save_data, f, indent=2, ensure_ascii=False)
+        print(f"Results saved → {out_path}")
+
+
+if __name__ == "__main__":
+    main()

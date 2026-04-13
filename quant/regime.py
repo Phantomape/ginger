@@ -74,9 +74,61 @@ def _fetch_index(ticker, ma_period=MA_PERIOD):
         return None
 
 
-def compute_market_regime(ma_period=MA_PERIOD):
+def _compute_regime_from_ohlcv(ticker, ohlcv_data, ma_period=MA_PERIOD):
+    """
+    Compute regime info for a single index from pre-loaded OHLCV data.
+
+    Used by the backtester to avoid live API calls during historical replay.
+
+    Args:
+        ticker     (str):          Index ticker symbol (e.g. "SPY")
+        ohlcv_data (pd.DataFrame): OHLCV with DatetimeIndex, sliced up to the
+                                   target date (inclusive)
+        ma_period  (int):          Moving average period (default 200)
+
+    Returns:
+        dict with close, ma200, above_ma, pct_from_ma — or None on failure
+    """
+    if ohlcv_data is None or len(ohlcv_data) < ma_period:
+        return None
+
+    try:
+        close = ohlcv_data["Close"]
+        ma = close.rolling(window=ma_period).mean()
+
+        latest_close = _scalar(close.iloc[-1])
+        latest_ma = _scalar(ma.iloc[-1])
+
+        above_ma = latest_close > latest_ma
+        pct_from_ma = (latest_close - latest_ma) / latest_ma
+
+        momentum_10d_pct = None
+        if len(ohlcv_data) >= 11:
+            close_10d_ago = _scalar(close.iloc[-11])
+            momentum_10d_pct = round((latest_close - close_10d_ago) / close_10d_ago, 4)
+
+        return {
+            "ticker": ticker,
+            "close": round(latest_close, 2),
+            f"ma{ma_period}": round(latest_ma, 2),
+            "above_ma": above_ma,
+            "pct_from_ma": round(pct_from_ma, 4),
+            "momentum_10d_pct": momentum_10d_pct,
+        }
+    except Exception as e:
+        logger.error(f"_compute_regime_from_ohlcv failed for {ticker}: {e}")
+        return None
+
+
+def compute_market_regime(ma_period=MA_PERIOD, ohlcv_override=None):
     """
     Compute overall market regime from SPY and QQQ.
+
+    Args:
+        ma_period      (int):  Moving average period (default 200)
+        ohlcv_override (dict): Optional {ticker: DataFrame} for backtesting.
+                               When provided, uses pre-loaded data instead of
+                               live yfinance downloads.
 
     Returns:
         dict: {
@@ -87,7 +139,12 @@ def compute_market_regime(ma_period=MA_PERIOD):
     """
     indices = {}
     for ticker in REGIME_TICKERS:
-        result = _fetch_index(ticker, ma_period)
+        if ohlcv_override and ticker in ohlcv_override:
+            result = _compute_regime_from_ohlcv(
+                ticker, ohlcv_override[ticker], ma_period
+            )
+        else:
+            result = _fetch_index(ticker, ma_period)
         if result:
             indices[ticker] = result
 

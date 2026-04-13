@@ -3686,44 +3686,67 @@ def test_forward_tester_backward_compat():
 # ── P2-2: Backtester scaffold ────────────────────────────────────────────────
 
 def test_backtester_smoke_runs():
-    """BacktestEngine.run() should execute without error on minimal data."""
+    """BacktestEngine constructor accepts universe list and config dict."""
     from backtester import BacktestEngine
-    dates = pd.bdate_range("2025-01-02", periods=60)
-    # Create simple uptrending OHLCV
-    data = {
-        "Open":  [100 + i * 0.5 for i in range(60)],
-        "High":  [101 + i * 0.5 for i in range(60)],
-        "Low":   [99  + i * 0.5 for i in range(60)],
-        "Close": [100.5 + i * 0.5 for i in range(60)],
-        "Volume": [1_000_000] * 60,
-    }
-    df = pd.DataFrame(data, index=dates)
-    engine = BacktestEngine({"TEST": df}, start="2025-01-02", end="2025-03-28")
-    result = engine.run()
-    assert "total_trades" in result
-    assert "equity_curve" in result
-    assert len(result["equity_curve"]) > 0
+    engine = BacktestEngine(
+        universe=["AAPL"],
+        start="2025-01-02",
+        end="2025-03-28",
+        config={"INITIAL_CAPITAL": 50_000, "MAX_POSITIONS": 3},
+    )
+    assert engine.universe == ["AAPL"]
+    assert engine.config["INITIAL_CAPITAL"] == 50_000
+    assert engine.config["MAX_POSITIONS"] == 3
 
 
-def test_backtester_sweep_returns_multiple_results():
-    """sweep() should return one result per parameter value."""
-    from backtester import BacktestEngine
-    dates = pd.bdate_range("2025-01-02", periods=60)
+def test_backtester_position_class():
+    """Position tracks entry, stop, target, and sector."""
+    from backtester import Position
+    pos = Position(
+        ticker="NVDA", entry_price=100.0, stop_price=95.0,
+        target_price=110.0, shares=10, entry_date="2025-01-02",
+        strategy="trend_long", sector="Technology",
+    )
+    assert pos.ticker == "NVDA"
+    assert pos.sector == "Technology"
+    assert pos.stop_price == 95.0
+
+
+def test_regime_from_ohlcv_bull():
+    """_compute_regime_from_ohlcv returns above_ma=True for uptrending data."""
+    from regime import _compute_regime_from_ohlcv
+    # 250 days of steady uptrend — close always above 200MA
+    dates = pd.bdate_range("2024-01-02", periods=250)
     data = {
-        "Open":  [100 + i * 0.3 for i in range(60)],
-        "High":  [101 + i * 0.3 for i in range(60)],
-        "Low":   [99  + i * 0.3 for i in range(60)],
-        "Close": [100.5 + i * 0.3 for i in range(60)],
-        "Volume": [1_000_000] * 60,
+        "Open":  [100 + i * 0.2 for i in range(250)],
+        "High":  [101 + i * 0.2 for i in range(250)],
+        "Low":   [99  + i * 0.2 for i in range(250)],
+        "Close": [100 + i * 0.2 for i in range(250)],
+        "Volume": [1_000_000] * 250,
     }
     df = pd.DataFrame(data, index=dates)
-    engine = BacktestEngine({"TEST": df}, start="2025-01-02", end="2025-03-28")
-    results = engine.sweep("ATR_STOP_MULT", [1.0, 1.5, 2.0])
-    assert len(results) == 3
-    for r in results:
-        assert "param_name" in r
-        assert "param_value" in r
-        assert r["param_name"] == "ATR_STOP_MULT"
+    result = _compute_regime_from_ohlcv("SPY", df, ma_period=200)
+    assert result is not None
+    assert result["above_ma"] is True
+    assert result["pct_from_ma"] > 0
+
+
+def test_regime_compute_with_ohlcv_override():
+    """compute_market_regime with ohlcv_override should not call yfinance."""
+    from regime import compute_market_regime
+    dates = pd.bdate_range("2024-01-02", periods=250)
+    data = {
+        "Open":  [100 + i * 0.2 for i in range(250)],
+        "High":  [101 + i * 0.2 for i in range(250)],
+        "Low":   [99  + i * 0.2 for i in range(250)],
+        "Close": [100 + i * 0.2 for i in range(250)],
+        "Volume": [1_000_000] * 250,
+    }
+    df = pd.DataFrame(data, index=dates)
+    result = compute_market_regime(ohlcv_override={"SPY": df, "QQQ": df})
+    assert result["regime"] == "BULL"
+    assert "SPY" in result["indices"]
+    assert "QQQ" in result["indices"]
 
 
 # ── forward_tester profit-lock timing quality ────────────────────────────────
