@@ -39,6 +39,68 @@ DATA_DIR     = "data"
 
 
 # ---------------------------------------------------------------------------
+# Fill model assumptions
+# ---------------------------------------------------------------------------
+# Slippage in basis points (1 bp = 0.01%).  Watchlist is primarily large-cap
+# US equity with a tail of less liquid names (CRDO, APP).  Stop slippage is
+# higher because stops execute in the same direction as adverse price moves
+# and are disproportionately hit on gap / high-volatility days.
+SLIPPAGE_BPS_ENTRY  = 5
+SLIPPAGE_BPS_STOP   = 10
+SLIPPAGE_BPS_TARGET = 5
+
+# Round-trip commission + spread cost as a fraction of notional, applied once
+# to a completed trade's realized P&L.  Separate from the per-fill slippage
+# above: slippage models the price you actually get on each leg, commission
+# models the per-trade friction (broker fees, regulatory, spread residual).
+ROUND_TRIP_COST = 0.0035
+
+
+# ---------------------------------------------------------------------------
+# Fill model helpers
+# ---------------------------------------------------------------------------
+
+def apply_slippage(price, bps, side):
+    """Adjust a theoretical fill price for adverse slippage.
+
+    side='buy'  → raise price  (you pay more than the quoted price)
+    side='sell' → lower price  (you receive less than the quoted price)
+    """
+    if price is None:
+        return None
+    factor = 1 + (bps / 10000.0) if side == "buy" else 1 - (bps / 10000.0)
+    return round(price * factor, 4)
+
+
+def get_next_open_price(ticker, rec_date):
+    """Fetch the Open of the first trading day STRICTLY AFTER rec_date.
+
+    Models realistic execution: signals are produced end-of-day, so the
+    earliest fill is the next session's opening auction.  Before this helper
+    existed, entry was assumed at rec_date close, which overstates edge
+    because (a) signals often can't be acted on before close and (b) the
+    opening auction is usually a worse fill than the prior close.
+    """
+    try:
+        start = pd.Timestamp(rec_date) + pd.Timedelta(days=1)
+        end   = pd.Timestamp(rec_date) + pd.Timedelta(days=7)
+        data  = yf.download(ticker, start=start, end=end, progress=False)
+        if data.empty:
+            return None, None
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+        if "Open" not in data.columns:
+            return None, None
+        first = data.index[0]
+        raw   = data.loc[first, "Open"]
+        price = float(raw.item() if hasattr(raw, "item") else raw)
+        return round(price, 4), first.date()
+    except Exception as e:
+        logger.warning(f"Failed to fetch next-open for {ticker} after {rec_date}: {e}")
+        return None, None
+
+
+# ---------------------------------------------------------------------------
 # Price fetching
 # ---------------------------------------------------------------------------
 
@@ -126,21 +188,31 @@ def check_stop_or_target_hit(ticker, entry_date, entry_price, stop_price, target
 
     Returns:
         dict: {
-            "stop_hit":       bool,
-            "stop_hit_day":   int or None,      # trading day index (1-based)
-            "stop_hit_price": float or None,    # low on the stop-hit day
-            "target_hit":     bool,
-            "target_hit_day": int or None,
-            "data_available": bool,
+            "stop_hit":         bool,
+            "stop_hit_day":     int or None,      # trading day index (1-based)
+            "stop_hit_price":   float or None,    # SLIPPAGE-ADJUSTED stop fill price
+            "target_hit":       bool,
+            "target_hit_day":   int or None,
+            "target_hit_price": float or None,    # SLIPPAGE-ADJUSTED target fill price
+            "exit_reason":      "stop" | "target" | None,  # first-touch reason
+            "data_available":   bool,
         }
+
+    Fills are slippage-adjusted (SLIPPAGE_BPS_STOP / SLIPPAGE_BPS_TARGET) so
+    the returned price is what the trade would actually realize, not the
+    theoretical trigger level.  Gap-through handling is preserved: if Open
+    has already crossed the level, fill uses Open; otherwise the trigger
+    level is used as the raw fill and slippage is applied on top.
     """
     result = {
-        "stop_hit":       False,
-        "stop_hit_day":   None,
-        "stop_hit_price": None,
-        "target_hit":     False,
-        "target_hit_day": None,
-        "data_available": False,
+        "stop_hit":         False,
+        "stop_hit_day":     None,
+        "stop_hit_price":   None,
+        "target_hit":       False,
+        "target_hit_day":   None,
+        "target_hit_price": None,
+        "exit_reason":      None,
+        "data_available":   False,
     }
 
     # Fetch slightly beyond the window to cover weekends / holidays
@@ -167,15 +239,25 @@ def check_stop_or_target_hit(ticker, entry_date, entry_price, stop_price, target
             #   Intraday stop (open >= stop): price drifts to stop during the session
             #     → execution approximated at stop_price (limit/stop-limit order).
             # Using low (the day's minimum) as fill would overstate the loss in both cases.
-            if open_p < stop_price:
-                result["stop_hit_price"] = round(open_p, 4)    # gap-fill: execution at open
-            else:
-                result["stop_hit_price"] = round(stop_price, 4)  # intraday fill at stop
+            raw_stop_fill = open_p if open_p < stop_price else stop_price
+            result["stop_hit_price"] = apply_slippage(
+                raw_stop_fill, SLIPPAGE_BPS_STOP, "sell")
+            if result["exit_reason"] is None:
+                result["exit_reason"] = "stop"
 
         # Target hit: daily High reaches or exceeds target_price
         if not result["target_hit"] and target_price and high >= target_price:
             result["target_hit"]     = True
             result["target_hit_day"] = day_idx
+            # Gap-up (open >= target): market opens above target → fill at open (bonus).
+            # Intraday (open < target, high >= target): fill at target (limit order).
+            raw_target_fill = open_p if open_p >= target_price else target_price
+            result["target_hit_price"] = apply_slippage(
+                raw_target_fill, SLIPPAGE_BPS_TARGET, "sell")
+            # Only set exit_reason if stop didn't already claim it earlier in the loop.
+            # Same-day stop+target → stop wins (conservative; see tie-break below).
+            if result["exit_reason"] is None:
+                result["exit_reason"] = "target"
 
         # Stop found first — subsequent target hit is irrelevant for this trade
         if result["stop_hit"] and result["target_hit"]:
@@ -473,13 +555,26 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         price_rec,  date_rec  = get_close_price(ticker, rec_date)
         price_eval, date_eval = get_close_price(ticker, eval_date)
 
-        if price_rec is not None and price_eval is not None:
+        # Entry fill model: next-day Open + buy-side slippage.  A caller-supplied
+        # entry_price (e.g. a backtest injecting a synthetic fill) still wins so
+        # historical test fixtures keep working; otherwise we model realistic
+        # execution: signals run EOD, order reaches the book at next open.
+        entry_override = new_trade.get("entry_price")
+        if entry_override is not None:
+            entry_fill_price = round(float(entry_override), 4)
+            entry_open_price = entry_fill_price
+        else:
+            entry_open_price, _ = get_next_open_price(ticker, rec_date)
+            entry_fill_price = apply_slippage(
+                entry_open_price, SLIPPAGE_BPS_ENTRY, "buy") if entry_open_price else None
+
+        if price_rec is not None and price_eval is not None and entry_fill_price is not None:
             return_10d      = (price_eval - price_rec) / price_rec
-            # Deduct round-trip execution cost (0.35%) to evaluate net profitability.
-            # Without cost: +0.2% looks "correct" for a long; actual net = -0.15% loss.
-            # This matches the cost model in performance_engine.py and trade_advice.txt.
-            ROUND_TRIP_COST = 0.0035
-            net_return_10d  = return_10d - ROUND_TRIP_COST  # long trade: cost reduces gain
+            # Legacy net_return_10d_pct retained for dashboard continuity; uses
+            # the close-to-close return minus a flat round-trip cost.  The
+            # authoritative metric is realized_pnl_pct_net below, which is
+            # grounded in the actual simulated fill prices.
+            net_return_10d  = return_10d - ROUND_TRIP_COST
             correct         = action_is_correct("NEW TRADE", net_return_10d)
 
             # Path analysis: check if stop or target was hit DURING the evaluation window.
@@ -488,13 +583,30 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
             stop_target_check = check_stop_or_target_hit(
                 ticker       = ticker,
                 entry_date   = rec_date,
-                entry_price  = new_trade.get("entry_price") or price_rec,
+                entry_price  = entry_fill_price,
                 stop_price   = new_trade.get("stop_price"),
                 target_price = new_trade.get("target_price"),
                 n_days       = n_days,
             )
-            # True profitability: if stop was hit first, the trade was a loss regardless
-            # of where the price ended up at the 10-day mark.
+
+            # Exit fill: whichever of stop / target fired first, else mark-to-market
+            # at eval_date close with sell-side slippage (open-ended trade).
+            exit_reason      = stop_target_check.get("exit_reason")
+            if exit_reason == "stop":
+                exit_fill_price = stop_target_check.get("stop_hit_price")
+            elif exit_reason == "target":
+                exit_fill_price = stop_target_check.get("target_hit_price")
+            else:
+                # No trigger → exit assumed at eval_date close with exit-side slippage.
+                # Use the target slippage budget (same tight liquidity assumption)
+                # since no adverse-momentum surge is implied.
+                exit_fill_price = apply_slippage(
+                    price_eval, SLIPPAGE_BPS_TARGET, "sell")
+
+            realized_pnl_pct = (exit_fill_price / entry_fill_price - 1)
+            realized_pnl_pct_net = realized_pnl_pct - ROUND_TRIP_COST
+
+            # Path-corrected direction: loss if stop fired first (or solo).
             path_correct = correct
             if stop_target_check.get("data_available"):
                 stop_day   = stop_target_check.get("stop_hit_day")
@@ -503,7 +615,6 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
                     not stop_target_check["target_hit"]
                     or (stop_day is not None and target_day is not None and stop_day < target_day)
                 ):
-                    # Stop was hit before (or without) target — actual trade result is a loss
                     path_correct = False
 
             # Multi-window evaluation: compute returns at 20d and 30d windows
@@ -537,16 +648,24 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
                 "direction":           direction,
                 "confidence":          confidence,
                 "thesis":              new_trade.get("thesis"),
-                "price_on_rec_date":   price_rec,
+                "price_on_rec_date":   price_rec,          # close of rec_date (reference)
                 "price_on_eval_date":  price_eval,
+                "entry_open_price":    entry_open_price,   # raw next-day Open
+                "entry_fill_price":    entry_fill_price,   # next-day Open + buy slippage
+                "exit_fill_price":     round(exit_fill_price, 4) if exit_fill_price else None,
+                "exit_reason":         exit_reason or "eval_close",
                 "return_10d_pct":      round(return_10d, 4),
-                "net_return_10d_pct":  round(net_return_10d, 4),  # after 0.35% round-trip cost
+                "net_return_10d_pct":  round(net_return_10d, 4),       # legacy close-based
+                "realized_pnl_pct":        round(realized_pnl_pct, 4),       # fills only
+                "realized_pnl_pct_net":    round(realized_pnl_pct_net, 4),   # fills + commission
                 "trade_correct":       correct,        # endpoint-only (original metric)
                 "path_correct":        path_correct,   # accounts for stop/target path
-                "stop_hit_during_period":  stop_target_check.get("stop_hit", False),
-                "stop_hit_day":            stop_target_check.get("stop_hit_day"),
+                "stop_hit_during_period":   stop_target_check.get("stop_hit", False),
+                "stop_hit_day":             stop_target_check.get("stop_hit_day"),
+                "stop_hit_price":           stop_target_check.get("stop_hit_price"),
                 "target_hit_during_period": stop_target_check.get("target_hit", False),
                 "target_hit_day":           stop_target_check.get("target_hit_day"),
+                "target_hit_price":         stop_target_check.get("target_hit_price"),
                 "actual_rec_date":     str(date_rec),
                 "actual_eval_date":    str(date_eval),
                 **multi_window,  # return_20d_pct, return_30d_pct when available
@@ -665,6 +784,15 @@ def print_report(results):
               f"({nt['return_10d_pct']*100:+.2f}%)  "
               f"endpoint:{CORRECT_ICON.get(nt['trade_correct'], '?')}  "
               f"path:{CORRECT_ICON.get(nt.get('path_correct'), '?')}")
+        # Fill-model realized P&L: shows the difference between "what the stock did"
+        # and "what you actually net after slippage + commission".  This is the
+        # authoritative edge number for attribution work.
+        if nt.get("entry_fill_price") and nt.get("exit_fill_price"):
+            print(f"    Fill P&L:      ${nt['entry_fill_price']:.2f} → "
+                  f"${nt['exit_fill_price']:.2f}  "
+                  f"gross {nt['realized_pnl_pct']*100:+.2f}%  "
+                  f"net {nt['realized_pnl_pct_net']*100:+.2f}%  "
+                  f"(exit: {nt.get('exit_reason', '?')})")
         stop_note   = f"stop hit day {nt['stop_hit_day']}"   if nt.get("stop_hit_during_period")   else "stop not hit"
         target_note = f"target hit day {nt['target_hit_day']}" if nt.get("target_hit_during_period") else "target not hit"
         print(f"    Path analysis: {stop_note} | {target_note}")
