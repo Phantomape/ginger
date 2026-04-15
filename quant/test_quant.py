@@ -3937,6 +3937,332 @@ def test_backtester_position_class():
     assert pos.ticker == "NVDA"
     assert pos.sector == "Technology"
     assert pos.stop_price == 95.0
+    # entry_open_price defaults to entry_price when caller doesn't supply raw Open
+    assert pos.entry_open_price == 100.0
+
+
+# ── backtester fill model (P0-3 Part 2) ──────────────────────────────────────
+
+def test_backtester_stop_fill_gap_down_with_slippage():
+    """Gap-down stop: fill uses Open (not daily Low), then sell-side slippage.
+
+    Open $92 below stop $95 → raw fill = $92; with 10bp sell slippage → $91.908.
+    """
+    from fill_model import apply_stop_fill, SLIPPAGE_BPS_STOP
+    got = apply_stop_fill(open_price=92.0, stop_price=95.0)
+    expected = round(92.0 * (1 - SLIPPAGE_BPS_STOP / 10000.0), 4)
+    assert got == expected
+    assert got < 92.0, "sell-side slippage must lower the fill below raw Open"
+
+
+def test_backtester_stop_fill_intraday_uses_stop_minus_slippage():
+    """Intraday stop: fill based on stop (not Low), with sell slippage."""
+    from fill_model import apply_stop_fill, SLIPPAGE_BPS_STOP
+    got = apply_stop_fill(open_price=97.0, stop_price=95.0)
+    expected = round(95.0 * (1 - SLIPPAGE_BPS_STOP / 10000.0), 4)
+    assert got == expected
+
+
+def test_backtester_target_fill_gap_up_uses_open_with_slippage():
+    """Gap-up target: fill = Open (bonus over target), minus sell slippage.
+
+    This is the case the PRE-fix backtester got WRONG — it priced at
+    target_price ($110) even when Open gapped to $112.
+    """
+    from fill_model import apply_target_fill, SLIPPAGE_BPS_TARGET
+    got = apply_target_fill(open_price=112.0, target_price=110.0)
+    expected = round(112.0 * (1 - SLIPPAGE_BPS_TARGET / 10000.0), 4)
+    assert got == expected
+    assert got > 110.0, "gap-up target fill must beat raw target even after slippage"
+
+
+def test_backtester_target_fill_intraday_uses_target_minus_slippage():
+    """Intraday target: Open below target, High tags target → fill at target - slip."""
+    from fill_model import apply_target_fill, SLIPPAGE_BPS_TARGET
+    got = apply_target_fill(open_price=105.0, target_price=110.0)
+    expected = round(110.0 * (1 - SLIPPAGE_BPS_TARGET / 10000.0), 4)
+    assert got == expected
+    assert got < 110.0
+
+
+def test_backtester_entry_fill_adds_buy_slippage():
+    """Long entry fill: raw Open + buy-side slippage (fill is WORSE = higher)."""
+    from fill_model import apply_entry_fill, SLIPPAGE_BPS_ENTRY
+    got = apply_entry_fill(open_price=100.0)
+    expected = round(100.0 * (1 + SLIPPAGE_BPS_ENTRY / 10000.0), 4)
+    assert got == expected
+    assert got > 100.0
+
+
+def test_fill_model_helpers_consistent_with_raw_apply_slippage():
+    """Sanity: the high-level helpers round-trip through apply_slippage
+    with the same constants, so changing one place affects everything."""
+    from fill_model import (
+        apply_slippage, apply_entry_fill, apply_stop_fill, apply_target_fill,
+        SLIPPAGE_BPS_ENTRY, SLIPPAGE_BPS_STOP, SLIPPAGE_BPS_TARGET,
+    )
+    assert apply_entry_fill(100.0) == apply_slippage(100.0, SLIPPAGE_BPS_ENTRY, "buy")
+    # Stop intraday case reduces to raw apply_slippage on stop_price
+    assert apply_stop_fill(97.0, 95.0) == apply_slippage(95.0, SLIPPAGE_BPS_STOP, "sell")
+    # Target intraday case reduces to raw apply_slippage on target_price
+    assert apply_target_fill(105.0, 110.0) == apply_slippage(110.0, SLIPPAGE_BPS_TARGET, "sell")
+
+
+# ── forward_tester position_actions fill model (P0-3 Part 3) ─────────────────
+
+def test_evaluate_file_position_action_exit_uses_slippage(monkeypatch, tmp_path):
+    """EXIT/REDUCE position_actions must record a fill-model-grounded realized
+    P&L (`realized_exit_pnl_pct_net`) alongside the legacy close-to-close
+    direction signal (`return_10d_pct`).
+
+    Pre-fix gap: position_actions were evaluated only on close-to-close returns,
+    so the realized P&L of an actual sell was invisible to downstream per-
+    strategy attribution.
+
+    Scenario: avg_cost=$100, position is underwater on rec_date (close $92).
+      next-day Open $90, sell slippage 10bp → fill $89.91
+      realized_exit_pnl_pct     = 89.91 / 100 - 1  = -0.1009
+      realized_exit_pnl_pct_net = -0.1009 - 0.0035 = -0.1044
+    """
+    import json
+    from datetime import date, timedelta
+    import forward_tester as ft
+    from forward_tester import (
+        evaluate_file, SLIPPAGE_BPS_STOP, ROUND_TRIP_COST,
+    )
+
+    rec = date.today() - timedelta(days=30)
+    rec_str = rec.strftime("%Y%m%d")
+
+    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
+    advice_path.write_text(json.dumps({
+        "advice_parsed": {
+            "position_actions": [
+                {"ticker": "TEST", "action": "EXIT", "confidence": 0.9,
+                 "exit_rule_triggered": "NONE"},
+            ],
+            "new_trade": None,
+        }
+    }))
+
+    pos_path = tmp_path / "open_positions.json"
+    pos_path.write_text(json.dumps({
+        "positions": [{"ticker": "TEST", "avg_cost": 100.0}]
+    }))
+
+    # rec_date close $92 (already underwater), eval_date close $88
+    monkeypatch.setattr(ft, "get_close_price",
+        lambda ticker, d: (92.0, d) if d == rec else (88.0, d))
+    # Next-day Open $90 — worse than rec_date close (adverse gap)
+    monkeypatch.setattr(ft, "get_next_open_price",
+        lambda ticker, d: (90.0, d + timedelta(days=1)))
+
+    result = evaluate_file(str(advice_path), open_positions_path=str(pos_path))
+    pr = result["position_results"][0]
+
+    expected_fill = round(90.0 * (1 - SLIPPAGE_BPS_STOP / 10000.0), 4)
+    expected_gross = round(expected_fill / 100.0 - 1, 4)
+    expected_net   = round(expected_gross - ROUND_TRIP_COST, 4)
+
+    assert pr["exit_fill_price"]            == expected_fill
+    assert pr["realized_exit_pnl_pct"]      == expected_gross
+    assert pr["realized_exit_pnl_pct_net"]  == expected_net
+    # Net realized P&L must be strictly worse than the gross (commission drag).
+    assert pr["realized_exit_pnl_pct_net"] < pr["realized_exit_pnl_pct"]
+    # And strictly worse than close-to-close price_rec vs avg_cost baseline,
+    # because Open was lower than rec_date close and slippage further lowers it.
+    assert pr["realized_exit_pnl_pct_net"] < pr["pnl_vs_cost_pct"]
+
+
+def test_evaluate_file_position_action_hold_has_no_exit_fill(monkeypatch, tmp_path):
+    """HOLD actions do not execute a sale, so exit_fill_price and
+    realized_exit_pnl_pct_net must be None (fill model only applies to EXIT/REDUCE)."""
+    import json
+    from datetime import date, timedelta
+    import forward_tester as ft
+    from forward_tester import evaluate_file
+
+    rec = date.today() - timedelta(days=30)
+    rec_str = rec.strftime("%Y%m%d")
+
+    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
+    advice_path.write_text(json.dumps({
+        "advice_parsed": {
+            "position_actions": [
+                {"ticker": "TEST", "action": "HOLD", "confidence": 0.7,
+                 "exit_rule_triggered": "NONE"},
+            ],
+            "new_trade": None,
+        }
+    }))
+
+    pos_path = tmp_path / "open_positions.json"
+    pos_path.write_text(json.dumps({
+        "positions": [{"ticker": "TEST", "avg_cost": 100.0}]
+    }))
+
+    monkeypatch.setattr(ft, "get_close_price",
+        lambda ticker, d: (105.0, d) if d == rec else (110.0, d))
+    monkeypatch.setattr(ft, "get_next_open_price",
+        lambda ticker, d: (106.0, d + timedelta(days=1)))
+
+    result = evaluate_file(str(advice_path), open_positions_path=str(pos_path))
+    pr = result["position_results"][0]
+
+    assert pr["action"] == "HOLD"
+    assert pr["exit_fill_price"]           is None
+    assert pr["realized_exit_pnl_pct"]     is None
+    assert pr["realized_exit_pnl_pct_net"] is None
+    # return_10d_pct must still be populated so direction-correctness grading
+    # continues to work unchanged.
+    assert pr["return_10d_pct"] is not None
+
+
+# ── backtester END-TO-END fill-model integration (P0-3 Part 2) ───────────────
+#
+# The unit tests above prove the fill_model helpers compute the right number.
+# These tests prove BacktestEngine.run() actually USES those helpers — catching
+# the class of bug where helpers are correct but the pipeline either skips them
+# or drops their output before it reaches a closed trade record.
+
+def _backtest_harness(monkeypatch, test_df, spy_df):
+    """Stub the whole pipeline so BacktestEngine.run() executes deterministically.
+
+    Returns a configured BacktestEngine where the only real logic is the
+    exit/entry/fill wiring inside run() itself.
+    """
+    import backtester, feature_layer, signal_engine, risk_engine, portfolio_engine
+    import regime as regime_mod
+    from backtester import BacktestEngine
+
+    monkeypatch.setattr(BacktestEngine, "_download_data",
+        lambda self: {"TEST": test_df, "SPY": spy_df, "QQQ": spy_df})
+    monkeypatch.setattr(feature_layer, "compute_features",
+        lambda t, df, e: {"ticker": t})
+    monkeypatch.setattr(regime_mod, "compute_market_regime",
+        lambda ohlcv_override=None: {
+            "regime": "BULL",
+            "indices": {
+                "SPY": {"pct_from_ma": 0.05, "momentum_10d_pct": 0.02},
+                "QQQ": {"pct_from_ma": 0.05},
+            },
+        })
+    monkeypatch.setattr(signal_engine, "generate_signals",
+        lambda features, market_context=None: (
+            [{"ticker": "TEST", "strategy": "trend_long", "sector": "Tech",
+              "entry_price": 100.0, "stop_price": 95.0, "target_price": 110.0,
+              "trade_quality_score": 0.8}]
+            if "TEST" in features else []))
+    monkeypatch.setattr(risk_engine, "enrich_signals",
+        lambda signals, features: signals)
+    def fake_size(signals, equity, risk_pct=None):
+        for s in signals:
+            s["sizing"] = {"shares_to_buy": 10}
+        return signals
+    monkeypatch.setattr(portfolio_engine, "size_signals", fake_size)
+
+    engine = BacktestEngine(
+        universe=["TEST"],
+        config={"INITIAL_CAPITAL": 100_000, "MAX_POSITIONS": 5},
+    )
+    engine.start = test_df.index[0]
+    engine.end   = test_df.index[-1]
+    return engine
+
+
+def _flat_then_trigger_df(idx, trigger_open, trigger_high, trigger_low):
+    """OHLCV: flat $100 for all but the last bar, which carries trigger prices."""
+    n = len(idx)
+    return pd.DataFrame({
+        "Open":  [100.0] * (n - 1) + [trigger_open],
+        "High":  [100.0] * (n - 1) + [trigger_high],
+        "Low":   [100.0] * (n - 1) + [trigger_low],
+        "Close": [100.0] * (n - 1) + [trigger_open],
+    }, index=idx)
+
+
+def test_backtester_run_gap_up_target_uses_fill_model(monkeypatch):
+    """End-to-end: BacktestEngine.run() records a gap-up target exit at
+    apply_target_fill(Open, target) — NOT raw target_price — and deducts
+    ROUND_TRIP_COST_PCT on top.
+
+    Pre-refactor bug this guards: backtester priced target exits at
+    `pos.target_price` flat (no slippage, no gap bonus).
+    """
+    import pandas as pd
+    from fill_model import apply_entry_fill, apply_target_fill
+    from portfolio_engine import ROUND_TRIP_COST_PCT
+
+    idx = pd.bdate_range("2025-10-01", periods=30)   # 30d so data_slice >= 21
+    spy_df = pd.DataFrame({"Open": [100.0]*30, "High": [100.0]*30,
+                           "Low": [100.0]*30,  "Close": [100.0]*30}, index=idx)
+    # Last bar gaps up through $110 target — Open=112, High=113.
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    result = engine.run()
+
+    assert result.get("total_trades") == 1, f"expected 1 trade, got {result}"
+    trade = result["trades"][0]
+    assert trade["exit_reason"] == "target"
+
+    expected_entry = round(apply_entry_fill(100.0), 2)
+    expected_exit  = round(apply_target_fill(112.0, 110.0), 2)
+    assert trade["entry_price"]    == expected_entry
+    assert trade["exit_price"]     == expected_exit
+    assert trade["exit_raw_price"] == 112.0
+    # Gap-up: realized exit price should BEAT raw target even after slippage.
+    assert trade["exit_price"] > 110.0, (
+        f"gap-up fill must exceed raw target; got {trade['exit_price']}")
+    # slippage_cost aggregates entry + exit slippage dollars.
+    assert trade["slippage_cost"] > 0
+
+    # P&L must include commission: (exit - entry) * shares - exit * COST_PCT * shares
+    exit_raw_fill  = apply_target_fill(112.0, 110.0)
+    entry_raw_fill = apply_entry_fill(100.0)
+    expected_cost  = exit_raw_fill * ROUND_TRIP_COST_PCT * 10
+    expected_pnl   = round((exit_raw_fill - entry_raw_fill) * 10 - expected_cost, 2)
+    assert trade["pnl"] == expected_pnl, (
+        f"pnl must deduct ROUND_TRIP_COST_PCT * exit * shares; "
+        f"expected {expected_pnl}, got {trade['pnl']}")
+
+
+def test_backtester_run_intraday_stop_uses_fill_model(monkeypatch):
+    """End-to-end: intraday stop hit (Open above stop, Low below) → exit
+    records apply_stop_fill(Open, stop) = stop_price minus sell slippage.
+    """
+    import pandas as pd
+    from fill_model import apply_entry_fill, apply_stop_fill
+    from portfolio_engine import ROUND_TRIP_COST_PCT
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({"Open": [100.0]*30, "High": [100.0]*30,
+                           "Low": [100.0]*30,  "Close": [100.0]*30}, index=idx)
+    # Last bar: Open $99 (above stop $95), Low $94 (below stop) → intraday stop.
+    test_df = _flat_then_trigger_df(idx, trigger_open=99.0,
+                                    trigger_high=99.0, trigger_low=94.0)
+
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    result = engine.run()
+
+    assert result.get("total_trades") == 1, f"expected 1 trade, got {result}"
+    trade = result["trades"][0]
+    assert trade["exit_reason"] == "stop"
+
+    expected_exit = round(apply_stop_fill(99.0, 95.0), 2)
+    assert trade["exit_price"]     == expected_exit
+    assert trade["exit_raw_price"] == 95.0
+    # Slippage on stop makes realized fill strictly worse than raw stop.
+    assert trade["exit_price"] < 95.0, (
+        f"sell slippage on stop must lower the fill; got {trade['exit_price']}")
+    assert trade["slippage_cost"] > 0
+
+    exit_raw_fill  = apply_stop_fill(99.0, 95.0)
+    entry_raw_fill = apply_entry_fill(100.0)
+    expected_cost  = exit_raw_fill * ROUND_TRIP_COST_PCT * 10
+    expected_pnl   = round((exit_raw_fill - entry_raw_fill) * 10 - expected_cost, 2)
+    assert trade["pnl"] == expected_pnl
 
 
 def test_regime_from_ohlcv_bull():

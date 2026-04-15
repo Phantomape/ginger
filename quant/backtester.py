@@ -41,19 +41,21 @@ DEFAULT_CONFIG = {
 class Position:
     """Track a single open backtested position."""
 
-    __slots__ = ("ticker", "entry_price", "stop_price", "target_price",
-                 "shares", "entry_date", "strategy", "sector")
+    __slots__ = ("ticker", "entry_price", "entry_open_price", "stop_price",
+                 "target_price", "shares", "entry_date", "strategy", "sector")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
-                 shares, entry_date, strategy, sector="Unknown"):
-        self.ticker       = ticker
-        self.entry_price  = entry_price
-        self.stop_price   = stop_price
-        self.target_price = target_price
-        self.shares       = shares
-        self.entry_date   = entry_date
-        self.strategy     = strategy
-        self.sector       = sector
+                 shares, entry_date, strategy, sector="Unknown",
+                 entry_open_price=None):
+        self.ticker           = ticker
+        self.entry_price      = entry_price               # post-slippage fill
+        self.entry_open_price = entry_open_price or entry_price
+        self.stop_price       = stop_price
+        self.target_price     = target_price
+        self.shares           = shares
+        self.entry_date       = entry_date
+        self.strategy         = strategy
+        self.sector           = sector
 
 
 class BacktestEngine:
@@ -122,8 +124,12 @@ class BacktestEngine:
         from feature_layer    import compute_features
         from signal_engine    import generate_signals
         from risk_engine      import enrich_signals
-        from portfolio_engine import size_signals, ROUND_TRIP_COST_PCT, EXEC_LAG_PCT
+        from portfolio_engine import size_signals, ROUND_TRIP_COST_PCT
         from regime           import compute_market_regime
+        from fill_model       import (
+            apply_entry_fill, apply_stop_fill, apply_target_fill,
+            apply_slippage,   SLIPPAGE_BPS_TARGET,
+        )
 
         ohlcv_all = self._download_data()
         if not ohlcv_all:
@@ -172,31 +178,42 @@ class BacktestEngine:
                 low  = float(row["Low"].item()   if hasattr(row["Low"],   "item") else row["Low"])
                 high = float(row["High"].item()  if hasattr(row["High"],  "item") else row["High"])
 
-                exit_price  = None
-                exit_reason = None
+                exit_price    = None      # slippage-adjusted fill
+                exit_raw_price = None     # theoretical trigger level (pre-slippage)
+                exit_reason   = None
 
-                # Stop hit (gap-fill or intraday)
+                # Stop hit (gap-fill or intraday) — sell slippage on top.
                 if pos.stop_price and low <= pos.stop_price:
-                    exit_price = opn if opn < pos.stop_price else pos.stop_price
-                    exit_reason = "stop"
-                # Target hit
+                    exit_raw_price = opn if opn < pos.stop_price else pos.stop_price
+                    exit_price     = apply_stop_fill(opn, pos.stop_price)
+                    exit_reason    = "stop"
+                # Target hit — gap-up uses Open (bonus), intraday uses target; slippage on top.
                 elif pos.target_price and high >= pos.target_price:
-                    exit_price  = pos.target_price
-                    exit_reason = "target"
+                    exit_raw_price = opn if opn >= pos.target_price else pos.target_price
+                    exit_price     = apply_target_fill(opn, pos.target_price)
+                    exit_reason    = "target"
 
                 if exit_price is not None:
                     cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
                     pnl  = (exit_price - pos.entry_price) * pos.shares - cost
                     equity += pnl
+                    # Entry-side slippage dollars were already baked into
+                    # pos.entry_price at open time, but the raw Open was stored
+                    # on Position so we can surface total slippage_cost here.
+                    entry_slip = (pos.entry_price - pos.entry_open_price) * pos.shares
+                    exit_slip  = (exit_raw_price  - exit_price)           * pos.shares
                     closed.append({
-                        "ticker":      pos.ticker,
-                        "strategy":    pos.strategy,
-                        "sector":      pos.sector,
-                        "entry_price": pos.entry_price,
-                        "exit_price":  round(exit_price, 2),
-                        "shares":      pos.shares,
-                        "pnl":         round(pnl, 2),
-                        "exit_reason": exit_reason,
+                        "ticker":           pos.ticker,
+                        "strategy":         pos.strategy,
+                        "sector":           pos.sector,
+                        "entry_price":      pos.entry_price,
+                        "entry_open_price": pos.entry_open_price,        # raw next-day Open
+                        "exit_price":       round(exit_price, 2),        # after slippage
+                        "exit_raw_price":   round(exit_raw_price, 4),    # pre-slippage trigger
+                        "shares":           pos.shares,
+                        "pnl":              round(pnl, 2),
+                        "slippage_cost":    round(entry_slip + exit_slip, 2),
+                        "exit_reason":      exit_reason,
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                         "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
                     })
@@ -326,14 +343,19 @@ class BacktestEngine:
                 if fill_price is None:
                     continue
 
-                # Cancel if gap too large (>1.5% above signal entry)
+                # Cancel if gap too large (>1.5% above signal entry).
+                # The gap check uses the RAW Open (not slippage-adjusted) so the
+                # cancel boundary is determined by market conditions, not by our
+                # own execution-cost assumptions.
                 signal_entry = sig.get("entry_price", fill_price)
                 if fill_price > signal_entry * 1.015:
                     continue
 
+                entry_fill = apply_entry_fill(fill_price)   # buy-side slippage
                 positions.append(Position(
                     ticker=ticker,
-                    entry_price=round(fill_price, 2),
+                    entry_price=round(entry_fill, 2),
+                    entry_open_price=round(fill_price, 4),  # raw next-day Open
                     stop_price=stop,
                     target_price=target,
                     shares=shares,
@@ -362,22 +384,33 @@ class BacktestEngine:
             df = ohlcv_all.get(pos.ticker)
             if df is not None and last_day in df.index:
                 row = df.loc[last_day]
-                exit_price = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
+                raw_close  = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
+                # Use target-side slippage budget (5 bps) — this is a mark-to-market
+                # unwind, not an adverse stop, so the stop-impact model would be
+                # too pessimistic.
+                exit_price = apply_slippage(raw_close, SLIPPAGE_BPS_TARGET, "sell")
+                exit_raw_price = raw_close
             else:
-                exit_price = pos.entry_price  # flat
+                exit_price = pos.entry_price     # flat — no price data
+                exit_raw_price = pos.entry_price
 
             cost = exit_price * ROUND_TRIP_COST_PCT * pos.shares
             pnl  = (exit_price - pos.entry_price) * pos.shares - cost
             equity += pnl
+            entry_slip = (pos.entry_price - pos.entry_open_price) * pos.shares
+            exit_slip  = (exit_raw_price  - exit_price)           * pos.shares
             closed.append({
-                "ticker":      pos.ticker,
-                "strategy":    pos.strategy,
-                "sector":      pos.sector,
-                "entry_price": pos.entry_price,
-                "exit_price":  round(exit_price, 2),
-                "shares":      pos.shares,
-                "pnl":         round(pnl, 2),
-                "exit_reason": "end_of_backtest",
+                "ticker":           pos.ticker,
+                "strategy":         pos.strategy,
+                "sector":           pos.sector,
+                "entry_price":      pos.entry_price,
+                "entry_open_price": pos.entry_open_price,
+                "exit_price":       round(exit_price, 2),
+                "exit_raw_price":   round(exit_raw_price, 4),
+                "shares":           pos.shares,
+                "pnl":              round(pnl, 2),
+                "slippage_cost":    round(entry_slip + exit_slip, 2),
+                "exit_reason":      "end_of_backtest",
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                 "exit_date":   str(last_day.date()),
             })

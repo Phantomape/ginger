@@ -39,37 +39,28 @@ DATA_DIR     = "data"
 
 
 # ---------------------------------------------------------------------------
-# Fill model assumptions
+# Fill model — shared with backtester.py via quant/fill_model.py
 # ---------------------------------------------------------------------------
-# Slippage in basis points (1 bp = 0.01%).  Watchlist is primarily large-cap
-# US equity with a tail of less liquid names (CRDO, APP).  Stop slippage is
-# higher because stops execute in the same direction as adverse price moves
-# and are disproportionately hit on gap / high-volatility days.
-SLIPPAGE_BPS_ENTRY  = 5
-SLIPPAGE_BPS_STOP   = 10
-SLIPPAGE_BPS_TARGET = 5
+# Re-export SLIPPAGE_BPS_* and apply_slippage under this module's namespace so
+# existing `from forward_tester import apply_slippage, SLIPPAGE_BPS_STOP`
+# imports in test_quant.py keep working without edits.
+from fill_model import (
+    SLIPPAGE_BPS_ENTRY,
+    SLIPPAGE_BPS_STOP,
+    SLIPPAGE_BPS_TARGET,
+    apply_slippage,
+)
 
 # Round-trip commission + spread cost as a fraction of notional, applied once
 # to a completed trade's realized P&L.  Separate from the per-fill slippage
 # above: slippage models the price you actually get on each leg, commission
 # models the per-trade friction (broker fees, regulatory, spread residual).
-ROUND_TRIP_COST = 0.0035
-
-
-# ---------------------------------------------------------------------------
-# Fill model helpers
-# ---------------------------------------------------------------------------
-
-def apply_slippage(price, bps, side):
-    """Adjust a theoretical fill price for adverse slippage.
-
-    side='buy'  → raise price  (you pay more than the quoted price)
-    side='sell' → lower price  (you receive less than the quoted price)
-    """
-    if price is None:
-        return None
-    factor = 1 + (bps / 10000.0) if side == "buy" else 1 - (bps / 10000.0)
-    return round(price * factor, 4)
+#
+# Single source of truth lives in portfolio_engine.ROUND_TRIP_COST_PCT so the
+# two simulators cannot drift from the live sizing logic.  Imported under the
+# legacy `ROUND_TRIP_COST` name because test_quant.py already imports it that
+# way.
+from portfolio_engine import ROUND_TRIP_COST_PCT as ROUND_TRIP_COST
 
 
 def get_next_open_price(ticker, rec_date):
@@ -509,6 +500,26 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         avg_cost    = avg_costs.get(ticker)
         pnl_vs_cost = ((price_rec - avg_cost) / avg_cost) if avg_cost else None
 
+        # Realized exit P&L for EXIT/REDUCE actions, grounded in an actual fill
+        # price rather than rec_date close.  Sell is modelled as next-day Open
+        # with stop-side slippage (conservative: exit decisions most often
+        # correlate with adverse price moves, so stop-side is the right budget),
+        # minus round-trip commission.  return_10d_pct remains the direction-
+        # correctness signal; realized_exit_pnl_pct_net is for P&L attribution.
+        exit_fill_price          = None
+        realized_exit_pnl_pct    = None
+        realized_exit_pnl_pct_net = None
+        if action in ("EXIT", "REDUCE"):
+            raw_exit_open, _ = get_next_open_price(ticker, rec_date)
+            if raw_exit_open is not None:
+                exit_fill_price = apply_slippage(
+                    raw_exit_open, SLIPPAGE_BPS_STOP, "sell")
+                if avg_cost:
+                    realized_exit_pnl_pct = (
+                        exit_fill_price / avg_cost - 1)
+                    realized_exit_pnl_pct_net = (
+                        realized_exit_pnl_pct - ROUND_TRIP_COST)
+
         position_entry = {
             "ticker":            ticker,
             "action":            action,
@@ -519,6 +530,9 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
             "pnl_vs_cost_pct":   round(pnl_vs_cost, 4) if pnl_vs_cost is not None else None,
             "price_on_eval_date":price_eval,
             "return_10d_pct":    round(return_10d, 4),
+            "exit_fill_price":   round(exit_fill_price, 4) if exit_fill_price is not None else None,
+            "realized_exit_pnl_pct":     round(realized_exit_pnl_pct, 4)     if realized_exit_pnl_pct     is not None else None,
+            "realized_exit_pnl_pct_net": round(realized_exit_pnl_pct_net, 4) if realized_exit_pnl_pct_net is not None else None,
             "action_correct":    correct,   # direction_correct (legacy name preserved)
             "actual_rec_date":   str(date_rec),
             "actual_eval_date":  str(date_eval),
