@@ -4542,3 +4542,172 @@ def test_prompt_disaster_detector_framing_present():
     assert "second_new_trade" not in content, (
         "Trade frequency control should be in code, not prompt."
     )
+
+
+# ── P0-1 per-strategy attribution ────────────────────────────────────────────
+
+def test_aggregate_by_strategy_basic():
+    from strategy_attribution import aggregate_by_strategy
+    trades = [
+        {"strategy": "A", "pnl_pct_net":  0.05},
+        {"strategy": "A", "pnl_pct_net": -0.02},
+        {"strategy": "B", "pnl_pct_net":  0.10},
+    ]
+    out = aggregate_by_strategy(trades)
+    assert set(out.keys()) == {"A", "B"}
+    assert out["A"]["trade_count"]     == 2
+    assert out["A"]["wins"]            == 1
+    assert out["A"]["losses"]          == 1
+    assert out["A"]["win_rate"]        == 0.5
+    assert out["A"]["avg_pnl_pct_net"] == 0.015
+    assert out["A"]["profit_factor"]   == round(0.05 / 0.02, 3)
+    assert out["B"]["trade_count"]     == 1
+    assert out["B"]["win_rate"]        == 1.0
+
+
+def test_aggregate_by_strategy_missing_strategy_buckets_unknown():
+    from strategy_attribution import aggregate_by_strategy
+    out = aggregate_by_strategy([
+        {"strategy": None, "pnl_pct_net": 0.03},
+        {"pnl_pct_net": -0.01},
+    ])
+    assert "unknown" in out
+    assert out["unknown"]["trade_count"] == 2
+
+
+def test_aggregate_by_strategy_profit_factor_no_losses_is_inf():
+    import math
+    from strategy_attribution import aggregate_by_strategy
+    out = aggregate_by_strategy([
+        {"strategy": "winners", "pnl_pct_net": 0.05},
+        {"strategy": "winners", "pnl_pct_net": 0.02},
+    ])
+    assert out["winners"]["profit_factor"] == math.inf
+
+
+def test_aggregate_by_strategy_r_multiple_requires_risk_on_all():
+    from strategy_attribution import aggregate_by_strategy
+    # Partial risk coverage → avg_R must be None (no mixed averages).
+    partial = aggregate_by_strategy([
+        {"strategy": "X", "pnl_pct_net": 0.05, "initial_risk_pct": 0.02},
+        {"strategy": "X", "pnl_pct_net": 0.03},
+    ])
+    assert partial["X"]["avg_R"] is None
+    # Full coverage → R-multiple averaged.
+    full = aggregate_by_strategy([
+        {"strategy": "X", "pnl_pct_net": 0.04, "initial_risk_pct": 0.02},
+        {"strategy": "X", "pnl_pct_net": -0.01, "initial_risk_pct": 0.01},
+    ])
+    # R = 0.04/0.02 = 2.0 ; R = -0.01/0.01 = -1.0 ; avg = 0.5
+    assert full["X"]["avg_R"] == 0.5
+
+
+def test_backtester_run_returns_by_strategy(monkeypatch):
+    """BacktestEngine.run() must return a by_strategy dict keyed by strategy."""
+    import pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({"Open": [100.0]*30, "High": [100.0]*30,
+                           "Low": [100.0]*30,  "Close": [100.0]*30}, index=idx)
+    # Gap-up target hit on last bar.
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    result = engine.run()
+
+    assert "by_strategy" in result
+    # Harness signals use strategy='trend_long'.
+    assert "trend_long" in result["by_strategy"]
+    bucket = result["by_strategy"]["trend_long"]
+    assert bucket["trade_count"] >= 1
+    # backtester carries $ P&L, so total_pnl_usd must be present.
+    assert "total_pnl_usd" in bucket
+    # Harness stop=95 entry~100 → initial_risk ≈ 5% → avg_R populated.
+    assert bucket["avg_R"] is not None
+
+
+def test_forward_tester_preserves_strategy_from_new_trade(monkeypatch, tmp_path):
+    """forward_tester must echo `strategy` from the LLM advice into new_trade_result
+    and compute initial_risk_pct from entry_fill_price - stop_price.
+    """
+    import json
+    import pandas as pd
+    from datetime import date, timedelta
+    import forward_tester as ft
+    from forward_tester import evaluate_file
+
+    rec = date.today() - timedelta(days=30)
+    rec_str = rec.strftime("%Y%m%d")
+
+    advice_path = tmp_path / f"investment_advice_{rec_str}.json"
+    advice_path.write_text(json.dumps({
+        "advice_parsed": {
+            "position_actions": [],
+            "new_trade": {
+                "ticker":       "TEST",
+                "direction":    "long",
+                "confidence":   0.8,
+                "stop_price":   95.0,
+                "target_price": 110.0,
+                "strategy":     "trend_long",
+            },
+        }
+    }))
+
+    monkeypatch.setattr(ft, "get_close_price",
+                        lambda ticker, d: (100.0, d) if d == rec else (108.0, d))
+    monkeypatch.setattr(ft, "get_next_open_price",
+                        lambda ticker, d: (101.0, d + timedelta(days=1)))
+    def fake_daily(ticker, start, end):
+        idx = pd.to_datetime([rec, rec + timedelta(days=1)])
+        return pd.DataFrame({
+            "Open":  [100.0, 105.0], "High":  [101.0, 106.0],
+            "Low":   [ 99.0, 104.0], "Close": [100.0, 105.0],
+        }, index=idx)
+    monkeypatch.setattr(ft, "get_daily_prices_during_period", fake_daily)
+
+    result = evaluate_file(str(advice_path))
+    nt = result["new_trade_result"]
+    assert nt["strategy"] == "trend_long"
+    assert nt["initial_risk_pct"] is not None
+    assert nt["initial_risk_pct"] > 0
+    # Entry fill ~101.05, stop 95 → risk ≈ (101.05-95)/101.05 ≈ 0.0599
+    assert 0.04 < nt["initial_risk_pct"] < 0.08
+
+
+def test_aggregate_forward_tests_across_files(tmp_path, monkeypatch):
+    """aggregate_forward_tests rolls up realized_pnl_pct_net across multiple
+    forward_test_*.json files, missing strategy bucketed as 'unknown'.
+    """
+    import json
+    import forward_tester as ft
+
+    def write(fname, nt):
+        (tmp_path / fname).write_text(json.dumps({"new_trade_result": nt}))
+
+    write("forward_test_20260101.json",
+          {"strategy": "trend_long",   "realized_pnl_pct_net":  0.04,
+           "initial_risk_pct": 0.02})
+    write("forward_test_20260102.json",
+          {"strategy": "trend_long",   "realized_pnl_pct_net": -0.01,
+           "initial_risk_pct": 0.02})
+    write("forward_test_20260103.json",
+          {"strategy": "breakout_long","realized_pnl_pct_net":  0.08,
+           "initial_risk_pct": 0.03})
+    # Legacy file with no strategy → bucket 'unknown'
+    write("forward_test_20260104.json",
+          {"realized_pnl_pct_net": 0.02})
+    # File with no realized P&L → skipped
+    write("forward_test_20260105.json",
+          {"strategy": "trend_long", "return_10d_pct": 0.05})
+
+    pattern = str(tmp_path / "forward_test_*.json")
+    out = ft.aggregate_forward_tests(pattern=pattern)
+
+    assert set(out.keys()) == {"trend_long", "breakout_long", "unknown"}
+    assert out["trend_long"]["trade_count"]   == 2
+    assert out["breakout_long"]["trade_count"] == 1
+    assert out["unknown"]["trade_count"]       == 1
+    # trend_long has full initial_risk coverage → avg_R populated
+    assert out["trend_long"]["avg_R"] is not None
+    # unknown bucket lacks initial_risk_pct → avg_R=None
+    assert out["unknown"]["avg_R"] is None

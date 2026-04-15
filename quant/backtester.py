@@ -202,16 +202,23 @@ class BacktestEngine:
                     # on Position so we can surface total slippage_cost here.
                     entry_slip = (pos.entry_price - pos.entry_open_price) * pos.shares
                     exit_slip  = (exit_raw_price  - exit_price)           * pos.shares
+                    pnl_pct_net = ((exit_price - pos.entry_price) / pos.entry_price
+                                   - ROUND_TRIP_COST_PCT)
+                    initial_risk_pct = (((pos.entry_price - pos.stop_price) / pos.entry_price)
+                                        if pos.stop_price and pos.entry_price else None)
                     closed.append({
                         "ticker":           pos.ticker,
                         "strategy":         pos.strategy,
                         "sector":           pos.sector,
                         "entry_price":      pos.entry_price,
                         "entry_open_price": pos.entry_open_price,        # raw next-day Open
+                        "stop_price":       pos.stop_price,
                         "exit_price":       round(exit_price, 2),        # after slippage
                         "exit_raw_price":   round(exit_raw_price, 4),    # pre-slippage trigger
                         "shares":           pos.shares,
                         "pnl":              round(pnl, 2),
+                        "pnl_pct_net":      round(pnl_pct_net, 6),
+                        "initial_risk_pct": round(initial_risk_pct, 6) if initial_risk_pct else None,
                         "slippage_cost":    round(entry_slip + exit_slip, 2),
                         "exit_reason":      exit_reason,
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
@@ -399,16 +406,23 @@ class BacktestEngine:
             equity += pnl
             entry_slip = (pos.entry_price - pos.entry_open_price) * pos.shares
             exit_slip  = (exit_raw_price  - exit_price)           * pos.shares
+            pnl_pct_net = ((exit_price - pos.entry_price) / pos.entry_price
+                           - ROUND_TRIP_COST_PCT)
+            initial_risk_pct = (((pos.entry_price - pos.stop_price) / pos.entry_price)
+                                if pos.stop_price and pos.entry_price else None)
             closed.append({
                 "ticker":           pos.ticker,
                 "strategy":         pos.strategy,
                 "sector":           pos.sector,
                 "entry_price":      pos.entry_price,
                 "entry_open_price": pos.entry_open_price,
+                "stop_price":       pos.stop_price,
                 "exit_price":       round(exit_price, 2),
                 "exit_raw_price":   round(exit_raw_price, 4),
                 "shares":           pos.shares,
                 "pnl":              round(pnl, 2),
+                "pnl_pct_net":      round(pnl_pct_net, 6),
+                "initial_risk_pct": round(initial_risk_pct, 6) if initial_risk_pct else None,
                 "slippage_cost":    round(entry_slip + exit_slip, 2),
                 "exit_reason":      "end_of_backtest",
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
@@ -443,6 +457,11 @@ class BacktestEngine:
         survival_rate = (round(total_signals_survived / total_signals_generated, 4)
                          if total_signals_generated > 0 else 0)
 
+        from strategy_attribution import aggregate_by_strategy
+        by_strategy = aggregate_by_strategy([
+            {**t, "pnl_usd": t["pnl"]} for t in closed
+        ])
+
         return {
             "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
             "trading_days":        len(sim_dates),
@@ -456,6 +475,7 @@ class BacktestEngine:
             "signals_generated":   total_signals_generated,
             "signals_survived":    total_signals_survived,
             "survival_rate":       survival_rate,
+            "by_strategy":         by_strategy,
             "equity_curve":        equity_curve,
             "trades":              closed,
         }
@@ -511,6 +531,11 @@ def _print_results(results):
     print(f"  Signals survived:  {results['signals_survived']}")
     print(f"  Survival rate:     {results['survival_rate']*100:.1f}%")
     print("=" * 60)
+
+    if results.get("by_strategy"):
+        from strategy_attribution import format_attribution_table
+        print("\n  PER-STRATEGY ATTRIBUTION:")
+        print(format_attribution_table(results["by_strategy"]))
 
     if results.get("trades"):
         print("\n  TRADE LOG:")

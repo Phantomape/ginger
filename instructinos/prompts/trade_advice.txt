@@ -68,6 +68,7 @@ USER:
 - 检查第 2 节新闻：是否有 T1 负面新闻否决该信号？
   - 有 T1 负面 → "NO NEW TRADE"，在 veto_check 中说明具体新闻
   - 无 T1 负面 → 信号通过，生成交易（所有数值直接使用第 3a 节预计算值）
+- 生成交易时必须 echo 第 3a 节的 strategy 字段（trend_long / breakout_long / earnings_event_long）
 
 任务 B — 现有持仓审查（全部照搬代码决策）：
 - 读第 4 节 position_states 和 suggested_reduce_pct
@@ -92,6 +93,7 @@ USER:
       "stop_price": 数字（直接使用第 3a 节值）,
       "target_price": 数字（直接使用第 3a 节值）,
       "shares_to_buy": 整数（直接使用第 3a 节 sizing.shares_to_buy）,
+      "strategy": "string（照搬第3a节值：trend_long / breakout_long / earnings_event_long）",
       "invalid_if": "使逻辑无效的具体条件"
     },
 

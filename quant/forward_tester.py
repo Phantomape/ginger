@@ -22,6 +22,7 @@ Usage:
 """
 
 import os
+import math
 import json
 import glob
 import logging
@@ -565,6 +566,7 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
         ticker     = new_trade["ticker"]
         direction  = new_trade.get("direction", "long")
         confidence = new_trade.get("confidence")
+        strategy   = new_trade.get("strategy")
 
         price_rec,  date_rec  = get_close_price(ticker, rec_date)
         price_eval, date_eval = get_close_price(ticker, eval_date)
@@ -657,10 +659,19 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
                         multi_window[f"target_hit_{window}d"] = True
                         multi_window[f"target_hit_{window}d_day"] = _w_check.get("target_hit_day")
 
+            stop_price_val = new_trade.get("stop_price")
+            if stop_price_val is not None and entry_fill_price:
+                initial_risk_pct = round(
+                    (entry_fill_price - float(stop_price_val)) / entry_fill_price, 4)
+            else:
+                initial_risk_pct = None
+
             results["new_trade_result"] = {
                 "ticker":              ticker,
                 "direction":           direction,
                 "confidence":          confidence,
+                "strategy":            strategy,
+                "initial_risk_pct":    initial_risk_pct,
                 "thesis":              new_trade.get("thesis"),
                 "price_on_rec_date":   price_rec,          # close of rec_date (reference)
                 "price_on_eval_date":  price_eval,
@@ -851,6 +862,35 @@ def print_report(results):
     print()
 
 
+def aggregate_forward_tests(pattern=None):
+    """Cross-file per-strategy rollup of new_trade realized P&L.
+
+    Reads every `forward_test_*.json` that carries a `new_trade_result` with
+    `realized_pnl_pct_net` (pre-P0-3 files without that field are skipped — they
+    were produced under a different fill model and are not comparable).
+    Historical files that predate the `strategy` echo bucket as 'unknown'.
+    """
+    from strategy_attribution import aggregate_by_strategy
+    if pattern is None:
+        pattern = os.path.join(DATA_DIR, "forward_test_*.json")
+    trades = []
+    for fp in sorted(glob.glob(pattern)):
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                r = json.load(f)
+        except Exception:
+            continue
+        nt = r.get("new_trade_result") or {}
+        if nt.get("realized_pnl_pct_net") is None:
+            continue
+        trades.append({
+            "strategy":         nt.get("strategy") or "unknown",
+            "pnl_pct_net":      nt["realized_pnl_pct_net"],
+            "initial_risk_pct": nt.get("initial_risk_pct"),
+        })
+    return aggregate_by_strategy(trades)
+
+
 def save_report(results, output_dir=DATA_DIR):
     """Save evaluation results to JSON."""
     date_str  = results["rec_date"].replace("-", "")
@@ -876,7 +916,36 @@ def main():
                         help="Path to a specific llm_output_YYYYMMDD.json file")
     parser.add_argument("--days", type=int, default=EVAL_DAYS,
                         help=f"Trading-day evaluation window (default: {EVAL_DAYS})")
+    parser.add_argument("--aggregate", action="store_true",
+                        help="Skip per-file eval; aggregate historical forward_test_*.json "
+                             "into per-strategy attribution report.")
     args = parser.parse_args()
+
+    if args.aggregate:
+        from strategy_attribution import format_attribution_table
+        by_strategy = aggregate_forward_tests()
+        print("\n" + "=" * 72)
+        print("  PER-STRATEGY ATTRIBUTION (forward_test_*.json)")
+        print("=" * 72)
+        print(format_attribution_table(by_strategy))
+        print("=" * 72)
+        out_path = os.path.join(
+            DATA_DIR,
+            f"strategy_attribution_{date.today().strftime('%Y%m%d')}.json")
+        def _jsonable(v):
+            if v == math.inf:
+                return "inf"
+            if v == -math.inf:
+                return "-inf"
+            return v
+        serialisable = {
+            k: {m: _jsonable(v) for m, v in mv.items()}
+            for k, mv in by_strategy.items()
+        }
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(serialisable, f, indent=2, ensure_ascii=False)
+        print(f"  Saved -> {out_path}\n")
+        return
 
     if args.file:
         files = [args.file]
