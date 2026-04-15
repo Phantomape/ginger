@@ -462,7 +462,36 @@ class BacktestEngine:
             {**t, "pnl_usd": t["pnl"]} for t in closed
         ])
 
-        return {
+        # ── Benchmarks: SPY / QQQ buy-and-hold over the same window ──
+        # The strategy's value is whatever it adds on top of free index exposure;
+        # without this comparison a 20% return is impossible to evaluate.
+        def _buy_hold(df, start_d, end_d):
+            try:
+                sliced = df.loc[start_d:end_d]
+            except Exception:
+                return None
+            if sliced is None or len(sliced) < 2:
+                return None
+            try:
+                return float(sliced["Close"].iloc[-1] / sliced["Close"].iloc[0] - 1)
+            except Exception:
+                return None
+
+        spy_ret = _buy_hold(ohlcv_all.get("SPY"), sim_dates[0], sim_dates[-1])
+        qqq_ret = _buy_hold(ohlcv_all.get("QQQ"), sim_dates[0], sim_dates[-1])
+        strat_ret = (sum(t["pnl"] for t in closed)
+                     / self.config["INITIAL_CAPITAL"])
+        benchmarks = {
+            "spy_buy_hold_return_pct":   round(spy_ret, 4) if spy_ret is not None else None,
+            "qqq_buy_hold_return_pct":   round(qqq_ret, 4) if qqq_ret is not None else None,
+            "strategy_total_return_pct": round(strat_ret, 4),
+            "strategy_vs_spy_pct":       (round(strat_ret - spy_ret, 4)
+                                          if spy_ret is not None else None),
+            "strategy_vs_qqq_pct":       (round(strat_ret - qqq_ret, 4)
+                                          if qqq_ret is not None else None),
+        }
+
+        result = {
             "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
             "trading_days":        len(sim_dates),
             "total_trades":        total,
@@ -476,9 +505,14 @@ class BacktestEngine:
             "signals_survived":    total_signals_survived,
             "survival_rate":       survival_rate,
             "by_strategy":         by_strategy,
+            "benchmarks":          benchmarks,
             "equity_curve":        equity_curve,
             "trades":              closed,
         }
+
+        from convergence import compute_convergence
+        result["convergence"] = compute_convergence(result)
+        return result
 
     def sweep(self, param_name, values):
         """
@@ -536,6 +570,22 @@ def _print_results(results):
         from strategy_attribution import format_attribution_table
         print("\n  PER-STRATEGY ATTRIBUTION:")
         print(format_attribution_table(results["by_strategy"]))
+
+    if results.get("benchmarks"):
+        b = results["benchmarks"]
+        print("\n  BENCHMARKS (buy-and-hold same window):")
+        def _fmt(v):
+            return f"{v*100:+.2f}%" if v is not None else "  N/A"
+        print(f"    SPY return:      {_fmt(b.get('spy_buy_hold_return_pct'))}")
+        print(f"    QQQ return:      {_fmt(b.get('qqq_buy_hold_return_pct'))}")
+        print(f"    Strategy return: {_fmt(b.get('strategy_total_return_pct'))}")
+        print(f"    vs SPY:          {_fmt(b.get('strategy_vs_spy_pct'))}")
+        print(f"    vs QQQ:          {_fmt(b.get('strategy_vs_qqq_pct'))}")
+
+    if results.get("convergence"):
+        from convergence import format_convergence_report
+        print("\n  CONVERGENCE:")
+        print(format_convergence_report(results["convergence"]))
 
     if results.get("trades"):
         print("\n  TRADE LOG:")

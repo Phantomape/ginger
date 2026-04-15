@@ -4711,3 +4711,94 @@ def test_aggregate_forward_tests_across_files(tmp_path, monkeypatch):
     assert out["trend_long"]["avg_R"] is not None
     # unknown bucket lacks initial_risk_pct → avg_R=None
     assert out["unknown"]["avg_R"] is None
+
+
+# ── CLAUDE3 convergence calculator + benchmarks ──────────────────────────────
+
+def _passing_result(**overrides):
+    """Backtest-shaped dict that satisfies every convergence criterion."""
+    base = {
+        "sharpe":            1.5,
+        "max_drawdown_pct":  0.05,
+        "total_trades":      30,
+        "win_rate":          0.55,
+        "survival_rate":     0.10,
+        "benchmarks": {
+            "spy_buy_hold_return_pct":   0.05,
+            "qqq_buy_hold_return_pct":   0.06,
+            "strategy_total_return_pct": 0.20,
+        },
+    }
+    base.update(overrides)
+    return base
+
+
+def test_compute_convergence_all_pass():
+    from convergence import compute_convergence
+    rep = compute_convergence(_passing_result())
+    assert rep["converged"] is True, rep
+    for name, c in rep["criteria"].items():
+        assert c["pass"], f"criterion {name} should pass: {c}"
+
+
+def test_compute_convergence_fails_when_below_spy():
+    from convergence import compute_convergence
+    # Strategy returns 4% but SPY did 5% — failing the new beat-the-index gate.
+    res = _passing_result(benchmarks={
+        "spy_buy_hold_return_pct":   0.05,
+        "qqq_buy_hold_return_pct":   0.03,
+        "strategy_total_return_pct": 0.04,
+    })
+    rep = compute_convergence(res)
+    assert rep["converged"] is False
+    assert rep["criteria"]["beats_spy_buy_hold"]["pass"] is False
+    # QQQ was beaten so that criterion still passes
+    assert rep["criteria"]["beats_qqq_buy_hold"]["pass"] is True
+
+
+def test_compute_convergence_fails_when_low_sharpe():
+    from convergence import compute_convergence
+    rep = compute_convergence(_passing_result(sharpe=0.3))
+    assert rep["converged"] is False
+    assert rep["criteria"]["sharpe_above_min"]["pass"] is False
+
+
+def test_compute_convergence_handles_missing_benchmarks():
+    from convergence import compute_convergence
+    res = _passing_result()
+    res["benchmarks"] = None  # benchmarks not computed yet
+    rep = compute_convergence(res)
+    # Missing benchmarks must not crash AND must fail the gate.
+    assert rep["converged"] is False
+    assert rep["criteria"]["beats_spy_buy_hold"]["pass"] is False
+    assert rep["criteria"]["beats_qqq_buy_hold"]["pass"] is False
+
+
+def test_backtester_run_emits_benchmarks(monkeypatch):
+    """End-to-end: BacktestEngine.run() result carries benchmarks + convergence."""
+    import pandas as pd
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    # SPY drifts up 10% over the window so the buy-hold baseline is non-trivial.
+    spy_close = [100.0 + i * (10.0 / 29) for i in range(30)]
+    spy_df = pd.DataFrame({
+        "Open": spy_close, "High": spy_close,
+        "Low":  spy_close, "Close": spy_close,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    result = engine.run()
+
+    b = result["benchmarks"]
+    assert b["spy_buy_hold_return_pct"] is not None
+    assert b["qqq_buy_hold_return_pct"] is not None  # harness uses spy_df for QQQ too
+    assert b["strategy_total_return_pct"] is not None
+    # vs_spy must equal strategy - spy
+    assert (round(b["strategy_total_return_pct"]
+                  - b["spy_buy_hold_return_pct"], 4)
+            == b["strategy_vs_spy_pct"])
+    # convergence dict is attached
+    assert "convergence" in result
+    assert "criteria" in result["convergence"]
