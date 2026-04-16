@@ -110,6 +110,7 @@ def main():
     from portfolio_engine   import size_signals, compute_portfolio_heat
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
+    from constants          import MAX_PER_SECTOR
 
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
@@ -288,20 +289,19 @@ def main():
     # Entering all of them turns 3 independent 1% risks into one concentrated bet.
     # Cap at 2 signals per sector; signals are already sorted by confidence from
     # generate_signals(), so the top-2 per sector survive.
-    _MAX_PER_SECTOR = 2
     _sector_counts: dict[str, int] = {}
     _capped_signals = []
     _dropped_sector = []
     for s in signals:
         sec = s.get("sector", "Unknown")
         _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
-        if _sector_counts[sec] <= _MAX_PER_SECTOR:
+        if _sector_counts[sec] <= MAX_PER_SECTOR:
             _capped_signals.append(s)
         else:
             _dropped_sector.append(s)
             log.warning(
                 f"{s['ticker']}: dropped — sector '{sec}' already has "
-                f"{_MAX_PER_SECTOR} signals today"
+                f"{MAX_PER_SECTOR} signals today"
             )
     if _dropped_sector:
         log.info(

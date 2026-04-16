@@ -388,12 +388,13 @@ def test_compute_exit_levels_atr_stop_from_current_price():
     Without this fix the LLM sees a stop that never triggers, providing no
     protection for winning positions.
     """
-    from position_manager import compute_exit_levels, ATR_MULTIPLIER
+    from position_manager import compute_exit_levels
+    from constants import ATR_STOP_MULT
     avg_cost      = 100.0
     current_price = 183.0
     atr           = 5.67
     levels = compute_exit_levels(avg_cost=avg_cost, atr=atr, current_price=current_price)
-    expected_stop = round(current_price - ATR_MULTIPLIER * atr, 2)
+    expected_stop = round(current_price - ATR_STOP_MULT * atr, 2)
     assert levels["atr_stop_price"] == expected_stop, (
         f"ATR stop {levels['atr_stop_price']} computed from avg_cost — "
         f"should be {expected_stop} (from current_price {current_price}). "
@@ -3723,13 +3724,13 @@ def test_sector_cap_drops_third_tech_signal():
         {"ticker": "MU",   "sector": "Technology", "confidence_score": 0.80},
     ]
     # Replicate the sector cap logic from run.py
-    _MAX_PER_SECTOR = 2
+    from constants import MAX_PER_SECTOR
     _sector_counts = {}
     capped = []
     for s in signals:
         sec = s.get("sector", "Unknown")
         _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
-        if _sector_counts[sec] <= _MAX_PER_SECTOR:
+        if _sector_counts[sec] <= MAX_PER_SECTOR:
             capped.append(s)
     assert len(capped) == 2, f"Expected 2, got {len(capped)}"
     assert capped[0]["ticker"] == "NVDA"
@@ -3743,13 +3744,13 @@ def test_sector_cap_diverse_sectors_all_pass():
         {"ticker": "TSLA", "sector": "Consumer Discretionary", "confidence_score": 0.85},
         {"ticker": "LLY",  "sector": "Healthcare", "confidence_score": 0.80},
     ]
-    _MAX_PER_SECTOR = 2
+    from constants import MAX_PER_SECTOR
     _sector_counts = {}
     capped = []
     for s in signals:
         sec = s.get("sector", "Unknown")
         _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
-        if _sector_counts[sec] <= _MAX_PER_SECTOR:
+        if _sector_counts[sec] <= MAX_PER_SECTOR:
             capped.append(s)
     assert len(capped) == 3, f"Diverse sectors should all pass, got {len(capped)}"
 

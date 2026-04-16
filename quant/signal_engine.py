@@ -19,6 +19,8 @@ Output format per signal:
 
 import logging
 
+from constants import ATR_STOP_MULT
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,10 +47,6 @@ def _confidence(checks):
         if val:
             true_weight += w
     return round(true_weight / total_weight, 2) if total_weight > 0 else 0.0
-
-
-# Stop multiplier — 1.5 × ATR per inst_5.txt spec
-ATR_STOP_MULT = 1.5
 
 
 def _rs_uptrend(features):

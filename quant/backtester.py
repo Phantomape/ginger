@@ -3,12 +3,21 @@ Signal-Level Backtester — replays historical OHLCV through the ACTUAL pipeline
 
 Unlike the previous simplified breakout heuristic, this backtester calls the
 real signal_engine.generate_signals() + risk_engine.enrich_signals() + all
-filter layers from run.py.  It assumes every signal that survives the full
+quant filter layers from run.py.  It assumes every signal that survives the
 pipeline is executed at next-day open (with exec_lag), and tracks positions
 using the signal's stop_price and target_price.
 
 Strategy C (earnings) is excluded because historical earnings dates are
 unreliable via yfinance.  Only Strategy A (trend) and B (breakout) are tested.
+
+KNOWN PARITY GAP — news veto layer:
+    Production (`run.py`) applies a T1-negative-news veto via filter.py
+    (EVENT_KEYWORDS, T1_TITLE_KEYWORDS).  We have no historical news archive
+    to replay, so signals that production rejected on news grounds will be
+    accepted in backtest.  Empirically this inflates win rate / total return
+    by an unknown but non-zero margin.  Treat backtest numbers as an
+    OPTIMISTIC upper bound.  This caveat is also surfaced in the result dict
+    under `result["caveats"]` and persisted to the saved JSON.
 
 Usage:
     cd d:/Github/ginger
@@ -31,9 +40,17 @@ logger = logging.getLogger(__name__)
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 
+# Ensure quant/ is on sys.path before importing from constants (supports both
+# `python quant/backtester.py` and `python -m quant.backtester` invocations).
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+if _script_dir not in sys.path:
+    sys.path.insert(0, _script_dir)
+
+from constants import MAX_POSITIONS, MAX_PER_SECTOR, CANCEL_GAP_PCT
+
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
-    "MAX_POSITIONS":       5,
+    "MAX_POSITIONS":       MAX_POSITIONS,
     "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
 }
 
@@ -74,6 +91,65 @@ class BacktestEngine:
         self.config   = {**DEFAULT_CONFIG, **(config or {})}
         self.start    = pd.Timestamp(start) if start else None
         self.end      = pd.Timestamp(end)   if end   else None
+
+    def _download_earnings_calendar(self):
+        """Per-ticker sorted list of earnings dates (past + upcoming).
+
+        Used to derive a walk-forward `days_to_earnings` per simulated day —
+        without this, the dte<=3 hard block in signal_engine never fires in
+        backtest and earnings-window signals leak through (production
+        rejected them; backtest accepts them, inflating survival rate).
+        """
+        import numpy as np
+        cal = {}
+        for ticker in self.universe:
+            try:
+                t = yf.Ticker(ticker)
+                df = t.get_earnings_dates(limit=20)
+                if df is None or df.empty:
+                    cal[ticker] = []
+                    continue
+                # Index is timezone-aware datetime; normalize to date.
+                dates = sorted({pd.Timestamp(d).normalize().date()
+                                for d in df.index})
+                cal[ticker] = dates
+            except Exception as e:
+                logger.debug(f"{ticker}: earnings calendar unavailable - {e}")
+                cal[ticker] = []
+        n_with = sum(1 for v in cal.values() if v)
+        logger.info(f"Earnings calendar: {n_with}/{len(cal)} tickers populated")
+        return cal
+
+    @staticmethod
+    def _earnings_dict_for(today, calendar_dates):
+        """Build the earnings_data dict feature_layer expects, walked to `today`.
+
+        Only `next_earnings_date` + `days_to_earnings` are reconstructable
+        historically; eps_estimate / surprise stats are TODAY-snapshot values
+        in data_layer and have no persisted history, so we leave them None.
+        That's fine - signal_engine's gates only consult dte.
+        """
+        import numpy as np
+        today_date = today.date() if hasattr(today, "date") else today
+        future = [d for d in calendar_dates if d > today_date]
+        if not future:
+            return {
+                "next_earnings_date": None, "days_to_earnings": None,
+                "eps_estimate": None, "eps_actual_last": None,
+                "historical_surprise_pct": [],
+                "avg_historical_surprise_pct": None,
+            }
+        nxt = future[0]
+        try:
+            dte = int(np.busday_count(today_date, nxt))
+        except Exception:
+            dte = None
+        return {
+            "next_earnings_date": str(nxt), "days_to_earnings": dte,
+            "eps_estimate": None, "eps_actual_last": None,
+            "historical_surprise_pct": [],
+            "avg_historical_surprise_pct": None,
+        }
 
     def _download_data(self):
         """Download OHLCV for universe + SPY + QQQ."""
@@ -134,6 +210,8 @@ class BacktestEngine:
         ohlcv_all = self._download_data()
         if not ohlcv_all:
             return {"error": "No data downloaded"}
+
+        earnings_calendar = self._download_earnings_calendar()
 
         # Build unified trading-day index from SPY
         spy_df = ohlcv_all.get("SPY")
@@ -245,7 +323,9 @@ class BacktestEngine:
                 data_slice = df.loc[:today]
                 if len(data_slice) < 21:
                     continue
-                features_dict[ticker] = compute_features(ticker, data_slice, None)
+                earn = self._earnings_dict_for(
+                    today, earnings_calendar.get(ticker, []))
+                features_dict[ticker] = compute_features(ticker, data_slice, earn)
 
             # Compute market regime from historical SPY/QQQ
             regime_ohlcv = {}
@@ -275,13 +355,12 @@ class BacktestEngine:
             signals = enrich_signals(signals, features_dict)
 
             # Sector concentration cap (same as run.py)
-            _MAX_PER_SECTOR = 2
             _sector_counts = {}
             _capped = []
             for s in signals:
                 sec = s.get("sector", "Unknown")
                 _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
-                if _sector_counts[sec] <= _MAX_PER_SECTOR:
+                if _sector_counts[sec] <= MAX_PER_SECTOR:
                     _capped.append(s)
             signals = _capped
 
@@ -350,12 +429,12 @@ class BacktestEngine:
                 if fill_price is None:
                     continue
 
-                # Cancel if gap too large (>1.5% above signal entry).
+                # Cancel if gap too large (> CANCEL_GAP_PCT above signal entry).
                 # The gap check uses the RAW Open (not slippage-adjusted) so the
                 # cancel boundary is determined by market conditions, not by our
                 # own execution-cost assumptions.
                 signal_entry = sig.get("entry_price", fill_price)
-                if fill_price > signal_entry * 1.015:
+                if fill_price > signal_entry * (1 + CANCEL_GAP_PCT):
                     continue
 
                 entry_fill = apply_entry_fill(fill_price)   # buy-side slippage
@@ -506,6 +585,12 @@ class BacktestEngine:
             "survival_rate":       survival_rate,
             "by_strategy":         by_strategy,
             "benchmarks":          benchmarks,
+            "caveats": [
+                "news_veto_not_replayed: production filter.py T1-negative-news "
+                "veto has no historical archive; signals rejected by news in "
+                "live runs are still accepted here. Treat metrics as an "
+                "OPTIMISTIC upper bound.",
+            ],
             "equity_curve":        equity_curve,
             "trades":              closed,
         }
@@ -586,6 +671,11 @@ def _print_results(results):
         from convergence import format_convergence_report
         print("\n  CONVERGENCE:")
         print(format_convergence_report(results["convergence"]))
+
+    if results.get("caveats"):
+        print("\n  CAVEATS (parity gaps vs production):")
+        for c in results["caveats"]:
+            print(f"    - {c}")
 
     if results.get("trades"):
         print("\n  TRADE LOG:")

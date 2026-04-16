@@ -23,9 +23,9 @@ Example output:
 import logging
 import pandas as pd
 
-logger = logging.getLogger(__name__)
+from constants import ATR_PERIOD
 
-ATR_PERIOD = 14
+logger = logging.getLogger(__name__)
 
 
 def _scalar(x):

@@ -12,20 +12,21 @@ Exit Rule Hierarchy (apply in priority order, no exceptions):
 import logging
 import pandas as pd
 
-logger = logging.getLogger(__name__)
+from constants import (
+    RISK_PER_TRADE_PCT,
+    MAX_POSITION_PCT,
+    ROUND_TRIP_COST_PCT,
+    EXEC_LAG_PCT,
+    HARD_STOP_PCT,
+    PROFIT_TARGET_PCT,
+    TRAILING_STOP_PCT,
+    TIME_STOP_DAYS,
+    ATR_STOP_MULT,
+    ATR_PERIOD,
+    MAX_PORTFOLIO_HEAT,
+)
 
-# Rule parameters
-RISK_PER_TRADE_PCT    = 0.01     # Risk 1% of total portfolio per new trade
-MAX_POSITION_PCT      = 0.20     # Single position capped at 20% of portfolio
-ROUND_TRIP_COST_PCT   = 0.0035   # matches risk_engine.py and performance_engine.py
-EXEC_LAG_PCT          = 0.005    # +0.5% assumed next-day open gap (matches risk_engine.py)
-HARD_STOP_PCT         = 0.12   # -12% hard stop from avg_cost
-PROFIT_TARGET_PCT     = 0.20   # +20% profit target from entry
-TRAILING_STOP_PCT     = 0.08   # -8% trailing stop from position high-water mark
-TIME_STOP_DAYS        = 45     # Exit review after 45 trading days (~9 weeks; trend strategies need time
-ATR_MULTIPLIER        = 1.5    # Stop = entry - 1.5 × ATR (matches signal_engine.py)
-ATR_PERIOD            = 14     # Standard ATR lookback
-MAX_PORTFOLIO_HEAT    = 0.08   # Max 8% of portfolio at risk simultaneously (per inst_5.txt)
+logger = logging.getLogger(__name__)
 
 
 def compute_atr(data, period=ATR_PERIOD):
@@ -191,7 +192,7 @@ def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_pr
         # far below market price that it never triggers, providing zero protection.
         # Falls back to avg_cost only when current_price is not supplied (e.g. unit tests).
         atr_ref  = current_price if current_price else avg_cost
-        atr_stop = round(atr_ref - ATR_MULTIPLIER * atr, 2)
+        atr_stop = round(atr_ref - ATR_STOP_MULT * atr, 2)
         levels["atr_stop_price"] = atr_stop
         levels["atr_stop_pct"]   = round((atr_stop - avg_cost) / avg_cost, 4)
 

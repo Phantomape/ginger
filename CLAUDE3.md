@@ -130,16 +130,29 @@ python quant/backtester.py --start YYYY-MM-DD --end YYYY-MM-DD
 
 ## 五、收敛标准（何时停止迭代）
 
-当以下**全部**满足时，输出 `CONVERGED` 并停止：
+收敛判定**已固化在代码**：`quant/convergence.py` 是单一真相源，文字标准
+不再生效。`BacktestEngine.run()` 在 result 里附 `convergence` 字段；
+CLI 会打印每条 criterion 的 PASS/FAIL 表。
 
-- [ ] 信号级回测 Sharpe > 0.5（至少 6 个月数据）
-- [ ] 最大回撤 < 20%
-- [ ] 交易次数 ≥ 15
-- [ ] 胜率 > 40%
-- [ ] 无幽灵规则（所有规则的前置数据字段均存在）
-- [ ] 信号存活率 > 5%
+当 `result["convergence"]["converged"] == True` 时，输出 `CONVERGED`
+并停止。否则，按 §四 优先级栈继续工作。**每次只改一件事**，测量，
+确认改善，再改下一件。
 
-未达到时，按优先级栈继续工作。**每次只改一件事**，测量，确认改善，再改下一件。
+当前 criterion（阈值在 `convergence.CRITERIA` 中维护，改阈值即改这里）：
+
+| 名称 | 含义 |
+|------|------|
+| `sharpe_above_min` | 信号级 Sharpe ≥ 0.5（至少 6 个月数据） |
+| `max_drawdown_under_cap` | 最大回撤 ≤ 20% |
+| `trade_count_above_min` | 交易次数 ≥ 15 |
+| `win_rate_above_min` | 胜率 ≥ 40% |
+| `survival_rate_above_min` | 信号存活率 ≥ 5% |
+| `no_phantom_rules` | 所有规则前置字段存在（caller-asserted bool） |
+| `beats_spy_buy_hold` | 策略总收益 > SPY 同窗口 buy-and-hold |
+| `beats_qqq_buy_hold` | 策略总收益 > QQQ 同窗口 buy-and-hold |
+
+新增/修改 criterion：改 `quant/convergence.py` + 同步加测试，**不要**
+回到本文件用文字描述。本节之外不应出现"收敛是否满足"的判断。
 
 ---
 

@@ -13,12 +13,14 @@ Every trade must include:
 
 import logging
 
-logger = logging.getLogger(__name__)
+from constants import (
+    ATR_STOP_MULT,
+    ATR_TARGET_MULT,
+    ROUND_TRIP_COST_PCT,
+    EXEC_LAG_PCT,
+)
 
-ATR_STOP_MULT        = 1.5
-ATR_TARGET_MULT      = 3.5
-ROUND_TRIP_COST_PCT  = 0.0035   # 0.15% slippage each way + 0.05% commission (matches performance_engine)
-EXEC_LAG_PCT         = 0.005    # +0.5% assumed next-day open gap (conservative; typical range +0.3–1.0%)
+logger = logging.getLogger(__name__)
 
 # Static sector map for the watchlist + common holdings.
 # Used by LLM prompt to enforce the 40% sector concentration rule.
