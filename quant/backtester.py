@@ -437,6 +437,12 @@ class BacktestEngine:
                 if fill_price > signal_entry * (1 + CANCEL_GAP_PCT):
                     continue
 
+                # Symmetric cancel: if overnight gap-down pushes the fill at or below
+                # the pre-computed stop, the position is already stopped-out on day 0.
+                # No valid R:R remains — skip the entry entirely.
+                if stop is not None and fill_price <= stop:
+                    continue
+
                 entry_fill = apply_entry_fill(fill_price)   # buy-side slippage
                 positions.append(Position(
                     ticker=ticker,
@@ -731,7 +737,8 @@ def main():
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
-        values = [float(v) for v in args.sweep[1:]]
+        raw = [float(v) for v in args.sweep[1:]]
+        values = [int(v) if v == int(v) else v for v in raw]
         results_list = engine.sweep(param_name, values)
         for r in results_list:
             print(f"\n--- {param_name} = {r['param_value']} ---")

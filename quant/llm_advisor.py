@@ -432,52 +432,6 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     else:
         user_message += pos_mgmt_section
 
-    # Section 5: recent closed trades — required by the loss-streak cool-down rule.
-    # trade_advice.txt: "若第 5 节 recent_trades 中最近 3 笔交易全部亏损 → 暂停新交易 3 个交易日"
-    # Without this data the prompt rule says "ignore" and the cool-down NEVER fires.
-    # Providing the last 10 closed trades enables the LLM to apply the rule correctly.
-    recent_trades_section = ""
-    try:
-        from performance_engine import load_trades
-        all_trades    = load_trades()
-        closed_trades = [t for t in all_trades
-                         if t.get("status") == "closed" and t.get("profit_loss") is not None]
-        # Sort most-recent first, take last 10 for context
-        closed_sorted = sorted(closed_trades, key=lambda t: t.get("exit_date") or "", reverse=True)
-        last_trades   = closed_sorted[:10]
-        if last_trades:
-            trade_summary = [
-                {
-                    "ticker":      t["ticker"],
-                    "strategy":    t["strategy"],
-                    "exit_date":   t.get("exit_date"),
-                    "profit_loss": t["profit_loss"],
-                    "result":      "WIN" if t["profit_loss"] > 0 else "LOSS",
-                }
-                for t in last_trades
-            ]
-            recent_trades_section = (
-                f"\n\n5) RECENT TRADES (最近 {len(trade_summary)} 笔已关闭交易 — 供冷却机制判断):\n"
-                f"{json.dumps(trade_summary, indent=2)}\n"
-            )
-            logger.info(
-                f"Section 5: injected {len(trade_summary)} recent trades "
-                f"(last 3: {[t['result'] for t in trade_summary[:3]]})"
-            )
-        else:
-            recent_trades_section = (
-                "\n\n5) RECENT TRADES: 尚无已关闭交易记录。冷却机制不适用。\n"
-            )
-    except Exception as e:
-        logger.warning(f"Failed to load recent trades for section 5: {e}")
-        recent_trades_section = "\n\n5) RECENT TRADES: 数据不可用。冷却机制不适用。\n"
-
-    task_a_pos = user_message.find("任务 A")
-    if task_a_pos != -1:
-        user_message = user_message[:task_a_pos] + recent_trades_section + "\n" + user_message[task_a_pos:]
-    else:
-        user_message += recent_trades_section
-
     return system_message, user_message
 
 

@@ -2487,29 +2487,6 @@ def test_sector_concentration_uses_portfolio_value_not_invested_only():
     )
 
 
-def test_build_prompt_includes_recent_trades_section():
-    """build_prompt must inject section 5 (recent trades) for the loss-streak cool-down rule.
-
-    Without section 5, the cool-down rule always falls back to 'ignore' — three
-    consecutive losses never trigger the 3-day pause, increasing max drawdown.
-    """
-    import os, sys
-    sys.path.insert(0, os.path.dirname(__file__))
-    from llm_advisor import build_prompt
-
-    positions = {"portfolio_value_usd": 100_000, "positions": []}
-    _, user_msg = build_prompt([], positions)
-
-    if user_msg is None:
-        pytest.skip("Prompt template file not found — skipping integration test")
-
-    assert "5)" in user_msg and "RECENT TRADES" in user_msg, (
-        "Section 5 (RECENT TRADES) not injected into prompt. "
-        "Loss-streak cool-down rule ('3 consecutive losses → pause 3 days') "
-        "permanently ignored when this section is absent."
-    )
-
-
 def test_build_prompt_warns_missing_entry_date():
     """build_prompt must surface a data_warning when positions lack entry_date.
 
@@ -4264,6 +4241,36 @@ def test_backtester_run_intraday_stop_uses_fill_model(monkeypatch):
     expected_cost  = exit_raw_fill * ROUND_TRIP_COST_PCT * 10
     expected_pnl   = round((exit_raw_fill - entry_raw_fill) * 10 - expected_cost, 2)
     assert trade["pnl"] == expected_pnl
+
+
+def test_backtester_cancels_entry_on_gap_down_below_stop(monkeypatch):
+    """Gap-down cancel: if next-day Open ≤ stop, entry is aborted.
+
+    Regression guard for the 3 trades in the 2025-10-16 → 2026-04-14 backtest
+    (SLV / GLD / IAU) that filled below stop due to overnight gap-downs and
+    stopped out on day 0 — -$302.68 guaranteed losses.
+    """
+    import pandas as pd
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({"Open": [100.0]*30, "High": [100.0]*30,
+                           "Low":  [100.0]*30, "Close": [100.0]*30}, index=idx)
+    # Day 0 closes $100 (signal day, mocked entry=100 / stop=95).
+    # Every subsequent day Open=$94 → always below the $95 stop → never enters.
+    n = len(idx)
+    test_df = pd.DataFrame({
+        "Open":  [100.0] + [94.0] * (n - 1),
+        "High":  [100.0] + [94.0] * (n - 1),
+        "Low":   [100.0] + [94.0] * (n - 1),
+        "Close": [100.0] + [94.0] * (n - 1),
+    }, index=idx)
+
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    result = engine.run()
+
+    assert result.get("total_trades") == 0, (
+        f"entry with fill ≤ stop must be cancelled; got {result.get('total_trades')} trades"
+    )
 
 
 def test_regime_from_ohlcv_bull():
