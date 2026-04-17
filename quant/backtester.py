@@ -46,12 +46,15 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-from constants import MAX_POSITIONS, MAX_PER_SECTOR, CANCEL_GAP_PCT
+from constants import MAX_POSITIONS, MAX_PER_SECTOR, CANCEL_GAP_PCT, ATR_STOP_MULT
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
     "MAX_POSITIONS":       MAX_POSITIONS,
     "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
+    # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
+    "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
+    "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
 }
 
 
@@ -59,11 +62,12 @@ class Position:
     """Track a single open backtested position."""
 
     __slots__ = ("ticker", "entry_price", "entry_open_price", "stop_price",
-                 "target_price", "shares", "entry_date", "strategy", "sector")
+                 "target_price", "shares", "entry_date", "strategy", "sector",
+                 "high_water", "atr", "trailing_active")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
-                 entry_open_price=None):
+                 entry_open_price=None, atr=None):
         self.ticker           = ticker
         self.entry_price      = entry_price               # post-slippage fill
         self.entry_open_price = entry_open_price or entry_price
@@ -73,6 +77,10 @@ class Position:
         self.entry_date       = entry_date
         self.strategy         = strategy
         self.sector           = sector
+        self.high_water       = entry_price               # tracks highest price seen
+        self.atr              = atr or ((entry_price - stop_price) / ATR_STOP_MULT
+                                        if stop_price and entry_price > stop_price else None)
+        self.trailing_active  = False
 
 
 class BacktestEngine:
@@ -260,11 +268,27 @@ class BacktestEngine:
                 exit_raw_price = None     # theoretical trigger level (pre-slippage)
                 exit_reason   = None
 
+                # Trailing stop logic: update high_water, check activation,
+                # dynamically raise stop if trailing is active.
+                trail_trigger = self.config.get("TRAIL_TRIGGER_ATR_MULT", 0)
+                trail_offset  = self.config.get("TRAIL_OFFSET_ATR_MULT", 0)
+                if trail_trigger > 0 and pos.atr:
+                    pos.high_water = max(pos.high_water, high)
+                    profit_in_atr = (pos.high_water - pos.entry_price) / pos.atr
+                    if profit_in_atr >= trail_trigger:
+                        pos.trailing_active = True
+                        trail_stop = round(pos.high_water - trail_offset * pos.atr, 2)
+                        # Only raise the stop, never lower it
+                        if trail_stop > (pos.stop_price or 0):
+                            pos.stop_price = trail_stop
+                        # Remove fixed target — let the trail run
+                        pos.target_price = None
+
                 # Stop hit (gap-fill or intraday) — sell slippage on top.
                 if pos.stop_price and low <= pos.stop_price:
                     exit_raw_price = opn if opn < pos.stop_price else pos.stop_price
                     exit_price     = apply_stop_fill(opn, pos.stop_price)
-                    exit_reason    = "stop"
+                    exit_reason    = "trailing_stop" if pos.trailing_active else "stop"
                 # Target hit — gap-up uses Open (bonus), intraday uses target; slippage on top.
                 elif pos.target_price and high >= pos.target_price:
                     exit_raw_price = opn if opn >= pos.target_price else pos.target_price
