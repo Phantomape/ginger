@@ -161,18 +161,26 @@ def main():
             for pos in open_positions["positions"]
             if pos.get("ticker") and pos.get("shares", 0) > 0
         )
-        _cash = (open_positions.get("cash_usd") or 0)
-        _live_pv = _equity + _cash
-        if _live_pv > 0:
-            if _stored_pv and abs(_live_pv - _stored_pv) / max(_stored_pv, 1) > 0.15:
+        _cash_raw = open_positions.get("cash_usd")
+        if _cash_raw is None:
+            if _stored_pv:
                 log.warning(
-                    f"Portfolio value drift: stored={_stored_pv:,.0f}  "
-                    f"live={_live_pv:,.0f} USD — using live for sizing"
+                    f"cash_usd missing — using stored portfolio_value_usd="
+                    f"{_stored_pv:,.0f} for sizing"
                 )
-            portfolio_value = _live_pv
-            log.info(f"Portfolio value: ${portfolio_value:,.0f} (live)")
-        else:
             log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored)")
+        else:
+            _live_pv = _equity + _cash_raw
+            if _live_pv > 0:
+                if _stored_pv and abs(_live_pv - _stored_pv) / max(_stored_pv, 1) > 0.15:
+                    log.warning(
+                        f"Portfolio value drift: stored={_stored_pv:,.0f}  "
+                        f"live={_live_pv:,.0f} USD — using live for sizing"
+                    )
+                portfolio_value = _live_pv
+                log.info(f"Portfolio value: ${portfolio_value:,.0f} (live)")
+            else:
+                log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored)")
     else:
         if portfolio_value:
             log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored, no positions)")

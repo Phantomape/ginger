@@ -279,7 +279,26 @@ class BacktestEngine:
         llm_signals_vetoed    = 0
         llm_signals_passed    = 0
 
+        # News-archive coverage bookkeeping (§6.1 parity measurement).
+        # Parallel to llm_gate_unreplayed: replaces the hard-coded
+        # news_veto_unreplayed=True bool with archive coverage data so a
+        # future news-veto replay can be built without guessing availability.
+        # Measurement-only — no decision logic reads from these lists.
+        news_archive_dates_covered = []
+        news_archive_dates_missing = []
+
         for day_idx, today in enumerate(sim_dates):
+
+            # News-archive presence check (§6.1 measurement instrumentation).
+            # Records whether data/clean_trade_news_YYYYMMDD.json exists for
+            # this simulation day. Does NOT gate signals — pure observation.
+            _today_str = today.strftime("%Y%m%d")
+            _news_archive_path = os.path.join(
+                self.data_dir, f"clean_trade_news_{_today_str}.json")
+            if os.path.exists(_news_archive_path):
+                news_archive_dates_covered.append(_today_str)
+            else:
+                news_archive_dates_missing.append(_today_str)
 
             # ── 1. Check exits on today's prices ────────────────────────────
             still_open = []
@@ -694,8 +713,28 @@ class BacktestEngine:
         llm_missing_n   = len(llm_dates_missing)
         coverage_frac   = (round(llm_covered_n / trading_days_n, 4)
                            if trading_days_n else 0.0)
+
+        # News-archive coverage (measurement-only, parallel to llm_gate_unreplayed).
+        # No replay mechanism exists yet — archive_replay_enabled is always False.
+        # When coverage_fraction rises above a useful threshold, a future
+        # experiment can build a news_replay.py module on top of this bucket.
+        news_archive_covered_n = len(news_archive_dates_covered)
+        news_archive_missing_n = len(news_archive_dates_missing)
+        news_archive_coverage_frac = (
+            round(news_archive_covered_n / trading_days_n, 4)
+            if trading_days_n else 0.0
+        )
+
         known_biases = {
-            "news_veto_unreplayed":        True,
+            # Structured audit bucket — previously a bare bool(True). Upgraded
+            # on 2026-04-18 to parallel llm_gate_unreplayed's shape so downstream
+            # readers can quantify the parity gap rather than just see a flag.
+            "news_veto_unreplayed": {
+                "archive_replay_enabled":    False,   # no replay mechanism yet
+                "archive_coverage_fraction": news_archive_coverage_frac,
+                "archive_dates_covered":     list(news_archive_dates_covered),
+                "archive_dates_missing_n":   news_archive_missing_n,
+            },
             "llm_gate_unreplayed": {
                 "enabled":            self.replay_llm,
                 "coverage_fraction":  coverage_frac,
@@ -704,7 +743,7 @@ class BacktestEngine:
             },
             "survivorship_bias_universe":  True,
             "notes": [
-                "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); no historical archive",
+                "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); clean_trade_news_YYYYMMDD.json archive coverage is reported but no replay engine exists yet",
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
             ],

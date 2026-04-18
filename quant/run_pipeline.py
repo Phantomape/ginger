@@ -359,15 +359,22 @@ def main():
                         for pos in _open_pos["positions"]
                         if pos.get("ticker") and pos.get("shares", 0) > 0
                     )
-                    _cash_usd = _open_pos.get("cash_usd", 0) or 0
-                    _live_pv = _equity_pv + _cash_usd
-                    if _live_pv > 0:
-                        if _stored_pv and abs(_live_pv - _stored_pv) / _stored_pv > 0.15:
+                    _cash_raw = _open_pos.get("cash_usd")
+                    if _cash_raw is None:
+                        if _stored_pv:
                             logger.warning(
-                                f"Portfolio value drift: stored={_stored_pv:,.0f}  "
-                                f"live={_live_pv:,.0f} USD — using live for sizing."
+                                f"cash_usd missing — using stored "
+                                f"portfolio_value_usd={_stored_pv:,.0f} for sizing."
                             )
-                        _pv = _live_pv
+                    else:
+                        _live_pv = _equity_pv + _cash_raw
+                        if _live_pv > 0:
+                            if _stored_pv and abs(_live_pv - _stored_pv) / _stored_pv > 0.15:
+                                logger.warning(
+                                    f"Portfolio value drift: stored={_stored_pv:,.0f}  "
+                                    f"live={_live_pv:,.0f} USD — using live for sizing."
+                                )
+                            _pv = _live_pv
                 if _pv:
                     qp_signals = size_signals(qp_signals, _pv,
                                               risk_pct=_trade_risk_pct)

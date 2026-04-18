@@ -229,17 +229,27 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             for pos in open_positions["positions"]
             if pos.get("ticker") and pos.get("shares", 0) > 0
         )
-        # Include cash so heat/sector/sizing reflect the full account (not just equity).
-        cash_usd = open_positions.get("cash_usd", 0) or 0
-        live_pv = equity_pv + cash_usd
-        if live_pv > 0:
-            portfolio_value = live_pv
-            if stored_pv and abs(live_pv - stored_pv) / stored_pv > 0.15:
+        # Build live_pv only when cash_usd is populated. Collapsing missing cash
+        # to 0 silently under-reports PV and inflates heat/sector ratios; better
+        # to keep stored_pv and warn so the operator knows the field is stale.
+        cash_raw = open_positions.get("cash_usd")
+        if cash_raw is None:
+            if stored_pv:
                 logger.warning(
-                    f"Portfolio value drift: stored={stored_pv:,.0f}  "
-                    f"live={live_pv:,.0f} USD (equity={equity_pv:,.0f} + cash={cash_usd:,.0f}) — "
-                    f"using live value for heat/sector calculations."
+                    f"cash_usd missing in open_positions.json — using stored "
+                    f"portfolio_value_usd={stored_pv:,.0f} for heat/sector. "
+                    f"Fill cash_usd to enable live PV."
                 )
+        else:
+            live_pv = equity_pv + cash_raw
+            if live_pv > 0:
+                portfolio_value = live_pv
+                if stored_pv and abs(live_pv - stored_pv) / stored_pv > 0.15:
+                    logger.warning(
+                        f"Portfolio value drift: stored={stored_pv:,.0f}  "
+                        f"live={live_pv:,.0f} USD (equity={equity_pv:,.0f} + cash={cash_raw:,.0f}) — "
+                        f"using live value for heat/sector calculations."
+                    )
 
     # Portfolio heat (using effective stops — ATR/trailing — not just avg_cost stop)
     heat = None

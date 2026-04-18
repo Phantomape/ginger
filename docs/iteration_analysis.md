@@ -293,3 +293,21 @@ lookback:  350 → 400 天  （第一次不够算 52 周高位）
 - 第 3 个月：批量调整 + 验证
 
 **最贵的代价不是用错了阈值，而是永远不知道阈值对不对。**
+
+---
+
+## 五、迭代 15+（2026-04-17 → 现在）：系统已收敛，转入数据积累与归因
+
+**状态**：2026-04-17 基线显示 8/8 criteria pass、`CONVERGED`、EV score = 0.4954、Sharpe 3.04、DD 4.59%。按 §五 原则，不再做策略微调，优先修**测量口径**与**归因可审计性**。
+
+### exp-20260417-004（accepted）— LLM 决策回放基础设施
+把 `known_biases.llm_gate_unreplayed` 从 bool(True) 升级为结构化 dict（`enabled` / `coverage_fraction` / `dates_covered` / `dates_missing_n`），新增 `result.llm_attribution` 桶与 `--replay-llm` flag。off-mode 数值与基线一致，on-mode 覆盖率仅 3.23%（5/124 天），数据量不足以做 alpha 归因，但机制已就位。
+
+### exp-20260418-001（pending_validation）— 新闻档案覆盖率可审计化
+沿用 exp-004 模式：把 `known_biases.news_veto_unreplayed` 从 bool(True) 升级为结构化 dict（`archive_replay_enabled` / `archive_coverage_fraction` / `archive_dates_covered` / `archive_dates_missing_n`）。每个 sim 日检查 `data/clean_trade_news_YYYYMMDD.json` 是否存在，纯测量，不改决策逻辑。数值指标由构造决定与基线 bit-identical。预测覆盖率约 10%（13/124 交易日），仍低于可做归因的阈值；但把"有多少档案可用"明确落盘后，下一轮可以在 news_replay.py 中基于 `archive_dates_covered` 做 T1 新闻规则回放并与策略结果做归因。
+
+### 累计观察
+
+1. **LLM 不是问题，覆盖率才是**：我们有 6 个 `llm_prompt_resp` 文件、20 个 `clean_trade_news` 文件，但 124 个交易日。不论策略改不改，覆盖率不上去，任何策略归因都带系统性偏差。这是下一季度的头号数据积累目标。
+2. **已收敛 ≠ 可以继续微调**：策略层已满足全部 criterion；进一步动信号引擎 / 过滤器 / LLM prompt，在归因机制就位之前都属于"拿歪尺子量"（§6.1）。
+3. **每一次"bool → 结构化 dict"的小动作都给未来留下杠杆**：exp-004 和 exp-20260418-001 都只是把一个 `True` 换成一个有字段的 dict，不改行为；但它们让下一次迭代可以写回放代码、跑归因、做 A/B 对比，而不必再返工补基础设施。

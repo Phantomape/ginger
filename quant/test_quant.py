@@ -2487,6 +2487,55 @@ def test_sector_concentration_uses_portfolio_value_not_invested_only():
     )
 
 
+def test_build_prompt_cash_usd_missing_falls_back_to_stored_pv():
+    """When cash_usd is null/absent, portfolio_value must fall back to stored
+    portfolio_value_usd — NOT silently collapse cash=0 and overwrite with
+    equity-only live_pv (which under-reports PV and inflates heat/sector ratios).
+
+    Before the fix: equity_pv=$60k, cash=None→0, live_pv=$60k overwrote
+    stored_pv=$200k → sector_concentration divided by $60k → Tech=1.0 → blocked
+    all new Tech trades.
+
+    After the fix: cash_usd is None → keep stored_pv=$200k → Tech=$60k/$200k=0.30.
+    """
+    import os, sys, json
+    sys.path.insert(0, os.path.dirname(__file__))
+    from llm_advisor import build_prompt
+
+    # trend_signals carries NVDA close=150 so current_prices is populated and the
+    # live_pv branch actually runs (otherwise the bug never triggered).
+    fake_trend_signals = {
+        "market_regime": {"regime": "BULL", "note": "", "indices": {}},
+        "quant_signals": [],
+        "signals": {
+            "NVDA": {"close": 150.0, "atr": 5.0, "20d_high": 160.0}
+        },
+    }
+
+    # $60k Tech at current price; stored_pv=$200k (true account incl. cash);
+    # cash_usd intentionally absent — this is the bug condition.
+    positions = {
+        "portfolio_value_usd": 200_000,
+        # no "cash_usd" key at all — emulates data/open_positions.json before fill
+        "positions": [{"ticker": "NVDA", "shares": 400, "avg_cost": 150.0}],
+    }
+    system_msg, user_msg = build_prompt([], positions, trend_signals=fake_trend_signals)
+
+    if system_msg is None:
+        pytest.skip("Prompt template file not found — skipping integration test")
+
+    import re
+    match = re.search(r'"sector_concentration":\s*(\{[^}]+\})', user_msg)
+    assert match, "sector_concentration field not found in prompt"
+    sector_json = json.loads(match.group(1))
+    tech_weight = sector_json.get("Technology")
+    assert tech_weight is not None, "Technology not in sector_concentration"
+    assert abs(tech_weight - 0.30) < 0.05, (
+        f"Technology weight={tech_weight}, expected ~0.30. "
+        f"cash_usd=None must fall back to stored_pv=$200k, not collapse to equity-only $60k."
+    )
+
+
 def test_build_prompt_warns_missing_entry_date():
     """build_prompt must surface a data_warning when positions lack entry_date.
 
@@ -4907,7 +4956,18 @@ def test_backtester_emits_known_biases_and_integrity(monkeypatch):
     result = engine.run()
 
     kb = result.get("known_biases") or {}
-    assert kb.get("news_veto_unreplayed") is True
+    # news_veto_unreplayed is now a structured archive-coverage bucket
+    # (upgraded 2026-04-18 from bare bool(True) to parallel llm_gate_unreplayed).
+    nvu = kb.get("news_veto_unreplayed")
+    assert isinstance(nvu, dict), (
+        "news_veto_unreplayed must be a structured dict so coverage is auditable"
+    )
+    assert nvu.get("archive_replay_enabled") is False, (
+        "archive_replay_enabled must be False — no replay mechanism exists yet"
+    )
+    assert "archive_coverage_fraction" in nvu
+    assert isinstance(nvu.get("archive_dates_covered"), list)
+    assert "archive_dates_missing_n" in nvu
     # llm_gate_unreplayed is structured disclosure; enabled=False when not replayed.
     llm_gate = kb.get("llm_gate_unreplayed")
     assert isinstance(llm_gate, dict)

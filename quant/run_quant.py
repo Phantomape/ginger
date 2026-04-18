@@ -148,24 +148,32 @@ def main():
         # Without cash: a $100k account with $60k invested computes PV=$60k →
         # positions sized for 0.6% risk (not 1%) and heat appears 1.67× inflated.
         # Add cash_usd field to open_positions.json to enable correct calculation.
-        cash_usd = open_positions.get("cash_usd", 0) or 0
-        live_pv = equity_pv + cash_usd
-        if live_pv > 0:
-            if stored_pv and abs(live_pv - stored_pv) / stored_pv > 0.15:
+        cash_raw = open_positions.get("cash_usd")
+        if cash_raw is None:
+            if stored_pv:
                 log.warning(
-                    f"⚠️  Portfolio value drift detected: stored={stored_pv:,.0f} USD  "
-                    f"live={live_pv:,.0f} USD  (equity={equity_pv:,.0f} + cash={cash_usd:,.0f}).  "
-                    f"Using live value for heat and sizing calculations. "
-                    f"Update portfolio_value_usd in open_positions.json to suppress this warning."
+                    f"⚠️  cash_usd missing in open_positions.json — using stored "
+                    f"portfolio_value_usd={stored_pv:,.0f} USD for heat and sizing. "
+                    f"Fill cash_usd to enable live PV."
                 )
-            portfolio_value = live_pv
-            log.info(f"Portfolio value: live={live_pv:,.0f} USD (stored={stored_pv or 'N/A'})")
-        elif stored_pv:
-            # Fallback: positions have no current price data (e.g. yfinance failure)
-            log.warning(
-                f"Could not compute live portfolio value (no current prices for positions). "
-                f"Falling back to stored value: {stored_pv:,.0f} USD."
-            )
+        else:
+            live_pv = equity_pv + cash_raw
+            if live_pv > 0:
+                if stored_pv and abs(live_pv - stored_pv) / stored_pv > 0.15:
+                    log.warning(
+                        f"⚠️  Portfolio value drift detected: stored={stored_pv:,.0f} USD  "
+                        f"live={live_pv:,.0f} USD  (equity={equity_pv:,.0f} + cash={cash_raw:,.0f}).  "
+                        f"Using live value for heat and sizing calculations. "
+                        f"Update portfolio_value_usd in open_positions.json to suppress this warning."
+                    )
+                portfolio_value = live_pv
+                log.info(f"Portfolio value: live={live_pv:,.0f} USD (stored={stored_pv or 'N/A'})")
+            elif stored_pv:
+                # Fallback: positions have no current price data (e.g. yfinance failure)
+                log.warning(
+                    f"Could not compute live portfolio value (no current prices for positions). "
+                    f"Falling back to stored value: {stored_pv:,.0f} USD."
+                )
     elif stored_pv:
         # Stale portfolio data warning
         if open_positions and open_positions.get("as_of"):
