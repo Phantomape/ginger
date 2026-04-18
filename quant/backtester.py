@@ -58,6 +58,22 @@ DEFAULT_CONFIG = {
 }
 
 
+def _open_positions_cash_populated():
+    """Check whether data/open_positions.json has a non-null cash_usd field.
+
+    Used by BacktestEngine.run() integrity diagnostics. Returning False surfaces
+    a known phantom-field condition (CLAUDE3.md §三.2) without mutating any
+    decision logic — pure reporting.
+    """
+    try:
+        path = os.path.join(_script_dir, "..", "data", "open_positions.json")
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data.get("cash_usd") is not None
+    except Exception:
+        return False
+
+
 class Position:
     """Track a single open backtested position."""
 
@@ -94,11 +110,18 @@ class BacktestEngine:
         config     (dict):      Override any key in DEFAULT_CONFIG
     """
 
-    def __init__(self, universe, start=None, end=None, config=None):
-        self.universe = universe
-        self.config   = {**DEFAULT_CONFIG, **(config or {})}
-        self.start    = pd.Timestamp(start) if start else None
-        self.end      = pd.Timestamp(end)   if end   else None
+    def __init__(self, universe, start=None, end=None, config=None,
+                 replay_llm=False, data_dir=None):
+        self.universe   = universe
+        self.config     = {**DEFAULT_CONFIG, **(config or {})}
+        self.start      = pd.Timestamp(start) if start else None
+        self.end        = pd.Timestamp(end)   if end   else None
+        self.replay_llm = bool(replay_llm)
+        # Default data_dir = repo-root/data (one up from quant/).
+        if data_dir is None:
+            here = os.path.dirname(os.path.abspath(__file__))
+            data_dir = os.path.normpath(os.path.join(here, "..", "data"))
+        self.data_dir   = data_dir
 
     def _download_earnings_calendar(self):
         """Per-ticker sorted list of earnings dates (past + upcoming).
@@ -248,6 +271,13 @@ class BacktestEngine:
         equity_curve  = []
         total_signals_generated = 0
         total_signals_survived  = 0
+
+        # LLM replay bookkeeping (§4.2 attribution requirement).
+        llm_dates_covered  = []
+        llm_dates_missing  = []
+        llm_signals_presented = 0
+        llm_signals_vetoed    = 0
+        llm_signals_passed    = 0
 
         for day_idx, today in enumerate(sim_dates):
 
@@ -412,6 +442,21 @@ class BacktestEngine:
             signals = size_signals(signals, equity, risk_pct=risk_pct)
             total_signals_survived += len(signals)
 
+            # ── 2b. LLM gate replay (optional; off by default). ─────────────
+            # When on, closes production/backtest parity for dates where
+            # data/llm_prompt_resp_YYYYMMDD.json exists. See llm_replay.py.
+            if self.replay_llm:
+                from llm_replay import get_llm_decision_for_date, apply_llm_gate
+                decision = get_llm_decision_for_date(today, self.data_dir)
+                if decision["file_present"]:
+                    llm_dates_covered.append(decision["date_str"])
+                    signals, presented_n, vetoed_n = apply_llm_gate(signals, decision)
+                    llm_signals_presented += presented_n
+                    llm_signals_vetoed    += vetoed_n
+                    llm_signals_passed    += len(signals)
+                else:
+                    llm_dates_missing.append(decision["date_str"])
+
             # ── 3. Enter positions at next-day open ─────────────────────────
             slots = self.config["MAX_POSITIONS"] - len(positions)
             for sig in signals[:slots]:
@@ -553,15 +598,40 @@ class BacktestEngine:
             if dd > max_dd:
                 max_dd = dd
 
-        # Sharpe from trade P&L (annualized assuming ~30 trades/year)
+        # LEGACY Sharpe: per-trade P&L × sqrt(30). Kept for historical
+        # comparability against prior backtest_results_*.json files.
+        # Known issues: dollar-denominated (not %), hand-picked sqrt(30) annualization,
+        # no "flat day" dilution from equity curve. See CLAUDE3.md iteration v2.
         pnl_series = [t["pnl"] for t in closed]
         if len(pnl_series) >= 2:
             mean_pnl = sum(pnl_series) / len(pnl_series)
             var_pnl  = sum((x - mean_pnl) ** 2 for x in pnl_series) / (len(pnl_series) - 1)
             std_pnl  = math.sqrt(var_pnl) if var_pnl > 0 else 0
-            sharpe   = round((mean_pnl / std_pnl) * math.sqrt(30), 2) if std_pnl > 0 else None
+            sharpe_legacy = round((mean_pnl / std_pnl) * math.sqrt(30), 2) if std_pnl > 0 else None
         else:
-            sharpe = None
+            sharpe_legacy = None
+
+        # DAILY Sharpe: equity-curve-based, annualized with sqrt(252).
+        # Additive measurement — does NOT enter compute_convergence (that still
+        # reads `sharpe`). This number is for humans to read alongside the
+        # legacy value and form a trust verdict.
+        equity_series = [eq for _, eq in equity_curve]
+        sharpe_daily = None
+        daily_returns = []
+        if len(equity_series) >= 2:
+            for i in range(1, len(equity_series)):
+                prev = equity_series[i - 1]
+                if prev > 0:
+                    daily_returns.append((equity_series[i] / prev) - 1)
+            if len(daily_returns) >= 2:
+                mean_r = sum(daily_returns) / len(daily_returns)
+                var_r  = sum((x - mean_r) ** 2 for x in daily_returns) / (len(daily_returns) - 1)
+                std_r  = math.sqrt(var_r) if var_r > 0 else 0
+                sharpe_daily = round((mean_r / std_r) * math.sqrt(252), 2) if std_r > 0 else None
+
+        # Backwards-compatible: convergence.py + downstream readers continue to
+        # use `sharpe` (legacy). `sharpe_daily` sits alongside for auditing.
+        sharpe = sharpe_legacy
 
         survival_rate = (round(total_signals_survived / total_signals_generated, 4)
                          if total_signals_generated > 0 else 0)
@@ -600,6 +670,65 @@ class BacktestEngine:
                                           if qqq_ret is not None else None),
         }
 
+        # Equity-curve integrity — guard against "right formula, wrong inputs".
+        # `sharpe_daily` is only trustworthy if the equity curve is not mostly
+        # flat (which would give an artificially low std denominator).
+        EQUITY_FLAT_EPS = 1e-9
+        equity_flat_days = sum(1 for r in daily_returns if abs(r) < EQUITY_FLAT_EPS)
+        open_positions_cash_populated = _open_positions_cash_populated()
+        equity_curve_integrity = {
+            "cash_field_present_in_open_positions": open_positions_cash_populated,
+            "risk_rules_enforced_in_backtest":      True,  # synthetic stop_price
+            "equity_curve_len":                     len(equity_series),
+            "trading_days":                         len(sim_dates),
+            "equity_flat_days":                     equity_flat_days,
+            "equity_flat_fraction": (round(equity_flat_days / len(daily_returns), 4)
+                                     if daily_returns else None),
+            "daily_returns_count":                  len(daily_returns),
+        }
+
+        # Structured disclosure of known measurement biases. Does NOT enter
+        # compute_convergence — pure audit surface.
+        trading_days_n  = len(sim_dates)
+        llm_covered_n   = len(llm_dates_covered)
+        llm_missing_n   = len(llm_dates_missing)
+        coverage_frac   = (round(llm_covered_n / trading_days_n, 4)
+                           if trading_days_n else 0.0)
+        known_biases = {
+            "news_veto_unreplayed":        True,
+            "llm_gate_unreplayed": {
+                "enabled":            self.replay_llm,
+                "coverage_fraction":  coverage_frac,
+                "dates_covered":      list(llm_dates_covered),
+                "dates_missing_n":    llm_missing_n,
+            },
+            "survivorship_bias_universe":  True,
+            "notes": [
+                "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); no historical archive",
+                "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
+                "data_layer.get_universe() reads current watchlist, not point-in-time",
+            ],
+        }
+
+        # §4.2 LLM attribution bucket. replay_enabled=False → counts are zero
+        # and veto_rate=None (no replay performed).
+        llm_attribution = {
+            "replay_enabled":       self.replay_llm,
+            "coverage_fraction":    coverage_frac,
+            "trading_days":         trading_days_n,
+            "dates_covered":        llm_covered_n,
+            "dates_missing":        llm_missing_n,
+            "signals_presented":    llm_signals_presented,
+            "signals_vetoed_by_llm": llm_signals_vetoed,
+            "signals_passed_by_llm": llm_signals_passed,
+            "veto_rate":            (round(llm_signals_vetoed / llm_signals_presented, 4)
+                                     if llm_signals_presented else None),
+            "notes": [
+                "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
+                "position_actions are NOT replayed — exits already run code-deterministic rule engine.",
+            ],
+        }
+
         result = {
             "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
             "trading_days":        len(sim_dates),
@@ -609,12 +738,17 @@ class BacktestEngine:
             "win_rate":            round(len(wins) / total, 4) if total else 0,
             "total_pnl":           round(sum(t["pnl"] for t in closed), 2),
             "sharpe":              sharpe,
+            "sharpe_daily":        sharpe_daily,
+            "sharpe_method":       "per_trade_sqrt30_legacy",
             "max_drawdown_pct":    round(max_dd, 4),
             "signals_generated":   total_signals_generated,
             "signals_survived":    total_signals_survived,
             "survival_rate":       survival_rate,
             "by_strategy":         by_strategy,
             "benchmarks":          benchmarks,
+            "known_biases":        known_biases,
+            "llm_attribution":     llm_attribution,
+            "equity_curve_integrity": equity_curve_integrity,
             "caveats": [
                 "news_veto_not_replayed: production filter.py T1-negative-news "
                 "veto has no historical archive; signals rejected by news in "
@@ -625,8 +759,21 @@ class BacktestEngine:
             "trades":              closed,
         }
 
-        from convergence import compute_convergence
+        from convergence import compute_convergence, compute_expected_value_score
+        result["expected_value_score"] = compute_expected_value_score(result)
         result["convergence"] = compute_convergence(result)
+
+        # v2 shadow verdict — what convergence WOULD say if we also required
+        # sharpe_daily >= sharpe_min. Does not mutate the real verdict.
+        from convergence import CRITERIA as _CRIT
+        sharpe_daily_pass = (sharpe_daily is not None
+                             and sharpe_daily >= _CRIT["sharpe_min"])
+        result["converged_v2_shadow"] = {
+            "sharpe_daily":                 sharpe_daily,
+            "sharpe_daily_would_pass":      bool(sharpe_daily_pass),
+            "converged_if_sharpe_daily":    bool(
+                result["convergence"]["converged"] and sharpe_daily_pass),
+        }
         return result
 
     def sweep(self, param_name, values):
@@ -649,6 +796,8 @@ class BacktestEngine:
                 start=str(self.start.date()) if self.start else None,
                 end=str(self.end.date()) if self.end else None,
                 config=cfg,
+                replay_llm=self.replay_llm,
+                data_dir=self.data_dir,
             )
             result = engine.run()
             result["param_name"]  = param_name
@@ -674,7 +823,9 @@ def _print_results(results):
     print(f"  Wins / Losses:     {results['wins']} / {results['losses']}")
     print(f"  Win rate:          {results['win_rate']*100:.1f}%")
     print(f"  Total PnL:         ${results['total_pnl']:,.2f}")
-    print(f"  Sharpe:            {results['sharpe']}")
+    print(f"  Sharpe (legacy):   {results['sharpe']}")
+    print(f"  Sharpe (daily):    {results.get('sharpe_daily')}")
+    print(f"  EV score:          {results.get('expected_value_score')}")
     print(f"  Max drawdown:      {results['max_drawdown_pct']*100:.2f}%")
     print(f"  Signals generated: {results['signals_generated']}")
     print(f"  Signals survived:  {results['signals_survived']}")
@@ -702,6 +853,36 @@ def _print_results(results):
         print("\n  CONVERGENCE:")
         print(format_convergence_report(results["convergence"]))
 
+    shadow = results.get("converged_v2_shadow")
+    if shadow:
+        print("\n  V2 SHADOW (observation — does NOT change verdict above):")
+        print(f"    sharpe_daily:              {shadow.get('sharpe_daily')}")
+        print(f"    sharpe_daily would pass:   {shadow.get('sharpe_daily_would_pass')}")
+        print(f"    converged if also gated:   {shadow.get('converged_if_sharpe_daily')}")
+
+    llm_attr = results.get("llm_attribution")
+    if llm_attr:
+        print("\n  LLM ATTRIBUTION:")
+        print(f"    replay_enabled:          {llm_attr.get('replay_enabled')}")
+        print(f"    coverage:                "
+              f"{llm_attr.get('dates_covered')}/{llm_attr.get('trading_days')} days "
+              f"({(llm_attr.get('coverage_fraction') or 0)*100:.1f}%)")
+        print(f"    signals presented:       {llm_attr.get('signals_presented')}")
+        print(f"    vetoed by LLM:           {llm_attr.get('signals_vetoed_by_llm')}")
+        print(f"    passed by LLM:           {llm_attr.get('signals_passed_by_llm')}")
+        print(f"    veto_rate:               {llm_attr.get('veto_rate')}")
+
+    integrity = results.get("equity_curve_integrity")
+    if integrity:
+        print("\n  EQUITY-CURVE INTEGRITY:")
+        print(f"    cash_usd populated in open_positions: "
+              f"{integrity.get('cash_field_present_in_open_positions')}")
+        flat = integrity.get("equity_flat_fraction")
+        flat_str = f"{flat*100:.1f}%" if flat is not None else "N/A"
+        print(f"    flat-equity days fraction:            {flat_str}")
+        print(f"    daily returns sampled:                "
+              f"{integrity.get('daily_returns_count')}")
+
     if results.get("caveats"):
         print("\n  CAVEATS (parity gaps vs production):")
         for c in results["caveats"]:
@@ -718,6 +899,75 @@ def _print_results(results):
                   f"${t['pnl']:>9.2f} {t['exit_reason']:<12} "
                   f"{t['entry_date']} → {t['exit_date']}")
     print()
+
+
+def _build_stability_diagnostics(primary, secondary):
+    """Structured cross-window comparison — observation only, no PASS/FAIL.
+
+    Returns a dict with per-metric deltas and simple consistency booleans.
+    Consumers (humans, future gating logic) decide how to act on it.
+    """
+    if not primary or not secondary or "error" in secondary:
+        return None
+
+    def _sub(a, b):
+        if a is None or b is None:
+            return None
+        return round(a - b, 4)
+
+    p_dd = primary.get("max_drawdown_pct")
+    s_dd = secondary.get("max_drawdown_pct")
+    p_ret = (primary.get("benchmarks") or {}).get("strategy_total_return_pct")
+    s_ret = (secondary.get("benchmarks") or {}).get("strategy_total_return_pct")
+
+    return {
+        "stable_across_windows": {
+            "expected_value_score_delta":  _sub(primary.get("expected_value_score"),
+                                               secondary.get("expected_value_score")),
+            "sharpe_legacy_delta":           _sub(primary.get("sharpe"),
+                                                 secondary.get("sharpe")),
+            "sharpe_daily_delta":            _sub(primary.get("sharpe_daily"),
+                                                 secondary.get("sharpe_daily")),
+            "max_drawdown_delta":            _sub(p_dd, s_dd),
+            "drawdown_consistent": (p_dd is not None and s_dd is not None
+                                    and abs(p_dd - s_dd) <= 0.05),
+            "directionally_profitable_both": (p_ret is not None and s_ret is not None
+                                              and p_ret > 0 and s_ret > 0),
+            "primary_expected_value_score":  primary.get("expected_value_score"),
+            "secondary_expected_value_score": secondary.get("expected_value_score"),
+            "primary_sharpe_daily":          primary.get("sharpe_daily"),
+            "secondary_sharpe_daily":        secondary.get("sharpe_daily"),
+            "primary_return_pct":            p_ret,
+            "secondary_return_pct":          s_ret,
+        }
+    }
+
+
+def _print_diagnostics(diagnostics):
+    """Pretty-print the stability diagnostics block."""
+    if not diagnostics:
+        return
+    s = diagnostics.get("stable_across_windows") or {}
+    print("\n" + "=" * 60)
+    print("  CROSS-WINDOW STABILITY (observation only)")
+    print("=" * 60)
+
+    def _fmt(v):
+        if v is None:
+            return "N/A"
+        return f"{v:+.4f}" if isinstance(v, float) else str(v)
+
+    print(f"  primary EV score:        {_fmt(s.get('primary_expected_value_score'))}")
+    print(f"  secondary EV score:      {_fmt(s.get('secondary_expected_value_score'))}")
+    print(f"  Δ EV score:              {_fmt(s.get('expected_value_score_delta'))}")
+    print(f"  primary sharpe_daily:    {_fmt(s.get('primary_sharpe_daily'))}")
+    print(f"  secondary sharpe_daily:  {_fmt(s.get('secondary_sharpe_daily'))}")
+    print(f"  Δ sharpe_legacy:         {_fmt(s.get('sharpe_legacy_delta'))}")
+    print(f"  Δ sharpe_daily:          {_fmt(s.get('sharpe_daily_delta'))}")
+    print(f"  Δ max_drawdown:          {_fmt(s.get('max_drawdown_delta'))}")
+    print(f"  drawdown_consistent:     {s.get('drawdown_consistent')}")
+    print(f"  profitable in both:      {s.get('directionally_profitable_both')}")
+    print("=" * 60)
 
 
 def main():
@@ -741,6 +991,11 @@ def main():
                         help="End date YYYY-MM-DD (default: today)")
     parser.add_argument("--sweep", nargs="+", default=None,
                         help="Parameter sweep: PARAM_NAME val1 val2 ...")
+    parser.add_argument("--no-secondary", action="store_true",
+                        help="Skip the non-overlapping secondary-window diagnostic run")
+    parser.add_argument("--replay-llm", action="store_true",
+                        help="Apply LLM gate using data/llm_prompt_resp_YYYYMMDD.json "
+                             "when the file exists (§6.1 parity fix). Default: off.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -757,7 +1012,8 @@ def main():
         from filter import WATCHLIST
         universe = list(WATCHLIST)
 
-    engine = BacktestEngine(universe, start=args.start, end=args.end)
+    engine = BacktestEngine(universe, start=args.start, end=args.end,
+                            replay_llm=args.replay_llm)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
@@ -776,12 +1032,51 @@ def main():
 
         _print_results(results)
 
-        # Save results
+        # Diagnostic: non-overlapping secondary window immediately preceding
+        # the primary. Report-only — does NOT change convergence verdict.
+        secondary = None
+        diagnostics = None
+        if not args.no_secondary:
+            try:
+                primary_start = pd.Timestamp(args.start)
+                secondary_end = (primary_start - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+                secondary_start = (primary_start - pd.Timedelta(days=183)).strftime("%Y-%m-%d")
+                print(f"\n--- SECONDARY WINDOW DIAGNOSTIC: "
+                      f"{secondary_start} → {secondary_end} ---")
+                secondary_engine = BacktestEngine(
+                    universe, start=secondary_start, end=secondary_end,
+                    replay_llm=args.replay_llm)
+                secondary = secondary_engine.run()
+                if "error" in secondary:
+                    print(f"  (secondary run failed: {secondary['error']})")
+                    secondary = {"error": secondary["error"]}
+                else:
+                    _print_results(secondary)
+                    diagnostics = _build_stability_diagnostics(results, secondary)
+                    _print_diagnostics(diagnostics)
+            except Exception as e:
+                print(f"  (secondary run exception: {e})")
+                secondary = {"error": str(e)}
+
+        # Save results. Combined layout when secondary is present; flat when not
+        # (preserves the historical shape consumed by downstream readers).
         out_path = os.path.join(script_dir, "..", "data",
                                 f"backtest_results_{datetime.now().strftime('%Y%m%d')}.json")
         os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 
-        save_data = {k: v for k, v in results.items() if k != "equity_curve"}
+        primary_save = {k: v for k, v in results.items() if k != "equity_curve"}
+        if secondary is not None:
+            secondary_save = ({k: v for k, v in secondary.items() if k != "equity_curve"}
+                              if "error" not in secondary else secondary)
+            save_data = {
+                **primary_save,                 # flat keys preserved for compat
+                "primary":     primary_save,
+                "secondary":   secondary_save,
+                "diagnostics": diagnostics,
+            }
+        else:
+            save_data = primary_save
+
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(save_data, f, indent=2, ensure_ascii=False)
         print(f"Results saved → {out_path}")

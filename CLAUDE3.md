@@ -13,8 +13,6 @@
 
 **你的唯一目标：在不增加策略复杂度和不过拟合的前提下，提高信号级回测指标（以 Sharpe / return / drawdown 为主），并且任何改动必须在多时间段回测中稳定提升。**
 
-你的唯一目标：在不增加策略复杂度和不过拟合的前提下，提高信号级回测指标（以 Sharpe / return / drawdown 为主），并且任何改动必须在多时间段回测中稳定提升。
-
 回测方式：`python quant/backtester.py`，它会调用真实的 signal_engine + risk_engine + 全部过滤层，用历史 OHLCV 数据模拟交易，输出 Sharpe/回撤/胜率/交易数/信号存活率。
 
 ---

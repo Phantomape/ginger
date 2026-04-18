@@ -284,6 +284,20 @@ def main():
     signals = generate_signals(features_dict, market_context=market_context)
     signals = enrich_signals(signals, features_dict)
 
+    # ── Filter out tickers already held ──────────────────────────────────
+    # Matches backtester.py:395 ("Skip if already holding") — without this,
+    # production recommends buying more of a stock already in the portfolio.
+    if open_positions and open_positions.get("positions"):
+        _held = {p["ticker"] for p in open_positions["positions"] if p.get("ticker")}
+        _before_held = len(signals)
+        _dropped_held = [s for s in signals if s["ticker"] in _held]
+        signals = [s for s in signals if s["ticker"] not in _held]
+        if _dropped_held:
+            log.info(
+                f"Already-held filter: {_before_held} → {len(signals)} signals "
+                f"(dropped {[s['ticker'] for s in _dropped_held]})"
+            )
+
     # ── Same-day sector concentration cap ─────────────────────────────────
     # Multiple correlated signals can fire on the same day (e.g. 3 tech stocks).
     # Entering all of them turns 3 independent 1% risks into one concentrated bet.

@@ -1,16 +1,18 @@
 {
-  "period": "2025-10-17 → 2026-04-15",
-  "trading_days": 123,
-  "total_trades": 29,
+  "period": "2025-10-20 → 2026-04-17",
+  "trading_days": 124,
+  "total_trades": 30,
   "wins": 18,
-  "losses": 11,
-  "win_rate": 0.6207,
-  "total_pnl": 20033.47,
-  "sharpe": 3.1,
+  "losses": 12,
+  "win_rate": 0.6,
+  "total_pnl": 20136.83,
+  "sharpe": 3.04,
+  "sharpe_daily": 2.46,
+  "sharpe_method": "per_trade_sqrt30_legacy",
   "max_drawdown_pct": 0.0459,
-  "signals_generated": 50,
-  "signals_survived": 49,
-  "survival_rate": 0.98,
+  "signals_generated": 51,
+  "signals_survived": 50,
+  "survival_rate": 0.9804,
   "by_strategy": {
     "trend_long": {
       "trade_count": 13,
@@ -23,22 +25,61 @@
       "total_pnl_usd": 8926.63
     },
     "breakout_long": {
-      "trade_count": 16,
+      "trade_count": 17,
       "wins": 10,
-      "losses": 6,
-      "win_rate": 0.625,
-      "avg_pnl_pct_net": 0.0362,
-      "profit_factor": 3.418,
-      "avg_R": 1.444,
-      "total_pnl_usd": 11106.84
+      "losses": 7,
+      "win_rate": 0.5882,
+      "avg_pnl_pct_net": 0.0343,
+      "profit_factor": 3.378,
+      "avg_R": 1.364,
+      "total_pnl_usd": 11210.2
     }
   },
   "benchmarks": {
-    "spy_buy_hold_return_pct": 0.0595,
-    "qqq_buy_hold_return_pct": 0.0581,
-    "strategy_total_return_pct": 0.2003,
-    "strategy_vs_spy_pct": 0.1408,
-    "strategy_vs_qqq_pct": 0.1422
+    "spy_buy_hold_return_pct": 0.0639,
+    "qqq_buy_hold_return_pct": 0.0637,
+    "strategy_total_return_pct": 0.2014,
+    "strategy_vs_spy_pct": 0.1375,
+    "strategy_vs_qqq_pct": 0.1377
+  },
+  "known_biases": {
+    "news_veto_unreplayed": true,
+    "llm_gate_unreplayed": {
+      "enabled": false,
+      "coverage_fraction": 0.0,
+      "dates_covered": [],
+      "dates_missing_n": 0
+    },
+    "survivorship_bias_universe": true,
+    "notes": [
+      "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); no historical archive",
+      "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
+      "data_layer.get_universe() reads current watchlist, not point-in-time"
+    ]
+  },
+  "llm_attribution": {
+    "replay_enabled": false,
+    "coverage_fraction": 0.0,
+    "trading_days": 124,
+    "dates_covered": 0,
+    "dates_missing": 0,
+    "signals_presented": 0,
+    "signals_vetoed_by_llm": 0,
+    "signals_passed_by_llm": 0,
+    "veto_rate": null,
+    "notes": [
+      "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
+      "position_actions are NOT replayed — exits already run code-deterministic rule engine."
+    ]
+  },
+  "equity_curve_integrity": {
+    "cash_field_present_in_open_positions": false,
+    "risk_rules_enforced_in_backtest": true,
+    "equity_curve_len": 124,
+    "trading_days": 124,
+    "equity_flat_days": 19,
+    "equity_flat_fraction": 0.1545,
+    "daily_returns_count": 123
   },
   "caveats": [
     "news_veto_not_replayed: production filter.py T1-negative-news veto has no historical archive; signals rejected by news in live runs are still accepted here. Treat metrics as an OPTIMISTIC upper bound."
@@ -555,23 +596,42 @@
       "entry_price": 235.42,
       "entry_open_price": 235.3,
       "stop_price": 223.63,
-      "exit_price": 248.38,
-      "exit_raw_price": 248.5,
+      "exit_price": 250.43,
+      "exit_raw_price": 250.56,
       "shares": 98,
-      "pnl": 1184.48,
-      "pnl_pct_net": 0.051533,
+      "pnl": 1385.54,
+      "pnl_pct_net": 0.060278,
       "initial_risk_pct": 0.050081,
-      "slippage_cost": 23.93,
+      "slippage_cost": 24.04,
       "exit_reason": "end_of_backtest",
       "entry_date": "2026-04-10",
-      "exit_date": "2026-04-15"
+      "exit_date": "2026-04-17"
+    },
+    {
+      "ticker": "AMD",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_price": 278.78,
+      "entry_open_price": 278.64,
+      "stop_price": 262.6,
+      "exit_price": 278.25,
+      "exit_raw_price": 278.39,
+      "shares": 65,
+      "pnl": -97.7,
+      "pnl_pct_net": -0.005398,
+      "initial_risk_pct": 0.058039,
+      "slippage_cost": 18.15,
+      "exit_reason": "end_of_backtest",
+      "entry_date": "2026-04-17",
+      "exit_date": "2026-04-17"
     }
   ],
+  "expected_value_score": 0.4954,
   "convergence": {
     "converged": true,
     "criteria": {
       "sharpe_above_min": {
-        "value": 3.1,
+        "value": 3.04,
         "pass": true,
         "threshold": 0.5
       },
@@ -581,17 +641,17 @@
         "threshold": 0.2
       },
       "trade_count_above_min": {
-        "value": 29,
+        "value": 30,
         "pass": true,
         "threshold": 15
       },
       "win_rate_above_min": {
-        "value": 0.6207,
+        "value": 0.6,
         "pass": true,
         "threshold": 0.4
       },
       "survival_rate_above_min": {
-        "value": 0.98,
+        "value": 0.9804,
         "pass": true,
         "threshold": 0.05
       },
@@ -601,16 +661,21 @@
         "pass": true
       },
       "beats_spy_buy_hold": {
-        "value": 0.2003,
-        "threshold": 0.0595,
+        "value": 0.2014,
+        "threshold": 0.0639,
         "pass": true
       },
       "beats_qqq_buy_hold": {
-        "value": 0.2003,
-        "threshold": 0.0581,
+        "value": 0.2014,
+        "threshold": 0.0637,
         "pass": true
       }
     },
     "summary": "8/8 criteria pass"
+  },
+  "converged_v2_shadow": {
+    "sharpe_daily": 2.46,
+    "sharpe_daily_would_pass": true,
+    "converged_if_sharpe_daily": true
   }
 }

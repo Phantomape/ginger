@@ -25,6 +25,23 @@ def _check(value, predicate):
     return {"value": value, "pass": bool(predicate(value))}
 
 
+def compute_expected_value_score(result):
+    """Single-source north-star metric for strategy iteration.
+
+    Definition:
+        expected_value_score = strategy_total_return_pct * sharpe_daily
+
+    Returns None when either input is unavailable. The score is rounded to
+    4 decimals so saved JSON and CLI output remain stable across runs.
+    """
+    benchmarks = result.get("benchmarks") or {}
+    strat_return = benchmarks.get("strategy_total_return_pct")
+    sharpe_daily = result.get("sharpe_daily")
+    if strat_return is None or sharpe_daily is None:
+        return None
+    return round(strat_return * sharpe_daily, 4)
+
+
 def compute_convergence(result, phantom_rules_clean=True):
     """Apply the convergence criteria to a backtester result dict.
 
