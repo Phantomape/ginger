@@ -4982,6 +4982,13 @@ def test_backtester_emits_known_biases_and_integrity(monkeypatch):
     assert "equity_flat_days" in integ
     assert integ.get("daily_returns_count") is not None
 
+    # news_attribution bucket present (added exp-20260418-002)
+    news_attr = result.get("news_attribution")
+    assert isinstance(news_attr, dict), "news_attribution bucket must be present"
+    assert news_attr.get("replay_enabled") is False
+    assert "veto_rate" in news_attr
+    assert "signals_vetoed_by_news" in news_attr
+
 
 def test_compute_convergence_ignores_sharpe_daily():
     """convergence.py must NOT key off sharpe_daily — only legacy sharpe."""
@@ -5134,3 +5141,118 @@ def test_llm_attribution_coverage_fraction(monkeypatch, tmp_path):
     assert attr["dates_covered"] == 2
     assert attr["dates_missing"] == 28
     assert abs(attr["coverage_fraction"] - (2/30)) < 1e-4
+
+
+# ── news_replay tests ────────────────────────────────────────────────────────
+
+def test_news_replay_off_is_pure_passthrough(monkeypatch, tmp_path):
+    """--replay-news off: result metrics unchanged; news_attribution bucket
+    present but with replay_enabled=False and zero veto counts."""
+    import pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.data_dir = str(tmp_path)
+    result = engine.run()
+
+    assert engine.replay_news is False
+    attr = result.get("news_attribution")
+    assert attr is not None
+    assert attr["replay_enabled"] is False
+    assert attr["signals_presented"] == 0
+    assert attr["signals_vetoed_by_news"] == 0
+    assert attr["signals_passed_by_news"] == 0
+    assert attr["veto_rate"] is None
+
+
+def test_news_replay_missing_file_falls_back_to_accept(monkeypatch, tmp_path):
+    """--replay-news on but no archive files: signals pass, no veto."""
+    import pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.replay_news = True
+    engine.data_dir    = str(tmp_path)  # empty dir
+    result = engine.run()
+
+    attr = result["news_attribution"]
+    assert attr["replay_enabled"] is True
+    assert attr["signals_vetoed_by_news"] == 0
+    assert attr["veto_rate"] is None
+    assert result["total_trades"] >= 1
+
+
+def test_news_replay_t1_negative_vetoes_signal(monkeypatch, tmp_path):
+    """When clean_trade_news contains a T1-negative headline for the signal
+    ticker, that signal must be dropped and counted as vetoed."""
+    import json, pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.replay_news = True
+    engine.data_dir    = str(tmp_path)
+
+    # Write T1-negative news for "TEST" on every trading day
+    t1_negative_item = {
+        "title": "TEST earnings miss analyst expectations",
+        "source": "reuters",
+        "tickers": ["TEST"],
+        "tier": "T1",
+    }
+    for d in idx:
+        fn = tmp_path / f"clean_trade_news_{d.strftime('%Y%m%d')}.json"
+        fn.write_text(json.dumps([t1_negative_item]), encoding="utf-8")
+
+    result = engine.run()
+    attr = result["news_attribution"]
+    assert attr["replay_enabled"] is True
+    assert attr["archive_dates_covered"] > 0
+    assert attr["signals_vetoed_by_news"] >= 1
+    assert attr["veto_rate"] is not None
+    assert result["total_trades"] == 0  # TEST vetoed on every signal day
+
+
+def test_news_replay_t1_positive_does_not_veto(monkeypatch, tmp_path):
+    """T1-positive news (e.g. earnings beat) must NOT trigger a veto."""
+    import json, pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.replay_news = True
+    engine.data_dir    = str(tmp_path)
+
+    # T1-positive news: earnings beat should NOT veto
+    t1_positive_item = {
+        "title": "TEST earnings beat analyst expectations",
+        "source": "reuters",
+        "tickers": ["TEST"],
+        "tier": "T1",
+    }
+    for d in idx:
+        fn = tmp_path / f"clean_trade_news_{d.strftime('%Y%m%d')}.json"
+        fn.write_text(json.dumps([t1_positive_item]), encoding="utf-8")
+
+    result = engine.run()
+    attr = result["news_attribution"]
+    assert attr["signals_vetoed_by_news"] == 0
+    assert result["total_trades"] >= 1  # trade not blocked by positive news

@@ -111,17 +111,18 @@ class BacktestEngine:
     """
 
     def __init__(self, universe, start=None, end=None, config=None,
-                 replay_llm=False, data_dir=None):
-        self.universe   = universe
-        self.config     = {**DEFAULT_CONFIG, **(config or {})}
-        self.start      = pd.Timestamp(start) if start else None
-        self.end        = pd.Timestamp(end)   if end   else None
-        self.replay_llm = bool(replay_llm)
+                 replay_llm=False, replay_news=False, data_dir=None):
+        self.universe    = universe
+        self.config      = {**DEFAULT_CONFIG, **(config or {})}
+        self.start       = pd.Timestamp(start) if start else None
+        self.end         = pd.Timestamp(end)   if end   else None
+        self.replay_llm  = bool(replay_llm)
+        self.replay_news = bool(replay_news)
         # Default data_dir = repo-root/data (one up from quant/).
         if data_dir is None:
             here = os.path.dirname(os.path.abspath(__file__))
             data_dir = os.path.normpath(os.path.join(here, "..", "data"))
-        self.data_dir   = data_dir
+        self.data_dir    = data_dir
 
     def _download_earnings_calendar(self):
         """Per-ticker sorted list of earnings dates (past + upcoming).
@@ -279,19 +280,18 @@ class BacktestEngine:
         llm_signals_vetoed    = 0
         llm_signals_passed    = 0
 
-        # News-archive coverage bookkeeping (§6.1 parity measurement).
-        # Parallel to llm_gate_unreplayed: replaces the hard-coded
-        # news_veto_unreplayed=True bool with archive coverage data so a
-        # future news-veto replay can be built without guessing availability.
-        # Measurement-only — no decision logic reads from these lists.
-        news_archive_dates_covered = []
-        news_archive_dates_missing = []
+        # News replay bookkeeping (§6.1 parity gap — news veto).
+        # When replay_news=True, T1-negative tickers are vetoed via news_replay.py.
+        # When replay_news=False, the lists below track archive availability only.
+        news_archive_dates_covered   = []
+        news_archive_dates_missing   = []
+        news_signals_presented       = 0
+        news_signals_vetoed          = 0
+        news_signals_passed          = 0
 
         for day_idx, today in enumerate(sim_dates):
 
             # News-archive presence check (§6.1 measurement instrumentation).
-            # Records whether data/clean_trade_news_YYYYMMDD.json exists for
-            # this simulation day. Does NOT gate signals — pure observation.
             _today_str = today.strftime("%Y%m%d")
             _news_archive_path = os.path.join(
                 self.data_dir, f"clean_trade_news_{_today_str}.json")
@@ -475,6 +475,19 @@ class BacktestEngine:
                     llm_signals_passed    += len(signals)
                 else:
                     llm_dates_missing.append(decision["date_str"])
+
+            # ── 2c. News T1-negative gate (optional; off by default). ────────
+            # When on, vetoes signals for tickers with T1-negative headlines
+            # in data/clean_trade_news_YYYYMMDD.json. Closes §6.1 parity gap
+            # for dates where the archive exists. See news_replay.py.
+            if self.replay_news:
+                from news_replay import get_news_for_date, apply_news_gate
+                news_dec = get_news_for_date(today, self.data_dir)
+                if news_dec["file_present"]:
+                    signals, presented_n, vetoed_n = apply_news_gate(signals, news_dec)
+                    news_signals_presented += presented_n
+                    news_signals_vetoed    += vetoed_n
+                    news_signals_passed    += len(signals)
 
             # ── 3. Enter positions at next-day open ─────────────────────────
             slots = self.config["MAX_POSITIONS"] - len(positions)
@@ -714,10 +727,7 @@ class BacktestEngine:
         coverage_frac   = (round(llm_covered_n / trading_days_n, 4)
                            if trading_days_n else 0.0)
 
-        # News-archive coverage (measurement-only, parallel to llm_gate_unreplayed).
-        # No replay mechanism exists yet — archive_replay_enabled is always False.
-        # When coverage_fraction rises above a useful threshold, a future
-        # experiment can build a news_replay.py module on top of this bucket.
+        # News-archive coverage metrics.
         news_archive_covered_n = len(news_archive_dates_covered)
         news_archive_missing_n = len(news_archive_dates_missing)
         news_archive_coverage_frac = (
@@ -726,11 +736,8 @@ class BacktestEngine:
         )
 
         known_biases = {
-            # Structured audit bucket — previously a bare bool(True). Upgraded
-            # on 2026-04-18 to parallel llm_gate_unreplayed's shape so downstream
-            # readers can quantify the parity gap rather than just see a flag.
             "news_veto_unreplayed": {
-                "archive_replay_enabled":    False,   # no replay mechanism yet
+                "archive_replay_enabled":    self.replay_news,
                 "archive_coverage_fraction": news_archive_coverage_frac,
                 "archive_dates_covered":     list(news_archive_dates_covered),
                 "archive_dates_missing_n":   news_archive_missing_n,
@@ -743,28 +750,47 @@ class BacktestEngine:
             },
             "survivorship_bias_universe":  True,
             "notes": [
-                "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); clean_trade_news_YYYYMMDD.json archive coverage is reported but no replay engine exists yet",
+                "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
             ],
         }
 
-        # §4.2 LLM attribution bucket. replay_enabled=False → counts are zero
-        # and veto_rate=None (no replay performed).
+        # §4.2 LLM attribution bucket.
         llm_attribution = {
-            "replay_enabled":       self.replay_llm,
-            "coverage_fraction":    coverage_frac,
-            "trading_days":         trading_days_n,
-            "dates_covered":        llm_covered_n,
-            "dates_missing":        llm_missing_n,
-            "signals_presented":    llm_signals_presented,
+            "replay_enabled":        self.replay_llm,
+            "coverage_fraction":     coverage_frac,
+            "trading_days":          trading_days_n,
+            "dates_covered":         llm_covered_n,
+            "dates_missing":         llm_missing_n,
+            "signals_presented":     llm_signals_presented,
             "signals_vetoed_by_llm": llm_signals_vetoed,
             "signals_passed_by_llm": llm_signals_passed,
-            "veto_rate":            (round(llm_signals_vetoed / llm_signals_presented, 4)
-                                     if llm_signals_presented else None),
+            "veto_rate":             (round(llm_signals_vetoed / llm_signals_presented, 4)
+                                      if llm_signals_presented else None),
             "notes": [
                 "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
                 "position_actions are NOT replayed — exits already run code-deterministic rule engine.",
+            ],
+        }
+
+        # §4.2 news attribution bucket (parallel to llm_attribution).
+        news_veto_rate = (round(news_signals_vetoed / news_signals_presented, 4)
+                          if news_signals_presented else None)
+        news_attribution = {
+            "replay_enabled":              self.replay_news,
+            "coverage_fraction":           news_archive_coverage_frac,
+            "trading_days":                trading_days_n,
+            "archive_dates_covered":       news_archive_covered_n,
+            "archive_dates_missing":       news_archive_missing_n,
+            "signals_presented":           news_signals_presented,
+            "signals_vetoed_by_news":      news_signals_vetoed,
+            "signals_passed_by_news":      news_signals_passed,
+            "veto_rate":                   news_veto_rate,
+            "notes": [
+                "Counts include only days where clean_trade_news_YYYYMMDD.json was present AND replay_news=True.",
+                "Veto criterion: ticker appears in T1-negative headline (earnings miss, guidance cut, bankruptcy, etc.).",
+                "Conservative upper bound — production LLM may approve despite negative news if already priced in.",
             ],
         }
 
@@ -787,13 +813,22 @@ class BacktestEngine:
             "benchmarks":          benchmarks,
             "known_biases":        known_biases,
             "llm_attribution":     llm_attribution,
+            "news_attribution":    news_attribution,
             "equity_curve_integrity": equity_curve_integrity,
-            "caveats": [
-                "news_veto_not_replayed: production filter.py T1-negative-news "
-                "veto has no historical archive; signals rejected by news in "
-                "live runs are still accepted here. Treat metrics as an "
-                "OPTIMISTIC upper bound.",
-            ],
+            "caveats": (
+                [
+                    f"news_veto_replayed_on_{news_archive_covered_n}_of_{trading_days_n}_days: "
+                    f"T1-negative veto active (coverage {news_archive_coverage_frac:.1%}). "
+                    f"Remaining {news_archive_missing_n} days still optimistic."
+                ]
+                if self.replay_news else
+                [
+                    "news_veto_not_replayed: production filter.py T1-negative-news "
+                    "veto has no historical archive; signals rejected by news in "
+                    "live runs are still accepted here. Treat metrics as an "
+                    "OPTIMISTIC upper bound.",
+                ]
+            ),
             "equity_curve":        equity_curve,
             "trades":              closed,
         }
@@ -836,6 +871,7 @@ class BacktestEngine:
                 end=str(self.end.date()) if self.end else None,
                 config=cfg,
                 replay_llm=self.replay_llm,
+                replay_news=self.replay_news,
                 data_dir=self.data_dir,
             )
             result = engine.run()
@@ -910,6 +946,18 @@ def _print_results(results):
         print(f"    vetoed by LLM:           {llm_attr.get('signals_vetoed_by_llm')}")
         print(f"    passed by LLM:           {llm_attr.get('signals_passed_by_llm')}")
         print(f"    veto_rate:               {llm_attr.get('veto_rate')}")
+
+    news_attr = results.get("news_attribution")
+    if news_attr:
+        print("\n  NEWS T1-NEGATIVE ATTRIBUTION:")
+        print(f"    replay_enabled:          {news_attr.get('replay_enabled')}")
+        print(f"    coverage:                "
+              f"{news_attr.get('archive_dates_covered')}/{news_attr.get('trading_days')} days "
+              f"({(news_attr.get('coverage_fraction') or 0)*100:.1f}%)")
+        print(f"    signals presented:       {news_attr.get('signals_presented')}")
+        print(f"    vetoed by news:          {news_attr.get('signals_vetoed_by_news')}")
+        print(f"    passed by news:          {news_attr.get('signals_passed_by_news')}")
+        print(f"    veto_rate:               {news_attr.get('veto_rate')}")
 
     integrity = results.get("equity_curve_integrity")
     if integrity:
@@ -1035,6 +1083,10 @@ def main():
     parser.add_argument("--replay-llm", action="store_true",
                         help="Apply LLM gate using data/llm_prompt_resp_YYYYMMDD.json "
                              "when the file exists (§6.1 parity fix). Default: off.")
+    parser.add_argument("--replay-news", action="store_true",
+                        help="Apply T1-negative news veto using "
+                             "data/clean_trade_news_YYYYMMDD.json when the file exists. "
+                             "Default: off.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -1052,7 +1104,8 @@ def main():
         universe = list(WATCHLIST)
 
     engine = BacktestEngine(universe, start=args.start, end=args.end,
-                            replay_llm=args.replay_llm)
+                            replay_llm=args.replay_llm,
+                            replay_news=args.replay_news)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
@@ -1084,7 +1137,8 @@ def main():
                       f"{secondary_start} → {secondary_end} ---")
                 secondary_engine = BacktestEngine(
                     universe, start=secondary_start, end=secondary_end,
-                    replay_llm=args.replay_llm)
+                    replay_llm=args.replay_llm,
+                    replay_news=args.replay_news)
                 secondary = secondary_engine.run()
                 if "error" in secondary:
                     print(f"  (secondary run failed: {secondary['error']})")
