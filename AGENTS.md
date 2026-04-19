@@ -40,6 +40,20 @@
 每次开始新迭代前，必须先查看过去的实验记录，尤其是**失败尝试**。  
 禁止在没有检查历史失败记录的情况下，重复发起一个高度相似的改动。
 
+**当前系统处于"已收敛"状态（2026-04-18）：**
+
+`result["convergence"]["converged"] == True`（8/8 criteria pass）。
+这意味着：
+
+- 禁止把"策略还有改进空间"当作启动新迭代的理由；
+- 当前最高优先级是**修复测量盲区**（LLM 归因、新闻 veto 覆盖率），而不是调整信号阈值或过滤逻辑；
+- 即使某个参数调整"看上去合理"，在归因盲区未修复前都属于拿歪尺子量木头（§6.1）。
+
+下一次允许做策略层改动的前提条件（满足其一即可）：
+1. LLM 回放档案覆盖率 ≥ 30 天，或
+2. 出现明确的系统性失效证据（如连续多周 win rate 跌破 40%），或
+3. 有新的外部 alpha 源需要集成（如更完整的 earnings 历史数据）。
+
 ---
 
 ## 二、门控协议（任何代码修改前必须通过）
@@ -61,6 +75,27 @@ python quant/backtester.py --start YYYY-MM-DD --end YYYY-MM-DD
 - 交易次数
 - 信号存活率
 - expected_value_score
+
+**已知基线（2026-04-18，窗口 2025-10-20 → 2026-04-17，124 交易日）：**
+
+| 指标 | 值 |
+|------|----|
+| `expected_value_score` | **0.4875** |
+| Sharpe (per-trade) | 3.00 |
+| Sharpe daily | **2.44** |
+| Max Drawdown | **4.59%** |
+| Total PnL | $19,983（+19.98%） |
+| Win Rate | 60% |
+| Total Trades | 30（trend_long: 13, breakout_long: 17, earnings_event_long: 0） |
+| Signal Survival Rate | **98.04%**（50/51） |
+| vs SPY | +13.6 pp |
+| vs QQQ | +13.6 pp |
+| LLM replay coverage | **0%**（盲区） |
+| News veto coverage | **10.5%**（盲区） |
+
+基线记录于 `data/backtest_results_20260418.json`。任何新改动的 Gate 4 必须与此基线比较，不允许重新跑"改动前基线"规避高水位。
+
+**关键盲区警告**：当前 EV score 不含 LLM veto 贡献。在覆盖率修复前，不应用此值作为"LLM 有/无贡献"的证据。
 
 如果 `data/backtest_results_*.json` 不存在，你的第一项（也是唯一一项）任务就是运行回测创建基线。
 
@@ -93,8 +128,11 @@ python quant/backtester.py --start YYYY-MM-DD --end YYYY-MM-DD
 
 运行回测查看 `signals_generated` 和 `signals_survived`。
 
+- 实测存活率（2026-04-18）：**98%**（50/51），远超 5% 警戒线
 - 如果 `survival_rate < 5%`：**禁止添加任何新过滤器**
+- 若当前存活率基线是 98%，而单个新过滤器将存活率降至 <50%，视为重大影响，须有回测证据支持
 - 新过滤器只能通过**移除或放松**一个同等或更严格的现有过滤器来添加
+- 注意：过去曾估算理论存活率 ≈ 2%（0.7^11）；实测否定了该估算；此后所有 Gate 3 判断以**实测值**为准
 
 ### Gate 4：改后测量对比
 
@@ -259,9 +297,13 @@ python quant/backtester.py --start YYYY-MM-DD --end YYYY-MM-DD
 
 ### 5. 禁止只增不减过滤器
 
-> 教训：当前 11 层过滤器，每层 70% 通过率 → 0.7^11 ≈ 2% 信号存活率。
+> 教训：曾估算"11 层过滤器 × 70% 通过率 → 0.7^11 ≈ 2% 存活率"；
+> 这是最坏情况理论估算，不是实测值。
+> **2026-04-18 实测存活率：98%（50/51）**。
 
-目标：≤ 6 层过滤器，信号存活率 > 5%。添加新过滤器必须同时移除一个现有过滤器。
+核心禁令不变：禁止盲目叠加过滤器，每层过滤器都必须能说清楚它过滤了什么、带来了多少误伤。
+目标存活率 > 5% 仍然有效；此后触发"禁止添加"的阈值应以**实测值**为准，而非理论推算。
+添加新过滤器必须同时移除一个现有过滤器。
 
 新增规则时必须明确写出：
 
@@ -322,15 +364,22 @@ python quant/backtester.py --start YYYY-MM-DD --end YYYY-MM-DD
 
 高优先级未完成时，禁止开始低优先级工作。
 
-| 优先级 | 任务 | 完成标准 |
-|--------|------|----------|
-| P0 | 确保 backtester.py 可运行 | `python quant/backtester.py` 输出完整结果 |
-| P1 | 修数据基础 | open_positions.json 所有 position 有 entry_date、target_price；顶层有 cash_usd |
-| P2 | 常量单一来源 | 创建 quant/constants.py，6个文件从中导入 |
-| P3 | 明确 LLM 职责边界 | prompt 中无重复量化阈值；LLM 只做适合语义判断的工作 |
-| P4 | 强化 LLM 可审计性 | LLM 输入/输出可落盘、可比对、可归因 |
-| P5 | 修生产/回测一致性 | 关键 veto / sizing / gating / fill 逻辑在两边口径一致或显式披露 |
-| P6 | 过滤器合并 | ≤ 6 层过滤，survival_rate > 5% |
+| 优先级 | 任务 | 完成标准 | 状态 |
+|--------|------|----------|------|
+| P0 | 确保 backtester.py 可运行 | `python quant/backtester.py` 输出完整结果 | **完成**（2026-04-13） |
+| P1 | 修数据基础 | open_positions.json 所有 position 有 entry_date、target_price；顶层有 cash_usd | **完成**（no_phantom_rules=True） |
+| P2 | 常量单一来源 | 创建 quant/constants.py，相关文件从中导入 | **完成**（constants.py 已存在） |
+| P3 | 明确 LLM 职责边界 | prompt 中无重复量化阈值；LLM 只做适合语义判断的工作 | **完成** |
+| P4 | 强化 LLM 可审计性 | LLM 输入/输出可落盘、可比对、可归因 | **部分完成** — 机制就位（`--replay-llm`），但覆盖率 0 天；完成标准：覆盖率 ≥ 30 天 |
+| P5 | 修生产/回测一致性 | 关键 veto / sizing / gating / fill 逻辑在两边口径一致或显式披露 | **部分完成** — 主要不一致项已在 `known_biases` 中落盘披露；剩余：LLM veto 与 news veto 未被完整回放 |
+| P6 | 过滤器合并 | ≤ 6 层过滤，survival_rate > 5% | **事实上已满足**（实测 98%）；不建议主动动过滤层 |
+| **P-LLM** | **修复 LLM 归因盲区** | `llm_prompt_resp_YYYYMMDD.json` 档案覆盖率 ≥ 30 天；`--replay-llm` 输出可信 veto_rate 和归因统计 | **未开始** — 当前 0 天覆盖率；每次 pipeline 运行后需持久化 LLM 决策日志 |
+| **P-ERN** | **修复 earnings 数据盲区** | 每次 pipeline 运行后持久化当日 earnings 快照（dte、eps_estimate、surprise_history）；回测可重建 C 策略历史；`by_strategy.earnings_event_long` 出现非零交易 | **未开始** — 当前回测 C 策略零交易的根本原因是历史数据未持久化 |
+
+**当前最高未完成优先级：P-LLM**
+
+P-LLM 优先于 P-ERN，原因：LLM 每天在生产中做决策，影响范围覆盖所有三个策略；
+earnings 数据缺口只影响 C 策略，且 C 策略历史信号频率本就低。
 
 开始任何低优先级工作前，先用下表给候选改动打分：
 
@@ -376,7 +425,36 @@ CLI 会打印每条 criterion 的 PASS/FAIL 表。
 | `beats_spy_buy_hold` | 策略总收益 > SPY 同窗口 buy-and-hold |
 | `beats_qqq_buy_hold` | 策略总收益 > QQQ 同窗口 buy-and-hold |
 
-注意：上述 criterion 主要衡量**当前可回放部分**的系统表现。若 LLM 决策尚未被完整回放，不得据此简单得出“LLM 无价值”的结论；应把它视为待审计模块，并优先补足日志与可回测代理指标。
+**当前状态（2026-04-18）：CONVERGED（8/8 criteria pass）**
+
+| 标准 | 当前值 | 阈值 | 结果 |
+|------|--------|------|------|
+| `sharpe_above_min` | 3.00 | ≥0.5 | PASS |
+| `max_drawdown_under_cap` | 4.59% | ≤20% | PASS |
+| `trade_count_above_min` | 30 | ≥15 | PASS |
+| `win_rate_above_min` | 60% | ≥40% | PASS |
+| `survival_rate_above_min` | 98% | ≥5% | PASS |
+| `no_phantom_rules` | True | True | PASS |
+| `beats_spy_buy_hold` | 19.98% | >6.39% | PASS |
+| `beats_qqq_buy_hold` | 19.98% | >6.37% | PASS |
+
+**收敛后的正确下一步：**
+
+1. **不做**：策略层改动（信号阈值、过滤器、exit 规则）；
+2. **优先做**：P-LLM（修复 LLM 归因盲区），当前最大测量缺口；
+3. **其次做**：P-ERN（持久化 earnings 数据，让 C 策略可验证）；
+4. **观察等待**：让系统在生产中运行，积累更多档案数据（目标：3 个月真实信号记录）；
+5. **触发再迭代的条件**：见 §一 末尾的说明。
+
+**推荐的下一个实验（exp-next-001）：**
+
+> 假设：当 `llm_prompt_resp_YYYYMMDD.json` 覆盖率达到 ≥30 天后，
+> 回放 LLM veto 将显示 veto_rate > 0%，并能计算 LLM 否决信号与放行信号的
+> 平均质量之差，从而确定 LLM 是否真正在创造 alpha。
+>
+> 完成标准：30 个日志文件 + `--replay-llm` 跑出可信的 veto_rate + 归因报告写入 `docs/experiment_log.jsonl`。
+
+注意：上述 criterion 主要衡量**当前可回放部分**的系统表现。若 LLM 决策尚未被完整回放，不得据此简单得出”LLM 无价值”的结论；应把它视为待审计模块，并优先补足日志与可回测代理指标。
 
 此外，达到 `CONVERGED` 也不代表可以无限继续微调。若连续多轮改动无法稳定提升主目标，或收益改善明显小于新增复杂度，应停止策略层迭代，转入数据积累、前向观测和归因分析。
 

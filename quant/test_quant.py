@@ -4522,6 +4522,62 @@ Let me know if you want me to explain the NVDA thesis."""
     assert parsed["position_actions"][0]["ticker"] == "AAPL"
 
 
+def test_import_advice_writes_replay_file(tmp_path):
+    """import_advice must also write llm_prompt_resp_YYYYMMDD.json alongside
+    investment_advice_YYYYMMDD.json so backtester --replay-llm can pick it up
+    without the user doing a separate manual step."""
+    import json, os as _os
+    from import_advice import import_advice
+    from llm_replay import get_llm_decision_for_date
+    import datetime
+
+    raw_response = '{"new_trade": {"ticker": "AMZN", "signal_source": "trend_long"}, "position_actions": []}'
+    import_advice(date_str="20260420", raw_text=raw_response, output_dir=str(tmp_path))
+
+    replay_path = tmp_path / "llm_prompt_resp_20260420.json"
+    assert replay_path.exists(), "llm_prompt_resp_YYYYMMDD.json must be written"
+
+    # Verify llm_replay can parse it and extract the approved ticker
+    d = datetime.datetime(2026, 4, 20)
+    decision = get_llm_decision_for_date(d, data_dir=str(tmp_path))
+    assert decision["file_present"]
+    assert decision["approved_tickers"] == ["AMZN"]
+
+
+def test_import_advice_replay_file_not_overwritten(tmp_path):
+    """If llm_prompt_resp_YYYYMMDD.json already exists (e.g. manually saved),
+    import_advice must not overwrite it."""
+    import json, os as _os
+    from import_advice import import_advice
+
+    existing = tmp_path / "llm_prompt_resp_20260420.json"
+    existing.write_text('{"new_trade": "MANUAL"}', encoding="utf-8")
+
+    import_advice(
+        date_str="20260420",
+        raw_text='{"new_trade": {"ticker": "NVDA"}, "position_actions": []}',
+        output_dir=str(tmp_path),
+    )
+
+    # Existing manual file should be preserved
+    assert json.loads(existing.read_text(encoding="utf-8"))["new_trade"] == "MANUAL"
+
+
+def test_import_advice_skips_replay_for_fake_response(tmp_path):
+    """A 'Prompt saved to...' acknowledgment (save_prompt_only=True path) must NOT
+    be written as a replay file — it is not a real LLM response and would veto
+    all signals on that date."""
+    import os as _os
+    from import_advice import import_advice
+
+    fake_raw = "Prompt saved to data/llm_prompt_20260421.txt\n\nTo use this prompt:\n1. Copy the content"
+
+    import_advice(date_str="20260421", raw_text=fake_raw, output_dir=str(tmp_path))
+
+    replay_path = tmp_path / "llm_prompt_resp_20260421.json"
+    assert not replay_path.exists(), "Replay file must NOT be written for fake save-prompt responses"
+
+
 def test_import_advice_warns_on_missing_keys(tmp_path, caplog):
     """When the response is missing one of the required keys (new_trade /
     position_actions), the helper must log a warning but still write the file
@@ -4988,6 +5044,78 @@ def test_backtester_emits_known_biases_and_integrity(monkeypatch):
     assert news_attr.get("replay_enabled") is False
     assert "veto_rate" in news_attr
     assert "signals_vetoed_by_news" in news_attr
+
+
+def test_backtester_emits_risk_distribution_metrics(monkeypatch):
+    """run() must expose worst trade, loss streak, and tail-loss concentration."""
+    import pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_close = [100.0 + i * (10.0 / 29) for i in range(30)]
+    spy_df = pd.DataFrame({
+        "Open": spy_close, "High": spy_close,
+        "Low": spy_close, "Close": spy_close,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    result = engine.run()
+
+    assert "worst_trade_pct" in result
+    assert "max_consecutive_losses" in result
+    assert "tail_loss_share" in result
+    assert result["max_consecutive_losses"] >= 0
+    if result["worst_trade_pct"] is not None:
+        expected_worst = min(t["pnl_pct_net"] for t in result["trades"])
+        assert result["worst_trade_pct"] == expected_worst
+    if result["tail_loss_share"] is not None:
+        assert 0 < result["tail_loss_share"] <= 1
+
+
+def test_risk_distribution_metric_math_examples():
+    """Document the intended math for loss concentration and streaks."""
+    import math
+
+    closed = [
+        {"pnl": 100.0, "pnl_pct_net": 0.0100},
+        {"pnl": -200.0, "pnl_pct_net": -0.0200},
+        {"pnl": -50.0, "pnl_pct_net": -0.0050},
+        {"pnl": 80.0, "pnl_pct_net": 0.0080},
+        {"pnl": -150.0, "pnl_pct_net": -0.0150},
+        {"pnl": -75.0, "pnl_pct_net": -0.0075},
+        {"pnl": -25.0, "pnl_pct_net": -0.0025},
+    ]
+
+    pnl_pct_series = [t["pnl_pct_net"] for t in closed]
+    worst_trade_pct = round(min(pnl_pct_series), 6) if pnl_pct_series else None
+
+    max_consecutive_losses = 0
+    current_loss_streak = 0
+    for trade in closed:
+        if trade["pnl_pct_net"] < 0:
+            current_loss_streak += 1
+            max_consecutive_losses = max(max_consecutive_losses, current_loss_streak)
+        else:
+            current_loss_streak = 0
+
+    losses_abs = sorted([-t["pnl"] for t in closed if t["pnl"] < 0], reverse=True)
+    total_loss_abs = sum(losses_abs)
+    tail_count = max(1, math.ceil(len(losses_abs) * 0.2))
+    tail_loss_share = round(sum(losses_abs[:tail_count]) / total_loss_abs, 4)
+
+    assert worst_trade_pct == -0.02
+    assert max_consecutive_losses == 3
+    # Losses are [200, 150, 75, 50, 25]; top 20% => top 1 => 200 / 500 = 0.4
+    assert tail_loss_share == 0.4
+
+
+def test_tail_loss_share_none_when_no_losses():
+    losses_abs = []
+    total_loss_abs = sum(losses_abs)
+    if total_loss_abs > 0:
+        tail_loss_share = 0.0
+    else:
+        tail_loss_share = None
+    assert tail_loss_share is None
 
 
 def test_compute_convergence_ignores_sharpe_daily():

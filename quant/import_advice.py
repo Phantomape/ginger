@@ -7,9 +7,14 @@ into ChatGPT / Claude web → copies the JSON response back. Without this helper
 the response is thrown away and forward_tester has nothing to grade.
 
 This script takes the pasted response (which may include markdown fences,
-leading commentary, or partial JSON) and writes it into
-``data/investment_advice_<date>.json`` in the wrapper format
-forward_tester expects (``{advice_raw, advice_parsed, token_usage, timestamp}``).
+leading commentary, or partial JSON) and writes it into TWO files:
+
+1. ``data/investment_advice_<date>.json`` — wrapper format that forward_tester
+   expects (``{advice_raw, advice_parsed, token_usage, timestamp}``).
+
+2. ``data/llm_prompt_resp_<date>.json`` — same content, consumed by the
+   backtester's ``--replay-llm`` path (llm_replay.py) to close the
+   production/backtest parity gap for the LLM new-trade gate.
 
 Usage:
     # From a saved file
@@ -131,8 +136,9 @@ def import_advice(
     output_dir: str = DATA_DIR,
 ) -> str:
     """
-    Parse raw LLM response text and write it to
-    ``<output_dir>/investment_advice_<YYYYMMDD>.json``.
+    Parse raw LLM response text and write it to two files:
+      - ``<output_dir>/investment_advice_<YYYYMMDD>.json``  (forward_tester)
+      - ``<output_dir>/llm_prompt_resp_<YYYYMMDD>.json``    (backtester --replay-llm)
 
     Args:
         date_str:   YYYYMMDD (produced by _parse_date_arg)
@@ -140,7 +146,7 @@ def import_advice(
         output_dir: Directory to write into (default: data/)
 
     Returns:
-        The absolute path to the written file.
+        The absolute path to the primary output file (investment_advice_*.json).
     """
     parsed = parse_json_advice(raw_text)
     _validate_structure(parsed, raw_text)
@@ -154,6 +160,28 @@ def import_advice(
     ok = save_advice(raw_text, out_path, token_usage=None)
     if not ok:
         raise SystemExit(f"Failed to write {out_path}")
+
+    # Also write llm_prompt_resp_YYYYMMDD.json for the backtester's --replay-llm path.
+    # llm_replay.py handles the same wrapper format (advice_parsed key present → unwrap).
+    # This closes the production/backtest parity gap for the LLM new-trade gate (P-LLM).
+    # Guard: only write if this is a real LLM response (has parseable new_trade or
+    # explicit NO NEW TRADE), not a "Prompt saved to..." acknowledgment message.
+    _is_real_response = (isinstance(parsed, dict) and "new_trade" in parsed)
+    replay_path = os.path.join(output_dir, f"llm_prompt_resp_{date_str}.json")
+    if _is_real_response and not os.path.exists(replay_path):
+        try:
+            import shutil
+            shutil.copy2(out_path, replay_path)
+            logger.info("LLM replay log written → %s", replay_path)
+        except Exception as e:
+            logger.warning("Could not write LLM replay log %s: %s", replay_path, e)
+    elif not _is_real_response:
+        logger.warning(
+            "Skipping LLM replay log: response does not contain 'new_trade' key "
+            "(likely a save-prompt acknowledgment, not a real LLM response)"
+        )
+    else:
+        logger.info("LLM replay log already exists, skipping: %s", replay_path)
 
     # Log a one-line summary so the user can see what landed in the file.
     if isinstance(parsed, dict):
