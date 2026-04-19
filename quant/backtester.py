@@ -123,6 +123,36 @@ class BacktestEngine:
             here = os.path.dirname(os.path.abspath(__file__))
             data_dir = os.path.normpath(os.path.join(here, "..", "data"))
         self.data_dir    = data_dir
+        # P-ERN: load all earnings snapshots once at init so _earnings_dict_for
+        # can supplement eps_estimate / avg_historical_surprise_pct for C strategy.
+        self._earnings_snapshots = self._load_earnings_snapshots()
+
+    def _load_earnings_snapshots(self):
+        """Load all data/earnings_snapshot_YYYYMMDD.json files (written by run.py P-ERN).
+
+        Returns dict keyed by YYYYMMDD string → {ticker: earnings_data_dict}.
+        Silently skips malformed files so missing data never crashes the backtest.
+        """
+        snaps = {}
+        if not os.path.isdir(self.data_dir):
+            return snaps
+        for fname in os.listdir(self.data_dir):
+            if not fname.startswith("earnings_snapshot_") or not fname.endswith(".json"):
+                continue
+            date_str = fname[len("earnings_snapshot_"):-len(".json")]
+            if len(date_str) != 8 or not date_str.isdigit():
+                continue
+            path = os.path.join(self.data_dir, fname)
+            try:
+                with open(path, encoding="utf-8") as f:
+                    data = json.load(f)
+                snaps[date_str] = data.get("earnings", {})
+            except Exception as e:
+                logger.debug(f"earnings snapshot {fname} skipped: {e}")
+        if snaps:
+            logger.info(f"Loaded {len(snaps)} earnings snapshots: "
+                        f"{sorted(snaps)[:3]}{'...' if len(snaps) > 3 else ''}")
+        return snaps
 
     def _download_earnings_calendar(self):
         """Per-ticker sorted list of earnings dates (past + upcoming).
@@ -152,36 +182,50 @@ class BacktestEngine:
         logger.info(f"Earnings calendar: {n_with}/{len(cal)} tickers populated")
         return cal
 
-    @staticmethod
-    def _earnings_dict_for(today, calendar_dates):
+    def _earnings_dict_for(self, today, calendar_dates, ticker=None):
         """Build the earnings_data dict feature_layer expects, walked to `today`.
 
-        Only `next_earnings_date` + `days_to_earnings` are reconstructable
-        historically; eps_estimate / surprise stats are TODAY-snapshot values
-        in data_layer and have no persisted history, so we leave them None.
-        That's fine - signal_engine's gates only consult dte.
+        `days_to_earnings` comes from the historical earnings calendar (always
+        reconstructable). `eps_estimate` and `avg_historical_surprise_pct` come
+        from the nearest available earnings snapshot written by run.py (P-ERN).
+        Without a snapshot, both are None (confidence for C strategy capped at 0.83).
         """
         import numpy as np
         today_date = today.date() if hasattr(today, "date") else today
         future = [d for d in calendar_dates if d > today_date]
+        base = {
+            "next_earnings_date": None, "days_to_earnings": None,
+            "eps_estimate": None, "eps_actual_last": None,
+            "historical_surprise_pct": [],
+            "avg_historical_surprise_pct": None,
+        }
         if not future:
-            return {
-                "next_earnings_date": None, "days_to_earnings": None,
-                "eps_estimate": None, "eps_actual_last": None,
-                "historical_surprise_pct": [],
-                "avg_historical_surprise_pct": None,
-            }
+            return base
         nxt = future[0]
         try:
             dte = int(np.busday_count(today_date, nxt))
         except Exception:
             dte = None
-        return {
-            "next_earnings_date": str(nxt), "days_to_earnings": dte,
-            "eps_estimate": None, "eps_actual_last": None,
-            "historical_surprise_pct": [],
-            "avg_historical_surprise_pct": None,
-        }
+        base["next_earnings_date"] = str(nxt)
+        base["days_to_earnings"]   = dte
+
+        # P-ERN: supplement with the most recent snapshot on or before today.
+        if ticker and self._earnings_snapshots:
+            today_str = today_date.strftime("%Y%m%d") if hasattr(today_date, "strftime") else str(today_date).replace("-", "")
+            # Find the latest snapshot date that is ≤ today
+            candidates = [d for d in self._earnings_snapshots if d <= today_str]
+            if candidates:
+                snap_date = max(candidates)
+                snap = self._earnings_snapshots[snap_date].get(ticker, {})
+                if snap.get("eps_estimate") is not None:
+                    base["eps_estimate"] = snap["eps_estimate"]
+                if snap.get("eps_actual_last") is not None:
+                    base["eps_actual_last"] = snap["eps_actual_last"]
+                if snap.get("avg_historical_surprise_pct") is not None:
+                    base["avg_historical_surprise_pct"] = snap["avg_historical_surprise_pct"]
+                if snap.get("historical_surprise_pct"):
+                    base["historical_surprise_pct"] = snap["historical_surprise_pct"]
+        return base
 
     def _download_data(self):
         """Download OHLCV for universe + SPY + QQQ."""
@@ -397,7 +441,7 @@ class BacktestEngine:
                 if len(data_slice) < 21:
                     continue
                 earn = self._earnings_dict_for(
-                    today, earnings_calendar.get(ticker, []))
+                    today, earnings_calendar.get(ticker, []), ticker=ticker)
                 features_dict[ticker] = compute_features(ticker, data_slice, earn)
 
             # Compute market regime from historical SPY/QQQ
@@ -668,6 +712,31 @@ class BacktestEngine:
         survival_rate = (round(total_signals_survived / total_signals_generated, 4)
                          if total_signals_generated > 0 else 0)
 
+        pnl_pct_series = [t.get("pnl_pct_net") for t in closed
+                          if t.get("pnl_pct_net") is not None]
+        worst_trade_pct = round(min(pnl_pct_series), 6) if pnl_pct_series else None
+
+        max_consecutive_losses = 0
+        current_loss_streak = 0
+        for trade in closed:
+            pnl_pct = trade.get("pnl_pct_net")
+            if pnl_pct is not None and pnl_pct < 0:
+                current_loss_streak += 1
+                max_consecutive_losses = max(max_consecutive_losses, current_loss_streak)
+            else:
+                current_loss_streak = 0
+
+        losses_abs = sorted(
+            [-t["pnl"] for t in closed if t.get("pnl") is not None and t["pnl"] < 0],
+            reverse=True,
+        )
+        total_loss_abs = sum(losses_abs)
+        if total_loss_abs > 0:
+            tail_count = max(1, math.ceil(len(losses_abs) * 0.2))
+            tail_loss_share = round(sum(losses_abs[:tail_count]) / total_loss_abs, 4)
+        else:
+            tail_loss_share = None
+
         from strategy_attribution import aggregate_by_strategy
         by_strategy = aggregate_by_strategy([
             {**t, "pnl_usd": t["pnl"]} for t in closed
@@ -749,10 +818,26 @@ class BacktestEngine:
                 "dates_missing_n":    llm_missing_n,
             },
             "survivorship_bias_universe":  True,
+            # Earnings strategy data quality: only days_to_earnings is historically
+            # reconstructable from yfinance calendar. eps_estimate and
+            # positive_surprise_history are always None in backtest (no snapshot
+            # archive exists yet — see P-ERN in AGENTS.md §四). This means
+            # earnings_event_long signals fire at reduced confidence (0.83 vs up
+            # to 1.0 with surprise data) and without the positive_surprise_history
+            # quality gate. Treat earnings_event_long metrics as a LOWER BOUND on
+            # strategy quality until daily earnings snapshots are accumulated.
+            "earnings_event_long_data_quality": {
+                "days_to_earnings_source":        "yfinance calendar (reconstructable, ~accurate)",
+                "eps_estimate":                   "always None — no snapshot archive",
+                "positive_surprise_history":      "always None — no snapshot archive",
+                "confidence_cap":                 0.83,
+                "note": "earnings_event_long results reflect incomplete data; accumulate daily earnings snapshots (P-ERN) for accurate evaluation",
+            },
             "notes": [
                 "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
+                "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
             ],
         }
 
@@ -806,6 +891,9 @@ class BacktestEngine:
             "sharpe_daily":        sharpe_daily,
             "sharpe_method":       "per_trade_sqrt30_legacy",
             "max_drawdown_pct":    round(max_dd, 4),
+            "worst_trade_pct":     worst_trade_pct,
+            "max_consecutive_losses": max_consecutive_losses,
+            "tail_loss_share":     tail_loss_share,
             "signals_generated":   total_signals_generated,
             "signals_survived":    total_signals_survived,
             "survival_rate":       survival_rate,
@@ -902,6 +990,13 @@ def _print_results(results):
     print(f"  Sharpe (daily):    {results.get('sharpe_daily')}")
     print(f"  EV score:          {results.get('expected_value_score')}")
     print(f"  Max drawdown:      {results['max_drawdown_pct']*100:.2f}%")
+    worst_trade = results.get("worst_trade_pct")
+    worst_trade_str = f"{worst_trade*100:.2f}%" if worst_trade is not None else "N/A"
+    print(f"  Worst trade:       {worst_trade_str}")
+    print(f"  Max loss streak:   {results.get('max_consecutive_losses')}")
+    tail_loss = results.get("tail_loss_share")
+    tail_loss_str = f"{tail_loss*100:.1f}%" if tail_loss is not None else "N/A"
+    print(f"  Tail loss share:   {tail_loss_str}")
     print(f"  Signals generated: {results['signals_generated']}")
     print(f"  Signals survived:  {results['signals_survived']}")
     print(f"  Survival rate:     {results['survival_rate']*100:.1f}%")

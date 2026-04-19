@@ -5152,6 +5152,77 @@ def test_stability_diagnostics_builder():
 
 
 # ───────────────────────────────────────────────────────────────────────────
+# P-ERN — earnings snapshot persistence (backtester supplement)
+
+def test_earnings_snapshot_loader_empty_dir(tmp_path):
+    """_load_earnings_snapshots returns {} when no snapshot files exist."""
+    import sys
+    sys.path.insert(0, str(tmp_path))
+    from backtester import BacktestEngine
+    engine = BacktestEngine.__new__(BacktestEngine)
+    engine.data_dir = str(tmp_path)
+    snaps = engine._load_earnings_snapshots()
+    assert snaps == {}
+
+
+def test_earnings_snapshot_loader_reads_file(tmp_path):
+    """_load_earnings_snapshots correctly reads earnings_snapshot_YYYYMMDD.json."""
+    import json
+    from backtester import BacktestEngine
+    snap = {
+        "date": "20260420",
+        "timestamp": "2026-04-20T09:00:00",
+        "earnings": {
+            "NVDA": {"days_to_earnings": 5, "eps_estimate": 4.78,
+                     "avg_historical_surprise_pct": 2.1, "historical_surprise_pct": [2.1, 3.5]},
+        },
+    }
+    (tmp_path / "earnings_snapshot_20260420.json").write_text(
+        json.dumps(snap), encoding="utf-8")
+    engine = BacktestEngine.__new__(BacktestEngine)
+    engine.data_dir = str(tmp_path)
+    snaps = engine._load_earnings_snapshots()
+    assert "20260420" in snaps
+    assert snaps["20260420"]["NVDA"]["eps_estimate"] == 4.78
+
+
+def test_earnings_dict_for_uses_snapshot(tmp_path):
+    """_earnings_dict_for enriches result with snapshot eps_estimate when available."""
+    import json, datetime
+    from backtester import BacktestEngine
+    snap = {"date": "20260420", "timestamp": "...",
+            "earnings": {"NVDA": {"eps_estimate": 4.78, "avg_historical_surprise_pct": 2.1,
+                                   "historical_surprise_pct": [2.1]}}}
+    (tmp_path / "earnings_snapshot_20260420.json").write_text(
+        json.dumps(snap), encoding="utf-8")
+    engine = BacktestEngine.__new__(BacktestEngine)
+    engine.data_dir = str(tmp_path)
+    engine._earnings_snapshots = engine._load_earnings_snapshots()
+
+    import datetime as dt
+    sim_date = dt.date(2026, 4, 20)
+    # Calendar has an upcoming earnings date
+    result = engine._earnings_dict_for(sim_date, [dt.date(2026, 4, 25)], ticker="NVDA")
+    assert result["eps_estimate"] == 4.78
+    assert result["avg_historical_surprise_pct"] == 2.1
+    assert result["days_to_earnings"] == 5   # Mon Apr 20 → Sat Apr 25 = 5 business days
+
+
+def test_earnings_dict_for_no_snapshot_returns_none(tmp_path):
+    """_earnings_dict_for returns None for eps/surprise when no snapshot exists."""
+    import datetime as dt
+    from backtester import BacktestEngine
+    engine = BacktestEngine.__new__(BacktestEngine)
+    engine.data_dir = str(tmp_path)
+    engine._earnings_snapshots = {}
+    sim_date = dt.date(2026, 4, 20)
+    result = engine._earnings_dict_for(sim_date, [dt.date(2026, 4, 25)], ticker="NVDA")
+    assert result["eps_estimate"] is None
+    assert result["avg_historical_surprise_pct"] is None
+    assert result["days_to_earnings"] == 5
+
+
+# ───────────────────────────────────────────────────────────────────────────
 # v4 — LLM gate replay (§6.1 parity fix). Four tests per AGENTS.md §4.2.
 
 def test_llm_replay_off_is_pure_passthrough(monkeypatch, tmp_path):
