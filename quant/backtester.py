@@ -323,6 +323,8 @@ class BacktestEngine:
         llm_signals_presented = 0
         llm_signals_vetoed    = 0
         llm_signals_passed    = 0
+        # Per-strategy breakdown: {"trend_long": {"presented": n, "vetoed": m, "passed": p}}
+        llm_signals_by_strategy: dict = {}
 
         # News replay bookkeeping (§6.1 parity gap — news veto).
         # When replay_news=True, T1-negative tickers are vetoed via news_replay.py.
@@ -513,10 +515,22 @@ class BacktestEngine:
                 decision = get_llm_decision_for_date(today, self.data_dir)
                 if decision["file_present"]:
                     llm_dates_covered.append(decision["date_str"])
+                    _pre_gate = list(signals)
                     signals, presented_n, vetoed_n = apply_llm_gate(signals, decision)
                     llm_signals_presented += presented_n
                     llm_signals_vetoed    += vetoed_n
                     llm_signals_passed    += len(signals)
+                    # Per-strategy veto breakdown: compare pre/post gate signal lists.
+                    _after_tickers = {(s.get("ticker") or "").upper() for s in signals}
+                    for _s in _pre_gate:
+                        _strat = _s.get("strategy", "unknown")
+                        _rec = llm_signals_by_strategy.setdefault(
+                            _strat, {"presented": 0, "vetoed": 0, "passed": 0})
+                        _rec["presented"] += 1
+                        if (_s.get("ticker") or "").upper() in _after_tickers:
+                            _rec["passed"] += 1
+                        else:
+                            _rec["vetoed"] += 1
                 else:
                     llm_dates_missing.append(decision["date_str"])
 
@@ -853,9 +867,20 @@ class BacktestEngine:
             "signals_passed_by_llm": llm_signals_passed,
             "veto_rate":             (round(llm_signals_vetoed / llm_signals_presented, 4)
                                       if llm_signals_presented else None),
+            "by_strategy": {
+                strat: {
+                    "presented": d["presented"],
+                    "vetoed":    d["vetoed"],
+                    "passed":    d["passed"],
+                    "veto_rate": round(d["vetoed"] / d["presented"], 4)
+                                 if d["presented"] else None,
+                }
+                for strat, d in llm_signals_by_strategy.items()
+            },
             "notes": [
                 "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
                 "position_actions are NOT replayed — exits already run code-deterministic rule engine.",
+                "by_strategy shows per-strategy veto breakdown to quantify LLM selectivity.",
             ],
         }
 

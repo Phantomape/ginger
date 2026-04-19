@@ -3,7 +3,9 @@ Unit tests for the quant pipeline modules.
 Run: cd d:/Github/ginger && python -m pytest quant/test_quant.py -v
 """
 
+import json
 import math
+import os
 import pytest
 import pandas as pd
 import numpy as np
@@ -4904,6 +4906,59 @@ def test_compute_expected_value_score_none_when_inputs_missing():
     assert compute_expected_value_score(res) is None
 
 
+def test_persist_earnings_snapshot_creates_structured_daily_file(tmp_path):
+    from datetime import datetime
+    from earnings_snapshot import persist_earnings_snapshot
+
+    snapshot_path = persist_earnings_snapshot(
+        {
+            "NVDA": {
+                "days_to_earnings": 5,
+                "eps_estimate": 1.23,
+                "avg_historical_surprise_pct": 7.8,
+                "ignore_me": "x",
+            },
+            "MSFT": None,
+        },
+        as_of=datetime(2026, 4, 18, 9, 30, 0),
+        base_dir=str(tmp_path),
+    )
+
+    assert os.path.basename(snapshot_path) == "earnings_snapshot_20260418.json"
+    with open(snapshot_path, "r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+
+    assert payload["date"] == "20260418"
+    assert payload["earnings"]["NVDA"] == {
+        "days_to_earnings": 5,
+        "eps_estimate": 1.23,
+        "avg_historical_surprise_pct": 7.8,
+    }
+    assert "MSFT" not in payload["earnings"]
+
+
+def test_persist_earnings_snapshot_is_idempotent(tmp_path):
+    from datetime import datetime
+    from earnings_snapshot import persist_earnings_snapshot
+
+    first_path = persist_earnings_snapshot(
+        {"NVDA": {"days_to_earnings": 5}},
+        as_of=datetime(2026, 4, 18, 9, 30, 0),
+        base_dir=str(tmp_path),
+    )
+    second_path = persist_earnings_snapshot(
+        {"NVDA": {"days_to_earnings": 99}},
+        as_of=datetime(2026, 4, 18, 16, 0, 0),
+        base_dir=str(tmp_path),
+    )
+
+    assert first_path == second_path
+    with open(first_path, "r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+
+    assert payload["earnings"]["NVDA"]["days_to_earnings"] == 5
+
+
 def test_backtester_run_emits_benchmarks(monkeypatch):
     """End-to-end: BacktestEngine.run() result carries benchmarks + convergence."""
     import pandas as pd
@@ -5340,6 +5395,95 @@ def test_llm_attribution_coverage_fraction(monkeypatch, tmp_path):
     assert attr["dates_covered"] == 2
     assert attr["dates_missing"] == 28
     assert abs(attr["coverage_fraction"] - (2/30)) < 1e-4
+
+
+def test_llm_attribution_by_strategy_breakdown(monkeypatch, tmp_path):
+    """llm_attribution.by_strategy must count veto/pass per strategy.
+
+    Two signals on day 20: trend_long (AAA, vetoed) and breakout_long (BBB,
+    approved).  by_strategy must record separate veto rates per strategy.
+    """
+    import json, pandas as pd
+    import signal_engine, portfolio_engine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.replay_llm = True
+    engine.data_dir   = str(tmp_path)
+
+    # On day 20 generate_signals returns two signals from different strategies.
+    _gen_call = [0]
+    def _two_strategy_gen(features, market_context=None):
+        _gen_call[0] += 1
+        if _gen_call[0] == 20:
+            return [
+                {"ticker": "AAA", "strategy": "trend_long",   "sector": "Tech",
+                 "entry_price": 100.0, "stop_price": 95.0, "target_price": 110.0,
+                 "trade_quality_score": 0.8},
+                {"ticker": "BBB", "strategy": "breakout_long", "sector": "Tech",
+                 "entry_price": 100.0, "stop_price": 95.0, "target_price": 110.0,
+                 "trade_quality_score": 0.8},
+            ]
+        return []
+    monkeypatch.setattr(signal_engine, "generate_signals", _two_strategy_gen)
+
+    # size_signals must give each signal a sizing dict so they enter the LLM gate.
+    def _size_both(sigs, equity, risk_pct=None):
+        for s in sigs:
+            s["sizing"] = {"shares_to_buy": 5}
+        return sigs
+    monkeypatch.setattr(portfolio_engine, "size_signals", _size_both)
+
+    # LLM approves only BBB on day 20; NO NEW TRADE on all other days.
+    for i, d in enumerate(idx):
+        fn = tmp_path / f"llm_prompt_resp_{d.strftime('%Y%m%d')}.json"
+        body = ({"new_trade": {"ticker": "BBB"}, "position_actions": []}
+                if i == 19 else
+                {"new_trade": "NO NEW TRADE", "position_actions": []})
+        fn.write_text(json.dumps(body), encoding="utf-8")
+
+    result = engine.run()
+    by_strat = result["llm_attribution"].get("by_strategy", {})
+
+    assert "trend_long"    in by_strat, f"trend_long missing; got {list(by_strat)}"
+    assert "breakout_long" in by_strat, f"breakout_long missing; got {list(by_strat)}"
+
+    tl = by_strat["trend_long"]
+    assert tl["presented"] == 1
+    assert tl["vetoed"]    == 1
+    assert tl["passed"]    == 0
+    assert tl["veto_rate"] == 1.0
+
+    bl = by_strat["breakout_long"]
+    assert bl["presented"] == 1
+    assert bl["vetoed"]    == 0
+    assert bl["passed"]    == 1
+    assert bl["veto_rate"] == 0.0
+
+
+def test_llm_attribution_by_strategy_empty_when_no_files(monkeypatch, tmp_path):
+    """When no llm_prompt_resp files exist, by_strategy must be an empty dict."""
+    import pandas as pd
+    idx = pd.bdate_range("2025-10-01", periods=10)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*10, "High": [100.0]*10,
+        "Low":  [100.0]*10, "Close": [100.0]*10,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.replay_llm = True
+    engine.data_dir   = str(tmp_path)   # empty dir — no response files
+
+    result = engine.run()
+    by_strat = result["llm_attribution"].get("by_strategy", {})
+    assert by_strat == {}, f"Expected empty dict, got {by_strat}"
 
 
 # ── news_replay tests ────────────────────────────────────────────────────────
