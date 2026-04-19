@@ -63,7 +63,7 @@ SECTOR_MAP = {
 }
 
 
-def enrich_signal_with_risk(signal, atr):
+def enrich_signal_with_risk(signal, atr, atr_target_mult=None):
     """
     Add target_price, risk_per_share, reward_per_share, risk_reward_ratio,
     and net_risk_reward_ratio to a signal dict.
@@ -87,6 +87,7 @@ def enrich_signal_with_risk(signal, atr):
     Args:
         signal (dict): Signal from signal_engine
         atr    (float): ATR value for this ticker
+        atr_target_mult (float): Optional override for ATR_TARGET_MULT constant
 
     Returns:
         dict: Enriched signal
@@ -94,7 +95,8 @@ def enrich_signal_with_risk(signal, atr):
     entry = signal["entry_price"]
     stop  = signal.get("stop_price") or round(entry - ATR_STOP_MULT * atr, 2)
 
-    target           = round(entry + ATR_TARGET_MULT * atr, 2)
+    _target_mult = atr_target_mult if atr_target_mult is not None else ATR_TARGET_MULT
+    target           = round(entry + _target_mult * atr, 2)
     risk_per_share   = round(entry - stop, 2)
     reward_per_share = round(target - entry, 2)
     rr_ratio         = (round(reward_per_share / risk_per_share, 2)
@@ -168,13 +170,14 @@ def _trade_quality_score(sig, features):
     return round(max(0.0, min(tqs, 1.0)), 3)
 
 
-def enrich_signals(signals, features_dict):
+def enrich_signals(signals, features_dict, atr_target_mult=None):
     """
     Enrich all signals with risk parameters and Trade Quality Score.
 
     Args:
         signals       (list[dict]): From signal_engine.generate_signals()
         features_dict (dict):       {ticker: features} for ATR + TQS fields
+        atr_target_mult (float):    Optional override for ATR_TARGET_MULT constant
 
     Returns:
         list[dict]: Signals with risk fields + trade_quality_score added.
@@ -201,7 +204,7 @@ def enrich_signals(signals, features_dict):
             })
             continue  # Drop: an incomplete signal is worse than no signal
 
-        enriched_sig = enrich_signal_with_risk(sig, atr)
+        enriched_sig = enrich_signal_with_risk(sig, atr, atr_target_mult=atr_target_mult)
 
         # Code-level exec_lag gate: drop signals where the overnight-gap-adjusted
         # net R:R is < 1.2.  The LLM prompt contains the same rule, but LLMs can

@@ -25,6 +25,7 @@ from parser import parse_feed, deduplicate_items, sort_items_by_date
 from filter import apply_hygiene_filters, apply_trade_filters
 from llm_advisor import get_investment_advice, save_advice
 from trend_signals import generate_trend_signals, save_trend_signals
+from earnings_snapshot import persist_earnings_snapshot
 
 
 # Configure logging
@@ -293,6 +294,7 @@ def main():
                 qp_universe = get_universe()
                 qp_ohlcv    = {t: get_ohlcv(t)          for t in qp_universe}
                 qp_earnings = {t: get_earnings_data(t)   for t in qp_universe}
+                persist_earnings_snapshot(qp_earnings, as_of=datetime.now(), logger=logger)
                 qp_features = {t: compute_features(t, qp_ohlcv[t], qp_earnings[t])
                                for t in qp_universe}
 

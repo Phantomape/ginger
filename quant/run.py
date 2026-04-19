@@ -27,6 +27,8 @@ from datetime import datetime
 
 import pandas as pd
 
+from earnings_snapshot import persist_earnings_snapshot
+
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 # colorlog adds ANSI colours: DEBUG=cyan, INFO=green, WARNING=yellow,
@@ -140,24 +142,7 @@ def main():
     # eps_estimate and avg_historical_surprise_pct for earnings_event_long.
     # Without this snapshot, the backtester uses None for both fields, capping
     # C-strategy confidence at 0.83 and preventing quality filtering.
-    _earnings_snapshot_path = f"data/earnings_snapshot_{today}.json"
-    if not os.path.exists(_earnings_snapshot_path):
-        _snapshot_data = {
-            "date": today,
-            "timestamp": datetime.now().isoformat(),
-            "earnings": {
-                ticker: {
-                    k: v for k, v in (ed or {}).items()
-                    if k in ("days_to_earnings", "eps_estimate", "eps_actual_last",
-                             "avg_historical_surprise_pct", "historical_surprise_pct")
-                }
-                for ticker, ed in earnings_dict.items()
-                if ed is not None
-            },
-        }
-        _save_json(_snapshot_data, _earnings_snapshot_path)
-    else:
-        log.info(f"Earnings snapshot already exists: {_earnings_snapshot_path}")
+    persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")

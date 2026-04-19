@@ -18,6 +18,8 @@ import json
 import logging
 from datetime import datetime
 
+from earnings_snapshot import persist_earnings_snapshot
+
 # ── Logging setup ────────────────────────────────────────────────────────────
 
 def _setup_logging():
@@ -92,6 +94,7 @@ def main():
     earnings_dict = {}
     for ticker in universe:
         earnings_dict[ticker] = get_earnings_data(ticker)
+    persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
 
     # ── Step 3: Feature Layer ────────────────────────────────────────────────
     log.info("Computing features...")

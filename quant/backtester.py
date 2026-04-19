@@ -46,12 +46,13 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-from constants import MAX_POSITIONS, MAX_PER_SECTOR, CANCEL_GAP_PCT, ATR_STOP_MULT
+from constants import MAX_POSITIONS, MAX_PER_SECTOR, CANCEL_GAP_PCT, ATR_STOP_MULT, ATR_TARGET_MULT
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
     "MAX_POSITIONS":       MAX_POSITIONS,
     "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
+    "ATR_TARGET_MULT":     ATR_TARGET_MULT,  # target = entry + N × ATR
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
@@ -471,7 +472,8 @@ class BacktestEngine:
             total_signals_generated += len(signals)
 
             # Enrich with risk parameters
-            signals = enrich_signals(signals, features_dict)
+            signals = enrich_signals(signals, features_dict,
+                                    atr_target_mult=self.config.get("ATR_TARGET_MULT"))
 
             # Sector concentration cap (same as run.py)
             _sector_counts = {}

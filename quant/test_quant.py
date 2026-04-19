@@ -4183,7 +4183,7 @@ def _backtest_harness(monkeypatch, test_df, spy_df):
               "trade_quality_score": 0.8}]
             if "TEST" in features else []))
     monkeypatch.setattr(risk_engine, "enrich_signals",
-        lambda signals, features: signals)
+        lambda signals, features, atr_target_mult=None: signals)
     def fake_size(signals, equity, risk_pct=None):
         for s in signals:
             s["sizing"] = {"shares_to_buy": 10}
