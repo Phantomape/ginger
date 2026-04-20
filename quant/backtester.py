@@ -31,12 +31,26 @@ import logging
 import math
 import os
 import sys
+import tempfile
 from datetime import datetime
 
 import pandas as pd
 import yfinance as yf
+import yfinance.cache as yf_cache
 
 logger = logging.getLogger(__name__)
+
+
+PROXY_ENV_VARS = (
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "GIT_HTTP_PROXY",
+    "GIT_HTTPS_PROXY",
+)
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 
@@ -46,13 +60,31 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-from constants import MAX_POSITIONS, MAX_PER_SECTOR, CANCEL_GAP_PCT, ATR_STOP_MULT, ATR_TARGET_MULT
+from constants import (
+    MAX_POSITIONS,
+    MAX_PER_SECTOR,
+    CANCEL_GAP_PCT,
+    ATR_STOP_MULT,
+    ATR_TARGET_MULT,
+    ENABLED_STRATEGIES,
+    BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    BREAKOUT_RANK_BY_52W_HIGH,
+    REGIME_AWARE_EXIT,
+    IN_TRADE_REGIME_UPDATE,
+)
+from regime_exit import compute_regime_exit_profile
+from in_trade_regime import maybe_update_position_target
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
     "MAX_POSITIONS":       MAX_POSITIONS,
+    "ENABLED_STRATEGIES":  ENABLED_STRATEGIES,
+    "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    "BREAKOUT_RANK_BY_52W_HIGH": BREAKOUT_RANK_BY_52W_HIGH,
     "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
     "ATR_TARGET_MULT":     ATR_TARGET_MULT,  # target = entry + N × ATR
+    "REGIME_AWARE_EXIT":   REGIME_AWARE_EXIT,  # smooth target width by entry-day regime strength
+    "IN_TRADE_REGIME_UPDATE": IN_TRADE_REGIME_UPDATE,
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
@@ -80,11 +112,13 @@ class Position:
 
     __slots__ = ("ticker", "entry_price", "entry_open_price", "stop_price",
                  "target_price", "shares", "entry_date", "strategy", "sector",
-                 "high_water", "atr", "trailing_active")
+                 "high_water", "atr", "trailing_active", "target_mult_used",
+                 "regime_exit_bucket", "regime_exit_score")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
-                 entry_open_price=None, atr=None):
+                 entry_open_price=None, atr=None, target_mult_used=None,
+                 regime_exit_bucket=None, regime_exit_score=None):
         self.ticker           = ticker
         self.entry_price      = entry_price               # post-slippage fill
         self.entry_open_price = entry_open_price or entry_price
@@ -98,6 +132,9 @@ class Position:
         self.atr              = atr or ((entry_price - stop_price) / ATR_STOP_MULT
                                         if stop_price and entry_price > stop_price else None)
         self.trailing_active  = False
+        self.target_mult_used = target_mult_used
+        self.regime_exit_bucket = regime_exit_bucket
+        self.regime_exit_score = regime_exit_score
 
 
 class BacktestEngine:
@@ -124,9 +161,33 @@ class BacktestEngine:
             here = os.path.dirname(os.path.abspath(__file__))
             data_dir = os.path.normpath(os.path.join(here, "..", "data"))
         self.data_dir    = data_dir
+        self._sanitize_proxy_env()
+        self._configure_yfinance_cache()
         # P-ERN: load all earnings snapshots once at init so _earnings_dict_for
         # can supplement eps_estimate / avg_historical_surprise_pct for C strategy.
         self._earnings_snapshots = self._load_earnings_snapshots()
+
+    def _sanitize_proxy_env(self):
+        """Drop broken localhost proxy injection for market-data downloads.
+
+        Some desktop sessions inject HTTP(S)_PROXY=http://127.0.0.1:9, which
+        blackholes yfinance requests. The backtester needs stable historical
+        OHLCV, so we prefer direct access when the proxy points at that known
+        invalid sink.
+        """
+        for key in PROXY_ENV_VARS:
+            value = os.environ.get(key)
+            if value and "127.0.0.1:9" in value:
+                os.environ.pop(key, None)
+
+    def _configure_yfinance_cache(self):
+        """Force yfinance cache into a known writable temp directory."""
+        cache_dir = os.path.join(tempfile.gettempdir(), "ginger_yfinance_cache")
+        os.makedirs(cache_dir, exist_ok=True)
+        try:
+            yf_cache.set_cache_location(cache_dir)
+        except Exception as e:
+            logger.debug(f"yfinance cache location unchanged: {e}")
 
     def _load_earnings_snapshots(self):
         """Load all data/earnings_snapshot_YYYYMMDD.json files (written by run.py P-ERN).
@@ -275,7 +336,7 @@ class BacktestEngine:
                    signals_survived, survival_rate}
         """
         from feature_layer    import compute_features
-        from signal_engine    import generate_signals
+        from signal_engine    import generate_signals, rank_signals_for_allocation
         from risk_engine      import enrich_signals
         from portfolio_engine import size_signals, ROUND_TRIP_COST_PCT
         from regime           import compute_market_regime
@@ -336,6 +397,33 @@ class BacktestEngine:
         news_signals_vetoed          = 0
         news_signals_passed          = 0
 
+        market_context_cache = {}
+        sim_date_to_idx = {pd.Timestamp(d): i for i, d in enumerate(sim_dates)}
+
+        def _market_context_for_day(asof_day):
+            if asof_day is None:
+                return {}
+            cache_key = str(pd.Timestamp(asof_day).date())
+            if cache_key in market_context_cache:
+                return market_context_cache[cache_key]
+
+            regime_ohlcv = {}
+            for idx_ticker in ["SPY", "QQQ"]:
+                df = ohlcv_all.get(idx_ticker)
+                if df is not None:
+                    regime_ohlcv[idx_ticker] = df.loc[:asof_day]
+
+            regime_result = compute_market_regime(ohlcv_override=regime_ohlcv)
+            market_context = {
+                "market_regime": regime_result.get("regime", "UNKNOWN"),
+                "spy_10d_return": regime_result.get("indices", {}).get("SPY", {}).get("momentum_10d_pct"),
+                "qqq_10d_return": regime_result.get("indices", {}).get("QQQ", {}).get("momentum_10d_pct"),
+                "spy_pct_from_ma": regime_result.get("indices", {}).get("SPY", {}).get("pct_from_ma"),
+                "qqq_pct_from_ma": regime_result.get("indices", {}).get("QQQ", {}).get("pct_from_ma"),
+            }
+            market_context_cache[cache_key] = market_context
+            return market_context
+
         for day_idx, today in enumerate(sim_dates):
 
             # News-archive presence check (§6.1 measurement instrumentation).
@@ -354,6 +442,22 @@ class BacktestEngine:
                 if df is None or today not in df.index:
                     still_open.append(pos)
                     continue
+
+                if self.config.get("IN_TRADE_REGIME_UPDATE") and day_idx > 0:
+                    entry_idx = sim_date_to_idx.get(pd.Timestamp(pos.entry_date))
+                    trading_days_held = day_idx - entry_idx if entry_idx is not None else None
+                    prior_context = _market_context_for_day(sim_dates[day_idx - 1])
+                    target_update = maybe_update_position_target(
+                        pos,
+                        prior_context,
+                        trading_days_held,
+                        base_target_mult=self.config.get("ATR_TARGET_MULT"),
+                    )
+                    if target_update:
+                        pos.target_price = target_update["target_price"]
+                        pos.target_mult_used = target_update["target_mult_used"]
+                        pos.regime_exit_bucket = target_update["regime_exit_bucket"]
+                        pos.regime_exit_score = target_update["regime_exit_score"]
 
                 row = df.loc[today]
                 opn  = float(row["Open"].item()  if hasattr(row["Open"],  "item") else row["Open"])
@@ -418,6 +522,9 @@ class BacktestEngine:
                         "pnl_pct_net":      round(pnl_pct_net, 6),
                         "initial_risk_pct": round(initial_risk_pct, 6) if initial_risk_pct else None,
                         "slippage_cost":    round(entry_slip + exit_slip, 2),
+                        "target_mult_used": pos.target_mult_used,
+                        "regime_exit_bucket": pos.regime_exit_bucket,
+                        "regime_exit_score": pos.regime_exit_score,
                         "exit_reason":      exit_reason,
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                         "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
@@ -447,33 +554,43 @@ class BacktestEngine:
                     today, earnings_calendar.get(ticker, []), ticker=ticker)
                 features_dict[ticker] = compute_features(ticker, data_slice, earn)
 
-            # Compute market regime from historical SPY/QQQ
-            regime_ohlcv = {}
-            for idx_ticker in ["SPY", "QQQ"]:
-                df = ohlcv_all.get(idx_ticker)
-                if df is not None:
-                    regime_ohlcv[idx_ticker] = df.loc[:today]
+            market_context = _market_context_for_day(today)
+            regime_str = market_context.get("market_regime", "UNKNOWN")
+            spy_pct = market_context.get("spy_pct_from_ma")
+            qqq_pct = market_context.get("qqq_pct_from_ma")
 
-            regime_result = compute_market_regime(ohlcv_override=regime_ohlcv)
-            regime_str    = regime_result.get("regime", "UNKNOWN")
-            spy_pct       = regime_result.get("indices", {}).get("SPY", {}).get("pct_from_ma")
-            qqq_pct       = regime_result.get("indices", {}).get("QQQ", {}).get("pct_from_ma")
-            spy_10d       = regime_result.get("indices", {}).get("SPY", {}).get("momentum_10d_pct")
+            exit_profile = compute_regime_exit_profile(
+                market_context,
+                base_target_mult=self.config.get("ATR_TARGET_MULT"),
+            )
+            atr_target_mult = (
+                exit_profile["target_mult"]
+                if self.config.get("REGIME_AWARE_EXIT")
+                else self.config.get("ATR_TARGET_MULT")
+            )
 
-            market_context = {
-                "market_regime":   regime_str,
-                "spy_10d_return":  spy_10d,
-                "spy_pct_from_ma": spy_pct,
-                "qqq_pct_from_ma": qqq_pct,
-            }
-
-            # Generate signals (Strategy A + B; C skipped because earnings=None)
-            signals = generate_signals(features_dict, market_context=market_context)
+            # Generate signals with explicit strategy selection so alpha experiments
+            # can isolate a single sub-strategy without changing signal rules.
+            signals = generate_signals(
+                features_dict,
+                market_context=market_context,
+                enabled_strategies=self.config.get("ENABLED_STRATEGIES"),
+                breakout_max_pullback_from_52w_high=(
+                    self.config.get("BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH")
+                ),
+            )
+            if self.config.get("BREAKOUT_RANK_BY_52W_HIGH"):
+                signals = rank_signals_for_allocation(signals)
             total_signals_generated += len(signals)
 
             # Enrich with risk parameters
             signals = enrich_signals(signals, features_dict,
-                                    atr_target_mult=self.config.get("ATR_TARGET_MULT"))
+                                    atr_target_mult=atr_target_mult)
+            if self.config.get("REGIME_AWARE_EXIT"):
+                for s in signals:
+                    s["target_mult_used"] = exit_profile["target_mult"]
+                    s["regime_exit_bucket"] = exit_profile["bucket"]
+                    s["regime_exit_score"] = exit_profile["score"]
 
             # Sector concentration cap (same as run.py)
             _sector_counts = {}
@@ -506,7 +623,11 @@ class BacktestEngine:
                 risk_pct = None  # default 1%
 
             # Size signals
-            signals = size_signals(signals, equity, risk_pct=risk_pct)
+            signals = size_signals(
+                signals,
+                equity,
+                risk_pct=risk_pct,
+            )
             total_signals_survived += len(signals)
 
             # ── 2b. LLM gate replay (optional; off by default). ─────────────
@@ -615,6 +736,9 @@ class BacktestEngine:
                     entry_date=fill_date,
                     strategy=sig.get("strategy", "unknown"),
                     sector=sig.get("sector", "Unknown"),
+                    target_mult_used=sig.get("target_mult_used"),
+                    regime_exit_bucket=sig.get("regime_exit_bucket"),
+                    regime_exit_score=sig.get("regime_exit_score"),
                 ))
 
             # Mark-to-market equity
@@ -670,6 +794,9 @@ class BacktestEngine:
                 "pnl_pct_net":      round(pnl_pct_net, 6),
                 "initial_risk_pct": round(initial_risk_pct, 6) if initial_risk_pct else None,
                 "slippage_cost":    round(entry_slip + exit_slip, 2),
+                "target_mult_used": pos.target_mult_used,
+                "regime_exit_bucket": pos.regime_exit_bucket,
+                "regime_exit_score": pos.regime_exit_score,
                 "exit_reason":      "end_of_backtest",
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                 "exit_date":   str(last_day.date()),
@@ -1209,6 +1336,12 @@ def main():
                         help="Apply T1-negative news veto using "
                              "data/clean_trade_news_YYYYMMDD.json when the file exists. "
                              "Default: off.")
+    parser.add_argument("--regime-aware-exit", action="store_true",
+                        help="Use the entry-day regime exit profile to set ATR target width. "
+                             "Default: off.")
+    parser.add_argument("--in-trade-regime-update", action="store_true",
+                        help="Retarget open trend winners using prior-day regime context. "
+                             "Default: off.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -1225,7 +1358,12 @@ def main():
         from filter import WATCHLIST
         universe = list(WATCHLIST)
 
+    cfg = {
+        "REGIME_AWARE_EXIT": args.regime_aware_exit,
+        "IN_TRADE_REGIME_UPDATE": args.in_trade_regime_update,
+    }
     engine = BacktestEngine(universe, start=args.start, end=args.end,
+                            config=cfg,
                             replay_llm=args.replay_llm,
                             replay_news=args.replay_news)
 
@@ -1259,6 +1397,7 @@ def main():
                       f"{secondary_start} → {secondary_end} ---")
                 secondary_engine = BacktestEngine(
                     universe, start=secondary_start, end=secondary_end,
+                    config=cfg,
                     replay_llm=args.replay_llm,
                     replay_news=args.replay_news)
                 secondary = secondary_engine.run()

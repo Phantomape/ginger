@@ -192,6 +192,63 @@ def test_strategy_b_fires_on_valid_signal():
     assert sig["strategy"] == "breakout_long"
 
 
+def test_strategy_b_optional_52w_pullback_gate_blocks_deep_recovery_breakout():
+    from signal_engine import strategy_b_breakout
+    feat = _make_features(pct_from_52w_high=-0.25)
+    sig = strategy_b_breakout(
+        "TEST",
+        feat,
+        breakout_max_pullback_from_52w_high=-0.20,
+    )
+    assert sig is None, "Deep-recovery breakout should fail the optional 52-week pullback gate"
+
+
+def test_generate_signals_passes_breakout_pullback_override():
+    from signal_engine import generate_signals
+    feat = _make_features(pct_from_52w_high=-0.25)
+    sigs = generate_signals(
+        {"TEST": feat},
+        market_context={"market_regime": "BULL"},
+        enabled_strategies=("breakout_long",),
+        breakout_max_pullback_from_52w_high=-0.20,
+    )
+    assert sigs == [], "generate_signals must forward the breakout-only pullback gate"
+
+
+def test_rank_signals_for_allocation_only_reorders_breakouts():
+    from signal_engine import rank_signals_for_allocation
+
+    signals = [
+        {"ticker": "TREND1", "strategy": "trend_long", "confidence_score": 1.0},
+        {"ticker": "B1", "strategy": "breakout_long", "confidence_score": 0.93,
+         "conditions_met": {"pct_from_52w_high": -0.08}},
+        {"ticker": "TREND2", "strategy": "trend_long", "confidence_score": 0.89},
+        {"ticker": "B2", "strategy": "breakout_long", "confidence_score": 0.93,
+         "conditions_met": {"pct_from_52w_high": -0.02}},
+    ]
+
+    ranked = rank_signals_for_allocation(signals)
+    assert [s["ticker"] for s in ranked] == ["TREND1", "B2", "TREND2", "B1"]
+
+
+def test_rank_signals_for_allocation_preserves_non_breakout_order():
+    from signal_engine import rank_signals_for_allocation
+
+    signals = [
+        {"ticker": "T1", "strategy": "trend_long", "confidence_score": 1.0},
+        {"ticker": "T2", "strategy": "trend_long", "confidence_score": 0.95},
+        {"ticker": "B1", "strategy": "breakout_long", "confidence_score": 0.93,
+         "conditions_met": {"pct_from_52w_high": -0.12}},
+        {"ticker": "B2", "strategy": "breakout_long", "confidence_score": 0.93,
+         "conditions_met": {"pct_from_52w_high": -0.03}},
+        {"ticker": "T3", "strategy": "trend_long", "confidence_score": 0.90},
+    ]
+
+    ranked = rank_signals_for_allocation(signals)
+    non_breakouts = [s["ticker"] for s in ranked if s["strategy"] != "breakout_long"]
+    assert non_breakouts == ["T1", "T2", "T3"]
+
+
 def test_strategy_b_blocked_without_volume():
     from signal_engine import strategy_b_breakout
     feat = _make_features(volume_spike_ratio=1.0)  # below 1.5 threshold
@@ -220,6 +277,145 @@ def test_generate_signals_best_confidence_kept():
             alt = fn("NVDA", feat)
             if alt:
                 assert sigs[0]["confidence_score"] >= alt["confidence_score"]
+
+
+def test_generate_signals_respects_enabled_strategies():
+    """Strategy gating for experiments must be explicit and reproducible."""
+    from signal_engine import generate_signals
+
+    feat = {
+        **_make_features(),
+        "earnings_event_window": True,
+        "days_to_earnings": 10,
+        "positive_surprise_history": True,
+    }
+
+    only_earnings = generate_signals(
+        {"NVDA": feat},
+        market_context={"market_regime": "BULL"},
+        enabled_strategies=("earnings_event_long",),
+    )
+    no_earnings = generate_signals(
+        {"NVDA": feat},
+        market_context={"market_regime": "BULL"},
+        enabled_strategies=("trend_long", "breakout_long"),
+    )
+
+    assert len(only_earnings) == 1 and only_earnings[0]["strategy"] == "earnings_event_long", (
+        "enabled_strategies must allow an isolated earnings-only experiment."
+    )
+    assert all(sig["strategy"] != "earnings_event_long" for sig in no_earnings), (
+        "Disabling earnings_event_long must remove it from the candidate set."
+    )
+
+
+def test_default_enabled_strategies_exclude_earnings_until_data_recovers():
+    """Default strategy set should match the current accepted alpha stance."""
+    from constants import (
+        ENABLED_STRATEGIES,
+        BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+        BREAKOUT_RANK_BY_52W_HIGH,
+    )
+    from backtester import DEFAULT_CONFIG
+
+    assert ENABLED_STRATEGIES == ("trend_long", "breakout_long")
+    assert BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH == -0.20
+    assert BREAKOUT_RANK_BY_52W_HIGH is True
+    assert DEFAULT_CONFIG["ENABLED_STRATEGIES"] == ENABLED_STRATEGIES
+    assert (
+        DEFAULT_CONFIG["BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH"]
+        == BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH
+    )
+    assert DEFAULT_CONFIG["BREAKOUT_RANK_BY_52W_HIGH"] is BREAKOUT_RANK_BY_52W_HIGH
+
+
+def test_regime_exit_profile_expands_in_risk_on_and_contracts_in_defensive():
+    """Entry-day exit target must respond smoothly to observable market strength."""
+    from regime_exit import compute_regime_exit_profile
+
+    risk_on = compute_regime_exit_profile({
+        "market_regime": "BULL",
+        "spy_pct_from_ma": 0.08,
+        "qqq_pct_from_ma": 0.10,
+        "spy_10d_return": 0.04,
+        "qqq_10d_return": 0.05,
+    })
+    defensive = compute_regime_exit_profile({
+        "market_regime": "BEAR",
+        "spy_pct_from_ma": -0.04,
+        "qqq_pct_from_ma": -0.05,
+        "spy_10d_return": -0.03,
+        "qqq_10d_return": -0.02,
+    })
+
+    assert risk_on["bucket"] == "risk_on"
+    assert defensive["bucket"] == "defensive"
+    assert risk_on["target_mult"] > 4.0
+    assert defensive["target_mult"] <= 3.25
+    assert risk_on["target_mult"] > defensive["target_mult"]
+
+
+def test_regime_exit_profile_falls_back_to_baseline_without_inputs():
+    """Missing regime inputs must not silently change the exit template."""
+    from regime_exit import compute_regime_exit_profile
+    profile = compute_regime_exit_profile({})
+    assert profile["target_mult"] == 3.5
+    assert profile["bucket"] == "baseline"
+    assert profile["score"] is None
+
+
+def test_in_trade_regime_update_only_applies_to_open_trend_winners():
+    from types import SimpleNamespace
+    from in_trade_regime import maybe_update_position_target
+
+    pos = SimpleNamespace(
+        strategy="trend_long",
+        atr=10.0,
+        entry_price=100.0,
+        high_water=112.0,
+        target_price=135.0,
+    )
+    update = maybe_update_position_target(
+        pos,
+        {
+            "market_regime": "BULL",
+            "spy_pct_from_ma": 0.08,
+            "qqq_pct_from_ma": 0.09,
+            "spy_10d_return": 0.04,
+            "qqq_10d_return": 0.05,
+        },
+        trading_days_held=3,
+    )
+
+    assert update is not None
+    assert update["target_price"] > 135.0
+    assert update["regime_exit_bucket"] == "risk_on"
+
+    no_profit = SimpleNamespace(
+        strategy="trend_long",
+        atr=10.0,
+        entry_price=100.0,
+        high_water=108.0,
+        target_price=135.0,
+    )
+    assert maybe_update_position_target(
+        no_profit,
+        {"market_regime": "BULL", "spy_pct_from_ma": 0.05},
+        trading_days_held=3,
+    ) is None
+
+    breakout = SimpleNamespace(
+        strategy="breakout_long",
+        atr=10.0,
+        entry_price=100.0,
+        high_water=112.0,
+        target_price=135.0,
+    )
+    assert maybe_update_position_target(
+        breakout,
+        {"market_regime": "BULL", "spy_pct_from_ma": 0.05},
+        trading_days_held=3,
+    ) is None
 
 
 def test_neutral_market_allows_one_soft_condition():
@@ -3955,6 +4151,24 @@ def test_backtester_smoke_runs():
     assert engine.config["MAX_POSITIONS"] == 3
 
 
+def test_backtester_strips_broken_local_proxy_env(monkeypatch):
+    """A blackhole localhost proxy must not poison yfinance downloads."""
+    from backtester import BacktestEngine
+
+    monkeypatch.setenv("HTTP_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("ALL_PROXY", "http://127.0.0.1:9")
+    engine = BacktestEngine(
+        universe=["AAPL"],
+        start="2025-01-02",
+        end="2025-03-28",
+    )
+    assert engine is not None
+    assert os.environ.get("HTTP_PROXY") is None
+    assert os.environ.get("HTTPS_PROXY") is None
+    assert os.environ.get("ALL_PROXY") is None
+
+
 def test_backtester_position_class():
     """Position tracks entry, stop, target, and sector."""
     from backtester import Position
@@ -4957,6 +5171,8 @@ def test_persist_earnings_snapshot_is_idempotent(tmp_path):
         payload = json.load(handle)
 
     assert payload["earnings"]["NVDA"]["days_to_earnings"] == 5
+
+
 
 
 def test_backtester_run_emits_benchmarks(monkeypatch):
