@@ -20,6 +20,14 @@ import os
 import sys
 from datetime import datetime
 
+from constants import (
+    ATR_TARGET_MULT,
+    BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    BREAKOUT_RANK_BY_52W_HIGH,
+    ENABLED_STRATEGIES,
+    REGIME_AWARE_EXIT,
+)
+from regime_exit import compute_regime_exit_profile
 from sources import get_all_sources
 from parser import parse_feed, deduplicate_items, sort_items_by_date
 from filter import apply_hygiene_filters, apply_trade_filters
@@ -286,7 +294,7 @@ def main():
             try:
                 from data_layer    import get_universe, get_ohlcv, get_earnings_data
                 from feature_layer import compute_features
-                from signal_engine import generate_signals
+                from signal_engine import generate_signals, rank_signals_for_allocation
                 from risk_engine   import enrich_signals
                 from portfolio_engine import size_signals
                 from regime        import compute_market_regime
@@ -304,12 +312,27 @@ def main():
                 mc = {
                     "market_regime":   qp_regime.get("regime", ""),
                     "spy_10d_return":  _spy_data.get("momentum_10d_pct"),
+                    "qqq_10d_return":  _qqq_data.get("momentum_10d_pct"),
                     "spy_pct_from_ma": _spy_data.get("pct_from_ma"),
                     "qqq_pct_from_ma": _qqq_data.get("pct_from_ma"),
                 }
 
-                qp_signals = generate_signals(qp_features, market_context=mc)
-                qp_signals = enrich_signals(qp_signals, qp_features)
+                qp_signals = generate_signals(
+                    qp_features,
+                    market_context=mc,
+                    enabled_strategies=ENABLED_STRATEGIES,
+                    breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+                )
+                if BREAKOUT_RANK_BY_52W_HIGH:
+                    qp_signals = rank_signals_for_allocation(qp_signals)
+                exit_profile = compute_regime_exit_profile(mc, base_target_mult=ATR_TARGET_MULT)
+                atr_target_mult = exit_profile["target_mult"] if REGIME_AWARE_EXIT else ATR_TARGET_MULT
+                qp_signals = enrich_signals(qp_signals, qp_features, atr_target_mult=atr_target_mult)
+                if REGIME_AWARE_EXIT:
+                    for s in qp_signals:
+                        s["target_mult_used"] = exit_profile["target_mult"]
+                        s["regime_exit_bucket"] = exit_profile["bucket"]
+                        s["regime_exit_score"] = exit_profile["score"]
 
                 # ── BEAR_SHALLOW post-enrich filter (mirrors run.py) ─────────
                 _regime_str = qp_regime.get("regime", "").upper()

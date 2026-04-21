@@ -16,6 +16,16 @@ MAX_POSITION_PCT        = 0.20       # Single position capped at 20% of portfoli
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap
 MAX_PER_SECTOR          = 2          # Same-day sector concentration cap
+ENABLED_STRATEGIES      = ("trend_long", "breakout_long")
+# earnings_event_long stays implemented but disabled by default until P-ERN
+# data quality is strong enough to re-validate it without partial-data drag.
+BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH = -0.20
+# breakout_long now rejects deep-recovery breakouts more than 20% below the
+# 52-week high. This preserves true continuation setups while filtering the
+# weak follow-through pattern seen in exp-20260419-007.
+BREAKOUT_RANK_BY_52W_HIGH = True
+# Allocation ranking now re-orders only the breakout_long subsequence by
+# pct_from_52w_high so closer-to-high continuation setups get earlier slot access.
 
 # ── Stops & targets ─────────────────────────────────────────────────────────
 HARD_STOP_PCT           = 0.12       # -12% hard stop from avg_cost
@@ -25,6 +35,7 @@ TIME_STOP_DAYS          = 45         # Exit review after 45 trading days
 ATR_STOP_MULT           = 1.5        # Stop = entry - 1.5 * ATR
 ATR_TARGET_MULT         = 3.5        # Target = entry + 3.5 * ATR
 ATR_PERIOD              = 14         # Standard ATR lookback
+REGIME_AWARE_EXIT       = True       # Adopt entry-day regime-aware target width by default
 
 # ── Execution ───────────────────────────────────────────────────────────────
 ROUND_TRIP_COST_PCT     = 0.0035     # Slippage + commission round trip (matches performance_engine)

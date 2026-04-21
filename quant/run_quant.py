@@ -18,7 +18,15 @@ import json
 import logging
 from datetime import datetime
 
+from constants import (
+    ATR_TARGET_MULT,
+    BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    BREAKOUT_RANK_BY_52W_HIGH,
+    ENABLED_STRATEGIES,
+    REGIME_AWARE_EXIT,
+)
 from earnings_snapshot import persist_earnings_snapshot
+from regime_exit import compute_regime_exit_profile
 
 # ── Logging setup ────────────────────────────────────────────────────────────
 
@@ -64,7 +72,7 @@ def main():
     # ── Imports (local to quant/) ────────────────────────────────────────────
     from data_layer       import get_universe, get_ohlcv, get_earnings_data
     from feature_layer    import compute_features
-    from signal_engine    import generate_signals
+    from signal_engine    import generate_signals, rank_signals_for_allocation
     from risk_engine      import enrich_signals
     from portfolio_engine import size_signals, compute_portfolio_heat
     from performance_engine import compute_metrics
@@ -113,15 +121,42 @@ def main():
     #   "spy_10d_return": float (SPY 10-day momentum, used by RS filter)
     mc = {"market_regime": market_regime.get("regime", "")}
     spy_data = market_regime.get("indices", {}).get("SPY", {})
+    qqq_data = market_regime.get("indices", {}).get("QQQ", {})
     if spy_data.get("momentum_10d_pct") is not None:
         mc["spy_10d_return"] = spy_data["momentum_10d_pct"]
+    if qqq_data.get("momentum_10d_pct") is not None:
+        mc["qqq_10d_return"] = qqq_data["momentum_10d_pct"]
+    if spy_data.get("pct_from_ma") is not None:
+        mc["spy_pct_from_ma"] = spy_data["pct_from_ma"]
+    if qqq_data.get("pct_from_ma") is not None:
+        mc["qqq_pct_from_ma"] = qqq_data["pct_from_ma"]
 
     log.info("Generating signals...")
-    signals = generate_signals(features_dict, market_context=mc)
+    signals = generate_signals(
+        features_dict,
+        market_context=mc,
+        enabled_strategies=ENABLED_STRATEGIES,
+        breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    )
+    if BREAKOUT_RANK_BY_52W_HIGH:
+        signals = rank_signals_for_allocation(signals)
     log.info(f"Signals: {len(signals)} triggered")
 
     # ── Step 5: Risk Engine ──────────────────────────────────────────────────
-    signals = enrich_signals(signals, features_dict)
+    exit_profile = compute_regime_exit_profile(mc, base_target_mult=ATR_TARGET_MULT)
+    atr_target_mult = exit_profile["target_mult"] if REGIME_AWARE_EXIT else ATR_TARGET_MULT
+    if REGIME_AWARE_EXIT:
+        log.info(
+            "Regime-aware exit active: "
+            f"bucket={exit_profile['bucket']} score={exit_profile['score']} "
+            f"target_mult={atr_target_mult:.2f}"
+        )
+    signals = enrich_signals(signals, features_dict, atr_target_mult=atr_target_mult)
+    if REGIME_AWARE_EXIT:
+        for s in signals:
+            s["target_mult_used"] = exit_profile["target_mult"]
+            s["regime_exit_bucket"] = exit_profile["bucket"]
+            s["regime_exit_score"] = exit_profile["score"]
 
     # ── Step 6: Portfolio Engine ─────────────────────────────────────────────
     open_positions  = _load_open_positions()

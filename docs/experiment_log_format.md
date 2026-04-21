@@ -148,6 +148,23 @@
 - `delta_metrics`
 - `decision`
 
+## 什么时候还要写进 Alpha 文档
+
+`docs/experiment_log.jsonl` 负责记录“这次具体怎么试、结果怎样”。
+
+但如果一次实验带来的主要价值是下面这类内容，就不应只停留在 JSONL，还应同步写进
+`docs/alpha-optimization-playbook.md` 或当日研究文档：
+
+- 证伪了一整类重复出现的思路
+- 改变了某个子策略的默认优化方向
+- 改变了未来 2-3 轮实验的优先级排序
+
+推荐补充格式：
+
+- `mechanism_insight`: 这次实验告诉我们 alpha 更可能来自哪里 / 不来自哪里
+- `anti_repeat_rule`: 以后什么条件下禁止简单重复这类尝试
+- `priority_update`: 这次实验后，下一轮默认该优先测什么
+
 ## 示例使用
 
 追加一条实验记录时，确保每条 JSON 独占一行。不要写 Markdown，不要写注释，不要跨多行。

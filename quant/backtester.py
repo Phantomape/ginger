@@ -70,10 +70,8 @@ from constants import (
     BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
     BREAKOUT_RANK_BY_52W_HIGH,
     REGIME_AWARE_EXIT,
-    IN_TRADE_REGIME_UPDATE,
 )
 from regime_exit import compute_regime_exit_profile
-from in_trade_regime import maybe_update_position_target
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
@@ -84,7 +82,6 @@ DEFAULT_CONFIG = {
     "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
     "ATR_TARGET_MULT":     ATR_TARGET_MULT,  # target = entry + N × ATR
     "REGIME_AWARE_EXIT":   REGIME_AWARE_EXIT,  # smooth target width by entry-day regime strength
-    "IN_TRADE_REGIME_UPDATE": IN_TRADE_REGIME_UPDATE,
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
@@ -398,7 +395,6 @@ class BacktestEngine:
         news_signals_passed          = 0
 
         market_context_cache = {}
-        sim_date_to_idx = {pd.Timestamp(d): i for i, d in enumerate(sim_dates)}
 
         def _market_context_for_day(asof_day):
             if asof_day is None:
@@ -442,22 +438,6 @@ class BacktestEngine:
                 if df is None or today not in df.index:
                     still_open.append(pos)
                     continue
-
-                if self.config.get("IN_TRADE_REGIME_UPDATE") and day_idx > 0:
-                    entry_idx = sim_date_to_idx.get(pd.Timestamp(pos.entry_date))
-                    trading_days_held = day_idx - entry_idx if entry_idx is not None else None
-                    prior_context = _market_context_for_day(sim_dates[day_idx - 1])
-                    target_update = maybe_update_position_target(
-                        pos,
-                        prior_context,
-                        trading_days_held,
-                        base_target_mult=self.config.get("ATR_TARGET_MULT"),
-                    )
-                    if target_update:
-                        pos.target_price = target_update["target_price"]
-                        pos.target_mult_used = target_update["target_mult_used"]
-                        pos.regime_exit_bucket = target_update["regime_exit_bucket"]
-                        pos.regime_exit_score = target_update["regime_exit_score"]
 
                 row = df.loc[today]
                 opn  = float(row["Open"].item()  if hasattr(row["Open"],  "item") else row["Open"])
@@ -591,7 +571,6 @@ class BacktestEngine:
                     s["target_mult_used"] = exit_profile["target_mult"]
                     s["regime_exit_bucket"] = exit_profile["bucket"]
                     s["regime_exit_score"] = exit_profile["score"]
-
             # Sector concentration cap (same as run.py)
             _sector_counts = {}
             _capped = []
@@ -1339,9 +1318,6 @@ def main():
     parser.add_argument("--regime-aware-exit", action="store_true",
                         help="Use the entry-day regime exit profile to set ATR target width. "
                              "Default: off.")
-    parser.add_argument("--in-trade-regime-update", action="store_true",
-                        help="Retarget open trend winners using prior-day regime context. "
-                             "Default: off.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -1358,10 +1334,7 @@ def main():
         from filter import WATCHLIST
         universe = list(WATCHLIST)
 
-    cfg = {
-        "REGIME_AWARE_EXIT": args.regime_aware_exit,
-        "IN_TRADE_REGIME_UPDATE": args.in_trade_regime_update,
-    }
+    cfg = {"REGIME_AWARE_EXIT": args.regime_aware_exit}
     engine = BacktestEngine(universe, start=args.start, end=args.end,
                             config=cfg,
                             replay_llm=args.replay_llm,

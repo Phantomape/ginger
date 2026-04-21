@@ -685,8 +685,38 @@ def save_advice(advice, filepath, token_usage=None):
             json.dump(output, f, indent=2, ensure_ascii=False)
 
         logger.info(f"Saved investment advice to {filepath}")
+        _maybe_write_replay_log(filepath, output)
         return True
 
     except Exception as e:
         logger.error(f"Failed to save advice: {e}")
         return False
+
+
+def _maybe_write_replay_log(filepath, output):
+    """Mirror real dated advice files to llm replay logs for backtest parity."""
+    basename = os.path.basename(filepath)
+    if not basename.startswith("investment_advice_") or not basename.endswith(".json"):
+        return
+
+    date_str = basename[len("investment_advice_"):-len(".json")]
+    if len(date_str) != 8 or not date_str.isdigit():
+        return
+
+    parsed_advice = output.get("advice_parsed")
+    is_real_response = isinstance(parsed_advice, dict) and "new_trade" in parsed_advice
+    if not is_real_response:
+        logger.info(
+            "Skipping LLM replay log for %s: parsed payload has no 'new_trade' key",
+            basename,
+        )
+        return
+
+    replay_path = os.path.join(os.path.dirname(filepath), f"llm_prompt_resp_{date_str}.json")
+    if os.path.exists(replay_path):
+        logger.info("LLM replay log already exists, skipping: %s", replay_path)
+        return
+
+    with open(replay_path, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2, ensure_ascii=False)
+    logger.info("Saved LLM replay log to %s", replay_path)

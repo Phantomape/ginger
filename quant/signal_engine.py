@@ -231,7 +231,12 @@ def strategy_a_trend(ticker, features, market_context=None):
     }
 
 
-def strategy_b_breakout(ticker, features, market_context=None):
+def strategy_b_breakout(
+    ticker,
+    features,
+    market_context=None,
+    breakout_max_pullback_from_52w_high=None,
+):
     """
     Strategy B – Volatility Breakout.
 
@@ -240,6 +245,10 @@ def strategy_b_breakout(ticker, features, market_context=None):
       - 20-day high breakout
       - volume expansion (ratio > 1.5)
       - RS: stock 10d return > SPY 10d return
+
+    Optional hard quality gate:
+      - when breakout_max_pullback_from_52w_high is set, require
+        pct_from_52w_high >= threshold
 
     Soft conditions:
       - RS strong (outperforms by ≥20%)
@@ -260,6 +269,11 @@ def strategy_b_breakout(ticker, features, market_context=None):
         return None
     if range_vs_atr is None or not breakout:
         return None
+
+    pct_from_52w_high = features.get("pct_from_52w_high")
+    if breakout_max_pullback_from_52w_high is not None:
+        if pct_from_52w_high is None or pct_from_52w_high < breakout_max_pullback_from_52w_high:
+            return None
 
     range_expanded  = bool(range_vs_atr > 1.5)
     # 1.5× volume minimum for Strategy B — intentionally lower than feature_layer's
@@ -336,7 +350,8 @@ def strategy_b_breakout(ticker, features, market_context=None):
             "volume_spike_ratio":  vol_ratio,
             "above_200ma":         above_200ma,
             "rs_vs_spy":           round(stock_10d - spy_10d, 4),
-            "pct_from_52w_high":   features.get("pct_from_52w_high"),
+            "pct_from_52w_high":   pct_from_52w_high,
+            "breakout_max_pullback_from_52w_high": breakout_max_pullback_from_52w_high,
         },
     }
 
@@ -445,14 +460,24 @@ def strategy_c_earnings(ticker, features, market_context=None):
     }
 
 
-def generate_signals(features_dict, market_context=None):
+def generate_signals(
+    features_dict,
+    market_context=None,
+    enabled_strategies=None,
+    breakout_max_pullback_from_52w_high=None,
+):
     """
-    Run all 3 strategies for every ticker in features_dict.
+    Run enabled strategies for every ticker in features_dict.
 
     Args:
-        features_dict  (dict): {ticker: features_dict or None}
-        market_context (dict): Optional {"spy_10d_return": float} for RS filter.
-                               Sourced from regime.py SPY momentum_10d_pct.
+        features_dict      (dict): {ticker: features_dict or None}
+        market_context     (dict): Optional {"spy_10d_return": float} for RS filter.
+                                   Sourced from regime.py SPY momentum_10d_pct.
+        enabled_strategies (iterable[str] | None): Strategy names to evaluate.
+                                   None means run all available strategies.
+        breakout_max_pullback_from_52w_high (float | None): Optional breakout-only
+                                   hard gate. When set, breakout_long requires
+                                   pct_from_52w_high >= this threshold.
 
     Returns:
         list[dict]: All triggered signals, sorted by confidence_score desc
@@ -511,6 +536,18 @@ def generate_signals(features_dict, market_context=None):
         )
         regime = "NEUTRAL"
 
+    strategy_functions = {
+        "trend_long": strategy_a_trend,
+        "breakout_long": strategy_b_breakout,
+        "earnings_event_long": strategy_c_earnings,
+    }
+    enabled = set(enabled_strategies or strategy_functions.keys())
+    active_functions = [
+        strategy_functions[name]
+        for name in strategy_functions
+        if name in enabled
+    ]
+
     signals = []
 
     for ticker, features in features_dict.items():
@@ -524,9 +561,17 @@ def generate_signals(features_dict, market_context=None):
         if bear_shallow and not features.get("above_200ma"):
             continue
 
-        for fn in [strategy_a_trend, strategy_b_breakout, strategy_c_earnings]:
+        for fn in active_functions:
             try:
-                sig = fn(ticker, features, market_context=market_context)
+                if fn is strategy_b_breakout:
+                    sig = fn(
+                        ticker,
+                        features,
+                        market_context=market_context,
+                        breakout_max_pullback_from_52w_high=breakout_max_pullback_from_52w_high,
+                    )
+                else:
+                    sig = fn(ticker, features, market_context=market_context)
                 if sig:
                     signals.append(sig)
                     logger.info(
@@ -630,3 +675,34 @@ def generate_signals(features_dict, market_context=None):
             )
 
     return deduped
+
+
+def rank_signals_for_allocation(signals):
+    """Re-rank only breakout candidates for slot competition.
+
+    The incoming order is assumed to already reflect the system's global base
+    ordering, currently confidence-first. This helper preserves the exact
+    relative order of non-breakout signals and only re-orders the breakout
+    subsequence so higher-quality continuation setups get earlier slot access.
+    """
+    breakout_signals = [s for s in signals if s.get("strategy") == "breakout_long"]
+    if len(breakout_signals) <= 1:
+        return list(signals)
+
+    ranked_breakouts = sorted(
+        breakout_signals,
+        key=lambda s: (
+            (s.get("conditions_met") or {}).get("pct_from_52w_high", float("-inf")),
+            s.get("confidence_score", 0),
+        ),
+        reverse=True,
+    )
+
+    breakout_iter = iter(ranked_breakouts)
+    reranked = []
+    for signal in signals:
+        if signal.get("strategy") == "breakout_long":
+            reranked.append(next(breakout_iter))
+        else:
+            reranked.append(signal)
+    return reranked

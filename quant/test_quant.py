@@ -364,60 +364,6 @@ def test_regime_exit_profile_falls_back_to_baseline_without_inputs():
     assert profile["score"] is None
 
 
-def test_in_trade_regime_update_only_applies_to_open_trend_winners():
-    from types import SimpleNamespace
-    from in_trade_regime import maybe_update_position_target
-
-    pos = SimpleNamespace(
-        strategy="trend_long",
-        atr=10.0,
-        entry_price=100.0,
-        high_water=112.0,
-        target_price=135.0,
-    )
-    update = maybe_update_position_target(
-        pos,
-        {
-            "market_regime": "BULL",
-            "spy_pct_from_ma": 0.08,
-            "qqq_pct_from_ma": 0.09,
-            "spy_10d_return": 0.04,
-            "qqq_10d_return": 0.05,
-        },
-        trading_days_held=3,
-    )
-
-    assert update is not None
-    assert update["target_price"] > 135.0
-    assert update["regime_exit_bucket"] == "risk_on"
-
-    no_profit = SimpleNamespace(
-        strategy="trend_long",
-        atr=10.0,
-        entry_price=100.0,
-        high_water=108.0,
-        target_price=135.0,
-    )
-    assert maybe_update_position_target(
-        no_profit,
-        {"market_regime": "BULL", "spy_pct_from_ma": 0.05},
-        trading_days_held=3,
-    ) is None
-
-    breakout = SimpleNamespace(
-        strategy="breakout_long",
-        atr=10.0,
-        entry_price=100.0,
-        high_water=112.0,
-        target_price=135.0,
-    )
-    assert maybe_update_position_target(
-        breakout,
-        {"market_regime": "BULL", "spy_pct_from_ma": 0.05},
-        trading_days_held=3,
-    ) is None
-
-
 def test_neutral_market_allows_one_soft_condition():
     """
     NEUTRAL market threshold 0.88 must allow all-hard + one soft condition.
@@ -4760,6 +4706,53 @@ def test_import_advice_writes_replay_file(tmp_path):
     assert decision["approved_tickers"] == ["AMZN"]
 
 
+def test_save_advice_writes_replay_file_for_dated_investment_advice(tmp_path):
+    """Automatic dated advice saves must also create the replay twin."""
+    import json
+    from llm_advisor import save_advice
+
+    advice_path = tmp_path / "investment_advice_20260420.json"
+    raw_response = '{"new_trade": {"ticker": "AMZN", "signal_source": "trend_long"}, "position_actions": []}'
+
+    ok = save_advice(raw_response, str(advice_path), token_usage={"total_tokens": 12})
+
+    assert ok is True
+    replay_path = tmp_path / "llm_prompt_resp_20260420.json"
+    assert replay_path.exists(), "dated advice saves must auto-create the replay twin"
+    saved = json.loads(replay_path.read_text(encoding="utf-8"))
+    assert saved["advice_parsed"]["new_trade"]["ticker"] == "AMZN"
+    assert saved["token_usage"]["total_tokens"] == 12
+
+
+def test_save_advice_does_not_overwrite_existing_replay_file(tmp_path):
+    """Automatic replay mirroring must preserve an existing manual replay file."""
+    from llm_advisor import save_advice
+
+    advice_path = tmp_path / "investment_advice_20260420.json"
+    replay_path = tmp_path / "llm_prompt_resp_20260420.json"
+    replay_path.write_text('{"manual": true}', encoding="utf-8")
+
+    raw_response = '{"new_trade": {"ticker": "AMZN", "signal_source": "trend_long"}, "position_actions": []}'
+    ok = save_advice(raw_response, str(advice_path), token_usage=None)
+
+    assert ok is True
+    assert replay_path.read_text(encoding="utf-8") == '{"manual": true}'
+
+
+def test_save_advice_skips_replay_for_non_response_payload(tmp_path):
+    """Fake or partial advice saves without new_trade must not create replay logs."""
+    from llm_advisor import save_advice
+
+    advice_path = tmp_path / "investment_advice_20260421.json"
+    fake_raw = "Prompt saved to data/llm_prompt_20260421.txt\n\nTo use this prompt:\n1. Copy the content"
+
+    ok = save_advice(fake_raw, str(advice_path), token_usage=None)
+
+    assert ok is True
+    replay_path = tmp_path / "llm_prompt_resp_20260421.json"
+    assert not replay_path.exists()
+
+
 def test_import_advice_replay_file_not_overwritten(tmp_path):
     """If llm_prompt_resp_YYYYMMDD.json already exists (e.g. manually saved),
     import_advice must not overwrite it."""
@@ -5143,6 +5136,14 @@ def test_persist_earnings_snapshot_creates_structured_daily_file(tmp_path):
         payload = json.load(handle)
 
     assert payload["date"] == "20260418"
+    assert payload["coverage"] == {
+        "tickers_total": 2,
+        "tickers_persisted": 1,
+        "tickers_with_days_to_earnings": 1,
+        "tickers_with_eps_estimate": 1,
+        "tickers_with_eps_actual_last": 0,
+        "tickers_with_surprise_history": 1,
+    }
     assert payload["earnings"]["NVDA"] == {
         "days_to_earnings": 5,
         "eps_estimate": 1.23,
@@ -5171,6 +5172,27 @@ def test_persist_earnings_snapshot_is_idempotent(tmp_path):
         payload = json.load(handle)
 
     assert payload["earnings"]["NVDA"]["days_to_earnings"] == 5
+    assert payload["coverage"]["tickers_persisted"] == 1
+
+
+def test_persist_earnings_snapshot_rewrites_invalid_existing_file(tmp_path):
+    from datetime import datetime
+    from earnings_snapshot import persist_earnings_snapshot
+
+    broken_path = tmp_path / "earnings_snapshot_20260418.json"
+    broken_path.write_text('{"date":"20260418","broken":true}', encoding="utf-8")
+
+    persist_earnings_snapshot(
+        {"NVDA": {"days_to_earnings": 5, "eps_estimate": 1.23}},
+        as_of=datetime(2026, 4, 18, 9, 30, 0),
+        base_dir=str(tmp_path),
+    )
+
+    with open(broken_path, "r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+
+    assert "coverage" in payload
+    assert payload["earnings"]["NVDA"]["eps_estimate"] == 1.23
 
 
 

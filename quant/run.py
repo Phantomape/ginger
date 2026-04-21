@@ -27,7 +27,15 @@ from datetime import datetime
 
 import pandas as pd
 
+from constants import (
+    ENABLED_STRATEGIES,
+    ATR_TARGET_MULT,
+    BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    BREAKOUT_RANK_BY_52W_HIGH,
+    REGIME_AWARE_EXIT,
+)
 from earnings_snapshot import persist_earnings_snapshot
+from regime_exit import compute_regime_exit_profile
 
 
 # ── Logging ──────────────────────────────────────────────────────────────────
@@ -107,7 +115,7 @@ def main():
     from data_layer         import get_universe, get_ohlcv, get_earnings_data
     from feature_layer      import compute_features
     from trend_signals      import compute_position_context, save_trend_signals
-    from signal_engine      import generate_signals
+    from signal_engine      import generate_signals, rank_signals_for_allocation
     from risk_engine        import enrich_signals
     from portfolio_engine   import size_signals, compute_portfolio_heat
     from performance_engine import compute_metrics
@@ -283,11 +291,13 @@ def main():
 
     # Build market_context: regime + RS filter + pct_from_ma for BEAR tier detection.
     spy_10d         = market_regime.get("indices", {}).get("SPY", {}).get("momentum_10d_pct")
+    qqq_10d         = market_regime.get("indices", {}).get("QQQ", {}).get("momentum_10d_pct")
     spy_pct_from_ma = market_regime.get("indices", {}).get("SPY", {}).get("pct_from_ma")
     qqq_pct_from_ma = market_regime.get("indices", {}).get("QQQ", {}).get("pct_from_ma")
     market_context  = {
         "market_regime":   market_regime.get("regime", "UNKNOWN"),
         "spy_10d_return":  spy_10d,
+        "qqq_10d_return":  qqq_10d,
         "spy_pct_from_ma": spy_pct_from_ma,
         "qqq_pct_from_ma": qqq_pct_from_ma,
     }
@@ -297,8 +307,28 @@ def main():
         log.info(f"SPY vs 200MA: {spy_pct_from_ma*100:+.2f}%   "
                  f"QQQ vs 200MA: {qqq_pct_from_ma*100:+.2f}%")
 
-    signals = generate_signals(features_dict, market_context=market_context)
-    signals = enrich_signals(signals, features_dict)
+    signals = generate_signals(
+        features_dict,
+        market_context=market_context,
+        enabled_strategies=ENABLED_STRATEGIES,
+        breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+    )
+    if BREAKOUT_RANK_BY_52W_HIGH:
+        signals = rank_signals_for_allocation(signals)
+    exit_profile = compute_regime_exit_profile(market_context, base_target_mult=ATR_TARGET_MULT)
+    atr_target_mult = exit_profile["target_mult"] if REGIME_AWARE_EXIT else ATR_TARGET_MULT
+    if REGIME_AWARE_EXIT:
+        log.info(
+            "Regime-aware exit active: "
+            f"bucket={exit_profile['bucket']} score={exit_profile['score']} "
+            f"target_mult={atr_target_mult:.2f}"
+        )
+    signals = enrich_signals(signals, features_dict, atr_target_mult=atr_target_mult)
+    if REGIME_AWARE_EXIT:
+        for s in signals:
+            s["target_mult_used"] = exit_profile["target_mult"]
+            s["regime_exit_bucket"] = exit_profile["bucket"]
+            s["regime_exit_score"] = exit_profile["score"]
 
     # ── Filter out tickers already held ──────────────────────────────────
     # Matches backtester.py:395 ("Skip if already holding") — without this,

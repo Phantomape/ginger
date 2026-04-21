@@ -229,7 +229,6 @@ def size_signals(signals, portfolio_value, risk_pct=None):
         portfolio_value (float):      Total portfolio value
         risk_pct        (float|None): Override risk per trade (default: RISK_PER_TRADE_PCT=1%).
                                       Pass 0.0075 for NEUTRAL, 0.005 for BEAR_SHALLOW.
-
     Returns:
         list[dict]: Signals with 'sizing' field added
     """
