@@ -1421,6 +1421,144 @@ def test_size_signals_respects_risk_pct_override():
     )
 
 
+def test_size_signals_derisks_low_tqs_signals():
+    """Low-TQS signals should keep only a fraction of the base risk budget."""
+    from portfolio_engine import size_signals
+    from constants import LOW_TQS_RISK_THRESHOLD, LOW_TQS_RISK_MULTIPLIER
+
+    sig = {
+        "ticker":      "GLD",
+        "strategy":    "trend_long",
+        "entry_price": 100.0,
+        "stop_price":  97.0,
+        "confidence_score": 1.0,
+        "trade_quality_score": LOW_TQS_RISK_THRESHOLD - 0.01,
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.01 * LOW_TQS_RISK_MULTIPLIER
+    assert sized["tqs_risk_multiplier_applied"] == LOW_TQS_RISK_MULTIPLIER
+    assert sized["trade_quality_score"] == sig["trade_quality_score"]
+
+
+def test_size_signals_zeroes_low_tqs_non_commodity_breakouts():
+    """Low-TQS non-commodity breakouts should lose all marginal risk budget."""
+    from portfolio_engine import size_signals
+    from constants import LOW_TQS_RISK_THRESHOLD
+
+    sig = {
+        "ticker": "MCD",
+        "strategy": "breakout_long",
+        "entry_price": 100.0,
+        "stop_price": 97.0,
+        "confidence_score": 1.0,
+        "trade_quality_score": LOW_TQS_RISK_THRESHOLD - 0.01,
+        "sector": "Consumer Discretionary",
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["position_value_usd"] == 0.0
+    assert sized["position_pct_of_portfolio"] == 0.0
+    assert sized["tqs_risk_multiplier_applied"] == 0.0
+    assert sized["low_tqs_haircut_exempt_sector"] is None
+
+
+def test_size_signals_zeroes_trend_industrials():
+    """Trend Industrials should lose all marginal risk budget in this experiment."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "CAT",
+        "strategy": "trend_long",
+        "entry_price": 500.0,
+        "stop_price": 485.0,
+        "sector": "Industrials",
+        "trade_quality_score": 0.95,
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["position_value_usd"] == 0.0
+    assert sized["tqs_risk_multiplier_applied"] == 1.0
+    assert sized["trend_industrials_risk_multiplier_applied"] == 0.0
+
+
+def test_size_signals_derisks_moderate_gap_trend_technology():
+    """Moderate-gap trend Technology setups should keep only 25% of base risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "AVGO",
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "sector": "Technology",
+        "trade_quality_score": 0.97,
+        "gap_vulnerability_pct": 0.05,
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["tqs_risk_multiplier_applied"] == 1.0
+    assert sized["trend_industrials_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 0.25
+
+
+def test_size_signals_keeps_full_risk_for_high_tqs_signals():
+    """High-TQS signals should preserve the caller's base risk budget."""
+    from portfolio_engine import size_signals
+    from constants import LOW_TQS_RISK_THRESHOLD
+
+    sig = {
+        "ticker":      "NVDA",
+        "strategy":    "trend_long",
+        "entry_price": 100.0,
+        "stop_price":  97.0,
+        "confidence_score": 1.0,
+        "trade_quality_score": LOW_TQS_RISK_THRESHOLD,
+    }
+
+    sized = size_signals([sig], 100_000.0, risk_pct=0.0075)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.0075
+    assert sized["risk_pct"] == 0.0075
+    assert sized["tqs_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_exempts_low_tqs_commodities_from_haircut():
+    """Low-TQS commodity breakouts should keep full size under the sector exemption."""
+    from portfolio_engine import size_signals
+    from constants import LOW_TQS_RISK_THRESHOLD
+
+    sig = {
+        "ticker": "GLD",
+        "strategy": "breakout_long",
+        "entry_price": 100.0,
+        "stop_price": 97.0,
+        "confidence_score": 1.0,
+        "trade_quality_score": LOW_TQS_RISK_THRESHOLD - 0.01,
+        "sector": "Commodities",
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.01
+    assert sized["tqs_risk_multiplier_applied"] == 1.0
+    assert sized["low_tqs_haircut_exempt_sector"] == "Commodities"
+
+
 def test_generate_signals_neutral_filter_strictly_greater_than_0_88():
     """NEUTRAL filter must be strictly > 0.88 — corrected from stale 0.90 threshold.
 
@@ -4115,6 +4253,61 @@ def test_backtester_strips_broken_local_proxy_env(monkeypatch):
     assert os.environ.get("ALL_PROXY") is None
 
 
+def test_yfinance_bootstrap_strips_proxy_and_sets_writable_cache(monkeypatch, tmp_path):
+    import yfinance_bootstrap as yb
+
+    monkeypatch.setenv("HTTP_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("ALL_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setattr(yb.tempfile, "gettempdir", lambda: str(tmp_path))
+
+    seen = {}
+
+    def fake_set_cache_location(path):
+        seen["path"] = path
+
+    monkeypatch.setattr(yb.yf_cache, "set_cache_location", fake_set_cache_location)
+
+    cache_dir = yb.configure_yfinance_runtime()
+
+    assert os.environ.get("HTTP_PROXY") is None
+    assert os.environ.get("HTTPS_PROXY") is None
+    assert os.environ.get("ALL_PROXY") is None
+    assert cache_dir == str(tmp_path / "ginger_yfinance_cache")
+    assert seen["path"] == cache_dir
+    assert os.path.isdir(cache_dir)
+
+
+def test_data_layer_import_applies_yfinance_bootstrap(monkeypatch):
+    import importlib
+    import data_layer
+
+    monkeypatch.setenv("HTTP_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("ALL_PROXY", "http://127.0.0.1:9")
+
+    importlib.reload(data_layer)
+
+    assert os.environ.get("HTTP_PROXY") is None
+    assert os.environ.get("HTTPS_PROXY") is None
+    assert os.environ.get("ALL_PROXY") is None
+
+
+def test_regime_import_applies_yfinance_bootstrap(monkeypatch):
+    import importlib
+    import regime
+
+    monkeypatch.setenv("HTTP_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:9")
+    monkeypatch.setenv("ALL_PROXY", "http://127.0.0.1:9")
+
+    importlib.reload(regime)
+
+    assert os.environ.get("HTTP_PROXY") is None
+    assert os.environ.get("HTTPS_PROXY") is None
+    assert os.environ.get("ALL_PROXY") is None
+
+
 def test_backtester_position_class():
     """Position tracks entry, stop, target, and sector."""
     from backtester import Position
@@ -5837,3 +6030,89 @@ def test_news_replay_t1_positive_does_not_veto(monkeypatch, tmp_path):
     attr = result["news_attribution"]
     assert attr["signals_vetoed_by_news"] == 0
     assert result["total_trades"] >= 1  # trade not blocked by positive news
+
+
+def test_get_earnings_data_as_of_uses_only_past_surprises():
+    """Historical as_of must not include surprises from future reports."""
+    import pandas as pd
+    from data_layer import get_earnings_data
+
+    idx = pd.to_datetime([
+        "2025-10-20",
+        "2026-01-20",
+        "2026-04-20",
+        "2026-07-20",
+    ])
+    dates_df = pd.DataFrame(
+        {
+            "Reported EPS": [1.0, 1.1, 1.2, None],
+            "Surprise(%)": [5.0, -3.0, 11.0, None],
+            "EPS Estimate": [None, None, None, 1.35],
+        },
+        index=idx,
+    )
+
+    result = get_earnings_data("TEST", as_of="2026-02-01", dates_df=dates_df)
+    assert result["historical_surprise_pct"] == [5.0, -3.0]
+    assert result["avg_historical_surprise_pct"] == 1.0
+    assert result["eps_actual_last"] == 1.1
+
+
+def test_get_earnings_data_as_of_uses_next_known_upcoming_row():
+    """Historical as_of should derive DTE and EPS estimate from the next future row."""
+    import pandas as pd
+    from data_layer import get_earnings_data
+
+    idx = pd.to_datetime([
+        "2026-01-20",
+        "2026-04-24",
+        "2026-07-20",
+    ])
+    dates_df = pd.DataFrame(
+        {
+            "Reported EPS": [1.1, None, None],
+            "Surprise(%)": [6.0, None, None],
+            "EPS Estimate": [None, 1.25, 1.4],
+        },
+        index=idx,
+    )
+
+    result = get_earnings_data("TEST", as_of="2026-04-20", dates_df=dates_df)
+    assert result["next_earnings_date"] == "2026-04-24"
+    assert result["days_to_earnings"] == 4
+    assert result["eps_estimate"] == 1.25
+
+
+def test_backfill_earnings_snapshots_writes_trading_day_files(tmp_path, monkeypatch):
+    """Backfill should emit one snapshot file per trading day in the requested range."""
+    import pandas as pd
+    from backfill_earnings_snapshots import backfill_earnings_snapshots
+
+    class FakeTicker:
+        def __init__(self, ticker):
+            self.ticker = ticker
+            self.info = {"forwardEps": 2.5}
+            self.calendar = None
+
+        def get_earnings_dates(self, limit=20):
+            idx = pd.to_datetime(["2026-01-20", "2026-01-23"])
+            return pd.DataFrame(
+                {
+                    "Reported EPS": [1.1, None],
+                    "Surprise(%)": [7.0, None],
+                    "EPS Estimate": [None, 1.25],
+                },
+                index=idx,
+            )
+
+    monkeypatch.setattr("backfill_earnings_snapshots.yf.Ticker", FakeTicker)
+    written = backfill_earnings_snapshots(
+        "2026-01-21",
+        "2026-01-22",
+        universe=["AAA", "BBB"],
+        data_dir=str(tmp_path),
+    )
+
+    assert len(written) == 2
+    assert (tmp_path / "earnings_snapshot_20260121.json").exists()
+    assert (tmp_path / "earnings_snapshot_20260122.json").exists()

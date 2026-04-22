@@ -2,7 +2,7 @@
 Data Layer: Collect structured market and event data.
 
 Provides:
-  - OHLCV price data (daily, 300 calendar days for 200-day MA)
+  - OHLCV price data
   - Earnings event data (next date, EPS estimates, historical surprise)
   - Trading universe from watchlist
 """
@@ -16,13 +16,20 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
+from yfinance_bootstrap import configure_yfinance_runtime
+
 logger = logging.getLogger(__name__)
+
+configure_yfinance_runtime()
 
 try:
     from filter import WATCHLIST
 except ImportError:
-    logger.warning("Could not import WATCHLIST from filter.py — using fallback")
-    WATCHLIST = ["NVDA", "META", "AMD", "QQQ", "TSLA", "MCD", "CRDO", "IAU", "NFLX", "APP", "GOOG", "COIN", "MU"]
+    logger.warning("Could not import WATCHLIST from filter.py; using fallback")
+    WATCHLIST = [
+        "NVDA", "META", "AMD", "QQQ", "TSLA", "MCD", "CRDO",
+        "IAU", "NFLX", "APP", "GOOG", "COIN", "MU",
+    ]
 
 
 def get_universe():
@@ -34,15 +41,15 @@ def get_universe():
     universe = set(WATCHLIST)
 
     for path in [
-        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
-        'data/open_positions.json',
+        os.path.join(os.path.dirname(__file__), "..", "data", "open_positions.json"),
+        "data/open_positions.json",
     ]:
         if os.path.exists(path):
             try:
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, "r", encoding="utf-8") as f:
                     positions = json.load(f)
-                for pos in positions.get('positions', []):
-                    ticker = pos.get('ticker')
+                for pos in positions.get("positions", []):
+                    ticker = pos.get("ticker")
                     if ticker:
                         universe.add(ticker)
             except Exception:
@@ -56,149 +63,196 @@ def get_ohlcv(ticker, lookback_days=400):
     """
     Download daily OHLCV data for a ticker.
 
-    400 calendar days ≈ 276 trading days.
-    Raised from 350 (≈241 trading days) → 400 to ensure 52-week high
-    computation works reliably.  feature_layer.py requires len(data) ≥ 252
-    for pct_from_52w_high; at 350 calendar days only ~241 trading days were
-    returned (241 < 252), causing _near_52w_high() to always return False and
-    suppressing the +0.40 quality bonus on every signal.
-    At 400 calendar days: ~276 trading days > 252 — 52w high computed correctly.
-
-    Returns:
-        pd.DataFrame with columns [Open, High, Low, Close, Volume], or None
+    400 calendar days is enough for 200-day MA + 52-week-high features.
+    Returns a DataFrame with [Open, High, Low, Close, Volume], or None.
     """
     try:
-        end   = datetime.now()
+        end = datetime.now()
         start = end - timedelta(days=lookback_days)
 
         data = yf.download(
-            ticker, start=start, end=end,
-            progress=False, auto_adjust=True
+            ticker,
+            start=start,
+            end=end,
+            progress=False,
+            auto_adjust=True,
         )
 
         if data is None or data.empty:
-            logger.warning(f"{ticker}: no OHLCV data returned")
+            logger.warning("%s: no OHLCV data returned", ticker)
             return None
 
-        # Flatten MultiIndex columns (yfinance multi-ticker quirk)
         if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
 
-        required = ['Open', 'High', 'Low', 'Close', 'Volume']
-        missing  = [c for c in required if c not in data.columns]
+        required = ["Open", "High", "Low", "Close", "Volume"]
+        missing = [c for c in required if c not in data.columns]
         if missing:
-            logger.warning(f"{ticker}: missing columns {missing}")
+            logger.warning("%s: missing columns %s", ticker, missing)
             return None
 
-        logger.info(f"{ticker}: {len(data)} trading days downloaded")
+        logger.info("%s: %s trading days downloaded", ticker, len(data))
         return data
 
     except Exception as e:
-        logger.error(f"{ticker}: OHLCV download failed — {e}")
+        logger.error("%s: OHLCV download failed - %s", ticker, e)
         return None
 
 
-def get_earnings_data(ticker):
+def _coerce_as_of_date(as_of):
+    """Normalize supported as_of inputs to a date object."""
+    if as_of is None:
+        return datetime.now().date()
+    if isinstance(as_of, str):
+        return pd.Timestamp(as_of).date()
+    if hasattr(as_of, "date"):
+        return as_of.date()
+    return as_of
+
+
+def _round_or_none(value, digits=4):
+    """Return a rounded float or None for NaN/invalid values."""
+    if value is None:
+        return None
+    try:
+        if pd.isna(value):
+            return None
+        return round(float(value), digits)
+    except Exception:
+        return None
+
+
+def _extract_earnings_dates_df(ticker_obj, ticker):
+    """Fetch the broader earnings timeline once so callers can reuse it."""
+    try:
+        return ticker_obj.get_earnings_dates(limit=20)
+    except Exception as e:
+        logger.debug("%s: earnings dates unavailable - %s", ticker, e)
+        return None
+
+
+def _populate_from_earnings_dates(result, dates_df, as_of_date):
+    """Fill result using only rows that would be knowable on as_of_date."""
+    if dates_df is None or dates_df.empty:
+        return
+
+    df = dates_df.copy()
+    df["_earnings_date"] = [pd.Timestamp(idx).date() for idx in df.index]
+    df = df.sort_values("_earnings_date")
+
+    if "Reported EPS" in df.columns:
+        past = df[(df["_earnings_date"] <= as_of_date) & df["Reported EPS"].notna()]
+        if not past.empty:
+            latest_past = past.iloc[-1]
+            result["eps_actual_last"] = _round_or_none(latest_past.get("Reported EPS"))
+
+            if "Surprise(%)" in past.columns:
+                tail = past.tail(4)
+                surprises = [
+                    round(float(s), 2)
+                    for s in tail["Surprise(%)"].tolist()
+                    if not pd.isna(s)
+                ]
+                result["historical_surprise_pct"] = surprises
+                if surprises:
+                    result["avg_historical_surprise_pct"] = round(
+                        sum(surprises) / len(surprises), 2
+                    )
+
+    future = df[df["_earnings_date"] > as_of_date]
+    if future.empty:
+        return
+
+    next_row = future.iloc[0]
+    next_date = next_row["_earnings_date"]
+    result["next_earnings_date"] = str(next_date)
+    result["days_to_earnings"] = int(np.busday_count(as_of_date, next_date))
+
+    if "EPS Estimate" in next_row.index:
+        result["eps_estimate"] = _round_or_none(next_row.get("EPS Estimate"))
+
+
+def _populate_from_calendar(result, calendar, as_of_date):
+    """Current-day fallback for next earnings date when earnings_dates lacks one."""
+    if calendar is None:
+        return
+
+    if isinstance(calendar, pd.DataFrame) and "Earnings Date" in calendar.index:
+        raw = calendar.loc["Earnings Date"].iloc[0]
+    elif isinstance(calendar, dict) and "Earnings Date" in calendar:
+        raw = calendar["Earnings Date"]
+        if isinstance(raw, (list, tuple)) and raw:
+            raw = raw[0]
+    else:
+        raw = None
+
+    if raw is None or pd.isna(raw):
+        return
+
+    earnings_date = raw.date() if hasattr(raw, "date") else raw
+    result["next_earnings_date"] = str(earnings_date)
+    result["days_to_earnings"] = int(np.busday_count(as_of_date, earnings_date))
+
+
+def _populate_from_info(result, info):
+    """Current-day fallback for EPS estimate when no dated row is available."""
+    if not isinstance(info, dict):
+        return
+
+    for key in ("forwardEps", "epsCurrentYear", "trailingEps"):
+        value = _round_or_none(info.get(key))
+        if value is not None:
+            result["eps_estimate"] = value
+            return
+
+
+def get_earnings_data(
+    ticker,
+    as_of=None,
+    *,
+    ticker_obj=None,
+    info=None,
+    calendar=None,
+    dates_df=None,
+):
     """
     Get earnings event data from yfinance.
 
-    Returns:
-        dict: {
-            next_earnings_date (str|None),
-            days_to_earnings   (int|None),
-            eps_estimate       (float|None),
-            eps_actual_last    (float|None),
-            historical_surprise_pct (list[float]),   # last ≤4 quarters
-            avg_historical_surprise_pct (float|None),
-        }
+    When `as_of` is historical, only rows already knowable on that date are used.
+    This avoids leaking future surprise history or future EPS estimates backward.
     """
+    as_of_date = _coerce_as_of_date(as_of)
+    current_mode = (as_of is None) or (as_of_date == datetime.now().date())
     result = {
-        "next_earnings_date":          None,
-        "days_to_earnings":            None,
-        "eps_estimate":                None,
-        "eps_actual_last":             None,
-        "historical_surprise_pct":     [],
+        "next_earnings_date": None,
+        "days_to_earnings": None,
+        "eps_estimate": None,
+        "eps_actual_last": None,
+        "historical_surprise_pct": [],
         "avg_historical_surprise_pct": None,
     }
 
     try:
-        t     = yf.Ticker(ticker)
-        today = datetime.now().date()
+        ticker_obj = ticker_obj or yf.Ticker(ticker)
+        if dates_df is None:
+            dates_df = _extract_earnings_dates_df(ticker_obj, ticker)
+        _populate_from_earnings_dates(result, dates_df, as_of_date)
 
-        # ── Next earnings date ──────────────────────────────────────────────
-        try:
-            cal = t.calendar
-            if cal is not None:
-                # Older yfinance: DataFrame with rows like 'Earnings Date'
-                if isinstance(cal, pd.DataFrame) and 'Earnings Date' in cal.index:
-                    raw = cal.loc['Earnings Date'].iloc[0]
-                    if pd.notna(raw):
-                        ed = raw.date() if hasattr(raw, 'date') else raw
-                        result["next_earnings_date"] = str(ed)
-                        result["days_to_earnings"]   = int(np.busday_count(today, ed))
-                # Newer yfinance: dict
-                elif isinstance(cal, dict) and 'Earnings Date' in cal:
-                    raw = cal['Earnings Date']
-                    if isinstance(raw, (list, tuple)) and raw:
-                        raw = raw[0]
-                    if pd.notna(raw):
-                        ed = raw.date() if hasattr(raw, 'date') else raw
-                        result["next_earnings_date"] = str(ed)
-                        result["days_to_earnings"]   = int(np.busday_count(today, ed))
-        except Exception as e:
-            logger.debug(f"{ticker}: calendar unavailable — {e}")
+        if current_mode and result["next_earnings_date"] is None:
+            try:
+                calendar = ticker_obj.calendar if calendar is None else calendar
+                _populate_from_calendar(result, calendar, as_of_date)
+            except Exception as e:
+                logger.debug("%s: calendar unavailable - %s", ticker, e)
 
-        # ── EPS estimate from info ──────────────────────────────────────────
-        try:
-            info = t.info
-            for key in ('forwardEps', 'epsCurrentYear', 'trailingEps'):
-                val = info.get(key)
-                if val is not None and not (isinstance(val, float) and val != val):
-                    result["eps_estimate"] = round(float(val), 4)
-                    break
-        except Exception as e:
-            logger.debug(f"{ticker}: EPS estimate unavailable — {e}")
-
-        # ── Historical earnings surprise ────────────────────────────────────
-        try:
-            dates_df = t.get_earnings_dates(limit=10)
-            if dates_df is not None and not dates_df.empty:
-                # Past earnings: 'Reported EPS' is filled in
-                past = dates_df[dates_df['Reported EPS'].notna()].head(4)
-                if not past.empty:
-                    result["eps_actual_last"] = float(past['Reported EPS'].iloc[0])
-
-                    if 'Surprise(%)' in past.columns:
-                        surprises = [
-                            round(float(s), 2)
-                            for s in past['Surprise(%)'].dropna()
-                        ]
-                        result["historical_surprise_pct"] = surprises
-                        if surprises:
-                            result["avg_historical_surprise_pct"] = round(
-                                sum(surprises) / len(surprises), 2
-                            )
-
-                # Upcoming (no Reported EPS): fill next_earnings_date if not yet set
-                upcoming = dates_df[dates_df['Reported EPS'].isna()]
-                if not upcoming.empty and result["next_earnings_date"] is None:
-                    raw = upcoming.index[0]
-                    ed  = raw.date() if hasattr(raw, 'date') else raw
-                    result["next_earnings_date"] = str(ed)
-                    result["days_to_earnings"]   = int(np.busday_count(today, ed))
-
-                # EPS estimate from upcoming row
-                if ('EPS Estimate' in upcoming.columns
-                        and not upcoming.empty
-                        and result["eps_estimate"] is None):
-                    est = upcoming['EPS Estimate'].iloc[0]
-                    if pd.notna(est):
-                        result["eps_estimate"] = round(float(est), 4)
-
-        except Exception as e:
-            logger.debug(f"{ticker}: earnings dates unavailable — {e}")
+        if current_mode and result["eps_estimate"] is None:
+            try:
+                info = ticker_obj.info if info is None else info
+                _populate_from_info(result, info)
+            except Exception as e:
+                logger.debug("%s: EPS estimate unavailable - %s", ticker, e)
 
     except Exception as e:
-        logger.error(f"{ticker}: earnings data collection failed — {e}")
+        logger.error("%s: earnings data collection failed - %s", ticker, e)
 
     return result

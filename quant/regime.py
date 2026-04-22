@@ -16,7 +16,11 @@ from datetime import datetime, timedelta
 import yfinance as yf
 import pandas as pd
 
+from yfinance_bootstrap import configure_yfinance_runtime
+
 logger = logging.getLogger(__name__)
+
+configure_yfinance_runtime()
 
 REGIME_TICKERS = ["SPY", "QQQ"]
 MA_PERIOD      = 200

@@ -505,16 +505,31 @@ def main():
     # Always generate the prompt — quant signals and position management do not
     # require news. On news-quiet days the prompt still surfaces exit signals
     # and high-confidence quant signals that stand alone (confidence >= 0.85).
+    #
+    # P-LLM coverage note:
+    #   If OPENAI_API_KEY is present, call the API and persist the dated advice file.
+    #   llm_advisor.save_advice() mirrors that file to llm_prompt_resp_YYYYMMDD.json,
+    #   which is what backtester --replay-llm consumes. Without this branch, the main
+    #   daily pipeline only saves prompts and replay coverage never compounds.
     try:
         from llm_advisor import get_investment_advice, save_advice
+        save_prompt_only = not bool(os.environ.get("OPENAI_API_KEY"))
+        if save_prompt_only:
+            log.info(
+                "OPENAI_API_KEY not set — saving prompt only. "
+                "Set OPENAI_API_KEY to auto-save dated advice + replay log."
+            )
         result = get_investment_advice(
             trade_items,           # may be [] on quiet news days — that's fine
             open_positions = open_positions,
             trend_signals  = trend_signals_dict,
-            save_prompt_only = True,   # saves to data/llm_prompt_YYYYMMDD.txt
+            save_prompt_only = save_prompt_only,
         )
         if result["success"]:
             log.info(result["advice"])
+            if not save_prompt_only:
+                advice_output = f"data/investment_advice_{today}.json"
+                save_advice(result["advice"], advice_output, result["token_usage"])
         else:
             log.error(f"LLM advisor: {result['error']}")
     except Exception as e:

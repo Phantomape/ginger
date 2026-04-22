@@ -72,6 +72,7 @@ from constants import (
     REGIME_AWARE_EXIT,
 )
 from regime_exit import compute_regime_exit_profile
+from yfinance_bootstrap import configure_yfinance_runtime
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
@@ -165,26 +166,12 @@ class BacktestEngine:
         self._earnings_snapshots = self._load_earnings_snapshots()
 
     def _sanitize_proxy_env(self):
-        """Drop broken localhost proxy injection for market-data downloads.
-
-        Some desktop sessions inject HTTP(S)_PROXY=http://127.0.0.1:9, which
-        blackholes yfinance requests. The backtester needs stable historical
-        OHLCV, so we prefer direct access when the proxy points at that known
-        invalid sink.
-        """
-        for key in PROXY_ENV_VARS:
-            value = os.environ.get(key)
-            if value and "127.0.0.1:9" in value:
-                os.environ.pop(key, None)
+        """Backward-compatible wrapper around the shared yfinance bootstrap."""
+        configure_yfinance_runtime()
 
     def _configure_yfinance_cache(self):
-        """Force yfinance cache into a known writable temp directory."""
-        cache_dir = os.path.join(tempfile.gettempdir(), "ginger_yfinance_cache")
-        os.makedirs(cache_dir, exist_ok=True)
-        try:
-            yf_cache.set_cache_location(cache_dir)
-        except Exception as e:
-            logger.debug(f"yfinance cache location unchanged: {e}")
+        """Backward-compatible wrapper around the shared yfinance bootstrap."""
+        configure_yfinance_runtime()
 
     def _load_earnings_snapshots(self):
         """Load all data/earnings_snapshot_YYYYMMDD.json files (written by run.py P-ERN).
