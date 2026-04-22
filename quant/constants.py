@@ -12,6 +12,27 @@ module because they belong to a single domain.
 RISK_PER_TRADE_PCT      = 0.01       # 1% portfolio risk per new trade (BULL default)
 RISK_PER_TRADE_NEUTRAL  = 0.0075     # 0.75% for NEUTRAL regime
 RISK_PER_TRADE_BEAR     = 0.005      # 0.50% for BEAR_SHALLOW regime
+LOW_TQS_RISK_THRESHOLD  = 0.85       # De-risk lower-quality setups that still pass entry gates
+LOW_TQS_RISK_MULTIPLIER = 0.25       # Keep only 25% of the normal risk budget below the TQS threshold
+LOW_TQS_HAIRCUT_EXEMPT_SECTORS = ("Commodities",)
+LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER = 0.0
+TREND_INDUSTRIALS_RISK_MULTIPLIER = 0.0
+TREND_TECH_GAP_VULN_MIN = 0.04
+TREND_TECH_GAP_VULN_MAX = 0.06
+TREND_TECH_GAP_RISK_MULTIPLIER = 0.25
+# Low-TQS breakouts were net-negative in Consumer Discretionary/Financials/Technology
+# but net-positive in Commodities across the validated windows. Keep the accepted
+# haircut everywhere else and exempt only the defensive commodity breakout pocket.
+# The remaining non-commodity low-TQS breakout cohort stayed negative across the
+# validated windows, so fully zero its marginal risk instead of merely shrinking it.
+# Current repo-state cohort audit shows `trend_long` Industrials remained a drag
+# across the primary, bull, and weak comparison windows. Zeroing only that
+# strategy+sector bucket is the next minimal allocation experiment.
+# The next surviving allocation leak is narrower: `trend_long` Technology names
+# with a 4-6% stop gap repeatedly dragged in the bull and weak windows, while the
+# primary window had no qualifying cohort. De-risk only that moderate-gap pocket.
+# This is a sizing rule, not an entry ban: keep the cohort tradable, but at 25%
+# of normal risk because 0x turned out worse than 0.25x in follow-up testing.
 MAX_POSITION_PCT        = 0.20       # Single position capped at 20% of portfolio
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap

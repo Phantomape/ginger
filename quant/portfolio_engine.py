@@ -14,6 +14,14 @@ from constants import (
     RISK_PER_TRADE_PCT,
     MAX_PORTFOLIO_HEAT,
     MAX_POSITION_PCT,
+    LOW_TQS_RISK_THRESHOLD,
+    LOW_TQS_RISK_MULTIPLIER,
+    LOW_TQS_HAIRCUT_EXEMPT_SECTORS,
+    LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER,
+    TREND_INDUSTRIALS_RISK_MULTIPLIER,
+    TREND_TECH_GAP_VULN_MIN,
+    TREND_TECH_GAP_VULN_MAX,
+    TREND_TECH_GAP_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
     ATR_STOP_MULT,
@@ -232,6 +240,26 @@ def size_signals(signals, portfolio_value, risk_pct=None):
     Returns:
         list[dict]: Signals with 'sizing' field added
     """
+    def _zero_risk_sizing(base_risk_pct, entry_price, stop_price):
+        return {
+            "portfolio_value_usd": round(portfolio_value, 2),
+            "risk_pct": 0.0,
+            "risk_amount_usd": 0.0,
+            "entry_price": round(entry_price, 2),
+            "stop_price": round(stop_price, 2),
+            "risk_per_share": round(entry_price - stop_price, 2),
+            "net_risk_per_share": round(
+                (entry_price - stop_price)
+                + entry_price * ROUND_TRIP_COST_PCT
+                + entry_price * EXEC_LAG_PCT,
+                4,
+            ),
+            "shares_to_buy": 0,
+            "position_value_usd": 0.0,
+            "position_pct_of_portfolio": 0.0,
+            "base_risk_pct": base_risk_pct,
+        }
+
     effective_risk_pct = risk_pct if risk_pct is not None else RISK_PER_TRADE_PCT
     sized = []
     for sig in signals:
@@ -239,7 +267,47 @@ def size_signals(signals, portfolio_value, risk_pct=None):
         stop     = sig.get("stop_price")
         strategy = sig.get("strategy", "")
         if entry and stop and portfolio_value:
-            if strategy == "earnings_event_long":
+            signal_risk_pct = effective_risk_pct
+            trade_quality_score = sig.get("trade_quality_score")
+            sector = sig.get("sector")
+            gap_vulnerability_pct = sig.get("gap_vulnerability_pct")
+            is_low_tqs = (
+                trade_quality_score is not None
+                and trade_quality_score < LOW_TQS_RISK_THRESHOLD
+            )
+            is_breakout_non_exempt = (
+                strategy == "breakout_long"
+                and sector not in LOW_TQS_HAIRCUT_EXEMPT_SECTORS
+            )
+            tqs_de_risk_applied = (
+                is_low_tqs
+                and sector not in LOW_TQS_HAIRCUT_EXEMPT_SECTORS
+            )
+            tqs_risk_multiplier = 1.0
+            if tqs_de_risk_applied:
+                if is_breakout_non_exempt:
+                    tqs_risk_multiplier = LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER
+                else:
+                    tqs_risk_multiplier = LOW_TQS_RISK_MULTIPLIER
+                signal_risk_pct *= tqs_risk_multiplier
+            trend_industrials_risk_multiplier = 1.0
+            if strategy == "trend_long" and sector == "Industrials":
+                trend_industrials_risk_multiplier = TREND_INDUSTRIALS_RISK_MULTIPLIER
+                signal_risk_pct *= trend_industrials_risk_multiplier
+            trend_tech_gap_risk_multiplier = 1.0
+            if (
+                strategy == "trend_long"
+                and sector == "Technology"
+                and gap_vulnerability_pct is not None
+                and TREND_TECH_GAP_VULN_MIN <= gap_vulnerability_pct < TREND_TECH_GAP_VULN_MAX
+            ):
+                # Accepted cohort rule: this pocket was too fragile for full size,
+                # but a full ban (0x) proved worse than keeping a small 0.25x stake.
+                trend_tech_gap_risk_multiplier = TREND_TECH_GAP_RISK_MULTIPLIER
+                signal_risk_pct *= trend_tech_gap_risk_multiplier
+            if signal_risk_pct <= 0:
+                sizing = _zero_risk_sizing(effective_risk_pct, entry, stop)
+            elif strategy == "earnings_event_long":
                 # Gap risk dominates: size based on max(ATR stop dist, 8% gap risk).
                 # For typical ATR ≤ 5%: gap_risk = 8% > ATR stop ≤ 7.5% → gap floor applies.
                 # For ATR = 5% (near the 5% gate): max(7.5%, 8%) = 8% — gap floor applies.
@@ -248,15 +316,27 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 gap_risk  = entry * EARNINGS_GAP_RISK_PCT
                 effective_stop = round(entry - max(atr_risk, gap_risk), 2)
                 sizing = compute_position_size(portfolio_value, entry, effective_stop,
-                                               risk_pct=effective_risk_pct)
+                                               risk_pct=signal_risk_pct)
                 if sizing:
                     sizing["earnings_gap_risk_applied"]  = True
                     sizing["gap_risk_pct"]               = EARNINGS_GAP_RISK_PCT
                     sizing["effective_stop_for_sizing"]  = effective_stop
             else:
                 sizing = compute_position_size(portfolio_value, entry, stop,
-                                               risk_pct=effective_risk_pct)
+                                               risk_pct=signal_risk_pct)
             if sizing:
+                sizing["base_risk_pct"] = effective_risk_pct
+                sizing["trade_quality_score"] = trade_quality_score
+                sizing["low_tqs_haircut_exempt_sector"] = (
+                    sector if sector in LOW_TQS_HAIRCUT_EXEMPT_SECTORS else None
+                )
+                sizing["tqs_risk_multiplier_applied"] = tqs_risk_multiplier
+                sizing["trend_industrials_risk_multiplier_applied"] = (
+                    trend_industrials_risk_multiplier
+                )
+                sizing["trend_tech_gap_risk_multiplier_applied"] = (
+                    trend_tech_gap_risk_multiplier
+                )
                 sig = {**sig, "sizing": sizing}
         sized.append(sig)
     return sized
