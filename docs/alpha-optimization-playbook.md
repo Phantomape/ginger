@@ -62,13 +62,17 @@
 - breakout 上成功的排序优化，不应默认迁移到 trend
 - trend 的下一步主线应是 `exit alpha`，不是继续排列 ranking key
 
-### 1.3 earnings_event_long 不是长期被否定，而是当前被数据阻塞
+### 1.3 earnings_event_long 不是长期被否定，但也不再是“只差补数据”
 
 长期判断：
 
 - PEAD 作为大类 alpha 仍然成立
-- 但当前仓库里的 `earnings_event_long` 仍被 P-ERN 数据质量阻塞
-- 在 `earnings_snapshot` 覆盖不足前，默认禁用 C 策略
+- `earnings_snapshot` 覆盖已经足够让仓库对 C 策略做真实历史检验
+- 当前问题已从“纯数据阻塞”转成“机制仍然不够好”：
+  repaired-data 之后，单字段 gate、小型 checklist、共享质量分数 gate、
+  standalone-day gate 都只能减轻拖累，仍不能稳定让 `A+B+C` 跑赢 accepted `A+B`
+- 因此，`C strategy revival` 现在默认需要“更丰富的事件分级或更强的边际槽位价值机制”，
+  而不是继续把“再补一点数据”当成主线
 
 ### 1.4 LLM 更适合做 ranking / grading，不适合做硬风控
 
@@ -192,13 +196,17 @@
   - `regime-aware exit` 已经带来正向提升
   - exit 对收益分布的影响通常大于 entry 微调
 
-### A2. C 策略当前差，不一定是策略差，可能是数据差
+### A2. C 策略当前差，已经不能再默认归因于数据差
 
 - 证据级别：Tier 1 + Tier 3
-- 当前状态：blocked by P-ERN
+- 当前状态：needs a new mechanism
 - 依据：
-  - PEAD 大类成立
-  - 当前实现缺少关键历史快照，无法正确过滤低质量 earnings 信号
+- PEAD 大类成立
+- repaired-data 之后，`earnings_event_long` 已经通过多轮真实机制检验
+- 目前被证伪的是“低复杂度复活路线”：
+  单字段 surprise gate、技术 gate、小型复合 checklist、
+  standalone-day gate、共享 `trade_quality_score` gate 都不足以稳定胜过 accepted `A+B`
+- 因此，后续若重启 C，不应再默认从 scalar threshold / checklist 家族继续扫
 
 ### A3. LLM 的最优角色更可能是 ranking，而不是只做 veto
 
@@ -250,13 +258,21 @@
 ### 6.2 暂缓方向
 
 - `LLM soft ranking`
-  - 原因：P-LLM 覆盖不足
+  - 原因：仍被 candidate-level replay coverage 阻塞
+  - 当前真正 go/no-go 指标不是日覆盖率，而是
+    `candidate_day_coverage_fraction` / `candidate_signal_coverage_fraction`
+  - 截至 `exp-20260422-003`，固定主窗口仍只有 `3/31` candidate days、
+    `3/44` candidate signals 被覆盖，缺口是明确的 missing-date backlog，
+    不是抽象的“样本偏少”
 
 - `C strategy revival`
-  - 原因：P-ERN 数据不足
+  - 原因：不再是数据不足，而是缺少 genuinely richer mechanism
+  - repaired-data 已经把 C 从“测不准”推进到“能测但当前机制不够强”
+  - 默认不要再做另一轮 scalar gate / checklist / standalone-day 变体
 
 - `PEAD quality scoring`
-  - 原因：依赖 C 策略先完成基本数据修复
+  - 原因：简单 quality scoring 家族已经基本被证伪
+  - 若重启，应从 richer event grading 或 marginal-slot evidence 出发
 
 ---
 
@@ -317,14 +333,17 @@
 
 在 `exp-20260420-002` 之后，默认优先级为：
 
-1. `NEW-A4 / in-trade regime update`
-   原因：最符合当前机制启发，且不依赖新外部数据
+1. `NEW-A2 / LLM soft ranking`
+   原因：仍是当前最高上限的 alpha 方向，且已明确知道阻断项是 candidate-level replay coverage，
+   不是方向不清楚
 
-2. `NEW-A2 / LLM soft ranking`
-   原因：LLM 更合理的职责边界是 ranking，但受 P-LLM 阻塞
+2. `NEW-A3 / C strategy revival`
+   原因：PEAD 大类仍成立，但仓库里的低复杂度复活路线已经基本证伪；
+   只有出现 genuinely richer event-grading / marginal-slot mechanism 时才值得重启
 
-3. `NEW-A3 / C strategy revival`
-   原因：PEAD 大类成立，但受 P-ERN 阻塞
+3. 仅在出现 genuinely new mechanism 时，才重开 unblocked A+B alpha work
+   原因：当前 accepted A+B stack 周围的 ranking / scalar / coarse cohort / fast-confirm
+   continuation 分支已经高度饱和，不应默认再做另一轮微调
 
 4. 暂缓新的 `trend_long ranking`
    原因：已有明确失败证据；除非出现新的 slot collision 证据，否则不应重复
@@ -612,6 +631,155 @@ Mechanism card:
 - Priority implication:
   downgrade the whole class of standalone-day or "only when no same-day A/B exists" C gates. If `C strategy revival` is revisited again, it must combine richer event grading with explicit marginal-slot evidence, not merely isolate C from A+B competition. This further strengthens the practical ordering: `LLM soft ranking` remains the highest-upside direction once replay coverage is credible, while repaired-data C remains secondary until a stronger mechanism appears.
 
+- `exp-20260421-029` tested the first explicit `breakout_long` fast-confirm exit idea after the repo had already saturated the easier breakout quality / ranking branch: if a breakout is still below entry after 2 trading days and has never reached even `0.5R` best excursion, force an early close.
+- Result summary:
+  - first validation pass looked mildly constructive (`primary EV 0.8299 -> 0.8321`, `bull EV 0.1255 -> 0.1798`, `weak EV 0.0144 -> 0.0163`)
+  - immediate rerun of the exact same config flipped the primary verdict negative (`primary EV 0.8299 -> 0.7241`) while the comparison windows stayed positive
+  - the difference was not mechanism drift but data-path drift: different yfinance rate-limit failures removed different tickers across reruns (`NFLX` / `JPM` first, `COIN` later)
+- Mechanism implication:
+  breakout early follow-through is still a plausible alpha carrier, and a fast-confirm exit is the right mechanism class to test next rather than another broad filter or another coarse allocation dial. But a small edge in this branch is not promotable unless the same-data rerun is deterministic.
+- Priority implication:
+  keep `breakout fast-confirm exit` in the "plausible but unaccepted" bucket. Do not promote it from small unstable deltas, and do not revisit it on the current live-download path without pinned local OHLCV snapshots or another deterministic cache. This is now a doctrine-level warning: when a mechanism's sign flips across immediate reruns because vendor downloads changed, the right conclusion is "measurement instability", not "new alpha" and not "mechanism falsified".
+
+- `exp-20260422-001` converted that doctrine warning into a usable measurement tool: `quant/backtester.py` can now save and reload OHLCV snapshots for a named window.
+- Result summary:
+  - live primary-window save run (`2025-10-23 -> 2026-04-21`, `--regime-aware-exit`) produced `EV 0.8470`, `sharpe_daily 3.51`, `return 24.13%`, `trade_count 23`
+  - replaying the same window from `data/ohlcv_snapshot_20251023_20260421.json` reproduced those metrics exactly
+  - targeted regression tests now prove the snapshot path round-trips OHLCV and bypasses `yf.download(...)`
+- Mechanism implication:
+  for small-delta A+B work, OHLCV download drift is no longer an acceptable excuse. The repository now has a fixed-price replay path, so future fast-confirm / post-entry / allocation experiments can be judged on identical price history instead of vendor noise.
+- Priority implication:
+  this does not change the top strategic ordering: `LLM soft ranking` is still the highest-upside branch and still blocked by coverage. But it upgrades `breakout fast-confirm exit` from "plausible but currently untestable" to "plausible and now credibly testable on a fixed snapshot." If a snapshot-backed rerun still drifts, the next suspect is the earnings-calendar path, not OHLCV.
+
+- `exp-20260422-002` ran that promised fixed-snapshot rerun of `breakout fast-confirm exit` on `data/ohlcv_snapshot_20251023_20260421.json`.
+- Result summary:
+  - deterministic primary window regressed materially (`EV 0.8470 -> 0.4767`, `sharpe_daily 3.51 -> 3.23`, `return 24.13% -> 14.76%`, `max_drawdown 2.60% -> 3.32%`)
+  - six `breakout_no_confirm` exits fired, and the rule increased trade count (`23 -> 26`) while collapsing win rate (`65.2% -> 42.3%`)
+  - because the same-data primary verdict was strongly negative, there was no need for additional multi-window spend
+- Mechanism implication:
+  the old uncertainty is gone. Early breakout under-confirmation by itself is not a useful exit signal in the current accepted A+B stack; the rule cuts too many valid continuations before they get time to work.
+- Priority implication:
+  remove `breakout fast-confirm exit` from the short list of plausible unblocked A+B retries. The practical ordering tightens again:
+  1. `LLM soft ranking` remains the highest-upside direction, still blocked by candidate-level replay coverage.
+  2. `C strategy revival` remains secondary until a genuinely richer event-grading mechanism appears.
+  3. Any future breakout exit work must start from a genuinely different post-entry mechanism, not another "failed to confirm quickly" variant on the same idea.
+
+- `exp-20260421-027` clarified the remaining `LLM soft ranking` blocker: calendar-day coverage is not the right readiness gauge.
+- Result summary:
+  - current primary replay window (`2025-10-23 -> 2026-04-21`) shows `6/123` archived trading days, but only `3/34` candidate days and `4/51` candidate signals were actually covered by LLM archives
+  - replay metrics stayed unchanged (`EV 0.8676`, `sharpe_daily 3.55`) because this was a measurement-only change
+- Mechanism implication:
+  the real blocker is candidate-level sample size, not raw day count. A superficially non-zero day-coverage number can still hide an underpowered LLM experiment when almost all uncovered days had no candidates anyway.
+- Priority implication:
+  keep `LLM soft ranking` as the top strategic direction, but do not treat `~5%` calendar coverage as progress enough on its own. Future go/no-go checks for LLM alpha should read `candidate_day_coverage_fraction` and `candidate_signal_coverage_fraction` first.
+
+- `exp-20260422-003` turned that readiness rule into an actionable backlog: the backtester now surfaces the exact missing candidate dates and the per-date candidate counts, not just aggregate fractions.
+- Result summary:
+  - fixed-snapshot primary replay (`2025-10-23 -> 2026-04-21`) stayed bit-identical on strategy metrics (`EV 0.8369`, `sharpe_daily 3.49`)
+  - the blocker is now explicit: only `3/31` candidate days and `3/44` candidate signals are covered, leaving `28` missing candidate dates in the primary window
+  - CLI output now previews the uncovered dates directly (starting with `20251028`, `20251029`, `20251030`, `20251031`, `20251103`)
+- Mechanism implication:
+  the remaining LLM blocker is no longer just "small sample." It is a concrete archive backlog on specific candidate-bearing dates. That makes the next replay-coverage push operational rather than conceptual.
+- Priority implication:
+  do not spend another round merely re-proving that LLM coverage is low. Use the explicit missing candidate-date inventory as the go-forward target list, and keep `LLM soft ranking` as the top strategy branch until that inventory is materially reduced.
+
+- `exp-20260422-007` showed that "prompt-ready" is still too coarse a label for the LLM backlog.
+- Result summary:
+  - `20260219` was not a true missing-response day; it already had a real saved model reply in `llm_output_20260219.json`, which was recoverable into `llm_prompt_resp_20260219.json`
+  - deterministic primary replay stayed bit-identical on trading metrics (`EV 0.8369`, `sharpe_daily 3.49`), but candidate coverage improved from `3/31` to `4/31` days and from `3/44` to `4/44` signals
+  - `20260312` still has only a prompt/report pair, so it remains a real response gap inside the repo
+- Mechanism implication:
+  some backlog dates can hide recoverable raw-response artifacts outside the canonical replay filename. The real distinction is now:
+  1. recoverable from a saved raw model response
+  2. prompt-only, still missing a response
+  3. true archive hole with neither prompt nor response
+- Priority implication:
+  before asking for more forward sample, inspect backlog dates for `llm_output_YYYYMMDD.json` or other real saved response artifacts and backfill those first. But do not overclaim progress: even after this recovery, `LLM soft ranking` remains measurement-blocked because `4/31` candidate days is still too small for a ranking experiment.
+
+- `exp-20260422-008` showed that even "prompt-only vs missing" is still too coarse for the remaining LLM blocker.
+- Result summary:
+  - deterministic primary replay again stayed bit-identical (`EV 0.8369`, `sharpe_daily 3.49`)
+  - backlog classification tightened to four practical tiers: `raw_response_recoverable`, `prompt_only`, `context_only`, `archive_hole`
+  - in the current primary window there are `0` remaining raw-response recoveries, `1` prompt-only day (`20260312`), and `26` context-only days; `earnings_snapshot_YYYYMMDD.json` exists on all `27` missing candidate days, but `quant_signals` / `trend_signals` survive on only `1` day each
+- Mechanism implication:
+  the remaining LLM blocker is no longer "maybe there are still hidden replies somewhere." That branch is locally exhausted for the current primary backlog. The dominant missing mass is now partial daily context without a replayable LLM decision.
+- Priority implication:
+  stop spending cycles re-auditing the same backlog for hidden `llm_output` files unless new artifacts appear. The next meaningful unblock path is either:
+  1. regenerate prompt/response archives for historical candidate days from richer saved pipeline context, or
+  2. accumulate more forward candidate-day archives.
+  Until one of those happens, `LLM soft ranking` remains the highest-upside branch but still measurement-blocked.
+
+- `exp-20260422-010` showed that even candidate-level replay coverage is still too optimistic if it ignores production-context alignment.
+- Result summary:
+  - deterministic primary replay stayed bit-identical (`EV 0.8369`, `sharpe_daily 3.49`)
+  - the old headline blocker was `4/31` covered candidate days and `4/44` covered candidate signals
+  - after comparing covered backtest candidate dates against saved production `quant_signals_YYYYMMDD.json`, only `1/31` candidate days and `1/44` candidate signals were actually production-context aligned
+  - two of the four covered days (`20260416`, `20260421`) had replay files but production `quant_signals=[]`, while one covered day (`20260219`) lacked a saved production quant-signals file entirely
+- Mechanism implication:
+  a dated LLM response file is not automatically a usable soft-ranking sample. The replay archive and the production-side candidate set must refer to the same practical trade opportunity set; otherwise "covered day" can still be a context-mismatched sample that should not count toward LLM alpha readiness.
+- Priority implication:
+  upgrade the LLM blocker definition again. Future go/no-go checks for `LLM soft ranking` should read `production_aligned_candidate_day_fraction` and `production_aligned_candidate_signal_fraction` before the older raw candidate-coverage metrics. Do not treat `production_quant_empty` covered days as progress toward ranking readiness.
+
+- `exp-20260422-011` showed that even production-aligned covered days can still overstate `LLM soft ranking` readiness if the prompt itself was program-locked before the model could make a real new-trade decision.
+- Result summary:
+  - deterministic primary replay again stayed bit-identical (`EV 0.8369`, `sharpe_daily 3.49`)
+  - replay archives can now carry prompt-time context (`signals_presented`, `new_trade_locked`, `account_state`) automatically via dated advice saves, and alignment can fall back to `llm_decision_log_YYYYMMDD.json` for older archives
+  - the practical go/no-go metric is now `ranking_eligible_candidate_day_fraction`, not just `production_aligned_candidate_day_fraction`; in the current primary window that still sits at only `1/31` days and `1/44` signals
+- Mechanism implication:
+  "dated reply exists" and even "production candidates overlap" are still not enough by themselves. A covered day only counts toward soft-ranking readiness when Task A was actually eligible for a new-trade choice and the prompt-time candidate set overlaps the backtest pre-LLM candidate set.
+- Priority implication:
+  tighten the blocker definition one more time. Future `LLM soft ranking` work should read `ranking_eligible_candidate_day_fraction_of_total` and `ranking_eligible_candidate_signal_fraction_of_total` first. Do not promote covered days from heat-locked / rule-locked prompts to alpha-readiness progress.
+
+- `exp-20260422-004` tested the cleanest remaining low-complexity repaired-data `C strategy revival` that had not yet been logged: use the existing cross-strategy `trade_quality_score` as a single gate for `earnings_event_long`, instead of adding another bespoke event checklist.
+- Result summary:
+  - ungated `A+B+C` remained materially worse than the accepted `A+B` stack on the deterministic primary snapshot (`EV 0.6229` vs `0.8470`)
+  - sweeping `C`-only `trade_quality_score` thresholds from `0.65` to `0.85` improved on ungated `A+B+C`, but the best threshold (`0.85`) still failed to beat `A+B` (`primary EV 0.8122 < 0.8470`, middle covered subwindow `0.2230 < 0.2383`)
+  - at that best threshold, the mechanism left only `1` surviving primary-window `earnings_event_long` trade, effectively approximating "disable C again" rather than creating a positive repaired-data C edge
+- Mechanism implication:
+  repaired-data `C strategy revival` is now downgraded beyond just event-specific checklists. Even a shared cross-strategy quality metric is not enough to rescue C with a simple scalar gate. The missing edge is not merely "filter out the low-quality C names"; it still requires richer event grading or a stronger marginal-value mechanism than a one-number threshold.
+- Priority implication:
+  downgrade the broader class of low-complexity `C` revival attempts built from scalar gates, even when the scalar is a reused cross-strategy score rather than a bespoke earnings rule. Practically, this strengthens the current ordering:
+  1. `LLM soft ranking` remains the highest-upside direction, still blocked by candidate-level replay coverage.
+  2. `C strategy revival` should not be revisited through another simple threshold/checklist family by default.
+  3. Unblocked A+B micro-tuning remains secondary to clearing the LLM blocker or finding a genuinely richer C event-grading mechanism.
+
+- `exp-20260422-005` tested the cleanest remaining low-complexity same-day slot-interaction variant for repaired-data `C strategy revival`: keep the accepted A+B stack unchanged, but when multiple `earnings_event_long` candidates appear on the same day, keep only the single highest-`trade_quality_score` C candidate and zero the rest.
+- Result summary:
+  - deterministic primary snapshot improved only trivially versus ungated `A+B+C` (`EV 0.6316 -> 0.6366`) and still remained far below accepted `A+B` (`0.6366 < 0.8470`)
+  - late-2025 bull subwindow was a near-null/slight regression (`0.2280 -> 0.2276`)
+  - early-2026 continuation subwindow was a strict null (`0.1482 -> 0.1482`)
+  - Feb-Apr stress subwindow regressed materially (`0.1073 -> 0.0807`)
+- Mechanism implication:
+  the current C drag is not primarily caused by issuing too many same-day earnings candidates. Even after reducing daily C multiplicity to a single top-ranked event, the surviving candidate is still too weak to create a positive marginal edge. That means the missing mechanism is not just slot crowding; it is single-name event quality discrimination.
+- Priority implication:
+  downgrade another tempting C continuation family alongside scalar gates and standalone-day rules. Do not reopen repaired-data `C strategy revival` with another light same-day crowding tweak unless the ranking source itself becomes materially richer than current `trade_quality_score`. Practically:
+  1. `LLM soft ranking` remains the highest-upside direction, still blocked by candidate-level replay coverage.
+  2. `C strategy revival` now needs genuinely richer event grading, not another minimal slot-management variant.
+  3. Unblocked A+B micro-tuning remains secondary while the top branch is still measurement-blocked.
+
+- `exp-20260422-009` tested the first deterministic `trend_long` exit idea built from a seemingly strong trade-level loser marker: severe early adverse excursion.
+- Result summary:
+  - the screening audit looked promising: across the accepted-stack trade logs, `trend_long` names that took `>=0.75R` adverse excursion inside the first 3 trading days were usually losers
+  - but the portfolio-level rule still failed on all three fixed snapshots: primary `EV 0.8470 -> 0.7063`, bull `0.1255 -> 0.0568`, weak `0.0109 -> 0.0071`
+  - the rule cut at least one important slow-burn winner in the primary window (`GOOG`) and also changed downstream slot usage, increasing trade count in the older windows without improving the north-star metric
+- Mechanism implication:
+  trade-level separation is not enough. A pattern that tags many losing trend trades can still be a bad portfolio rule once replacement-flow and slow-burn winners are included. For `trend_long`, pure early-path OHLCV damage still does not provide enough context to distinguish "broken trade" from "slow winner."
+- Priority implication:
+  downgrade another appealing unblocked A+B retry family: early-damage / early-pain `trend_long` exits built only from first-few-day price path statistics. If trend exit alpha is revisited again, it should require richer hold-quality context than raw early excursion against the original stop.
+
+- `exp-20260422-012` ran the first deterministic cross-era health audit of the current accepted A+B stack on three fixed OHLCV snapshots instead of relying on a single recent window.
+- Result summary:
+  - recent window (`2025-10-23 -> 2026-04-21`) stayed strong: `EV 0.8470`, `sharpe_daily 3.51`, with `breakout_long` dominating (`PF 13.74`, `10/12` wins)
+  - earlier bull window (`2025-04-23 -> 2025-10-22`) weakened sharply: `EV 0.1255`, strategy return only `10.37%` vs `SPY +25.44%` / `QQQ +33.51%`
+  - older mixed-to-weak window (`2024-10-02 -> 2025-04-22`) thinned further: `EV 0.0109`, with `breakout_long` nearly fully broken (`1/7` wins, `PF 0.27`, `-$3.44k`) while `trend_long` remained modestly positive (`PF 1.50`, `+$6.48k`)
+  - the snapshot replays reproduced the same headline metrics, so this is now fixed-data evidence rather than vendor-download drift
+- Mechanism implication:
+  the current system is not driven by one stationary alpha source. `trend_long` is the more persistent but lower-powered carrier; `breakout_long` is the convex, high-upside carrier that can dominate in the right tape and become the main drag in the wrong tape. In other words, breakout should now be treated as a regime-sensitive module, not as an always-on peer that deserves the same default trust in every market phase.
+- Failure-response doctrine:
+  when this mechanism weakens, the correct response is not "add one more scalar filter" and not "keep assuming breakout is the core engine." The next research branch should study conditional breakout participation: either context-aware de-risking, explicit breakout-health gating, or dynamic capital-allocation shifts toward the more persistent trend sleeve. If the breakout module is unhealthy, the system should be able to trade smaller, rarer, or not at all in that sleeve rather than forcing equal participation.
+- Priority implication:
+  upgrade a new top unblocked A+B research question: identify observable same-day or recent-history context that predicts `breakout_long` health before entry. At the same time, downgrade further unconditional breakout micro-tuning. Future breakout work should begin from "when should breakout get less capital?" rather than "what extra static rule makes all breakouts better?"
+
 - Updated practical ordering after `exp-20260421-014`:
   1. `LLM soft ranking` remains the highest-value strategy direction, but still measurement-blocked by replay coverage.
   2. `C strategy revival` stays downgraded until a genuinely new event-grading or slot-interaction mechanism exists; repaired snapshot coverage alone was not enough.
@@ -637,3 +805,15 @@ When a future alpha rule is accepted, do not leave only a raw multiplier or thre
   what future evidence should cause deletion instead of more micro-tuning
 
 This keeps narrow alpha rules auditable and prevents accepted cohort edges from degrading into unexplained black-box constants.
+
+## 10. 2026-04-22 Addendum
+
+- `exp-20260422-012` showed that even the remaining `prompt_ready` backlog count was still too optimistic for `LLM soft ranking`.
+- Result summary:
+  - deterministic primary replay stayed bit-identical again (`EV 0.8369`, `sharpe_daily 3.49`, `return 23.98%`)
+  - the lone remaining prompt-only missing candidate day, `20260312`, already contains enough saved production context to prove it was not a usable soft-ranking sample: `quant_signals=[]` and `portfolio_heat.can_add_new_positions=false`
+  - after tightening backlog classification, the primary-window backlog moved from `prompt_ready 1/27` to `prompt_ready 0/27`, with `prompt_ineligible 1/27`
+- Mechanism implication:
+  a saved prompt file is still not enough. For missing-response days, the backlog should only count a prompt as actionable when prompt-time context still indicates a genuine ranking-eligible new-trade opportunity; otherwise it belongs with context-only archive gaps, not near-term recoveries.
+- Priority implication:
+  stop treating `20260312`-style prompt leftovers as meaningful progress toward `LLM soft ranking`. The top strategic direction remains unchanged, but the blocker is now stricter: there are zero ranking-eligible prompt-only recoveries left in the current primary window, so the next real unblock path is fresh forward accumulation or historically regenerated prompt/response archives with preserved prompt-time eligibility.
