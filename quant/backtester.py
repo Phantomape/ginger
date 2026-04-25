@@ -89,6 +89,217 @@ DEFAULT_CONFIG = {
 }
 
 
+SIZING_MULTIPLIER_KEYS = (
+    "tqs_risk_multiplier_applied",
+    "trend_industrials_risk_multiplier_applied",
+    "trend_tech_tight_gap_risk_multiplier_applied",
+    "trend_tech_gap_risk_multiplier_applied",
+    "trend_tech_near_high_risk_multiplier_applied",
+    "trend_tech_dte_risk_multiplier_applied",
+    "breakout_industrials_gap_risk_multiplier_applied",
+    "breakout_comms_near_high_risk_multiplier_applied",
+    "breakout_comms_gap_risk_multiplier_applied",
+    "breakout_financials_dte_risk_multiplier_applied",
+    "breakout_tech_dte_risk_multiplier_applied",
+    "breakout_healthcare_dte_risk_multiplier_applied",
+    "trend_healthcare_dte_risk_multiplier_applied",
+    "trend_consumer_near_high_dte_risk_multiplier_applied",
+)
+
+
+def _extract_sizing_multipliers(sizing):
+    """Return non-neutral sizing multipliers from a signal sizing payload."""
+    if not sizing:
+        return {}
+    out = {}
+    for key in SIZING_MULTIPLIER_KEYS:
+        value = sizing.get(key)
+        if value is not None and value != 1.0:
+            out[key] = value
+    return out
+
+
+def _calendar_days_held(trade):
+    try:
+        entry = pd.Timestamp(trade.get("entry_date"))
+        exit_ = pd.Timestamp(trade.get("exit_date"))
+    except Exception:
+        return None
+    if pd.isna(entry) or pd.isna(exit_):
+        return None
+    return max(1, int((exit_ - entry).days) + 1)
+
+
+def _build_capital_efficiency(closed, initial_capital, trading_days,
+                              total_pnl, strategy_return_pct, max_positions):
+    """Observation-only capital efficiency metrics for comparing alpha ideas."""
+    total = len(closed)
+    slot_days = sum(
+        days for days in (_calendar_days_held(t) for t in closed)
+        if days is not None
+    )
+    max_slot_days = trading_days * max_positions if trading_days and max_positions else 0
+    return {
+        "return_per_trade": (
+            round(strategy_return_pct / total, 6) if total else None
+        ),
+        "pnl_per_trade_usd": round(total_pnl / total, 2) if total else None,
+        "calendar_slot_days": slot_days,
+        "avg_calendar_days_held": round(slot_days / total, 2) if total else None,
+        "return_per_calendar_slot_day": (
+            round(strategy_return_pct / slot_days, 8) if slot_days else None
+        ),
+        "pnl_per_calendar_slot_day_usd": (
+            round(total_pnl / slot_days, 2) if slot_days else None
+        ),
+        "trade_count_per_100_trading_days": (
+            round(total / trading_days * 100, 2) if trading_days else None
+        ),
+        "gross_slot_day_fraction": (
+            round(slot_days / max_slot_days, 4) if max_slot_days else None
+        ),
+        "initial_capital": round(initial_capital, 2) if initial_capital else None,
+        "note": "calendar_slot_days use inclusive calendar days, not trading days.",
+    }
+
+
+def _update_sizing_rule_signal_attribution(acc, signals):
+    """Track how often sizing rules touched candidate signals."""
+    for sig in signals or []:
+        sizing = sig.get("sizing") or {}
+        base_risk = sizing.get("base_risk_pct")
+        actual_risk = sizing.get("risk_pct")
+        for key, multiplier in _extract_sizing_multipliers(sizing).items():
+            rec = acc.setdefault(key, {
+                "signals_seen": 0,
+                "zero_risk_signals": 0,
+                "reduced_risk_signals": 0,
+                "risk_pct_before_sum": 0.0,
+                "risk_pct_after_sum": 0.0,
+                "risk_pct_reduced_sum": 0.0,
+                "strategies": {},
+                "sectors": {},
+            })
+            rec["signals_seen"] += 1
+            if actual_risk == 0:
+                rec["zero_risk_signals"] += 1
+            elif multiplier < 1.0:
+                rec["reduced_risk_signals"] += 1
+            if base_risk is not None:
+                rec["risk_pct_before_sum"] += base_risk
+            if actual_risk is not None:
+                rec["risk_pct_after_sum"] += actual_risk
+            if base_risk is not None and actual_risk is not None:
+                rec["risk_pct_reduced_sum"] += max(0.0, base_risk - actual_risk)
+            strategy = sig.get("strategy", "unknown")
+            sector = sig.get("sector", "Unknown")
+            rec["strategies"][strategy] = rec["strategies"].get(strategy, 0) + 1
+            rec["sectors"][sector] = rec["sectors"].get(sector, 0) + 1
+
+
+def _finalize_sizing_rule_signal_attribution(acc):
+    finalized = {}
+    for key, rec in sorted((acc or {}).items()):
+        signals_seen = rec.get("signals_seen", 0)
+        risk_before = rec.get("risk_pct_before_sum", 0.0)
+        risk_after = rec.get("risk_pct_after_sum", 0.0)
+        finalized[key] = {
+            "signals_seen": signals_seen,
+            "zero_risk_signals": rec.get("zero_risk_signals", 0),
+            "reduced_risk_signals": rec.get("reduced_risk_signals", 0),
+            "avg_risk_pct_before": (
+                round(risk_before / signals_seen, 6) if signals_seen else None
+            ),
+            "avg_risk_pct_after": (
+                round(risk_after / signals_seen, 6) if signals_seen else None
+            ),
+            "risk_pct_reduced_sum": round(rec.get("risk_pct_reduced_sum", 0.0), 6),
+            "strategies": dict(sorted(rec.get("strategies", {}).items())),
+            "sectors": dict(sorted(rec.get("sectors", {}).items())),
+        }
+    return finalized
+
+
+def _build_sizing_rule_trade_attribution(closed):
+    """Observed outcomes for trades that carried non-neutral sizing rules."""
+    acc = {}
+    for trade in closed or []:
+        for key, multiplier in (trade.get("sizing_multipliers") or {}).items():
+            rec = acc.setdefault(key, {
+                "trade_count": 0,
+                "wins": 0,
+                "losses": 0,
+                "total_pnl_usd": 0.0,
+                "multipliers": {},
+            })
+            pnl = trade.get("pnl") or 0.0
+            rec["trade_count"] += 1
+            rec["wins"] += 1 if pnl > 0 else 0
+            rec["losses"] += 1 if pnl <= 0 else 0
+            rec["total_pnl_usd"] += pnl
+            mkey = str(multiplier)
+            rec["multipliers"][mkey] = rec["multipliers"].get(mkey, 0) + 1
+
+    finalized = {}
+    for key, rec in sorted(acc.items()):
+        trade_count = rec["trade_count"]
+        finalized[key] = {
+            "trade_count": trade_count,
+            "wins": rec["wins"],
+            "losses": rec["losses"],
+            "win_rate": round(rec["wins"] / trade_count, 4) if trade_count else None,
+            "total_pnl_usd": round(rec["total_pnl_usd"], 2),
+            "avg_pnl_usd": round(rec["total_pnl_usd"] / trade_count, 2) if trade_count else None,
+            "multipliers": dict(sorted(rec["multipliers"].items())),
+            "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        }
+    return finalized
+
+
+def _build_multi_window_robustness(results):
+    """Summarize consistency across any list of backtest result dicts."""
+    clean = [r for r in (results or []) if r and "error" not in r]
+    evs = [r.get("expected_value_score") for r in clean
+           if r.get("expected_value_score") is not None]
+    returns = [
+        (r.get("benchmarks") or {}).get("strategy_total_return_pct")
+        for r in clean
+        if (r.get("benchmarks") or {}).get("strategy_total_return_pct") is not None
+    ]
+    sharpes = [r.get("sharpe_daily") for r in clean if r.get("sharpe_daily") is not None]
+    drawdowns = [r.get("max_drawdown_pct") for r in clean if r.get("max_drawdown_pct") is not None]
+
+    def _median(xs):
+        if not xs:
+            return None
+        ordered = sorted(xs)
+        mid = len(ordered) // 2
+        if len(ordered) % 2:
+            return ordered[mid]
+        return (ordered[mid - 1] + ordered[mid]) / 2
+
+    ev_positive = sum(1 for x in evs if x > 0)
+    ret_positive = sum(1 for x in returns if x > 0)
+    sharpe_positive = sum(1 for x in sharpes if x > 0)
+    drawdown_breaks = sum(1 for x in drawdowns if x > 0.20)
+    return {
+        "windows": len(clean),
+        "expected_value_score_positive_windows": ev_positive,
+        "return_positive_windows": ret_positive,
+        "sharpe_daily_positive_windows": sharpe_positive,
+        "drawdown_guardrail_break_windows": drawdown_breaks,
+        "expected_value_score_min": round(min(evs), 4) if evs else None,
+        "expected_value_score_median": round(_median(evs), 4) if evs else None,
+        "expected_value_score_max": round(max(evs), 4) if evs else None,
+        "expected_value_score_spread": (
+            round(max(evs) - min(evs), 4) if len(evs) >= 2 else None
+        ),
+        "worst_max_drawdown_pct": round(max(drawdowns), 4) if drawdowns else None,
+        "robustness_score": ev_positive + ret_positive + sharpe_positive - drawdown_breaks,
+        "note": "Higher score means more windows with positive EV/return/daily Sharpe; no gating verdict.",
+    }
+
+
 def _open_positions_cash_populated():
     """Check whether data/open_positions.json has a non-null cash_usd field.
 
@@ -111,12 +322,15 @@ class Position:
     __slots__ = ("ticker", "entry_price", "entry_open_price", "stop_price",
                  "target_price", "shares", "entry_date", "strategy", "sector",
                  "high_water", "atr", "trailing_active", "target_mult_used",
-                 "regime_exit_bucket", "regime_exit_score")
+                 "regime_exit_bucket", "regime_exit_score",
+                 "sizing_multipliers", "base_risk_pct", "actual_risk_pct")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
                  entry_open_price=None, atr=None, target_mult_used=None,
-                 regime_exit_bucket=None, regime_exit_score=None):
+                 regime_exit_bucket=None, regime_exit_score=None,
+                 sizing_multipliers=None, base_risk_pct=None,
+                 actual_risk_pct=None):
         self.ticker           = ticker
         self.entry_price      = entry_price               # post-slippage fill
         self.entry_open_price = entry_open_price or entry_price
@@ -133,6 +347,9 @@ class Position:
         self.target_mult_used = target_mult_used
         self.regime_exit_bucket = regime_exit_bucket
         self.regime_exit_score = regime_exit_score
+        self.sizing_multipliers = sizing_multipliers or {}
+        self.base_risk_pct = base_risk_pct
+        self.actual_risk_pct = actual_risk_pct
 
 
 class BacktestEngine:
@@ -147,7 +364,8 @@ class BacktestEngine:
     """
 
     def __init__(self, universe, start=None, end=None, config=None,
-                 replay_llm=False, replay_news=False, data_dir=None):
+                 replay_llm=False, replay_news=False, data_dir=None,
+                 ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None):
         self.universe    = universe
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
@@ -159,6 +377,8 @@ class BacktestEngine:
             here = os.path.dirname(os.path.abspath(__file__))
             data_dir = os.path.normpath(os.path.join(here, "..", "data"))
         self.data_dir    = data_dir
+        self.ohlcv_snapshot_path = self._resolve_snapshot_path(ohlcv_snapshot_path)
+        self.save_ohlcv_snapshot_path = self._resolve_snapshot_path(save_ohlcv_snapshot_path)
         self._sanitize_proxy_env()
         self._configure_yfinance_cache()
         # P-ERN: load all earnings snapshots once at init so _earnings_dict_for
@@ -172,6 +392,75 @@ class BacktestEngine:
     def _configure_yfinance_cache(self):
         """Backward-compatible wrapper around the shared yfinance bootstrap."""
         configure_yfinance_runtime()
+
+    def _resolve_snapshot_path(self, raw_path):
+        """Resolve snapshot paths relative to the current working directory."""
+        if not raw_path:
+            return None
+        return raw_path if os.path.isabs(raw_path) else os.path.abspath(raw_path)
+
+    def _serialize_ohlcv_snapshot(self, ohlcv, download_start, download_end):
+        """Convert OHLCV frames to a JSON-friendly payload."""
+        payload = {
+            "metadata": {
+                "created_at": datetime.now().isoformat(),
+                "download_start": str(pd.Timestamp(download_start).date()),
+                "download_end": str(pd.Timestamp(download_end).date()),
+                "tickers": sorted(ohlcv.keys()),
+            },
+            "ohlcv": {},
+        }
+        for ticker, df in ohlcv.items():
+            frame = df.copy()
+            if isinstance(frame.columns, pd.MultiIndex):
+                frame.columns = frame.columns.get_level_values(0)
+            frame = frame.sort_index()
+            rows = []
+            for idx, row in frame.iterrows():
+                rows.append({
+                    "Date": str(pd.Timestamp(idx).date()),
+                    "Open": float(row["Open"]),
+                    "High": float(row["High"]),
+                    "Low": float(row["Low"]),
+                    "Close": float(row["Close"]),
+                    "Volume": float(row["Volume"]),
+                })
+            payload["ohlcv"][ticker] = rows
+        return payload
+
+    def _write_ohlcv_snapshot(self, ohlcv, path, download_start, download_end):
+        """Persist a deterministic OHLCV snapshot for later reruns."""
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        payload = self._serialize_ohlcv_snapshot(ohlcv, download_start, download_end)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+        logger.info("Saved OHLCV snapshot -> %s", path)
+
+    def _load_ohlcv_snapshot(self, path):
+        """Load OHLCV frames from a previously saved snapshot JSON."""
+        with open(path, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+
+        raw = payload.get("ohlcv")
+        if not isinstance(raw, dict):
+            raise ValueError(f"Snapshot missing 'ohlcv' dict: {path}")
+
+        ohlcv = {}
+        for ticker, rows in raw.items():
+            frame = pd.DataFrame(rows)
+            if frame.empty:
+                continue
+            frame["Date"] = pd.to_datetime(frame["Date"])
+            frame = frame.set_index("Date").sort_index()
+            frame.index.name = None
+            required = ["Open", "High", "Low", "Close", "Volume"]
+            missing = [col for col in required if col not in frame.columns]
+            if missing:
+                raise ValueError(f"Snapshot {path} missing columns for {ticker}: {missing}")
+            ohlcv[ticker] = frame[required]
+
+        logger.info("Loaded OHLCV snapshot <- %s (%d tickers)", path, len(ohlcv))
+        return ohlcv
 
     def _load_earnings_snapshots(self):
         """Load all data/earnings_snapshot_YYYYMMDD.json files (written by run.py P-ERN).
@@ -289,6 +578,13 @@ class BacktestEngine:
         else:
             dl_start = dl_end - pd.Timedelta(days=lookback + 180)
 
+        if self.ohlcv_snapshot_path:
+            if not os.path.exists(self.ohlcv_snapshot_path):
+                raise FileNotFoundError(
+                    f"OHLCV snapshot not found: {self.ohlcv_snapshot_path}"
+                )
+            return self._load_ohlcv_snapshot(self.ohlcv_snapshot_path)
+
         logger.info(f"Downloading {len(all_tickers)} tickers: "
                     f"{dl_start.date()} → {dl_end.date()}")
 
@@ -308,6 +604,14 @@ class BacktestEngine:
             except Exception as e:
                 logger.warning(f"  {ticker}: download failed — {e}")
 
+        if self.save_ohlcv_snapshot_path and ohlcv:
+            self._write_ohlcv_snapshot(
+                ohlcv,
+                self.save_ohlcv_snapshot_path,
+                dl_start,
+                dl_end,
+            )
+
         return ohlcv
 
     def run(self):
@@ -322,7 +626,11 @@ class BacktestEngine:
         from feature_layer    import compute_features
         from signal_engine    import generate_signals, rank_signals_for_allocation
         from risk_engine      import enrich_signals
-        from portfolio_engine import size_signals, ROUND_TRIP_COST_PCT
+        from portfolio_engine import (
+            compute_portfolio_heat,
+            size_signals,
+            ROUND_TRIP_COST_PCT,
+        )
         from regime           import compute_market_regime
         from fill_model       import (
             apply_entry_fill, apply_stop_fill, apply_target_fill,
@@ -362,6 +670,7 @@ class BacktestEngine:
         equity_curve  = []
         total_signals_generated = 0
         total_signals_survived  = 0
+        sizing_rule_signal_attribution = {}
 
         # LLM replay bookkeeping (§4.2 attribution requirement).
         llm_dates_covered  = []
@@ -369,6 +678,12 @@ class BacktestEngine:
         llm_signals_presented = 0
         llm_signals_vetoed    = 0
         llm_signals_passed    = 0
+        llm_candidate_days_total   = 0
+        llm_candidate_days_covered = 0
+        llm_candidate_dates_covered = []
+        llm_candidate_dates_missing = []
+        llm_candidate_signal_counts_by_date = {}
+        llm_candidate_tickers_by_date = {}
         # Per-strategy breakdown: {"trend_long": {"presented": n, "vetoed": m, "passed": p}}
         llm_signals_by_strategy: dict = {}
 
@@ -492,6 +807,9 @@ class BacktestEngine:
                         "target_mult_used": pos.target_mult_used,
                         "regime_exit_bucket": pos.regime_exit_bucket,
                         "regime_exit_score": pos.regime_exit_score,
+                        "sizing_multipliers": dict(pos.sizing_multipliers),
+                        "base_risk_pct":    pos.base_risk_pct,
+                        "actual_risk_pct":  pos.actual_risk_pct,
                         "exit_reason":      exit_reason,
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                         "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
@@ -555,9 +873,18 @@ class BacktestEngine:
                                     atr_target_mult=atr_target_mult)
             if self.config.get("REGIME_AWARE_EXIT"):
                 for s in signals:
-                    s["target_mult_used"] = exit_profile["target_mult"]
+                    s["target_mult_used"] = s.get(
+                        "target_mult_used",
+                        exit_profile["target_mult"],
+                    )
                     s["regime_exit_bucket"] = exit_profile["bucket"]
                     s["regime_exit_score"] = exit_profile["score"]
+            # Production removes already-held tickers before sector-cap competition.
+            # If backtest delays that skip until entry time, a held ticker can still
+            # consume a capped sector slot and suppress the real candidate set.
+            held_tickers = {p.ticker for p in positions if p.ticker}
+            if held_tickers:
+                signals = [s for s in signals if s.get("ticker") not in held_tickers]
             # Sector concentration cap (same as run.py)
             _sector_counts = {}
             _capped = []
@@ -588,11 +915,44 @@ class BacktestEngine:
             else:
                 risk_pct = None  # default 1%
 
-            # Size signals
-            signals = size_signals(
-                signals,
+            current_prices = {
+                ticker: feat["close"]
+                for ticker, feat in features_dict.items()
+                if feat and feat.get("close") is not None
+            }
+            open_positions = {
+                "positions": [
+                    {
+                        "ticker": p.ticker,
+                        "shares": p.shares,
+                        "avg_cost": p.entry_price,
+                        "entry_date": (
+                            str(p.entry_date.date())
+                            if hasattr(p.entry_date, "date")
+                            else str(p.entry_date)
+                        ),
+                        "target_price": p.target_price,
+                    }
+                    for p in positions
+                ]
+            }
+            portfolio_heat = compute_portfolio_heat(
+                open_positions,
+                current_prices,
                 equity,
-                risk_pct=risk_pct,
+                features_dict=features_dict,
+            )
+            if portfolio_heat and not portfolio_heat.get("can_add_new_positions", False):
+                signals = []
+            else:
+                signals = size_signals(
+                    signals,
+                    equity,
+                    risk_pct=risk_pct,
+                )
+            _update_sizing_rule_signal_attribution(
+                sizing_rule_signal_attribution,
+                signals,
             )
             total_signals_survived += len(signals)
 
@@ -601,10 +961,22 @@ class BacktestEngine:
             # data/llm_prompt_resp_YYYYMMDD.json exists. See llm_replay.py.
             if self.replay_llm:
                 from llm_replay import get_llm_decision_for_date, apply_llm_gate
+                if signals:
+                    _candidate_date_str = today.strftime("%Y%m%d")
+                    llm_candidate_days_total += 1
+                    llm_candidate_signal_counts_by_date[_candidate_date_str] = len(signals)
+                    llm_candidate_tickers_by_date[_candidate_date_str] = [
+                        (sig.get("ticker") or "").upper()
+                        for sig in signals
+                        if isinstance(sig.get("ticker"), str) and sig.get("ticker").strip()
+                    ]
                 decision = get_llm_decision_for_date(today, self.data_dir)
                 if decision["file_present"]:
                     llm_dates_covered.append(decision["date_str"])
                     _pre_gate = list(signals)
+                    if _pre_gate:
+                        llm_candidate_days_covered += 1
+                        llm_candidate_dates_covered.append(decision["date_str"])
                     signals, presented_n, vetoed_n = apply_llm_gate(signals, decision)
                     llm_signals_presented += presented_n
                     llm_signals_vetoed    += vetoed_n
@@ -622,6 +994,8 @@ class BacktestEngine:
                             _rec["vetoed"] += 1
                 else:
                     llm_dates_missing.append(decision["date_str"])
+                    if signals:
+                        llm_candidate_dates_missing.append(decision["date_str"])
 
             # ── 2c. News T1-negative gate (optional; off by default). ────────
             # When on, vetoes signals for tickers with T1-negative headlines
@@ -692,6 +1066,7 @@ class BacktestEngine:
                     continue
 
                 entry_fill = apply_entry_fill(fill_price)   # buy-side slippage
+                sizing = sig.get("sizing") or {}
                 positions.append(Position(
                     ticker=ticker,
                     entry_price=round(entry_fill, 2),
@@ -705,6 +1080,9 @@ class BacktestEngine:
                     target_mult_used=sig.get("target_mult_used"),
                     regime_exit_bucket=sig.get("regime_exit_bucket"),
                     regime_exit_score=sig.get("regime_exit_score"),
+                    sizing_multipliers=_extract_sizing_multipliers(sizing),
+                    base_risk_pct=sizing.get("base_risk_pct"),
+                    actual_risk_pct=sizing.get("risk_pct"),
                 ))
 
             # Mark-to-market equity
@@ -763,6 +1141,9 @@ class BacktestEngine:
                 "target_mult_used": pos.target_mult_used,
                 "regime_exit_bucket": pos.regime_exit_bucket,
                 "regime_exit_score": pos.regime_exit_score,
+                "sizing_multipliers": dict(pos.sizing_multipliers),
+                "base_risk_pct":    pos.base_risk_pct,
+                "actual_risk_pct":  pos.actual_risk_pct,
                 "exit_reason":      "end_of_backtest",
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                 "exit_date":   str(last_day.date()),
@@ -850,6 +1231,7 @@ class BacktestEngine:
         by_strategy = aggregate_by_strategy([
             {**t, "pnl_usd": t["pnl"]} for t in closed
         ])
+        total_pnl = sum(t["pnl"] for t in closed)
 
         # ── Benchmarks: SPY / QQQ buy-and-hold over the same window ──
         # The strategy's value is whatever it adds on top of free index exposure;
@@ -868,8 +1250,7 @@ class BacktestEngine:
 
         spy_ret = _buy_hold(ohlcv_all.get("SPY"), sim_dates[0], sim_dates[-1])
         qqq_ret = _buy_hold(ohlcv_all.get("QQQ"), sim_dates[0], sim_dates[-1])
-        strat_ret = (sum(t["pnl"] for t in closed)
-                     / self.config["INITIAL_CAPITAL"])
+        strat_ret = total_pnl / self.config["INITIAL_CAPITAL"]
         benchmarks = {
             "spy_buy_hold_return_pct":   round(spy_ret, 4) if spy_ret is not None else None,
             "qqq_buy_hold_return_pct":   round(qqq_ret, 4) if qqq_ret is not None else None,
@@ -904,6 +1285,14 @@ class BacktestEngine:
         llm_missing_n   = len(llm_dates_missing)
         coverage_frac   = (round(llm_covered_n / trading_days_n, 4)
                            if trading_days_n else 0.0)
+        llm_candidate_signal_coverage_frac = (
+            round(llm_signals_presented / total_signals_survived, 4)
+            if total_signals_survived else 0.0
+        )
+        llm_candidate_day_coverage_frac = (
+            round(llm_candidate_days_covered / llm_candidate_days_total, 4)
+            if llm_candidate_days_total else 0.0
+        )
 
         # News-archive coverage metrics.
         news_archive_covered_n = len(news_archive_dates_covered)
@@ -914,6 +1303,12 @@ class BacktestEngine:
         )
 
         known_biases = {
+            "ohlcv_source": {
+                "snapshot_loaded": bool(self.ohlcv_snapshot_path),
+                "snapshot_path": self.ohlcv_snapshot_path,
+                "snapshot_written": bool(self.save_ohlcv_snapshot_path),
+                "snapshot_write_path": self.save_ohlcv_snapshot_path,
+            },
             "news_veto_unreplayed": {
                 "archive_replay_enabled":    self.replay_news,
                 "archive_coverage_fraction": news_archive_coverage_frac,
@@ -921,10 +1316,20 @@ class BacktestEngine:
                 "archive_dates_missing_n":   news_archive_missing_n,
             },
             "llm_gate_unreplayed": {
-                "enabled":            self.replay_llm,
-                "coverage_fraction":  coverage_frac,
-                "dates_covered":      list(llm_dates_covered),
-                "dates_missing_n":    llm_missing_n,
+                "enabled":                          self.replay_llm,
+                "coverage_fraction":                coverage_frac,
+                "dates_covered":                    list(llm_dates_covered),
+                "dates_missing_n":                  llm_missing_n,
+                "candidate_day_coverage_fraction":  llm_candidate_day_coverage_frac,
+                "candidate_days_covered":           llm_candidate_days_covered,
+                "candidate_days_total":             llm_candidate_days_total,
+                "candidate_dates_covered":          list(llm_candidate_dates_covered),
+                "candidate_dates_missing":          list(llm_candidate_dates_missing),
+                "candidate_signal_counts_by_date":  dict(llm_candidate_signal_counts_by_date),
+                "candidate_tickers_by_date":        dict(llm_candidate_tickers_by_date),
+                "candidate_signal_coverage_fraction": llm_candidate_signal_coverage_frac,
+                "candidate_signals_covered":        llm_signals_presented,
+                "candidate_signals_total":          total_signals_survived,
             },
             "survivorship_bias_universe":  True,
             # Earnings strategy data quality: only days_to_earnings is historically
@@ -947,21 +1352,68 @@ class BacktestEngine:
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
                 "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
+                "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
             ],
         }
+        capital_efficiency = _build_capital_efficiency(
+            closed,
+            self.config["INITIAL_CAPITAL"],
+            len(sim_dates),
+            total_pnl,
+            strat_ret,
+            self.config["MAX_POSITIONS"],
+        )
+        sizing_rule_signal_attribution = _finalize_sizing_rule_signal_attribution(
+            sizing_rule_signal_attribution
+        )
+        sizing_rule_trade_attribution = _build_sizing_rule_trade_attribution(closed)
+
+        from llm_backlog import build_llm_archive_backlog, build_llm_context_alignment
+
+        llm_archive_backlog = build_llm_archive_backlog(
+            self.data_dir,
+            llm_candidate_dates_missing,
+            llm_candidate_signal_counts_by_date,
+        )
+        llm_context_alignment = build_llm_context_alignment(
+            self.data_dir,
+            llm_candidate_dates_covered,
+            llm_candidate_tickers_by_date,
+            llm_candidate_signal_counts_by_date,
+            llm_candidate_days_total,
+            total_signals_survived,
+        )
+        known_biases["llm_gate_unreplayed"]["production_aligned_candidate_day_fraction"] = (
+            llm_context_alignment.get("production_aligned_candidate_day_fraction_of_total")
+        )
+        known_biases["llm_gate_unreplayed"]["production_aligned_candidate_signal_fraction"] = (
+            llm_context_alignment.get("production_aligned_candidate_signal_fraction_of_total")
+        )
 
         # §4.2 LLM attribution bucket.
         llm_attribution = {
-            "replay_enabled":        self.replay_llm,
-            "coverage_fraction":     coverage_frac,
-            "trading_days":          trading_days_n,
-            "dates_covered":         llm_covered_n,
-            "dates_missing":         llm_missing_n,
-            "signals_presented":     llm_signals_presented,
-            "signals_vetoed_by_llm": llm_signals_vetoed,
-            "signals_passed_by_llm": llm_signals_passed,
-            "veto_rate":             (round(llm_signals_vetoed / llm_signals_presented, 4)
-                                      if llm_signals_presented else None),
+            "replay_enabled":                   self.replay_llm,
+            "coverage_fraction":                coverage_frac,
+            "trading_days":                     trading_days_n,
+            "dates_covered":                    llm_covered_n,
+            "dates_missing":                    llm_missing_n,
+            "candidate_days_covered":           llm_candidate_days_covered,
+            "candidate_days_total":             llm_candidate_days_total,
+            "candidate_dates_covered":          list(llm_candidate_dates_covered),
+            "candidate_dates_missing":          list(llm_candidate_dates_missing),
+            "candidate_signal_counts_by_date":  dict(llm_candidate_signal_counts_by_date),
+            "candidate_tickers_by_date":        dict(llm_candidate_tickers_by_date),
+            "candidate_day_coverage_fraction":  llm_candidate_day_coverage_frac,
+            "candidate_signals_covered":        llm_signals_presented,
+            "candidate_signals_total":          total_signals_survived,
+            "candidate_signal_coverage_fraction": llm_candidate_signal_coverage_frac,
+            "context_alignment":                llm_context_alignment,
+            "signals_presented":                llm_signals_presented,
+            "signals_vetoed_by_llm":            llm_signals_vetoed,
+            "signals_passed_by_llm":            llm_signals_passed,
+            "veto_rate":                        (round(llm_signals_vetoed / llm_signals_presented, 4)
+                                                 if llm_signals_presented else None),
+            "archive_backlog":                  llm_archive_backlog,
             "by_strategy": {
                 strat: {
                     "presented": d["presented"],
@@ -974,6 +1426,7 @@ class BacktestEngine:
             },
             "notes": [
                 "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
+                "candidate_* metrics measure coverage over actual pre-LLM candidates, which is the relevant readiness gauge for LLM alpha experiments.",
                 "position_actions are NOT replayed — exits already run code-deterministic rule engine.",
                 "by_strategy shows per-strategy veto breakdown to quantify LLM selectivity.",
             ],
@@ -1006,7 +1459,7 @@ class BacktestEngine:
             "wins":                len(wins),
             "losses":              len(losses),
             "win_rate":            round(len(wins) / total, 4) if total else 0,
-            "total_pnl":           round(sum(t["pnl"] for t in closed), 2),
+            "total_pnl":           round(total_pnl, 2),
             "sharpe":              sharpe,
             "sharpe_daily":        sharpe_daily,
             "sharpe_method":       "per_trade_sqrt30_legacy",
@@ -1014,6 +1467,9 @@ class BacktestEngine:
             "worst_trade_pct":     worst_trade_pct,
             "max_consecutive_losses": max_consecutive_losses,
             "tail_loss_share":     tail_loss_share,
+            "capital_efficiency":  capital_efficiency,
+            "sizing_rule_signal_attribution": sizing_rule_signal_attribution,
+            "sizing_rule_trade_attribution": sizing_rule_trade_attribution,
             "signals_generated":   total_signals_generated,
             "signals_survived":    total_signals_survived,
             "survival_rate":       survival_rate,
@@ -1044,6 +1500,7 @@ class BacktestEngine:
         from convergence import compute_convergence, compute_expected_value_score
         result["expected_value_score"] = compute_expected_value_score(result)
         result["convergence"] = compute_convergence(result)
+        result["single_window_quality"] = _build_multi_window_robustness([result])
 
         # v2 shadow verdict — what convergence WOULD say if we also required
         # sharpe_daily >= sharpe_min. Does not mutate the real verdict.
@@ -1081,6 +1538,8 @@ class BacktestEngine:
                 replay_llm=self.replay_llm,
                 replay_news=self.replay_news,
                 data_dir=self.data_dir,
+                ohlcv_snapshot_path=self.ohlcv_snapshot_path,
+                save_ohlcv_snapshot_path=self.save_ohlcv_snapshot_path,
             )
             result = engine.run()
             result["param_name"]  = param_name
@@ -1122,6 +1581,31 @@ def _print_results(results):
     print(f"  Survival rate:     {results['survival_rate']*100:.1f}%")
     print("=" * 60)
 
+    cap_eff = results.get("capital_efficiency") or {}
+    if cap_eff:
+        def _fmt_pct(v):
+            return f"{v*100:+.4f}%" if v is not None else "N/A"
+        def _fmt_usd(v):
+            return f"${v:,.2f}" if v is not None else "N/A"
+        print("\n  CAPITAL EFFICIENCY:")
+        print(f"    return / trade:           {_fmt_pct(cap_eff.get('return_per_trade'))}")
+        print(f"    pnl / trade:              {_fmt_usd(cap_eff.get('pnl_per_trade_usd'))}")
+        print(f"    avg calendar days held:   {cap_eff.get('avg_calendar_days_held')}")
+        print(f"    pnl / calendar slot-day:  {_fmt_usd(cap_eff.get('pnl_per_calendar_slot_day_usd'))}")
+        gross = cap_eff.get("gross_slot_day_fraction")
+        gross_str = f"{gross*100:.1f}%" if gross is not None else "N/A"
+        print(f"    gross slot-day usage:     {gross_str}")
+
+    rule_attr = results.get("sizing_rule_signal_attribution") or {}
+    if rule_attr:
+        print("\n  SIZING RULE SIGNAL ATTRIBUTION:")
+        for key, rec in rule_attr.items():
+            print(f"    {key}: seen={rec.get('signals_seen')} "
+                  f"zero={rec.get('zero_risk_signals')} "
+                  f"reduced={rec.get('reduced_risk_signals')} "
+                  f"avg_risk {rec.get('avg_risk_pct_before')} -> "
+                  f"{rec.get('avg_risk_pct_after')}")
+
     if results.get("by_strategy"):
         from strategy_attribution import format_attribution_table
         print("\n  PER-STRATEGY ATTRIBUTION:")
@@ -1157,6 +1641,36 @@ def _print_results(results):
         print(f"    coverage:                "
               f"{llm_attr.get('dates_covered')}/{llm_attr.get('trading_days')} days "
               f"({(llm_attr.get('coverage_fraction') or 0)*100:.1f}%)")
+        print(f"    candidate-day coverage:  "
+              f"{llm_attr.get('candidate_days_covered')}/{llm_attr.get('candidate_days_total')} "
+              f"({(llm_attr.get('candidate_day_coverage_fraction') or 0)*100:.1f}%)")
+        print(f"    candidate-signal cover:  "
+              f"{llm_attr.get('candidate_signals_covered')}/{llm_attr.get('candidate_signals_total')} "
+              f"({(llm_attr.get('candidate_signal_coverage_fraction') or 0)*100:.1f}%)")
+        candidate_missing = llm_attr.get("candidate_dates_missing") or []
+        if candidate_missing:
+            preview = ", ".join(candidate_missing[:5])
+            suffix = " ..." if len(candidate_missing) > 5 else ""
+            print(f"    missing candidate days:  {preview}{suffix}")
+        backlog = llm_attr.get("archive_backlog") or {}
+        if backlog.get("missing_candidate_days"):
+            print(f"    raw-response backlog:    "
+                  f"{backlog.get('raw_response_recoverable_days')}/{backlog.get('missing_candidate_days')} days")
+            print(f"    prompt-ready backlog:    "
+                  f"{backlog.get('prompt_ready_days')}/{backlog.get('missing_candidate_days')} days")
+            print(f"    prompt-ineligible:       "
+                  f"{backlog.get('prompt_ineligible_days')}/{backlog.get('missing_candidate_days')} days")
+        alignment = llm_attr.get("context_alignment") or {}
+        if alignment.get("covered_candidate_days"):
+            print(f"    production-aligned:      "
+                  f"{alignment.get('aligned_days')}/{llm_attr.get('candidate_days_total')} total "
+                  f"({(alignment.get('production_aligned_candidate_day_fraction_of_total') or 0)*100:.1f}%)")
+            print(f"    aligned within covered:  "
+                  f"{alignment.get('aligned_days')}/{alignment.get('covered_candidate_days')} "
+                  f"({(alignment.get('production_aligned_candidate_day_fraction_of_covered') or 0)*100:.1f}%)")
+            print(f"    ranking-eligible:        "
+                  f"{alignment.get('ranking_eligible_aligned_days')}/{llm_attr.get('candidate_days_total')} total "
+                  f"({(alignment.get('ranking_eligible_candidate_day_fraction_of_total') or 0)*100:.1f}%)")
         print(f"    signals presented:       {llm_attr.get('signals_presented')}")
         print(f"    vetoed by LLM:           {llm_attr.get('signals_vetoed_by_llm')}")
         print(f"    passed by LLM:           {llm_attr.get('signals_passed_by_llm')}")
@@ -1241,7 +1755,8 @@ def _build_stability_diagnostics(primary, secondary):
             "secondary_sharpe_daily":        secondary.get("sharpe_daily"),
             "primary_return_pct":            p_ret,
             "secondary_return_pct":          s_ret,
-        }
+        },
+        "multi_window_robustness": _build_multi_window_robustness([primary, secondary]),
     }
 
 
@@ -1269,6 +1784,13 @@ def _print_diagnostics(diagnostics):
     print(f"  Δ max_drawdown:          {_fmt(s.get('max_drawdown_delta'))}")
     print(f"  drawdown_consistent:     {s.get('drawdown_consistent')}")
     print(f"  profitable in both:      {s.get('directionally_profitable_both')}")
+    r = diagnostics.get("multi_window_robustness") or {}
+    if r:
+        print(f"  robustness score:        {r.get('robustness_score')}")
+        print(f"  EV positive windows:     "
+              f"{r.get('expected_value_score_positive_windows')}/{r.get('windows')}")
+        print(f"  EV score spread:         {_fmt(r.get('expected_value_score_spread'))}")
+        print(f"  worst max drawdown:      {_fmt(r.get('worst_max_drawdown_pct'))}")
     print("=" * 60)
 
 
@@ -1305,6 +1827,10 @@ def main():
     parser.add_argument("--regime-aware-exit", action="store_true",
                         help="Use the entry-day regime exit profile to set ATR target width. "
                              "Default: off.")
+    parser.add_argument("--ohlcv-snapshot", type=str, default=None,
+                        help="Load OHLCV from a saved snapshot JSON instead of live yfinance.")
+    parser.add_argument("--save-ohlcv-snapshot", type=str, default=None,
+                        help="Save downloaded OHLCV to a snapshot JSON for deterministic reruns.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -1325,7 +1851,9 @@ def main():
     engine = BacktestEngine(universe, start=args.start, end=args.end,
                             config=cfg,
                             replay_llm=args.replay_llm,
-                            replay_news=args.replay_news)
+                            replay_news=args.replay_news,
+                            ohlcv_snapshot_path=args.ohlcv_snapshot,
+                            save_ohlcv_snapshot_path=args.save_ohlcv_snapshot)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
@@ -1359,7 +1887,8 @@ def main():
                     universe, start=secondary_start, end=secondary_end,
                     config=cfg,
                     replay_llm=args.replay_llm,
-                    replay_news=args.replay_news)
+                    replay_news=args.replay_news,
+                    ohlcv_snapshot_path=args.ohlcv_snapshot)
                 secondary = secondary_engine.run()
                 if "error" in secondary:
                     print(f"  (secondary run failed: {secondary['error']})")

@@ -16,6 +16,8 @@ import logging
 from constants import (
     ATR_STOP_MULT,
     ATR_TARGET_MULT,
+    TREND_TECH_TARGET_ATR_MULT,
+    TREND_COMMODITIES_TARGET_ATR_MULT,
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
 )
@@ -137,6 +139,47 @@ def enrich_signal_with_risk(signal, atr, atr_target_mult=None):
     }
 
 
+def _retarget_signal_with_atr_mult(signal, atr, target_mult):
+    """Recompute target/R:R fields for a strategy-specific target width."""
+    entry = signal["entry_price"]
+    stop = signal["stop_price"]
+    target = round(entry + target_mult * atr, 2)
+    risk_per_share = round(entry - stop, 2)
+    reward_per_share = round(target - entry, 2)
+    rr_ratio = (
+        round(reward_per_share / risk_per_share, 2)
+        if risk_per_share > 0 else None
+    )
+
+    cost_per_share = round(entry * ROUND_TRIP_COST_PCT, 4)
+    net_reward = reward_per_share - cost_per_share
+    net_risk = risk_per_share + cost_per_share
+    net_rr_ratio = (
+        round(net_reward / net_risk, 2)
+        if net_risk > 0 and net_reward > 0 else None
+    )
+
+    adj_entry = round(entry * (1 + EXEC_LAG_PCT), 2)
+    adj_reward = round(target - adj_entry, 2)
+    adj_risk = round(adj_entry - stop, 2)
+    adj_net_cost = round(adj_entry * ROUND_TRIP_COST_PCT, 4)
+    exec_lag_adj_rr = (
+        round((adj_reward - adj_net_cost) / (adj_risk + adj_net_cost), 2)
+        if adj_risk > 0 and adj_reward > adj_net_cost else None
+    )
+
+    return {
+        **signal,
+        "target_price": target,
+        "reward_per_share": reward_per_share,
+        "risk_reward_ratio": rr_ratio,
+        "net_risk_reward_ratio": net_rr_ratio,
+        "exec_lag_adj_net_rr": exec_lag_adj_rr,
+        "target_mult_used": target_mult,
+        "target_width_applied": target_mult,
+    }
+
+
 def _trade_quality_score(sig, features):
     """
     Compute Trade Quality Score (TQS) — pre-calculated so LLM reads it directly.
@@ -250,6 +293,35 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Inject sector so LLM can enforce the 40% sector concentration rule.
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
+        if (
+            enriched_sig.get("strategy") == "trend_long"
+            and enriched_sig["sector"] == "Technology"
+        ):
+            # exp-20260425-027: Technology trend alpha was being clipped by the
+            # shared target width. Keep the override narrow to avoid replaying
+            # the rejected broad trend-widening family.
+            enriched_sig = _retarget_signal_with_atr_mult(
+                enriched_sig,
+                atr,
+                TREND_TECH_TARGET_ATR_MULT,
+            )
+            enriched_sig["tech_trend_target_width_applied"] = (
+                TREND_TECH_TARGET_ATR_MULT
+            )
+        if (
+            enriched_sig.get("strategy") == "trend_long"
+            and enriched_sig["sector"] == "Commodities"
+        ):
+            # exp-20260425-031: commodity trend exposure carried useful
+            # convexity; the alpha leak was clipping winners, not oversizing.
+            enriched_sig = _retarget_signal_with_atr_mult(
+                enriched_sig,
+                atr,
+                TREND_COMMODITIES_TARGET_ATR_MULT,
+            )
+            enriched_sig["commodity_trend_target_width_applied"] = (
+                TREND_COMMODITIES_TARGET_ATR_MULT
+            )
         # Inject days_to_earnings for ALL signal types (not just earnings_event_long).
         # The LLM prompt blocks ANY new trade when dte ≤ 4 — including trend_long and
         # breakout_long — but the LLM has no way to enforce this rule without the data.

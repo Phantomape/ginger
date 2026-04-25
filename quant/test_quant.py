@@ -36,6 +36,92 @@ def test_enrich_signal_rr_above_2():
         assert rr >= 2.0, f"R:R={rr} < 2.0 for ATR={atr}"
 
 
+def test_enrich_signals_widens_only_technology_trend_target():
+    from constants import TREND_TECH_TARGET_ATR_MULT
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "NVDA",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "NVDA",
+            "strategy": "breakout_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+    ]
+    features = {
+        "NVDA": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.1,
+        }
+    }
+
+    trend, breakout = enrich_signals(signals, features, atr_target_mult=4.5)
+
+    assert trend["target_price"] == round(
+        100.0 + TREND_TECH_TARGET_ATR_MULT * 2.0,
+        2,
+    )
+    assert trend["target_mult_used"] == TREND_TECH_TARGET_ATR_MULT
+    assert trend["target_width_applied"] == TREND_TECH_TARGET_ATR_MULT
+    assert trend["tech_trend_target_width_applied"] == TREND_TECH_TARGET_ATR_MULT
+    assert breakout["target_price"] == round(100.0 + 4.5 * 2.0, 2)
+    assert breakout.get("target_width_applied") is None
+    assert breakout.get("tech_trend_target_width_applied") is None
+
+
+def test_enrich_signals_widens_only_commodities_trend_target():
+    from constants import TREND_COMMODITIES_TARGET_ATR_MULT
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "IAU",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "IAU",
+            "strategy": "breakout_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+    ]
+    features = {
+        "IAU": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.1,
+        }
+    }
+
+    trend, breakout = enrich_signals(signals, features, atr_target_mult=4.5)
+
+    assert trend["target_price"] == round(
+        100.0 + TREND_COMMODITIES_TARGET_ATR_MULT * 2.0,
+        2,
+    )
+    assert trend["target_mult_used"] == TREND_COMMODITIES_TARGET_ATR_MULT
+    assert trend["target_width_applied"] == TREND_COMMODITIES_TARGET_ATR_MULT
+    assert trend["commodity_trend_target_width_applied"] == TREND_COMMODITIES_TARGET_ATR_MULT
+    assert breakout["target_price"] == round(100.0 + 4.5 * 2.0, 2)
+    assert breakout.get("target_width_applied") is None
+    assert breakout.get("commodity_trend_target_width_applied") is None
+
+
 def test_trade_quality_score_range():
     """TQS must be within [0, 1]."""
     from risk_engine import _trade_quality_score
@@ -1150,8 +1236,8 @@ def test_prompt_position_cap_present():
     pre-computed before data reaches the LLM.
     """
     from position_manager import MAX_POSITION_PCT
-    assert MAX_POSITION_PCT == 0.20, (
-        "Position cap must be 20% in code (position_manager.MAX_POSITION_PCT)."
+    assert MAX_POSITION_PCT == 0.25, (
+        "Position cap must be 25% in code (position_manager.MAX_POSITION_PCT)."
     )
 
 
@@ -1512,7 +1598,323 @@ def test_size_signals_derisks_moderate_gap_trend_technology():
     assert sized["risk_pct"] == 0.0025
     assert sized["tqs_risk_multiplier_applied"] == 1.0
     assert sized["trend_industrials_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
     assert sized["trend_tech_gap_risk_multiplier_applied"] == 0.25
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_zeroes_tight_gap_trend_technology():
+    """Tight-gap trend Technology setups should lose all marginal risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "DDOG",
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 97.5,
+        "sector": "Technology",
+        "trade_quality_score": 0.97,
+        "gap_vulnerability_pct": 0.025,
+        "conditions_met": {
+            "pct_from_52w_high": -0.08,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["position_value_usd"] == 0.0
+    assert sized["tqs_risk_multiplier_applied"] == 1.0
+    assert sized["trend_industrials_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 0.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_derisks_near_high_trend_technology():
+    """Near-high trend Technology setups should keep only 25% of base risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "MSFT",
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 96.0,
+        "sector": "Technology",
+        "trade_quality_score": 0.97,
+        "gap_vulnerability_pct": 0.015,
+        "conditions_met": {
+            "pct_from_52w_high": -0.015,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["tqs_risk_multiplier_applied"] == 1.0
+    assert sized["trend_industrials_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 0.25
+
+
+def test_size_signals_zeroes_moderate_gap_breakout_industrials():
+    """Breakout Industrials with a 3-4% stop gap should lose all marginal risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "CAT",
+        "strategy": "breakout_long",
+        "entry_price": 500.0,
+        "stop_price": 482.0,
+        "trade_quality_score": 0.92,
+        "sector": "Industrials",
+        "gap_vulnerability_pct": 0.035,
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_industrials_gap_risk_multiplier_applied"] == 0.0
+
+
+def test_size_signals_derisks_near_high_breakout_communication_services():
+    """Near-high Communication Services breakouts should keep only 25% risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "NFLX",
+        "strategy": "breakout_long",
+        "entry_price": 500.0,
+        "stop_price": 482.0,
+        "trade_quality_score": 0.93,
+        "sector": "Communication Services",
+        "gap_vulnerability_pct": 0.045,
+        "conditions_met": {
+            "pct_from_52w_high": -0.02,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["shares_to_buy"] > 0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_industrials_gap_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_comms_near_high_risk_multiplier_applied"] == 0.25
+    assert sized["breakout_comms_gap_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_derisks_moderate_gap_breakout_communication_services():
+    """Moderate-gap Communication Services breakouts should keep only 25% risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "DIS",
+        "strategy": "breakout_long",
+        "entry_price": 120.0,
+        "stop_price": 115.92,
+        "trade_quality_score": 0.93,
+        "sector": "Communication Services",
+        "gap_vulnerability_pct": 0.034,
+        "conditions_met": {
+            "pct_from_52w_high": -0.08,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["shares_to_buy"] > 0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_industrials_gap_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_comms_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_comms_gap_risk_multiplier_applied"] == 0.25
+    assert sized["breakout_financials_dte_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_derisks_breakout_financials_near_earnings():
+    """Financials breakouts 8-14 days before earnings should keep only 25% risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "GS",
+        "strategy": "breakout_long",
+        "entry_price": 500.0,
+        "stop_price": 482.0,
+        "trade_quality_score": 0.91,
+        "sector": "Financials",
+        "days_to_earnings": 10,
+        "conditions_met": {
+            "pct_from_52w_high": -0.02,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["shares_to_buy"] > 0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_industrials_gap_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_comms_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_comms_gap_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_financials_dte_risk_multiplier_applied"] == 0.25
+
+
+def test_size_signals_zeroes_breakout_technology_dte_26_40():
+    """Technology breakouts 26-40 days before earnings should get zero risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "AAPL",
+        "strategy": "breakout_long",
+        "entry_price": 200.0,
+        "stop_price": 193.0,
+        "trade_quality_score": 0.91,
+        "sector": "Technology",
+        "days_to_earnings": 32,
+        "conditions_met": {
+            "pct_from_52w_high": -0.02,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["position_value_usd"] == 0.0
+    assert sized["breakout_financials_dte_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_tech_dte_risk_multiplier_applied"] == 0.0
+    assert sized["breakout_healthcare_dte_risk_multiplier_applied"] == 1.0
+    assert sized["trend_healthcare_dte_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_derisks_breakout_healthcare_dte_20_65():
+    """Healthcare breakouts 20-65 DTE should keep only 25% of normal risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "LLY",
+        "strategy": "breakout_long",
+        "entry_price": 800.0,
+        "stop_price": 760.0,
+        "trade_quality_score": 0.93,
+        "sector": "Healthcare",
+        "days_to_earnings": 60,
+        "conditions_met": {
+            "pct_from_52w_high": -0.10,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["shares_to_buy"] > 0
+    assert sized["breakout_tech_dte_risk_multiplier_applied"] == 1.0
+    assert sized["breakout_healthcare_dte_risk_multiplier_applied"] == 0.25
+    assert sized["trend_healthcare_dte_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_derisks_trend_technology_dte_44_64():
+    """Technology trends 44-64 DTE should keep only 25% of normal risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "TSM",
+        "strategy": "trend_long",
+        "entry_price": 300.0,
+        "stop_price": 288.0,
+        "trade_quality_score": 0.96,
+        "sector": "Technology",
+        "gap_vulnerability_pct": 0.035,
+        "days_to_earnings": 58,
+        "conditions_met": {
+            "pct_from_52w_high": -0.05,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0025
+    assert sized["shares_to_buy"] > 0
+    assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
+    assert sized["trend_tech_dte_risk_multiplier_applied"] == 0.25
+    assert sized["breakout_tech_dte_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_zeroes_trend_healthcare_near_earnings():
+    """Healthcare trends 6-12 days before earnings should lose all marginal risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "NVO",
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "trade_quality_score": 0.94,
+        "sector": "Healthcare",
+        "days_to_earnings": 12,
+        "conditions_met": {
+            "pct_from_52w_high": -0.04,
+        },
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["position_value_usd"] == 0.0
+    assert sized["breakout_financials_dte_risk_multiplier_applied"] == 1.0
+    assert sized["trend_healthcare_dte_risk_multiplier_applied"] == 0.0
+
+
+def test_size_signals_zeroes_near_high_consumer_trends_before_earnings():
+    """Near-high Consumer Discretionary trends 30-65 DTE should get zero risk."""
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "MCD",
+        "strategy": "trend_long",
+        "entry_price": 330.0,
+        "stop_price": 320.0,
+        "target_price": 360.0,
+        "sector": "Consumer Discretionary",
+        "trade_quality_score": 0.94,
+        "days_to_earnings": 39,
+        "conditions_met": {"pct_from_52w_high": -0.005},
+    }
+
+    sized = size_signals([sig], portfolio_value=100_000.0)[0]["sizing"]
+
+    assert sized["base_risk_pct"] == 0.01
+    assert sized["risk_pct"] == 0.0
+    assert sized["shares_to_buy"] == 0
+    assert sized["position_value_usd"] == 0.0
+    assert sized["trend_healthcare_dte_risk_multiplier_applied"] == 1.0
+    assert sized["trend_consumer_near_high_dte_risk_multiplier_applied"] == 0.0
 
 
 def test_size_signals_keeps_full_risk_for_high_tqs_signals():
@@ -4278,6 +4680,74 @@ def test_yfinance_bootstrap_strips_proxy_and_sets_writable_cache(monkeypatch, tm
     assert os.path.isdir(cache_dir)
 
 
+def test_backtester_ohlcv_snapshot_roundtrip(tmp_path):
+    """OHLCV snapshots should round-trip without hitting yfinance."""
+    from backtester import BacktestEngine
+
+    idx = pd.bdate_range("2025-01-02", periods=3)
+    sample = pd.DataFrame({
+        "Open": [100.0, 101.0, 102.0],
+        "High": [101.0, 102.0, 103.0],
+        "Low": [99.0, 100.0, 101.0],
+        "Close": [100.5, 101.5, 102.5],
+        "Volume": [1_000_000, 1_100_000, 1_200_000],
+    }, index=idx)
+
+    engine = BacktestEngine(["AAA"], data_dir=str(tmp_path))
+    snapshot_path = tmp_path / "ohlcv_snapshot.json"
+    engine._write_ohlcv_snapshot(
+        {"AAA": sample, "SPY": sample, "QQQ": sample},
+        str(snapshot_path),
+        idx[0],
+        idx[-1],
+    )
+
+    loaded = engine._load_ohlcv_snapshot(str(snapshot_path))
+
+    assert sorted(loaded.keys()) == ["AAA", "QQQ", "SPY"]
+    pd.testing.assert_frame_equal(loaded["AAA"], sample, check_freq=False, check_dtype=False)
+
+
+def test_backtester_download_data_uses_snapshot_without_yfinance(monkeypatch, tmp_path):
+    """An explicit OHLCV snapshot should bypass live vendor downloads entirely."""
+    import backtester as backtester_mod
+    from backtester import BacktestEngine
+
+    idx = pd.bdate_range("2025-01-02", periods=2)
+    sample = pd.DataFrame({
+        "Open": [100.0, 101.0],
+        "High": [101.0, 102.0],
+        "Low": [99.0, 100.0],
+        "Close": [100.5, 101.5],
+        "Volume": [1_000_000, 1_100_000],
+    }, index=idx)
+
+    writer = BacktestEngine(["AAA"], data_dir=str(tmp_path))
+    snapshot_path = tmp_path / "deterministic.json"
+    writer._write_ohlcv_snapshot(
+        {"AAA": sample, "SPY": sample, "QQQ": sample},
+        str(snapshot_path),
+        idx[0],
+        idx[-1],
+    )
+
+    def fail_download(*args, **kwargs):
+        raise AssertionError("yf.download must not be called when snapshot is provided")
+
+    monkeypatch.setattr(backtester_mod.yf, "download", fail_download)
+
+    engine = BacktestEngine(
+        ["AAA"],
+        start="2025-01-02",
+        end="2025-01-10",
+        data_dir=str(tmp_path),
+        ohlcv_snapshot_path=str(snapshot_path),
+    )
+    loaded = engine._download_data()
+
+    pd.testing.assert_frame_equal(loaded["AAA"], sample, check_freq=False, check_dtype=False)
+
+
 def test_data_layer_import_applies_yfinance_bootstrap(monkeypatch):
     import importlib
     import data_layer
@@ -4530,7 +5000,7 @@ def _backtest_harness(monkeypatch, test_df, spy_df):
             },
         })
     monkeypatch.setattr(signal_engine, "generate_signals",
-        lambda features, market_context=None: (
+        lambda features, market_context=None, **kwargs: (
             [{"ticker": "TEST", "strategy": "trend_long", "sector": "Tech",
               "entry_price": 100.0, "stop_price": 95.0, "target_price": 110.0,
               "trade_quality_score": 0.8}]
@@ -4675,6 +5145,172 @@ def test_backtester_cancels_entry_on_gap_down_below_stop(monkeypatch):
     assert result.get("total_trades") == 0, (
         f"entry with fill ≤ stop must be cancelled; got {result.get('total_trades')} trades"
     )
+
+
+def test_backtester_filters_already_held_before_sector_cap(monkeypatch):
+    import backtester
+    import feature_layer
+    import signal_engine
+    import risk_engine
+    import portfolio_engine
+    import regime as regime_mod
+    from backtester import BacktestEngine
+
+    idx = pd.bdate_range("2025-10-01", periods=40)
+    flat = pd.DataFrame({
+        "Open": [100.0] * len(idx),
+        "High": [100.0] * len(idx),
+        "Low": [100.0] * len(idx),
+        "Close": [100.0] * len(idx),
+    }, index=idx)
+    ohlcv = {"HELD": flat, "NEW": flat, "SPY": flat, "QQQ": flat}
+    first_signal_day = idx[20]
+    second_signal_day = idx[25]
+
+    monkeypatch.setattr(BacktestEngine, "_download_data", lambda self: ohlcv)
+    monkeypatch.setattr(feature_layer, "compute_features",
+        lambda ticker, df, earn: {"ticker": ticker, "close": 100.0, "as_of": df.index[-1]})
+    monkeypatch.setattr(regime_mod, "compute_market_regime",
+        lambda ohlcv_override=None: {
+            "regime": "BULL",
+            "indices": {
+                "SPY": {"pct_from_ma": 0.05, "momentum_10d_pct": 0.02},
+                "QQQ": {"pct_from_ma": 0.05},
+            },
+        })
+
+    def fake_generate(features, market_context=None, **kwargs):
+        if not features:
+            return []
+        day = next(iter(features.values()))["as_of"]
+        if day == first_signal_day:
+            return [{
+                "ticker": "HELD", "strategy": "trend_long", "sector": "Tech",
+                "entry_price": 100.0, "stop_price": 95.0, "target_price": 130.0,
+                "trade_quality_score": 0.9,
+            }]
+        if day == second_signal_day:
+            return [
+                {
+                    "ticker": "HELD", "strategy": "trend_long", "sector": "Tech",
+                    "entry_price": 100.0, "stop_price": 95.0, "target_price": 130.0,
+                    "trade_quality_score": 0.9,
+                },
+                {
+                    "ticker": "NEW", "strategy": "trend_long", "sector": "Tech",
+                    "entry_price": 100.0, "stop_price": 95.0, "target_price": 130.0,
+                    "trade_quality_score": 0.8,
+                },
+            ]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate)
+    monkeypatch.setattr(risk_engine, "enrich_signals",
+        lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals",
+        lambda signals, equity, risk_pct=None: [
+            {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+        ])
+    monkeypatch.setattr(portfolio_engine, "compute_portfolio_heat",
+        lambda *args, **kwargs: {
+            "can_add_new_positions": True,
+            "heat_note": "ok",
+        })
+    monkeypatch.setattr(backtester, "MAX_PER_SECTOR", 1)
+
+    engine = BacktestEngine(
+        universe=["HELD", "NEW"],
+        config={"INITIAL_CAPITAL": 100_000, "MAX_POSITIONS": 5},
+    )
+    engine.start = idx[0]
+    engine.end = idx[-1]
+
+    result = engine.run()
+
+    traded = [t["ticker"] for t in result["trades"]]
+    assert traded.count("HELD") == 1
+    assert traded.count("NEW") == 1, (
+        "already-held tickers must be removed before sector cap so fresh candidates survive"
+    )
+
+
+def test_backtester_respects_portfolio_heat_gate_for_new_entries(monkeypatch):
+    import feature_layer
+    import signal_engine
+    import risk_engine
+    import portfolio_engine
+    import regime as regime_mod
+    from backtester import BacktestEngine
+
+    idx = pd.bdate_range("2025-10-01", periods=40)
+    flat = pd.DataFrame({
+        "Open": [100.0] * len(idx),
+        "High": [100.0] * len(idx),
+        "Low": [100.0] * len(idx),
+        "Close": [100.0] * len(idx),
+    }, index=idx)
+    ohlcv = {"HELD": flat, "NEW": flat, "SPY": flat, "QQQ": flat}
+    first_signal_day = idx[20]
+    second_signal_day = idx[25]
+
+    monkeypatch.setattr(BacktestEngine, "_download_data", lambda self: ohlcv)
+    monkeypatch.setattr(feature_layer, "compute_features",
+        lambda ticker, df, earn: {"ticker": ticker, "close": 100.0, "as_of": df.index[-1]})
+    monkeypatch.setattr(regime_mod, "compute_market_regime",
+        lambda ohlcv_override=None: {
+            "regime": "BULL",
+            "indices": {
+                "SPY": {"pct_from_ma": 0.05, "momentum_10d_pct": 0.02},
+                "QQQ": {"pct_from_ma": 0.05},
+            },
+        })
+
+    def fake_generate(features, market_context=None, **kwargs):
+        if not features:
+            return []
+        day = next(iter(features.values()))["as_of"]
+        if day == first_signal_day:
+            return [{
+                "ticker": "HELD", "strategy": "trend_long", "sector": "Tech",
+                "entry_price": 100.0, "stop_price": 95.0, "target_price": 130.0,
+                "trade_quality_score": 0.9,
+            }]
+        if day == second_signal_day:
+            return [{
+                "ticker": "NEW", "strategy": "trend_long", "sector": "Tech",
+                "entry_price": 100.0, "stop_price": 95.0, "target_price": 130.0,
+                "trade_quality_score": 0.8,
+            }]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate)
+    monkeypatch.setattr(risk_engine, "enrich_signals",
+        lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals",
+        lambda signals, equity, risk_pct=None: [
+            {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+        ])
+
+    def fake_heat(open_positions, *args, **kwargs):
+        return {
+            "can_add_new_positions": len(open_positions.get("positions", [])) == 0,
+            "heat_note": "blocked" if open_positions.get("positions") else "ok",
+        }
+
+    monkeypatch.setattr(portfolio_engine, "compute_portfolio_heat", fake_heat)
+
+    engine = BacktestEngine(
+        universe=["HELD", "NEW"],
+        config={"INITIAL_CAPITAL": 100_000, "MAX_POSITIONS": 5},
+    )
+    engine.start = idx[0]
+    engine.end = idx[-1]
+
+    result = engine.run()
+
+    traded = [t["ticker"] for t in result["trades"]]
+    assert traded.count("HELD") == 1
+    assert "NEW" not in traded, "portfolio heat gate should block fresh entries"
 
 
 def test_regime_from_ohlcv_bull():
@@ -4915,6 +5551,94 @@ def test_save_advice_writes_replay_file_for_dated_investment_advice(tmp_path):
     saved = json.loads(replay_path.read_text(encoding="utf-8"))
     assert saved["advice_parsed"]["new_trade"]["ticker"] == "AMZN"
     assert saved["token_usage"]["total_tokens"] == 12
+
+
+def test_save_advice_attaches_archive_context_when_decision_log_exists(tmp_path):
+    """Dated advice saves should include prompt-time machine context when present."""
+    import json
+    from llm_advisor import save_advice
+
+    (tmp_path / "llm_decision_log_20260420.json").write_text(json.dumps({
+        "signals_presented": ["AMZN", "NVDA"],
+        "signal_details": [{"ticker": "AMZN", "strategy": "trend_long"}],
+        "new_trade_locked": True,
+        "account_state": "LOCKED_BY_HEAT",
+        "lock_reason": "Heat cap hit",
+    }), encoding="utf-8")
+
+    advice_path = tmp_path / "investment_advice_20260420.json"
+    raw_response = '{"new_trade": "NO NEW TRADE", "position_actions": []}'
+
+    ok = save_advice(raw_response, str(advice_path), token_usage=None)
+
+    assert ok is True
+    saved = json.loads(advice_path.read_text(encoding="utf-8"))
+    ctx = saved["archive_context"]
+    assert ctx["source"] == "llm_decision_log"
+    assert ctx["signals_presented"] == ["AMZN"]
+    assert ctx["signals_presented_count"] == 1
+    assert ctx["ranking_eligible"] is False
+    assert ctx["new_trade_locked"] is True
+    assert ctx["account_state"] == "LOCKED_BY_HEAT"
+    assert ctx["lock_reason"] == "Heat cap hit"
+
+
+def test_get_investment_advice_api_mode_still_saves_prompt(tmp_path, monkeypatch):
+    """API mode must still persist llm_prompt_YYYYMMDD.txt for audit/replay workflows."""
+    import os
+    from llm_advisor import get_investment_advice
+
+    class _FixedDateTime:
+        @classmethod
+        def now(cls):
+            import datetime as _dt
+            return _dt.datetime(2026, 4, 22, 10, 30, 0)
+
+    class _FakeResponse:
+        class _Usage:
+            prompt_tokens = 11
+            completion_tokens = 7
+            total_tokens = 18
+
+        class _Choice:
+            class _Message:
+                content = '{"new_trade":"NO NEW TRADE","position_actions":[]}'
+            message = _Message()
+
+        choices = [_Choice()]
+        usage = _Usage()
+
+    class _FakeCompletions:
+        @staticmethod
+        def create(**kwargs):
+            return _FakeResponse()
+
+    class _FakeChat:
+        completions = _FakeCompletions()
+
+    class _FakeClient:
+        def __init__(self, api_key):
+            self.chat = _FakeChat()
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr("llm_advisor.build_prompt", lambda *args, **kwargs: ("system body", "user body"))
+    monkeypatch.setattr("llm_advisor.datetime", _FixedDateTime)
+    monkeypatch.setattr("llm_advisor.OpenAI", _FakeClient)
+
+    result = get_investment_advice(
+        trade_news=[],
+        open_positions={},
+        trend_signals={"quant_signals": []},
+        save_prompt_only=False,
+    )
+
+    assert result["success"] is True
+    prompt_path = tmp_path / "data" / "llm_prompt_20260422.txt"
+    assert prompt_path.exists(), "Prompt file must be written even when API mode is enabled"
+    prompt_text = prompt_path.read_text(encoding="utf-8")
+    assert "system body" in prompt_text
+    assert "user body" in prompt_text
 
 
 def test_save_advice_does_not_overwrite_existing_replay_file(tmp_path):
@@ -5604,6 +6328,92 @@ def test_tail_loss_share_none_when_no_losses():
     assert tail_loss_share is None
 
 
+def test_capital_efficiency_metric_math_examples():
+    """Document capital-efficiency math independently from market data."""
+    from backtester import _build_capital_efficiency
+
+    closed = [
+        {"entry_date": "2026-01-02", "exit_date": "2026-01-04", "pnl": 120.0},
+        {"entry_date": "2026-01-10", "exit_date": "2026-01-10", "pnl": -20.0},
+    ]
+    metrics = _build_capital_efficiency(
+        closed,
+        initial_capital=10000.0,
+        trading_days=10,
+        total_pnl=100.0,
+        strategy_return_pct=0.01,
+        max_positions=5,
+    )
+
+    assert metrics["return_per_trade"] == 0.005
+    assert metrics["pnl_per_trade_usd"] == 50.0
+    assert metrics["calendar_slot_days"] == 4
+    assert metrics["avg_calendar_days_held"] == 2.0
+    assert metrics["pnl_per_calendar_slot_day_usd"] == 25.0
+    assert metrics["gross_slot_day_fraction"] == 0.08
+
+
+def test_sizing_rule_signal_attribution_counts_adjusted_signals():
+    """Sizing attribution counts rules without changing trade decisions."""
+    from backtester import (
+        _finalize_sizing_rule_signal_attribution,
+        _update_sizing_rule_signal_attribution,
+    )
+
+    acc = {}
+    _update_sizing_rule_signal_attribution(acc, [
+        {
+            "strategy": "trend_long",
+            "sector": "Healthcare",
+            "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_pct": 0.0,
+                "trend_healthcare_dte_risk_multiplier_applied": 0.0,
+            },
+        },
+        {
+            "strategy": "breakout_long",
+            "sector": "Communication Services",
+            "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_pct": 0.005,
+                "breakout_comms_gap_risk_multiplier_applied": 0.5,
+            },
+        },
+    ])
+    finalized = _finalize_sizing_rule_signal_attribution(acc)
+
+    healthcare = finalized["trend_healthcare_dte_risk_multiplier_applied"]
+    comms = finalized["breakout_comms_gap_risk_multiplier_applied"]
+    assert healthcare["signals_seen"] == 1
+    assert healthcare["zero_risk_signals"] == 1
+    assert healthcare["avg_risk_pct_after"] == 0.0
+    assert comms["reduced_risk_signals"] == 1
+    assert comms["avg_risk_pct_after"] == 0.005
+
+
+def test_sizing_rule_trade_attribution_observed_outcomes():
+    from backtester import _build_sizing_rule_trade_attribution
+
+    closed = [
+        {
+            "pnl": 100.0,
+            "sizing_multipliers": {"breakout_comms_gap_risk_multiplier_applied": 0.5},
+        },
+        {
+            "pnl": -50.0,
+            "sizing_multipliers": {"breakout_comms_gap_risk_multiplier_applied": 0.5},
+        },
+    ]
+    attr = _build_sizing_rule_trade_attribution(closed)
+    rec = attr["breakout_comms_gap_risk_multiplier_applied"]
+
+    assert rec["trade_count"] == 2
+    assert rec["win_rate"] == 0.5
+    assert rec["total_pnl_usd"] == 50.0
+    assert rec["avg_pnl_usd"] == 25.0
+
+
 def test_compute_convergence_ignores_sharpe_daily():
     """convergence.py must NOT key off sharpe_daily — only legacy sharpe."""
     from convergence import compute_convergence
@@ -5632,9 +6442,41 @@ def test_stability_diagnostics_builder():
     assert s["sharpe_legacy_delta"] == 1.5
     assert s["sharpe_daily_delta"]  == 1.0
     assert s["directionally_profitable_both"] is True
+    r = d["multi_window_robustness"]
+    assert r["windows"] == 2
+    assert r["expected_value_score_positive_windows"] == 2
+    assert r["return_positive_windows"] == 2
+    assert r["robustness_score"] == 6
     # Nothing in the dict should be a pass/fail verdict
     for k, v in s.items():
         assert k not in ("pass", "passed", "verdict", "converged")
+
+
+def test_multi_window_robustness_score_handles_mixed_windows():
+    from backtester import _build_multi_window_robustness
+
+    metrics = _build_multi_window_robustness([
+        {
+            "expected_value_score": 0.25,
+            "sharpe_daily": 1.2,
+            "max_drawdown_pct": 0.05,
+            "benchmarks": {"strategy_total_return_pct": 0.10},
+        },
+        {
+            "expected_value_score": -0.10,
+            "sharpe_daily": -0.4,
+            "max_drawdown_pct": 0.25,
+            "benchmarks": {"strategy_total_return_pct": -0.03},
+        },
+    ])
+
+    assert metrics["windows"] == 2
+    assert metrics["expected_value_score_positive_windows"] == 1
+    assert metrics["return_positive_windows"] == 1
+    assert metrics["sharpe_daily_positive_windows"] == 1
+    assert metrics["drawdown_guardrail_break_windows"] == 1
+    assert metrics["expected_value_score_spread"] == 0.35
+    assert metrics["robustness_score"] == 2
 
 
 # ───────────────────────────────────────────────────────────────────────────
@@ -5735,6 +6577,15 @@ def test_llm_replay_off_is_pure_passthrough(monkeypatch, tmp_path):
     assert attr["signals_passed_by_llm"] == 0
     assert attr["dates_covered"] == 0
     assert attr["coverage_fraction"] == 0.0
+    assert attr["candidate_days_covered"] == 0
+    assert attr["candidate_days_total"] == 0
+    assert attr["candidate_dates_covered"] == []
+    assert attr["candidate_dates_missing"] == []
+    assert attr["candidate_signal_counts_by_date"] == {}
+    assert attr["candidate_day_coverage_fraction"] == 0.0
+    assert attr["candidate_signals_covered"] == 0
+    assert attr["candidate_signals_total"] == result["signals_survived"]
+    assert attr["candidate_signal_coverage_fraction"] == 0.0
     assert attr["veto_rate"] is None
 
 
@@ -5820,12 +6671,359 @@ def test_llm_attribution_coverage_fraction(monkeypatch, tmp_path):
                                    "position_actions": []}),
                       encoding="utf-8")
 
+    import signal_engine
+    _orig_generate_signals = signal_engine.generate_signals
+
+    def _compat_generate_signals(features, market_context=None, **kwargs):
+        return _orig_generate_signals(features, market_context=market_context)
+
+    monkeypatch.setattr(signal_engine, "generate_signals", _compat_generate_signals)
+
     result = engine.run()
     attr = result["llm_attribution"]
     assert attr["trading_days"] == 30
     assert attr["dates_covered"] == 2
     assert attr["dates_missing"] == 28
     assert abs(attr["coverage_fraction"] - (2/30)) < 1e-4
+
+
+def test_llm_attribution_candidate_coverage_metrics(monkeypatch, tmp_path):
+    """Candidate coverage must measure only days/signals that reached the LLM gate."""
+    import json, pandas as pd
+    import signal_engine, portfolio_engine, risk_engine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+        "Volume": [1_000_000]*30,
+    }, index=idx)
+
+    from backtester import BacktestEngine
+    engine = BacktestEngine(["AAA"], start="2025-10-01", end="2025-10-30", replay_llm=True, data_dir=str(tmp_path))
+    monkeypatch.setattr(engine, "_download_data", lambda: {"AAA": spy_df, "SPY": spy_df, "QQQ": spy_df})
+    monkeypatch.setattr(engine, "_download_earnings_calendar", lambda: {"AAA": [], "SPY": [], "QQQ": []})
+
+    _gen_call = [0]
+    def fake_generate_signals(*args, **kwargs):
+        _gen_call[0] += 1
+        if _gen_call[0] == 14:
+            return [{"ticker": "AAA", "strategy": "trend_long", "entry_price": 100.0, "stop_price": 95.0}]
+        if _gen_call[0] == 15:
+            return [{"ticker": "AAA", "strategy": "breakout_long", "entry_price": 100.0, "stop_price": 95.0}]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate_signals)
+    monkeypatch.setattr(signal_engine, "rank_signals_for_allocation", lambda signals, **kwargs: list(signals))
+    monkeypatch.setattr(risk_engine, "enrich_signals", lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals", lambda signals, *args, **kwargs: [
+        {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+    ])
+
+    # Cover only one of the two candidate days.
+    covered_day = idx[13].strftime("%Y%m%d")
+    (tmp_path / f"llm_prompt_resp_{covered_day}.json").write_text(json.dumps({
+        "new_trade": {"ticker": "AAA"},
+        "position_actions": [],
+    }), encoding="utf-8")
+
+    result = engine.run()
+    attr = result["llm_attribution"]
+
+    assert attr["candidate_days_total"] == 2
+    assert attr["candidate_days_covered"] == 1
+    assert attr["candidate_dates_covered"] == [covered_day]
+    missing_day = idx[14].strftime("%Y%m%d")
+    assert attr["candidate_dates_missing"] == [missing_day]
+    assert attr["candidate_signal_counts_by_date"] == {
+        covered_day: 1,
+        missing_day: 1,
+    }
+    assert attr["candidate_day_coverage_fraction"] == 0.5
+    assert attr["candidate_signals_total"] == 2
+    assert attr["candidate_signals_covered"] == 1
+    assert attr["candidate_signal_coverage_fraction"] == 0.5
+
+
+def test_llm_attribution_archive_backlog_prioritizes_prompt_ready_days(monkeypatch, tmp_path):
+    """Missing candidate days should expose an actionable prompt-ready backlog."""
+    import json, pandas as pd
+    import signal_engine, portfolio_engine, risk_engine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+        "Volume": [1_000_000]*30,
+    }, index=idx)
+
+    from backtester import BacktestEngine
+    engine = BacktestEngine(["AAA"], start="2025-10-01", end="2025-10-30", replay_llm=True, data_dir=str(tmp_path))
+    monkeypatch.setattr(engine, "_download_data", lambda: {"AAA": spy_df, "SPY": spy_df, "QQQ": spy_df})
+    monkeypatch.setattr(engine, "_download_earnings_calendar", lambda: {"AAA": [], "SPY": [], "QQQ": []})
+
+    _gen_call = [0]
+    def fake_generate_signals(*args, **kwargs):
+        _gen_call[0] += 1
+        if _gen_call[0] == 14:
+            return [{"ticker": "AAA", "strategy": "trend_long", "entry_price": 100.0, "stop_price": 95.0}]
+        if _gen_call[0] == 15:
+            return [{"ticker": "AAA", "strategy": "breakout_long", "entry_price": 100.0, "stop_price": 95.0}]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate_signals)
+    monkeypatch.setattr(signal_engine, "rank_signals_for_allocation", lambda signals, **kwargs: list(signals))
+    monkeypatch.setattr(risk_engine, "enrich_signals", lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals", lambda signals, *args, **kwargs: [
+        {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+    ])
+
+    covered_day = idx[13].strftime("%Y%m%d")
+    prompt_ready_day = idx[14].strftime("%Y%m%d")
+    prompt_missing_day = idx[15].strftime("%Y%m%d")
+
+    (tmp_path / f"llm_prompt_resp_{covered_day}.json").write_text(json.dumps({
+        "new_trade": {"ticker": "AAA"},
+        "position_actions": [],
+    }), encoding="utf-8")
+
+    (tmp_path / f"llm_prompt_{prompt_ready_day}.txt").write_text("prompt body", encoding="utf-8")
+    (tmp_path / f"llm_decision_log_{prompt_ready_day}.json").write_text(json.dumps({
+        "signal_details": [
+            {
+                "ticker": "AAA",
+                "strategy": "breakout_long",
+                "trade_quality_score": 0.91,
+            }
+        ]
+    }), encoding="utf-8")
+
+    result = engine.run()
+    backlog = result["llm_attribution"]["archive_backlog"]
+
+    assert backlog["missing_candidate_days"] == 1
+    assert backlog["missing_candidate_signals"] == 1
+    assert backlog["raw_response_recoverable_days"] == 0
+    assert backlog["prompt_ready_days"] == 1
+    assert backlog["prompt_ineligible_days"] == 0
+    assert backlog["prompt_missing_days"] == 0
+    assert backlog["context_only_days"] == 0
+    assert backlog["archive_hole_days"] == 0
+    assert backlog["decision_log_days"] == 1
+    assert backlog["queue"][0]["date"] == prompt_ready_day
+    assert backlog["queue"][0]["ready_for_manual_import"] is True
+    assert backlog["queue"][0]["recovery_tier"] == "prompt_only"
+    assert backlog["queue"][0]["ranking_eligible_prompt"] is True
+    assert backlog["queue"][0]["signal_tickers"] == ["AAA"]
+    assert backlog["queue"][0]["strategies"] == {"breakout_long": 1}
+    assert backlog["queue"][0]["max_trade_quality_score"] == 0.91
+
+
+def test_llm_archive_backlog_downgrades_prompt_only_days_without_ranking_opportunity(tmp_path):
+    """Prompt files without a real ranking opportunity should not count as prompt-ready."""
+    import json
+
+    from llm_backlog import build_llm_archive_backlog
+
+    (tmp_path / "llm_prompt_20260312.txt").write_text("prompt body", encoding="utf-8")
+    (tmp_path / "quant_signals_20260312.json").write_text(json.dumps({
+        "portfolio_heat": {"can_add_new_positions": False},
+        "signals": [],
+    }), encoding="utf-8")
+
+    backlog = build_llm_archive_backlog(
+        str(tmp_path),
+        ["20260312"],
+        {"20260312": 1},
+    )
+
+    assert backlog["missing_candidate_days"] == 1
+    assert backlog["prompt_ready_days"] == 0
+    assert backlog["prompt_ineligible_days"] == 1
+    assert backlog["context_only_days"] == 1
+    assert backlog["queue"][0]["date"] == "20260312"
+    assert backlog["queue"][0]["recovery_tier"] == "context_only"
+    assert backlog["queue"][0]["ready_for_manual_import"] is False
+    assert backlog["queue"][0]["prompt_exists_but_not_ranking_eligible"] is True
+    assert backlog["queue"][0]["ranking_eligible_prompt"] is False
+    assert backlog["queue"][0]["can_add_new_positions"] is False
+
+
+def test_llm_attribution_context_alignment_distinguishes_empty_vs_aligned_days(monkeypatch, tmp_path):
+    """Covered replay days are only credible when production quant context aligns."""
+    import json, pandas as pd
+    import signal_engine, portfolio_engine, risk_engine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0]*30, "High": [100.0]*30,
+        "Low":  [100.0]*30, "Close": [100.0]*30,
+        "Volume": [1_000_000]*30,
+    }, index=idx)
+
+    from backtester import BacktestEngine
+    engine = BacktestEngine(["AAA"], start="2025-10-01", end="2025-10-30", replay_llm=True, data_dir=str(tmp_path))
+    monkeypatch.setattr(engine, "_download_data", lambda: {"AAA": spy_df, "SPY": spy_df, "QQQ": spy_df})
+    monkeypatch.setattr(engine, "_download_earnings_calendar", lambda: {"AAA": [], "SPY": [], "QQQ": []})
+
+    _gen_call = [0]
+    def fake_generate_signals(*args, **kwargs):
+        _gen_call[0] += 1
+        if _gen_call[0] == 14:
+            return [{"ticker": "AAA", "strategy": "trend_long", "entry_price": 100.0, "stop_price": 95.0}]
+        if _gen_call[0] == 15:
+            return [{"ticker": "AAA", "strategy": "breakout_long", "entry_price": 100.0, "stop_price": 95.0}]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate_signals)
+    monkeypatch.setattr(signal_engine, "rank_signals_for_allocation", lambda signals, **kwargs: list(signals))
+    monkeypatch.setattr(risk_engine, "enrich_signals", lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals", lambda signals, *args, **kwargs: [
+        {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+    ])
+
+    aligned_day = idx[13].strftime("%Y%m%d")
+    empty_day = idx[14].strftime("%Y%m%d")
+
+    for day in [aligned_day, empty_day]:
+        (tmp_path / f"llm_prompt_resp_{day}.json").write_text(json.dumps({
+            "new_trade": {"ticker": "AAA"},
+            "position_actions": [],
+        }), encoding="utf-8")
+
+    (tmp_path / f"quant_signals_{aligned_day}.json").write_text(json.dumps({
+        "signals": [{"ticker": "AAA", "strategy": "trend_long"}],
+    }), encoding="utf-8")
+    (tmp_path / f"quant_signals_{empty_day}.json").write_text(json.dumps({
+        "signals": [],
+    }), encoding="utf-8")
+
+    result = engine.run()
+    alignment = result["llm_attribution"]["context_alignment"]
+
+    assert alignment["covered_candidate_days"] == 2
+    assert alignment["aligned_days"] == 1
+    assert alignment["production_quant_empty_days"] == 1
+    assert alignment["production_quant_missing_days"] == 0
+    assert alignment["production_quant_mismatch_days"] == 0
+    assert alignment["aligned_signals"] == 1
+    assert alignment["production_aligned_candidate_day_fraction_of_total"] == 0.5
+    assert alignment["production_aligned_candidate_day_fraction_of_covered"] == 0.5
+    assert alignment["production_aligned_candidate_signal_fraction_of_total"] == 0.5
+    assert alignment["ranking_eligible_aligned_days"] == 0
+    assert alignment["ranking_locked_days"] == 0
+    assert alignment["ranking_unknown_days"] == 2
+
+    statuses = {item["date"]: item["alignment_status"] for item in alignment["queue"]}
+    assert statuses[aligned_day] == "aligned"
+    assert statuses[empty_day] == "production_quant_empty"
+
+
+def test_llm_attribution_context_alignment_uses_archive_context_for_ranking_eligibility(monkeypatch, tmp_path):
+    """Replay archive context should distinguish usable ranking samples from locked ones."""
+    import json, pandas as pd
+    import signal_engine, portfolio_engine, risk_engine
+
+    idx = pd.bdate_range("2026-01-01", periods=6)
+    spy_df = pd.DataFrame({
+        "Open": [100.0] * 6, "High": [100.0] * 6,
+        "Low": [100.0] * 6, "Close": [100.0] * 6,
+        "Volume": [1_000_000] * 6,
+    }, index=idx)
+
+    from backtester import BacktestEngine
+    engine = BacktestEngine(["AAA"], start="2026-01-01", end="2026-01-08", replay_llm=True, data_dir=str(tmp_path))
+    monkeypatch.setattr(engine, "_download_data", lambda: {"AAA": spy_df, "SPY": spy_df, "QQQ": spy_df})
+    monkeypatch.setattr(engine, "_download_earnings_calendar", lambda: {"AAA": [], "SPY": [], "QQQ": []})
+
+    _gen_call = [0]
+    def fake_generate_signals(*args, **kwargs):
+        _gen_call[0] += 1
+        if _gen_call[0] in (1, 2):
+            return [{"ticker": "AAA", "strategy": "trend_long", "entry_price": 100.0, "stop_price": 95.0}]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate_signals)
+    monkeypatch.setattr(signal_engine, "rank_signals_for_allocation", lambda signals, **kwargs: list(signals))
+    monkeypatch.setattr(risk_engine, "enrich_signals", lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals", lambda signals, *args, **kwargs: [
+        {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+    ])
+
+    eligible_day = idx[0].strftime("%Y%m%d")
+    locked_day = idx[1].strftime("%Y%m%d")
+
+    (tmp_path / f"llm_prompt_resp_{eligible_day}.json").write_text(json.dumps({
+        "new_trade": {"ticker": "AAA"},
+        "position_actions": [],
+        "archive_context": {
+            "signals_presented": ["AAA"],
+            "signals_presented_count": 1,
+            "ranking_eligible": True,
+            "new_trade_locked": False,
+        },
+    }), encoding="utf-8")
+    (tmp_path / f"llm_prompt_resp_{locked_day}.json").write_text(json.dumps({
+        "new_trade": "NO NEW TRADE",
+        "position_actions": [],
+        "archive_context": {
+            "signals_presented": ["AAA"],
+            "signals_presented_count": 1,
+            "ranking_eligible": False,
+            "new_trade_locked": True,
+        },
+    }), encoding="utf-8")
+
+    result = engine.run()
+    alignment = result["llm_attribution"]["context_alignment"]
+
+    assert alignment["covered_candidate_days"] == 2
+    assert alignment["aligned_days"] == 2
+    assert alignment["ranking_eligible_aligned_days"] == 1
+    assert alignment["ranking_locked_days"] == 1
+    assert alignment["ranking_unknown_days"] == 0
+    assert alignment["ranking_eligible_candidate_day_fraction_of_total"] == 0.5
+    assert alignment["ranking_eligible_candidate_signal_fraction_of_total"] == 0.5
+
+    ranking_statuses = {item["date"]: item["ranking_status"] for item in alignment["queue"]}
+    assert ranking_statuses[eligible_day] == "ranking_eligible_aligned"
+    assert ranking_statuses[locked_day] == "new_trade_locked"
+
+
+def test_llm_attribution_archive_backlog_distinguishes_recovery_tiers(monkeypatch, tmp_path):
+    """Backlog should distinguish raw-response, context-only, and archive-hole dates."""
+    import json
+
+    from llm_backlog import build_llm_archive_backlog
+
+    (tmp_path / "llm_output_20260121.json").write_text('{"new_trade":"NO NEW TRADE"}', encoding="utf-8")
+    (tmp_path / "quant_signals_20260129.json").write_text('{"signals":[]}', encoding="utf-8")
+    (tmp_path / "earnings_snapshot_20260204.json").write_text('{"date":"20260204"}', encoding="utf-8")
+    (tmp_path / "llm_decision_log_20260129.json").write_text(json.dumps({
+        "signal_details": [{"ticker": "BBB", "strategy": "trend_long"}]
+    }), encoding="utf-8")
+
+    backlog = build_llm_archive_backlog(
+        str(tmp_path),
+        ["20260121", "20260129", "20260204", "20260312"],
+        {"20260121": 4, "20260129": 3, "20260204": 2, "20260312": 1},
+    )
+
+    assert backlog["missing_candidate_days"] == 4
+    assert backlog["raw_response_recoverable_days"] == 1
+    assert backlog["prompt_ready_days"] == 0
+    assert backlog["prompt_ineligible_days"] == 0
+    assert backlog["context_only_days"] == 2
+    assert backlog["archive_hole_days"] == 1
+    assert backlog["quant_signals_days"] == 1
+    assert backlog["earnings_snapshot_days"] == 1
+    assert backlog["queue"][0]["date"] == "20260121"
+    assert backlog["queue"][0]["recovery_tier"] == "raw_response_recoverable"
+
+    tiers = {item["date"]: item["recovery_tier"] for item in backlog["queue"]}
+    assert tiers["20260129"] == "context_only"
+    assert tiers["20260204"] == "context_only"
+    assert tiers["20260312"] == "archive_hole"
 
 
 def test_llm_attribution_by_strategy_breakdown(monkeypatch, tmp_path):
@@ -5850,7 +7048,7 @@ def test_llm_attribution_by_strategy_breakdown(monkeypatch, tmp_path):
 
     # On day 20 generate_signals returns two signals from different strategies.
     _gen_call = [0]
-    def _two_strategy_gen(features, market_context=None):
+    def _two_strategy_gen(features, market_context=None, **kwargs):
         _gen_call[0] += 1
         if _gen_call[0] == 20:
             return [
@@ -5911,6 +7109,14 @@ def test_llm_attribution_by_strategy_empty_when_no_files(monkeypatch, tmp_path):
     engine = _backtest_harness(monkeypatch, test_df, spy_df)
     engine.replay_llm = True
     engine.data_dir   = str(tmp_path)   # empty dir — no response files
+
+    import signal_engine
+    _orig_generate_signals = signal_engine.generate_signals
+
+    def _compat_generate_signals(features, market_context=None, **kwargs):
+        return _orig_generate_signals(features, market_context=market_context)
+
+    monkeypatch.setattr(signal_engine, "generate_signals", _compat_generate_signals)
 
     result = engine.run()
     by_strat = result["llm_attribution"].get("by_strategy", {})

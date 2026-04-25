@@ -1,0 +1,91 @@
+{
+  "experiment_id": "exp-20260425-031",
+  "status": "accepted",
+  "rule": {
+    "strategy": "trend_long",
+    "sector": "Commodities",
+    "target_atr_mult": 7.0,
+    "unchanged": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend target width",
+      "all breakout exits",
+      "all non-Commodity trend exits"
+    ]
+  },
+  "fixed_snapshot_results": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "before": {
+        "expected_value_score": 1.1108,
+        "sharpe_daily": 3.99,
+        "total_return_pct": 0.2784,
+        "max_drawdown_pct": 0.0238,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "after": {
+        "expected_value_score": 1.3382,
+        "sharpe_daily": 4.30,
+        "total_return_pct": 0.3112,
+        "max_drawdown_pct": 0.0237,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      }
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "before": {
+        "expected_value_score": 0.4030,
+        "sharpe_daily": 2.62,
+        "total_return_pct": 0.1538,
+        "max_drawdown_pct": 0.0205,
+        "trade_count": 25,
+        "win_rate": 0.44
+      },
+      "after": {
+        "expected_value_score": 0.4182,
+        "sharpe_daily": 2.38,
+        "total_return_pct": 0.1757,
+        "max_drawdown_pct": 0.0205,
+        "trade_count": 21,
+        "win_rate": 0.4762
+      }
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "before": {
+        "expected_value_score": 0.1121,
+        "sharpe_daily": 1.12,
+        "total_return_pct": 0.1001,
+        "max_drawdown_pct": 0.0444,
+        "trade_count": 24,
+        "win_rate": 0.375
+      },
+      "after": {
+        "expected_value_score": 0.1121,
+        "sharpe_daily": 1.12,
+        "total_return_pct": 0.1001,
+        "max_drawdown_pct": 0.0444,
+        "trade_count": 24,
+        "win_rate": 0.375
+      }
+    }
+  },
+  "verification": [
+    ".venv\\\\Scripts\\\\python.exe -m pytest quant\\\\test_quant.py -q => 285 passed",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20251023_20260421.json --no-secondary => EV 1.3382, Sharpe daily 4.30, maxDD 2.37%, trades 21",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2025-04-23 --end 2025-10-22 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20250423_20251022.json --no-secondary => EV 0.4182, Sharpe daily 2.38, maxDD 2.05%, trades 21",
+    ".venv\\\\Scripts\\\\python.exe quant\\\\backtester.py --start 2024-10-02 --end 2025-04-22 --regime-aware-exit --ohlcv-snapshot data\\\\ohlcv_snapshot_20241002_20250422.json --no-secondary => EV 0.1121, Sharpe daily 1.12, maxDD 4.44%, trades 24"
+  ],
+  "notes": "This experiment changes one independent causal variable: Commodity trend target width. It is an exit-alpha/winner-truncation repair, not a sizing haircut and not a generic trend target widening."
+}

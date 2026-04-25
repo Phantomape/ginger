@@ -13,6 +13,96 @@ from openai import OpenAI
 logger = logging.getLogger(__name__)
 
 
+def _load_json_if_exists(path):
+    """Best-effort JSON loader for optional replay sidecar files."""
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.warning(f"Failed to load optional JSON sidecar {path}: {e}")
+        return None
+
+
+def _build_archive_context(date_str, data_dir):
+    """Attach prompt-time production context to dated advice / replay archives.
+
+    The top alpha branch (`LLM soft ranking`) is blocked not just by missing
+    replies, but by lacking prompt-time candidate context. This helper mirrors
+    enough program-side state into the saved advice wrapper so replay readiness
+    can later distinguish:
+      - ranking-eligible candidate days
+      - prompt days that were hard-locked by heat / regime rules
+      - days with no prompt candidates at all
+    """
+    decision_log = _load_json_if_exists(
+        os.path.join(data_dir, f"llm_decision_log_{date_str}.json")
+    )
+    quant_signals = _load_json_if_exists(
+        os.path.join(data_dir, f"quant_signals_{date_str}.json")
+    )
+
+    signal_details = []
+    if isinstance(decision_log, dict):
+        signal_details = decision_log.get("signal_details") or []
+
+    signal_tickers = []
+    for item in signal_details:
+        if not isinstance(item, dict):
+            continue
+        ticker = item.get("ticker")
+        if isinstance(ticker, str) and ticker.strip():
+            signal_tickers.append(ticker.strip().upper())
+
+    source = None
+    new_trade_locked = None
+    account_state = None
+    lock_reason = None
+    if isinstance(decision_log, dict):
+        source = "llm_decision_log"
+        new_trade_locked = decision_log.get("new_trade_locked")
+        account_state = decision_log.get("account_state")
+        lock_reason = decision_log.get("lock_reason")
+        if not signal_tickers:
+            for ticker in decision_log.get("signals_presented", []) or []:
+                if isinstance(ticker, str) and ticker.strip():
+                    signal_tickers.append(ticker.strip().upper())
+    elif isinstance(quant_signals, dict):
+        source = "quant_signals"
+        for item in quant_signals.get("signals", []) or []:
+            if not isinstance(item, dict):
+                continue
+            ticker = item.get("ticker")
+            if isinstance(ticker, str) and ticker.strip():
+                signal_tickers.append(ticker.strip().upper())
+
+    if source is None:
+        return None
+
+    signal_tickers = list(dict.fromkeys(signal_tickers))
+    if new_trade_locked is True:
+        ranking_eligible = False
+    elif signal_tickers:
+        ranking_eligible = True
+    else:
+        ranking_eligible = False
+
+    context = {
+        "source": source,
+        "signals_presented": signal_tickers,
+        "signals_presented_count": len(signal_tickers),
+        "ranking_eligible": ranking_eligible,
+    }
+    if new_trade_locked is not None:
+        context["new_trade_locked"] = bool(new_trade_locked)
+    if account_state is not None:
+        context["account_state"] = account_state
+    if lock_reason:
+        context["lock_reason"] = lock_reason
+    return context
+
+
 def load_open_positions(filepath="../data/open_positions.json"):
     """
     Load open positions from JSON file.
@@ -333,6 +423,10 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         heat_data     = heat,
         regime_data   = regime,
     )
+    if isinstance(trend_signals, dict):
+        # Persist the machine-state summary alongside the day payload so later
+        # decision logs / replay archives can recover prompt-time gating state.
+        trend_signals["preflight"] = preflight
     # Merge preflight data_warnings with the existing field-missing warnings
     combined_warnings = (preflight.get("data_warnings") or []) + (_data_warnings or [])
 
@@ -456,11 +550,21 @@ def _save_decision_log(date_str, trade_news, trend_signals):
         quant_signals = trend_signals.get("quant_signals", []) if trend_signals else []
         signals_presented = [s["ticker"] for s in quant_signals]
 
-        # Extract position states from the preflight data embedded in trend_signals
-        # (these are injected by build_prompt → preflight_validator)
+        # Extract machine-state context from the preflight data embedded in
+        # trend_signals (injected by build_prompt -> preflight_validator).
         position_states = {}
         suggested_reduce = {}
-        new_trade_locked = False
+        new_trade_locked = None
+        account_state = None
+        lock_reason = None
+        if isinstance(trend_signals, dict):
+            preflight = trend_signals.get("preflight") or {}
+            if isinstance(preflight, dict):
+                position_states = preflight.get("position_states") or {}
+                suggested_reduce = preflight.get("suggested_reduce_pct") or {}
+                new_trade_locked = preflight.get("new_trade_locked")
+                account_state = preflight.get("account_state")
+                lock_reason = preflight.get("lock_reason")
 
         # Count news tiers
         tier_counts = {"T1": 0, "T2": 0, "T3": 0}
@@ -484,6 +588,11 @@ def _save_decision_log(date_str, trade_news, trend_signals):
             ],
             "news_summary": tier_counts,
             "has_actionable_news": tier_counts["T1"] > 0,
+            "new_trade_locked": new_trade_locked,
+            "account_state": account_state,
+            "lock_reason": lock_reason,
+            "position_states": position_states,
+            "suggested_reduce_pct": suggested_reduce,
         }
 
         log_file = f"data/llm_decision_log_{date_str}.json"
@@ -494,6 +603,32 @@ def _save_decision_log(date_str, trade_news, trend_signals):
 
     except Exception as e:
         logger.warning(f"Failed to save decision log: {e}")
+
+
+def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_signals):
+    """Persist the rendered prompt for auditability, regardless of API usage."""
+    prompt_file = f"data/llm_prompt_{date_str}.txt"
+
+    os.makedirs("data", exist_ok=True)
+
+    with open(prompt_file, "w", encoding="utf-8") as f:
+        f.write("=" * 80 + "\n")
+        f.write("SYSTEM MESSAGE\n")
+        f.write("=" * 80 + "\n\n")
+        f.write(system_message)
+        f.write("\n\n")
+        f.write("=" * 80 + "\n")
+        f.write("USER MESSAGE\n")
+        f.write("=" * 80 + "\n\n")
+        f.write(user_message)
+        f.write("\n")
+
+    logger.info(f"Prompt saved to {prompt_file}")
+
+    # Save decision log: what signals/positions the code pre-decided,
+    # so we can later compare LLM veto/pass against actual outcomes.
+    _save_decision_log(date_str, trade_news, trend_signals)
+    return prompt_file
 
 
 def get_investment_advice(trade_news, open_positions=None, trend_signals=None, model="gpt-4o", max_tokens=4000, save_prompt_only=True):
@@ -535,32 +670,27 @@ def get_investment_advice(trade_news, open_positions=None, trend_signals=None, m
             "token_usage": None
         }
 
+    today = datetime.now().strftime("%Y%m%d")
+    try:
+        prompt_file = _save_prompt_file(
+            today,
+            system_message,
+            user_message,
+            trade_news,
+            trend_signals,
+        )
+    except Exception as e:
+        logger.error(f"Failed to save prompt: {e}")
+        return {
+            "success": False,
+            "advice": None,
+            "error": f"Failed to save prompt: {e}",
+            "token_usage": None
+        }
+
     # If save_prompt_only, save to file and return
     if save_prompt_only:
         try:
-            today = datetime.now().strftime("%Y%m%d")
-            prompt_file = f"data/llm_prompt_{today}.txt"
-
-            os.makedirs("data", exist_ok=True)
-
-            with open(prompt_file, "w", encoding="utf-8") as f:
-                f.write("=" * 80 + "\n")
-                f.write("SYSTEM MESSAGE\n")
-                f.write("=" * 80 + "\n\n")
-                f.write(system_message)
-                f.write("\n\n")
-                f.write("=" * 80 + "\n")
-                f.write("USER MESSAGE\n")
-                f.write("=" * 80 + "\n\n")
-                f.write(user_message)
-                f.write("\n")
-
-            logger.info(f"Prompt saved to {prompt_file}")
-
-            # Save decision log: what signals/positions the code pre-decided,
-            # so we can later compare LLM veto/pass against actual outcomes.
-            _save_decision_log(today, trade_news, trend_signals)
-
             return {
                 "success": True,
                 "advice": f"Prompt saved to {prompt_file}\n\nTo use this prompt:\n1. Copy the content\n2. Paste into ChatGPT or Claude\n3. Review the structured JSON response",
@@ -680,6 +810,14 @@ def save_advice(advice, filepath, token_usage=None):
             "advice_parsed": parsed_advice,
             "token_usage": token_usage
         }
+
+        basename = os.path.basename(filepath)
+        if basename.startswith("investment_advice_") and basename.endswith(".json"):
+            date_str = basename[len("investment_advice_"):-len(".json")]
+            if len(date_str) == 8 and date_str.isdigit():
+                archive_context = _build_archive_context(date_str, os.path.dirname(filepath))
+                if archive_context:
+                    output["archive_context"] = archive_context
 
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(output, f, indent=2, ensure_ascii=False)

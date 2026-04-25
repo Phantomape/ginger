@@ -22,6 +22,38 @@ from constants import (
     TREND_TECH_GAP_VULN_MIN,
     TREND_TECH_GAP_VULN_MAX,
     TREND_TECH_GAP_RISK_MULTIPLIER,
+    TREND_TECH_TIGHT_GAP_VULN_MIN,
+    TREND_TECH_TIGHT_GAP_VULN_MAX,
+    TREND_TECH_TIGHT_GAP_RISK_MULTIPLIER,
+    TREND_TECH_NEAR_HIGH_MAX_PULLBACK,
+    TREND_TECH_NEAR_HIGH_RISK_MULTIPLIER,
+    BREAKOUT_INDUSTRIALS_GAP_VULN_MIN,
+    BREAKOUT_INDUSTRIALS_GAP_VULN_MAX,
+    BREAKOUT_INDUSTRIALS_GAP_RISK_MULTIPLIER,
+    BREAKOUT_COMMS_NEAR_HIGH_MAX_PULLBACK,
+    BREAKOUT_COMMS_NEAR_HIGH_RISK_MULTIPLIER,
+    BREAKOUT_COMMS_GAP_VULN_MIN,
+    BREAKOUT_COMMS_GAP_VULN_MAX,
+    BREAKOUT_COMMS_GAP_RISK_MULTIPLIER,
+    BREAKOUT_FINANCIALS_DTE_MIN,
+    BREAKOUT_FINANCIALS_DTE_MAX,
+    BREAKOUT_FINANCIALS_DTE_RISK_MULTIPLIER,
+    BREAKOUT_TECH_DTE_MIN,
+    BREAKOUT_TECH_DTE_MAX,
+    BREAKOUT_TECH_DTE_RISK_MULTIPLIER,
+    BREAKOUT_HEALTHCARE_DTE_MIN,
+    BREAKOUT_HEALTHCARE_DTE_MAX,
+    BREAKOUT_HEALTHCARE_DTE_RISK_MULTIPLIER,
+    TREND_TECH_DTE_MIN,
+    TREND_TECH_DTE_MAX,
+    TREND_TECH_DTE_RISK_MULTIPLIER,
+    TREND_HEALTHCARE_DTE_MIN,
+    TREND_HEALTHCARE_DTE_MAX,
+    TREND_HEALTHCARE_DTE_RISK_MULTIPLIER,
+    TREND_CONSUMER_NEAR_HIGH_DTE_MIN,
+    TREND_CONSUMER_NEAR_HIGH_DTE_MAX,
+    TREND_CONSUMER_NEAR_HIGH_MAX_PULLBACK,
+    TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
     ATR_STOP_MULT,
@@ -271,6 +303,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             trade_quality_score = sig.get("trade_quality_score")
             sector = sig.get("sector")
             gap_vulnerability_pct = sig.get("gap_vulnerability_pct")
+            days_to_earnings = sig.get("days_to_earnings")
             is_low_tqs = (
                 trade_quality_score is not None
                 and trade_quality_score < LOW_TQS_RISK_THRESHOLD
@@ -294,6 +327,19 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             if strategy == "trend_long" and sector == "Industrials":
                 trend_industrials_risk_multiplier = TREND_INDUSTRIALS_RISK_MULTIPLIER
                 signal_risk_pct *= trend_industrials_risk_multiplier
+            trend_tech_tight_gap_risk_multiplier = 1.0
+            if (
+                strategy == "trend_long"
+                and sector == "Technology"
+                and gap_vulnerability_pct is not None
+                and TREND_TECH_TIGHT_GAP_VULN_MIN <= gap_vulnerability_pct < TREND_TECH_TIGHT_GAP_VULN_MAX
+            ):
+                # Residual audit found this tighter-gap pocket was a stable drag
+                # in the weaker windows and absent in the dominant strong tape.
+                trend_tech_tight_gap_risk_multiplier = (
+                    TREND_TECH_TIGHT_GAP_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= trend_tech_tight_gap_risk_multiplier
             trend_tech_gap_risk_multiplier = 1.0
             if (
                 strategy == "trend_long"
@@ -305,6 +351,143 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 # but a full ban (0x) proved worse than keeping a small 0.25x stake.
                 trend_tech_gap_risk_multiplier = TREND_TECH_GAP_RISK_MULTIPLIER
                 signal_risk_pct *= trend_tech_gap_risk_multiplier
+            trend_tech_near_high_risk_multiplier = 1.0
+            pct_from_52w_high = (sig.get("conditions_met") or {}).get("pct_from_52w_high")
+            if (
+                strategy == "trend_long"
+                and sector == "Technology"
+                and pct_from_52w_high is not None
+                and pct_from_52w_high >= TREND_TECH_NEAR_HIGH_MAX_PULLBACK
+            ):
+                # Residual trend-Tech drag is concentrated in the near-high entry
+                # shape after the accepted stack; keep the pocket tradable, but
+                # only at 25% size so deeper-pullback winners still get budget.
+                trend_tech_near_high_risk_multiplier = (
+                    TREND_TECH_NEAR_HIGH_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= trend_tech_near_high_risk_multiplier
+            trend_tech_dte_risk_multiplier = 1.0
+            if (
+                strategy == "trend_long"
+                and sector == "Technology"
+                and days_to_earnings is not None
+                and TREND_TECH_DTE_MIN <= days_to_earnings <= TREND_TECH_DTE_MAX
+            ):
+                # This is the surviving Technology trend DTE sleeve after the
+                # rejected 59-69 DTE+gap probe; keep it narrow and partial-size.
+                trend_tech_dte_risk_multiplier = TREND_TECH_DTE_RISK_MULTIPLIER
+                signal_risk_pct *= trend_tech_dte_risk_multiplier
+            breakout_industrials_gap_risk_multiplier = 1.0
+            if (
+                strategy == "breakout_long"
+                and sector == "Industrials"
+                and gap_vulnerability_pct is not None
+                and BREAKOUT_INDUSTRIALS_GAP_VULN_MIN <= gap_vulnerability_pct < BREAKOUT_INDUSTRIALS_GAP_VULN_MAX
+            ):
+                breakout_industrials_gap_risk_multiplier = (
+                    BREAKOUT_INDUSTRIALS_GAP_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= breakout_industrials_gap_risk_multiplier
+            breakout_comms_near_high_risk_multiplier = 1.0
+            if (
+                strategy == "breakout_long"
+                and sector == "Communication Services"
+                and pct_from_52w_high is not None
+                and pct_from_52w_high >= BREAKOUT_COMMS_NEAR_HIGH_MAX_PULLBACK
+            ):
+                # Residual breakout audit found the weak-window leak here was an
+                # entry shape, not another sector+gap pocket. Keep the sleeve
+                # live, but only at 25% risk so stronger breakout cohorts still
+                # dominate slot usage.
+                breakout_comms_near_high_risk_multiplier = (
+                    BREAKOUT_COMMS_NEAR_HIGH_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= breakout_comms_near_high_risk_multiplier
+            breakout_comms_gap_risk_multiplier = 1.0
+            if (
+                strategy == "breakout_long"
+                and sector == "Communication Services"
+                and gap_vulnerability_pct is not None
+                and BREAKOUT_COMMS_GAP_VULN_MIN <= gap_vulnerability_pct < BREAKOUT_COMMS_GAP_VULN_MAX
+            ):
+                # After the accepted near-high haircut, the residual drag in
+                # this sleeve still clustered in moderate-gap setups.
+                breakout_comms_gap_risk_multiplier = (
+                    BREAKOUT_COMMS_GAP_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= breakout_comms_gap_risk_multiplier
+            breakout_financials_dte_risk_multiplier = 1.0
+            if (
+                strategy == "breakout_long"
+                and sector == "Financials"
+                and days_to_earnings is not None
+                and BREAKOUT_FINANCIALS_DTE_MIN <= days_to_earnings <= BREAKOUT_FINANCIALS_DTE_MAX
+            ):
+                # Residual breakout audit found that the remaining Financials drag
+                # was event-proximity, not another sector-only or price-shape leak.
+                breakout_financials_dte_risk_multiplier = (
+                    BREAKOUT_FINANCIALS_DTE_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= breakout_financials_dte_risk_multiplier
+            breakout_tech_dte_risk_multiplier = 1.0
+            if (
+                strategy == "breakout_long"
+                and sector == "Technology"
+                and days_to_earnings is not None
+                and BREAKOUT_TECH_DTE_MIN <= days_to_earnings <= BREAKOUT_TECH_DTE_MAX
+            ):
+                # Residual audit found this breakout-only Technology pocket was
+                # repeatedly weak 26-40 trading days before earnings and absent
+                # from the dominant strong tape. This is not the rejected trend
+                # Technology DTE+gap family.
+                breakout_tech_dte_risk_multiplier = (
+                    BREAKOUT_TECH_DTE_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= breakout_tech_dte_risk_multiplier
+            breakout_healthcare_dte_risk_multiplier = 1.0
+            if (
+                strategy == "breakout_long"
+                and sector == "Healthcare"
+                and days_to_earnings is not None
+                and BREAKOUT_HEALTHCARE_DTE_MIN <= days_to_earnings <= BREAKOUT_HEALTHCARE_DTE_MAX
+            ):
+                # Runtime residual audit found this Healthcare breakout
+                # event-distance sleeve improved the mid/old validation windows.
+                # Keep it partial-size; widening to 20-70 DTE cut a late winner.
+                breakout_healthcare_dte_risk_multiplier = (
+                    BREAKOUT_HEALTHCARE_DTE_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= breakout_healthcare_dte_risk_multiplier
+            trend_healthcare_dte_risk_multiplier = 1.0
+            if (
+                strategy == "trend_long"
+                and sector == "Healthcare"
+                and days_to_earnings is not None
+                and TREND_HEALTHCARE_DTE_MIN <= days_to_earnings <= TREND_HEALTHCARE_DTE_MAX
+            ):
+                # Residual trend audit found a wider pre-earnings Healthcare
+                # pocket that is outside the hard dte<=3 entry block but still
+                # carried unstable event-risk exposure.
+                trend_healthcare_dte_risk_multiplier = (
+                    TREND_HEALTHCARE_DTE_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= trend_healthcare_dte_risk_multiplier
+            trend_consumer_near_high_dte_risk_multiplier = 1.0
+            if (
+                strategy == "trend_long"
+                and sector == "Consumer Discretionary"
+                and days_to_earnings is not None
+                and pct_from_52w_high is not None
+                and TREND_CONSUMER_NEAR_HIGH_DTE_MIN <= days_to_earnings <= TREND_CONSUMER_NEAR_HIGH_DTE_MAX
+                and pct_from_52w_high >= TREND_CONSUMER_NEAR_HIGH_MAX_PULLBACK
+            ):
+                # Fixed-window residual audit found this MCD-like pocket was a
+                # repeat loser and absent from the mid-window winners. Keep the
+                # rule narrow: trend only, sector only, near-high only, 30-65 DTE.
+                trend_consumer_near_high_dte_risk_multiplier = (
+                    TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= trend_consumer_near_high_dte_risk_multiplier
             if signal_risk_pct <= 0:
                 sizing = _zero_risk_sizing(effective_risk_pct, entry, stop)
             elif strategy == "earnings_event_long":
@@ -334,8 +517,41 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sizing["trend_industrials_risk_multiplier_applied"] = (
                     trend_industrials_risk_multiplier
                 )
+                sizing["trend_tech_tight_gap_risk_multiplier_applied"] = (
+                    trend_tech_tight_gap_risk_multiplier
+                )
                 sizing["trend_tech_gap_risk_multiplier_applied"] = (
                     trend_tech_gap_risk_multiplier
+                )
+                sizing["trend_tech_near_high_risk_multiplier_applied"] = (
+                    trend_tech_near_high_risk_multiplier
+                )
+                sizing["trend_tech_dte_risk_multiplier_applied"] = (
+                    trend_tech_dte_risk_multiplier
+                )
+                sizing["breakout_industrials_gap_risk_multiplier_applied"] = (
+                    breakout_industrials_gap_risk_multiplier
+                )
+                sizing["breakout_comms_near_high_risk_multiplier_applied"] = (
+                    breakout_comms_near_high_risk_multiplier
+                )
+                sizing["breakout_comms_gap_risk_multiplier_applied"] = (
+                    breakout_comms_gap_risk_multiplier
+                )
+                sizing["breakout_financials_dte_risk_multiplier_applied"] = (
+                    breakout_financials_dte_risk_multiplier
+                )
+                sizing["breakout_tech_dte_risk_multiplier_applied"] = (
+                    breakout_tech_dte_risk_multiplier
+                )
+                sizing["breakout_healthcare_dte_risk_multiplier_applied"] = (
+                    breakout_healthcare_dte_risk_multiplier
+                )
+                sizing["trend_healthcare_dte_risk_multiplier_applied"] = (
+                    trend_healthcare_dte_risk_multiplier
+                )
+                sizing["trend_consumer_near_high_dte_risk_multiplier_applied"] = (
+                    trend_consumer_near_high_dte_risk_multiplier
                 )
                 sig = {**sig, "sizing": sizing}
         sized.append(sig)

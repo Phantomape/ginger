@@ -20,6 +20,38 @@ TREND_INDUSTRIALS_RISK_MULTIPLIER = 0.0
 TREND_TECH_GAP_VULN_MIN = 0.04
 TREND_TECH_GAP_VULN_MAX = 0.06
 TREND_TECH_GAP_RISK_MULTIPLIER = 0.25
+TREND_TECH_TIGHT_GAP_VULN_MIN = 0.02
+TREND_TECH_TIGHT_GAP_VULN_MAX = 0.03
+TREND_TECH_TIGHT_GAP_RISK_MULTIPLIER = 0.0
+TREND_TECH_NEAR_HIGH_MAX_PULLBACK = -0.03
+TREND_TECH_NEAR_HIGH_RISK_MULTIPLIER = 0.25
+BREAKOUT_INDUSTRIALS_GAP_VULN_MIN = 0.03
+BREAKOUT_INDUSTRIALS_GAP_VULN_MAX = 0.04
+BREAKOUT_INDUSTRIALS_GAP_RISK_MULTIPLIER = 0.0
+BREAKOUT_COMMS_NEAR_HIGH_MAX_PULLBACK = -0.03
+BREAKOUT_COMMS_NEAR_HIGH_RISK_MULTIPLIER = 0.25
+BREAKOUT_COMMS_GAP_VULN_MIN = 0.03
+BREAKOUT_COMMS_GAP_VULN_MAX = 0.04
+BREAKOUT_COMMS_GAP_RISK_MULTIPLIER = 0.25
+BREAKOUT_FINANCIALS_DTE_MIN = 8
+BREAKOUT_FINANCIALS_DTE_MAX = 14
+BREAKOUT_FINANCIALS_DTE_RISK_MULTIPLIER = 0.25
+BREAKOUT_TECH_DTE_MIN = 26
+BREAKOUT_TECH_DTE_MAX = 40
+BREAKOUT_TECH_DTE_RISK_MULTIPLIER = 0.0
+BREAKOUT_HEALTHCARE_DTE_MIN = 20
+BREAKOUT_HEALTHCARE_DTE_MAX = 65
+BREAKOUT_HEALTHCARE_DTE_RISK_MULTIPLIER = 0.25
+TREND_TECH_DTE_MIN = 44
+TREND_TECH_DTE_MAX = 64
+TREND_TECH_DTE_RISK_MULTIPLIER = 0.25
+TREND_HEALTHCARE_DTE_MIN = 6
+TREND_HEALTHCARE_DTE_MAX = 12
+TREND_HEALTHCARE_DTE_RISK_MULTIPLIER = 0.0
+TREND_CONSUMER_NEAR_HIGH_DTE_MIN = 30
+TREND_CONSUMER_NEAR_HIGH_DTE_MAX = 65
+TREND_CONSUMER_NEAR_HIGH_MAX_PULLBACK = -0.01
+TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER = 0.0
 # Low-TQS breakouts were net-negative in Consumer Discretionary/Financials/Technology
 # but net-positive in Commodities across the validated windows. Keep the accepted
 # haircut everywhere else and exempt only the defensive commodity breakout pocket.
@@ -33,7 +65,55 @@ TREND_TECH_GAP_RISK_MULTIPLIER = 0.25
 # primary window had no qualifying cohort. De-risk only that moderate-gap pocket.
 # This is a sizing rule, not an entry ban: keep the cohort tradable, but at 25%
 # of normal risk because 0x turned out worse than 0.25x in follow-up testing.
-MAX_POSITION_PCT        = 0.20       # Single position capped at 20% of portfolio
+# A different residual leak remained below that band: `trend_long` Technology
+# names with only a 2-3% stop gap were net-negative across the fixed late/mid/old
+# windows, while the current late-strong window had zero qualifying trades. Zero
+# only that tighter-gap pocket; it improves the weaker tapes without touching the
+# dominant tape.
+# The remaining residual trend-Tech leak is a different entry shape, not another
+# nearby gap-band tweak: names entering within 3% of the 52-week high repeatedly
+# dragged after the accepted stack, while deeper-pullback Technology trends still
+# carried the surviving winners. Keep that near-high pocket tradable, but only at
+# 25% of normal risk.
+# The remaining breakout leak is narrower still: `breakout_long` Industrials with
+# a 3-4% stop gap repeatedly lost in the weak windows, while the current late-strong
+# winner sat just outside the band (>4%). Zero only that risk-shape pocket.
+# The next surviving breakout leak is a different conditioning source, not another
+# sector+gap retry: near-high Communication Services breakouts repeatedly lost in
+# the weaker tapes while the dominant late-strong tape had zero qualifying names.
+# Keep the pocket tradable, but only at 25% of normal risk so the branch stays
+# aligned with the stronger breakout sleeve rather than turning into another full ban.
+# After that accepted near-high rule, a narrower Communication Services
+# risk-shape leak still remained: 3-4% gap-vulnerability breakouts kept
+# dragging in the weaker tapes, while the dominant strong tape still had no
+# qualifying names. Keep that pocket live, but only at 25% of whatever risk
+# budget survives the earlier accepted stack.
+# The next residual breakout leak is not another price-shape retry. Financials
+# breakouts entering 8-14 calendar days before earnings lost in both the strong
+# and weak validation tapes, while the old winner sat far from earnings. Keep
+# that pocket live, but only at 25% of normal risk so the sleeve does not carry
+# event-proximity exposure at full size.
+# A later residual breakout leak appeared in Technology names 26-40 trading days
+# before earnings. It is not the rejected Technology trend DTE+gap family: this
+# pocket is breakout-only, event-proximity-only, absent from the dominant strong
+# tape, and repeatedly weak in the mid/old tapes. Zero only this narrow sleeve.
+# A separate Healthcare breakout event-distance leak survived after the rejected
+# deep-pullback screen. De-risk only the 20-65 DTE sleeve at 25% risk; widening
+# to 20-70 DTE cut the dominant late-window LLY winner and failed stability.
+# A separate residual Technology trend leak survived the rejected 59-69 DTE+gap
+# probe: the repeat drag clustered at 44-64 DTE after existing gap/near-high
+# haircuts, while the 69 DTE APP winner that broke the old probe is excluded.
+# Keep the sleeve live at 25% risk rather than banning it; 0x hurt old_thin.
+# A separate residual trend leak remained in Healthcare names 6-12 trading days
+# before earnings. The existing dte<=3 hard entry block avoids immediate gap
+# exposure, but this wider pre-event pocket still lost in the strong and weak
+# tapes while the mid window had no qualifier. Zero only this narrow sleeve.
+# Another residual trend leak appeared in Consumer Discretionary names entering
+# within 1% of the 52-week high while still 30-65 days from earnings. The fixed
+# snapshot trio showed this MCD-like pocket losing in late/old windows and absent
+# in mid. Zero only this replayable cross-state sleeve; do not generalize it into
+# broad Consumer Discretionary or near-high trend cuts.
+MAX_POSITION_PCT        = 0.25       # Single position capped at 25% of portfolio; exp-20260425-033
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap
 MAX_PER_SECTOR          = 2          # Same-day sector concentration cap
@@ -55,6 +135,8 @@ PROFIT_TARGET_PCT       = 0.20       # +20% profit target from entry
 TIME_STOP_DAYS          = 45         # Exit review after 45 trading days
 ATR_STOP_MULT           = 1.5        # Stop = entry - 1.5 * ATR
 ATR_TARGET_MULT         = 3.5        # Target = entry + 3.5 * ATR
+TREND_TECH_TARGET_ATR_MULT = 6.0     # Let Technology trend winners run; exp-20260425-027
+TREND_COMMODITIES_TARGET_ATR_MULT = 7.0  # Preserve commodity trend convexity; exp-20260425-031
 ATR_PERIOD              = 14         # Standard ATR lookback
 REGIME_AWARE_EXIT       = True       # Adopt entry-day regime-aware target width by default
 

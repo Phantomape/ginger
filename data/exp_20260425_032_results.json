@@ -1,0 +1,131 @@
+{
+  "experiment_id": "exp-20260425-032",
+  "status": "rejected",
+  "hypothesis": "After the accepted Technology and Commodity trend target-width repairs, another trend sector may still be losing EV because winners are clipped by the shared 4.5 ATR target. Widening only one remaining trend sector at a time should identify whether the winner-truncation mechanism generalizes beyond those two accepted sleeves.",
+  "change_type": "alpha_search_exit_sweep",
+  "component": "runtime-only monkeypatch of risk_engine.enrich_signals",
+  "parameters": {
+    "strategy": "trend_long",
+    "sectors_tested": [
+      "Financials",
+      "Consumer Discretionary",
+      "Communication Services",
+      "Energy",
+      "Healthcare"
+    ],
+    "target_atr_mults_tested": [
+      5.0,
+      6.0,
+      7.0
+    ],
+    "unchanged": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM responsibilities",
+      "earnings_event_long",
+      "Technology trend 6.0 ATR target",
+      "Commodity trend 7.0 ATR target",
+      "all breakout exits"
+    ]
+  },
+  "date_range": {
+    "start": "2024-10-02",
+    "end": "2026-04-21"
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "baseline": {
+        "expected_value_score": 1.3382,
+        "sharpe_daily": 4.30,
+        "total_return_pct": 0.3112,
+        "max_drawdown_pct": 0.0237,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      }
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "baseline": {
+        "expected_value_score": 0.4182,
+        "sharpe_daily": 2.38,
+        "total_return_pct": 0.1757,
+        "max_drawdown_pct": 0.0205,
+        "trade_count": 21,
+        "win_rate": 0.4762
+      }
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "baseline": {
+        "expected_value_score": 0.1121,
+        "sharpe_daily": 1.12,
+        "total_return_pct": 0.1001,
+        "max_drawdown_pct": 0.0444,
+        "trade_count": 24,
+        "win_rate": 0.375
+      }
+    }
+  },
+  "screen_summary": {
+    "best_positive_but_one_window_only": {
+      "sector": "Consumer Discretionary",
+      "target_atr_mult": 7.0,
+      "ev_deltas": {
+        "late_strong": 0.0,
+        "mid_weak": 0.0,
+        "old_thin": 0.0668
+      },
+      "sharpe_daily_deltas": {
+        "late_strong": 0.0,
+        "mid_weak": 0.0,
+        "old_thin": 0.27
+      },
+      "total_return_pct_deltas": {
+        "late_strong": 0.0,
+        "mid_weak": 0.0,
+        "old_thin": 0.0286
+      },
+      "decision_note": "Rejected for production because the improvement had qualifying impact only in old_thin and zero impact in the other two fixed windows."
+    },
+    "second_best_one_window_only": {
+      "sector": "Communication Services",
+      "target_atr_mult": 7.0,
+      "ev_deltas": {
+        "late_strong": 0.0,
+        "mid_weak": 0.0,
+        "old_thin": 0.0261
+      },
+      "decision_note": "Rejected for the same one-window-only exposure problem."
+    },
+    "damaging_families": {
+      "Financials": "All 5.0/6.0/7.0 ATR variants damaged both mid_weak and old_thin EV.",
+      "Energy": "All 5.0/6.0/7.0 ATR variants damaged late_strong EV by -0.2366.",
+      "Healthcare": "All tested variants were strict null across the fixed windows."
+    }
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains blocked by candidate-level replay coverage, so this run deliberately used deterministic exit alpha instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "No remaining sector-specific trend target-width variant improved a majority of non-overlapping windows. The only positive candidates were one-window old_thin effects; other sectors were null or damaging.",
+  "next_retry_requires": [
+    "Do not generalize Technology/Commodity trend target widening to additional sectors by default.",
+    "Do not promote Consumer Discretionary or Communication Services trend target widening until another non-overlapping or forward sample has qualifying exposure.",
+    "Do not retry Financials or Energy trend target widening by only nudging 5-7 ATR values.",
+    "Future exit-alpha work needs a fresh winner-truncation audit with exposure in at least two windows, or a new trade-specific hold-quality signal."
+  ],
+  "verification": [
+    "Runtime-only screen on fixed OHLCV snapshots completed enough to print the full summary; command exceeded the tool timeout after producing the result summary.",
+    "No production code was changed, so no pytest run was required for this rejected screen."
+  ],
+  "notes": "This was alpha_search. It changed no production code and did not treat LLM as the problem. It directly tests and rejects the simple sector-by-sector extrapolation of the accepted Technology and Commodity trend target-width mechanism."
+}
