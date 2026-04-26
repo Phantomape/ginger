@@ -3,9 +3,8 @@
 from experiment_registry import (
     add_common_registry_arg,
     claim_ticket,
-    load_registry,
+    locked_registry_update,
     print_json,
-    save_registry,
 )
 
 
@@ -20,17 +19,19 @@ def main():
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
-    registry = load_registry(args.registry)
-    ticket, conflicts = claim_ticket(
-        registry,
-        args.experiment_id,
-        args.owner,
-        force=args.force,
+    ticket, conflicts = locked_registry_update(
+        args.registry,
+        lambda registry: claim_ticket(
+            registry,
+            args.experiment_id,
+            args.owner,
+            force=args.force,
+        ),
+        timeout_seconds=args.lock_timeout_seconds,
     )
     if conflicts:
         print_json({"claimed": False, "ticket": ticket, "conflicts": conflicts})
         sys.exit(2)
-    save_registry(registry, args.registry)
     print_json({"claimed": True, "ticket": ticket, "conflicts": []})
 
 

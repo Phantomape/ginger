@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import os
 import json
+import time
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -11,6 +14,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REGISTRY = REPO_ROOT / "docs" / "experiment_registry.json"
 DEFAULT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
+DEFAULT_LOCK_TIMEOUT_SECONDS = 30
+STALE_LOCK_SECONDS = 300
 ACTIVE_STATUSES = {"claimed", "running"}
 FINAL_STATUSES = {"accepted", "rejected", "observed_only"}
 SHARED_COORDINATION_SCOPES = {
@@ -58,6 +63,62 @@ def save_registry(registry, path=DEFAULT_REGISTRY):
     with path.open("w", encoding="utf-8") as f:
         json.dump(registry, f, indent=2, ensure_ascii=False)
         f.write("\n")
+
+
+def lock_path_for(path):
+    path = Path(path)
+    return path.with_name(path.name + ".lock")
+
+
+@contextmanager
+def file_lock(path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
+              stale_seconds=STALE_LOCK_SECONDS):
+    lock_path = lock_path_for(path)
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    deadline = time.time() + timeout_seconds
+    payload = {
+        "pid": os.getpid(),
+        "created_at": utc_now_iso(),
+        "target": _repo_relative(path),
+    }
+
+    while True:
+        try:
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False)
+                f.write("\n")
+            break
+        except FileExistsError:
+            try:
+                age = time.time() - lock_path.stat().st_mtime
+            except FileNotFoundError:
+                continue
+            if age > stale_seconds:
+                try:
+                    lock_path.unlink()
+                    continue
+                except FileNotFoundError:
+                    continue
+            if time.time() >= deadline:
+                raise TimeoutError(f"timed out waiting for lock: {lock_path}")
+            time.sleep(0.1)
+
+    try:
+        yield lock_path
+    finally:
+        try:
+            lock_path.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def locked_registry_update(path, mutator, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
+    with file_lock(path, timeout_seconds=timeout_seconds):
+        registry = load_registry(path)
+        result = mutator(registry)
+        save_registry(registry, path)
+        return result
 
 
 def latest_backtest_result(data_dir=None):
@@ -386,17 +447,19 @@ def experiment_id_exists_in_log(log_path, experiment_id):
     return False
 
 
-def append_log_entry(log_path, row, *, allow_duplicate=False):
+def append_log_entry(log_path, row, *, allow_duplicate=False,
+                     timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     experiment_id = row.get("experiment_id")
     if not experiment_id:
         raise ValueError("log row must include experiment_id")
-    if not allow_duplicate and experiment_id_exists_in_log(log_path, experiment_id):
-        raise ValueError(f"experiment_id already exists in log: {experiment_id}")
-
     path = Path(log_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+    with file_lock(path, timeout_seconds=timeout_seconds):
+        if not allow_duplicate and experiment_id_exists_in_log(path, experiment_id):
+            raise ValueError(f"experiment_id already exists in log: {experiment_id}")
+        with path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
     return path
 
 
@@ -409,4 +472,10 @@ def add_common_registry_arg(parser):
         "--registry",
         default=str(DEFAULT_REGISTRY),
         help="Path to experiment registry JSON.",
+    )
+    parser.add_argument(
+        "--lock-timeout-seconds",
+        type=float,
+        default=DEFAULT_LOCK_TIMEOUT_SECONDS,
+        help="Seconds to wait for registry/log locks before failing.",
     )

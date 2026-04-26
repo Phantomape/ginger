@@ -106,5 +106,14 @@ every agent needs them for closeout:
 - `docs/experiment_log.jsonl`
 - `docs/experiment_registry.json`
 
+Actual writes to those files are still protected by lock files:
+
+- `docs/experiment_log.jsonl.lock`
+- `docs/experiment_registry.json.lock`
+
+The scripts wait for the lock by default and recover stale locks after the
+configured stale-lock window. Use `--lock-timeout-seconds` to fail faster in a
+busy multi-agent run.
+
 Use narrow write scopes. A broad scope such as `quant/` should be treated as
 exclusive ownership of that whole area.

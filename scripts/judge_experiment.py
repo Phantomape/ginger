@@ -7,9 +7,9 @@ from experiment_registry import (
     DEFAULT_LOG,
     get_experiment,
     judge_results,
+    locked_registry_update,
     load_registry,
     print_json,
-    save_registry,
     update_result,
 )
 
@@ -62,22 +62,25 @@ def main():
     )
     args = parser.parse_args()
 
-    registry = load_registry(args.registry)
-    experiment = get_experiment(registry, args.experiment_id)
+    registry_snapshot = load_registry(args.registry)
+    experiment = get_experiment(registry_snapshot, args.experiment_id)
     if not experiment:
         raise SystemExit(f"unknown experiment_id: {args.experiment_id}")
 
     judgement = judge_results(args.before, args.after)
     if args.write_registry:
-        update_result(
-            registry,
-            args.experiment_id,
-            judgement,
-            args.before,
-            args.after,
-            status_override=args.status_override,
+        experiment = locked_registry_update(
+            args.registry,
+            lambda registry: update_result(
+                registry,
+                args.experiment_id,
+                judgement,
+                args.before,
+                args.after,
+                status_override=args.status_override,
+            ),
+            timeout_seconds=args.lock_timeout_seconds,
         )
-        save_registry(registry, args.registry)
 
     if args.log_draft or args.append_log:
         draft = build_log_draft(
@@ -94,6 +97,7 @@ def main():
                 args.log_path,
                 draft,
                 allow_duplicate=args.allow_duplicate_log_id,
+                timeout_seconds=args.lock_timeout_seconds,
             )
         print_json(draft)
     else:

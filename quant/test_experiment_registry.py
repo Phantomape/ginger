@@ -1,4 +1,5 @@
 import json
+import threading
 import sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from experiment_registry import (  # noqa: E402
     evaluate_gate,
     experiment_id_exists_in_log,
     judge_results,
+    locked_registry_update,
     load_registry,
     save_registry,
     update_result,
@@ -242,6 +244,70 @@ def test_append_log_rejects_duplicate_experiment_id(tmp_path):
         assert "already exists" in str(exc)
     else:
         raise AssertionError("duplicate experiment_id was accepted")
+
+
+def test_append_log_uses_lock_and_removes_lock_file(tmp_path):
+    row = {"experiment_id": "exp-20990101-002", "decision": "observed_only"}
+    log_path = tmp_path / "experiment_log.jsonl"
+    append_log_entry(log_path, row)
+
+    assert log_path.exists()
+    assert not (tmp_path / "experiment_log.jsonl.lock").exists()
+
+
+def test_locked_registry_update_serializes_read_modify_write(tmp_path):
+    registry_path = tmp_path / "experiment_registry.json"
+    save_registry({"schema_version": 1, "updated_at": None, "experiments": []}, registry_path)
+
+    def add_ticket(registry):
+        return create_ticket(
+            registry,
+            lane="measurement_repair",
+            hypothesis="Create ticket under lock.",
+            change_type="logging_fix",
+            single_causal_variable="locked registry update",
+            baseline_result_file="data/backtest_results_20260425.json",
+        )
+
+    ticket = locked_registry_update(registry_path, add_ticket)
+    loaded = load_registry(registry_path)
+
+    assert ticket["experiment_id"].endswith("-001")
+    assert len(loaded["experiments"]) == 1
+    assert not (tmp_path / "experiment_registry.json.lock").exists()
+
+
+def test_concurrent_locked_registry_updates_do_not_duplicate_ids(tmp_path):
+    registry_path = tmp_path / "experiment_registry.json"
+    save_registry({"schema_version": 1, "updated_at": None, "experiments": []}, registry_path)
+    tickets = []
+
+    def worker(i):
+        def add_ticket(registry):
+            return create_ticket(
+                registry,
+                lane="measurement_repair",
+                hypothesis=f"Create concurrent ticket {i}.",
+                change_type="logging_fix",
+                single_causal_variable=f"locked registry update {i}",
+                baseline_result_file="data/backtest_results_20260425.json",
+            )
+
+        tickets.append(locked_registry_update(registry_path, add_ticket))
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(6)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    loaded = load_registry(registry_path)
+    ids = [exp["experiment_id"] for exp in loaded["experiments"]]
+
+    assert len(tickets) == 6
+    assert len(ids) == 6
+    assert len(set(ids)) == 6
+    assert ids == sorted(ids)
 
 
 def test_update_result_honors_status_override():
