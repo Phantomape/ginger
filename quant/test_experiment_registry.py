@@ -85,6 +85,67 @@ def test_claim_detects_scope_and_variable_conflicts():
     assert conflicts[0]["locked_variable_conflicts"] == ["breakout ranking key"]
 
 
+def test_claim_ignores_shared_coordination_file_scopes():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    first = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="Record one failure taxonomy.",
+        change_type="failure_taxonomy",
+        single_causal_variable="taxonomy A",
+        allowed_write_scope=[
+            "docs/experiment_log.jsonl",
+            "docs/experiment_registry.json",
+        ],
+    )
+    second = create_ticket(
+        registry,
+        lane="universe_scout",
+        hypothesis="Record one universe scout artifact.",
+        change_type="universe_expansion",
+        single_causal_variable="universe B",
+        allowed_write_scope=[
+            "D:/Github/ginger/docs/experiment_log.jsonl",
+            "D:/Github/ginger/docs/experiment_registry.json",
+        ],
+    )
+
+    _, conflicts = claim_ticket(registry, first["experiment_id"], "agent-loss")
+    assert conflicts == []
+
+    claimed, conflicts = claim_ticket(registry, second["experiment_id"], "agent-universe")
+    assert conflicts == []
+    assert claimed["status"] == "claimed"
+
+
+def test_claim_still_blocks_same_locked_variable_with_shared_scopes():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    first = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="Study one shared failure family.",
+        change_type="failure_taxonomy",
+        single_causal_variable="shared failure family",
+        allowed_write_scope=["docs/experiment_log.jsonl"],
+    )
+    second = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="Study same shared failure family.",
+        change_type="failure_taxonomy",
+        single_causal_variable="shared failure family",
+        allowed_write_scope=["docs/experiment_registry.json"],
+    )
+
+    _, conflicts = claim_ticket(registry, first["experiment_id"], "agent-a")
+    assert conflicts == []
+
+    _, conflicts = claim_ticket(registry, second["experiment_id"], "agent-b")
+    assert conflicts
+    assert conflicts[0]["scope_conflicts"] == []
+    assert conflicts[0]["locked_variable_conflicts"] == ["shared failure family"]
+
+
 def test_evaluate_gate_accepts_expected_value_improvement():
     before = {
         "expected_value_score": 1.0,

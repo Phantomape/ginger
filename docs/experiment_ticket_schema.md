@@ -100,5 +100,11 @@ Duplicate experiment IDs are rejected unless `--allow-duplicate-log-id` is set.
 - `allowed_write_scope`, or
 - `locked_variables`.
 
+The shared coordination files below are ignored for scope conflicts because
+every agent needs them for closeout:
+
+- `docs/experiment_log.jsonl`
+- `docs/experiment_registry.json`
+
 Use narrow write scopes. A broad scope such as `quant/` should be treated as
 exclusive ownership of that whole area.

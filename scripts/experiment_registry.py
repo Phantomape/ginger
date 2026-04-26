@@ -13,6 +13,10 @@ DEFAULT_REGISTRY = REPO_ROOT / "docs" / "experiment_registry.json"
 DEFAULT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 ACTIVE_STATUSES = {"claimed", "running"}
 FINAL_STATUSES = {"accepted", "rejected", "observed_only"}
+SHARED_COORDINATION_SCOPES = {
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+}
 VALID_LANES = {
     "alpha_discovery",
     "loss_attribution",
@@ -145,21 +149,33 @@ def create_ticket(
 
 
 def _path_overlaps(left, right):
-    a = left.rstrip("/\\")
-    b = right.rstrip("/\\")
+    a = _normalize_scope(left)
+    b = _normalize_scope(right)
     return a == b or a.startswith(b + "/") or b.startswith(a + "/")
+
+
+def _normalize_scope(scope):
+    return _repo_relative(scope).replace("\\", "/").rstrip("/").lower()
+
+
+def _is_shared_coordination_scope(scope):
+    return _normalize_scope(scope) in SHARED_COORDINATION_SCOPES
+
+
+def _conflict_scopes(scopes):
+    return [scope for scope in (scopes or []) if not _is_shared_coordination_scope(scope)]
 
 
 def find_conflicts(registry, experiment):
     conflicts = []
-    scopes = experiment.get("allowed_write_scope") or []
+    scopes = _conflict_scopes(experiment.get("allowed_write_scope") or [])
     locked = set(experiment.get("locked_variables") or [])
     for other in registry.get("experiments", []):
         if other is experiment:
             continue
         if other.get("status") not in ACTIVE_STATUSES:
             continue
-        other_scopes = other.get("allowed_write_scope") or []
+        other_scopes = _conflict_scopes(other.get("allowed_write_scope") or [])
         scope_hits = [
             [s, o]
             for s in scopes
