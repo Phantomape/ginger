@@ -10,10 +10,18 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REGISTRY = REPO_ROOT / "docs" / "experiment_registry.json"
 DEFAULT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
+DEFAULT_EXPERIMENTS_DIR = REPO_ROOT / "docs" / "experiments"
+DEFAULT_TICKETS_DIR = DEFAULT_EXPERIMENTS_DIR / "tickets"
+DEFAULT_EXPERIMENT_LOGS_DIR = DEFAULT_EXPERIMENTS_DIR / "logs"
 DEFAULT_LOCK_TIMEOUT_SECONDS = 30
 STALE_LOCK_SECONDS = 300
 ACTIVE_STATUSES = {"claimed", "running"}
@@ -60,14 +68,109 @@ def save_registry(registry, path=DEFAULT_REGISTRY):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     registry["updated_at"] = utc_now_iso()
+    persisted = {k: v for k, v in registry.items() if not k.startswith("_")}
     with path.open("w", encoding="utf-8") as f:
-        json.dump(registry, f, indent=2, ensure_ascii=False)
+        json.dump(persisted, f, indent=2, ensure_ascii=False)
         f.write("\n")
+
+
+def ticket_path(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
+    return Path(tickets_dir) / f"{experiment_id}.json"
+
+
+def experiment_log_path(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
+    return Path(logs_dir) / f"{experiment_id}.json"
+
+
+def save_ticket(ticket, tickets_dir=DEFAULT_TICKETS_DIR):
+    path = ticket_path(ticket["experiment_id"], tickets_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(ticket, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    return path
+
+
+def _registry_tickets_dir(registry):
+    return Path(registry.get("_tickets_dir", DEFAULT_TICKETS_DIR))
+
+
+def _registry_logs_dir(registry):
+    return Path(registry.get("_logs_dir", DEFAULT_EXPERIMENT_LOGS_DIR))
+
+
+def load_ticket(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
+    path = ticket_path(experiment_id, tickets_dir)
+    if not path.exists():
+        return None
+    with path.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _ticket_index_entry(ticket, tickets_dir=DEFAULT_TICKETS_DIR):
+    return {
+        "experiment_id": ticket.get("experiment_id"),
+        "status": ticket.get("status"),
+        "lane": ticket.get("lane"),
+        "owner": ticket.get("owner"),
+        "hypothesis": ticket.get("hypothesis"),
+        "ticket_file": _repo_relative(ticket_path(ticket["experiment_id"], tickets_dir)),
+        "updated_at": utc_now_iso(),
+    }
+
+
+def _sync_index_entry(registry, ticket):
+    experiments = registry.setdefault("experiments", [])
+    entry = _ticket_index_entry(ticket, _registry_tickets_dir(registry))
+    for i, existing in enumerate(experiments):
+        if existing.get("experiment_id") == ticket.get("experiment_id"):
+            experiments[i] = {**existing, **entry}
+            return experiments[i]
+    experiments.append(entry)
+    return entry
+
+
+def materialize_experiment(entry):
+    ticket_file = entry.get("ticket_file")
+    if ticket_file:
+        path = REPO_ROOT / ticket_file
+        if path.exists():
+            with path.open(encoding="utf-8") as f:
+                return json.load(f)
+    return entry
+
+
+def iter_experiments(registry):
+    return [materialize_experiment(entry) for entry in registry.get("experiments", [])]
 
 
 def lock_path_for(path):
     path = Path(path)
     return path.with_name(path.name + ".lock")
+
+
+def _acquire_os_lock(handle):
+    if os.name == "nt":
+        handle.seek(0)
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError as exc:
+            raise BlockingIOError from exc
+        return
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        raise
+    except OSError as exc:
+        raise BlockingIOError from exc
+
+
+def _release_os_lock(handle):
+    if os.name == "nt":
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        return
+    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 @contextmanager
@@ -82,40 +185,40 @@ def file_lock(path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
         "target": _repo_relative(path),
     }
 
-    while True:
-        try:
-            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            with os.fdopen(fd, "w", encoding="utf-8") as f:
-                json.dump(payload, f, ensure_ascii=False)
-                f.write("\n")
-            break
-        except FileExistsError:
+    lock_path.touch(exist_ok=True)
+    with lock_path.open("r+", encoding="utf-8") as handle:
+        while True:
             try:
-                age = time.time() - lock_path.stat().st_mtime
-            except FileNotFoundError:
-                continue
-            if age > stale_seconds:
-                try:
-                    lock_path.unlink()
-                    continue
-                except FileNotFoundError:
-                    continue
-            if time.time() >= deadline:
-                raise TimeoutError(f"timed out waiting for lock: {lock_path}")
-            time.sleep(0.1)
+                _acquire_os_lock(handle)
+                break
+            except BlockingIOError:
+                if time.time() >= deadline:
+                    raise TimeoutError(f"timed out waiting for lock: {lock_path}")
+                time.sleep(0.1)
 
-    try:
-        yield lock_path
-    finally:
         try:
-            lock_path.unlink()
-        except FileNotFoundError:
-            pass
+            handle.seek(0)
+            handle.truncate()
+            json.dump(payload, handle, ensure_ascii=False)
+            handle.write("\n")
+            handle.flush()
+            yield lock_path
+        finally:
+            released_payload = dict(payload)
+            released_payload["released_at"] = utc_now_iso()
+            handle.seek(0)
+            handle.truncate()
+            json.dump(released_payload, handle, ensure_ascii=False)
+            handle.write("\n")
+            handle.flush()
+            _release_os_lock(handle)
 
 
 def locked_registry_update(path, mutator, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     with file_lock(path, timeout_seconds=timeout_seconds):
         registry = load_registry(path)
+        registry["_tickets_dir"] = str(Path(path).parent / "experiments" / "tickets")
+        registry["_logs_dir"] = str(Path(path).parent / "experiments" / "logs")
         result = mutator(registry)
         save_registry(registry, path)
         return result
@@ -162,7 +265,7 @@ def parse_windows(values):
 def get_experiment(registry, experiment_id):
     for exp in registry.get("experiments", []):
         if exp.get("experiment_id") == experiment_id:
-            return exp
+            return materialize_experiment(exp)
     return None
 
 
@@ -205,7 +308,11 @@ def create_ticket(
         "completed_at": None,
         "result": None,
     }
-    registry.setdefault("experiments", []).append(ticket)
+    if "_tickets_dir" in registry:
+        save_ticket(ticket, _registry_tickets_dir(registry))
+        _sync_index_entry(registry, ticket)
+    else:
+        registry.setdefault("experiments", []).append(ticket)
     return ticket
 
 
@@ -231,7 +338,7 @@ def find_conflicts(registry, experiment):
     conflicts = []
     scopes = _conflict_scopes(experiment.get("allowed_write_scope") or [])
     locked = set(experiment.get("locked_variables") or [])
-    for other in registry.get("experiments", []):
+    for other in iter_experiments(registry):
         if other is experiment:
             continue
         if other.get("status") not in ACTIVE_STATUSES:
@@ -265,6 +372,9 @@ def claim_ticket(registry, experiment_id, owner, force=False):
     exp["owner"] = owner
     exp["status"] = "claimed"
     exp["claimed_at"] = utc_now_iso()
+    if "_tickets_dir" in registry:
+        save_ticket(exp, _registry_tickets_dir(registry))
+        _sync_index_entry(registry, exp)
     return exp, []
 
 
@@ -426,7 +536,31 @@ def update_result(
         "after_result_file": _repo_relative(after_path),
         "delta_metrics": judgement.get("delta_metrics") or {},
     }
+    if "_tickets_dir" in registry:
+        save_ticket(exp, _registry_tickets_dir(registry))
+        _sync_index_entry(registry, exp)
     return exp
+
+
+def experiment_log_exists(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
+    return experiment_log_path(experiment_id, logs_dir).exists()
+
+
+def save_experiment_log_entry(row, *, allow_duplicate=False,
+                              logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
+                              timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
+    experiment_id = row.get("experiment_id")
+    if not experiment_id:
+        raise ValueError("log row must include experiment_id")
+    path = experiment_log_path(experiment_id, logs_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with file_lock(path, timeout_seconds=timeout_seconds):
+        if path.exists() and not allow_duplicate:
+            raise ValueError(f"experiment log already exists: {path}")
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(row, f, indent=2, ensure_ascii=False, sort_keys=True)
+            f.write("\n")
+    return path
 
 
 def experiment_id_exists_in_log(log_path, experiment_id):

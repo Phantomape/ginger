@@ -2,7 +2,6 @@
 
 from experiment_registry import (
     add_common_registry_arg,
-    append_log_entry,
     build_log_draft,
     DEFAULT_LOG,
     get_experiment,
@@ -10,6 +9,7 @@ from experiment_registry import (
     locked_registry_update,
     load_registry,
     print_json,
+    save_experiment_log_entry,
     update_result,
 )
 
@@ -48,12 +48,12 @@ def main():
     parser.add_argument(
         "--append-log",
         action="store_true",
-        help="Append the generated log row to docs/experiment_log.jsonl.",
+        help="Write the generated log row to docs/experiments/logs/<experiment_id>.json.",
     )
     parser.add_argument(
         "--log-path",
         default=str(DEFAULT_LOG),
-        help="Path to experiment_log.jsonl.",
+        help="Legacy JSONL path kept for compatibility; not used by --append-log.",
     )
     parser.add_argument(
         "--allow-duplicate-log-id",
@@ -93,8 +93,7 @@ def main():
             notes=args.notes,
         )
         if args.append_log:
-            append_log_entry(
-                args.log_path,
+            save_experiment_log_entry(
                 draft,
                 allow_duplicate=args.allow_duplicate_log_id,
                 timeout_seconds=args.lock_timeout_seconds,

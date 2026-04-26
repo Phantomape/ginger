@@ -15,17 +15,25 @@ from experiment_registry import (  # noqa: E402
     claim_ticket,
     create_ticket,
     evaluate_gate,
+    experiment_log_exists,
     experiment_id_exists_in_log,
+    iter_experiments,
     judge_results,
     locked_registry_update,
     load_registry,
+    save_experiment_log_entry,
     save_registry,
     update_result,
 )
 
 
 def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
-    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    registry = {
+        "schema_version": 1,
+        "updated_at": None,
+        "experiments": [],
+        "_tickets_dir": str(tmp_path / "tickets"),
+    }
 
     first = create_ticket(
         registry,
@@ -56,6 +64,9 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
     save_registry(registry, path)
     loaded = load_registry(path)
     assert len(loaded["experiments"]) == 2
+    assert loaded["experiments"][0]["ticket_file"].endswith(
+        "tickets/exp-20260426-001.json"
+    )
 
 
 def test_claim_detects_scope_and_variable_conflicts():
@@ -197,7 +208,12 @@ def test_judge_results_extracts_metrics_and_rejects_no_delta(tmp_path):
 
 
 def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
-    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    registry = {
+        "schema_version": 1,
+        "updated_at": None,
+        "experiments": [],
+        "_tickets_dir": str(tmp_path / "tickets"),
+    }
     ticket = create_ticket(
         registry,
         lane="measurement_repair",
@@ -233,6 +249,17 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
     assert experiment_id_exists_in_log(log_path, ticket["experiment_id"])
 
 
+def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):
+    row = {"experiment_id": "exp-20990101-003", "decision": "observed_only"}
+    logs_dir = tmp_path / "logs"
+
+    path = save_experiment_log_entry(row, logs_dir=logs_dir)
+
+    assert path == logs_dir / "exp-20990101-003.json"
+    assert experiment_log_exists("exp-20990101-003", logs_dir=logs_dir)
+    assert json.loads(path.read_text(encoding="utf-8"))["decision"] == "observed_only"
+
+
 def test_append_log_rejects_duplicate_experiment_id(tmp_path):
     row = {"experiment_id": "exp-20990101-001", "decision": "observed_only"}
     log_path = tmp_path / "experiment_log.jsonl"
@@ -246,13 +273,21 @@ def test_append_log_rejects_duplicate_experiment_id(tmp_path):
         raise AssertionError("duplicate experiment_id was accepted")
 
 
-def test_append_log_uses_lock_and_removes_lock_file(tmp_path):
+def test_append_log_uses_persistent_lock_file_without_blocking_reuse(tmp_path):
     row = {"experiment_id": "exp-20990101-002", "decision": "observed_only"}
     log_path = tmp_path / "experiment_log.jsonl"
     append_log_entry(log_path, row)
+    append_log_entry(
+        log_path,
+        {"experiment_id": "exp-20990101-003", "decision": "observed_only"},
+    )
 
     assert log_path.exists()
-    assert not (tmp_path / "experiment_log.jsonl.lock").exists()
+    lock_path = tmp_path / "experiment_log.jsonl.lock"
+    assert lock_path.exists()
+    lock_payload = json.loads(lock_path.read_text(encoding="utf-8"))
+    assert lock_payload["target"].endswith("experiment_log.jsonl")
+    assert "released_at" in lock_payload
 
 
 def test_locked_registry_update_serializes_read_modify_write(tmp_path):
@@ -274,7 +309,12 @@ def test_locked_registry_update_serializes_read_modify_write(tmp_path):
 
     assert ticket["experiment_id"].endswith("-001")
     assert len(loaded["experiments"]) == 1
-    assert not (tmp_path / "experiment_registry.json.lock").exists()
+    assert iter_experiments(loaded)[0]["single_causal_variable"] == "locked registry update"
+    lock_path = tmp_path / "experiment_registry.json.lock"
+    assert lock_path.exists()
+    lock_payload = json.loads(lock_path.read_text(encoding="utf-8"))
+    assert lock_payload["target"].endswith("experiment_registry.json")
+    assert "released_at" in lock_payload
 
 
 def test_concurrent_locked_registry_updates_do_not_duplicate_ids(tmp_path):

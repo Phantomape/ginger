@@ -4,9 +4,18 @@ This file defines the minimum contract for multi-agent experiments. The goal is
 to let agents explore in parallel while preserving one baseline, one judge, and
 one causal variable per experiment.
 
-Primary registry:
+Primary index:
 
 - `docs/experiment_registry.json`
+
+Per-experiment state:
+
+- `docs/experiments/tickets/exp-*.json`
+- `docs/experiments/logs/exp-*.json`
+
+The registry is intentionally only a small index. Each agent mostly writes its
+own ticket and final log file, so parallel experiments do not fight over one
+large shared JSON document.
 
 ## Status Values
 
@@ -89,8 +98,9 @@ python scripts\judge_experiment.py `
   --write-registry
 ```
 
-`--append-log` writes the generated JSONL row to `docs/experiment_log.jsonl`.
-Duplicate experiment IDs are rejected unless `--allow-duplicate-log-id` is set.
+`--append-log` writes the generated row to
+`docs/experiments/logs/<experiment_id>.json`. Duplicate experiment IDs are
+rejected unless `--allow-duplicate-log-id` is set.
 
 ## Conflict Rules
 

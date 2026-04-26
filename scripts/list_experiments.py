@@ -1,6 +1,6 @@
 """List experiment tickets in the registry."""
 
-from experiment_registry import add_common_registry_arg, load_registry
+from experiment_registry import add_common_registry_arg, iter_experiments, load_registry
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     args = parser.parse_args()
 
     registry = load_registry(args.registry)
-    experiments = registry.get("experiments", [])
+    experiments = iter_experiments(registry)
     if args.status:
         experiments = [e for e in experiments if e.get("status") == args.status]
 
