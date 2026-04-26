@@ -9,12 +9,16 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from experiment_registry import (  # noqa: E402
+    append_log_entry,
+    build_log_draft,
     claim_ticket,
     create_ticket,
     evaluate_gate,
+    experiment_id_exists_in_log,
     judge_results,
     load_registry,
     save_registry,
+    update_result,
 )
 
 
@@ -127,3 +131,82 @@ def test_judge_results_extracts_metrics_and_rejects_no_delta(tmp_path):
     assert judgement["before_metrics"]["expected_value_score"] == 0.15
     assert judgement["delta_metrics"]["trade_count"] == 0
     assert judgement["decision"] == "rejected"
+
+
+def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="measurement_repair",
+        hypothesis="Record a measurement artifact without strategy acceptance.",
+        change_type="measurement_instrumentation",
+        single_causal_variable="log append path",
+        baseline_result_file="data/backtest_results_20260425.json",
+        allowed_write_scope=["scripts/"],
+    )
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 1.0},
+        "delta_metrics": {"expected_value_score": 0.0},
+    }
+
+    draft = build_log_draft(
+        ticket,
+        judgement,
+        "data/before.json",
+        "data/after.json",
+        status_override="observed_only",
+        change_summary="Append-log path observed without strategy claim.",
+        notes="No strategy decision intended.",
+    )
+    log_path = tmp_path / "experiment_log.jsonl"
+    append_log_entry(log_path, draft)
+
+    assert draft["status"] == "observed_only"
+    assert draft["decision"] == "observed_only"
+    assert draft["rejection_reason"] is None
+    assert experiment_id_exists_in_log(log_path, ticket["experiment_id"])
+
+
+def test_append_log_rejects_duplicate_experiment_id(tmp_path):
+    row = {"experiment_id": "exp-20990101-001", "decision": "observed_only"}
+    log_path = tmp_path / "experiment_log.jsonl"
+    append_log_entry(log_path, row)
+
+    try:
+        append_log_entry(log_path, row)
+    except ValueError as exc:
+        assert "already exists" in str(exc)
+    else:
+        raise AssertionError("duplicate experiment_id was accepted")
+
+
+def test_update_result_honors_status_override():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="Close an analysis ticket as observed only.",
+        change_type="analysis_only",
+        single_causal_variable="loss taxonomy",
+        baseline_result_file="data/backtest_results_20260425.json",
+    )
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "delta_metrics": {},
+    }
+
+    updated = update_result(
+        registry,
+        ticket["experiment_id"],
+        judgement,
+        "data/before.json",
+        "data/after.json",
+        status_override="observed_only",
+    )
+
+    assert updated["status"] == "observed_only"
+    assert updated["result"]["decision"] == "observed_only"

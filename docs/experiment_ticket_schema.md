@@ -76,6 +76,22 @@ repository gate:
 Measurement and analysis tickets may be marked `observed_only`, but they must
 still record the artifact that makes the next alpha experiment more testable.
 
+Example observed-only closeout:
+
+```powershell
+python scripts\judge_experiment.py `
+  --experiment-id exp-20260425-001 `
+  --before data\backtest_results_20260424.json `
+  --after data\backtest_results_20260425.json `
+  --status-override observed_only `
+  --change-summary "Recorded a reproducible loss taxonomy." `
+  --append-log `
+  --write-registry
+```
+
+`--append-log` writes the generated JSONL row to `docs/experiment_log.jsonl`.
+Duplicate experiment IDs are rejected unless `--allow-duplicate-log-id` is set.
+
 ## Conflict Rules
 
 `scripts/claim_experiment.py` blocks a claim when another active ticket
