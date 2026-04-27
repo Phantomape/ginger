@@ -1,0 +1,115 @@
+{
+  "experiment_id": "exp-20260427-014",
+  "timestamp": "2026-04-27T05:20:00+00:00",
+  "status": "rejected",
+  "hypothesis": "The accepted A+B+strict-add-on stack may be globally capacity constrained; changing MAX_POSITIONS could release existing signal alpha, especially in mid_weak, without adding entries or changing exits.",
+  "change_summary": "Added and ran a fixed-window replay runner that swept MAX_POSITIONS at 4, 5, 6, and 7 across the three deterministic OHLCV snapshots. No production strategy logic was promoted.",
+  "change_type": "capital_allocation",
+  "component": "quant/exp_20260427_014_max_positions_sweep.py, data/exp_20260427_014_max_positions_sweep.json, docs/experiments/logs/exp-20260427-014.json",
+  "parameters": {
+    "single_causal_variable": "MAX_POSITIONS",
+    "baseline": 5,
+    "tested_values": [4, 5, 6, 7],
+    "fixed_config": {
+      "REGIME_AWARE_EXIT": true,
+      "ADDON_ENABLED": true,
+      "ADDON_MAX_POSITION_PCT": 0.35
+    }
+  },
+  "date_range": {
+    "start": "2024-10-02",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where accepted stack makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "win_rate": 0.4762,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "expected_value_score": 0.1507,
+      "sharpe_daily": 1.22,
+      "total_pnl": 12346.07,
+      "total_return_pct": 0.1235,
+      "max_drawdown_pct": 0.0454,
+      "win_rate": 0.375,
+      "trade_count": 24
+    }
+  },
+  "after_metrics": {
+    "MAX_POSITIONS_4": {
+      "ev_delta_sum": -0.149,
+      "pnl_delta_sum": -3064.54,
+      "windows_improved": 1,
+      "windows_regressed": 2
+    },
+    "MAX_POSITIONS_6": {
+      "ev_delta_sum": -0.0214,
+      "pnl_delta_sum": 919.7,
+      "windows_improved": 1,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0128
+    },
+    "MAX_POSITIONS_7": {
+      "ev_delta_sum": -0.252,
+      "pnl_delta_sum": -5480.04,
+      "windows_improved": 1,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0174
+    }
+  },
+  "delta_metrics": {
+    "best_non_baseline_by_ev_sum": 6,
+    "best_non_baseline_ev_delta_sum": -0.0214,
+    "best_non_baseline_pnl_delta_sum": 919.7,
+    "best_non_baseline_shape": "MAX_POSITIONS=6 improved mid_weak by EV +0.0042 and PnL +$2,020.42, but regressed late_strong EV by -0.0206 and old_thin EV by -0.0050 while increasing mid_weak drawdown by 1.28 pp.",
+    "gate4_basis": "Rejected because no non-baseline MAX_POSITIONS value improved EV in a majority of the fixed windows; wider capacity mostly added lower-quality trades, and narrower capacity only helped old_thin."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-blocked, so this run tested deterministic capital allocation instead of LLM ranking."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Global MAX_POSITIONS is not a stable alpha lever after the accepted add-on default. The mid_weak capacity gain is real but not portable; global widening hurts late_strong/old_thin and global tightening hurts late/mid.",
+  "next_retry_requires": [
+    "Do not retry nearby global MAX_POSITIONS values as the next meta-allocation experiment.",
+    "If capacity returns, it must be conditional on explicit market state or sleeve context, not a global slot count.",
+    "Next meta-allocation work should map which sleeve or sector deserves risk in mid_weak rather than changing total slots."
+  ],
+  "related_files": [
+    "quant/exp_20260427_014_max_positions_sweep.py",
+    "data/exp_20260427_014_max_positions_sweep.json",
+    "docs/experiments/logs/exp-20260427-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. One causal variable changed; signal generation, exits, ranking, LLM, C strategy, sizing rules, and add-on defaults stayed unchanged."
+}

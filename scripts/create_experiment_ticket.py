@@ -21,6 +21,18 @@ def main():
     parser.add_argument("--single-causal-variable", required=True)
     parser.add_argument("--baseline-result-file")
     parser.add_argument("--allowed-write-scope", default="")
+    parser.add_argument(
+        "--file-slug",
+        help=(
+            "Optional short slug for auto-generated runner/artifact names. "
+            "Defaults to a slug from --single-causal-variable."
+        ),
+    )
+    parser.add_argument(
+        "--exclusive-scope-ok",
+        action="store_true",
+        help="Allow broad directory scopes such as data/ or quant/.",
+    )
     parser.add_argument("--must-not-touch", default="")
     parser.add_argument("--locked-variables", default="")
     parser.add_argument(
@@ -48,6 +60,8 @@ def main():
             evaluation_windows=parse_windows(args.window),
             acceptance_rule=args.acceptance_rule,
             owner=args.owner,
+            file_slug=args.file_slug,
+            exclusive_scope_ok=args.exclusive_scope_ok,
         ),
         timeout_seconds=args.lock_timeout_seconds,
     )

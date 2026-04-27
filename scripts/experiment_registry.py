@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import os
 import json
+import re
 import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -29,6 +30,12 @@ FINAL_STATUSES = {"accepted", "rejected", "observed_only"}
 SHARED_COORDINATION_SCOPES = {
     "docs/experiment_log.jsonl",
     "docs/experiment_registry.json",
+}
+DISALLOWED_BROAD_SCOPES = {
+    "data",
+    "docs",
+    "quant",
+    "scripts",
 }
 VALID_LANES = {
     "alpha_discovery",
@@ -262,6 +269,83 @@ def parse_windows(values):
     return windows
 
 
+def _template_scope(scope, experiment_id, lane, change_type):
+    return scope.format(
+        experiment_id=experiment_id,
+        lane=lane,
+        change_type=change_type,
+    )
+
+
+def experiment_file_prefix(experiment_id):
+    return experiment_id.replace("-", "_")
+
+
+def slugify_file_part(value, fallback="experiment"):
+    slug = re.sub(r"[^a-zA-Z0-9]+", "_", value or "").strip("_").lower()
+    slug = re.sub(r"_+", "_", slug)
+    return slug[:80].strip("_") or fallback
+
+
+def default_file_stem(experiment_id, single_causal_variable, file_slug=None):
+    slug_source = file_slug or single_causal_variable
+    return f"{experiment_file_prefix(experiment_id)}_{slugify_file_part(slug_source)}"
+
+
+def default_allowed_write_scope(
+    experiment_id,
+    lane,
+    single_causal_variable,
+    file_slug=None,
+):
+    stem = default_file_stem(experiment_id, single_causal_variable, file_slug)
+    return [
+        f"quant/experiments/{stem}.py",
+        f"data/experiments/{experiment_id}/{stem}.json",
+        f"docs/experiments/tickets/{experiment_id}.json",
+        f"docs/experiments/logs/{experiment_id}.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+    ]
+
+
+def normalize_allowed_write_scope(
+    scopes,
+    *,
+    experiment_id,
+    lane,
+    change_type,
+    single_causal_variable,
+    file_slug=None,
+    exclusive_scope_ok=False,
+):
+    if not scopes:
+        return default_allowed_write_scope(
+            experiment_id,
+            lane,
+            single_causal_variable,
+            file_slug,
+        )
+
+    normalized = [
+        _template_scope(scope, experiment_id, lane, change_type)
+        for scope in scopes
+    ]
+    if exclusive_scope_ok:
+        return normalized
+
+    broad = [
+        scope for scope in normalized
+        if _normalize_scope(scope) in DISALLOWED_BROAD_SCOPES
+    ]
+    if broad:
+        raise ValueError(
+            "broad allowed_write_scope entries require --exclusive-scope-ok: "
+            + ", ".join(broad)
+        )
+    return normalized
+
+
 def get_experiment(registry, experiment_id):
     for exp in registry.get("experiments", []):
         if exp.get("experiment_id") == experiment_id:
@@ -283,12 +367,24 @@ def create_ticket(
     evaluation_windows=None,
     acceptance_rule=None,
     owner=None,
+    file_slug=None,
+    exclusive_scope_ok=False,
 ):
     if lane not in VALID_LANES:
         raise ValueError(f"lane must be one of {sorted(VALID_LANES)}")
     baseline = baseline_result_file or latest_backtest_result()
+    experiment_id = next_experiment_id(registry)
+    write_scope = normalize_allowed_write_scope(
+        allowed_write_scope,
+        experiment_id=experiment_id,
+        lane=lane,
+        change_type=change_type,
+        single_causal_variable=single_causal_variable,
+        file_slug=file_slug,
+        exclusive_scope_ok=exclusive_scope_ok,
+    )
     ticket = {
-        "experiment_id": next_experiment_id(registry),
+        "experiment_id": experiment_id,
         "status": "proposed",
         "lane": lane,
         "owner": owner,
@@ -296,7 +392,7 @@ def create_ticket(
         "change_type": change_type,
         "single_causal_variable": single_causal_variable,
         "baseline_result_file": baseline,
-        "allowed_write_scope": allowed_write_scope or [],
+        "allowed_write_scope": write_scope,
         "must_not_touch": must_not_touch or [],
         "locked_variables": locked_variables or (
             [single_causal_variable] if single_causal_variable else []

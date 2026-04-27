@@ -1,0 +1,154 @@
+{
+  "experiment_id": "exp-20260427-013",
+  "timestamp": "2026-04-27T04:05:00+00:00",
+  "status": "accepted",
+  "hypothesis": "The strict day-2 follow-through add-on with a 35% add-on-only position cap has enough three-window evidence and acceptable drawdown impact to become the default capital-allocation behavior, while preserving the 25% initial-entry cap.",
+  "change_summary": "Promoted the previously default-off strict follow-through add-on: DEFAULT_CONFIG now enables ADDON_ENABLED and sets ADDON_MAX_POSITION_PCT to 0.35. Entry, exit, ranking, LLM, C strategy, initial position sizing, and the 25% initial-entry cap were left unchanged.",
+  "change_type": "capital_allocation_production_promotion",
+  "component": "quant/backtester.py, quant/test_quant.py",
+  "parameters": {
+    "single_causal_variable": "production default for strict day-2 follow-through add-on with 35% add-on-only cap",
+    "old_default": {
+      "ADDON_ENABLED": false,
+      "ADDON_MAX_POSITION_PCT": null
+    },
+    "new_default": {
+      "ADDON_ENABLED": true,
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false,
+      "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": false
+    },
+    "unchanged": [
+      "initial-entry MAX_POSITION_PCT remains 0.25",
+      "entry logic unchanged",
+      "exit logic unchanged",
+      "ranking unchanged",
+      "LLM/news responsibilities unchanged",
+      "earnings C strategy unchanged"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull with weaker follow-through",
+    "old_thin": "mixed-to-weak older tape"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5039,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4773,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031,
+      "max_drawdown_pct": 0.0247,
+      "win_rate": 0.4762,
+      "trade_count": 21,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.131,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139,
+      "max_drawdown_pct": 0.0456,
+      "win_rate": 0.375,
+      "trade_count": 24,
+      "survival_rate": 0.8929
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "win_rate": 0.4762,
+      "trade_count": 21,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1507,
+      "sharpe_daily": 1.22,
+      "total_pnl": 12346.07,
+      "total_return_pct": 0.1235,
+      "max_drawdown_pct": 0.0454,
+      "win_rate": 0.375,
+      "trade_count": 24,
+      "survival_rate": 0.8929
+    }
+  },
+  "delta_metrics": {
+    "ev_delta_sum": 0.1458,
+    "pnl_delta_sum": 4415.14,
+    "pnl_delta_pct_on_baseline_pnl_sum": 0.0657,
+    "max_drawdown_delta_max": 0.0029,
+    "windows_ev_improved": 3,
+    "windows_pnl_improved": 3,
+    "windows_regressed": 0,
+    "gate4_basis": "Aggregate PnL improved by 6.57% versus no-add-on baseline, EV improved in all three fixed windows, and max drawdown increase stayed under 0.3 percentage points."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-blocked; this deterministic capital-allocation alpha does not change LLM responsibilities."
+  },
+  "decision": "accepted",
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not tune nearby add-on trigger thresholds; keep day-2, +2% unrealized, and RS > 0 as the clean trigger.",
+    "Monitor live/paper concentration and drawdown after production default promotion.",
+    "Do not generalize 35% to initial entries or non-follow-through adds."
+  ],
+  "verification": {
+    "fixed_windows": [
+      "python quant/backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --ohlcv-snapshot data/ohlcv_snapshot_20251023_20260421.json",
+      "python quant/backtester.py --start 2025-04-23 --end 2025-10-22 --regime-aware-exit --ohlcv-snapshot data/ohlcv_snapshot_20250423_20251022.json",
+      "python quant/backtester.py --start 2024-10-02 --end 2025-04-22 --regime-aware-exit --ohlcv-snapshot data/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "tests": "python -m pytest quant/test_quant.py -k \"addon_cap or compute_position_size_max_cap\""
+  },
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/experiment_log.jsonl",
+    "docs/experiments/logs/exp-20260427-013.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. This promotes a previously accepted default-off research harness after direct three-window default-config replay."
+}

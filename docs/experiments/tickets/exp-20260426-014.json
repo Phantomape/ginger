@@ -1,0 +1,58 @@
+{
+  "experiment_id": "exp-20260426-014",
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "measurement-repair",
+  "hypothesis": "LLM soft ranking remains blocked by missing replay archives; recovering already-saved raw llm_output files into llm_prompt_resp files should increase replayable candidate coverage without changing strategy behavior.",
+  "change_type": "replay_fix",
+  "single_causal_variable": "LLM raw-response replay recovery path",
+  "baseline_result_file": "data/backtest_results_20260425.json",
+  "allowed_write_scope": [
+    "quant/import_advice.py",
+    "quant/test_quant.py",
+    "scripts/recover_llm_replay_logs.py",
+    "data/",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/filter.py",
+    "quant/run.py",
+    "quant/run_pipeline.py"
+  ],
+  "locked_variables": [
+    "LLM raw-response replay recovery path"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    }
+  ],
+  "acceptance_rule": "observed_only unless metrics move for measurement reasons; must convert recoverable raw LLM outputs into replayable archives and improve LLM attribution readiness",
+  "created_at": "2026-04-26T08:03:22+00:00",
+  "claimed_at": "2026-04-26T16:51:30+00:00",
+  "completed_at": "2026-04-27T00:33:52+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtest_results_20260425.json",
+    "after_result_file": "data/backtest_results_20260425.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  }
+}

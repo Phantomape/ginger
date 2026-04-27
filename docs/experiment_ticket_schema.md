@@ -47,8 +47,12 @@ large shared JSON document.
   "single_causal_variable": "breakout follow-through taxonomy",
   "baseline_result_file": "data/backtest_results_20260425.json",
   "allowed_write_scope": [
-    "docs/",
-    "scripts/"
+    "quant/experiments/exp_20260425_001_breakout_follow_through_taxonomy.py",
+    "data/experiments/exp-20260425-001/exp_20260425_001_breakout_follow_through_taxonomy.json",
+    "docs/experiments/tickets/exp-20260425-001.json",
+    "docs/experiments/logs/exp-20260425-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
   ],
   "must_not_touch": [
     "quant/constants.py",
@@ -127,3 +131,40 @@ busy multi-agent run.
 
 Use narrow write scopes. A broad scope such as `quant/` should be treated as
 exclusive ownership of that whole area.
+
+## Automatic Write Scopes
+
+`scripts/create_experiment_ticket.py` now generates per-experiment write scopes
+when `--allowed-write-scope` is omitted. This is the default for parallel
+agents because the script knows the assigned `experiment_id` and can create
+non-overlapping paths:
+
+- `quant/experiments/<experiment_id_as_prefix>_<slug>.py`
+- `data/experiments/<experiment_id>/<experiment_id_as_prefix>_<slug>.json`
+- `docs/experiments/tickets/<experiment_id>.json`
+- `docs/experiments/logs/<experiment_id>.json`
+- `docs/experiment_log.jsonl`
+- `docs/experiment_registry.json`
+
+The default `<slug>` is derived from `--single-causal-variable`, so a ticket
+with `single_causal_variable="bad trade hold-quality taxonomy"` creates names
+like `exp_20260427_010_bad_trade_hold_quality_taxonomy.py`. If an agent wants
+a shorter explicit name, pass `--file-slug hold_quality_audit`.
+
+Do not use broad directory scopes such as `data/`, `quant/`, `docs/`, or
+`scripts/` for ordinary experiments. They serialize unrelated agents because
+claim conflict detection treats parent and child paths as overlapping. The
+ticket creation script rejects those broad scopes unless
+`--exclusive-scope-ok` is passed.
+
+When a custom scope is needed but the experiment id is not known yet, use
+templates:
+
+```powershell
+python scripts\create_experiment_ticket.py `
+  --lane alpha_discovery `
+  --hypothesis "One narrow shadow source." `
+  --change-type new_strategy_shadow `
+  --single-causal-variable "one shadow source" `
+  --allowed-write-scope "quant/experiments/{experiment_id}_{lane}.py,data/experiments/{experiment_id}/{change_type}.json"
+```

@@ -1,0 +1,205 @@
+﻿{
+    "experiment_id":  "exp-20260427-011",
+    "timestamp":  "2026-04-27T02:02:29+00:00",
+    "status":  "rejected",
+    "hypothesis":  "Strict day-2 follow-through add-ons may have better production materiality if the absolute unrealized-return threshold is tightened above the current +2% research candidate.",
+    "change_summary":  "Swept strict day-2 follow-through add-on unrealized-return thresholds at 2%, 3%, 4%, and 5% in real BacktestEngine replay. Higher absolute follow-through thresholds reduced realized add-on alpha versus the simpler 2% candidate.",
+    "change_type":  "capital_allocation",
+    "component":  "quant/exp_20260427_011_entry_followthrough_unrealized_threshold_sweep.py, data/exp_20260427_011_entry_followthrough_unrealized_threshold_sweep.json, docs/experiments/logs/exp-20260427-011.json",
+    "parameters":  {
+                       "single_causal_variable":  "ADDON_MIN_UNREALIZED_PCT threshold sweep",
+                       "locked_variables":  [
+                                                "ADDON_MIN_UNREALIZED_PCT threshold sweep"
+                                            ],
+                       "thresholds":  [
+                                          0.02,
+                                          0.03,
+                                          0.04,
+                                          0.05
+                                      ],
+                       "fixed_config":  {
+                                            "addon_enabled":  true,
+                                            "checkpoint_days":  2,
+                                            "min_rs_vs_spy":  0,
+                                            "fraction_of_original_shares":  0.25,
+                                            "require_checkpoint_cap_room":  false,
+                                            "require_improving_followthrough":  false
+                                        }
+                   },
+    "date_range":  {
+                       "start":  "2025-10-23",
+                       "end":  "2026-04-21"
+                   },
+    "secondary_windows":  [
+                              {
+                                  "start":  "2025-04-23",
+                                  "end":  "2025-10-22"
+                              },
+                              {
+                                  "start":  "2024-10-02",
+                                  "end":  "2025-04-22"
+                              }
+                          ],
+    "market_regime_summary":  {
+                                  "late_strong":  "slow-melt bull / accepted-stack dominant tape",
+                                  "mid_weak":  "rotation-heavy bull with weaker follow-through",
+                                  "old_thin":  "mixed-to-weak older tape"
+                              },
+    "before_metrics":  {
+                           "late_strong":  {
+                                               "expected_value_score":  1.5039,
+                                               "sharpe":  5.72,
+                                               "sharpe_daily":  4.24,
+                                               "total_pnl":  35471.49,
+                                               "total_return_pct":  0.3547,
+                                               "max_drawdown_pct":  0.0281,
+                                               "trade_count":  21,
+                                               "win_rate":  0.7143,
+                                               "survival_rate":  0.8431,
+                                               "addon":  {
+                                                             "scheduled":  0,
+                                                             "executed":  0,
+                                                             "skipped":  0,
+                                                             "checkpoint_rejected":  0
+                                                         }
+                                           },
+                           "mid_weak":  {
+                                            "expected_value_score":  0.4773,
+                                            "sharpe":  4.1,
+                                            "sharpe_daily":  2.35,
+                                            "total_pnl":  20307.9,
+                                            "total_return_pct":  0.2031,
+                                            "max_drawdown_pct":  0.0247,
+                                            "trade_count":  21,
+                                            "win_rate":  0.4762,
+                                            "survival_rate":  0.8298,
+                                            "addon":  {
+                                                          "scheduled":  0,
+                                                          "executed":  0,
+                                                          "skipped":  0,
+                                                          "checkpoint_rejected":  0
+                                                      }
+                                        },
+                           "old_thin":  {
+                                            "expected_value_score":  0.131,
+                                            "sharpe":  1.91,
+                                            "sharpe_daily":  1.15,
+                                            "total_pnl":  11388.73,
+                                            "total_return_pct":  0.1139,
+                                            "max_drawdown_pct":  0.0456,
+                                            "trade_count":  24,
+                                            "win_rate":  0.375,
+                                            "survival_rate":  0.8929,
+                                            "addon":  {
+                                                          "scheduled":  0,
+                                                          "executed":  0,
+                                                          "skipped":  0,
+                                                          "checkpoint_rejected":  0
+                                                      }
+                                        }
+                       },
+    "after_metrics":  {
+                          "best_threshold":  0.02,
+                          "threshold_0_02":  {
+                                                 "ev_delta_vs_no_addon_sum":  0.0447,
+                                                 "pnl_delta_vs_no_addon_sum":  1523.89,
+                                                 "ev_delta_vs_2pct_sum":  0.0,
+                                                 "pnl_delta_vs_2pct_sum":  0.0,
+                                                 "windows_improved_vs_no_addon":  3,
+                                                 "windows_regressed_vs_2pct":  0,
+                                                 "executed_addons":  14
+                                             },
+                          "threshold_0_03":  {
+                                                 "ev_delta_vs_no_addon_sum":  0.043,
+                                                 "pnl_delta_vs_no_addon_sum":  1369.71,
+                                                 "ev_delta_vs_2pct_sum":  -0.0017,
+                                                 "pnl_delta_vs_2pct_sum":  -154.18,
+                                                 "windows_improved_vs_no_addon":  3,
+                                                 "windows_regressed_vs_2pct":  1,
+                                                 "executed_addons":  12
+                                             },
+                          "threshold_0_04":  {
+                                                 "ev_delta_vs_no_addon_sum":  0.027,
+                                                 "pnl_delta_vs_no_addon_sum":  777.09,
+                                                 "ev_delta_vs_2pct_sum":  -0.0177,
+                                                 "pnl_delta_vs_2pct_sum":  -746.8,
+                                                 "windows_improved_vs_no_addon":  3,
+                                                 "windows_regressed_vs_2pct":  1,
+                                                 "executed_addons":  10
+                                             },
+                          "threshold_0_05":  {
+                                                 "ev_delta_vs_no_addon_sum":  0.0206,
+                                                 "pnl_delta_vs_no_addon_sum":  566.82,
+                                                 "ev_delta_vs_2pct_sum":  -0.0241,
+                                                 "pnl_delta_vs_2pct_sum":  -957.07,
+                                                 "windows_improved_vs_no_addon":  2,
+                                                 "windows_regressed_vs_2pct":  3,
+                                                 "executed_addons":  7
+                                             }
+                      },
+    "delta_metrics":  {
+                          "best_threshold":  0.02,
+                          "threshold_0_02_ev_delta_sum_vs_no_addon":  0.0447,
+                          "threshold_0_03_ev_delta_sum_vs_2pct":  -0.0017,
+                          "threshold_0_04_ev_delta_sum_vs_2pct":  -0.0177,
+                          "threshold_0_05_ev_delta_sum_vs_2pct":  -0.0241,
+                          "threshold_0_03_pnl_delta_sum_vs_2pct":  -154.18,
+                          "threshold_0_04_pnl_delta_sum_vs_2pct":  -746.8,
+                          "threshold_0_05_pnl_delta_sum_vs_2pct":  -957.07
+                      },
+    "multi_window_metrics":  {
+                                 "0.02":  {
+                                              "ev_delta_vs_no_addon_sum":  0.0447,
+                                              "pnl_delta_vs_no_addon_sum":  1523.89,
+                                              "ev_delta_vs_2pct_sum":  0.0,
+                                              "pnl_delta_vs_2pct_sum":  0.0,
+                                              "windows_improved_vs_no_addon":  3,
+                                              "windows_regressed_vs_2pct":  0,
+                                              "executed_addons":  14
+                                          },
+                                 "0.03":  {
+                                              "ev_delta_vs_no_addon_sum":  0.043,
+                                              "pnl_delta_vs_no_addon_sum":  1369.71,
+                                              "ev_delta_vs_2pct_sum":  -0.0017,
+                                              "pnl_delta_vs_2pct_sum":  -154.18,
+                                              "windows_improved_vs_no_addon":  3,
+                                              "windows_regressed_vs_2pct":  1,
+                                              "executed_addons":  12
+                                          },
+                                 "0.04":  {
+                                              "ev_delta_vs_no_addon_sum":  0.027,
+                                              "pnl_delta_vs_no_addon_sum":  777.09,
+                                              "ev_delta_vs_2pct_sum":  -0.0177,
+                                              "pnl_delta_vs_2pct_sum":  -746.8,
+                                              "windows_improved_vs_no_addon":  3,
+                                              "windows_regressed_vs_2pct":  1,
+                                              "executed_addons":  10
+                                          },
+                                 "0.05":  {
+                                              "ev_delta_vs_no_addon_sum":  0.0206,
+                                              "pnl_delta_vs_no_addon_sum":  566.82,
+                                              "ev_delta_vs_2pct_sum":  -0.0241,
+                                              "pnl_delta_vs_2pct_sum":  -957.07,
+                                              "windows_improved_vs_no_addon":  2,
+                                              "windows_regressed_vs_2pct":  3,
+                                              "executed_addons":  7
+                                          }
+                             },
+    "llm_metrics":  {
+                        "used_llm":  false,
+                        "blocker_relation":  "LLM soft ranking remains blocked by candidate-level replay coverage; this deterministic add-on alpha branch was tested instead."
+                    },
+    "decision":  "rejected",
+    "rejection_reason":  "No tightened unrealized-return threshold improved over the ordinary 2% strict day-2 add-on. 3% lost $154.18 aggregate PnL versus 2%, 4% lost $746.80, and 5% lost $957.07 while regressing all windows versus 2%.",
+    "next_retry_requires":  [
+                                "Do not retry nearby global ADDON_MIN_UNREALIZED_PCT thresholds above 2% as the next trigger-quality test.",
+                                "The ordinary strict day2 \u003e= 2% and RS \u003e 0 add-on remains the cleanest default-off research candidate.",
+                                "Future add-on work needs a genuinely different evidence type, forward sample, or materiality unlock rather than another local threshold nudge."
+                            ],
+    "related_files":  [
+                          "quant/exp_20260427_011_entry_followthrough_unrealized_threshold_sweep.py",
+                          "data/exp_20260427_011_entry_followthrough_unrealized_threshold_sweep.json",
+                          "docs/experiments/logs/exp-20260427-011.json"
+                      ],
+    "notes":  "This was alpha_search, not measurement repair. It used the three fixed snapshot windows from docs/backtesting.md and changed one causal variable only. Production defaults remain unchanged."
+}

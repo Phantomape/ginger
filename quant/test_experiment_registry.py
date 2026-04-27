@@ -17,6 +17,7 @@ from experiment_registry import (  # noqa: E402
     evaluate_gate,
     experiment_log_exists,
     experiment_id_exists_in_log,
+    default_file_stem,
     iter_experiments,
     judge_results,
     locked_registry_update,
@@ -44,6 +45,7 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
         baseline_result_file="data/backtest_results_20260425.json",
         allowed_write_scope=["docs/"],
         evaluation_windows=[{"start": "2025-10-23", "end": "2026-04-21"}],
+        exclusive_scope_ok=True,
     )
     second = create_ticket(
         registry,
@@ -53,6 +55,7 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
         single_causal_variable="replay coverage bucket",
         baseline_result_file="data/backtest_results_20260425.json",
         allowed_write_scope=["scripts/"],
+        exclusive_scope_ok=True,
     )
 
     assert first["experiment_id"].endswith("-001")
@@ -65,8 +68,103 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
     loaded = load_registry(path)
     assert len(loaded["experiments"]) == 2
     assert loaded["experiments"][0]["ticket_file"].endswith(
-        "tickets/exp-20260426-001.json"
+        f"tickets/{first['experiment_id']}.json"
     )
+
+
+def test_create_ticket_auto_generates_per_experiment_write_scope(tmp_path):
+    registry = {
+        "schema_version": 1,
+        "updated_at": None,
+        "experiments": [],
+        "_tickets_dir": str(tmp_path / "tickets"),
+    }
+
+    ticket = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="Find one reproducible failure family.",
+        change_type="failure_taxonomy",
+        single_causal_variable="hold quality taxonomy",
+        baseline_result_file="data/backtest_results_20260425.json",
+    )
+
+    scopes = ticket["allowed_write_scope"]
+    stem = f"{ticket['experiment_id'].replace('-', '_')}_hold_quality_taxonomy"
+    assert f"quant/experiments/{stem}.py" in scopes
+    assert f"data/experiments/{ticket['experiment_id']}/{stem}.json" in scopes
+    assert f"docs/experiments/tickets/{ticket['experiment_id']}.json" in scopes
+    assert f"docs/experiments/logs/{ticket['experiment_id']}.json" in scopes
+    assert "data/" not in scopes
+
+
+def test_create_ticket_file_slug_overrides_auto_generated_file_stem():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    ticket = create_ticket(
+        registry,
+        lane="loss_attribution",
+        hypothesis="Find one reproducible failure family.",
+        change_type="failure_taxonomy",
+        single_causal_variable="bad trade hold-quality taxonomy",
+        baseline_result_file="data/backtest_results_20260425.json",
+        file_slug="hold_quality_audit",
+    )
+
+    stem = f"{ticket['experiment_id'].replace('-', '_')}_hold_quality_audit"
+    assert f"quant/experiments/{stem}.py" in ticket["allowed_write_scope"]
+    assert (
+        f"data/experiments/{ticket['experiment_id']}/{stem}.json"
+        in ticket["allowed_write_scope"]
+    )
+
+
+def test_default_file_stem_falls_back_when_slug_has_no_ascii():
+    assert default_file_stem("exp-20990101-001", "坏交易") == (
+        "exp_20990101_001_experiment"
+    )
+
+
+def test_create_ticket_rejects_broad_directory_scope_without_exclusive_flag():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    try:
+        create_ticket(
+            registry,
+            lane="loss_attribution",
+            hypothesis="Find one reproducible failure family.",
+            change_type="failure_taxonomy",
+            single_causal_variable="hold quality taxonomy",
+            baseline_result_file="data/backtest_results_20260425.json",
+            allowed_write_scope=["quant/exp_loss_attribution_runner.py", "data/"],
+        )
+    except ValueError as exc:
+        assert "broad allowed_write_scope" in str(exc)
+        assert "data/" in str(exc)
+    else:
+        raise AssertionError("broad data/ scope was accepted")
+
+
+def test_create_ticket_expands_scope_templates():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    ticket = create_ticket(
+        registry,
+        lane="alpha_discovery",
+        hypothesis="Test one shadow source.",
+        change_type="new_strategy_shadow",
+        single_causal_variable="shadow source",
+        baseline_result_file="data/backtest_results_20260425.json",
+        allowed_write_scope=[
+            "quant/experiments/{experiment_id}_{lane}.py",
+            "data/experiments/{experiment_id}/{change_type}.json",
+        ],
+    )
+
+    assert ticket["allowed_write_scope"] == [
+        f"quant/experiments/{ticket['experiment_id']}_alpha_discovery.py",
+        f"data/experiments/{ticket['experiment_id']}/new_strategy_shadow.json",
+    ]
 
 
 def test_claim_detects_scope_and_variable_conflicts():
@@ -86,6 +184,7 @@ def test_claim_detects_scope_and_variable_conflicts():
         change_type="ranking_rule",
         single_causal_variable="breakout ranking key",
         allowed_write_scope=["quant/"],
+        exclusive_scope_ok=True,
     )
 
     claimed, conflicts = claim_ticket(registry, first["experiment_id"], "agent-a")
@@ -222,6 +321,7 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
         single_causal_variable="log append path",
         baseline_result_file="data/backtest_results_20260425.json",
         allowed_write_scope=["scripts/"],
+        exclusive_scope_ok=True,
     )
     judgement = {
         "decision": "rejected",

@@ -1,0 +1,147 @@
+{
+  "experiment_id": "exp-20260427-012",
+  "timestamp": "2026-04-27T03:04:36+00:00",
+  "status": "accepted",
+  "hypothesis": "Strict day-2 follow-through add-ons may be materially under-sized because the production 25% single-position cap blocks confirmed winner add-ons; an add-on-only 35% cap may unlock capital allocation alpha without changing entry, exit, ranking, LLM, or production defaults.",
+  "change_summary": "Added a default-off BacktestEngine config hook, ADDON_MAX_POSITION_PCT, and replayed the strict day-2 +2%/RS>0 add-on with a 35% add-on-only cap across the three fixed snapshot windows.",
+  "change_type": "capital_allocation",
+  "component": "quant/backtester.py, quant/test_quant.py, quant/exp_20260427_012_entry_followthrough_addon_cap_real_replay.py, data/exp_20260427_012_entry_followthrough_addon_cap_real_replay.json",
+  "parameters": {
+    "single_causal_variable": "ADDON_MAX_POSITION_PCT for strict day2 follow-through add-ons",
+    "base_config": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "normal_addon_config": {
+      "ADDON_ENABLED": true,
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+      "ADDON_MAX_POSITION_PCT": null,
+      "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false,
+      "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": false
+    },
+    "headroom_addon_config": {
+      "ADDON_ENABLED": true,
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false,
+      "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": false
+    }
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull with weaker follow-through",
+    "old_thin": "mixed-to-weak older tape"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5039,
+      "sharpe_daily": 4.24,
+      "total_pnl": 35471.49,
+      "total_return_pct": 0.3547,
+      "max_drawdown_pct": 0.0281,
+      "trade_count": 21,
+      "win_rate": 0.7143
+    },
+    "mid_weak": {
+      "expected_value_score": 0.4773,
+      "sharpe_daily": 2.35,
+      "total_pnl": 20307.9,
+      "total_return_pct": 0.2031,
+      "max_drawdown_pct": 0.0247,
+      "trade_count": 21,
+      "win_rate": 0.4762
+    },
+    "old_thin": {
+      "expected_value_score": 0.131,
+      "sharpe_daily": 1.15,
+      "total_pnl": 11388.73,
+      "total_return_pct": 0.1139,
+      "max_drawdown_pct": 0.0456,
+      "trade_count": 24,
+      "win_rate": 0.375
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "trade_count": 21,
+      "win_rate": 0.7143,
+      "newly_executed_addons_vs_normal": 1
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "trade_count": 21,
+      "win_rate": 0.4762,
+      "newly_executed_addons_vs_normal": 1
+    },
+    "old_thin": {
+      "expected_value_score": 0.1507,
+      "sharpe_daily": 1.22,
+      "total_pnl": 12346.07,
+      "total_return_pct": 0.1235,
+      "max_drawdown_pct": 0.0454,
+      "trade_count": 24,
+      "win_rate": 0.375,
+      "newly_executed_addons_vs_normal": 2
+    }
+  },
+  "delta_metrics": {
+    "headroom_vs_base_ev_delta_sum": 0.1458,
+    "headroom_vs_base_pnl_delta_sum": 4415.14,
+    "headroom_vs_normal_ev_delta_sum": 0.1011,
+    "headroom_vs_normal_pnl_delta_sum": 2891.25,
+    "headroom_vs_normal_maxdd_delta_max": 0.0028,
+    "windows_improved_vs_base": 3,
+    "windows_improved_vs_normal": 3,
+    "windows_regressed_vs_normal": 0,
+    "newly_executed_count": 4
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains blocked by production-aligned replay sample size, so this run tested a deterministic capital-allocation alpha instead."
+  },
+  "decision": "accepted_default_off_research_harness",
+  "production_promotion": false,
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not tune nearby add-on trigger thresholds again; 2% unrealized and RS>0 remains the clean trigger.",
+    "Next add-on work should test forward or paper evidence, or a production-promotion decision for the 35% add-on-only cap after reviewing concentration risk.",
+    "Do not generalize this into a higher initial-entry single-position cap."
+  ],
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "quant/exp_20260427_012_entry_followthrough_addon_cap_real_replay.py",
+    "data/exp_20260427_012_entry_followthrough_addon_cap_real_replay.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiments/logs/exp-20260427-012.json"
+  ],
+  "notes": "Alpha search, not measurement repair. One causal variable changed: add-on-only single-position cap. Entry, exit, ranking, LLM, C strategy, initial position cap, and production defaults remain unchanged."
+}
