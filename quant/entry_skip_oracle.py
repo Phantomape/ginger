@@ -62,6 +62,69 @@ def _median(values):
     return (ordered[mid - 1] + ordered[mid]) / 2
 
 
+def _gap_cancel_audit(rows, threshold_values=(0.015, 0.02, 0.03, 0.05, 0.10)):
+    gap_rows = []
+    for row in rows:
+        if row.get("decision") != "gap_cancel":
+            continue
+        details = row.get("details") or {}
+        fill_price = details.get("fill_price")
+        signal_entry = details.get("signal_entry")
+        if not fill_price or not signal_entry:
+            continue
+        gap_pct = (float(fill_price) / float(signal_entry)) - 1
+        gap_rows.append({**row, "gap_pct": round(gap_pct, 6)})
+
+    if not gap_rows:
+        return {
+            "sample_count": 0,
+            "threshold_sweep": {},
+            "rows": [],
+        }
+
+    gaps = [row["gap_pct"] for row in gap_rows]
+    returns = [row["max_forward_return_pct"] for row in gap_rows]
+    sweep = {}
+    for threshold in threshold_values:
+        admitted = [row for row in gap_rows if row["gap_pct"] <= threshold]
+        admitted_returns = [row["max_forward_return_pct"] for row in admitted]
+        sweep[f"{threshold:.3f}"] = {
+            "threshold_pct": threshold,
+            "would_admit_count": len(admitted),
+            "would_still_cancel_count": len(gap_rows) - len(admitted),
+            "avg_max_forward_return_pct": (
+                round(sum(admitted_returns) / len(admitted_returns), 6)
+                if admitted_returns else None
+            ),
+            "median_max_forward_return_pct": (
+                round(_median(admitted_returns), 6)
+                if admitted_returns else None
+            ),
+            "best_max_forward_return_pct": (
+                round(max(admitted_returns), 6)
+                if admitted_returns else None
+            ),
+            "worst_max_forward_return_pct": (
+                round(min(admitted_returns), 6)
+                if admitted_returns else None
+            ),
+        }
+
+    return {
+        "sample_count": len(gap_rows),
+        "avg_gap_pct": round(sum(gaps) / len(gaps), 6),
+        "median_gap_pct": round(_median(gaps), 6),
+        "max_gap_pct": round(max(gaps), 6),
+        "avg_max_forward_return_pct": round(sum(returns) / len(returns), 6),
+        "threshold_sweep": sweep,
+        "rows": sorted(
+            gap_rows,
+            key=lambda row: row["max_forward_return_pct"],
+            reverse=True,
+        ),
+    }
+
+
 def build_entry_skip_oracle(backtest_result, snapshot, horizon_days=20):
     attribution = backtest_result.get("entry_execution_attribution") or {}
     skips = attribution.get("sample_skips") or []
@@ -150,6 +213,7 @@ def build_entry_skip_oracle(backtest_result, snapshot, horizon_days=20):
             "final conclusions."
         ),
         "by_decision": dict(sorted(summary.items())),
+        "gap_cancel_audit": _gap_cancel_audit(rows),
         "top_skipped_opportunities": sorted(
             rows,
             key=lambda row: row["max_forward_return_pct"],

@@ -28,7 +28,11 @@ def test_entry_skip_oracle_groups_future_returns_by_decision(tmp_path):
                     "decision": "gap_cancel",
                     "candidate_rank": 1,
                     "available_slots_at_entry_loop": 2,
-                    "details": {"fill_date": "2026-01-05", "fill_price": 10.0},
+                    "details": {
+                        "fill_date": "2026-01-05",
+                        "fill_price": 10.2,
+                        "signal_entry": 10.0,
+                    },
                 },
                 {
                     "date": "2026-01-02",
@@ -67,3 +71,8 @@ def test_entry_skip_oracle_groups_future_returns_by_decision(tmp_path):
     assert oracle["by_decision"]["no_shares"]["sample_count"] == 1
     assert oracle["top_skipped_opportunities"][0]["ticker"] == "AAA"
     assert oracle["top_skipped_opportunities"][0]["decision"] == "gap_cancel"
+    gap_audit = oracle["gap_cancel_audit"]
+    assert gap_audit["sample_count"] == 1
+    assert gap_audit["rows"][0]["gap_pct"] == 0.02
+    assert gap_audit["threshold_sweep"]["0.015"]["would_admit_count"] == 0
+    assert gap_audit["threshold_sweep"]["0.020"]["would_admit_count"] == 1
