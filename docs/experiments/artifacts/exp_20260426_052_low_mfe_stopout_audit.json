@@ -1,0 +1,591 @@
+{
+  "experiment_id": "exp-20260426-052",
+  "timestamp": "2026-04-26T21:11:01+00:00",
+  "lane": "loss_attribution",
+  "change_type": "failure_taxonomy",
+  "single_causal_variable": "low-MFE stopout taxonomy for accepted-stack bad trades",
+  "hypothesis": "Accepted-stack losers may contain a reproducible low-MFE stopout lifecycle family where positions never achieve even 1 percent favorable excursion before stopping out.",
+  "parameters": {
+    "low_mfe_pct": 0.01,
+    "config": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "prior_family_overlap_only": [
+      "trend_instant_failure",
+      "trend_late_rollover",
+      "breakout false-positive/loss",
+      "near-target or big-MFE giveback",
+      "post-entry gap-down damage"
+    ]
+  },
+  "windows": {
+    "late_strong": {
+      "date_range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "market_regime_summary": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 1.5039,
+        "sharpe": 5.72,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35471.49,
+        "total_return_pct": 0.3547,
+        "max_drawdown_pct": 0.0281,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "family_counts": {
+        "low_mfe_stopout_bad": 3,
+        "other_bad_trade": 3,
+        "winner_or_flat_not_low_mfe": 15
+      },
+      "summary_by_family": {
+        "low_mfe_stopout_bad": {
+          "count": 3,
+          "pnl_sum": -1847.59,
+          "avg_pnl": -615.86,
+          "median_pnl": -821.88,
+          "winner_count": 0,
+          "loser_count": 3
+        },
+        "other_bad_trade": {
+          "count": 3,
+          "pnl_sum": -702.94,
+          "avg_pnl": -234.31,
+          "median_pnl": -224.1,
+          "winner_count": 0,
+          "loser_count": 3
+        },
+        "winner_collateral_low_mfe": {
+          "count": 0,
+          "pnl_sum": 0.0,
+          "avg_pnl": null,
+          "median_pnl": null,
+          "winner_count": 0,
+          "loser_count": 0
+        },
+        "winner_or_flat_not_low_mfe": {
+          "count": 15,
+          "pnl_sum": 38022.02,
+          "avg_pnl": 2534.8,
+          "median_pnl": 2871.83,
+          "winner_count": 15,
+          "loser_count": 0
+        }
+      },
+      "low_mfe_bad_strategy_counts": {
+        "breakout_long": 1,
+        "trend_long": 2
+      },
+      "low_mfe_bad_sector_counts": {
+        "Energy": 2,
+        "Technology": 1
+      },
+      "unclassified_low_mfe_bad_count": 0,
+      "winner_collateral_low_mfe_count": 0,
+      "low_mfe_bad_rows": [
+        {
+          "ticker": "CVX",
+          "strategy": "trend_long",
+          "sector": "Energy",
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "exit_reason": "stop",
+          "pnl": -1004.78,
+          "pnl_pct_net": -0.036728,
+          "entry_price": 163.36,
+          "exit_price": 157.93,
+          "max_high": 163.4510668436851,
+          "min_low": 154.5976714506855,
+          "mfe_pct": 0.000557,
+          "mae_pct": -0.053638,
+          "entry_close_return_pct": -0.051031,
+          "day1_close_return_pct": null,
+          "first_three_close_peak_pct": -0.051031,
+          "hold_days_observed": 1,
+          "prior_family_labels": [
+            "trend_instant_failure"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "XOM",
+          "strategy": "breakout_long",
+          "sector": "Energy",
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "exit_reason": "stop",
+          "pnl": -821.88,
+          "pnl_pct_net": -0.030081,
+          "entry_price": 124.58,
+          "exit_price": 121.27,
+          "max_high": 124.96705385497772,
+          "min_low": 120.19883266800142,
+          "mfe_pct": 0.003107,
+          "mae_pct": -0.035168,
+          "entry_close_return_pct": -0.034769,
+          "day1_close_return_pct": null,
+          "first_three_close_peak_pct": -0.034769,
+          "hold_days_observed": 1,
+          "prior_family_labels": [
+            "breakout_false_positive_or_breakout_loss"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "TSM",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "entry_date": "2026-01-16",
+          "exit_date": "2026-01-20",
+          "exit_reason": "stop",
+          "pnl": -20.93,
+          "pnl_pct_net": -0.060734,
+          "entry_price": 345.71,
+          "exit_price": 325.92,
+          "max_high": 348.8669754198533,
+          "min_low": 325.9814434873856,
+          "mfe_pct": 0.009132,
+          "mae_pct": -0.057067,
+          "entry_close_return_pct": -0.012357,
+          "day1_close_return_pct": -0.056317,
+          "first_three_close_peak_pct": -0.012357,
+          "hold_days_observed": 2,
+          "prior_family_labels": [
+            "trend_instant_failure"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        }
+      ],
+      "unclassified_low_mfe_bad_rows": [],
+      "winner_collateral_low_mfe_rows": []
+    },
+    "mid_weak": {
+      "date_range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "market_regime_summary": "rotation-heavy bull with weaker follow-through",
+      "metrics": {
+        "expected_value_score": 0.4773,
+        "sharpe": 4.1,
+        "sharpe_daily": 2.35,
+        "total_pnl": 20307.9,
+        "total_return_pct": 0.2031,
+        "max_drawdown_pct": 0.0247,
+        "trade_count": 21,
+        "win_rate": 0.4762
+      },
+      "family_counts": {
+        "low_mfe_stopout_bad": 1,
+        "other_bad_trade": 10,
+        "winner_or_flat_not_low_mfe": 10
+      },
+      "summary_by_family": {
+        "low_mfe_stopout_bad": {
+          "count": 1,
+          "pnl_sum": -55.6,
+          "avg_pnl": -55.6,
+          "median_pnl": -55.6,
+          "winner_count": 0,
+          "loser_count": 1
+        },
+        "other_bad_trade": {
+          "count": 10,
+          "pnl_sum": -1186.02,
+          "avg_pnl": -118.6,
+          "median_pnl": -49.11,
+          "winner_count": 0,
+          "loser_count": 10
+        },
+        "winner_collateral_low_mfe": {
+          "count": 0,
+          "pnl_sum": 0.0,
+          "avg_pnl": null,
+          "median_pnl": null,
+          "winner_count": 0,
+          "loser_count": 0
+        },
+        "winner_or_flat_not_low_mfe": {
+          "count": 10,
+          "pnl_sum": 21549.52,
+          "avg_pnl": 2154.95,
+          "median_pnl": 2431.74,
+          "winner_count": 10,
+          "loser_count": 0
+        }
+      },
+      "low_mfe_bad_strategy_counts": {
+        "trend_long": 1
+      },
+      "low_mfe_bad_sector_counts": {
+        "Technology": 1
+      },
+      "unclassified_low_mfe_bad_count": 1,
+      "winner_collateral_low_mfe_count": 0,
+      "low_mfe_bad_rows": [
+        {
+          "ticker": "TSM",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "entry_date": "2025-07-18",
+          "exit_date": "2025-07-22",
+          "exit_reason": "stop",
+          "pnl": -55.6,
+          "pnl_pct_net": -0.038208,
+          "entry_price": 243.32,
+          "exit_price": 234.87,
+          "max_high": 243.8491909037162,
+          "min_low": 229.76170044254383,
+          "mfe_pct": 0.002175,
+          "mae_pct": -0.055722,
+          "entry_close_return_pct": -0.020519,
+          "day1_close_return_pct": -0.026835,
+          "first_three_close_peak_pct": -0.020519,
+          "hold_days_observed": 3,
+          "prior_family_labels": [],
+          "prior_family_covered": false,
+          "family": "low_mfe_stopout_bad"
+        }
+      ],
+      "unclassified_low_mfe_bad_rows": [
+        {
+          "ticker": "TSM",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "entry_date": "2025-07-18",
+          "exit_date": "2025-07-22",
+          "exit_reason": "stop",
+          "pnl": -55.6,
+          "pnl_pct_net": -0.038208,
+          "entry_price": 243.32,
+          "exit_price": 234.87,
+          "max_high": 243.8491909037162,
+          "min_low": 229.76170044254383,
+          "mfe_pct": 0.002175,
+          "mae_pct": -0.055722,
+          "entry_close_return_pct": -0.020519,
+          "day1_close_return_pct": -0.026835,
+          "first_three_close_peak_pct": -0.020519,
+          "hold_days_observed": 3,
+          "prior_family_labels": [],
+          "prior_family_covered": false,
+          "family": "low_mfe_stopout_bad"
+        }
+      ],
+      "winner_collateral_low_mfe_rows": []
+    },
+    "old_thin": {
+      "date_range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "market_regime_summary": "mixed-to-weak older tape",
+      "metrics": {
+        "expected_value_score": 0.131,
+        "sharpe": 1.91,
+        "sharpe_daily": 1.15,
+        "total_pnl": 11388.73,
+        "total_return_pct": 0.1139,
+        "max_drawdown_pct": 0.0456,
+        "trade_count": 24,
+        "win_rate": 0.375
+      },
+      "family_counts": {
+        "low_mfe_stopout_bad": 6,
+        "other_bad_trade": 9,
+        "winner_or_flat_not_low_mfe": 9
+      },
+      "summary_by_family": {
+        "low_mfe_stopout_bad": {
+          "count": 6,
+          "pnl_sum": -2532.7,
+          "avg_pnl": -422.12,
+          "median_pnl": -411.84,
+          "winner_count": 0,
+          "loser_count": 6
+        },
+        "other_bad_trade": {
+          "count": 9,
+          "pnl_sum": -4312.45,
+          "avg_pnl": -479.16,
+          "median_pnl": -271.86,
+          "winner_count": 0,
+          "loser_count": 9
+        },
+        "winner_collateral_low_mfe": {
+          "count": 0,
+          "pnl_sum": 0.0,
+          "avg_pnl": null,
+          "median_pnl": null,
+          "winner_count": 0,
+          "loser_count": 0
+        },
+        "winner_or_flat_not_low_mfe": {
+          "count": 9,
+          "pnl_sum": 18233.88,
+          "avg_pnl": 2025.99,
+          "median_pnl": 2124.78,
+          "winner_count": 9,
+          "loser_count": 0
+        }
+      },
+      "low_mfe_bad_strategy_counts": {
+        "trend_long": 6
+      },
+      "low_mfe_bad_sector_counts": {
+        "Commodities": 1,
+        "Financials": 1,
+        "Healthcare": 1,
+        "Technology": 3
+      },
+      "unclassified_low_mfe_bad_count": 2,
+      "winner_collateral_low_mfe_count": 0,
+      "low_mfe_bad_rows": [
+        {
+          "ticker": "ISRG",
+          "strategy": "trend_long",
+          "sector": "Healthcare",
+          "entry_date": "2024-10-21",
+          "exit_date": "2024-10-31",
+          "exit_reason": "stop",
+          "pnl": -808.39,
+          "pnl_pct_net": -0.035492,
+          "entry_price": 519.3,
+          "exit_price": 502.69,
+          "max_high": 522.6699829101562,
+          "min_low": 500.6700134277344,
+          "mfe_pct": 0.006489,
+          "mae_pct": -0.035875,
+          "entry_close_return_pct": -0.000847,
+          "day1_close_return_pct": -0.003466,
+          "first_three_close_peak_pct": -0.000847,
+          "hold_days_observed": 9,
+          "prior_family_labels": [],
+          "prior_family_covered": false,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "V",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "entry_date": "2025-03-03",
+          "exit_date": "2025-03-04",
+          "exit_reason": "stop",
+          "pnl": -805.18,
+          "pnl_pct_net": -0.028361,
+          "entry_price": 360.48,
+          "exit_price": 351.52,
+          "max_high": 363.81714051066433,
+          "min_low": 347.79704157872015,
+          "mfe_pct": 0.009257,
+          "mae_pct": -0.035184,
+          "entry_close_return_pct": -0.003739,
+          "day1_close_return_pct": -0.030145,
+          "first_three_close_peak_pct": -0.003739,
+          "hold_days_observed": 2,
+          "prior_family_labels": [
+            "trend_instant_failure"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "entry_date": "2025-03-14",
+          "exit_date": "2025-03-21",
+          "exit_reason": "stop",
+          "pnl": -590.73,
+          "pnl_pct_net": -0.038091,
+          "entry_price": 30.93,
+          "exit_price": 29.86,
+          "max_high": 31.149999618530273,
+          "min_low": 29.719999313354492,
+          "mfe_pct": 0.007113,
+          "mae_pct": -0.039121,
+          "entry_close_return_pct": -0.007113,
+          "day1_close_return_pct": -0.00388,
+          "first_three_close_peak_pct": -0.002586,
+          "hold_days_observed": 6,
+          "prior_family_labels": [],
+          "prior_family_covered": false,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "TSM",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "entry_date": "2024-10-18",
+          "exit_date": "2024-10-28",
+          "exit_reason": "stop",
+          "pnl": -232.95,
+          "pnl_pct_net": -0.055068,
+          "entry_price": 202.1,
+          "exit_price": 191.68,
+          "max_high": 201.99941489590708,
+          "min_low": 190.78866769672885,
+          "mfe_pct": -0.000498,
+          "mae_pct": -0.055969,
+          "entry_close_return_pct": -0.025588,
+          "day1_close_return_pct": -0.01991,
+          "first_three_close_peak_pct": -0.01991,
+          "hold_days_observed": 7,
+          "prior_family_labels": [
+            "post_entry_gap_down_damage"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "TSM",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "entry_date": "2025-01-07",
+          "exit_date": "2025-01-08",
+          "exit_reason": "stop",
+          "pnl": -72.74,
+          "pnl_pct_net": -0.055845,
+          "entry_price": 217.79,
+          "exit_price": 206.39,
+          "max_high": 217.9213369702856,
+          "min_low": 202.61136780585136,
+          "mfe_pct": 0.000603,
+          "mae_pct": -0.069694,
+          "entry_close_return_pct": -0.044846,
+          "day1_close_return_pct": -0.064273,
+          "first_three_close_peak_pct": -0.044846,
+          "hold_days_observed": 2,
+          "prior_family_labels": [
+            "trend_instant_failure"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "entry_date": "2024-12-17",
+          "exit_date": "2024-12-17",
+          "exit_reason": "stop",
+          "pnl": -22.71,
+          "pnl_pct_net": -0.03197,
+          "entry_price": 237.48,
+          "exit_price": 230.72,
+          "max_high": 239.15476723093408,
+          "min_low": 230.60331186099987,
+          "mfe_pct": 0.007052,
+          "mae_pct": -0.028957,
+          "entry_close_return_pct": -0.002251,
+          "day1_close_return_pct": null,
+          "first_three_close_peak_pct": -0.002251,
+          "hold_days_observed": 1,
+          "prior_family_labels": [
+            "trend_instant_failure"
+          ],
+          "prior_family_covered": true,
+          "family": "low_mfe_stopout_bad"
+        }
+      ],
+      "unclassified_low_mfe_bad_rows": [
+        {
+          "ticker": "ISRG",
+          "strategy": "trend_long",
+          "sector": "Healthcare",
+          "entry_date": "2024-10-21",
+          "exit_date": "2024-10-31",
+          "exit_reason": "stop",
+          "pnl": -808.39,
+          "pnl_pct_net": -0.035492,
+          "entry_price": 519.3,
+          "exit_price": 502.69,
+          "max_high": 522.6699829101562,
+          "min_low": 500.6700134277344,
+          "mfe_pct": 0.006489,
+          "mae_pct": -0.035875,
+          "entry_close_return_pct": -0.000847,
+          "day1_close_return_pct": -0.003466,
+          "first_three_close_peak_pct": -0.000847,
+          "hold_days_observed": 9,
+          "prior_family_labels": [],
+          "prior_family_covered": false,
+          "family": "low_mfe_stopout_bad"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "entry_date": "2025-03-14",
+          "exit_date": "2025-03-21",
+          "exit_reason": "stop",
+          "pnl": -590.73,
+          "pnl_pct_net": -0.038091,
+          "entry_price": 30.93,
+          "exit_price": 29.86,
+          "max_high": 31.149999618530273,
+          "min_low": 29.719999313354492,
+          "mfe_pct": 0.007113,
+          "mae_pct": -0.039121,
+          "entry_close_return_pct": -0.007113,
+          "day1_close_return_pct": -0.00388,
+          "first_three_close_peak_pct": -0.002586,
+          "hold_days_observed": 6,
+          "prior_family_labels": [],
+          "prior_family_covered": false,
+          "family": "low_mfe_stopout_bad"
+        }
+      ],
+      "winner_collateral_low_mfe_rows": []
+    }
+  },
+  "aggregate": {
+    "total_trades": 66,
+    "bad_trade_count": 32,
+    "low_mfe_bad_count": 10,
+    "low_mfe_bad_frequency_of_all_trades": 0.1515,
+    "low_mfe_bad_frequency_of_bad_trades": 0.3125,
+    "low_mfe_bad_pnl_sum": -4435.89,
+    "unclassified_low_mfe_bad_count": 3,
+    "unclassified_low_mfe_bad_pnl_sum": -1454.72,
+    "winner_collateral_low_mfe_count": 0,
+    "winner_collateral_low_mfe_pnl_sum": 0,
+    "prior_family_overlap_counts": {
+      "breakout_false_positive_or_breakout_loss": 1,
+      "post_entry_gap_down_damage": 1,
+      "trend_instant_failure": 5
+    },
+    "low_mfe_bad_strategy_counts": {
+      "breakout_long": 1,
+      "trend_long": 9
+    },
+    "low_mfe_bad_sector_counts": {
+      "Commodities": 1,
+      "Energy": 2,
+      "Financials": 1,
+      "Healthcare": 1,
+      "Technology": 5
+    },
+    "unclassified_low_mfe_strategy_counts": {
+      "trend_long": 3
+    },
+    "unclassified_low_mfe_sector_counts": {
+      "Commodities": 1,
+      "Healthcare": 1,
+      "Technology": 1
+    }
+  },
+  "interpretation": {
+    "decision": "observed_only",
+    "finding": "Low-MFE stopouts are a repeated accepted-stack lifecycle family and explain most currently unclassified bad trades without introducing another production rule.",
+    "next_alpha_implication": "A future experiment, if any, should test a post-entry lifecycle response to persistent sub-1% MFE rather than another pre-entry filter; broad pre-entry removal cannot observe this variable."
+  }
+}

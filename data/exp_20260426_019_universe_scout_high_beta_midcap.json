@@ -1,0 +1,1469 @@
+{
+  "experiment_id": "exp-20260426-021",
+  "status": "observed_only",
+  "created_at": "2026-04-26T11:05:29Z",
+  "hypothesis": "A liquidity-filtered high-beta mid-cap shadow universe can provide non-overlapping OHLCV-replayable candidates outside the current accepted A/B universe without relying on sparse archived news coverage.",
+  "single_causal_variable": "liquidity-filtered high-beta mid-cap shadow universe definition",
+  "shadow_universe_definition": {
+    "source": "existing OHLCV snapshots only; no production universe promotion",
+    "midcap_proxy_tickers": [
+      "APP",
+      "COIN",
+      "CRDO",
+      "DDOG",
+      "PLTR",
+      "SNOW",
+      "SPOT",
+      "TRIP"
+    ],
+    "excluded_etf_or_macro_proxies": [
+      "GLD",
+      "IAU",
+      "IEF",
+      "IWM",
+      "QQQ",
+      "SLV",
+      "SPY",
+      "TLT",
+      "USO",
+      "UUP",
+      "XLE",
+      "XLP",
+      "XLU",
+      "XLV"
+    ],
+    "filters": {
+      "min_beta_vs_spy": 1.25,
+      "min_beta_observations": 60,
+      "min_median_dollar_volume": 25000000,
+      "min_close": 5.0,
+      "min_coverage_fraction": 0.95
+    },
+    "shadow_candidate_trigger": "A/B-like OHLCV technical triggers in shadow mode only: trend_long style 200MA+20d breakout+2.0x volume, or breakout_long style 1.5 ATR range+20d breakout+1.5x volume.",
+    "forward_return_horizons_trading_days": [
+      1,
+      5,
+      10,
+      20
+    ]
+  },
+  "survivorship_bias_risk": "High. The repository snapshots contain only the already archived ticker set, and no historical market-cap snapshots are available. The 'mid-cap' label is therefore a deterministic proxy list evaluated with measured beta/liquidity, not a survivorship-free historical index membership test.",
+  "production_promotion": false,
+  "promotion_blockers": [
+    "No production universe write was attempted.",
+    "A shadow universe must show scarce-slot candidate quality, not merely more candidates.",
+    "The current snapshots do not provide a survivorship-free historical mid-cap source."
+  ],
+  "windows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 123,
+      "shadow_universe_tickers": [
+        "APP",
+        "COIN",
+        "CRDO",
+        "DDOG",
+        "PLTR",
+        "SNOW",
+        "TRIP"
+      ],
+      "shadow_universe_count": 7,
+      "selection_rejections": {
+        "beta_below_threshold": 1,
+        "etf_or_macro_proxy": 14,
+        "not_midcap_proxy_list": 30
+      },
+      "shadow_universe_stats": {
+        "APP": {
+          "ticker": "APP",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2434741375.69,
+          "median_close": 530.05,
+          "last_close": 473.18,
+          "beta_vs_spy": 2.2602,
+          "beta_observations": 397,
+          "sector": "Technology"
+        },
+        "COIN": {
+          "ticker": "COIN",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2245249934.57,
+          "median_close": 223.14,
+          "last_close": 195.95,
+          "beta_vs_spy": 2.5284,
+          "beta_observations": 397,
+          "sector": "Financials"
+        },
+        "CRDO": {
+          "ticker": "CRDO",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 806572897.92,
+          "median_close": 139.16,
+          "last_close": 183.32,
+          "beta_vs_spy": 2.7638,
+          "beta_observations": 397,
+          "sector": "Technology"
+        },
+        "DDOG": {
+          "ticker": "DDOG",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 605412279.32,
+          "median_close": 129.67,
+          "last_close": 129.29,
+          "beta_vs_spy": 1.2946,
+          "beta_observations": 397,
+          "sector": "Technology"
+        },
+        "PLTR": {
+          "ticker": "PLTR",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 7163168598.91,
+          "median_close": 163.55,
+          "last_close": 145.97,
+          "beta_vs_spy": 1.9978,
+          "beta_observations": 397,
+          "sector": "Technology"
+        },
+        "SNOW": {
+          "ticker": "SNOW",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 982716714.81,
+          "median_close": 209.39,
+          "last_close": 150.84,
+          "beta_vs_spy": 1.447,
+          "beta_observations": 397,
+          "sector": "Technology"
+        },
+        "TRIP": {
+          "ticker": "TRIP",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 34431120.5,
+          "median_close": 13.31,
+          "last_close": 11.23,
+          "beta_vs_spy": 1.6869,
+          "beta_observations": 397,
+          "sector": "Unknown"
+        }
+      },
+      "shadow_candidate_records": 3,
+      "shadow_candidate_unique_tickers": 2,
+      "candidate_count_by_strategy": {
+        "breakout_long": 2,
+        "trend_long": 1
+      },
+      "candidate_count_by_sector": {
+        "Technology": 3
+      },
+      "top_candidate_tickers": [
+        [
+          "CRDO",
+          2
+        ],
+        [
+          "DDOG",
+          1
+        ]
+      ],
+      "same_day_ab_overlap_count": 1,
+      "same_day_ab_overlap_rate": 0.3333,
+      "ticker_history_ab_overlap_count": 3,
+      "ticker_history_ab_overlap_rate": 1.0,
+      "outside_production_candidate_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 3,
+          "avg": 0.081604,
+          "median": 0.055354,
+          "win_rate": 1.0,
+          "p10": 0.002201,
+          "p25": 0.002201,
+          "p50": 0.055354,
+          "p75": 0.187258,
+          "p90": 0.187258
+        },
+        "fwd_5d": {
+          "count": 3,
+          "avg": 0.140918,
+          "median": 0.149198,
+          "win_rate": 0.6667,
+          "p10": -0.025417,
+          "p25": -0.025417,
+          "p50": 0.149198,
+          "p75": 0.298973,
+          "p90": 0.298973
+        },
+        "fwd_10d": {
+          "count": 1,
+          "avg": -0.163767,
+          "median": -0.163767,
+          "win_rate": 0.0,
+          "p10": -0.163767,
+          "p25": -0.163767,
+          "p50": -0.163767,
+          "p75": -0.163767,
+          "p90": -0.163767
+        },
+        "fwd_20d": {
+          "count": 1,
+          "avg": -0.20653,
+          "median": -0.20653,
+          "win_rate": 0.0,
+          "p10": -0.20653,
+          "p25": -0.20653,
+          "p50": -0.20653,
+          "p75": -0.20653,
+          "p90": -0.20653
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 2,
+          "avg": 0.09473,
+          "median": 0.09473,
+          "win_rate": 1.0,
+          "p10": 0.002201,
+          "p25": 0.002201,
+          "p50": 0.002201,
+          "p75": 0.187258,
+          "p90": 0.187258
+        },
+        "fwd_5d": {
+          "count": 2,
+          "avg": 0.136778,
+          "median": 0.136778,
+          "win_rate": 0.5,
+          "p10": -0.025417,
+          "p25": -0.025417,
+          "p50": -0.025417,
+          "p75": 0.298973,
+          "p90": 0.298973
+        },
+        "fwd_10d": {
+          "count": 1,
+          "avg": -0.163767,
+          "median": -0.163767,
+          "win_rate": 0.0,
+          "p10": -0.163767,
+          "p25": -0.163767,
+          "p50": -0.163767,
+          "p75": -0.163767,
+          "p90": -0.163767
+        },
+        "fwd_20d": {
+          "count": 1,
+          "avg": -0.20653,
+          "median": -0.20653,
+          "win_rate": 0.0,
+          "p10": -0.20653,
+          "p25": -0.20653,
+          "p50": -0.20653,
+          "p75": -0.20653,
+          "p90": -0.20653
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2025-11-06",
+          "ticker": "DDOG",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.2946,
+          "median_dollar_volume": 605412279.32,
+          "fwd_5d": -0.025417,
+          "fwd_10d": -0.163767
+        },
+        {
+          "date": "2026-04-13",
+          "ticker": "CRDO",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.7638,
+          "median_dollar_volume": 806572897.92,
+          "fwd_5d": 0.298973,
+          "fwd_10d": null
+        },
+        {
+          "date": "2026-04-14",
+          "ticker": "CRDO",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": true,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.7638,
+          "median_dollar_volume": 806572897.92,
+          "fwd_5d": 0.149198,
+          "fwd_10d": null
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 127,
+      "shadow_universe_tickers": [
+        "APP",
+        "COIN",
+        "CRDO",
+        "DDOG",
+        "PLTR",
+        "SNOW",
+        "TRIP"
+      ],
+      "shadow_universe_count": 7,
+      "selection_rejections": {
+        "beta_below_threshold": 1,
+        "etf_or_macro_proxy": 14,
+        "not_midcap_proxy_list": 30
+      },
+      "shadow_universe_stats": {
+        "APP": {
+          "ticker": "APP",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2321032797.52,
+          "median_close": 390.26,
+          "last_close": 564.82,
+          "beta_vs_spy": 2.2483,
+          "beta_observations": 400,
+          "sector": "Technology"
+        },
+        "COIN": {
+          "ticker": "COIN",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 3042614405.27,
+          "median_close": 317.55,
+          "last_close": 320.33,
+          "beta_vs_spy": 2.426,
+          "beta_observations": 400,
+          "sector": "Financials"
+        },
+        "CRDO": {
+          "ticker": "CRDO",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 489975201.67,
+          "median_close": 101.22,
+          "last_close": 137.2,
+          "beta_vs_spy": 2.7142,
+          "beta_observations": 400,
+          "sector": "Technology"
+        },
+        "DDOG": {
+          "ticker": "DDOG",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 577501153.59,
+          "median_close": 132.94,
+          "last_close": 154.21,
+          "beta_vs_spy": 1.3143,
+          "beta_observations": 400,
+          "sector": "Technology"
+        },
+        "PLTR": {
+          "ticker": "PLTR",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 9864513782.91,
+          "median_close": 154.27,
+          "last_close": 175.49,
+          "beta_vs_spy": 2.0251,
+          "beta_observations": 400,
+          "sector": "Technology"
+        },
+        "SNOW": {
+          "ticker": "SNOW",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 786440319.17,
+          "median_close": 212.25,
+          "last_close": 241.67,
+          "beta_vs_spy": 1.4858,
+          "beta_observations": 400,
+          "sector": "Technology"
+        },
+        "TRIP": {
+          "ticker": "TRIP",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 40278711.67,
+          "median_close": 16.21,
+          "last_close": 16.43,
+          "beta_vs_spy": 1.6213,
+          "beta_observations": 400,
+          "sector": "Unknown"
+        }
+      },
+      "shadow_candidate_records": 25,
+      "shadow_candidate_unique_tickers": 7,
+      "candidate_count_by_strategy": {
+        "breakout_long": 13,
+        "trend_long": 12
+      },
+      "candidate_count_by_sector": {
+        "Financials": 9,
+        "Technology": 13,
+        "Unknown": 3
+      },
+      "top_candidate_tickers": [
+        [
+          "COIN",
+          9
+        ],
+        [
+          "DDOG",
+          4
+        ],
+        [
+          "APP",
+          4
+        ],
+        [
+          "TRIP",
+          3
+        ],
+        [
+          "SNOW",
+          3
+        ],
+        [
+          "CRDO",
+          1
+        ],
+        [
+          "PLTR",
+          1
+        ]
+      ],
+      "same_day_ab_overlap_count": 0,
+      "same_day_ab_overlap_rate": 0.0,
+      "ticker_history_ab_overlap_count": 13,
+      "ticker_history_ab_overlap_rate": 0.52,
+      "outside_production_candidate_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 25,
+          "avg": 0.004156,
+          "median": -0.002562,
+          "win_rate": 0.4,
+          "p10": -0.029511,
+          "p25": -0.015405,
+          "p50": -0.002562,
+          "p75": 0.030596,
+          "p90": 0.044329
+        },
+        "fwd_5d": {
+          "count": 25,
+          "avg": 0.015712,
+          "median": -0.002589,
+          "win_rate": 0.48,
+          "p10": -0.066987,
+          "p25": -0.037369,
+          "p50": -0.002589,
+          "p75": 0.074787,
+          "p90": 0.119375
+        },
+        "fwd_10d": {
+          "count": 25,
+          "avg": 0.020807,
+          "median": 0.031967,
+          "win_rate": 0.56,
+          "p10": -0.089571,
+          "p25": -0.060383,
+          "p50": 0.031967,
+          "p75": 0.094521,
+          "p90": 0.176331
+        },
+        "fwd_20d": {
+          "count": 22,
+          "avg": 0.042928,
+          "median": 0.014456,
+          "win_rate": 0.5,
+          "p10": -0.126007,
+          "p25": -0.073714,
+          "p50": -0.01532,
+          "p75": 0.120959,
+          "p90": 0.242631
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 25,
+          "avg": 0.004156,
+          "median": -0.002562,
+          "win_rate": 0.4,
+          "p10": -0.029511,
+          "p25": -0.015405,
+          "p50": -0.002562,
+          "p75": 0.030596,
+          "p90": 0.044329
+        },
+        "fwd_5d": {
+          "count": 25,
+          "avg": 0.015712,
+          "median": -0.002589,
+          "win_rate": 0.48,
+          "p10": -0.066987,
+          "p25": -0.037369,
+          "p50": -0.002589,
+          "p75": 0.074787,
+          "p90": 0.119375
+        },
+        "fwd_10d": {
+          "count": 25,
+          "avg": 0.020807,
+          "median": 0.031967,
+          "win_rate": 0.56,
+          "p10": -0.089571,
+          "p25": -0.060383,
+          "p50": 0.031967,
+          "p75": 0.094521,
+          "p90": 0.176331
+        },
+        "fwd_20d": {
+          "count": 22,
+          "avg": 0.042928,
+          "median": 0.014456,
+          "win_rate": 0.5,
+          "p10": -0.126007,
+          "p25": -0.073714,
+          "p50": -0.01532,
+          "p75": 0.120959,
+          "p90": 0.242631
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2025-05-07",
+          "ticker": "TRIP",
+          "strategy": "breakout_long",
+          "sector": "Unknown",
+          "confidence_score": 0.8667,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.6213,
+          "median_dollar_volume": 40278711.67,
+          "fwd_5d": 0.094011,
+          "fwd_10d": -0.057103
+        },
+        {
+          "date": "2025-05-13",
+          "ticker": "COIN",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": 0.017439,
+          "fwd_10d": -0.01016
+        },
+        {
+          "date": "2025-05-16",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "confidence_score": 0.8947,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.012385,
+          "fwd_10d": -0.074082
+        },
+        {
+          "date": "2025-05-22",
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.4858,
+          "median_dollar_volume": 786440319.17,
+          "fwd_5d": 0.012255,
+          "fwd_10d": 0.037701
+        },
+        {
+          "date": "2025-06-03",
+          "ticker": "CRDO",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.7142,
+          "median_dollar_volume": 489975201.67,
+          "fwd_5d": -0.047136,
+          "fwd_10d": 0.108315
+        },
+        {
+          "date": "2025-06-18",
+          "ticker": "COIN",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": 0.270175,
+          "fwd_10d": 0.204917
+        },
+        {
+          "date": "2025-06-18",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3143,
+          "median_dollar_volume": 577501153.59,
+          "fwd_5d": 0.008305,
+          "fwd_10d": 0.193094
+        },
+        {
+          "date": "2025-06-20",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "confidence_score": 0.8947,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": 0.146086,
+          "fwd_10d": 0.157987
+        },
+        {
+          "date": "2025-06-24",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.027522,
+          "fwd_10d": 0.084189
+        },
+        {
+          "date": "2025-06-25",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.002589,
+          "fwd_10d": 0.094521
+        },
+        {
+          "date": "2025-06-26",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.051377,
+          "fwd_10d": 0.031967
+        },
+        {
+          "date": "2025-07-03",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3143,
+          "median_dollar_volume": 577501153.59,
+          "fwd_5d": -0.114599,
+          "fwd_10d": -0.065292
+        },
+        {
+          "date": "2025-07-03",
+          "ticker": "TRIP",
+          "strategy": "breakout_long",
+          "sector": "Unknown",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.6213,
+          "median_dollar_volume": 40278711.67,
+          "fwd_5d": 0.028571,
+          "fwd_10d": 0.000571
+        },
+        {
+          "date": "2025-07-18",
+          "ticker": "COIN",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.066987,
+          "fwd_10d": -0.250345
+        },
+        {
+          "date": "2025-07-31",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 0.8947,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2483,
+          "median_dollar_volume": 2321032797.52,
+          "fwd_5d": 0.119375,
+          "fwd_10d": 0.109137
+        },
+        {
+          "date": "2025-08-05",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.0251,
+          "median_dollar_volume": 9864513782.91,
+          "fwd_5d": 0.079067,
+          "fwd_10d": -0.089571
+        },
+        {
+          "date": "2025-08-07",
+          "ticker": "APP",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2483,
+          "median_dollar_volume": 2321032797.52,
+          "fwd_5d": -0.009146,
+          "fwd_10d": -0.042484
+        },
+        {
+          "date": "2025-08-28",
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.4858,
+          "median_dollar_volume": 786440319.17,
+          "fwd_5d": -0.063983,
+          "fwd_10d": -0.082365
+        },
+        {
+          "date": "2025-09-08",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2483,
+          "median_dollar_volume": 2321032797.52,
+          "fwd_5d": 0.084272,
+          "fwd_10d": 0.176331
+        },
+        {
+          "date": "2025-09-15",
+          "ticker": "TRIP",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.6213,
+          "median_dollar_volume": 40278711.67,
+          "fwd_5d": -0.008484,
+          "fwd_10d": -0.09597
+        },
+        {
+          "date": "2025-09-18",
+          "ticker": "COIN",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.426,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.106199,
+          "fwd_10d": 0.084341
+        },
+        {
+          "date": "2025-09-19",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2483,
+          "median_dollar_volume": 2321032797.52,
+          "fwd_5d": 0.031204,
+          "fwd_10d": 0.051063
+        },
+        {
+          "date": "2025-10-01",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3143,
+          "median_dollar_volume": 577501153.59,
+          "fwd_5d": 0.074787,
+          "fwd_10d": 0.047937
+        },
+        {
+          "date": "2025-10-08",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3143,
+          "median_dollar_volume": 577501153.59,
+          "fwd_5d": -0.024982,
+          "fwd_10d": -0.060383
+        },
+        {
+          "date": "2025-10-08",
+          "ticker": "SNOW",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.4858,
+          "median_dollar_volume": 786440319.17,
+          "fwd_5d": -0.037369,
+          "fwd_10d": -0.034131
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 138,
+      "shadow_universe_tickers": [
+        "APP",
+        "COIN",
+        "CRDO",
+        "DDOG",
+        "PLTR",
+        "SNOW",
+        "TRIP"
+      ],
+      "shadow_universe_count": 7,
+      "selection_rejections": {
+        "beta_below_threshold": 1,
+        "etf_or_macro_proxy": 14,
+        "not_midcap_proxy_list": 30
+      },
+      "shadow_universe_stats": {
+        "APP": {
+          "ticker": "APP",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1755737756.35,
+          "median_close": 318.61,
+          "last_close": 237.71,
+          "beta_vs_spy": 2.2612,
+          "beta_observations": 412,
+          "sector": "Technology"
+        },
+        "COIN": {
+          "ticker": "COIN",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2036921017.73,
+          "median_close": 252.755,
+          "last_close": 190.0,
+          "beta_vs_spy": 2.3387,
+          "beta_observations": 412,
+          "sector": "Financials"
+        },
+        "CRDO": {
+          "ticker": "CRDO",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 216751696.61,
+          "median_close": 47.045,
+          "last_close": 37.02,
+          "beta_vs_spy": 2.5555,
+          "beta_observations": 412,
+          "sector": "Technology"
+        },
+        "DDOG": {
+          "ticker": "DDOG",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 541345393.19,
+          "median_close": 128.255,
+          "last_close": 91.42,
+          "beta_vs_spy": 1.3346,
+          "beta_observations": 412,
+          "sector": "Technology"
+        },
+        "PLTR": {
+          "ticker": "PLTR",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 6510997037.84,
+          "median_close": 76.205,
+          "last_close": 93.99,
+          "beta_vs_spy": 2.2288,
+          "beta_observations": 412,
+          "sector": "Technology"
+        },
+        "SNOW": {
+          "ticker": "SNOW",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 786289809.82,
+          "median_close": 158.745,
+          "last_close": 140.23,
+          "beta_vs_spy": 1.5627,
+          "beta_observations": 412,
+          "sector": "Technology"
+        },
+        "TRIP": {
+          "ticker": "TRIP",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 32184172.98,
+          "median_close": 14.57,
+          "last_close": 11.89,
+          "beta_vs_spy": 1.4775,
+          "beta_observations": 412,
+          "sector": "Unknown"
+        }
+      },
+      "shadow_candidate_records": 22,
+      "shadow_candidate_unique_tickers": 7,
+      "candidate_count_by_strategy": {
+        "breakout_long": 11,
+        "trend_long": 11
+      },
+      "candidate_count_by_sector": {
+        "Financials": 3,
+        "Technology": 18,
+        "Unknown": 1
+      },
+      "top_candidate_tickers": [
+        [
+          "PLTR",
+          6
+        ],
+        [
+          "DDOG",
+          4
+        ],
+        [
+          "APP",
+          4
+        ],
+        [
+          "COIN",
+          3
+        ],
+        [
+          "SNOW",
+          3
+        ],
+        [
+          "CRDO",
+          1
+        ],
+        [
+          "TRIP",
+          1
+        ]
+      ],
+      "same_day_ab_overlap_count": 1,
+      "same_day_ab_overlap_rate": 0.0455,
+      "ticker_history_ab_overlap_count": 16,
+      "ticker_history_ab_overlap_rate": 0.7273,
+      "outside_production_candidate_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 22,
+          "avg": 0.005904,
+          "median": -0.007516,
+          "win_rate": 0.3636,
+          "p10": -0.027338,
+          "p25": -0.022819,
+          "p50": -0.011168,
+          "p75": 0.006303,
+          "p90": 0.08154
+        },
+        "fwd_5d": {
+          "count": 22,
+          "avg": 0.024015,
+          "median": 0.00476,
+          "win_rate": 0.5909,
+          "p10": -0.056668,
+          "p25": -0.025098,
+          "p50": 0.003724,
+          "p75": 0.084658,
+          "p90": 0.119578
+        },
+        "fwd_10d": {
+          "count": 22,
+          "avg": 0.049906,
+          "median": 0.025252,
+          "win_rate": 0.5909,
+          "p10": -0.089234,
+          "p25": -0.037071,
+          "p50": 0.009427,
+          "p75": 0.118675,
+          "p90": 0.258346
+        },
+        "fwd_20d": {
+          "count": 22,
+          "avg": 0.115049,
+          "median": 0.000545,
+          "win_rate": 0.5,
+          "p10": -0.23697,
+          "p25": -0.126899,
+          "p50": -0.002306,
+          "p75": 0.30039,
+          "p90": 0.628605
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 21,
+          "avg": 0.006772,
+          "median": -0.003864,
+          "win_rate": 0.381,
+          "p10": -0.027338,
+          "p25": -0.022819,
+          "p50": -0.003864,
+          "p75": 0.006303,
+          "p90": 0.08154
+        },
+        "fwd_5d": {
+          "count": 21,
+          "avg": 0.024981,
+          "median": 0.005797,
+          "win_rate": 0.5714,
+          "p10": -0.056668,
+          "p25": -0.025098,
+          "p50": 0.005797,
+          "p75": 0.084658,
+          "p90": 0.119578
+        },
+        "fwd_10d": {
+          "count": 21,
+          "avg": 0.045172,
+          "median": 0.009427,
+          "win_rate": 0.5714,
+          "p10": -0.089234,
+          "p25": -0.037071,
+          "p50": 0.009427,
+          "p75": 0.100586,
+          "p90": 0.258346
+        },
+        "fwd_20d": {
+          "count": 21,
+          "avg": 0.111902,
+          "median": -0.002306,
+          "win_rate": 0.4762,
+          "p10": -0.23697,
+          "p25": -0.126899,
+          "p50": -0.002306,
+          "p75": 0.30039,
+          "p90": 0.628605
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2024-10-10",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3346,
+          "median_dollar_volume": 541345393.19,
+          "fwd_5d": -0.029749,
+          "fwd_10d": -0.047659
+        },
+        {
+          "date": "2024-10-14",
+          "ticker": "COIN",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "confidence_score": 0.8667,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.3387,
+          "median_dollar_volume": 2036921017.73,
+          "fwd_5d": 0.088464,
+          "fwd_10d": 0.100586
+        },
+        {
+          "date": "2024-10-21",
+          "ticker": "APP",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2612,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.046176,
+          "fwd_10d": 0.001637
+        },
+        {
+          "date": "2024-11-05",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2288,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.170546,
+          "fwd_10d": 0.231762
+        },
+        {
+          "date": "2024-11-06",
+          "ticker": "COIN",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.3387,
+          "median_dollar_volume": 2036921017.73,
+          "fwd_5d": 0.119578,
+          "fwd_10d": 0.258346
+        },
+        {
+          "date": "2024-11-06",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2288,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.093103,
+          "fwd_10d": 0.118675
+        },
+        {
+          "date": "2024-11-07",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2612,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.153977,
+          "fwd_10d": 0.290877
+        },
+        {
+          "date": "2024-11-07",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2288,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.059055,
+          "fwd_10d": 0.098067
+        },
+        {
+          "date": "2024-11-08",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": true,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2612,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.003724,
+          "fwd_10d": 0.149305
+        },
+        {
+          "date": "2024-11-11",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.3387,
+          "median_dollar_volume": 2036921017.73,
+          "fwd_5d": 0.003608,
+          "fwd_10d": -0.037071
+        },
+        {
+          "date": "2024-11-13",
+          "ticker": "SNOW",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.8667,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.5627,
+          "median_dollar_volume": 786289809.82,
+          "fwd_5d": -0.012315,
+          "fwd_10d": 0.328693
+        },
+        {
+          "date": "2024-11-15",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2288,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": -0.02159,
+          "fwd_10d": 0.009427
+        },
+        {
+          "date": "2024-11-21",
+          "ticker": "SNOW",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.5627,
+          "median_dollar_volume": 786289809.82,
+          "fwd_5d": 0.020134,
+          "fwd_10d": 0.071724
+        },
+        {
+          "date": "2024-11-22",
+          "ticker": "DDOG",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3346,
+          "median_dollar_volume": 541345393.19,
+          "fwd_5d": -0.012594,
+          "fwd_10d": 0.041077
+        },
+        {
+          "date": "2024-12-03",
+          "ticker": "CRDO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.5555,
+          "median_dollar_volume": 216751696.61,
+          "fwd_5d": -0.062668,
+          "fwd_10d": -0.012166
+        },
+        {
+          "date": "2024-12-04",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3346,
+          "median_dollar_volume": 541345393.19,
+          "fwd_5d": -0.056668,
+          "fwd_10d": -0.094526
+        },
+        {
+          "date": "2025-01-23",
+          "ticker": "TRIP",
+          "strategy": "breakout_long",
+          "sector": "Unknown",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.4775,
+          "median_dollar_volume": 32184172.98,
+          "fwd_5d": -0.025098,
+          "fwd_10d": -0.025098
+        },
+        {
+          "date": "2025-01-28",
+          "ticker": "DDOG",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.3346,
+          "median_dollar_volume": 541345393.19,
+          "fwd_5d": -0.039897,
+          "fwd_10d": -0.042597
+        },
+        {
+          "date": "2025-01-28",
+          "ticker": "SNOW",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 0.9333,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "beta_vs_spy": 1.5627,
+          "median_dollar_volume": 786289809.82,
+          "fwd_5d": 0.005797,
+          "fwd_10d": -0.023774
+        },
+        {
+          "date": "2025-02-04",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2288,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.084658,
+          "fwd_10d": 0.079264
+        },
+        {
+          "date": "2025-02-06",
+          "ticker": "PLTR",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2288,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.059579,
+          "fwd_10d": -0.089234
+        },
+        {
+          "date": "2025-02-13",
+          "ticker": "APP",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "confidence_score": 1.0,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "beta_vs_spy": 2.2612,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": -0.11949,
+          "fwd_10d": -0.30939
+        }
+      ]
+    }
+  ]
+}

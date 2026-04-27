@@ -1,0 +1,2763 @@
+{
+  "experiment_id": "exp-20260426-025",
+  "status": "observed_only",
+  "created_at": "2026-04-26T14:04:43Z",
+  "hypothesis": "A low-overlap volatility-expansion shadow universe can identify OHLCV-replayable candidates with better non-overlap and forward-return quality than the prior high-beta mid-cap proxy, without changing production universe or strategy logic.",
+  "single_causal_variable": "low-overlap volatility-expansion shadow universe definition",
+  "shadow_universe_definition": {
+    "source": "existing OHLCV snapshots only; no production universe promotion",
+    "filters": {
+      "excluded_etf_or_macro_proxies": [
+        "GLD",
+        "IAU",
+        "IEF",
+        "IWM",
+        "QQQ",
+        "SLV",
+        "SPY",
+        "TLT",
+        "USO",
+        "UUP",
+        "XLE",
+        "XLP",
+        "XLU",
+        "XLV"
+      ],
+      "min_median_dollar_volume": 25000000,
+      "min_close": 5.0,
+      "min_coverage_fraction": 0.95,
+      "max_ab_touchpoint_day_rate": 0.04
+    },
+    "shadow_candidate_trigger": "Volatility expansion in shadow mode only: ATR14 at least 1.2x its prior 60d median, same-day volume at least 1.3x prior 20d average, range at least 1.15x ATR, plus positive 10d momentum or a 20d breakout.",
+    "forward_return_horizons_trading_days": [
+      1,
+      5,
+      10,
+      20
+    ]
+  },
+  "prior_high_beta_proxy_summary": {
+    "late_strong": {
+      "shadow_universe_count": 7,
+      "shadow_candidate_records": 3,
+      "same_day_ab_overlap_rate": 0.3333,
+      "outside_production_candidate_count": 0,
+      "fwd_10d_avg": -0.163767,
+      "fwd_10d_win_rate": 0.0
+    },
+    "mid_weak": {
+      "shadow_universe_count": 7,
+      "shadow_candidate_records": 25,
+      "same_day_ab_overlap_rate": 0.0,
+      "outside_production_candidate_count": 0,
+      "fwd_10d_avg": 0.020807,
+      "fwd_10d_win_rate": 0.56
+    },
+    "old_thin": {
+      "shadow_universe_count": 7,
+      "shadow_candidate_records": 22,
+      "same_day_ab_overlap_rate": 0.0455,
+      "outside_production_candidate_count": 0,
+      "fwd_10d_avg": 0.049906,
+      "fwd_10d_win_rate": 0.5909
+    }
+  },
+  "survivorship_bias_risk": "High. The repository snapshots contain only the archived ticker set. This is a low-overlap definition inside available snapshots, not a survivorship-free historical universe membership test.",
+  "outside_production_limitations": [
+    "Current OHLCV snapshots contain no tickers outside the archived repository universe.",
+    "Outside-production candidate count is therefore expected to be zero unless new OHLCV sources are added.",
+    "This scout can rank candidate source quality but cannot justify production promotion by itself."
+  ],
+  "production_promotion": false,
+  "promotion_blockers": [
+    "No production universe write was attempted.",
+    "A shadow universe must beat scarce-slot alternatives, not merely produce more rows.",
+    "A survivorship-aware external candidate source is still needed before production promotion."
+  ],
+  "windows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 123,
+      "shadow_universe_tickers": [
+        "APP",
+        "AVGO",
+        "COIN",
+        "CRDO",
+        "DIS",
+        "GE",
+        "JPM",
+        "MA",
+        "MSFT",
+        "NOW",
+        "NVDA",
+        "PLTR",
+        "SNOW",
+        "SPOT",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "shadow_universe_count": 17,
+      "selection_rejections": {
+        "etf_or_macro_proxy": 14,
+        "prior_ab_overlap_too_high": 21
+      },
+      "shadow_universe_stats": {
+        "APP": {
+          "ticker": "APP",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2434741375.69,
+          "median_close": 530.05,
+          "last_close": 473.18,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Technology"
+        },
+        "AVGO": {
+          "ticker": "AVGO",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 8088371520.67,
+          "median_close": 341.0905,
+          "last_close": 402.17,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Technology"
+        },
+        "COIN": {
+          "ticker": "COIN",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2245249934.57,
+          "median_close": 223.14,
+          "last_close": 195.95,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Financials"
+        },
+        "CRDO": {
+          "ticker": "CRDO",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 806572897.92,
+          "median_close": 139.16,
+          "last_close": 183.32,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Technology"
+        },
+        "DIS": {
+          "ticker": "DIS",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1068968031.89,
+          "median_close": 106.0525,
+          "last_close": 104.29,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Communication Services"
+        },
+        "GE": {
+          "ticker": "GE",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1456349495.97,
+          "median_close": 306.7,
+          "last_close": 286.73,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Industrials"
+        },
+        "JPM": {
+          "ticker": "JPM",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2768953692.13,
+          "median_close": 306.2938,
+          "last_close": 313.0,
+          "ab_touchpoint_days_all_archives": 2,
+          "ab_touchpoint_day_rate": 0.0163,
+          "sector": "Financials"
+        },
+        "MA": {
+          "ticker": "MA",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1700723271.3,
+          "median_close": 536.538,
+          "last_close": 511.35,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Financials"
+        },
+        "MSFT": {
+          "ticker": "MSFT",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 12701800960.91,
+          "median_close": 458.3339,
+          "last_close": 424.16,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "NOW": {
+          "ticker": "NOW",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1687608246.91,
+          "median_close": 129.62,
+          "last_close": 100.14,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Technology"
+        },
+        "NVDA": {
+          "ticker": "NVDA",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 32334223817.75,
+          "median_close": 184.96,
+          "last_close": 199.88,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "PLTR": {
+          "ticker": "PLTR",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 7163168598.91,
+          "median_close": 163.55,
+          "last_close": 145.97,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Technology"
+        },
+        "SNOW": {
+          "ticker": "SNOW",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 982716714.81,
+          "median_close": 209.39,
+          "last_close": 150.84,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "SPOT": {
+          "ticker": "SPOT",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1054999679.79,
+          "median_close": 531.45,
+          "last_close": 522.44,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Communication Services"
+        },
+        "TRIP": {
+          "ticker": "TRIP",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 34431120.5,
+          "median_close": 13.31,
+          "last_close": 11.23,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0081,
+          "sector": "Unknown"
+        },
+        "TSLA": {
+          "ticker": "TSLA",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 26919751121.12,
+          "median_close": 419.4,
+          "last_close": 386.42,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Consumer Discretionary"
+        },
+        "UNH": {
+          "ticker": "UNH",
+          "coverage_days": 123,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2455320530.65,
+          "median_close": 316.4,
+          "last_close": 346.01,
+          "ab_touchpoint_days_all_archives": 3,
+          "ab_touchpoint_day_rate": 0.0244,
+          "sector": "Healthcare"
+        }
+      },
+      "shadow_candidate_records": 9,
+      "shadow_candidate_unique_tickers": 8,
+      "candidate_count_by_sector": {
+        "Consumer Discretionary": 1,
+        "Financials": 2,
+        "Healthcare": 1,
+        "Technology": 5
+      },
+      "top_candidate_tickers": [
+        [
+          "NVDA",
+          2
+        ],
+        [
+          "UNH",
+          1
+        ],
+        [
+          "CRDO",
+          1
+        ],
+        [
+          "AVGO",
+          1
+        ],
+        [
+          "TSLA",
+          1
+        ],
+        [
+          "MSFT",
+          1
+        ],
+        [
+          "COIN",
+          1
+        ],
+        [
+          "MA",
+          1
+        ]
+      ],
+      "same_day_ab_overlap_count": 0,
+      "same_day_ab_overlap_rate": 0.0,
+      "ticker_history_ab_overlap_count": 3,
+      "ticker_history_ab_overlap_rate": 0.3333,
+      "outside_production_candidate_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 8,
+          "avg": 0.004138,
+          "median": 0.001237,
+          "win_rate": 0.5,
+          "p10": -0.033988,
+          "p25": -0.003052,
+          "p50": 0.00398,
+          "p75": 0.018706,
+          "p90": 0.029896
+        },
+        "fwd_5d": {
+          "count": 8,
+          "avg": -0.031183,
+          "median": -0.015709,
+          "win_rate": 0.25,
+          "p10": -0.096317,
+          "p25": -0.040536,
+          "p50": -0.01164,
+          "p75": -0.000722,
+          "p90": 0.009551
+        },
+        "fwd_10d": {
+          "count": 8,
+          "avg": -0.057596,
+          "median": -0.026942,
+          "win_rate": 0.25,
+          "p10": -0.17389,
+          "p25": -0.049269,
+          "p50": -0.014735,
+          "p75": -0.006838,
+          "p90": 0.003413
+        },
+        "fwd_20d": {
+          "count": 8,
+          "avg": -0.108432,
+          "median": -0.094731,
+          "win_rate": 0.0,
+          "p10": -0.236415,
+          "p25": -0.119716,
+          "p50": -0.074007,
+          "p75": -0.058243,
+          "p90": -0.013764
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 8,
+          "avg": 0.004138,
+          "median": 0.001237,
+          "win_rate": 0.5,
+          "p10": -0.033988,
+          "p25": -0.003052,
+          "p50": 0.00398,
+          "p75": 0.018706,
+          "p90": 0.029896
+        },
+        "fwd_5d": {
+          "count": 8,
+          "avg": -0.031183,
+          "median": -0.015709,
+          "win_rate": 0.25,
+          "p10": -0.096317,
+          "p25": -0.040536,
+          "p50": -0.01164,
+          "p75": -0.000722,
+          "p90": 0.009551
+        },
+        "fwd_10d": {
+          "count": 8,
+          "avg": -0.057596,
+          "median": -0.026942,
+          "win_rate": 0.25,
+          "p10": -0.17389,
+          "p25": -0.049269,
+          "p50": -0.014735,
+          "p75": -0.006838,
+          "p90": 0.003413
+        },
+        "fwd_20d": {
+          "count": 8,
+          "avg": -0.108432,
+          "median": -0.094731,
+          "win_rate": 0.0,
+          "p10": -0.236415,
+          "p25": -0.119716,
+          "p50": -0.074007,
+          "p75": -0.058243,
+          "p90": -0.013764
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2026-04-21",
+          "ticker": "UNH",
+          "sector": "Healthcare",
+          "shadow_score": 1.7467,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0244,
+          "median_dollar_volume": 2455320530.65,
+          "fwd_5d": null,
+          "fwd_10d": null,
+          "conditions": {
+            "atr_expansion_ratio": 1.2356,
+            "volume_ratio": 3.2067,
+            "daily_range_vs_atr": 1.199,
+            "momentum_10d_pct": 0.124395,
+            "spy_10d_return": 0.06805,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-12-02",
+          "ticker": "CRDO",
+          "sector": "Technology",
+          "shadow_score": 1.7266,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0081,
+          "median_dollar_volume": 806572897.92,
+          "fwd_5d": -0.096317,
+          "fwd_10d": -0.255254,
+          "conditions": {
+            "atr_expansion_ratio": 1.4505,
+            "volume_ratio": 2.6431,
+            "daily_range_vs_atr": 1.6238,
+            "momentum_10d_pct": 0.294409,
+            "spy_10d_return": 0.023826,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-11-24",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.6233,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0081,
+          "median_dollar_volume": 8088371520.67,
+          "fwd_5d": 0.009551,
+          "fwd_10d": 0.074955,
+          "conditions": {
+            "atr_expansion_ratio": 1.2911,
+            "volume_ratio": 2.2732,
+            "daily_range_vs_atr": 1.9297,
+            "momentum_10d_pct": 0.054605,
+            "spy_10d_return": -0.018652,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-28",
+          "ticker": "NVDA",
+          "sector": "Technology",
+          "shadow_score": 1.5313,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 32334223817.75,
+          "fwd_5d": -0.01164,
+          "fwd_10d": -0.039148,
+          "conditions": {
+            "atr_expansion_ratio": 1.2188,
+            "volume_ratio": 1.8046,
+            "daily_range_vs_atr": 1.7512,
+            "momentum_10d_pct": 0.116647,
+            "spy_10d_return": 0.037495,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-23",
+          "ticker": "TSLA",
+          "sector": "Consumer Discretionary",
+          "shadow_score": 1.3872,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 26919751121.12,
+          "fwd_5d": -0.019778,
+          "fwd_10d": -0.006838,
+          "conditions": {
+            "atr_expansion_ratio": 1.4179,
+            "volume_ratio": 1.4454,
+            "daily_range_vs_atr": 1.8676,
+            "momentum_10d_pct": 0.030858,
+            "spy_10d_return": 0.000894,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-11-07",
+          "ticker": "NVDA",
+          "sector": "Technology",
+          "shadow_score": 1.3743,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 32334223817.75,
+          "fwd_5d": 0.010736,
+          "fwd_10d": -0.049269,
+          "conditions": {
+            "atr_expansion_ratio": 1.3883,
+            "volume_ratio": 1.4185,
+            "daily_range_vs_atr": 1.2543,
+            "momentum_10d_pct": 0.010147,
+            "spy_10d_return": -0.009273,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-31",
+          "ticker": "MSFT",
+          "sector": "Technology",
+          "shadow_score": 1.1863,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 12701800960.91,
+          "fwd_5d": -0.040536,
+          "fwd_10d": -0.014735,
+          "conditions": {
+            "atr_expansion_ratio": 1.267,
+            "volume_ratio": 1.7413,
+            "daily_range_vs_atr": 1.4391,
+            "momentum_10d_pct": 0.008236,
+            "spy_10d_return": 0.026596,
+            "rs_positive": false,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-31",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.132,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 2245249934.57,
+          "fwd_5d": -0.100762,
+          "fwd_10d": -0.17389,
+          "conditions": {
+            "atr_expansion_ratio": 1.2186,
+            "volume_ratio": 1.4763,
+            "daily_range_vs_atr": 1.3991,
+            "momentum_10d_pct": 0.023094,
+            "spy_10d_return": 0.026596,
+            "rs_positive": false,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-30",
+          "ticker": "MA",
+          "sector": "Financials",
+          "shadow_score": 1.0654,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 1700723271.3,
+          "fwd_5d": -0.000722,
+          "fwd_10d": 0.003413,
+          "conditions": {
+            "atr_expansion_ratio": 1.2395,
+            "volume_ratio": 1.6573,
+            "daily_range_vs_atr": 1.4576,
+            "momentum_10d_pct": 0.006911,
+            "spy_10d_return": 0.029048,
+            "rs_positive": false,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": false
+          }
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 127,
+      "shadow_universe_tickers": [
+        "APP",
+        "AVGO",
+        "COIN",
+        "CRDO",
+        "DIS",
+        "GE",
+        "JPM",
+        "MA",
+        "MSFT",
+        "NOW",
+        "NVDA",
+        "PLTR",
+        "SNOW",
+        "SPOT",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "shadow_universe_count": 17,
+      "selection_rejections": {
+        "etf_or_macro_proxy": 14,
+        "prior_ab_overlap_too_high": 21
+      },
+      "shadow_universe_stats": {
+        "APP": {
+          "ticker": "APP",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2321032797.52,
+          "median_close": 390.26,
+          "last_close": 564.82,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Technology"
+        },
+        "AVGO": {
+          "ticker": "AVGO",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 5445582892.36,
+          "median_close": 286.994,
+          "last_close": 338.9391,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Technology"
+        },
+        "COIN": {
+          "ticker": "COIN",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 3042614405.27,
+          "median_close": 317.55,
+          "last_close": 320.33,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Financials"
+        },
+        "CRDO": {
+          "ticker": "CRDO",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 489975201.67,
+          "median_close": 101.22,
+          "last_close": 137.2,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Technology"
+        },
+        "DIS": {
+          "ticker": "DIS",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 868730730.5,
+          "median_close": 114.4556,
+          "last_close": 112.3201,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Communication Services"
+        },
+        "GE": {
+          "ticker": "GE",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1225895139.25,
+          "median_close": 265.1652,
+          "last_close": 297.1169,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Industrials"
+        },
+        "JPM": {
+          "ticker": "JPM",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2188365966.89,
+          "median_close": 286.4887,
+          "last_close": 291.2985,
+          "ab_touchpoint_days_all_archives": 2,
+          "ab_touchpoint_day_rate": 0.0157,
+          "sector": "Financials"
+        },
+        "MA": {
+          "ticker": "MA",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1380670629.4,
+          "median_close": 566.2349,
+          "last_close": 569.5244,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Financials"
+        },
+        "MSFT": {
+          "ticker": "MSFT",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 8946284911.98,
+          "median_close": 502.1718,
+          "last_close": 518.3844,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "NOW": {
+          "ticker": "NOW",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1223491751.68,
+          "median_close": 190.074,
+          "last_close": 187.13,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Technology"
+        },
+        "NVDA": {
+          "ticker": "NVDA",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 27214430985.98,
+          "median_close": 170.7516,
+          "last_close": 180.2602,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "PLTR": {
+          "ticker": "PLTR",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 9864513782.91,
+          "median_close": 154.27,
+          "last_close": 175.49,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Technology"
+        },
+        "SNOW": {
+          "ticker": "SNOW",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 786440319.17,
+          "median_close": 212.25,
+          "last_close": 241.67,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "SPOT": {
+          "ticker": "SPOT",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1096758041.99,
+          "median_close": 693.1,
+          "last_close": 675.62,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Communication Services"
+        },
+        "TRIP": {
+          "ticker": "TRIP",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 40278711.67,
+          "median_close": 16.21,
+          "last_close": 16.43,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0079,
+          "sector": "Unknown"
+        },
+        "TSLA": {
+          "ticker": "TSLA",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 31966483081.13,
+          "median_close": 333.87,
+          "last_close": 438.97,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Consumer Discretionary"
+        },
+        "UNH": {
+          "ticker": "UNH",
+          "coverage_days": 127,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 3751546038.61,
+          "median_close": 301.562,
+          "last_close": 356.3057,
+          "ab_touchpoint_days_all_archives": 3,
+          "ab_touchpoint_day_rate": 0.0236,
+          "sector": "Healthcare"
+        }
+      },
+      "shadow_candidate_records": 26,
+      "shadow_candidate_unique_tickers": 11,
+      "candidate_count_by_sector": {
+        "Consumer Discretionary": 2,
+        "Financials": 6,
+        "Healthcare": 1,
+        "Technology": 14,
+        "Unknown": 3
+      },
+      "top_candidate_tickers": [
+        [
+          "COIN",
+          6
+        ],
+        [
+          "AVGO",
+          4
+        ],
+        [
+          "TRIP",
+          3
+        ],
+        [
+          "SNOW",
+          2
+        ],
+        [
+          "MSFT",
+          2
+        ],
+        [
+          "APP",
+          2
+        ],
+        [
+          "NOW",
+          2
+        ],
+        [
+          "TSLA",
+          2
+        ],
+        [
+          "UNH",
+          1
+        ],
+        [
+          "CRDO",
+          1
+        ],
+        [
+          "NVDA",
+          1
+        ]
+      ],
+      "same_day_ab_overlap_count": 0,
+      "same_day_ab_overlap_rate": 0.0,
+      "ticker_history_ab_overlap_count": 13,
+      "ticker_history_ab_overlap_rate": 0.5,
+      "outside_production_candidate_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 26,
+          "avg": 0.00828,
+          "median": -0.005106,
+          "win_rate": 0.4615,
+          "p10": -0.03524,
+          "p25": -0.017601,
+          "p50": -0.008318,
+          "p75": 0.028172,
+          "p90": 0.054487
+        },
+        "fwd_5d": {
+          "count": 26,
+          "avg": -0.003555,
+          "median": -0.020195,
+          "win_rate": 0.3462,
+          "p10": -0.063317,
+          "p25": -0.051377,
+          "p50": -0.020914,
+          "p75": 0.011217,
+          "p90": 0.057659
+        },
+        "fwd_10d": {
+          "count": 25,
+          "avg": 0.012562,
+          "median": 0.009319,
+          "win_rate": 0.56,
+          "p10": -0.099382,
+          "p25": -0.029216,
+          "p50": 0.009319,
+          "p75": 0.051063,
+          "p90": 0.119409
+        },
+        "fwd_20d": {
+          "count": 21,
+          "avg": 0.037577,
+          "median": -0.031648,
+          "win_rate": 0.4762,
+          "p10": -0.084683,
+          "p25": -0.067884,
+          "p50": -0.031648,
+          "p75": 0.151557,
+          "p90": 0.2243
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 26,
+          "avg": 0.00828,
+          "median": -0.005106,
+          "win_rate": 0.4615,
+          "p10": -0.03524,
+          "p25": -0.017601,
+          "p50": -0.008318,
+          "p75": 0.028172,
+          "p90": 0.054487
+        },
+        "fwd_5d": {
+          "count": 26,
+          "avg": -0.003555,
+          "median": -0.020195,
+          "win_rate": 0.3462,
+          "p10": -0.063317,
+          "p25": -0.051377,
+          "p50": -0.020914,
+          "p75": 0.011217,
+          "p90": 0.057659
+        },
+        "fwd_10d": {
+          "count": 25,
+          "avg": 0.012562,
+          "median": 0.009319,
+          "win_rate": 0.56,
+          "p10": -0.099382,
+          "p25": -0.029216,
+          "p50": 0.009319,
+          "p75": 0.051063,
+          "p90": 0.119409
+        },
+        "fwd_20d": {
+          "count": 21,
+          "avg": 0.037577,
+          "median": -0.031648,
+          "win_rate": 0.4762,
+          "p10": -0.084683,
+          "p25": -0.067884,
+          "p50": -0.031648,
+          "p75": 0.151557,
+          "p90": 0.2243
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2025-09-05",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.8488,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 5445582892.36,
+          "fwd_5d": 0.074591,
+          "fwd_10d": 0.03001,
+          "conditions": {
+            "atr_expansion_ratio": 1.5294,
+            "volume_ratio": 4.2493,
+            "daily_range_vs_atr": 2.0041,
+            "momentum_10d_pct": 0.156388,
+            "spy_10d_return": 0.018394,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-08-28",
+          "ticker": "SNOW",
+          "sector": "Technology",
+          "shadow_score": 1.8344,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 786440319.17,
+          "fwd_5d": -0.063983,
+          "fwd_10d": -0.082365,
+          "conditions": {
+            "atr_expansion_ratio": 1.4815,
+            "volume_ratio": 8.3033,
+            "daily_range_vs_atr": 3.651,
+            "momentum_10d_pct": 0.236532,
+            "spy_10d_return": 0.006155,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-08-08",
+          "ticker": "TRIP",
+          "sector": "Unknown",
+          "shadow_score": 1.7898,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 40278711.67,
+          "fwd_5d": -0.019477,
+          "fwd_10d": -0.015581,
+          "conditions": {
+            "atr_expansion_ratio": 1.3326,
+            "volume_ratio": 3.7701,
+            "daily_range_vs_atr": 2.7461,
+            "momentum_10d_pct": 0.008417,
+            "spy_10d_return": 0.000126,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-07-03",
+          "ticker": "TRIP",
+          "sector": "Unknown",
+          "shadow_score": 1.7834,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 40278711.67,
+          "fwd_5d": 0.028571,
+          "fwd_10d": 0.000571,
+          "conditions": {
+            "atr_expansion_ratio": 1.3157,
+            "volume_ratio": 3.2912,
+            "daily_range_vs_atr": 2.6195,
+            "momentum_10d_pct": 0.342025,
+            "spy_10d_return": 0.049794,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-07-31",
+          "ticker": "MSFT",
+          "sector": "Technology",
+          "shadow_score": 1.7702,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 8946284911.98,
+          "fwd_5d": -0.02373,
+          "fwd_10d": -0.020656,
+          "conditions": {
+            "atr_expansion_ratio": 1.3306,
+            "volume_ratio": 3.1733,
+            "daily_range_vs_atr": 2.6983,
+            "momentum_10d_pct": 0.042603,
+            "spy_10d_return": 0.006433,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-09-19",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 1.766,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 2321032797.52,
+          "fwd_5d": 0.031204,
+          "fwd_10d": 0.051063,
+          "conditions": {
+            "atr_expansion_ratio": 1.2535,
+            "volume_ratio": 10.6483,
+            "daily_range_vs_atr": 1.3638,
+            "momentum_10d_pct": 0.325045,
+            "spy_10d_return": 0.028274,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-09-10",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.7648,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 5445582892.36,
+          "fwd_5d": -0.063317,
+          "fwd_10d": -0.080306,
+          "conditions": {
+            "atr_expansion_ratio": 1.8279,
+            "volume_ratio": 2.1432,
+            "daily_range_vs_atr": 1.4913,
+            "momentum_10d_pct": 0.240126,
+            "spy_10d_return": 0.010928,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-06-25",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.7096,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.002589,
+          "fwd_10d": 0.094521,
+          "conditions": {
+            "atr_expansion_ratio": 1.4659,
+            "volume_ratio": 2.4989,
+            "daily_range_vs_atr": 1.3381,
+            "momentum_10d_pct": 0.393936,
+            "spy_10d_return": 0.009675,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-06-24",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.7074,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.027522,
+          "fwd_10d": 0.084189,
+          "conditions": {
+            "atr_expansion_ratio": 1.3653,
+            "volume_ratio": 2.6857,
+            "daily_range_vs_atr": 2.0755,
+            "momentum_10d_pct": 0.343646,
+            "spy_10d_return": 0.014831,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-06-26",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.6365,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.051377,
+          "fwd_10d": 0.031967,
+          "conditions": {
+            "atr_expansion_ratio": 1.4332,
+            "volume_ratio": 2.0767,
+            "daily_range_vs_atr": 1.4224,
+            "momentum_10d_pct": 0.49621,
+            "spy_10d_return": 0.020485,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-08-15",
+          "ticker": "UNH",
+          "sector": "Healthcare",
+          "shadow_score": 1.5991,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0236,
+          "median_dollar_volume": 3751546038.61,
+          "fwd_5d": 0.011217,
+          "fwd_10d": 0.019276,
+          "conditions": {
+            "atr_expansion_ratio": 1.5303,
+            "volume_ratio": 3.5363,
+            "daily_range_vs_atr": 1.2079,
+            "momentum_10d_pct": 0.278589,
+            "spy_10d_return": 0.034935,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": false,
+            "above_200ma": false
+          }
+        },
+        {
+          "date": "2025-07-24",
+          "ticker": "NOW",
+          "sector": "Technology",
+          "shadow_score": 1.5779,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 1223491751.68,
+          "fwd_5d": -0.053263,
+          "fwd_10d": -0.122528,
+          "conditions": {
+            "atr_expansion_ratio": 1.2641,
+            "volume_ratio": 3.0245,
+            "daily_range_vs_atr": 2.483,
+            "momentum_10d_pct": 0.029016,
+            "spy_10d_return": 0.013742,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-08",
+          "ticker": "SNOW",
+          "sector": "Technology",
+          "shadow_score": 1.5383,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 786440319.17,
+          "fwd_5d": -0.037369,
+          "fwd_10d": -0.034131,
+          "conditions": {
+            "atr_expansion_ratio": 1.3039,
+            "volume_ratio": 1.681,
+            "daily_range_vs_atr": 1.635,
+            "momentum_10d_pct": 0.124186,
+            "spy_10d_return": 0.018167,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-07-18",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.5104,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": -0.066987,
+          "fwd_10d": -0.250345,
+          "conditions": {
+            "atr_expansion_ratio": 1.296,
+            "volume_ratio": 1.5105,
+            "daily_range_vs_atr": 1.9641,
+            "momentum_10d_pct": 0.17982,
+            "spy_10d_return": 0.003582,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-06-23",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.5008,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": 0.139471,
+          "fwd_10d": 0.153549,
+          "conditions": {
+            "atr_expansion_ratio": 1.2179,
+            "volume_ratio": 1.603,
+            "daily_range_vs_atr": 1.2359,
+            "momentum_10d_pct": 0.224141,
+            "spy_10d_return": 0.004647,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-06-27",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.4996,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 3042614405.27,
+          "fwd_5d": 0.010384,
+          "fwd_10d": 0.114818,
+          "conditions": {
+            "atr_expansion_ratio": 1.4895,
+            "volume_ratio": 2.0519,
+            "daily_range_vs_atr": 1.2613,
+            "momentum_10d_pct": 0.46621,
+            "spy_10d_return": 0.021495,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-06-04",
+          "ticker": "CRDO",
+          "sector": "Technology",
+          "shadow_score": 1.4535,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 489975201.67,
+          "fwd_5d": -0.063039,
+          "fwd_10d": 0.119409,
+          "conditions": {
+            "atr_expansion_ratio": 1.2344,
+            "volume_ratio": 2.2546,
+            "daily_range_vs_atr": 1.6058,
+            "momentum_10d_pct": 0.231042,
+            "spy_10d_return": 0.005195,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-13",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.4483,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 5445582892.36,
+          "fwd_5d": -0.020914,
+          "fwd_10d": null,
+          "conditions": {
+            "atr_expansion_ratio": 1.3522,
+            "volume_ratio": 1.9843,
+            "daily_range_vs_atr": 1.192,
+            "momentum_10d_pct": 0.087832,
+            "spy_10d_return": -0.000964,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-07-07",
+          "ticker": "TRIP",
+          "sector": "Unknown",
+          "shadow_score": 1.4459,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 40278711.67,
+          "fwd_5d": 0.057659,
+          "fwd_10d": 0.009319,
+          "conditions": {
+            "atr_expansion_ratio": 1.3498,
+            "volume_ratio": 1.973,
+            "daily_range_vs_atr": 1.2583,
+            "momentum_10d_pct": 0.323824,
+            "spy_10d_return": 0.044423,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-08-01",
+          "ticker": "MSFT",
+          "sector": "Technology",
+          "shadow_score": 1.4245,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 8946284911.98,
+          "fwd_5d": -0.003949,
+          "fwd_10d": -0.007517,
+          "conditions": {
+            "atr_expansion_ratio": 1.4613,
+            "volume_ratio": 1.6071,
+            "daily_range_vs_atr": 1.5587,
+            "momentum_10d_pct": 0.027566,
+            "spy_10d_return": -0.009337,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-02",
+          "ticker": "TSLA",
+          "sector": "Consumer Discretionary",
+          "shadow_score": 1.4041,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 31966483081.13,
+          "fwd_5d": -0.001055,
+          "fwd_10d": -0.016628,
+          "conditions": {
+            "atr_expansion_ratio": 1.4851,
+            "volume_ratio": 1.4238,
+            "daily_range_vs_atr": 1.8402,
+            "momentum_10d_pct": 0.04594,
+            "spy_10d_return": 0.013311,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-03",
+          "ticker": "TSLA",
+          "sector": "Consumer Discretionary",
+          "shadow_score": 1.3909,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 31966483081.13,
+          "fwd_5d": -0.038015,
+          "fwd_10d": 0.022055,
+          "conditions": {
+            "atr_expansion_ratio": 1.4875,
+            "volume_ratio": 1.3313,
+            "daily_range_vs_atr": 1.5766,
+            "momentum_10d_pct": 0.008825,
+            "spy_10d_return": 0.008302,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-10-10",
+          "ticker": "NVDA",
+          "sector": "Technology",
+          "shadow_score": 1.3434,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 27214430985.98,
+          "fwd_5d": 0.000328,
+          "fwd_10d": 0.016925,
+          "conditions": {
+            "atr_expansion_ratio": 1.2243,
+            "volume_ratio": 1.5409,
+            "daily_range_vs_atr": 2.3132,
+            "momentum_10d_pct": 0.027892,
+            "spy_10d_return": -0.013297,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-08-15",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.3299,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 5445582892.36,
+          "fwd_5d": -0.040282,
+          "fwd_10d": -0.029216,
+          "conditions": {
+            "atr_expansion_ratio": 1.2794,
+            "volume_ratio": 1.3408,
+            "daily_range_vs_atr": 1.1866,
+            "momentum_10d_pct": 0.061322,
+            "spy_10d_return": 0.034935,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-09-05",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 1.3272,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 2321032797.52,
+          "fwd_5d": 0.187174,
+          "fwd_10d": 0.325045,
+          "conditions": {
+            "atr_expansion_ratio": 1.2581,
+            "volume_ratio": 1.365,
+            "daily_range_vs_atr": 1.5647,
+            "momentum_10d_pct": 0.170694,
+            "spy_10d_return": 0.018394,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-07-25",
+          "ticker": "NOW",
+          "sector": "Technology",
+          "shadow_score": 1.2407,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0079,
+          "median_dollar_volume": 1223491751.68,
+          "fwd_5d": -0.056173,
+          "fwd_10d": -0.099382,
+          "conditions": {
+            "atr_expansion_ratio": 1.3145,
+            "volume_ratio": 1.3425,
+            "daily_range_vs_atr": 1.2775,
+            "momentum_10d_pct": 0.031967,
+            "spy_10d_return": 0.021616,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": false
+          }
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 138,
+      "shadow_universe_tickers": [
+        "APP",
+        "AVGO",
+        "COIN",
+        "CRDO",
+        "DIS",
+        "GE",
+        "JPM",
+        "MA",
+        "MSFT",
+        "NOW",
+        "NVDA",
+        "PLTR",
+        "SNOW",
+        "SPOT",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "shadow_universe_count": 17,
+      "selection_rejections": {
+        "etf_or_macro_proxy": 14,
+        "prior_ab_overlap_too_high": 21
+      },
+      "shadow_universe_stats": {
+        "APP": {
+          "ticker": "APP",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1755737756.35,
+          "median_close": 318.61,
+          "last_close": 237.71,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Technology"
+        },
+        "AVGO": {
+          "ticker": "AVGO",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 4895815351.68,
+          "median_close": 182.7833,
+          "last_close": 168.217,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Technology"
+        },
+        "COIN": {
+          "ticker": "COIN",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2036921017.73,
+          "median_close": 252.755,
+          "last_close": 190.0,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Financials"
+        },
+        "CRDO": {
+          "ticker": "CRDO",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 216751696.61,
+          "median_close": 47.045,
+          "last_close": 37.02,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Technology"
+        },
+        "DIS": {
+          "ticker": "DIS",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 853068772.65,
+          "median_close": 107.2235,
+          "last_close": 85.1483,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Communication Services"
+        },
+        "GE": {
+          "ticker": "GE",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 878135322.43,
+          "median_close": 183.7671,
+          "last_close": 188.1839,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Industrials"
+        },
+        "JPM": {
+          "ticker": "JPM",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2095773150.73,
+          "median_close": 235.2853,
+          "last_close": 231.0956,
+          "ab_touchpoint_days_all_archives": 2,
+          "ab_touchpoint_day_rate": 0.0145,
+          "sector": "Financials"
+        },
+        "MA": {
+          "ticker": "MA",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1328104025.1,
+          "median_close": 521.8971,
+          "last_close": 524.2334,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Financials"
+        },
+        "MSFT": {
+          "ticker": "MSFT",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 8330246124.64,
+          "median_close": 411.5965,
+          "last_close": 364.0331,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "NOW": {
+          "ticker": "NOW",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1372043084.11,
+          "median_close": 196.903,
+          "last_close": 153.366,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Technology"
+        },
+        "NVDA": {
+          "ticker": "NVDA",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 30921846269.32,
+          "median_close": 133.8661,
+          "last_close": 98.8667,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "PLTR": {
+          "ticker": "PLTR",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 6510997037.84,
+          "median_close": 76.205,
+          "last_close": 93.99,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Technology"
+        },
+        "SNOW": {
+          "ticker": "SNOW",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 786289809.82,
+          "median_close": 158.745,
+          "last_close": 140.23,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Technology"
+        },
+        "SPOT": {
+          "ticker": "SPOT",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 1045274100.21,
+          "median_close": 488.375,
+          "last_close": 590.39,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Communication Services"
+        },
+        "TRIP": {
+          "ticker": "TRIP",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 32184172.98,
+          "median_close": 14.57,
+          "last_close": 11.89,
+          "ab_touchpoint_days_all_archives": 1,
+          "ab_touchpoint_day_rate": 0.0072,
+          "sector": "Unknown"
+        },
+        "TSLA": {
+          "ticker": "TSLA",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 29140370806.27,
+          "median_close": 320.97,
+          "last_close": 237.97,
+          "ab_touchpoint_days_all_archives": 0,
+          "ab_touchpoint_day_rate": 0.0,
+          "sector": "Consumer Discretionary"
+        },
+        "UNH": {
+          "ticker": "UNH",
+          "coverage_days": 138,
+          "coverage_fraction": 1.0,
+          "median_dollar_volume": 2045251067.6,
+          "median_close": 516.8786,
+          "last_close": 415.4646,
+          "ab_touchpoint_days_all_archives": 3,
+          "ab_touchpoint_day_rate": 0.0217,
+          "sector": "Healthcare"
+        }
+      },
+      "shadow_candidate_records": 69,
+      "shadow_candidate_unique_tickers": 16,
+      "candidate_count_by_sector": {
+        "Communication Services": 9,
+        "Consumer Discretionary": 7,
+        "Financials": 6,
+        "Healthcare": 3,
+        "Industrials": 1,
+        "Technology": 41,
+        "Unknown": 2
+      },
+      "top_candidate_tickers": [
+        [
+          "PLTR",
+          16
+        ],
+        [
+          "APP",
+          8
+        ],
+        [
+          "CRDO",
+          8
+        ],
+        [
+          "TSLA",
+          7
+        ],
+        [
+          "SPOT",
+          5
+        ],
+        [
+          "AVGO",
+          4
+        ],
+        [
+          "COIN",
+          4
+        ],
+        [
+          "DIS",
+          4
+        ],
+        [
+          "UNH",
+          3
+        ],
+        [
+          "SNOW",
+          2
+        ],
+        [
+          "JPM",
+          2
+        ],
+        [
+          "TRIP",
+          2
+        ]
+      ],
+      "same_day_ab_overlap_count": 2,
+      "same_day_ab_overlap_rate": 0.029,
+      "ticker_history_ab_overlap_count": 49,
+      "ticker_history_ab_overlap_rate": 0.7101,
+      "outside_production_candidate_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 69,
+          "avg": 0.007316,
+          "median": -0.003864,
+          "win_rate": 0.4638,
+          "p10": -0.051074,
+          "p25": -0.023766,
+          "p50": -0.003864,
+          "p75": 0.02377,
+          "p90": 0.054403
+        },
+        "fwd_5d": {
+          "count": 69,
+          "avg": 0.003742,
+          "median": 0.003724,
+          "win_rate": 0.5507,
+          "p10": -0.136929,
+          "p25": -0.036636,
+          "p50": 0.003724,
+          "p75": 0.055338,
+          "p90": 0.123946
+        },
+        "fwd_10d": {
+          "count": 69,
+          "avg": 0.007789,
+          "median": 0.009427,
+          "win_rate": 0.5362,
+          "p10": -0.209603,
+          "p25": -0.064647,
+          "p50": 0.009427,
+          "p75": 0.092231,
+          "p90": 0.158342
+        },
+        "fwd_20d": {
+          "count": 64,
+          "avg": 0.047149,
+          "median": -0.0015,
+          "win_rate": 0.5,
+          "p10": -0.177661,
+          "p25": -0.067296,
+          "p50": 0.003395,
+          "p75": 0.136266,
+          "p90": 0.260548
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 67,
+          "avg": 0.007493,
+          "median": -0.003864,
+          "win_rate": 0.4627,
+          "p10": -0.051074,
+          "p25": -0.023789,
+          "p50": -0.003864,
+          "p75": 0.027485,
+          "p90": 0.054403
+        },
+        "fwd_5d": {
+          "count": 67,
+          "avg": 0.001241,
+          "median": 0.003608,
+          "win_rate": 0.5373,
+          "p10": -0.136929,
+          "p25": -0.040533,
+          "p50": 0.003608,
+          "p75": 0.055338,
+          "p90": 0.119578
+        },
+        "fwd_10d": {
+          "count": 67,
+          "avg": 0.003197,
+          "median": 0.006656,
+          "win_rate": 0.5224,
+          "p10": -0.209603,
+          "p25": -0.067457,
+          "p50": 0.006656,
+          "p75": 0.088138,
+          "p90": 0.118675
+        },
+        "fwd_20d": {
+          "count": 62,
+          "avg": 0.043551,
+          "median": -0.012943,
+          "win_rate": 0.4839,
+          "p10": -0.177661,
+          "p25": -0.073092,
+          "p50": -0.019491,
+          "p75": 0.120902,
+          "p90": 0.260548
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2024-11-08",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 2.2,
+          "same_day_ab_overlap": true,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.003724,
+          "fwd_10d": 0.149305,
+          "conditions": {
+            "atr_expansion_ratio": 2.9596,
+            "volume_ratio": 3.3729,
+            "daily_range_vs_atr": 3.2092,
+            "momentum_10d_pct": 0.794283,
+            "spy_10d_return": 0.033072,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-07",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 2.1342,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.153977,
+          "fwd_10d": 0.290877,
+          "conditions": {
+            "atr_expansion_ratio": 2.4807,
+            "volume_ratio": 4.999,
+            "daily_range_vs_atr": 2.2636,
+            "momentum_10d_pct": 0.550503,
+            "spy_10d_return": 0.028261,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-20",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 2.1294,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": -0.041837,
+          "fwd_10d": -0.131099,
+          "conditions": {
+            "atr_expansion_ratio": 2.4648,
+            "volume_ratio": 3.4487,
+            "daily_range_vs_atr": 1.6823,
+            "momentum_10d_pct": 0.055148,
+            "spy_10d_return": -0.024136,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-03",
+          "ticker": "CRDO",
+          "sector": "Technology",
+          "shadow_score": 2.052,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 216751696.61,
+          "fwd_5d": -0.062668,
+          "fwd_10d": -0.012166,
+          "conditions": {
+            "atr_expansion_ratio": 2.2066,
+            "volume_ratio": 5.8542,
+            "daily_range_vs_atr": 1.8174,
+            "momentum_10d_pct": 0.741133,
+            "spy_10d_return": 0.026796,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-11",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 2.0106,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.040394,
+          "fwd_10d": 0.11577,
+          "conditions": {
+            "atr_expansion_ratio": 3.2828,
+            "volume_ratio": 2.0373,
+            "daily_range_vs_atr": 1.679,
+            "momentum_10d_pct": 0.723561,
+            "spy_10d_return": 0.030869,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-16",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.9927,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 4895815351.68,
+          "fwd_5d": -0.06811,
+          "fwd_10d": -0.070155,
+          "conditions": {
+            "atr_expansion_ratio": 2.0089,
+            "volume_ratio": 3.9458,
+            "daily_range_vs_atr": 1.8886,
+            "momentum_10d_pct": 0.501411,
+            "spy_10d_return": 0.005235,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-21",
+          "ticker": "SNOW",
+          "sector": "Technology",
+          "shadow_score": 1.9914,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 786289809.82,
+          "fwd_5d": 0.020134,
+          "fwd_10d": 0.071724,
+          "conditions": {
+            "atr_expansion_ratio": 2.0048,
+            "volume_ratio": 10.1509,
+            "daily_range_vs_atr": 1.8432,
+            "momentum_10d_pct": 0.387,
+            "spy_10d_return": -0.003257,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-11",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.9481,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 2036921017.73,
+          "fwd_5d": 0.003608,
+          "fwd_10d": -0.037071,
+          "conditions": {
+            "atr_expansion_ratio": 1.98,
+            "volume_ratio": 3.0607,
+            "daily_range_vs_atr": 1.8147,
+            "momentum_10d_pct": 0.500416,
+            "spy_10d_return": 0.030869,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-15",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.9416,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": -0.02159,
+          "fwd_10d": 0.009427,
+          "conditions": {
+            "atr_expansion_ratio": 2.3026,
+            "volume_ratio": 2.3723,
+            "daily_range_vs_atr": 1.5377,
+            "momentum_10d_pct": 0.568941,
+            "spy_10d_return": 0.02576,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-18",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.9189,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 2036921017.73,
+          "fwd_5d": -0.040533,
+          "fwd_10d": -0.049353,
+          "conditions": {
+            "atr_expansion_ratio": 2.6511,
+            "volume_ratio": 1.524,
+            "daily_range_vs_atr": 1.4331,
+            "momentum_10d_pct": 0.74698,
+            "spy_10d_return": 0.032186,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-13",
+          "ticker": "AVGO",
+          "sector": "Technology",
+          "shadow_score": 1.9049,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 4895815351.68,
+          "fwd_5d": -0.017838,
+          "fwd_10d": 0.050762,
+          "conditions": {
+            "atr_expansion_ratio": 1.7164,
+            "volume_ratio": 5.2178,
+            "daily_range_vs_atr": 1.8453,
+            "momentum_10d_pct": 0.386969,
+            "spy_10d_return": 0.002755,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-15",
+          "ticker": "DIS",
+          "sector": "Communication Services",
+          "shadow_score": 1.8968,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 853068772.65,
+          "fwd_5d": 0.004953,
+          "fwd_10d": 0.018074,
+          "conditions": {
+            "atr_expansion_ratio": 1.7479,
+            "volume_ratio": 3.1828,
+            "daily_range_vs_atr": 1.7747,
+            "momentum_10d_pct": 0.201127,
+            "spy_10d_return": 0.02576,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-09",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 1.8701,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": 0.004145,
+          "fwd_10d": 0.006656,
+          "conditions": {
+            "atr_expansion_ratio": 4.7048,
+            "volume_ratio": 2.1008,
+            "daily_range_vs_atr": 1.7323,
+            "momentum_10d_pct": 0.027692,
+            "spy_10d_return": 0.015398,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-02-04",
+          "ticker": "SPOT",
+          "sector": "Communication Services",
+          "shadow_score": 1.8636,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1045274100.21,
+          "fwd_5d": 0.002219,
+          "fwd_10d": 0.03371,
+          "conditions": {
+            "atr_expansion_ratio": 1.5787,
+            "volume_ratio": 3.6862,
+            "daily_range_vs_atr": 1.8443,
+            "momentum_10d_pct": 0.275399,
+            "spy_10d_return": -0.002106,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-14",
+          "ticker": "DIS",
+          "sector": "Communication Services",
+          "shadow_score": 1.855,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 853068772.65,
+          "fwd_5d": 0.05132,
+          "fwd_10d": 0.076521,
+          "conditions": {
+            "atr_expansion_ratio": 1.5501,
+            "volume_ratio": 5.803,
+            "daily_range_vs_atr": 2.5966,
+            "momentum_10d_pct": 0.134304,
+            "spy_10d_return": 0.043454,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-06",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "shadow_score": 1.8282,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 2036921017.73,
+          "fwd_5d": 0.119578,
+          "fwd_10d": 0.258346,
+          "conditions": {
+            "atr_expansion_ratio": 1.5665,
+            "volume_ratio": 3.088,
+            "daily_range_vs_atr": 2.1585,
+            "momentum_10d_pct": 0.278389,
+            "spy_10d_return": 0.022578,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-13",
+          "ticker": "SPOT",
+          "sector": "Communication Services",
+          "shadow_score": 1.8266,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1045274100.21,
+          "fwd_5d": 0.005649,
+          "fwd_10d": 0.016839,
+          "conditions": {
+            "atr_expansion_ratio": 1.4552,
+            "volume_ratio": 6.5587,
+            "daily_range_vs_atr": 2.1344,
+            "momentum_10d_pct": 0.186158,
+            "spy_10d_return": 0.02962,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-02-13",
+          "ticker": "APP",
+          "sector": "Technology",
+          "shadow_score": 1.8237,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 1755737756.35,
+          "fwd_5d": -0.11949,
+          "fwd_10d": -0.30939,
+          "conditions": {
+            "atr_expansion_ratio": 1.4455,
+            "volume_ratio": 4.609,
+            "daily_range_vs_atr": 2.5238,
+            "momentum_10d_pct": 0.290443,
+            "spy_10d_return": 0.007752,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-18",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.8102,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.055338,
+          "fwd_10d": 0.158342,
+          "conditions": {
+            "atr_expansion_ratio": 2.5952,
+            "volume_ratio": 1.9108,
+            "daily_range_vs_atr": 1.6269,
+            "momentum_10d_pct": 0.479353,
+            "spy_10d_return": 0.032186,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-04",
+          "ticker": "CRDO",
+          "sector": "Technology",
+          "shadow_score": 1.7995,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 216751696.61,
+          "fwd_5d": 0.006521,
+          "fwd_10d": -0.036951,
+          "conditions": {
+            "atr_expansion_ratio": 2.4159,
+            "volume_ratio": 2.1979,
+            "daily_range_vs_atr": 1.5579,
+            "momentum_10d_pct": 0.570551,
+            "spy_10d_return": 0.029409,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-02-04",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.7896,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.084658,
+          "fwd_10d": 0.079264,
+          "conditions": {
+            "atr_expansion_ratio": 1.3661,
+            "volume_ratio": 3.2316,
+            "daily_range_vs_atr": 1.1917,
+            "momentum_10d_pct": 0.420966,
+            "spy_10d_return": -0.002106,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-05",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.7875,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.170546,
+          "fwd_10d": 0.231762,
+          "conditions": {
+            "atr_expansion_ratio": 1.325,
+            "volume_ratio": 4.5057,
+            "daily_range_vs_atr": 2.4753,
+            "momentum_10d_pct": 0.190731,
+            "spy_10d_return": -0.011349,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-09",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.7807,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.045404,
+          "fwd_10d": 0.11358,
+          "conditions": {
+            "atr_expansion_ratio": 2.3654,
+            "volume_ratio": 2.1737,
+            "daily_range_vs_atr": 2.6444,
+            "momentum_10d_pct": 0.12603,
+            "spy_10d_return": 0.015398,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2025-02-20",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.7805,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": -0.202315,
+          "fwd_10d": -0.242872,
+          "conditions": {
+            "atr_expansion_ratio": 2.1472,
+            "volume_ratio": 2.6087,
+            "daily_range_vs_atr": 1.3105,
+            "momentum_10d_pct": 0.048441,
+            "spy_10d_return": 0.010195,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-22",
+          "ticker": "SNOW",
+          "sector": "Technology",
+          "shadow_score": 1.777,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 786289809.82,
+          "fwd_5d": 0.029742,
+          "fwd_10d": 0.079551,
+          "conditions": {
+            "atr_expansion_ratio": 2.1795,
+            "volume_ratio": 2.5212,
+            "daily_range_vs_atr": 1.4945,
+            "momentum_10d_pct": 0.385061,
+            "spy_10d_return": -0.00448,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-11",
+          "ticker": "TSLA",
+          "sector": "Consumer Discretionary",
+          "shadow_score": 1.7703,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": false,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0,
+          "median_dollar_volume": 29140370806.27,
+          "fwd_5d": -0.032171,
+          "fwd_10d": -0.0326,
+          "conditions": {
+            "atr_expansion_ratio": 1.7665,
+            "volume_ratio": 2.3025,
+            "daily_range_vs_atr": 1.2211,
+            "momentum_10d_pct": 0.333282,
+            "spy_10d_return": 0.030869,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-09",
+          "ticker": "CRDO",
+          "sector": "Technology",
+          "shadow_score": 1.7639,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 216751696.61,
+          "fwd_5d": 0.152469,
+          "fwd_10d": 0.028196,
+          "conditions": {
+            "atr_expansion_ratio": 2.7725,
+            "volume_ratio": 1.3926,
+            "daily_range_vs_atr": 1.3732,
+            "momentum_10d_pct": 0.46226,
+            "spy_10d_return": 0.015398,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-16",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.7539,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.065215,
+          "fwd_10d": -0.001584,
+          "conditions": {
+            "atr_expansion_ratio": 2.5973,
+            "volume_ratio": 1.5314,
+            "daily_range_vs_atr": 1.5671,
+            "momentum_10d_pct": 0.140985,
+            "spy_10d_return": 0.005235,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-12-18",
+          "ticker": "PLTR",
+          "sector": "Technology",
+          "shadow_score": 1.7459,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0072,
+          "median_dollar_volume": 6510997037.84,
+          "fwd_5d": 0.14865,
+          "fwd_10d": 0.117186,
+          "conditions": {
+            "atr_expansion_ratio": 2.6318,
+            "volume_ratio": 1.4088,
+            "daily_range_vs_atr": 1.5643,
+            "momentum_10d_pct": 0.023765,
+            "spy_10d_return": -0.035184,
+            "rs_positive": true,
+            "breakout_20d": false,
+            "near_high60": false,
+            "above_200ma": true
+          }
+        },
+        {
+          "date": "2024-11-06",
+          "ticker": "JPM",
+          "sector": "Financials",
+          "shadow_score": 1.7349,
+          "same_day_ab_overlap": false,
+          "ticker_in_prior_ab_trades_or_signals": true,
+          "in_production_universe": true,
+          "ab_touchpoint_day_rate": 0.0145,
+          "median_dollar_volume": 2095773150.73,
+          "fwd_5d": -0.023881,
+          "fwd_10d": -0.025419,
+          "conditions": {
+            "atr_expansion_ratio": 1.2473,
+            "volume_ratio": 3.1045,
+            "daily_range_vs_atr": 2.5169,
+            "momentum_10d_pct": 0.105859,
+            "spy_10d_return": 0.022578,
+            "rs_positive": true,
+            "breakout_20d": true,
+            "near_high60": true,
+            "above_200ma": true
+          }
+        }
+      ]
+    }
+  ]
+}

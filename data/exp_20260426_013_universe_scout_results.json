@@ -1,0 +1,775 @@
+{
+  "experiment_id": "exp-20260426-013",
+  "status": "observed_only",
+  "created_at": "2026-04-26T09:05:54Z",
+  "hypothesis": "A liquidity-filtered event-sensitive shadow universe can surface non-overlapping candidates with acceptable data coverage and forward-return quality outside the current accepted A/B universe.",
+  "single_causal_variable": "event-sensitive liquidity-filtered shadow universe definition",
+  "shadow_universe_definition": {
+    "source": "archived clean_news_* and clean_trade_news_* ticker-tagged event items",
+    "event_terms": [
+      "acquisition",
+      "activist",
+      "antitrust",
+      "approval",
+      "bankruptcy",
+      "buyback",
+      "buyout",
+      "contract",
+      "cuts",
+      "departure",
+      "dividend",
+      "downgrade",
+      "earnings",
+      "fda",
+      "forecast",
+      "guidance",
+      "investigation",
+      "launch",
+      "lawsuit",
+      "lowers",
+      "merger",
+      "order",
+      "partnership",
+      "probe",
+      "profit warning",
+      "raises",
+      "recall",
+      "repurchase",
+      "resign",
+      "restatement",
+      "results",
+      "sec",
+      "settlement",
+      "short seller",
+      "split",
+      "takeover",
+      "tariff",
+      "upgrade"
+    ],
+    "liquidity_filters": {
+      "min_median_dollar_volume": 25000000,
+      "min_close": 5.0,
+      "min_coverage_fraction": 0.95
+    },
+    "forward_return_horizons_trading_days": [
+      1,
+      5,
+      10,
+      20
+    ]
+  },
+  "survivorship_bias_risk": "High. Snapshot OHLCV only contains tickers already available in the repository snapshots, so this evaluates a shadow candidate source within the current archived data universe rather than a survivorship-free historical expansion.",
+  "production_promotion": false,
+  "promotion_blockers": [
+    "No production universe write was attempted.",
+    "Outside-production ticker evidence is limited by archived OHLCV coverage.",
+    "Candidate count alone is not an alpha claim; any promotion needs scarce-slot quality evidence."
+  ],
+  "windows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 123,
+      "production_universe_count": 44,
+      "raw_event_records": 292,
+      "qualified_event_records": 268,
+      "qualified_unique_tickers": 21,
+      "qualified_tickers": [
+        "AAPL",
+        "AMD",
+        "AMZN",
+        "APP",
+        "AVGO",
+        "COIN",
+        "CRDO",
+        "GE",
+        "GOOG",
+        "GS",
+        "JPM",
+        "LLY",
+        "MCD",
+        "META",
+        "MSFT",
+        "MU",
+        "NFLX",
+        "NVDA",
+        "QQQ",
+        "SPY",
+        "TSLA"
+      ],
+      "skipped": {
+        "missing_ohlcv_snapshot": 24
+      },
+      "candidate_count_by_sector": {
+        "Communication Services": 29,
+        "Consumer Discretionary": 54,
+        "ETF": 11,
+        "Financials": 28,
+        "Healthcare": 1,
+        "Industrials": 1,
+        "Technology": 144
+      },
+      "top_event_tickers": [
+        [
+          "NFLX",
+          29
+        ],
+        [
+          "META",
+          29
+        ],
+        [
+          "TSLA",
+          26
+        ],
+        [
+          "AMD",
+          25
+        ],
+        [
+          "NVDA",
+          24
+        ],
+        [
+          "COIN",
+          22
+        ],
+        [
+          "APP",
+          18
+        ],
+        [
+          "MCD",
+          15
+        ],
+        [
+          "AMZN",
+          13
+        ],
+        [
+          "MU",
+          12
+        ],
+        [
+          "CRDO",
+          11
+        ],
+        [
+          "QQQ",
+          10
+        ]
+      ],
+      "same_day_ab_overlap_count": 7,
+      "same_day_ab_overlap_rate": 0.0261,
+      "ticker_history_ab_overlap_count": 178,
+      "ticker_history_ab_overlap_rate": 0.6642,
+      "outside_production_event_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 253,
+          "avg": 0.005428,
+          "median": 0.006334,
+          "win_rate": 0.6364,
+          "p10": -0.025197,
+          "p25": -0.009645,
+          "p50": 0.006334,
+          "p75": 0.017256,
+          "p90": 0.036773
+        },
+        "fwd_5d": {
+          "count": 192,
+          "avg": 0.024379,
+          "median": 0.017342,
+          "win_rate": 0.5833,
+          "p10": -0.066537,
+          "p25": -0.029994,
+          "p50": 0.017534,
+          "p75": 0.06735,
+          "p90": 0.1361
+        },
+        "fwd_10d": {
+          "count": 123,
+          "avg": 0.014544,
+          "median": -0.011221,
+          "win_rate": 0.4472,
+          "p10": -0.135157,
+          "p25": -0.062979,
+          "p50": -0.011221,
+          "p75": 0.098422,
+          "p90": 0.203371
+        },
+        "fwd_20d": {
+          "count": 102,
+          "avg": -0.001216,
+          "median": -0.014345,
+          "win_rate": 0.4706,
+          "p10": -0.109629,
+          "p25": -0.076292,
+          "p50": -0.016382,
+          "p75": 0.05663,
+          "p90": 0.160671
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 246,
+          "avg": 0.005556,
+          "median": 0.00645,
+          "win_rate": 0.6463,
+          "p10": -0.025486,
+          "p25": -0.008161,
+          "p50": 0.006334,
+          "p75": 0.017518,
+          "p90": 0.036401
+        },
+        "fwd_5d": {
+          "count": 187,
+          "avg": 0.024762,
+          "median": 0.017534,
+          "win_rate": 0.5829,
+          "p10": -0.059407,
+          "p25": -0.029994,
+          "p50": 0.017534,
+          "p75": 0.069183,
+          "p90": 0.1361
+        },
+        "fwd_10d": {
+          "count": 121,
+          "avg": 0.016555,
+          "median": -0.010497,
+          "win_rate": 0.4545,
+          "p10": -0.135157,
+          "p25": -0.059453,
+          "p50": -0.010497,
+          "p75": 0.098422,
+          "p90": 0.203371
+        },
+        "fwd_20d": {
+          "count": 100,
+          "avg": 0.000517,
+          "median": -0.01225,
+          "win_rate": 0.48,
+          "p10": -0.109629,
+          "p25": -0.068414,
+          "p50": -0.012192,
+          "p75": 0.05663,
+          "p90": 0.160671
+        }
+      },
+      "sample_candidates": [
+        {
+          "date": "2026-01-23",
+          "ticker": "TSLA",
+          "sector": "Consumer Discretionary",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 26919751121.12,
+          "fwd_5d": -0.041531,
+          "fwd_10d": -0.08451,
+          "title": "Tesla Inc. (TSLA) Barclays Believes Stock is Currently Overvalued with $360 Target Forecast - The Globe and Mail"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 2245249934.57,
+          "fwd_5d": -0.102374,
+          "fwd_10d": -0.238903,
+          "title": "Coinbase\u2019s Policy Shifts And Partnerships Reframe The COIN Investment Story - simplywall.st"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "NFLX",
+          "sector": "Communication Services",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 3901177827.4,
+          "fwd_5d": -0.030539,
+          "fwd_10d": -0.045518,
+          "title": "NFLX Stock Today: Q4 Beat, Buybacks Paused for Warner Deal January 23 - Meyka"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "GOOG",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 6321601120.87,
+          "fwd_5d": 0.030752,
+          "fwd_10d": -0.016229,
+          "title": "Alphabet (GOOG) stock rises after Raymond James upgrade as judge keeps consumer antitrust case alive - TechStock\u00b2"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "GE",
+          "sector": "Industrials",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 1456349495.97,
+          "fwd_5d": 0.043965,
+          "fwd_10d": 0.09232,
+          "title": "Earnings live: Intel stock drops, GE Aerospace tumbles, Capital One announces Brex acquisition - Yahoo Finance"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "QQQ",
+          "sector": "ETF",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 34959080710.69,
+          "fwd_5d": -0.001365,
+          "fwd_10d": -0.020989,
+          "title": "Assessing Invesco (IVZ) Valuation After RBC Capital\u2019s Outperform Upgrade And QQQ ETF Earnings Tailwind - Yahoo Finance"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "AAPL",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 11768891895.14,
+          "fwd_5d": 0.046122,
+          "fwd_10d": 0.121271,
+          "title": "Apple Inc. (AAPL) Stock: Faces India Antitrust Fight Over App Store Financial Disclosures - CoinCentral"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "APP",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 2434741375.69,
+          "fwd_5d": -0.097824,
+          "fwd_10d": -0.224424,
+          "title": "Apple Inc. (AAPL) Stock: Faces India Antitrust Fight Over App Store Financial Disclosures - CoinCentral"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "AAPL",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 11768891895.14,
+          "fwd_5d": 0.046122,
+          "fwd_10d": 0.121271,
+          "title": "AAPL, AMZN and GOOG Forecast \u2013 Major Tech Stocks Await Earnings and Surf Headlines - FXEmpire"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "GOOG",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 6321601120.87,
+          "fwd_5d": 0.030752,
+          "fwd_10d": -0.016229,
+          "title": "AAPL, AMZN and GOOG Forecast \u2013 Major Tech Stocks Await Earnings and Surf Headlines - FXEmpire"
+        },
+        {
+          "date": "2026-01-23",
+          "ticker": "AMZN",
+          "sector": "Consumer Discretionary",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 9934904702.42,
+          "fwd_5d": 0.000585,
+          "fwd_10d": -0.120589,
+          "title": "AAPL, AMZN and GOOG Forecast \u2013 Major Tech Stocks Await Earnings and Surf Headlines - FXEmpire"
+        },
+        {
+          "date": "2026-01-30",
+          "ticker": "APP",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 2434741375.69,
+          "fwd_5d": -0.140327,
+          "fwd_10d": -0.174505,
+          "title": "0005.HK Stock Today: January 31 HK App Outage Triggers HKMA Probe - Meyka"
+        },
+        {
+          "date": "2026-01-30",
+          "ticker": "AAPL",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 11768891895.14,
+          "fwd_5d": 0.071836,
+          "fwd_10d": -0.013337,
+          "title": "AAPL Earnings: Apple Stock Rises after Smashing Estimates - TipRanks"
+        },
+        {
+          "date": "2026-02-14",
+          "ticker": "MCD",
+          "sector": "Consumer Discretionary",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 955173325.85,
+          "fwd_5d": 0.021308,
+          "fwd_10d": 0.022102,
+          "title": "A Look At McDonald's (MCD) Valuation After Strong Q4 Results And Higher Analyst Confidence - simplywall.st"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "AMZN",
+          "sector": "Consumer Discretionary",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 9934904702.42,
+          "fwd_5d": 0.036838,
+          "fwd_10d": 0.037683,
+          "title": "Coatue expands positions in NFLX, AMZN and cuts in GOOGL, META, among other Q4 moves (NFLX:NASDAQ) - Seeking Alpha"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "META",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 9395181785.74,
+          "fwd_5d": 1.6e-05,
+          "fwd_10d": 0.024699,
+          "title": "Coatue expands positions in NFLX, AMZN and cuts in GOOGL, META, among other Q4 moves (NFLX:NASDAQ) - Seeking Alpha"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "NFLX",
+          "sector": "Communication Services",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 3901177827.4,
+          "fwd_5d": 0.013507,
+          "fwd_10d": 0.268831,
+          "title": "Coatue expands positions in NFLX, AMZN and cuts in GOOGL, META, among other Q4 moves (NFLX:NASDAQ) - Seeking Alpha"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "APP",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 2434741375.69,
+          "fwd_5d": 0.044742,
+          "fwd_10d": 0.166082,
+          "title": "KimKim launches app to share travel details with clients - Travel Weekly"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 2245249934.57,
+          "fwd_5d": -0.024033,
+          "fwd_10d": 0.098422,
+          "title": "Mizuho Securities Cuts Price Target for MSTR, COIN, HOOD Stocks - CoinGape"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "MSFT",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 12701800960.91,
+          "fwd_5d": -0.017568,
+          "fwd_10d": 0.020138,
+          "title": "MSFT, GOOG and AMZN Forecast \u2013 Major Tech Stocks Looking to Recover After President\u2019s Day - FXEmpire"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "GOOG",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 6321601120.87,
+          "fwd_5d": 0.026749,
+          "fwd_10d": 0.002444,
+          "title": "MSFT, GOOG and AMZN Forecast \u2013 Major Tech Stocks Looking to Recover After President\u2019s Day - FXEmpire"
+        },
+        {
+          "date": "2026-02-17",
+          "ticker": "AMZN",
+          "sector": "Consumer Discretionary",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 9934904702.42,
+          "fwd_5d": 0.036838,
+          "fwd_10d": 0.037683,
+          "title": "MSFT, GOOG and AMZN Forecast \u2013 Major Tech Stocks Looking to Recover After President\u2019s Day - FXEmpire"
+        },
+        {
+          "date": "2026-02-19",
+          "ticker": "NVDA",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 32334223817.75,
+          "fwd_5d": -0.016019,
+          "fwd_10d": -0.024268,
+          "title": "Ahead of Q4 Earnings, Let\u2019s Look at Who Owns Nvidia Stock (NVDA) - TipRanks"
+        },
+        {
+          "date": "2026-02-19",
+          "ticker": "COIN",
+          "sector": "Financials",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 2245249934.57,
+          "fwd_5d": 0.091117,
+          "fwd_10d": 0.239665,
+          "title": "Why Coinbase (COIN) Is Up 7.1% After Q4 Loss, Big Buyback and New ESOP Shelf Registration - simplywall.st"
+        },
+        {
+          "date": "2026-02-19",
+          "ticker": "NVDA",
+          "sector": "Technology",
+          "same_day_ab_overlap": false,
+          "in_production_universe": true,
+          "median_dollar_volume": 32334223817.75,
+          "fwd_5d": -0.016019,
+          "fwd_10d": -0.024268,
+          "title": "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks"
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 127,
+      "production_universe_count": 44,
+      "raw_event_records": 0,
+      "qualified_event_records": 0,
+      "qualified_unique_tickers": 0,
+      "qualified_tickers": [],
+      "skipped": {},
+      "candidate_count_by_sector": {},
+      "top_event_tickers": [],
+      "same_day_ab_overlap_count": 0,
+      "same_day_ab_overlap_rate": null,
+      "ticker_history_ab_overlap_count": 0,
+      "ticker_history_ab_overlap_rate": null,
+      "outside_production_event_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_5d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_10d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_20d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_5d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_10d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_20d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        }
+      },
+      "sample_candidates": []
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "snapshot_ticker_count": 52,
+      "snapshot_metadata_ticker_count": 52,
+      "expected_trading_days": 138,
+      "production_universe_count": 44,
+      "raw_event_records": 0,
+      "qualified_event_records": 0,
+      "qualified_unique_tickers": 0,
+      "qualified_tickers": [],
+      "skipped": {},
+      "candidate_count_by_sector": {},
+      "top_event_tickers": [],
+      "same_day_ab_overlap_count": 0,
+      "same_day_ab_overlap_rate": null,
+      "ticker_history_ab_overlap_count": 0,
+      "ticker_history_ab_overlap_rate": null,
+      "outside_production_event_count": 0,
+      "outside_production_unique_tickers": [],
+      "forward_return_distribution": {
+        "fwd_1d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_5d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_10d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_20d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        }
+      },
+      "non_same_day_overlap_forward_return_distribution": {
+        "fwd_1d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_5d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_10d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        },
+        "fwd_20d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p10": null,
+          "p25": null,
+          "p50": null,
+          "p75": null,
+          "p90": null
+        }
+      },
+      "sample_candidates": []
+    }
+  ]
+}

@@ -1,0 +1,378 @@
+{
+  "experiment_id": "exp-20260426-012",
+  "timestamp": "2026-04-25T23:56:52",
+  "hypothesis": "Requiring real cap room on the checkpoint day may remove noisy unexecutable follow-through add-ons and improve the strict 25% add-on candidate's EV/risk tradeoff.",
+  "single_causal_variable": "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM",
+  "fixed_parameters": {
+    "REGIME_AWARE_EXIT": true,
+    "ADDON_ENABLED": true,
+    "ADDON_CHECKPOINT_DAYS": 2,
+    "ADDON_MIN_UNREALIZED_PCT": 0.02,
+    "ADDON_MIN_RS_VS_SPY": 0.0,
+    "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+    "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false
+  },
+  "windows": {
+    "late_strong": {
+      "date_range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "baseline": {
+        "expected_value_score": 1.5039,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35471.49,
+        "total_return_pct": 0.3547,
+        "max_drawdown_pct": 0.0281,
+        "trade_count": 21,
+        "win_rate": 0.7143,
+        "addons_scheduled": 0,
+        "addons_executed": 0,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 0
+      },
+      "addon_25pct": {
+        "expected_value_score": 1.5205,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35857.0,
+        "total_return_pct": 0.3586,
+        "max_drawdown_pct": 0.0281,
+        "trade_count": 21,
+        "win_rate": 0.7143,
+        "addons_scheduled": 8,
+        "addons_executed": 5,
+        "addons_skipped": 3,
+        "addons_checkpoint_rejected": 0
+      },
+      "addon_25pct_checkpoint_cap_room": {
+        "expected_value_score": 1.52,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35846.12,
+        "total_return_pct": 0.3585,
+        "max_drawdown_pct": 0.0281,
+        "trade_count": 21,
+        "win_rate": 0.7143,
+        "addons_scheduled": 4,
+        "addons_executed": 4,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 4
+      },
+      "delta_vs_baseline": {
+        "addon_25pct": {
+          "expected_value_score": 0.0166,
+          "sharpe_daily": 0.0,
+          "total_pnl": 385.51,
+          "total_return_pct": 0.0039,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "addon_25pct_checkpoint_cap_room": {
+          "expected_value_score": 0.0161,
+          "sharpe_daily": 0.0,
+          "total_pnl": 374.63,
+          "total_return_pct": 0.0038,
+          "max_drawdown_pct": 0.0,
+          "trade_count": 0,
+          "win_rate": 0.0
+        }
+      },
+      "delta_vs_addon_25pct": {
+        "expected_value_score": -0.0005,
+        "sharpe_daily": 0.0,
+        "total_pnl": -10.88,
+        "total_return_pct": -0.0001,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "checkpoint_rejected_events": [
+        {
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "checkpoint_date": "2026-01-26",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.04648,
+          "rs_vs_spy": 0.023132,
+          "original_shares": 62,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 464.7,
+          "requested_shares": 15
+        },
+        {
+          "ticker": "IAU",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "checkpoint_date": "2026-01-26",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.046394,
+          "rs_vs_spy": 0.022863,
+          "original_shares": 303,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 95.18,
+          "requested_shares": 75
+        },
+        {
+          "ticker": "CVX",
+          "strategy": "breakout_long",
+          "sector": "Energy",
+          "checkpoint_date": "2026-02-04",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.044366,
+          "rs_vs_spy": 0.05463,
+          "original_shares": 170,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 179.4743,
+          "requested_shares": 42
+        },
+        {
+          "ticker": "XOM",
+          "strategy": "breakout_long",
+          "sector": "Energy",
+          "checkpoint_date": "2026-02-06",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.033672,
+          "rs_vs_spy": 0.003436,
+          "original_shares": 211,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 148.0631,
+          "requested_shares": 52
+        }
+      ]
+    },
+    "mid_weak": {
+      "date_range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "baseline": {
+        "expected_value_score": 0.4773,
+        "sharpe_daily": 2.35,
+        "total_pnl": 20307.9,
+        "total_return_pct": 0.2031,
+        "max_drawdown_pct": 0.0247,
+        "trade_count": 21,
+        "win_rate": 0.4762,
+        "addons_scheduled": 0,
+        "addons_executed": 0,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 0
+      },
+      "addon_25pct": {
+        "expected_value_score": 0.5001,
+        "sharpe_daily": 2.36,
+        "total_pnl": 21186.78,
+        "total_return_pct": 0.2119,
+        "max_drawdown_pct": 0.0248,
+        "trade_count": 21,
+        "win_rate": 0.4762,
+        "addons_scheduled": 7,
+        "addons_executed": 5,
+        "addons_skipped": 2,
+        "addons_checkpoint_rejected": 0
+      },
+      "addon_25pct_checkpoint_cap_room": {
+        "expected_value_score": 0.5001,
+        "sharpe_daily": 2.36,
+        "total_pnl": 21186.78,
+        "total_return_pct": 0.2119,
+        "max_drawdown_pct": 0.0248,
+        "trade_count": 21,
+        "win_rate": 0.4762,
+        "addons_scheduled": 5,
+        "addons_executed": 5,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 2
+      },
+      "delta_vs_baseline": {
+        "addon_25pct": {
+          "expected_value_score": 0.0228,
+          "sharpe_daily": 0.01,
+          "total_pnl": 878.88,
+          "total_return_pct": 0.0088,
+          "max_drawdown_pct": 0.0001,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "addon_25pct_checkpoint_cap_room": {
+          "expected_value_score": 0.0228,
+          "sharpe_daily": 0.01,
+          "total_pnl": 878.88,
+          "total_return_pct": 0.0088,
+          "max_drawdown_pct": 0.0001,
+          "trade_count": 0,
+          "win_rate": 0.0
+        }
+      },
+      "delta_vs_addon_25pct": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "checkpoint_rejected_events": [
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "checkpoint_date": "2025-06-05",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.037073,
+          "rs_vs_spy": 0.037225,
+          "original_shares": 791,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 32.45,
+          "requested_shares": 197
+        },
+        {
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "checkpoint_date": "2025-08-08",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.091674,
+          "rs_vs_spy": 0.034374,
+          "original_shares": 1,
+          "status": "rejected_checkpoint_no_requested_shares",
+          "checkpoint_close": 186.96,
+          "requested_shares": 0
+        }
+      ]
+    },
+    "old_thin": {
+      "date_range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "baseline": {
+        "expected_value_score": 0.131,
+        "sharpe_daily": 1.15,
+        "total_pnl": 11388.73,
+        "total_return_pct": 0.1139,
+        "max_drawdown_pct": 0.0456,
+        "trade_count": 24,
+        "win_rate": 0.375,
+        "addons_scheduled": 0,
+        "addons_executed": 0,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 0
+      },
+      "addon_25pct": {
+        "expected_value_score": 0.1363,
+        "sharpe_daily": 1.17,
+        "total_pnl": 11648.23,
+        "total_return_pct": 0.1165,
+        "max_drawdown_pct": 0.0457,
+        "trade_count": 24,
+        "win_rate": 0.375,
+        "addons_scheduled": 6,
+        "addons_executed": 4,
+        "addons_skipped": 2,
+        "addons_checkpoint_rejected": 0
+      },
+      "addon_25pct_checkpoint_cap_room": {
+        "expected_value_score": 0.1363,
+        "sharpe_daily": 1.17,
+        "total_pnl": 11648.23,
+        "total_return_pct": 0.1165,
+        "max_drawdown_pct": 0.0457,
+        "trade_count": 24,
+        "win_rate": 0.375,
+        "addons_scheduled": 4,
+        "addons_executed": 4,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 2
+      },
+      "delta_vs_baseline": {
+        "addon_25pct": {
+          "expected_value_score": 0.0053,
+          "sharpe_daily": 0.02,
+          "total_pnl": 259.5,
+          "total_return_pct": 0.0026,
+          "max_drawdown_pct": 0.0001,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "addon_25pct_checkpoint_cap_room": {
+          "expected_value_score": 0.0053,
+          "sharpe_daily": 0.02,
+          "total_pnl": 259.5,
+          "total_return_pct": 0.0026,
+          "max_drawdown_pct": 0.0001,
+          "trade_count": 0,
+          "win_rate": 0.0
+        }
+      },
+      "delta_vs_addon_25pct": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0
+      },
+      "checkpoint_rejected_events": [
+        {
+          "ticker": "BKNG",
+          "strategy": "trend_long",
+          "sector": "Consumer Discretionary",
+          "checkpoint_date": "2024-11-05",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.05214,
+          "rs_vs_spy": 0.025015,
+          "original_shares": 132,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 194.3828,
+          "requested_shares": 33
+        },
+        {
+          "ticker": "JPM",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "checkpoint_date": "2025-01-21",
+          "checkpoint_days": 2,
+          "unrealized_pct": 0.035046,
+          "rs_vs_spy": 0.015166,
+          "original_shares": 111,
+          "status": "rejected_checkpoint_position_cap",
+          "checkpoint_close": 256.4327,
+          "requested_shares": 27
+        }
+      ]
+    }
+  },
+  "summary_vs_baseline": {
+    "addon_25pct": {
+      "ev_improved_windows": 3,
+      "material_regression_windows": 0,
+      "ev_delta_sum": 0.0447,
+      "pnl_delta_sum": 1523.89,
+      "max_drawdown_worsening": 0.0001
+    },
+    "addon_25pct_checkpoint_cap_room": {
+      "ev_improved_windows": 3,
+      "material_regression_windows": 0,
+      "ev_delta_sum": 0.0442,
+      "pnl_delta_sum": 1513.01,
+      "max_drawdown_worsening": 0.0001
+    }
+  },
+  "summary_vs_addon_25pct": {
+    "ev_improved_windows": 0,
+    "material_regression_windows": 0,
+    "ev_delta_sum": -0.0005,
+    "pnl_delta_sum": -10.88,
+    "max_drawdown_worsening": 0.0
+  },
+  "decision": "rejected_variant",
+  "production_promotion": false,
+  "production_promotion_reason": "This tests cap-room semantics only; production add-ons remain default-off."
+}

@@ -1,0 +1,765 @@
+{
+  "experiment_id": "exp-20260426-027",
+  "timestamp": "2026-04-26T13:10:55+00:00",
+  "hypothesis": "Strict day-2 follow-through add-ons may be under-executed by the existing single-position cap; add-on-only cap headroom may capture skipped confirmed-winner upside.",
+  "change_type": "capital_allocation",
+  "single_causal_variable": "strict day2 follow-through add-on-only cap headroom",
+  "fixed_addon_config": {
+    "REGIME_AWARE_EXIT": true,
+    "ADDON_ENABLED": true,
+    "ADDON_CHECKPOINT_DAYS": 2,
+    "ADDON_MIN_UNREALIZED_PCT": 0.02,
+    "ADDON_MIN_RS_VS_SPY": 0.0,
+    "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+    "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": false
+  },
+  "production_max_position_pct": 0.25,
+  "addon_only_cap_variants": {
+    "addon_cap_27_5pct": 0.275,
+    "addon_cap_30pct": 0.3,
+    "addon_cap_35pct": 0.35
+  },
+  "parity_warning": "Shadow mode only. This locally patches backtester.MAX_POSITION_PCT around add-on replay runs; no production constants or shared strategy modules are modified.",
+  "windows": {
+    "late_strong": {
+      "date_range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "market_regime_summary": "slow-melt bull / AI-beta continuation",
+      "baseline": {
+        "expected_value_score": 1.5039,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35471.49,
+        "total_return_pct": 0.3547,
+        "max_drawdown_pct": 0.0281,
+        "trade_count": 21,
+        "win_rate": 0.7143,
+        "addons_scheduled": 0,
+        "addons_executed": 0,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 0
+      },
+      "normal_25pct_addon": {
+        "expected_value_score": 1.5205,
+        "sharpe_daily": 4.24,
+        "total_pnl": 35857.0,
+        "total_return_pct": 0.3586,
+        "max_drawdown_pct": 0.0281,
+        "trade_count": 21,
+        "win_rate": 0.7143,
+        "addons_scheduled": 8,
+        "addons_executed": 5,
+        "addons_skipped": 3,
+        "addons_checkpoint_rejected": 0
+      },
+      "normal_25pct_delta_vs_baseline": {
+        "expected_value_score": 0.0166,
+        "sharpe_daily": 0.0,
+        "total_pnl": 385.51,
+        "total_return_pct": 0.0039,
+        "max_drawdown_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "addons_executed": 5,
+        "addons_skipped": 3
+      },
+      "normal_status_counts": {
+        "executed": 5,
+        "skipped_position_cap": 3
+      },
+      "variants": {
+        "addon_cap_27_5pct": {
+          "addon_only_cap": 0.275,
+          "metrics": {
+            "expected_value_score": 1.5564,
+            "sharpe_daily": 4.27,
+            "total_pnl": 36449.89,
+            "total_return_pct": 0.3645,
+            "max_drawdown_pct": 0.0281,
+            "trade_count": 21,
+            "win_rate": 0.7143,
+            "addons_scheduled": 8,
+            "addons_executed": 6,
+            "addons_skipped": 2,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0359,
+            "sharpe_daily": 0.03,
+            "total_pnl": 592.89,
+            "total_return_pct": 0.0059,
+            "max_drawdown_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 6,
+            "skipped_portfolio_heat_cap": 2
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "sector": "Energy",
+              "checkpoint_date": "2026-02-06",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.033672,
+              "rs_vs_spy": 0.003436,
+              "original_shares": 211,
+              "scheduled_fill_date": "2026-02-09",
+              "status": "executed",
+              "raw_open": 148.2717,
+              "entry_fill": 148.3458,
+              "requested_shares": 52,
+              "addon_shares": 15,
+              "new_total_shares": 226,
+              "new_avg_entry": 143.58,
+              "matched_exit_date": "2026-03-02",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 3420.02
+            }
+          ]
+        },
+        "addon_cap_30pct": {
+          "addon_only_cap": 0.3,
+          "metrics": {
+            "expected_value_score": 1.5748,
+            "sharpe_daily": 4.27,
+            "total_pnl": 36883.33,
+            "total_return_pct": 0.3688,
+            "max_drawdown_pct": 0.0281,
+            "trade_count": 21,
+            "win_rate": 0.7143,
+            "addons_scheduled": 8,
+            "addons_executed": 6,
+            "addons_skipped": 2,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0543,
+            "sharpe_daily": 0.03,
+            "total_pnl": 1026.33,
+            "total_return_pct": 0.0102,
+            "max_drawdown_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 6,
+            "skipped_portfolio_heat_cap": 2
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "sector": "Energy",
+              "checkpoint_date": "2026-02-06",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.033672,
+              "rs_vs_spy": 0.003436,
+              "original_shares": 211,
+              "scheduled_fill_date": "2026-02-09",
+              "status": "executed",
+              "raw_open": 148.2717,
+              "entry_fill": 148.3458,
+              "requested_shares": 52,
+              "addon_shares": 36,
+              "new_total_shares": 247,
+              "new_avg_entry": 143.98,
+              "matched_exit_date": "2026-03-02",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 3639.01
+            }
+          ]
+        },
+        "addon_cap_35pct": {
+          "addon_only_cap": 0.35,
+          "metrics": {
+            "expected_value_score": 1.5855,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37128.69,
+            "total_return_pct": 0.3713,
+            "max_drawdown_pct": 0.0281,
+            "trade_count": 21,
+            "win_rate": 0.7143,
+            "addons_scheduled": 8,
+            "addons_executed": 6,
+            "addons_skipped": 2,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.065,
+            "sharpe_daily": 0.03,
+            "total_pnl": 1271.69,
+            "total_return_pct": 0.0127,
+            "max_drawdown_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 6,
+            "skipped_portfolio_heat_cap": 2
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "sector": "Energy",
+              "checkpoint_date": "2026-02-06",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.033672,
+              "rs_vs_spy": 0.003436,
+              "original_shares": 211,
+              "scheduled_fill_date": "2026-02-09",
+              "status": "executed",
+              "raw_open": 148.2717,
+              "entry_fill": 148.3458,
+              "requested_shares": 52,
+              "addon_shares": 52,
+              "new_total_shares": 263,
+              "new_avg_entry": 144.25,
+              "matched_exit_date": "2026-03-02",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 3803.73
+            }
+          ]
+        }
+      }
+    },
+    "mid_weak": {
+      "date_range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "market_regime_summary": "rotation-heavy bull with crowding risk",
+      "baseline": {
+        "expected_value_score": 0.4773,
+        "sharpe_daily": 2.35,
+        "total_pnl": 20307.9,
+        "total_return_pct": 0.2031,
+        "max_drawdown_pct": 0.0247,
+        "trade_count": 21,
+        "win_rate": 0.4762,
+        "addons_scheduled": 0,
+        "addons_executed": 0,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 0
+      },
+      "normal_25pct_addon": {
+        "expected_value_score": 0.5001,
+        "sharpe_daily": 2.36,
+        "total_pnl": 21186.78,
+        "total_return_pct": 0.2119,
+        "max_drawdown_pct": 0.0248,
+        "trade_count": 21,
+        "win_rate": 0.4762,
+        "addons_scheduled": 7,
+        "addons_executed": 5,
+        "addons_skipped": 2,
+        "addons_checkpoint_rejected": 0
+      },
+      "normal_25pct_delta_vs_baseline": {
+        "expected_value_score": 0.0228,
+        "sharpe_daily": 0.01,
+        "total_pnl": 878.88,
+        "total_return_pct": 0.0088,
+        "max_drawdown_pct": 0.0001,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "addons_executed": 5,
+        "addons_skipped": 2
+      },
+      "normal_status_counts": {
+        "executed": 5,
+        "skipped_no_requested_shares": 1,
+        "skipped_position_cap": 1
+      },
+      "variants": {
+        "addon_cap_27_5pct": {
+          "addon_only_cap": 0.275,
+          "metrics": {
+            "expected_value_score": 0.5081,
+            "sharpe_daily": 2.36,
+            "total_pnl": 21533.95,
+            "total_return_pct": 0.2153,
+            "max_drawdown_pct": 0.0253,
+            "trade_count": 21,
+            "win_rate": 0.4762,
+            "addons_scheduled": 7,
+            "addons_executed": 6,
+            "addons_skipped": 1,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.008,
+            "sharpe_daily": 0.0,
+            "total_pnl": 347.17,
+            "total_return_pct": 0.0034,
+            "max_drawdown_pct": 0.0005,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 6,
+            "skipped_no_requested_shares": 1
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "checkpoint_date": "2025-06-05",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.037073,
+              "rs_vs_spy": 0.037225,
+              "original_shares": 791,
+              "scheduled_fill_date": "2025-06-06",
+              "status": "executed",
+              "raw_open": 32.92,
+              "entry_fill": 32.9365,
+              "requested_shares": 197,
+              "addon_shares": 44,
+              "new_total_shares": 835,
+              "new_avg_entry": 31.38,
+              "matched_exit_date": "2025-07-23",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 3579.5
+            }
+          ]
+        },
+        "addon_cap_30pct": {
+          "addon_only_cap": 0.3,
+          "metrics": {
+            "expected_value_score": 0.5168,
+            "sharpe_daily": 2.36,
+            "total_pnl": 21902.53,
+            "total_return_pct": 0.219,
+            "max_drawdown_pct": 0.0264,
+            "trade_count": 21,
+            "win_rate": 0.4762,
+            "addons_scheduled": 7,
+            "addons_executed": 6,
+            "addons_skipped": 1,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0167,
+            "sharpe_daily": 0.0,
+            "total_pnl": 715.75,
+            "total_return_pct": 0.0071,
+            "max_drawdown_pct": 0.0016,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 6,
+            "skipped_no_requested_shares": 1
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "checkpoint_date": "2025-06-05",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.037073,
+              "rs_vs_spy": 0.037225,
+              "original_shares": 791,
+              "scheduled_fill_date": "2025-06-06",
+              "status": "executed",
+              "raw_open": 32.92,
+              "entry_fill": 32.9365,
+              "requested_shares": 197,
+              "addon_shares": 120,
+              "new_total_shares": 911,
+              "new_avg_entry": 31.51,
+              "matched_exit_date": "2025-07-23",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 3786.87
+            }
+          ]
+        },
+        "addon_cap_35pct": {
+          "addon_only_cap": 0.35,
+          "metrics": {
+            "expected_value_score": 0.5218,
+            "sharpe_daily": 2.36,
+            "total_pnl": 22108.5,
+            "total_return_pct": 0.2211,
+            "max_drawdown_pct": 0.0276,
+            "trade_count": 21,
+            "win_rate": 0.4762,
+            "addons_scheduled": 7,
+            "addons_executed": 6,
+            "addons_skipped": 1,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0217,
+            "sharpe_daily": 0.0,
+            "total_pnl": 921.72,
+            "total_return_pct": 0.0092,
+            "max_drawdown_pct": 0.0028,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 6,
+            "skipped_no_requested_shares": 1
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "checkpoint_date": "2025-06-05",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.037073,
+              "rs_vs_spy": 0.037225,
+              "original_shares": 791,
+              "scheduled_fill_date": "2025-06-06",
+              "status": "executed",
+              "raw_open": 32.92,
+              "entry_fill": 32.9365,
+              "requested_shares": 197,
+              "addon_shares": 197,
+              "new_total_shares": 988,
+              "new_avg_entry": 31.62,
+              "matched_exit_date": "2025-07-23",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 3998.27
+            }
+          ]
+        }
+      }
+    },
+    "old_thin": {
+      "date_range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "market_regime_summary": "mixed-to-weak macro tape",
+      "baseline": {
+        "expected_value_score": 0.131,
+        "sharpe_daily": 1.15,
+        "total_pnl": 11388.73,
+        "total_return_pct": 0.1139,
+        "max_drawdown_pct": 0.0456,
+        "trade_count": 24,
+        "win_rate": 0.375,
+        "addons_scheduled": 0,
+        "addons_executed": 0,
+        "addons_skipped": 0,
+        "addons_checkpoint_rejected": 0
+      },
+      "normal_25pct_addon": {
+        "expected_value_score": 0.1363,
+        "sharpe_daily": 1.17,
+        "total_pnl": 11648.23,
+        "total_return_pct": 0.1165,
+        "max_drawdown_pct": 0.0457,
+        "trade_count": 24,
+        "win_rate": 0.375,
+        "addons_scheduled": 6,
+        "addons_executed": 4,
+        "addons_skipped": 2,
+        "addons_checkpoint_rejected": 0
+      },
+      "normal_25pct_delta_vs_baseline": {
+        "expected_value_score": 0.0053,
+        "sharpe_daily": 0.02,
+        "total_pnl": 259.5,
+        "total_return_pct": 0.0026,
+        "max_drawdown_pct": 0.0001,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "addons_executed": 4,
+        "addons_skipped": 2
+      },
+      "normal_status_counts": {
+        "executed": 4,
+        "skipped_position_cap": 2
+      },
+      "variants": {
+        "addon_cap_27_5pct": {
+          "addon_only_cap": 0.275,
+          "metrics": {
+            "expected_value_score": 0.1432,
+            "sharpe_daily": 1.19,
+            "total_pnl": 12032.74,
+            "total_return_pct": 0.1203,
+            "max_drawdown_pct": 0.0455,
+            "trade_count": 24,
+            "win_rate": 0.375,
+            "addons_scheduled": 6,
+            "addons_executed": 6,
+            "addons_skipped": 0,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0069,
+            "sharpe_daily": 0.02,
+            "total_pnl": 384.51,
+            "total_return_pct": 0.0038,
+            "max_drawdown_pct": -0.0002,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 2,
+            "addons_skipped": -2
+          },
+          "status_counts": {
+            "executed": 6
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "BKNG",
+              "strategy": "trend_long",
+              "sector": "Consumer Discretionary",
+              "checkpoint_date": "2024-11-05",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.05214,
+              "rs_vs_spy": 0.025015,
+              "original_shares": 132,
+              "scheduled_fill_date": "2024-11-06",
+              "status": "executed",
+              "raw_open": 199.1944,
+              "entry_fill": 199.294,
+              "requested_shares": 33,
+              "addon_shares": 3,
+              "new_total_shares": 135,
+              "new_avg_entry": 185.07,
+              "matched_exit_date": "2024-11-21",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 2129.46
+            },
+            {
+              "ticker": "JPM",
+              "strategy": "breakout_long",
+              "sector": "Financials",
+              "checkpoint_date": "2025-01-21",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.035046,
+              "rs_vs_spy": 0.015166,
+              "original_shares": 112,
+              "scheduled_fill_date": "2025-01-22",
+              "status": "executed",
+              "raw_open": 256.3059,
+              "entry_fill": 256.4341,
+              "requested_shares": 28,
+              "addon_shares": 6,
+              "new_total_shares": 118,
+              "new_avg_entry": 248.19,
+              "matched_exit_date": "2025-02-06",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 2147.68
+            }
+          ]
+        },
+        "addon_cap_30pct": {
+          "addon_only_cap": 0.3,
+          "metrics": {
+            "expected_value_score": 0.1479,
+            "sharpe_daily": 1.21,
+            "total_pnl": 12219.96,
+            "total_return_pct": 0.1222,
+            "max_drawdown_pct": 0.0455,
+            "trade_count": 24,
+            "win_rate": 0.375,
+            "addons_scheduled": 6,
+            "addons_executed": 5,
+            "addons_skipped": 1,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0116,
+            "sharpe_daily": 0.04,
+            "total_pnl": 571.73,
+            "total_return_pct": 0.0057,
+            "max_drawdown_pct": -0.0002,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 5,
+            "skipped_portfolio_heat_cap": 1
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "BKNG",
+              "strategy": "trend_long",
+              "sector": "Consumer Discretionary",
+              "checkpoint_date": "2024-11-05",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.05214,
+              "rs_vs_spy": 0.025015,
+              "original_shares": 132,
+              "scheduled_fill_date": "2024-11-06",
+              "status": "executed",
+              "raw_open": 199.1944,
+              "entry_fill": 199.294,
+              "requested_shares": 33,
+              "addon_shares": 15,
+              "new_total_shares": 147,
+              "new_avg_entry": 186.23,
+              "matched_exit_date": "2024-11-21",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 2148.23
+            },
+            {
+              "ticker": "JPM",
+              "strategy": "breakout_long",
+              "sector": "Financials",
+              "checkpoint_date": "2025-01-21",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.035046,
+              "rs_vs_spy": 0.015166,
+              "original_shares": 112,
+              "scheduled_fill_date": "2025-01-22",
+              "status": "executed",
+              "raw_open": 256.3059,
+              "entry_fill": 256.4341,
+              "requested_shares": 28,
+              "addon_shares": 17,
+              "new_total_shares": 129,
+              "new_avg_entry": 248.89,
+              "matched_exit_date": "2025-02-06",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 2257.58
+            }
+          ]
+        },
+        "addon_cap_35pct": {
+          "addon_only_cap": 0.35,
+          "metrics": {
+            "expected_value_score": 0.1507,
+            "sharpe_daily": 1.22,
+            "total_pnl": 12346.07,
+            "total_return_pct": 0.1235,
+            "max_drawdown_pct": 0.0454,
+            "trade_count": 24,
+            "win_rate": 0.375,
+            "addons_scheduled": 6,
+            "addons_executed": 5,
+            "addons_skipped": 1,
+            "addons_checkpoint_rejected": 0
+          },
+          "delta_vs_normal_25pct_addon": {
+            "expected_value_score": 0.0144,
+            "sharpe_daily": 0.05,
+            "total_pnl": 697.84,
+            "total_return_pct": 0.007,
+            "max_drawdown_pct": -0.0003,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "addons_executed": 1,
+            "addons_skipped": -1
+          },
+          "status_counts": {
+            "executed": 5,
+            "skipped_portfolio_heat_cap": 1
+          },
+          "newly_executed_events": [
+            {
+              "ticker": "BKNG",
+              "strategy": "trend_long",
+              "sector": "Consumer Discretionary",
+              "checkpoint_date": "2024-11-05",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.05214,
+              "rs_vs_spy": 0.025015,
+              "original_shares": 132,
+              "scheduled_fill_date": "2024-11-06",
+              "status": "executed",
+              "raw_open": 199.1944,
+              "entry_fill": 199.294,
+              "requested_shares": 33,
+              "addon_shares": 28,
+              "new_total_shares": 160,
+              "new_avg_entry": 187.3,
+              "matched_exit_date": "2024-11-21",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 2167.0
+            },
+            {
+              "ticker": "JPM",
+              "strategy": "breakout_long",
+              "sector": "Financials",
+              "checkpoint_date": "2025-01-21",
+              "checkpoint_days": 2,
+              "unrealized_pct": 0.035046,
+              "rs_vs_spy": 0.015166,
+              "original_shares": 112,
+              "scheduled_fill_date": "2025-01-22",
+              "status": "executed",
+              "raw_open": 256.3059,
+              "entry_fill": 256.4341,
+              "requested_shares": 28,
+              "addon_shares": 28,
+              "new_total_shares": 140,
+              "new_avg_entry": 249.49,
+              "matched_exit_date": "2025-02-06",
+              "matched_exit_reason": "target",
+              "matched_trade_pnl": 2366.09
+            }
+          ]
+        }
+      }
+    }
+  },
+  "aggregate_by_variant": {
+    "addon_cap_27_5pct": {
+      "ev_delta_vs_normal_addon_sum": 0.0508,
+      "pnl_delta_vs_normal_addon_sum": 1324.57,
+      "maxdd_delta_vs_normal_addon_max": 0.0005,
+      "windows_improved_ev": 3,
+      "windows_regressed_ev": 0,
+      "newly_executed_count": 4
+    },
+    "addon_cap_30pct": {
+      "ev_delta_vs_normal_addon_sum": 0.0826,
+      "pnl_delta_vs_normal_addon_sum": 2313.81,
+      "maxdd_delta_vs_normal_addon_max": 0.0016,
+      "windows_improved_ev": 3,
+      "windows_regressed_ev": 0,
+      "newly_executed_count": 4
+    },
+    "addon_cap_35pct": {
+      "ev_delta_vs_normal_addon_sum": 0.1011,
+      "pnl_delta_vs_normal_addon_sum": 2891.25,
+      "maxdd_delta_vs_normal_addon_max": 0.0028,
+      "windows_improved_ev": 3,
+      "windows_regressed_ev": 0,
+      "newly_executed_count": 4
+    }
+  },
+  "best_variant": {
+    "name": "addon_cap_35pct",
+    "ev_delta_vs_normal_addon_sum": 0.1011,
+    "pnl_delta_vs_normal_addon_sum": 2891.25,
+    "maxdd_delta_vs_normal_addon_max": 0.0028,
+    "windows_improved_ev": 3,
+    "windows_regressed_ev": 0,
+    "newly_executed_count": 4
+  },
+  "decision": "candidate_needs_real_replay_review",
+  "production_promotion": false,
+  "production_promotion_reason": "Shadow-only result. Production promotion would require a reviewed BacktestEngine config hook and normal Gate 4 comparison."
+}
