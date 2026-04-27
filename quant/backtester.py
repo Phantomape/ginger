@@ -70,6 +70,8 @@ from constants import (
     BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
     BREAKOUT_RANK_BY_52W_HIGH,
     REGIME_AWARE_EXIT,
+    MAX_POSITION_PCT,
+    MAX_PORTFOLIO_HEAT,
 )
 from regime_exit import compute_regime_exit_profile
 from yfinance_bootstrap import configure_yfinance_runtime
@@ -86,7 +88,24 @@ DEFAULT_CONFIG = {
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
+    "ADDON_ENABLED": True,
+    "ADDON_CHECKPOINT_DAYS": 2,
+    "ADDON_MIN_UNREALIZED_PCT": 0.02,
+    "ADDON_MIN_RS_VS_SPY": 0.0,
+    "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+    "ADDON_MAX_POSITION_PCT": 0.35,
+    "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": False,
+    "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": False,
 }
+
+
+def should_cancel_gap(fill_price, signal_entry, sig=None, today=None, ohlcv_all=None):
+    """Return True when the next open is too far above signal entry.
+
+    Extra arguments are accepted so shadow diagnostics can monkeypatch this
+    function with context-aware predicates without changing production defaults.
+    """
+    return fill_price > signal_entry * (1 + CANCEL_GAP_PCT)
 
 
 SIZING_MULTIPLIER_KEYS = (
@@ -300,6 +319,162 @@ def _build_multi_window_robustness(results):
     }
 
 
+def _summarize_entry_decision_events(events):
+    """Summarize why post-gate candidates did or did not become positions."""
+    reason_counts = {}
+    by_date = {}
+    skipped = []
+    for event in events or []:
+        reason = event.get("decision") or "unknown"
+        reason_counts[reason] = reason_counts.get(reason, 0) + 1
+        date = event.get("date")
+        if date:
+            by_date.setdefault(date, {})
+            by_date[date][reason] = by_date[date].get(reason, 0) + 1
+        if reason != "entered":
+            skipped.append(event)
+
+    skipped.sort(
+        key=lambda event: (
+            event.get("date") or "",
+            event.get("candidate_rank")
+            if event.get("candidate_rank") is not None else 999999,
+            event.get("ticker") or "",
+        )
+    )
+
+    return {
+        "candidate_events": len(events or []),
+        "entered_count": reason_counts.get("entered", 0),
+        "skipped_count": len(skipped),
+        "reason_counts": dict(sorted(reason_counts.items())),
+        "by_date": dict(sorted(by_date.items())),
+        "sample_skips": skipped[:25],
+        "notes": [
+            "entry_execution_attribution is measurement-only; it does not change fills or signal ordering.",
+            "slot_sliced means the candidate survived all gates but sat beyond available same-day position slots.",
+            "gap_cancel and stop_breach_cancel explain candidates that reached next-day fill evaluation but were cancelled by execution safeguards.",
+        ],
+    }
+
+
+def _load_saved_quant_signal_tickers(data_dir, date_str):
+    """Return saved production quant-signal tickers for a date when present."""
+    path = os.path.join(data_dir, f"quant_signals_{date_str}.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+    except Exception:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    signals = payload.get("signals")
+    if not isinstance(signals, list):
+        return []
+    tickers = []
+    for item in signals:
+        if not isinstance(item, dict):
+            continue
+        ticker = item.get("ticker")
+        if isinstance(ticker, str) and ticker.strip():
+            tickers.append(ticker.strip().upper())
+    return tickers
+
+
+def _build_news_context_alignment(
+    data_dir,
+    candidate_dates_covered,
+    candidate_tickers_by_date,
+    candidate_signal_counts_by_date,
+    candidate_days_total,
+    candidate_signals_total,
+):
+    """Audit whether archived-news coverage overlaps saved production candidates."""
+    covered_dates = list(candidate_dates_covered or [])
+    candidate_tickers_by_date = dict(candidate_tickers_by_date or {})
+    candidate_signal_counts_by_date = dict(candidate_signal_counts_by_date or {})
+
+    queue = []
+    for date_str in covered_dates:
+        backtest_tickers = [
+            t.strip().upper()
+            for t in candidate_tickers_by_date.get(date_str, [])
+            if isinstance(t, str) and t.strip()
+        ]
+        production_tickers = _load_saved_quant_signal_tickers(data_dir, date_str)
+        quant_file_exists = production_tickers is not None
+        production_tickers = production_tickers or []
+        overlap = [t for t in backtest_tickers if t in set(production_tickers)]
+
+        if not quant_file_exists:
+            alignment_status = "production_quant_missing"
+        elif not production_tickers:
+            alignment_status = "production_quant_empty"
+        elif overlap:
+            alignment_status = "aligned"
+        else:
+            alignment_status = "production_quant_mismatch"
+
+        queue.append({
+            "date": date_str,
+            "candidate_signal_count": int(candidate_signal_counts_by_date.get(date_str, 0) or 0),
+            "backtest_candidate_tickers": backtest_tickers,
+            "production_quant_tickers": production_tickers,
+            "overlap_tickers": overlap,
+            "production_quant_exists": quant_file_exists,
+            "alignment_status": alignment_status,
+        })
+
+    queue.sort(
+        key=lambda item: (
+            item["alignment_status"] != "aligned",
+            -item["candidate_signal_count"],
+            item["date"],
+        )
+    )
+
+    aligned_days = sum(1 for item in queue if item["alignment_status"] == "aligned")
+    aligned_signals = sum(len(item["overlap_tickers"]) for item in queue)
+    production_quant_empty_days = sum(
+        1 for item in queue if item["alignment_status"] == "production_quant_empty"
+    )
+    production_quant_missing_days = sum(
+        1 for item in queue if item["alignment_status"] == "production_quant_missing"
+    )
+    production_quant_mismatch_days = sum(
+        1 for item in queue if item["alignment_status"] == "production_quant_mismatch"
+    )
+
+    return {
+        "covered_candidate_days": len(queue),
+        "aligned_days": aligned_days,
+        "aligned_signals": aligned_signals,
+        "production_quant_empty_days": production_quant_empty_days,
+        "production_quant_missing_days": production_quant_missing_days,
+        "production_quant_mismatch_days": production_quant_mismatch_days,
+        "production_aligned_candidate_day_fraction_of_total": (
+            round(aligned_days / candidate_days_total, 4) if candidate_days_total else 0.0
+        ),
+        "production_aligned_candidate_day_fraction_of_covered": (
+            round(aligned_days / len(queue), 4) if queue else 0.0
+        ),
+        "production_aligned_candidate_signal_fraction_of_total": (
+            round(aligned_signals / candidate_signals_total, 4)
+            if candidate_signals_total else 0.0
+        ),
+        "notes": [
+            "aligned means saved production quant_signals for the same date share at least one ticker with the backtest pre-news candidate set.",
+            "production_quant_empty means a news archive exists, but the saved production quant_signals file had zero candidates that day.",
+            "production_quant_missing means a news archive exists, but no saved production quant_signals file exists for candidate-set comparability.",
+            "production_quant_mismatch means both sides had candidates, but none of the saved production tickers overlap the backtest pre-news candidate set.",
+            "Use this subset when judging archive-backed news hypotheses; headline archive coverage can overstate usable sample size.",
+        ],
+        "queue": queue,
+    }
+
+
 def _open_positions_cash_populated():
     """Check whether data/open_positions.json has a non-null cash_usd field.
 
@@ -323,7 +498,9 @@ class Position:
                  "target_price", "shares", "entry_date", "strategy", "sector",
                  "high_water", "atr", "trailing_active", "target_mult_used",
                  "regime_exit_bucket", "regime_exit_score",
-                 "sizing_multipliers", "base_risk_pct", "actual_risk_pct")
+                 "sizing_multipliers", "base_risk_pct", "actual_risk_pct",
+                 "original_shares", "addon_done", "addon_count",
+                 "addon_shares", "addon_cost")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
@@ -350,6 +527,11 @@ class Position:
         self.sizing_multipliers = sizing_multipliers or {}
         self.base_risk_pct = base_risk_pct
         self.actual_risk_pct = actual_risk_pct
+        self.original_shares = shares
+        self.addon_done = False
+        self.addon_count = 0
+        self.addon_shares = 0
+        self.addon_cost = 0.0
 
 
 class BacktestEngine:
@@ -671,6 +853,7 @@ class BacktestEngine:
         total_signals_generated = 0
         total_signals_survived  = 0
         sizing_rule_signal_attribution = {}
+        entry_decision_events = []
 
         # LLM replay bookkeeping (§4.2 attribution requirement).
         llm_dates_covered  = []
@@ -692,9 +875,23 @@ class BacktestEngine:
         # When replay_news=False, the lists below track archive availability only.
         news_archive_dates_covered   = []
         news_archive_dates_missing   = []
+        news_candidate_dates_covered = []
+        news_candidate_dates_missing = []
+        news_candidate_signal_counts_by_date = {}
+        news_candidate_tickers_by_date = {}
+        news_candidate_days_total     = 0
+        news_candidate_signals_total  = 0
         news_signals_presented       = 0
         news_signals_vetoed          = 0
         news_signals_passed          = 0
+
+        addon_enabled = bool(self.config.get("ADDON_ENABLED"))
+        pending_addons = {}
+        addon_events = []
+        addon_scheduled_count = 0
+        addon_executed_count = 0
+        addon_skipped_count = 0
+        addon_checkpoint_rejected_count = 0
 
         market_context_cache = {}
 
@@ -722,18 +919,290 @@ class BacktestEngine:
             market_context_cache[cache_key] = market_context
             return market_context
 
+        def _scalar_price(row, column):
+            value = row[column]
+            return float(value.item() if hasattr(value, "item") else value)
+
+        def _next_trade_date_for_ticker(ticker, after_day):
+            df = ohlcv_all.get(ticker)
+            if df is None:
+                return None
+            for nd in all_dates:
+                if nd > after_day and nd in df.index:
+                    return nd
+            return None
+
+        def _position_heat(pos, price):
+            if not pos.stop_price or price <= pos.stop_price:
+                return 0.0
+            return pos.shares * (price - pos.stop_price)
+
+        def _cap_addon_shares(pos, raw_open, requested_shares, current_prices):
+            """Respect existing single-position and portfolio heat caps."""
+            if requested_shares <= 0 or raw_open <= 0:
+                return 0, "no_requested_shares"
+
+            addon_position_cap = self.config.get("ADDON_MAX_POSITION_PCT")
+            if addon_position_cap is None:
+                addon_position_cap = MAX_POSITION_PCT
+            max_total_shares = math.floor(equity * addon_position_cap / raw_open)
+            cap_room = max_total_shares - pos.shares
+            if cap_room <= 0:
+                return 0, "position_cap"
+
+            shares = min(requested_shares, cap_room)
+            risk_per_share = max(0.0, raw_open - (pos.stop_price or raw_open))
+            if risk_per_share <= 0:
+                return shares, None
+
+            current_heat_usd = 0.0
+            for p in positions:
+                px = current_prices.get(p.ticker)
+                if px is not None:
+                    current_heat_usd += _position_heat(p, px)
+            heat_room_usd = max(0.0, equity * MAX_PORTFOLIO_HEAT - current_heat_usd)
+            max_heat_shares = math.floor(heat_room_usd / risk_per_share)
+            shares = min(shares, max_heat_shares)
+            if shares <= 0:
+                return 0, "portfolio_heat_cap"
+            return shares, None
+
+        def _record_entry_decision(today, sig, decision, slots, candidate_rank, details=None):
+            details = details or {}
+            entry_decision_events.append({
+                "date": str(today.date()) if hasattr(today, "date") else str(today),
+                "ticker": (sig.get("ticker") or "").upper(),
+                "strategy": sig.get("strategy", "unknown"),
+                "decision": decision,
+                "candidate_rank": candidate_rank,
+                "available_slots_at_entry_loop": slots,
+                "details": details,
+            })
+
+        def _current_prices_for_positions(today, column):
+            prices = {}
+            for p in positions:
+                df = ohlcv_all.get(p.ticker)
+                if df is not None and today in df.index:
+                    prices[p.ticker] = _scalar_price(df.loc[today], column)
+            return prices
+
+        def _execute_pending_addons(today):
+            nonlocal addon_executed_count, addon_skipped_count
+            date_key = str(today.date())
+            todays_addons = pending_addons.pop(date_key, [])
+            if not addon_enabled or not todays_addons:
+                return
+
+            current_prices = _current_prices_for_positions(today, "Open")
+
+            for addon in todays_addons:
+                pos = next((p for p in positions if p.ticker == addon["ticker"]), None)
+                if pos is None:
+                    addon_skipped_count += 1
+                    addon_events.append({**addon, "status": "skipped_position_closed"})
+                    continue
+
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or today not in df.index:
+                    addon_skipped_count += 1
+                    addon_events.append({**addon, "status": "skipped_no_price"})
+                    continue
+
+                row = df.loc[today]
+                raw_open = _scalar_price(row, "Open")
+                requested = math.floor(
+                    pos.original_shares
+                    * self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES", 0.25)
+                )
+                addon_shares, skip_reason = _cap_addon_shares(
+                    pos,
+                    raw_open,
+                    requested,
+                    current_prices,
+                )
+                if addon_shares <= 0:
+                    addon_skipped_count += 1
+                    addon_events.append({
+                        **addon,
+                        "status": "skipped_" + (skip_reason or "zero_shares"),
+                        "raw_open": round(raw_open, 4),
+                        "requested_shares": requested,
+                    })
+                    continue
+
+                entry_fill = apply_entry_fill(raw_open)
+                old_shares = pos.shares
+                new_shares = old_shares + addon_shares
+                pos.entry_price = round(
+                    ((pos.entry_price * old_shares) + (entry_fill * addon_shares))
+                    / new_shares,
+                    2,
+                )
+                pos.entry_open_price = round(
+                    ((pos.entry_open_price * old_shares) + (raw_open * addon_shares))
+                    / new_shares,
+                    4,
+                )
+                pos.shares = new_shares
+                pos.addon_count += 1
+                pos.addon_shares += addon_shares
+                pos.addon_cost += entry_fill * addon_shares
+                pos.high_water = max(pos.high_water, raw_open)
+                addon_executed_count += 1
+                addon_events.append({
+                    **addon,
+                    "status": "executed",
+                    "raw_open": round(raw_open, 4),
+                    "entry_fill": round(entry_fill, 4),
+                    "requested_shares": requested,
+                    "addon_shares": addon_shares,
+                    "new_total_shares": new_shares,
+                    "new_avg_entry": pos.entry_price,
+                })
+
+        def _schedule_followthrough_addons(today):
+            nonlocal addon_scheduled_count, addon_checkpoint_rejected_count
+            if not addon_enabled:
+                return
+
+            spy_df = ohlcv_all.get("SPY")
+            checkpoint_days = int(self.config.get("ADDON_CHECKPOINT_DAYS", 2))
+            min_unrealized = self.config.get("ADDON_MIN_UNREALIZED_PCT", 0.02)
+            min_rs = self.config.get("ADDON_MIN_RS_VS_SPY", 0.0)
+            require_checkpoint_cap_room = bool(
+                self.config.get("ADDON_REQUIRE_CHECKPOINT_CAP_ROOM")
+            )
+            require_improving_followthrough = bool(
+                self.config.get("ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH")
+            )
+            if spy_df is None:
+                return
+
+            for pos in positions:
+                if pos.addon_done:
+                    continue
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or today not in df.index:
+                    continue
+                try:
+                    entry_idx = df.index.get_loc(pd.Timestamp(pos.entry_date))
+                    today_idx = df.index.get_loc(today)
+                    spy_entry_idx = spy_df.index.get_loc(pd.Timestamp(pos.entry_date))
+                    spy_today_idx = spy_df.index.get_loc(today)
+                except KeyError:
+                    continue
+                if today_idx - entry_idx != checkpoint_days:
+                    continue
+
+                close = _scalar_price(df.loc[today], "Close")
+                entry_close = _scalar_price(df.iloc[entry_idx], "Close")
+                spy_close = _scalar_price(spy_df.iloc[spy_today_idx], "Close")
+                spy_entry_close = _scalar_price(spy_df.iloc[spy_entry_idx], "Close")
+                if entry_close <= 0 or spy_entry_close <= 0:
+                    continue
+
+                unrealized = (close - pos.entry_price) / pos.entry_price
+                ticker_ret = (close - entry_close) / entry_close
+                spy_ret = (spy_close - spy_entry_close) / spy_entry_close
+                rs_vs_spy = ticker_ret - spy_ret
+                if unrealized < min_unrealized or rs_vs_spy <= min_rs:
+                    continue
+
+                followthrough_state = {}
+                if require_improving_followthrough:
+                    if checkpoint_days < 2 or today_idx - 1 < 0 or spy_today_idx - 1 < 0:
+                        continue
+                    day1_close = _scalar_price(df.iloc[today_idx - 1], "Close")
+                    spy_day1_close = _scalar_price(spy_df.iloc[spy_today_idx - 1], "Close")
+                    if day1_close <= 0 or spy_day1_close <= 0:
+                        continue
+                    day1_unrealized = (day1_close - pos.entry_price) / pos.entry_price
+                    day1_ticker_ret = (day1_close - entry_close) / entry_close
+                    day1_spy_ret = (spy_day1_close - spy_entry_close) / spy_entry_close
+                    day1_rs_vs_spy = day1_ticker_ret - day1_spy_ret
+                    unrealized_improved = unrealized > day1_unrealized
+                    rs_improved = rs_vs_spy > day1_rs_vs_spy
+                    followthrough_state = {
+                        "day1_unrealized_pct": round(day1_unrealized, 6),
+                        "day1_rs_vs_spy": round(day1_rs_vs_spy, 6),
+                        "unrealized_improved": unrealized_improved,
+                        "rs_improved": rs_improved,
+                    }
+                    if not (unrealized_improved and rs_improved):
+                        addon_checkpoint_rejected_count += 1
+                        addon_events.append({
+                            "ticker": pos.ticker,
+                            "strategy": pos.strategy,
+                            "sector": pos.sector,
+                            "checkpoint_date": str(today.date()),
+                            "checkpoint_days": checkpoint_days,
+                            "unrealized_pct": round(unrealized, 6),
+                            "rs_vs_spy": round(rs_vs_spy, 6),
+                            "original_shares": pos.original_shares,
+                            **followthrough_state,
+                            "status": "rejected_checkpoint_not_improving_followthrough",
+                        })
+                        continue
+
+                requested = math.floor(
+                    pos.original_shares
+                    * self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES", 0.25)
+                )
+                checkpoint_candidate = {
+                    "ticker": pos.ticker,
+                    "strategy": pos.strategy,
+                    "sector": pos.sector,
+                    "checkpoint_date": str(today.date()),
+                    "checkpoint_days": checkpoint_days,
+                    "unrealized_pct": round(unrealized, 6),
+                    "rs_vs_spy": round(rs_vs_spy, 6),
+                    "original_shares": pos.original_shares,
+                    **followthrough_state,
+                }
+                if require_checkpoint_cap_room:
+                    checkpoint_prices = _current_prices_for_positions(today, "Close")
+                    checkpoint_shares, skip_reason = _cap_addon_shares(
+                        pos,
+                        close,
+                        requested,
+                        checkpoint_prices,
+                    )
+                    if checkpoint_shares <= 0:
+                        addon_checkpoint_rejected_count += 1
+                        addon_events.append({
+                            **checkpoint_candidate,
+                            "status": "rejected_checkpoint_" + (skip_reason or "no_cap_room"),
+                            "checkpoint_close": round(close, 4),
+                            "requested_shares": requested,
+                        })
+                        continue
+
+                fill_date = _next_trade_date_for_ticker(pos.ticker, today)
+                if fill_date is None:
+                    continue
+                pos.addon_done = True
+                addon_scheduled_count += 1
+                pending_addons.setdefault(str(fill_date.date()), []).append({
+                    **checkpoint_candidate,
+                    "scheduled_fill_date": str(fill_date.date()),
+                })
+
         for day_idx, today in enumerate(sim_dates):
 
             # News-archive presence check (§6.1 measurement instrumentation).
             _today_str = today.strftime("%Y%m%d")
             _news_archive_path = os.path.join(
                 self.data_dir, f"clean_trade_news_{_today_str}.json")
-            if os.path.exists(_news_archive_path):
+            news_archive_present = os.path.exists(_news_archive_path)
+            if news_archive_present:
                 news_archive_dates_covered.append(_today_str)
             else:
                 news_archive_dates_missing.append(_today_str)
 
             # ── 1. Check exits on today's prices ────────────────────────────
+            _execute_pending_addons(today)
+
             still_open = []
             for pos in positions:
                 df = ohlcv_all.get(pos.ticker)
@@ -810,6 +1279,9 @@ class BacktestEngine:
                         "sizing_multipliers": dict(pos.sizing_multipliers),
                         "base_risk_pct":    pos.base_risk_pct,
                         "actual_risk_pct":  pos.actual_risk_pct,
+                        "addon_count":      pos.addon_count,
+                        "addon_shares":     pos.addon_shares,
+                        "addon_cost":       round(pos.addon_cost, 2),
                         "exit_reason":      exit_reason,
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                         "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
@@ -818,6 +1290,7 @@ class BacktestEngine:
                     still_open.append(pos)
 
             positions = still_open
+            _schedule_followthrough_addons(today)
 
             # ── 2. Generate signals using the REAL pipeline ─────────────────
             # Skip if at max positions
@@ -997,6 +1470,22 @@ class BacktestEngine:
                     if signals:
                         llm_candidate_dates_missing.append(decision["date_str"])
 
+            # Candidate-level archived-news coverage should only count real
+            # pre-news candidates, not all trading days.
+            if signals:
+                news_candidate_days_total += 1
+                news_candidate_signals_total += len(signals)
+                news_candidate_signal_counts_by_date[_today_str] = len(signals)
+                news_candidate_tickers_by_date[_today_str] = [
+                    str(s.get("ticker")).strip().upper()
+                    for s in signals
+                    if isinstance(s.get("ticker"), str) and s.get("ticker").strip()
+                ]
+                if news_archive_present:
+                    news_candidate_dates_covered.append(_today_str)
+                else:
+                    news_candidate_dates_missing.append(_today_str)
+
             # ── 2c. News T1-negative gate (optional; off by default). ────────
             # When on, vetoes signals for tickers with T1-negative headlines
             # in data/clean_trade_news_YYYYMMDD.json. Closes §6.1 parity gap
@@ -1012,14 +1501,38 @@ class BacktestEngine:
 
             # ── 3. Enter positions at next-day open ─────────────────────────
             slots = self.config["MAX_POSITIONS"] - len(positions)
-            for sig in signals[:slots]:
+            for rank, sig in enumerate(signals[slots:], start=slots + 1):
+                _record_entry_decision(
+                    today,
+                    sig,
+                    "slot_sliced",
+                    slots,
+                    rank,
+                    {"signal_count": len(signals)},
+                )
+            for rank, sig in enumerate(signals[:slots], start=1):
                 ticker = sig["ticker"]
                 # Skip if already holding
                 if any(p.ticker == ticker for p in positions):
+                    _record_entry_decision(today, sig, "already_holding", slots, rank)
                     continue
 
                 sizing = sig.get("sizing")
                 if not sizing or not sizing.get("shares_to_buy"):
+                    _record_entry_decision(
+                        today,
+                        sig,
+                        "no_shares",
+                        slots,
+                        rank,
+                        {
+                            "has_sizing": bool(sizing),
+                            "shares_to_buy": (sizing or {}).get("shares_to_buy"),
+                            "risk_pct_before": (sizing or {}).get("risk_pct_before"),
+                            "risk_pct_after": (sizing or {}).get("risk_pct_after"),
+                            "risk_multipliers": _extract_sizing_multipliers(sizing),
+                        },
+                    )
                     continue
 
                 shares = sizing["shares_to_buy"]
@@ -1027,11 +1540,20 @@ class BacktestEngine:
                 target = sig.get("target_price")
 
                 if not stop or not target:
+                    _record_entry_decision(
+                        today,
+                        sig,
+                        "missing_stop_or_target",
+                        slots,
+                        rank,
+                        {"has_stop": bool(stop), "has_target": bool(target)},
+                    )
                     continue
 
                 # Fill at next-day open
                 df = ohlcv_all.get(ticker)
                 if df is None:
+                    _record_entry_decision(today, sig, "missing_ohlcv", slots, rank)
                     continue
 
                 future_dates = [d for d in all_dates if d > today]
@@ -1049,6 +1571,7 @@ class BacktestEngine:
                         break
 
                 if fill_price is None:
+                    _record_entry_decision(today, sig, "no_future_fill", slots, rank)
                     continue
 
                 # Cancel if gap too large (> CANCEL_GAP_PCT above signal entry).
@@ -1056,13 +1579,44 @@ class BacktestEngine:
                 # cancel boundary is determined by market conditions, not by our
                 # own execution-cost assumptions.
                 signal_entry = sig.get("entry_price", fill_price)
-                if fill_price > signal_entry * (1 + CANCEL_GAP_PCT):
+                if should_cancel_gap(
+                    fill_price,
+                    signal_entry,
+                    sig=sig,
+                    today=today,
+                    ohlcv_all=ohlcv_all,
+                ):
+                    _record_entry_decision(
+                        today,
+                        sig,
+                        "gap_cancel",
+                        slots,
+                        rank,
+                        {
+                            "fill_date": str(fill_date.date()) if hasattr(fill_date, "date") else str(fill_date),
+                            "fill_price": round(fill_price, 4),
+                            "signal_entry": round(float(signal_entry), 4) if signal_entry else None,
+                            "cancel_gap_pct": CANCEL_GAP_PCT,
+                        },
+                    )
                     continue
 
                 # Symmetric cancel: if overnight gap-down pushes the fill at or below
                 # the pre-computed stop, the position is already stopped-out on day 0.
                 # No valid R:R remains — skip the entry entirely.
                 if stop is not None and fill_price <= stop:
+                    _record_entry_decision(
+                        today,
+                        sig,
+                        "stop_breach_cancel",
+                        slots,
+                        rank,
+                        {
+                            "fill_date": str(fill_date.date()) if hasattr(fill_date, "date") else str(fill_date),
+                            "fill_price": round(fill_price, 4),
+                            "stop_price": round(float(stop), 4) if stop else None,
+                        },
+                    )
                     continue
 
                 entry_fill = apply_entry_fill(fill_price)   # buy-side slippage
@@ -1084,6 +1638,18 @@ class BacktestEngine:
                     base_risk_pct=sizing.get("base_risk_pct"),
                     actual_risk_pct=sizing.get("risk_pct"),
                 ))
+                _record_entry_decision(
+                    today,
+                    sig,
+                    "entered",
+                    slots,
+                    rank,
+                    {
+                        "fill_date": str(fill_date.date()) if hasattr(fill_date, "date") else str(fill_date),
+                        "fill_price": round(fill_price, 4),
+                        "shares": shares,
+                    },
+                )
 
             # Mark-to-market equity
             mtm = capital
@@ -1144,6 +1710,9 @@ class BacktestEngine:
                 "sizing_multipliers": dict(pos.sizing_multipliers),
                 "base_risk_pct":    pos.base_risk_pct,
                 "actual_risk_pct":  pos.actual_risk_pct,
+                "addon_count":      pos.addon_count,
+                "addon_shares":     pos.addon_shares,
+                "addon_cost":       round(pos.addon_cost, 2),
                 "exit_reason":      "end_of_backtest",
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                 "exit_date":   str(last_day.date()),
@@ -1301,6 +1870,19 @@ class BacktestEngine:
             round(news_archive_covered_n / trading_days_n, 4)
             if trading_days_n else 0.0
         )
+        news_candidate_days_covered = len(news_candidate_dates_covered)
+        news_candidate_day_coverage_frac = (
+            round(news_candidate_days_covered / news_candidate_days_total, 4)
+            if news_candidate_days_total else 0.0
+        )
+        news_candidate_signals_covered = sum(
+            news_candidate_signal_counts_by_date.get(date_str, 0)
+            for date_str in news_candidate_dates_covered
+        )
+        news_candidate_signal_coverage_frac = (
+            round(news_candidate_signals_covered / news_candidate_signals_total, 4)
+            if news_candidate_signals_total else 0.0
+        )
 
         known_biases = {
             "ohlcv_source": {
@@ -1390,6 +1972,73 @@ class BacktestEngine:
             llm_context_alignment.get("production_aligned_candidate_signal_fraction_of_total")
         )
 
+        effective_alignment_rows = [
+            item for item in (llm_context_alignment.get("queue") or [])
+            if item.get("ranking_status") == "ranking_eligible_aligned"
+        ]
+        effective_dates = [item.get("date") for item in effective_alignment_rows if item.get("date")]
+        effective_presented = 0
+        effective_passed = 0
+        for item in effective_alignment_rows:
+            overlap_tickers = [
+                t.strip().upper()
+                for t in (item.get("overlap_tickers") or [])
+                if isinstance(t, str) and t.strip()
+            ]
+            if not overlap_tickers:
+                continue
+            from llm_replay import get_llm_decision_for_date
+            decision = get_llm_decision_for_date(item["date"], self.data_dir)
+            approved = {
+                t.strip().upper()
+                for t in (decision.get("approved_tickers") or [])
+                if isinstance(t, str) and t.strip()
+            }
+            effective_presented += len(overlap_tickers)
+            effective_passed += sum(1 for t in overlap_tickers if t in approved)
+        effective_vetoed = effective_presented - effective_passed
+
+        news_context_alignment = _build_news_context_alignment(
+            self.data_dir,
+            news_candidate_dates_covered,
+            news_candidate_tickers_by_date,
+            news_candidate_signal_counts_by_date,
+            news_candidate_days_total,
+            news_candidate_signals_total,
+        )
+        known_biases["news_veto_unreplayed"]["production_aligned_candidate_day_fraction"] = (
+            news_context_alignment.get("production_aligned_candidate_day_fraction_of_total")
+        )
+        known_biases["news_veto_unreplayed"]["production_aligned_candidate_signal_fraction"] = (
+            news_context_alignment.get("production_aligned_candidate_signal_fraction_of_total")
+        )
+
+        effective_news_rows = [
+            item for item in (news_context_alignment.get("queue") or [])
+            if item.get("alignment_status") == "aligned"
+        ]
+        effective_news_dates = [item.get("date") for item in effective_news_rows if item.get("date")]
+        effective_news_presented = 0
+        effective_news_vetoed = 0
+        for item in effective_news_rows:
+            overlap_tickers = {
+                t.strip().upper()
+                for t in (item.get("overlap_tickers") or [])
+                if isinstance(t, str) and t.strip()
+            }
+            if not overlap_tickers:
+                continue
+            from news_replay import get_news_for_date
+            news_dec = get_news_for_date(item["date"], self.data_dir)
+            veto_set = {
+                t.strip().upper()
+                for t in (news_dec.get("t1_negative_tickers") or set())
+                if isinstance(t, str) and t.strip()
+            }
+            effective_news_presented += len(overlap_tickers)
+            effective_news_vetoed += sum(1 for t in overlap_tickers if t in veto_set)
+        effective_news_passed = effective_news_presented - effective_news_vetoed
+
         # §4.2 LLM attribution bucket.
         llm_attribution = {
             "replay_enabled":                   self.replay_llm,
@@ -1408,6 +2057,30 @@ class BacktestEngine:
             "candidate_signals_total":          total_signals_survived,
             "candidate_signal_coverage_fraction": llm_candidate_signal_coverage_frac,
             "context_alignment":                llm_context_alignment,
+            "effective_attribution": {
+                "effective_candidate_days": len(effective_dates),
+                "effective_candidate_signals": llm_context_alignment.get(
+                    "ranking_eligible_aligned_signals", 0
+                ),
+                "effective_candidate_dates": effective_dates,
+                "effective_candidate_day_fraction_of_total": llm_context_alignment.get(
+                    "ranking_eligible_candidate_day_fraction_of_total"
+                ),
+                "effective_candidate_signal_fraction_of_total": llm_context_alignment.get(
+                    "ranking_eligible_candidate_signal_fraction_of_total"
+                ),
+                "signals_presented": effective_presented,
+                "signals_vetoed_by_llm": effective_vetoed,
+                "signals_passed_by_llm": effective_passed,
+                "veto_rate": (
+                    round(effective_vetoed / effective_presented, 4)
+                    if effective_presented else None
+                ),
+                "notes": [
+                    "effective_attribution keeps only production-aligned candidate overlap where archive_context says Task A was actually ranking-eligible.",
+                    "Use this subset for soft-ranking alpha judgement; headline llm_attribution counts still include covered-but-empty or eligibility-unknown replay dates for compatibility.",
+                ],
+            },
             "signals_presented":                llm_signals_presented,
             "signals_vetoed_by_llm":            llm_signals_vetoed,
             "signals_passed_by_llm":            llm_signals_passed,
@@ -1441,16 +2114,74 @@ class BacktestEngine:
             "trading_days":                trading_days_n,
             "archive_dates_covered":       news_archive_covered_n,
             "archive_dates_missing":       news_archive_missing_n,
+            "candidate_days_covered":      news_candidate_days_covered,
+            "candidate_days_total":        news_candidate_days_total,
+            "candidate_dates_covered":     list(news_candidate_dates_covered),
+            "candidate_dates_missing":     list(news_candidate_dates_missing),
+            "candidate_signal_counts_by_date": dict(news_candidate_signal_counts_by_date),
+            "candidate_tickers_by_date":   dict(news_candidate_tickers_by_date),
+            "candidate_day_coverage_fraction": news_candidate_day_coverage_frac,
+            "candidate_signals_covered":   news_candidate_signals_covered,
+            "candidate_signals_total":     news_candidate_signals_total,
+            "candidate_signal_coverage_fraction": news_candidate_signal_coverage_frac,
+            "context_alignment":           news_context_alignment,
+            "effective_attribution": {
+                "effective_candidate_days": len(effective_news_dates),
+                "effective_candidate_signals": news_context_alignment.get("aligned_signals", 0),
+                "effective_candidate_dates": effective_news_dates,
+                "effective_candidate_day_fraction_of_total": news_context_alignment.get(
+                    "production_aligned_candidate_day_fraction_of_total"
+                ),
+                "effective_candidate_signal_fraction_of_total": news_context_alignment.get(
+                    "production_aligned_candidate_signal_fraction_of_total"
+                ),
+                "signals_presented": effective_news_presented,
+                "signals_vetoed_by_news": effective_news_vetoed,
+                "signals_passed_by_news": effective_news_passed,
+                "veto_rate": (
+                    round(effective_news_vetoed / effective_news_presented, 4)
+                    if effective_news_presented else None
+                ),
+                "notes": [
+                    "effective_attribution keeps only candidate overlap between saved production quant_signals and the backtest pre-news candidate set on archived-news dates.",
+                    "Use this subset for archive-backed news hypotheses; headline news_attribution still includes covered dates that may have had empty or mismatched production candidates.",
+                ],
+            },
             "signals_presented":           news_signals_presented,
             "signals_vetoed_by_news":      news_signals_vetoed,
             "signals_passed_by_news":      news_signals_passed,
             "veto_rate":                   news_veto_rate,
             "notes": [
                 "Counts include only days where clean_trade_news_YYYYMMDD.json was present AND replay_news=True.",
+                "candidate_* metrics measure archive coverage over actual pre-news candidates, which is the relevant readiness gauge for archived-news alpha experiments.",
                 "Veto criterion: ticker appears in T1-negative headline (earnings miss, guidance cut, bankruptcy, etc.).",
                 "Conservative upper bound — production LLM may approve despite negative news if already priced in.",
             ],
         }
+
+        addon_attribution = {
+            "enabled": addon_enabled,
+            "checkpoint_days": self.config.get("ADDON_CHECKPOINT_DAYS"),
+            "min_unrealized_pct": self.config.get("ADDON_MIN_UNREALIZED_PCT"),
+            "min_rs_vs_spy": self.config.get("ADDON_MIN_RS_VS_SPY"),
+            "fraction_of_original_shares": self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES"),
+            "max_position_pct": self.config.get("ADDON_MAX_POSITION_PCT"),
+            "require_checkpoint_cap_room": self.config.get("ADDON_REQUIRE_CHECKPOINT_CAP_ROOM"),
+            "require_improving_followthrough": self.config.get("ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH"),
+            "scheduled": addon_scheduled_count,
+            "executed": addon_executed_count,
+            "skipped": addon_skipped_count,
+            "checkpoint_rejected": addon_checkpoint_rejected_count,
+            "events": addon_events,
+            "notes": [
+                "Strict day-2 follow-through add-on is enabled by default after exp-20260427-013.",
+                "Add-on fills at next available ticker open after checkpoint using entry slippage.",
+                "Incremental shares are capped by original-share fraction, single-position cap, and portfolio heat cap.",
+            ],
+        }
+        entry_execution_attribution = _summarize_entry_decision_events(
+            entry_decision_events
+        )
 
         result = {
             "period":              f"{sim_dates[0].date()} → {sim_dates[-1].date()}",
@@ -1478,6 +2209,8 @@ class BacktestEngine:
             "known_biases":        known_biases,
             "llm_attribution":     llm_attribution,
             "news_attribution":    news_attribution,
+            "addon_attribution":   addon_attribution,
+            "entry_execution_attribution": entry_execution_attribution,
             "equity_curve_integrity": equity_curve_integrity,
             "caveats": (
                 [
@@ -1671,6 +2404,15 @@ def _print_results(results):
             print(f"    ranking-eligible:        "
                   f"{alignment.get('ranking_eligible_aligned_days')}/{llm_attr.get('candidate_days_total')} total "
                   f"({(alignment.get('ranking_eligible_candidate_day_fraction_of_total') or 0)*100:.1f}%)")
+        effective = llm_attr.get("effective_attribution") or {}
+        if effective.get("effective_candidate_days"):
+            print(f"    effective sample days:   "
+                  f"{effective.get('effective_candidate_days')}/{llm_attr.get('candidate_days_total')} total "
+                  f"({(effective.get('effective_candidate_day_fraction_of_total') or 0)*100:.1f}%)")
+            print(f"    effective sample sigs:   "
+                  f"{effective.get('effective_candidate_signals')}/{llm_attr.get('candidate_signals_total')} total "
+                  f"({(effective.get('effective_candidate_signal_fraction_of_total') or 0)*100:.1f}%)")
+            print(f"    effective veto_rate:     {effective.get('veto_rate')}")
         print(f"    signals presented:       {llm_attr.get('signals_presented')}")
         print(f"    vetoed by LLM:           {llm_attr.get('signals_vetoed_by_llm')}")
         print(f"    passed by LLM:           {llm_attr.get('signals_passed_by_llm')}")
@@ -1683,6 +2425,26 @@ def _print_results(results):
         print(f"    coverage:                "
               f"{news_attr.get('archive_dates_covered')}/{news_attr.get('trading_days')} days "
               f"({(news_attr.get('coverage_fraction') or 0)*100:.1f}%)")
+        print(f"    candidate-day coverage:  "
+              f"{news_attr.get('candidate_days_covered')}/{news_attr.get('candidate_days_total')} "
+              f"({(news_attr.get('candidate_day_coverage_fraction') or 0)*100:.1f}%)")
+        print(f"    candidate-signal cover:  "
+              f"{news_attr.get('candidate_signals_covered')}/{news_attr.get('candidate_signals_total')} "
+              f"({(news_attr.get('candidate_signal_coverage_fraction') or 0)*100:.1f}%)")
+        alignment = news_attr.get("context_alignment") or {}
+        if alignment.get("covered_candidate_days"):
+            print(f"    production-aligned:      "
+                  f"{alignment.get('aligned_days')}/{news_attr.get('candidate_days_total')} total "
+                  f"({(alignment.get('production_aligned_candidate_day_fraction_of_total') or 0)*100:.1f}%)")
+        effective = news_attr.get("effective_attribution") or {}
+        if effective.get("effective_candidate_days"):
+            print(f"    effective sample days:   "
+                  f"{effective.get('effective_candidate_days')}/{news_attr.get('candidate_days_total')} total "
+                  f"({(effective.get('effective_candidate_day_fraction_of_total') or 0)*100:.1f}%)")
+            print(f"    effective sample sigs:   "
+                  f"{effective.get('effective_candidate_signals')}/{news_attr.get('candidate_signals_total')} total "
+                  f"({(effective.get('effective_candidate_signal_fraction_of_total') or 0)*100:.1f}%)")
+            print(f"    effective veto_rate:     {effective.get('veto_rate')}")
         print(f"    signals presented:       {news_attr.get('signals_presented')}")
         print(f"    vetoed by news:          {news_attr.get('signals_vetoed_by_news')}")
         print(f"    passed by news:          {news_attr.get('signals_passed_by_news')}")

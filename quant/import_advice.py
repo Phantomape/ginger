@@ -35,8 +35,10 @@ so partial captures are not lost.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
+import re
 import sys
 from datetime import datetime
 
@@ -44,7 +46,7 @@ from datetime import datetime
 # parse_json_advice handles markdown-fenced, leading-commentary, and clean JSON.
 # save_advice writes the {advice_raw, advice_parsed, token_usage, timestamp} wrapper
 # that forward_tester.evaluate_file() expects.
-from llm_advisor import parse_json_advice, save_advice
+from llm_advisor import _build_archive_context, parse_json_advice, save_advice
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +96,112 @@ def _read_source(args: argparse.Namespace) -> str:
     if not data or not data.strip():
         raise SystemExit("Clipboard was empty")
     return data
+
+
+def _extract_date_from_filename(path: str) -> str | None:
+    """Extract YYYYMMDD from llm_output/investment_advice style filenames."""
+    name = os.path.basename(path)
+    match = re.search(r"_(\d{8})\.json$", name)
+    if not match:
+        return None
+    return match.group(1)
+
+
+def _load_json_file(path: str):
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _load_text_file(path: str) -> str | None:
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception:
+        return None
+
+
+def _is_real_saved_advice(payload) -> bool:
+    """True only when the saved wrapper already contains a real new_trade decision."""
+    if not isinstance(payload, dict):
+        return False
+    parsed = payload.get("advice_parsed")
+    return isinstance(parsed, dict) and "new_trade" in parsed
+
+
+def _normalize_replay_payload(raw_text: str, date_str: str, output_dir: str) -> dict:
+    """Build a canonical replay wrapper with prompt-time archive context."""
+    parsed_direct = None
+    advice_raw = raw_text
+    try:
+        existing = json.loads(raw_text)
+    except Exception:
+        existing = None
+
+    if isinstance(existing, dict) and "advice_parsed" in existing:
+        parsed_direct = existing.get("advice_parsed")
+        advice_raw = existing.get("advice_raw") or raw_text
+
+    payload = {
+        "timestamp": datetime.now().isoformat(),
+        "advice_raw": advice_raw,
+        "advice_parsed": (
+            parsed_direct if isinstance(parsed_direct, dict) else parse_json_advice(advice_raw)
+        ),
+        "token_usage": None,
+    }
+    archive_context = _build_archive_context(date_str, output_dir)
+    if archive_context:
+        payload["archive_context"] = archive_context
+    return payload
+
+
+def normalize_replay_archive(
+    date_str: str,
+    *,
+    output_dir: str = DATA_DIR,
+    raw_text: str | None = None,
+) -> dict:
+    """
+    Rewrite llm_prompt_resp_YYYYMMDD.json into canonical wrapper form.
+    """
+    replay_path = os.path.join(output_dir, f"llm_prompt_resp_{date_str}.json")
+    existing_text = raw_text if raw_text is not None else _load_text_file(replay_path)
+    if not existing_text or not existing_text.strip():
+        return {
+            "date_str": date_str,
+            "status": "missing_replay_text",
+            "replay_path": replay_path,
+        }
+
+    payload = _normalize_replay_payload(existing_text, date_str, output_dir)
+    parsed = payload.get("advice_parsed")
+    if not (isinstance(parsed, dict) and "new_trade" in parsed):
+        return {
+            "date_str": date_str,
+            "status": "skipped_non_response",
+            "replay_path": replay_path,
+        }
+
+    with open(replay_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+    return {
+        "date_str": date_str,
+        "status": "normalized",
+        "replay_path": replay_path,
+        "has_archive_context": "archive_context" in payload,
+        "signals_presented_count": (
+            (payload.get("archive_context") or {}).get("signals_presented_count")
+        ),
+        "ranking_eligible": (payload.get("archive_context") or {}).get("ranking_eligible"),
+    }
 
 
 def _validate_structure(parsed: dict | None, raw_text: str) -> dict:
@@ -181,7 +289,7 @@ def import_advice(
             "(likely a save-prompt acknowledgment, not a real LLM response)"
         )
     else:
-        logger.info("LLM replay log already exists, skipping: %s", replay_path)
+        logger.info("LLM replay log already exists; preserving existing file: %s", replay_path)
 
     # Log a one-line summary so the user can see what landed in the file.
     if isinstance(parsed, dict):
@@ -199,6 +307,78 @@ def import_advice(
         logger.info("Imported raw text (no parsed JSON) → %s", out_path)
 
     return out_path
+
+
+def recover_advice_from_raw_output(
+    raw_output_path: str,
+    *,
+    date_str: str | None = None,
+    output_dir: str = DATA_DIR,
+) -> dict:
+    """
+    Recover a replayable advice archive from an existing llm_output_YYYYMMDD.json file.
+
+    This is for legacy/raw captures that were saved outside the normal import flow.
+    It only overwrites investment_advice_YYYYMMDD.json when the existing file is a
+    placeholder/non-response shell; real parsed advice files are preserved.
+    """
+    if not os.path.exists(raw_output_path):
+        raise SystemExit(f"Raw output file not found: {raw_output_path}")
+
+    resolved_date = date_str or _extract_date_from_filename(raw_output_path)
+    if not resolved_date:
+        raise SystemExit(
+            f"Could not infer date from {raw_output_path!r}; pass date_str explicitly"
+        )
+    resolved_date = _parse_date_arg(resolved_date)
+
+    with open(raw_output_path, "r", encoding="utf-8") as f:
+        raw_text = f.read()
+
+    os.makedirs(output_dir, exist_ok=True)
+    advice_path = os.path.join(output_dir, f"investment_advice_{resolved_date}.json")
+    replay_path = os.path.join(output_dir, f"llm_prompt_resp_{resolved_date}.json")
+
+    existing = _load_json_file(advice_path)
+    if _is_real_saved_advice(existing):
+        return {
+            "date_str": resolved_date,
+            "status": "skipped_existing_real_advice",
+            "advice_path": advice_path,
+            "replay_path": replay_path,
+        }
+
+    out_path = import_advice(resolved_date, raw_text, output_dir=output_dir)
+    return {
+        "date_str": resolved_date,
+        "status": "recovered",
+        "advice_path": out_path,
+        "replay_path": replay_path,
+    }
+
+
+def normalize_replay_file(
+    replay_path: str,
+    *,
+    date_str: str | None = None,
+    output_dir: str = DATA_DIR,
+) -> dict:
+    """Normalize an existing llm_prompt_resp_YYYYMMDD.json file in place."""
+    if not os.path.exists(replay_path):
+        raise SystemExit(f"Replay file not found: {replay_path}")
+
+    resolved_date = date_str or _extract_date_from_filename(replay_path)
+    if not resolved_date:
+        raise SystemExit(
+            f"Could not infer date from {replay_path!r}; pass date_str explicitly"
+        )
+    resolved_date = _parse_date_arg(resolved_date)
+    raw_text = _load_text_file(replay_path)
+    return normalize_replay_archive(
+        resolved_date,
+        output_dir=output_dir,
+        raw_text=raw_text,
+    )
 
 
 def main() -> None:

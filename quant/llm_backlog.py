@@ -193,12 +193,21 @@ def build_llm_archive_backlog(data_dir, candidate_dates_missing, candidate_signa
             elif quant_signals_exists:
                 ranking_eligible_prompt = False
 
+        has_replay_context = (
+            decision_log_exists
+            or quant_signals_exists
+            or trend_signals_exists
+            or os.path.exists(news_path)
+        )
+
         if raw_response_exists and not response_exists:
             recovery_tier = "raw_response_recoverable"
         elif prompt_exists and not response_exists and ranking_eligible_prompt is True:
             recovery_tier = "prompt_only"
-        elif decision_log_exists or quant_signals_exists or trend_signals_exists or earnings_snapshot_exists:
+        elif has_replay_context:
             recovery_tier = "context_only"
+        elif earnings_snapshot_exists:
+            recovery_tier = "snapshot_only"
         else:
             recovery_tier = "archive_hole"
 
@@ -253,6 +262,7 @@ def build_llm_archive_backlog(data_dir, candidate_dates_missing, candidate_signa
     trend_signals_days = sum(1 for item in queue if item["trend_signals_exists"])
     earnings_snapshot_days = sum(1 for item in queue if item["earnings_snapshot_exists"])
     context_only_days = sum(1 for item in queue if item["recovery_tier"] == "context_only")
+    snapshot_only_days = sum(1 for item in queue if item["recovery_tier"] == "snapshot_only")
     archive_hole_days = sum(1 for item in queue if item["recovery_tier"] == "archive_hole")
 
     return {
@@ -263,6 +273,7 @@ def build_llm_archive_backlog(data_dir, candidate_dates_missing, candidate_signa
         "prompt_ineligible_days": prompt_ineligible_days,
         "prompt_missing_days": prompt_missing_days,
         "context_only_days": context_only_days,
+        "snapshot_only_days": snapshot_only_days,
         "archive_hole_days": archive_hole_days,
         "decision_log_days": decision_log_days,
         "investment_advice_days": advice_days,
@@ -274,7 +285,8 @@ def build_llm_archive_backlog(data_dir, candidate_dates_missing, candidate_signa
             "raw_response_recoverable_days means llm_output_YYYYMMDD.json exists and can be imported into llm_prompt_resp without inventing decisions.",
             "prompt_ready_days means llm_prompt_YYYYMMDD.txt exists and prompt-time context still indicates a real ranking-eligible new-trade decision can be reconstructed.",
             "prompt_ineligible_days means a prompt file exists, but saved context already shows no prompt-time ranking opportunity (for example no candidates or Task A locked), so it should not count toward soft-ranking readiness.",
-            "context_only_days means some day-level artifacts exist, but no saved LLM prompt/response exists yet.",
+            "context_only_days means some production-side context exists (decision log, quant signals, trend signals, or saved clean news), but no saved LLM prompt/response exists yet.",
+            "snapshot_only_days means only earnings_snapshot_YYYYMMDD.json exists. That supports earnings replay, but it is not meaningful LLM replay context and should not be treated as a near-recoverable soft-ranking sample.",
             "priority ranks higher-candidate days first, then favors recoverable raw responses, then prompt-ready dates.",
             "signal_tickers and strategies come from llm_decision_log_YYYYMMDD.json when available.",
         ],

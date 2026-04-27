@@ -562,6 +562,26 @@ def test_compute_position_size_max_cap_position_manager():
     assert result["position_pct_of_portfolio"] <= MAX_POSITION_PCT
 
 
+def test_backtester_addon_cap_defaults_to_production_cap():
+    from backtester import BacktestEngine, DEFAULT_CONFIG
+
+    assert DEFAULT_CONFIG["ADDON_ENABLED"] is True
+    assert DEFAULT_CONFIG["ADDON_MAX_POSITION_PCT"] == 0.35
+    engine = BacktestEngine(universe=["SPY"])
+    assert engine.config["ADDON_ENABLED"] is True
+    assert engine.config["ADDON_MAX_POSITION_PCT"] == 0.35
+
+
+def test_backtester_accepts_addon_specific_position_cap():
+    from backtester import BacktestEngine
+
+    engine = BacktestEngine(
+        universe=["SPY"],
+        config={"ADDON_MAX_POSITION_PCT": 0.35},
+    )
+    assert engine.config["ADDON_MAX_POSITION_PCT"] == 0.35
+
+
 def test_portfolio_heat_basic():
     from portfolio_engine import compute_portfolio_heat
     positions = {
@@ -5704,6 +5724,66 @@ def test_import_advice_skips_replay_for_fake_response(tmp_path):
     assert not replay_path.exists(), "Replay file must NOT be written for fake save-prompt responses"
 
 
+def test_recover_advice_from_raw_output_replaces_placeholder_and_writes_replay(tmp_path):
+    """Legacy raw llm_output files should recover replay twins without inventing new text."""
+    import json
+    from import_advice import recover_advice_from_raw_output
+
+    raw_output = tmp_path / "llm_output_20260220.json"
+    raw_output.write_text(
+        '{"new_trade": "NO NEW TRADE", "position_actions": [{"ticker": "NVDA", "action": "HOLD"}]}',
+        encoding="utf-8",
+    )
+    placeholder = tmp_path / "investment_advice_20260220.json"
+    placeholder.write_text(
+        json.dumps({
+            "timestamp": "2026-02-20T23:11:57",
+            "advice_raw": "Prompt saved to data/llm_prompt_20260220.txt",
+            "advice_parsed": None,
+            "token_usage": None,
+        }),
+        encoding="utf-8",
+    )
+
+    result = recover_advice_from_raw_output(str(raw_output), output_dir=str(tmp_path))
+
+    assert result["status"] == "recovered"
+    saved = json.loads(placeholder.read_text(encoding="utf-8"))
+    assert saved["advice_parsed"]["new_trade"] == "NO NEW TRADE"
+    replay_path = tmp_path / "llm_prompt_resp_20260220.json"
+    assert replay_path.exists()
+    replay_saved = json.loads(replay_path.read_text(encoding="utf-8"))
+    assert replay_saved["advice_parsed"]["position_actions"][0]["ticker"] == "NVDA"
+
+
+def test_recover_advice_from_raw_output_preserves_existing_real_advice(tmp_path):
+    """Recovery must not overwrite an already-real dated advice archive."""
+    import json
+    from import_advice import recover_advice_from_raw_output
+
+    raw_output = tmp_path / "llm_output_20260220.json"
+    raw_output.write_text(
+        '{"new_trade": {"ticker": "AMZN"}, "position_actions": []}',
+        encoding="utf-8",
+    )
+    advice_path = tmp_path / "investment_advice_20260220.json"
+    advice_path.write_text(
+        json.dumps({
+            "timestamp": "2026-02-20T23:11:57",
+            "advice_raw": '{"new_trade": {"ticker": "NVDA"}, "position_actions": []}',
+            "advice_parsed": {"new_trade": {"ticker": "NVDA"}, "position_actions": []},
+            "token_usage": None,
+        }),
+        encoding="utf-8",
+    )
+
+    result = recover_advice_from_raw_output(str(raw_output), output_dir=str(tmp_path))
+
+    assert result["status"] == "skipped_existing_real_advice"
+    saved = json.loads(advice_path.read_text(encoding="utf-8"))
+    assert saved["advice_parsed"]["new_trade"]["ticker"] == "NVDA"
+
+
 def test_import_advice_warns_on_missing_keys(tmp_path, caplog):
     """When the response is missing one of the required keys (new_trade /
     position_actions), the helper must log a warning but still write the file
@@ -6841,6 +6921,7 @@ def test_llm_archive_backlog_downgrades_prompt_only_days_without_ranking_opportu
     assert backlog["prompt_ready_days"] == 0
     assert backlog["prompt_ineligible_days"] == 1
     assert backlog["context_only_days"] == 1
+    assert backlog["snapshot_only_days"] == 0
     assert backlog["queue"][0]["date"] == "20260312"
     assert backlog["queue"][0]["recovery_tier"] == "context_only"
     assert backlog["queue"][0]["ready_for_manual_import"] is False
@@ -6918,6 +6999,15 @@ def test_llm_attribution_context_alignment_distinguishes_empty_vs_aligned_days(m
     assert statuses[aligned_day] == "aligned"
     assert statuses[empty_day] == "production_quant_empty"
 
+    effective = result["llm_attribution"]["effective_attribution"]
+    assert effective["effective_candidate_days"] == 0
+    assert effective["effective_candidate_signals"] == 0
+    assert effective["effective_candidate_dates"] == []
+    assert effective["signals_presented"] == 0
+    assert effective["signals_vetoed_by_llm"] == 0
+    assert effective["signals_passed_by_llm"] == 0
+    assert effective["veto_rate"] is None
+
 
 def test_llm_attribution_context_alignment_uses_archive_context_for_ranking_eligibility(monkeypatch, tmp_path):
     """Replay archive context should distinguish usable ranking samples from locked ones."""
@@ -6989,6 +7079,17 @@ def test_llm_attribution_context_alignment_uses_archive_context_for_ranking_elig
     assert ranking_statuses[eligible_day] == "ranking_eligible_aligned"
     assert ranking_statuses[locked_day] == "new_trade_locked"
 
+    effective = result["llm_attribution"]["effective_attribution"]
+    assert effective["effective_candidate_days"] == 1
+    assert effective["effective_candidate_signals"] == 1
+    assert effective["effective_candidate_dates"] == [eligible_day]
+    assert effective["effective_candidate_day_fraction_of_total"] == 0.5
+    assert effective["effective_candidate_signal_fraction_of_total"] == 0.5
+    assert effective["signals_presented"] == 1
+    assert effective["signals_vetoed_by_llm"] == 0
+    assert effective["signals_passed_by_llm"] == 1
+    assert effective["veto_rate"] == 0.0
+
 
 def test_llm_attribution_archive_backlog_distinguishes_recovery_tiers(monkeypatch, tmp_path):
     """Backlog should distinguish raw-response, context-only, and archive-hole dates."""
@@ -7013,7 +7114,8 @@ def test_llm_attribution_archive_backlog_distinguishes_recovery_tiers(monkeypatc
     assert backlog["raw_response_recoverable_days"] == 1
     assert backlog["prompt_ready_days"] == 0
     assert backlog["prompt_ineligible_days"] == 0
-    assert backlog["context_only_days"] == 2
+    assert backlog["context_only_days"] == 1
+    assert backlog["snapshot_only_days"] == 1
     assert backlog["archive_hole_days"] == 1
     assert backlog["quant_signals_days"] == 1
     assert backlog["earnings_snapshot_days"] == 1
@@ -7022,7 +7124,7 @@ def test_llm_attribution_archive_backlog_distinguishes_recovery_tiers(monkeypatc
 
     tiers = {item["date"]: item["recovery_tier"] for item in backlog["queue"]}
     assert tiers["20260129"] == "context_only"
-    assert tiers["20260204"] == "context_only"
+    assert tiers["20260204"] == "snapshot_only"
     assert tiers["20260312"] == "archive_hole"
 
 
@@ -7148,6 +7250,14 @@ def test_news_replay_off_is_pure_passthrough(monkeypatch, tmp_path):
     assert attr["signals_vetoed_by_news"] == 0
     assert attr["signals_passed_by_news"] == 0
     assert attr["veto_rate"] is None
+    assert attr["candidate_days_total"] >= 1
+    assert attr["candidate_signals_total"] >= 1
+    effective = attr["effective_attribution"]
+    assert effective["effective_candidate_days"] == 0
+    assert effective["effective_candidate_signals"] == 0
+    assert effective["signals_presented"] == 0
+    assert effective["signals_vetoed_by_news"] == 0
+    assert effective["veto_rate"] is None
 
 
 def test_news_replay_missing_file_falls_back_to_accept(monkeypatch, tmp_path):
@@ -7236,6 +7346,101 @@ def test_news_replay_t1_positive_does_not_veto(monkeypatch, tmp_path):
     attr = result["news_attribution"]
     assert attr["signals_vetoed_by_news"] == 0
     assert result["total_trades"] >= 1  # trade not blocked by positive news
+
+
+def test_news_attribution_effective_subset_distinguishes_empty_vs_aligned_days(monkeypatch, tmp_path):
+    """Archived-news readiness should count only production-aligned candidate overlap."""
+    import json, pandas as pd
+    import signal_engine, portfolio_engine, risk_engine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    spy_df = pd.DataFrame({
+        "Open": [100.0] * 30, "High": [100.0] * 30,
+        "Low": [100.0] * 30, "Close": [100.0] * 30,
+    }, index=idx)
+    test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
+                                    trigger_high=113.0, trigger_low=112.0)
+    engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine.data_dir = str(tmp_path)
+
+    _gen_call = [0]
+    def fake_generate_signals(*args, **kwargs):
+        _gen_call[0] += 1
+        if _gen_call[0] == 14:
+            return [{"ticker": "AAA", "strategy": "trend_long", "entry_price": 100.0, "stop_price": 95.0}]
+        if _gen_call[0] == 15:
+            return [{"ticker": "AAA", "strategy": "breakout_long", "entry_price": 100.0, "stop_price": 95.0}]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", fake_generate_signals)
+    monkeypatch.setattr(signal_engine, "rank_signals_for_allocation", lambda signals, **kwargs: list(signals))
+    monkeypatch.setattr(risk_engine, "enrich_signals", lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(portfolio_engine, "size_signals", lambda signals, *args, **kwargs: [
+        {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+    ])
+
+    aligned_day = idx[13].strftime("%Y%m%d")
+    empty_day = idx[14].strftime("%Y%m%d")
+
+    negative_item = {
+        "title": "AAA earnings miss analyst expectations",
+        "source": "reuters",
+        "tickers": ["AAA"],
+        "tier": "T1",
+    }
+    neutral_item = {
+        "title": "macro wrap with no ticker impact",
+        "source": "reuters",
+        "tickers": [],
+        "tier": "T1",
+    }
+    (tmp_path / f"clean_trade_news_{aligned_day}.json").write_text(
+        json.dumps([negative_item]), encoding="utf-8"
+    )
+    (tmp_path / f"clean_trade_news_{empty_day}.json").write_text(
+        json.dumps([neutral_item]), encoding="utf-8"
+    )
+    (tmp_path / f"quant_signals_{aligned_day}.json").write_text(json.dumps({
+        "signals": [{"ticker": "AAA"}]
+    }), encoding="utf-8")
+    (tmp_path / f"quant_signals_{empty_day}.json").write_text(json.dumps({
+        "signals": []
+    }), encoding="utf-8")
+
+    result = engine.run()
+    attr = result["news_attribution"]
+
+    assert attr["candidate_days_total"] == 2
+    assert attr["candidate_days_covered"] == 2
+    assert attr["candidate_signals_total"] == 2
+    assert attr["candidate_signals_covered"] == 2
+    assert attr["candidate_day_coverage_fraction"] == 1.0
+    assert attr["candidate_signal_coverage_fraction"] == 1.0
+
+    alignment = attr["context_alignment"]
+    assert alignment["covered_candidate_days"] == 2
+    assert alignment["aligned_days"] == 1
+    assert alignment["production_quant_empty_days"] == 1
+    assert alignment["production_quant_missing_days"] == 0
+    assert alignment["production_quant_mismatch_days"] == 0
+    assert alignment["aligned_signals"] == 1
+    assert alignment["production_aligned_candidate_day_fraction_of_total"] == 0.5
+    assert alignment["production_aligned_candidate_signal_fraction_of_total"] == 0.5
+
+    statuses = {item["date"]: item["alignment_status"] for item in alignment["queue"]}
+    assert statuses[aligned_day] == "aligned"
+    assert statuses[empty_day] == "production_quant_empty"
+
+    effective = attr["effective_attribution"]
+    assert effective["effective_candidate_days"] == 1
+    assert effective["effective_candidate_signals"] == 1
+    assert effective["effective_candidate_dates"] == [aligned_day]
+    assert effective["effective_candidate_day_fraction_of_total"] == 0.5
+    assert effective["effective_candidate_signal_fraction_of_total"] == 0.5
+    assert effective["signals_presented"] == 1
+    assert effective["signals_vetoed_by_news"] == 1
+    assert effective["signals_passed_by_news"] == 0
+    assert effective["veto_rate"] == 1.0
 
 
 def test_get_earnings_data_as_of_uses_only_past_surprises():

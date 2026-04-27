@@ -33,6 +33,61 @@ def _extract_advice_body(raw):
     return raw
 
 
+def _normalize_tickers(raw_tickers):
+    if not isinstance(raw_tickers, list):
+        return []
+    tickers = []
+    for ticker in raw_tickers:
+        if isinstance(ticker, str) and ticker.strip():
+            tickers.append(ticker.strip().upper())
+    return tickers
+
+
+def _extract_archive_attribution(raw):
+    """Expose prompt-time replay context without changing gate behavior."""
+    if not isinstance(raw, dict):
+        return {
+            "archive_context_present": False,
+            "signals_presented": [],
+            "signals_presented_count": None,
+            "ranking_eligible": None,
+            "new_trade_locked": None,
+        }
+
+    context = raw.get("archive_context")
+    if not isinstance(context, dict):
+        return {
+            "archive_context_present": False,
+            "signals_presented": [],
+            "signals_presented_count": None,
+            "ranking_eligible": None,
+            "new_trade_locked": None,
+        }
+
+    signals_presented = _normalize_tickers(context.get("signals_presented"))
+    count = context.get("signals_presented_count")
+    if not isinstance(count, int):
+        count = len(signals_presented)
+
+    ranking_eligible = context.get("ranking_eligible")
+    if not isinstance(ranking_eligible, bool):
+        ranking_eligible = None
+
+    new_trade_locked = context.get("new_trade_locked")
+    if not isinstance(new_trade_locked, bool):
+        new_trade_locked = None
+
+    return {
+        "archive_context_present": True,
+        "signals_presented": signals_presented,
+        "signals_presented_count": count,
+        "ranking_eligible": ranking_eligible,
+        "new_trade_locked": new_trade_locked,
+        "lock_reason": context.get("lock_reason"),
+        "source": context.get("source"),
+    }
+
+
 def _approved_tickers_from_advice(advice):
     """
     new_trade shapes observed in the wild:
@@ -74,6 +129,11 @@ def get_llm_decision_for_date(date_obj, data_dir="data"):
             "file_present":     False,
             "date_str":         date_str,
             "approved_tickers": [],
+            "archive_context_present": False,
+            "signals_presented": [],
+            "signals_presented_count": None,
+            "ranking_eligible": None,
+            "new_trade_locked": None,
         }
 
     try:
@@ -84,6 +144,11 @@ def get_llm_decision_for_date(date_obj, data_dir="data"):
             "file_present":     False,
             "date_str":         date_str,
             "approved_tickers": [],
+            "archive_context_present": False,
+            "signals_presented": [],
+            "signals_presented_count": None,
+            "ranking_eligible": None,
+            "new_trade_locked": None,
         }
 
     advice = _extract_advice_body(raw)
@@ -92,6 +157,7 @@ def get_llm_decision_for_date(date_obj, data_dir="data"):
         "file_present":     True,
         "date_str":         date_str,
         "approved_tickers": approved,
+        **_extract_archive_attribution(raw),
     }
 
 

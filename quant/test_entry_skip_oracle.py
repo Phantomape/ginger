@@ -41,7 +41,11 @@ def test_entry_skip_oracle_groups_future_returns_by_decision(tmp_path):
                     "decision": "no_shares",
                     "candidate_rank": 2,
                     "available_slots_at_entry_loop": 2,
-                    "details": {},
+                    "details": {
+                        "risk_multipliers": {
+                            "tqs_risk_multiplier_applied": 0.0,
+                        },
+                    },
                 },
             ],
         },
@@ -89,3 +93,6 @@ def test_entry_skip_oracle_groups_future_returns_by_decision(tmp_path):
     assert "context_summary" in gap_audit
     assert gap_audit["threshold_sweep"]["0.015"]["would_admit_count"] == 0
     assert gap_audit["threshold_sweep"]["0.020"]["would_admit_count"] == 1
+    no_shares_audit = oracle["no_shares_multiplier_audit"]
+    assert no_shares_audit["tqs_risk_multiplier_applied=0.0"]["sample_count"] == 1
+    assert no_shares_audit["tqs_risk_multiplier_applied=0.0"]["rows"][0]["ticker"] == "BBB"

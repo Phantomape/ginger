@@ -241,6 +241,56 @@ def _gap_cancel_audit(rows, rows_by_ticker=None, threshold_values=(0.015, 0.02, 
     }
 
 
+def _summarize_return_rows(rows):
+    returns = [row["max_forward_return_pct"] for row in rows]
+    if not returns:
+        return {
+            "sample_count": 0,
+            "positive_fraction": None,
+            "avg_max_forward_return_pct": None,
+            "median_max_forward_return_pct": None,
+            "best_max_forward_return_pct": None,
+            "worst_max_forward_return_pct": None,
+        }
+    return {
+        "sample_count": len(rows),
+        "positive_fraction": round(sum(1 for row in rows if row["max_forward_return_pct"] > 0) / len(rows), 4),
+        "avg_max_forward_return_pct": round(sum(returns) / len(returns), 6),
+        "median_max_forward_return_pct": round(_median(returns), 6),
+        "best_max_forward_return_pct": round(max(returns), 6),
+        "worst_max_forward_return_pct": round(min(returns), 6),
+    }
+
+
+def _no_shares_multiplier_audit(rows):
+    groups = {}
+    for row in rows:
+        if row.get("decision") != "no_shares":
+            continue
+        multipliers = (row.get("details") or {}).get("risk_multipliers") or {}
+        if not multipliers:
+            group_keys = ["unknown"]
+        else:
+            group_keys = [
+                f"{key}={value}"
+                for key, value in sorted(multipliers.items())
+            ]
+        for key in group_keys:
+            groups.setdefault(key, []).append(row)
+
+    return {
+        key: {
+            **_summarize_return_rows(group_rows),
+            "rows": sorted(
+                group_rows,
+                key=lambda row: row["max_forward_return_pct"],
+                reverse=True,
+            ),
+        }
+        for key, group_rows in sorted(groups.items())
+    }
+
+
 def build_entry_skip_oracle(backtest_result, snapshot, horizon_days=20):
     attribution = backtest_result.get("entry_execution_attribution") or {}
     skips = attribution.get("sample_skips") or []
@@ -330,6 +380,7 @@ def build_entry_skip_oracle(backtest_result, snapshot, horizon_days=20):
         ),
         "by_decision": dict(sorted(summary.items())),
         "gap_cancel_audit": _gap_cancel_audit(rows, rows_by_ticker=rows_by_ticker),
+        "no_shares_multiplier_audit": _no_shares_multiplier_audit(rows),
         "top_skipped_opportunities": sorted(
             rows,
             key=lambda row: row["max_forward_return_pct"],
