@@ -1,0 +1,172 @@
+{
+  "experiment_id": "exp-20260427-020",
+  "timestamp": "2026-04-27T08:08:00+00:00",
+  "status": "rejected",
+  "hypothesis": "The scarce-slot sleeve-routing edge may have higher materiality if breakout_long entries are deferred when two or fewer entry slots remain, instead of only one.",
+  "change_summary": "Added a replay runner that swept the existing default-off DEFER_BREAKOUT_WHEN_SLOTS_LTE hook at 1 and 2 across the three fixed OHLCV snapshot windows. Production defaults and strategy logic remain unchanged.",
+  "change_type": "capital_allocation",
+  "component": "quant/exp_20260427_020_scarce_slot_breakout_defer_threshold.py, data/exp-20260427-020_scarce_slot_breakout_defer_threshold.json",
+  "parameters": {
+    "single_causal_variable": "DEFER_BREAKOUT_WHEN_SLOTS_LTE threshold",
+    "baseline": null,
+    "tested_values": [1, 2],
+    "fixed_config": {
+      "REGIME_AWARE_EXIT": true,
+      "ADDON_ENABLED": true,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "MAX_POSITIONS": 5
+    }
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where accepted stack makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "win_rate": 0.4762,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "expected_value_score": 0.1507,
+      "sharpe_daily": 1.22,
+      "total_pnl": 12346.07,
+      "total_return_pct": 0.1235,
+      "max_drawdown_pct": 0.0454,
+      "win_rate": 0.375,
+      "trade_count": 24
+    }
+  },
+  "after_metrics": {
+    "slots_lte_1": {
+      "late_strong": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "total_return_pct": 0.3713,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "breakout_deferred": 0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.5709,
+        "sharpe_daily": 2.55,
+        "total_pnl": 22387.61,
+        "total_return_pct": 0.2239,
+        "max_drawdown_pct": 0.0254,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "breakout_deferred": 3
+      },
+      "old_thin": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "total_return_pct": 0.1293,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "breakout_deferred": 8
+      }
+    },
+    "slots_lte_2": {
+      "late_strong": {
+        "expected_value_score": 1.2207,
+        "sharpe_daily": 4.03,
+        "total_pnl": 30292.96,
+        "total_return_pct": 0.3029,
+        "max_drawdown_pct": 0.0256,
+        "win_rate": 0.65,
+        "trade_count": 20,
+        "breakout_deferred": 3
+      },
+      "mid_weak": {
+        "expected_value_score": 0.6406,
+        "sharpe_daily": 2.55,
+        "total_pnl": 25117.68,
+        "total_return_pct": 0.2512,
+        "max_drawdown_pct": 0.0367,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "breakout_deferred": 12
+      },
+      "old_thin": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "total_return_pct": 0.1293,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "breakout_deferred": 8
+      }
+    }
+  },
+  "delta_metrics": {
+    "slots_lte_1": {
+      "ev_delta_sum": 0.06,
+      "pnl_delta_sum": 867.84,
+      "windows_improved": 2,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0,
+      "total_breakout_deferred": 11
+    },
+    "slots_lte_2": {
+      "ev_delta_sum": -0.2351,
+      "pnl_delta_sum": -3237.82,
+      "windows_improved": 2,
+      "windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0091,
+      "total_breakout_deferred": 23
+    },
+    "gate4_basis": "Rejected because slots_lte_2 improved mid_weak and old_thin but damaged late_strong EV by -0.3648 and aggregate PnL by -$3,237.82. The previous slots_lte_1 harness remains the best tested form."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited; this deterministic sleeve-routing alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Do not widen scarce-slot breakout defer to two remaining slots; the wider rule behaves like broad breakout de-risking in late_strong and fails multi-window robustness.",
+  "next_retry_requires": [
+    "Do not retry DEFER_BREAKOUT_WHEN_SLOTS_LTE >= 2 without a new market-state discriminator.",
+    "Keep the one-slot scarce-slot hook default-off; it remains promising but modest.",
+    "Next meta-allocation work should add explicit market-state or sleeve-level context rather than widening this threshold."
+  ],
+  "related_files": [
+    "quant/exp_20260427_020_scarce_slot_breakout_defer_threshold.py",
+    "data/exp-20260427-020_scarce_slot_breakout_defer_threshold.json",
+    "docs/experiments/logs/exp-20260427-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. One causal variable changed in replay; production strategy defaults remain unchanged."
+}

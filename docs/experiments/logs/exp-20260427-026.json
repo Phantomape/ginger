@@ -1,0 +1,158 @@
+{
+  "experiment_id": "exp-20260427-026",
+  "timestamp": "2026-04-27T15:08:50Z",
+  "status": "rejected",
+  "hypothesis": "Existing enriched trade_quality_score may route scarce same-day entry slots better than current strategy/native ordering.",
+  "change_summary": "Temporarily tested a default-off RANK_SIGNALS_BY_TQS BacktestEngine hook that sorted enriched same-day candidates by trade_quality_score, then rolled the hook back after it regressed all three fixed windows.",
+  "change_type": "capital_allocation",
+  "component": "temporary BacktestEngine config hook, quant/exp_20260427_026_tqs_allocation_rank.py, data/exp-20260427-026_tqs_allocation_rank.json",
+  "parameters": {
+    "single_causal_variable": "RANK_SIGNALS_BY_TQS=True",
+    "baseline": {
+      "RANK_SIGNALS_BY_TQS": false
+    },
+    "tested_values": {
+      "rank_by_tqs": {
+        "RANK_SIGNALS_BY_TQS": true,
+        "sort_key": [
+          "trade_quality_score desc",
+          "confidence_score desc"
+        ]
+      }
+    },
+    "fixed_config": {
+      "REGIME_AWARE_EXIT": true,
+      "ADDON_ENABLED": true,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "MAX_POSITIONS": 5
+    }
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where accepted stack makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "win_rate": 0.4762,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "expected_value_score": 0.1507,
+      "sharpe_daily": 1.22,
+      "total_pnl": 12346.07,
+      "total_return_pct": 0.1235,
+      "max_drawdown_pct": 0.0454,
+      "win_rate": 0.375,
+      "trade_count": 24
+    }
+  },
+  "after_metrics": {
+    "rank_by_tqs": {
+      "late_strong": {
+        "expected_value_score": 1.5109,
+        "sharpe_daily": 4.16,
+        "total_pnl": 36319.39,
+        "total_return_pct": 0.3632,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.6818,
+        "trade_count": 22
+      },
+      "mid_weak": {
+        "expected_value_score": 0.4894,
+        "sharpe_daily": 2.29,
+        "total_pnl": 21367.96,
+        "total_return_pct": 0.2137,
+        "max_drawdown_pct": 0.0276,
+        "win_rate": 0.4545,
+        "trade_count": 22
+      },
+      "old_thin": {
+        "expected_value_score": 0.0801,
+        "sharpe_daily": 0.96,
+        "total_pnl": 8340.61,
+        "total_return_pct": 0.0834,
+        "max_drawdown_pct": 0.0456,
+        "win_rate": 0.3478,
+        "trade_count": 23
+      }
+    }
+  },
+  "delta_metrics": {
+    "rank_by_tqs": {
+      "late_strong": {
+        "expected_value_score_delta": -0.0746,
+        "total_pnl_delta": -809.3,
+        "sharpe_daily_delta": -0.11,
+        "max_drawdown_pct_delta": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score_delta": -0.0324,
+        "total_pnl_delta": -740.54,
+        "sharpe_daily_delta": -0.07,
+        "max_drawdown_pct_delta": 0.0
+      },
+      "old_thin": {
+        "expected_value_score_delta": -0.0706,
+        "total_pnl_delta": -4005.46,
+        "sharpe_daily_delta": -0.26,
+        "max_drawdown_pct_delta": 0.0002
+      },
+      "aggregate": {
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "ev_delta_sum": -0.1776,
+        "pnl_delta_sum": -5555.3,
+        "max_drawdown_delta_max": 0.0002
+      }
+    },
+    "gate4_basis": "Rejected because TQS ordering regressed EV, PnL, Sharpe, and win rate in all three fixed windows."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic allocation-ranking alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Global TQS sorting is not a reliable allocation alpha; it appears to displace useful native strategy/order structure rather than improve scarce-slot routing.",
+  "next_retry_requires": [
+    "Do not retry global trade_quality_score sorting or nearby TQS-only ordering variants.",
+    "A valid ranking retry needs a new information source or a narrower context that explains why TQS should dominate native ordering.",
+    "Do not combine this with scarce-slot breakout deferral unless a separate audit proves interaction value."
+  ],
+  "related_files": [
+    "quant/exp_20260427_026_tqs_allocation_rank.py",
+    "data/exp-20260427-026_tqs_allocation_rank.json",
+    "docs/experiments/logs/exp-20260427-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. The temporary production hook was rolled back after failing Gate 4; only experiment artifacts and records remain."
+}

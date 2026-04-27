@@ -1,0 +1,215 @@
+{
+  "experiment_id": "exp-20260427-022",
+  "timestamp": "2026-04-27T11:05:57.348650+00:00",
+  "status": "rejected",
+  "hypothesis": "When only one entry slot remains, breakout deferral should fire only when the candidate would add to same-sector crowding already held in the portfolio.",
+  "change_summary": "Temporarily tested a same-sector crowding discriminator on top of the existing default-off DEFER_BREAKOUT_WHEN_SLOTS_LTE=1 scarce-slot hook, then rolled the code hook back because it did not improve EV and worsened old_thin drawdown.",
+  "change_type": "capital_allocation",
+  "component": "temporary BacktestEngine config hook, data/exp-20260427-022_scarce_slot_sector_crowding.json, docs/experiments/logs/exp-20260427-022.json",
+  "parameters": {
+    "single_causal_variable": "DEFER_BREAKOUT_IF_HELD_SAME_SECTOR_GTE=1 with DEFER_BREAKOUT_WHEN_SLOTS_LTE fixed at 1",
+    "baseline": {
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": null
+    },
+    "tested_values": {
+      "sector_crowded_lte_1": {
+        "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+        "DEFER_BREAKOUT_IF_HELD_SAME_SECTOR_GTE": 1
+      }
+    },
+    "fixed_config": {
+      "REGIME_AWARE_EXIT": true,
+      "ADDON_ENABLED": true,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "MAX_POSITIONS": 5
+    }
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where accepted stack makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "breakout_deferred": 0,
+      "entry_reason_counts": {
+        "entered": 21,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3,
+        "stop_breach_cancel": 3
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "win_rate": 0.4762,
+      "trade_count": 21,
+      "survival_rate": 0.8298,
+      "breakout_deferred": 0,
+      "entry_reason_counts": {
+        "entered": 21,
+        "gap_cancel": 5,
+        "no_shares": 11,
+        "slot_sliced": 2
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.1507,
+      "sharpe_daily": 1.22,
+      "total_pnl": 12346.07,
+      "total_return_pct": 0.1235,
+      "max_drawdown_pct": 0.0454,
+      "win_rate": 0.375,
+      "trade_count": 24,
+      "survival_rate": 0.8929,
+      "breakout_deferred": 0,
+      "entry_reason_counts": {
+        "entered": 24,
+        "gap_cancel": 6,
+        "no_shares": 10,
+        "slot_sliced": 10
+      }
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "breakout_deferred": 0,
+      "entry_reason_counts": {
+        "entered": 21,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3,
+        "stop_breach_cancel": 3
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5218,
+      "sharpe_daily": 2.36,
+      "total_pnl": 22108.5,
+      "total_return_pct": 0.2211,
+      "max_drawdown_pct": 0.0276,
+      "win_rate": 0.4762,
+      "trade_count": 21,
+      "survival_rate": 0.8298,
+      "breakout_deferred": 2,
+      "entry_reason_counts": {
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 2,
+        "slot_sliced": 1
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.1498,
+      "sharpe_daily": 1.19,
+      "total_pnl": 12593.65,
+      "total_return_pct": 0.1259,
+      "max_drawdown_pct": 0.0609,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9153,
+      "breakout_deferred": 3,
+      "entry_reason_counts": {
+        "entered": 23,
+        "gap_cancel": 5,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 3,
+        "slot_sliced": 12
+      }
+    }
+  },
+  "delta_metrics": {
+    "windows_improved": 0,
+    "windows_regressed": 1,
+    "ev_delta_sum": -0.0009,
+    "pnl_delta_sum": 247.58,
+    "max_drawdown_delta_max": 0.0155,
+    "total_breakout_deferred": 5,
+    "decision": "rejected",
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "sharpe_daily_delta": 0.0,
+        "max_drawdown_pct_delta": 0.0,
+        "win_rate_delta": 0.0,
+        "trade_count_delta": 0,
+        "breakout_deferred": 0
+      },
+      "mid_weak": {
+        "expected_value_score_delta": 0.0,
+        "total_pnl_delta": 0.0,
+        "sharpe_daily_delta": 0.0,
+        "max_drawdown_pct_delta": 0.0,
+        "win_rate_delta": 0.0,
+        "trade_count_delta": 0,
+        "breakout_deferred": 2
+      },
+      "old_thin": {
+        "expected_value_score_delta": -0.0009,
+        "total_pnl_delta": 247.58,
+        "sharpe_daily_delta": -0.03,
+        "max_drawdown_pct_delta": 0.0155,
+        "win_rate_delta": 0.0163,
+        "trade_count_delta": -1,
+        "breakout_deferred": 3
+      }
+    },
+    "gate4_basis": "Rejected because EV improved in 0/3 windows: late_strong and mid_weak were EV-null, while old_thin EV fell by 0.0009 and max drawdown rose by 1.55 percentage points despite +$247.58 PnL."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic sleeve-routing alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Same-sector crowding did not explain the scarce-slot breakout defer edge; it filtered fewer breakouts but failed to improve EV and increased old_thin drawdown.",
+  "next_retry_requires": [
+    "Do not retry same-sector held-count crowding as the next scarce-slot discriminator.",
+    "A valid retry needs a different state variable such as sector breadth, candidate-level rank gap, or forward/paper evidence.",
+    "Keep the existing one-slot scarce-slot hook default-off; this experiment does not justify production promotion."
+  ],
+  "related_files": [
+    "data/exp-20260427-022_scarce_slot_sector_crowding.json",
+    "docs/experiments/logs/exp-20260427-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. The temporary condition hook was removed after failing Gate 4."
+}
