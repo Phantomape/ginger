@@ -19,8 +19,9 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 try:
-    from constants import ROUND_TRIP_COST_PCT
+    from constants import MAX_POSITIONS, ROUND_TRIP_COST_PCT
 except Exception:  # pragma: no cover - only used if constants import is broken.
+    MAX_POSITIONS = 5
     ROUND_TRIP_COST_PCT = 0.0035
 
 
@@ -106,6 +107,16 @@ def _candidate_sources(backtest_result):
         if tickers_by_date:
             sources.append((key, tickers_by_date))
     return sources
+
+
+def _active_trades_on_date(backtest_result, date_str):
+    active = []
+    for trade in backtest_result.get("trades") or []:
+        entry_date = trade.get("entry_date")
+        exit_date = trade.get("exit_date")
+        if entry_date and exit_date and entry_date <= date_str < exit_date:
+            active.append(trade)
+    return active
 
 
 def _collect_candidate_forward_rows(backtest_result, snapshot, horizon_days):
@@ -204,6 +215,92 @@ def build_candidate_forward_oracle(backtest_result, snapshot, horizon_days=20):
         "median_max_forward_return_pct": round(sorted(returns)[len(returns) // 2], 6),
         "best_max_forward_return_pct": round(max(returns), 6),
         "top_candidate_opportunities": top,
+        "missing_candidates": missing,
+    }
+
+
+def build_no_trade_attribution_oracle(backtest_result, snapshot, horizon_days=20):
+    candidate_rows, missing = _collect_candidate_forward_rows(
+        backtest_result,
+        snapshot,
+        horizon_days,
+    )
+    if not candidate_rows:
+        return {
+            "oracle_type": "candidate_no_trade_attribution",
+            "is_tradable": False,
+            "lookahead_warning": "Uses saved candidates and future rows for diagnostics only.",
+            "horizon_days": horizon_days,
+            "candidate_days": 0,
+            "missing_candidate_count": len(missing),
+            "missing_candidates": missing,
+        }
+
+    by_signal_date = {}
+    for row in candidate_rows:
+        by_signal_date.setdefault(row["signal_date"], []).append(row)
+
+    rows = []
+    reason_counts = {}
+    for signal_date, candidates in sorted(by_signal_date.items()):
+        actual = [row for row in candidates if row["became_actual_trade_same_entry_day"]]
+        if actual:
+            continue
+
+        active = _active_trades_on_date(backtest_result, signal_date)
+        active_tickers = {
+            (trade.get("ticker") or "").upper()
+            for trade in active
+        }
+        candidate_tickers = {
+            (row.get("ticker") or "").upper()
+            for row in candidates
+        }
+        slots_available = max(0, MAX_POSITIONS - len(active))
+        already_holding = sorted(candidate_tickers & active_tickers)
+
+        if already_holding:
+            reason = "already_holding_candidate"
+        elif slots_available < len(candidates):
+            reason = "slot_competition_possible"
+        else:
+            reason = "needs_entry_skip_logging"
+
+        reason_counts[reason] = reason_counts.get(reason, 0) + 1
+        top_candidate = max(candidates, key=lambda row: row["max_forward_return_pct"])
+        rows.append({
+            "signal_date": signal_date,
+            "candidate_count": len(candidates),
+            "top_candidate": top_candidate["ticker"],
+            "top_candidate_return_pct": top_candidate["max_forward_return_pct"],
+            "active_position_count_on_signal_date": len(active),
+            "slots_available_on_signal_date": slots_available,
+            "already_holding_candidate_tickers": already_holding,
+            "attribution": reason,
+        })
+
+    missed_returns = [row["top_candidate_return_pct"] for row in rows]
+    return {
+        "oracle_type": "candidate_no_trade_attribution",
+        "is_tradable": False,
+        "lookahead_warning": (
+            "This is a conservative reconstruction from saved candidates and closed trades. "
+            "Rows marked needs_entry_skip_logging require explicit backtester skip-reason logs."
+        ),
+        "horizon_days": horizon_days,
+        "candidate_days": len(by_signal_date),
+        "no_actual_selection_days": len(rows),
+        "missing_candidate_count": len(missing),
+        "reason_counts": dict(sorted(reason_counts.items())),
+        "avg_missed_top_candidate_return_pct": (
+            round(sum(missed_returns) / len(missed_returns), 6)
+            if missed_returns else None
+        ),
+        "largest_no_trade_opportunities": sorted(
+            rows,
+            key=lambda row: row["top_candidate_return_pct"],
+            reverse=True,
+        )[:10],
         "missing_candidates": missing,
     }
 
@@ -425,6 +522,11 @@ def build_oracle_diagnostics(backtest_path, snapshot_path=None, candidate_horizo
                 horizon_days=candidate_horizon_days,
             ),
             "candidate_selection": build_candidate_selection_oracle(
+                backtest,
+                snapshot,
+                horizon_days=candidate_horizon_days,
+            ),
+            "no_trade_attribution": build_no_trade_attribution_oracle(
                 backtest,
                 snapshot,
                 horizon_days=candidate_horizon_days,

@@ -184,3 +184,83 @@ def test_candidate_selection_oracle_reports_rank_regret(tmp_path):
     assert selection["largest_daily_selection_regrets"][0]["top_candidate"] == "BBB"
     assert selection["largest_daily_selection_regrets"][0]["best_actual_candidate"] == "AAA"
     assert selection["avg_top1_vs_actual_selection_regret_pct"] > 0.3
+
+
+def test_no_trade_attribution_flags_missing_skip_logging(tmp_path):
+    backtest = {
+        "known_biases": {
+            "ohlcv_source": {
+                "snapshot_path": str(tmp_path / "snapshot.json"),
+            },
+            "llm_gate_unreplayed": {
+                "candidate_tickers_by_date": {
+                    "20260102": ["AAA"],
+                }
+            },
+        },
+        "trades": [],
+    }
+    snapshot = {
+        "ohlcv": {
+            "AAA": [
+                {"Date": "2026-01-05", "Open": 10.0, "High": 12.0},
+                {"Date": "2026-01-06", "Open": 10.5, "High": 13.0},
+            ]
+        }
+    }
+    backtest_path = tmp_path / "backtest.json"
+    snapshot_path = tmp_path / "snapshot.json"
+    backtest_path.write_text(json.dumps(backtest), encoding="utf-8")
+    snapshot_path.write_text(json.dumps(snapshot), encoding="utf-8")
+
+    diagnostics = build_oracle_diagnostics(backtest_path, candidate_horizon_days=2)
+    attribution = diagnostics["oracle_metrics"]["no_trade_attribution"]
+
+    assert attribution["no_actual_selection_days"] == 1
+    assert attribution["reason_counts"] == {"needs_entry_skip_logging": 1}
+    assert attribution["largest_no_trade_opportunities"][0]["top_candidate"] == "AAA"
+
+
+def test_no_trade_attribution_flags_already_held_candidate(tmp_path):
+    backtest = {
+        "known_biases": {
+            "ohlcv_source": {
+                "snapshot_path": str(tmp_path / "snapshot.json"),
+            },
+            "llm_gate_unreplayed": {
+                "candidate_tickers_by_date": {
+                    "20260102": ["AAA"],
+                }
+            },
+        },
+        "trades": [
+            {
+                "ticker": "AAA",
+                "entry_date": "2026-01-01",
+                "exit_date": "2026-01-06",
+                "entry_price": 10.0,
+                "shares": 1,
+                "pnl": 1.0,
+            }
+        ],
+    }
+    snapshot = {
+        "ohlcv": {
+            "AAA": [
+                {"Date": "2026-01-05", "Open": 10.0, "High": 12.0},
+                {"Date": "2026-01-06", "Open": 10.5, "High": 13.0},
+            ]
+        }
+    }
+    backtest_path = tmp_path / "backtest.json"
+    snapshot_path = tmp_path / "snapshot.json"
+    backtest_path.write_text(json.dumps(backtest), encoding="utf-8")
+    snapshot_path.write_text(json.dumps(snapshot), encoding="utf-8")
+
+    diagnostics = build_oracle_diagnostics(backtest_path, candidate_horizon_days=2)
+    attribution = diagnostics["oracle_metrics"]["no_trade_attribution"]
+
+    assert attribution["reason_counts"] == {"already_holding_candidate": 1}
+    assert attribution["largest_no_trade_opportunities"][0][
+        "already_holding_candidate_tickers"
+    ] == ["AAA"]

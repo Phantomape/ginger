@@ -17,6 +17,9 @@ tradable strategy rule or as a direct Gate 4 acceptance metric.
   the oracle top candidates with the trades the system actually selected. This
   estimates whether headroom is coming from same-day ranking errors or from
   candidate days where the system made no trade.
+- `no_trade_attribution`: Reconstruct open-position occupancy on missed
+  candidate days. This conservatively separates obvious capacity / already-held
+  cases from rows that need explicit entry skip-reason logging.
 
 ## Usage
 
@@ -43,5 +46,10 @@ python quant/oracle_diagnostics.py \
 - If `candidate_selection.avg_top1_vs_actual_selection_regret_pct` is low but
   `days_without_actual_selection` is high, the next research question is
   capacity / gating / no-trade attribution rather than same-day ranking quality.
+- If `no_trade_attribution.reason_counts.needs_entry_skip_logging` dominates,
+  do not infer a portfolio-cap problem from oracle output alone. Add explicit
+  skip reasons around sizing, stop/target presence, future fill availability,
+  gap cancel, stop-breach cancel, and slot slicing before changing allocation
+  rules.
 - Top candidate opportunities are research leads, not proof. Any tradable rule
   inspired by them still needs normal backtest gates and multi-window checks.
