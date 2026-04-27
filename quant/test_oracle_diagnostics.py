@@ -134,3 +134,53 @@ def test_candidate_forward_oracle_uses_saved_candidate_dates(tmp_path):
     assert candidate["candidate_count"] == 1
     assert candidate["actual_trade_overlap_count"] == 1
     assert candidate["best_max_forward_return_pct"] > 0.29
+
+
+def test_candidate_selection_oracle_reports_rank_regret(tmp_path):
+    backtest = {
+        "known_biases": {
+            "ohlcv_source": {
+                "snapshot_path": str(tmp_path / "snapshot.json"),
+            },
+            "llm_gate_unreplayed": {
+                "candidate_tickers_by_date": {
+                    "20260102": ["AAA", "BBB"],
+                }
+            },
+        },
+        "trades": [
+            {
+                "ticker": "AAA",
+                "entry_date": "2026-01-05",
+                "entry_price": 10.0,
+                "shares": 1,
+                "pnl": 1.0,
+                "exit_date": "2026-01-06",
+            }
+        ],
+    }
+    snapshot = {
+        "ohlcv": {
+            "AAA": [
+                {"Date": "2026-01-05", "Open": 10.0, "High": 11.0},
+                {"Date": "2026-01-06", "Open": 10.5, "High": 11.5},
+            ],
+            "BBB": [
+                {"Date": "2026-01-05", "Open": 10.0, "High": 15.0},
+                {"Date": "2026-01-06", "Open": 14.0, "High": 16.0},
+            ],
+        }
+    }
+    backtest_path = tmp_path / "backtest.json"
+    snapshot_path = tmp_path / "snapshot.json"
+    backtest_path.write_text(json.dumps(backtest), encoding="utf-8")
+    snapshot_path.write_text(json.dumps(snapshot), encoding="utf-8")
+
+    diagnostics = build_oracle_diagnostics(backtest_path, candidate_horizon_days=2)
+    selection = diagnostics["oracle_metrics"]["candidate_selection"]
+
+    assert selection["candidate_days"] == 1
+    assert selection["top1_actual_hit_fraction"] == 0
+    assert selection["largest_daily_selection_regrets"][0]["top_candidate"] == "BBB"
+    assert selection["largest_daily_selection_regrets"][0]["best_actual_candidate"] == "AAA"
+    assert selection["avg_top1_vs_actual_selection_regret_pct"] > 0.3

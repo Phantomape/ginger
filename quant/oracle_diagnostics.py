@@ -108,7 +108,7 @@ def _candidate_sources(backtest_result):
     return sources
 
 
-def build_candidate_forward_oracle(backtest_result, snapshot, horizon_days=20):
+def _collect_candidate_forward_rows(backtest_result, snapshot, horizon_days):
     rows_by_ticker = _ohlcv_rows_by_date(snapshot)
     actual_trade_keys = {
         (trade.get("entry_date"), (trade.get("ticker") or "").upper())
@@ -161,6 +161,16 @@ def build_candidate_forward_oracle(backtest_result, snapshot, horizon_days=20):
                     ),
                 })
 
+    return candidate_rows, missing
+
+
+def build_candidate_forward_oracle(backtest_result, snapshot, horizon_days=20):
+    candidate_rows, missing = _collect_candidate_forward_rows(
+        backtest_result,
+        snapshot,
+        horizon_days,
+    )
+
     if not candidate_rows:
         return {
             "oracle_type": "candidate_forward_upper_bound",
@@ -194,6 +204,134 @@ def build_candidate_forward_oracle(backtest_result, snapshot, horizon_days=20):
         "median_max_forward_return_pct": round(sorted(returns)[len(returns) // 2], 6),
         "best_max_forward_return_pct": round(max(returns), 6),
         "top_candidate_opportunities": top,
+        "missing_candidates": missing,
+    }
+
+
+def build_candidate_selection_oracle(backtest_result, snapshot, horizon_days=20, k_values=(1, 2, 3)):
+    candidate_rows, missing = _collect_candidate_forward_rows(
+        backtest_result,
+        snapshot,
+        horizon_days,
+    )
+    if not candidate_rows:
+        return {
+            "oracle_type": "candidate_selection_upper_bound",
+            "is_tradable": False,
+            "lookahead_warning": "Uses future candidate returns for ranking; diagnostic only.",
+            "horizon_days": horizon_days,
+            "candidate_days": 0,
+            "missing_candidate_count": len(missing),
+            "missing_candidates": missing,
+        }
+
+    by_signal_date = {}
+    for row in candidate_rows:
+        by_signal_date.setdefault(row["signal_date"], []).append(row)
+
+    actual_rows = [
+        row for row in candidate_rows
+        if row["became_actual_trade_same_entry_day"]
+    ]
+    actual_returns = [row["max_forward_return_pct"] for row in actual_rows]
+
+    daily_rank_regrets = []
+    missed_top1 = []
+    top1_actual_hits = 0
+    days_with_actual = 0
+
+    for signal_date, rows in sorted(by_signal_date.items()):
+        ranked = sorted(rows, key=lambda row: row["max_forward_return_pct"], reverse=True)
+        top1 = ranked[0]
+        actual_for_day = [
+            row for row in rows
+            if row["became_actual_trade_same_entry_day"]
+        ]
+        if top1["became_actual_trade_same_entry_day"]:
+            top1_actual_hits += 1
+        else:
+            missed_top1.append(top1)
+        if actual_for_day:
+            days_with_actual += 1
+            best_actual = max(actual_for_day, key=lambda row: row["max_forward_return_pct"])
+            daily_rank_regrets.append({
+                "signal_date": signal_date,
+                "top_candidate": top1["ticker"],
+                "top_candidate_return_pct": top1["max_forward_return_pct"],
+                "best_actual_candidate": best_actual["ticker"],
+                "best_actual_return_pct": best_actual["max_forward_return_pct"],
+                "selection_regret_pct": round(
+                    top1["max_forward_return_pct"] - best_actual["max_forward_return_pct"],
+                    6,
+                ),
+            })
+
+    top_k_summary = {}
+    for k in k_values:
+        selected = []
+        for rows in by_signal_date.values():
+            ranked = sorted(rows, key=lambda row: row["max_forward_return_pct"], reverse=True)
+            selected.extend(ranked[:k])
+        returns = [row["max_forward_return_pct"] for row in selected]
+        top_k_summary[f"top_{k}"] = {
+            "selected_candidate_count": len(selected),
+            "equal_weight_avg_max_forward_return_pct": (
+                round(sum(returns) / len(returns), 6) if returns else None
+            ),
+            "best_selected_return_pct": round(max(returns), 6) if returns else None,
+            "worst_selected_return_pct": round(min(returns), 6) if returns else None,
+        }
+
+    regret_values = [row["selection_regret_pct"] for row in daily_rank_regrets]
+    missed_top1 = sorted(
+        missed_top1,
+        key=lambda row: row["max_forward_return_pct"],
+        reverse=True,
+    )[:10]
+    all_missed_top1 = [
+        sorted(rows, key=lambda row: row["max_forward_return_pct"], reverse=True)[0]
+        for rows in by_signal_date.values()
+        if not any(row["became_actual_trade_same_entry_day"] for row in rows)
+    ]
+    missed_top1_returns = [
+        row["max_forward_return_pct"]
+        for row in all_missed_top1
+    ]
+
+    return {
+        "oracle_type": "candidate_selection_upper_bound",
+        "is_tradable": False,
+        "lookahead_warning": (
+            "Ranks candidates by future returns. Use only to estimate selection/ranking headroom, "
+            "never as a tradable ranking rule."
+        ),
+        "horizon_days": horizon_days,
+        "candidate_days": len(by_signal_date),
+        "candidate_count": len(candidate_rows),
+        "missing_candidate_count": len(missing),
+        "days_with_actual_selection": days_with_actual,
+        "days_without_actual_selection": len(by_signal_date) - days_with_actual,
+        "top1_actual_hit_fraction": round(top1_actual_hits / len(by_signal_date), 4),
+        "actual_selected_candidate_count": len(actual_rows),
+        "actual_equal_weight_avg_max_forward_return_pct": (
+            round(sum(actual_returns) / len(actual_returns), 6)
+            if actual_returns else None
+        ),
+        "missed_top1_avg_max_forward_return_pct": (
+            round(sum(missed_top1_returns) / len(missed_top1_returns), 6)
+            if missed_top1_returns else None
+        ),
+        "avg_top1_vs_actual_selection_regret_pct": (
+            round(sum(regret_values) / len(regret_values), 6)
+            if regret_values else None
+        ),
+        "top_k_summary": top_k_summary,
+        "largest_daily_selection_regrets": sorted(
+            daily_rank_regrets,
+            key=lambda row: row["selection_regret_pct"],
+            reverse=True,
+        )[:10],
+        "missed_top1_opportunities": missed_top1,
         "missing_candidates": missing,
     }
 
@@ -282,6 +420,11 @@ def build_oracle_diagnostics(backtest_path, snapshot_path=None, candidate_horizo
         "oracle_metrics": {
             "perfect_exit": build_perfect_exit_oracle(backtest, snapshot),
             "candidate_forward": build_candidate_forward_oracle(
+                backtest,
+                snapshot,
+                horizon_days=candidate_horizon_days,
+            ),
+            "candidate_selection": build_candidate_selection_oracle(
                 backtest,
                 snapshot,
                 horizon_days=candidate_horizon_days,
