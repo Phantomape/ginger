@@ -413,6 +413,8 @@ def test_default_enabled_strategies_exclude_earnings_until_data_recovers():
         == BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH
     )
     assert DEFAULT_CONFIG["BREAKOUT_RANK_BY_52W_HIGH"] is BREAKOUT_RANK_BY_52W_HIGH
+    assert DEFAULT_CONFIG["DEFER_BREAKOUT_WHEN_SLOTS_LTE"] == 1
+    assert DEFAULT_CONFIG["DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA"] is None
 
 
 def test_regime_exit_profile_expands_in_risk_on_and_contracts_in_defensive():
@@ -7226,6 +7228,105 @@ def test_llm_attribution_by_strategy_empty_when_no_files(monkeypatch, tmp_path):
 
 
 # ── news_replay tests ────────────────────────────────────────────────────────
+
+def test_scarce_slot_defer_records_breakout_event_details(monkeypatch):
+    """Scarce-slot routing must expose deferred breakout candidates."""
+    import pandas as pd
+    import backtester, feature_layer, signal_engine, risk_engine, portfolio_engine
+    import regime as regime_mod
+    from backtester import BacktestEngine
+
+    idx = pd.bdate_range("2025-10-01", periods=30)
+    base_df = pd.DataFrame({
+        "Open": [100.0] * 30,
+        "High": [100.0] * 30,
+        "Low": [100.0] * 30,
+        "Close": [100.0] * 30,
+    }, index=idx)
+
+    monkeypatch.setattr(
+        BacktestEngine,
+        "_download_data",
+        lambda self: {
+            "AAA": base_df,
+            "BBB": base_df,
+            "SPY": base_df,
+            "QQQ": base_df,
+        },
+    )
+    monkeypatch.setattr(feature_layer, "compute_features", lambda t, df, e: {"ticker": t})
+    monkeypatch.setattr(
+        regime_mod,
+        "compute_market_regime",
+        lambda ohlcv_override=None: {
+            "regime": "BULL",
+            "indices": {"SPY": {"pct_from_ma": 0.05}, "QQQ": {"pct_from_ma": 0.05}},
+        },
+    )
+
+    call = [0]
+
+    def _signals(features, market_context=None, **kwargs):
+        call[0] += 1
+        if call[0] == 20:
+            return [
+                {"ticker": "AAA", "strategy": "trend_long", "sector": "Technology",
+                 "entry_price": 100.0, "stop_price": 95.0, "target_price": 110.0,
+                 "trade_quality_score": 0.9, "confidence_score": 0.8},
+                {"ticker": "BBB", "strategy": "breakout_long", "sector": "Technology",
+                 "entry_price": 100.0, "stop_price": 95.0, "target_price": 110.0,
+                 "trade_quality_score": 0.7, "confidence_score": 0.75},
+            ]
+        return []
+
+    monkeypatch.setattr(signal_engine, "generate_signals", _signals)
+    monkeypatch.setattr(risk_engine, "enrich_signals", lambda signals, features, atr_target_mult=None: signals)
+    monkeypatch.setattr(
+        portfolio_engine,
+        "size_signals",
+        lambda signals, *args, **kwargs: [
+            {**s, "sizing": {"shares_to_buy": 1}} for s in signals
+        ],
+    )
+    monkeypatch.setattr(backtester, "MAX_PER_SECTOR", 2)
+
+    engine = BacktestEngine(
+        universe=["AAA", "BBB"],
+        config={
+            "INITIAL_CAPITAL": 100_000,
+            "MAX_POSITIONS": 1,
+            "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+        },
+    )
+    engine.start = idx[0]
+    engine.end = idx[-1]
+    result = engine.run()
+
+    scarce = result["scarce_slot_attribution"]
+    assert scarce["breakout_deferred"] == 1
+    assert scarce["deferred_events"][0]["ticker"] == "BBB"
+    assert scarce["deferred_events"][0]["trade_quality_score"] == 0.7
+
+    call[0] = 0
+    capped_engine = BacktestEngine(
+        universe=["AAA", "BBB"],
+        config={
+            "INITIAL_CAPITAL": 100_000,
+            "MAX_POSITIONS": 1,
+            "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+            "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": 0.04,
+        },
+    )
+    capped_engine.start = idx[0]
+    capped_engine.end = idx[-1]
+    capped_result = capped_engine.run()
+    capped_scarce = capped_result["scarce_slot_attribution"]
+
+    assert capped_scarce["breakout_deferred"] == 0
+    assert (
+        capped_scarce["defer_breakout_max_min_index_pct_from_ma"] == 0.04
+    )
+
 
 def test_news_replay_off_is_pure_passthrough(monkeypatch, tmp_path):
     """--replay-news off: result metrics unchanged; news_attribution bucket
