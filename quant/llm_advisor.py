@@ -253,6 +253,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     # --- 3a: Pre-computed quant signals (new trade candidates) ---
     quant_signals = trend_signals.get("quant_signals", []) if trend_signals else []
+    addon_actions = trend_signals.get("addon_actions", []) if trend_signals else []
     if quant_signals:
         sections_3 += (
             f"\n\n3a) 量化信号 QUANT SIGNALS（预计算完成，直接使用）：\n"
@@ -263,6 +264,14 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     else:
         sections_3 += "\n\n3a) 量化信号 QUANT SIGNALS：今日无满足条件的量化信号。\n"
 
+    if addon_actions:
+        sections_3 += (
+            f"\n\n3a-add) 加仓动作 ADD-ON ACTIONS（代码已决定，非新开仓候选）：\n"
+            f"这些动作来自回测同源的 day-N follow-through 规则，若无 T1 灾难新闻，"
+            f"原样输出到 add_on_trades。\n"
+            f"{json.dumps(addon_actions, indent=2)}\n"
+        )
+
     # --- 3b: Technical context — only tickers with open positions that have triggered exits ---
     raw_signals = trend_signals.get('signals', {}) if trend_signals else {}
     attention_tickers = set()
@@ -272,7 +281,11 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             attention_tickers.add(t)
     # Also include tickers that have quant signals
     signal_tickers = {s["ticker"] for s in quant_signals}
-    relevant_tickers = attention_tickers | signal_tickers
+    addon_tickers = {
+        a["ticker"] for a in addon_actions
+        if isinstance(a, dict) and a.get("ticker")
+    }
+    relevant_tickers = attention_tickers | signal_tickers | addon_tickers
 
     if relevant_tickers:
         filtered = {t: raw_signals[t] for t in relevant_tickers if t in raw_signals}

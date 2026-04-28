@@ -36,7 +36,8 @@ logger = logging.getLogger(__name__)
 
 def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            metrics=None, market_regime=None, open_positions=None,
-                           dropped_signals=None):
+                           dropped_signals=None, addon_actions=None,
+                           entry_execution_plan=None):
     """
     Build a human-readable daily trade report string.
 
@@ -48,6 +49,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         market_regime    (dict):        Output of regime.compute_market_regime()
         open_positions   (dict):        Raw open_positions.json content
         dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
+        addon_actions    (list[dict]):  Code-determined follow-through add-ons
 
     Returns:
         str: Formatted report
@@ -87,6 +89,36 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         can_add  = portfolio_heat.get("can_add_new_positions", True)
         status   = "OK to add" if can_add else "CAPPED — no new trades"
         lines.append(f"\nPORTFOLIO HEAT: {heat_pct*100:.1f}%  ({status})")
+
+    if entry_execution_plan:
+        slots = entry_execution_plan.get("available_slots")
+        deferred = entry_execution_plan.get("deferred_breakout_signals") or []
+        sliced = entry_execution_plan.get("slot_sliced_signals") or []
+        lines.append(f"\nENTRY SLOTS: {slots} available")
+        if deferred:
+            tickers = ", ".join(d.get("ticker", "?") for d in deferred)
+            lines.append(f"  Deferred breakout(s): {tickers}")
+        if sliced:
+            tickers = ", ".join(d.get("ticker", "?") for d in sliced)
+            lines.append(f"  Slot-sliced candidate(s): {tickers}")
+
+    addon_actions = addon_actions or []
+    if addon_actions:
+        lines.append("\n" + "-" * 60)
+        lines.append("FOLLOW-THROUGH ADD-ONS")
+        lines.append("-" * 60)
+        for action in addon_actions:
+            lines.append(
+                f"\n{action.get('ticker', '?')}: ADD "
+                f"{action.get('shares_to_buy', '?')} shares "
+                f"at next session open"
+            )
+            lines.append(
+                f"   Checkpoint: day {action.get('checkpoint_days')}  |  "
+                f"Unrealized: {action.get('unrealized_pct', 0)*100:.1f}%  |  "
+                f"RS vs SPY: {action.get('rs_vs_spy', 0)*100:.1f}%"
+            )
+            lines.append(f"   Reason:     {action.get('reason', '')}")
 
     # ── Trade candidates ────────────────────────────────────────────────────
     lines.append("\n" + "-" * 60)

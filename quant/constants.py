@@ -128,6 +128,24 @@ BREAKOUT_RANK_BY_52W_HIGH = True
 # Allocation ranking now re-orders only the breakout_long subsequence by
 # pct_from_52w_high so closer-to-high continuation setups get earlier slot access.
 
+# ── Follow-through add-ons / scarce-slot entry routing ──────────────────────
+ADDON_ENABLED = True
+ADDON_CHECKPOINT_DAYS = 2
+ADDON_MIN_UNREALIZED_PCT = 0.02
+ADDON_MIN_RS_VS_SPY = 0.0
+ADDON_FRACTION_OF_ORIGINAL_SHARES = 0.50
+ADDON_MAX_POSITION_PCT = 0.35
+ADDON_REQUIRE_CHECKPOINT_CAP_ROOM = False
+ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH = False
+SECOND_ADDON_ENABLED = False
+SECOND_ADDON_CHECKPOINT_DAYS = 5
+SECOND_ADDON_MIN_UNREALIZED_PCT = 0.05
+SECOND_ADDON_MIN_RS_VS_SPY = 0.0
+SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES = 0.15
+SECOND_ADDON_MAX_POSITION_PCT = 0.45
+DEFER_BREAKOUT_WHEN_SLOTS_LTE = 1
+DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA = None
+
 # ── Stops & targets ─────────────────────────────────────────────────────────
 HARD_STOP_PCT           = 0.12       # -12% hard stop from avg_cost
 TRAILING_STOP_PCT       = 0.08       # -8% trailing stop from position high-water mark

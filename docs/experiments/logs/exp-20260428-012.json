@@ -1,0 +1,85 @@
+{
+  "experiment_id": "exp-20260428-012",
+  "timestamp": "2026-04-27T22:47:40-07:00",
+  "category": "measurement_repair",
+  "change_type": "production_backtest_parity",
+  "hypothesis": "Production should expose the accepted day-2 follow-through add-on and scarce-slot entry routing used by the backtester, otherwise forward observations undercount adds and overstate executable new-entry candidates.",
+  "alpha_hypothesis": {
+    "type": "capital_allocation",
+    "statement": "The accepted follow-through add-on alpha should be actionable in live runs as an explicit ADD action rather than hidden inside backtester-only mechanics."
+  },
+  "why_not_direct_alpha_search": "The immediate alpha branch was already accepted in exp-20260428-005; run.py could not emit those add-on actions, so a fresh alpha test would be measured against a production chain that did not execute the validated lifecycle behavior.",
+  "mechanism_insight_check": {
+    "recent_forbidden_pattern": "Do not repeat nearby add-on cap sweeps after exp-20260428-006 failed materiality.",
+    "this_change_is_not_a_repeat": "No add-on thresholds or caps were tuned. The patch only moves existing accepted mechanics into production reporting, JSON, and prompt context."
+  },
+  "changes": [
+    "Moved follow-through add-on and scarce-slot constants into quant/constants.py and imported them into backtester defaults.",
+    "Added quant/production_parity.py with testable helpers for scarce-slot entry planning and follow-through add-on action generation.",
+    "Updated quant/run.py to clear heat-blocked new entries, apply scarce-slot planning, and emit addon_actions/addon_audit/entry_execution_plan in quant_signals JSON.",
+    "Updated reports and LLM prompt context/schema so add-ons are represented as ADD actions separate from new_trade.",
+    "Added unit coverage for scarce-slot breakout deferral and day-2 add-on generation."
+  ],
+  "parameters": {
+    "changed_strategy_parameters": "none",
+    "constants_moved_without_value_change": {
+      "ADDON_ENABLED": true,
+      "ADDON_CHECKPOINT_DAYS": 2,
+      "ADDON_MIN_UNREALIZED_PCT": 0.02,
+      "ADDON_MIN_RS_VS_SPY": 0.0,
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.5,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "SECOND_ADDON_ENABLED": false,
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1
+    }
+  },
+  "validation": {
+    "unit_tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py -q -> 2 passed",
+    "py_compile_note": "py_compile was blocked by Windows pycache permission, not by a syntax error; pytest imported the edited modules successfully.",
+    "fixed_windows": [
+      {
+        "name": "late_strong",
+        "date_range": "2025-10-23 to 2026-04-21",
+        "expected_value_score": 1.6495,
+        "sharpe_daily": 4.29,
+        "max_drawdown": 0.0281,
+        "total_pnl": 38452.19,
+        "win_rate": 0.714,
+        "trades": 21,
+        "survival_rate": 0.843
+      },
+      {
+        "name": "mid_weak",
+        "date_range": "2025-04-23 to 2025-10-22",
+        "expected_value_score": 0.6083,
+        "sharpe_daily": 2.54,
+        "max_drawdown": 0.0263,
+        "total_pnl": 23949.98,
+        "win_rate": 0.5,
+        "trades": 20,
+        "survival_rate": 0.83
+      },
+      {
+        "name": "old_thin",
+        "date_range": "2024-10-02 to 2025-04-22",
+        "expected_value_score": 0.1765,
+        "sharpe_daily": 1.29,
+        "max_drawdown": 0.0442,
+        "total_pnl": 13683.1,
+        "win_rate": 0.391,
+        "trades": 23,
+        "survival_rate": 0.917
+      }
+    ]
+  },
+  "decision": "accepted",
+  "expected_value_score_delta": 0.0,
+  "rationale": "Backtester metrics are unchanged, confirming the patch is a production measurement/parity repair rather than an alpha parameter change. It removes the specific live-run blind spot where add-ons existed in backtest but not in daily advice artifacts.",
+  "kept_unchanged": [
+    "LLM/news replay semantics from docs/backtesting.md",
+    "entry/exit thresholds",
+    "risk multipliers",
+    "add-on trigger/cap values"
+  ],
+  "main_risk": "If open_positions lacks original_shares/addon_count history, live add-on sizing falls back to current shares and may be less exact than the simulator for manually edited positions."
+}

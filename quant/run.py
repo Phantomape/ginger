@@ -118,6 +118,10 @@ def main():
     from signal_engine      import generate_signals, rank_signals_for_allocation
     from risk_engine        import enrich_signals
     from portfolio_engine   import size_signals, compute_portfolio_heat
+    from production_parity  import (
+        build_followthrough_addon_actions,
+        plan_entry_candidates,
+    )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
     from constants          import MAX_PER_SECTOR
@@ -145,6 +149,9 @@ def main():
     for ticker in universe:
         ohlcv_dict[ticker]    = get_ohlcv(ticker)        # 350 calendar days
         earnings_dict[ticker] = get_earnings_data(ticker)
+    spy_ohlcv = ohlcv_dict.get("SPY")
+    if spy_ohlcv is None:
+        spy_ohlcv = get_ohlcv("SPY")
 
     # P-ERN: persist today's earnings snapshot so backtester can reconstruct
     # eps_estimate and avg_historical_surprise_pct for earnings_event_long.
@@ -331,8 +338,8 @@ def main():
             s["regime_exit_score"] = exit_profile["score"]
 
     # ── Filter out tickers already held ──────────────────────────────────
-    # Matches backtester.py:395 ("Skip if already holding") — without this,
-    # production recommends buying more of a stock already in the portfolio.
+    # New entries match backtester.py's "already holding" skip. Additive
+    # exposure is handled separately below as explicit follow-through add-ons.
     if open_positions and open_positions.get("positions"):
         _held = {p["ticker"] for p in open_positions["positions"] if p.get("ticker")}
         _before_held = len(signals)
@@ -428,6 +435,7 @@ def main():
     }
 
     portfolio_heat = None
+    heat_blocked_signals = []
     if open_positions and portfolio_value:
         # Pass features_dict so heat uses effective stops (ATR/trailing) not just avg_cost stop
         portfolio_heat = compute_portfolio_heat(
@@ -437,14 +445,53 @@ def main():
         log.info(portfolio_heat["heat_note"])
         if portfolio_heat["can_add_new_positions"] and portfolio_value:
             signals = size_signals(signals, portfolio_value, risk_pct=_trade_risk_pct)
+        else:
+            heat_blocked_signals = signals
+            signals = []
     elif portfolio_value:
         signals = size_signals(signals, portfolio_value, risk_pct=_trade_risk_pct)
+
+    signals, entry_execution_plan = plan_entry_candidates(
+        signals,
+        open_positions,
+        market_context=market_context,
+    )
+    if entry_execution_plan["deferred_breakout_signals"]:
+        log.info(
+            "Scarce-slot routing deferred %d breakout signal(s)",
+            len(entry_execution_plan["deferred_breakout_signals"]),
+        )
+    if entry_execution_plan["slot_sliced_signals"]:
+        log.info(
+            "Position slots kept %d/%d signal(s)",
+            entry_execution_plan["signals_after_entry_plan"],
+            entry_execution_plan["signals_before_entry_plan"],
+        )
+
+    addon_ohlcv_dict = dict(ohlcv_dict)
+    addon_ohlcv_dict["SPY"] = spy_ohlcv
+    addon_actions, addon_audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=addon_ohlcv_dict,
+        portfolio_value=portfolio_value,
+        current_prices=current_prices,
+        portfolio_heat=portfolio_heat,
+    )
+    if addon_actions:
+        log.info(
+            "Follow-through add-ons: %s",
+            ", ".join(
+                f"{a['ticker']} +{a['shares_to_buy']}" for a in addon_actions
+            ),
+        )
 
     metrics = compute_metrics()
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
     trend_signals_dict["quant_signals"] = signals
+    trend_signals_dict["addon_actions"] = addon_actions
+    trend_signals_dict["entry_execution_plan"] = entry_execution_plan
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
@@ -456,6 +503,8 @@ def main():
         market_regime    = market_regime,
         open_positions   = open_positions,
         dropped_signals  = last_dropped_signals or None,
+        addon_actions    = addon_actions,
+        entry_execution_plan = entry_execution_plan,
     )
     print("\n" + report)
     save_report(report)
@@ -465,6 +514,10 @@ def main():
         "market_regime":  market_regime,
         "portfolio_heat": portfolio_heat,
         "signals":        signals,
+        "addon_actions":  addon_actions,
+        "addon_audit":    addon_audit,
+        "entry_execution_plan": entry_execution_plan,
+        "heat_blocked_signals": heat_blocked_signals,
         "features":       features_dict,
     }, f"data/quant_signals_{today}.json")
 
@@ -539,6 +592,7 @@ def main():
     _print_section("PIPELINE COMPLETE")
     log.info(f"  Tickers analyzed:   {len(universe)}")
     log.info(f"  Signals generated:  {len(signals)}")
+    log.info(f"  Add-on actions:     {len(addon_actions)}")
     log.info(f"  News (trade):       {len(trade_items)}")
     log.info(f"  Regime:             {market_regime['regime']}")
     if portfolio_heat:

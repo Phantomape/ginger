@@ -72,6 +72,12 @@ USER:
   - 无 T1 负面 → 信号通过，生成交易（所有数值直接使用第 3a 节预计算值）
 - 生成交易时必须 echo 第 3a 节的 strategy 字段（trend_long / breakout_long / earnings_event_long）
 
+任务 A2 — 加仓动作：
+- 读取第 3a-add 节 add-on actions（若存在）
+- 这不是新开仓，不受 new_trade_locked 影响；它是代码层 follow-through 加仓
+- 若无 T1 灾难新闻否决该 ticker → 原样输出到 add_on_trades
+- 若有 T1 灾难新闻 → 不输出该加仓，并在 add_on_vetoes 写明新闻和理由
+
 任务 B — 现有持仓审查（全部照搬代码决策）：
 - 读第 4 节 position_states 和 suggested_reduce_pct
 - CRITICAL_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
@@ -100,6 +106,24 @@ USER:
       "invalid_if": "使逻辑无效的具体条件"
     },
 
+  "add_on_trades": [
+    {
+      "ticker": "string",
+      "action": "ADD",
+      "shares_to_buy": 整数,
+      "fill_timing": "next_session_open",
+      "decision_mode": "code_followthrough_addon",
+      "reason": "照搬第3a-add节代码理由"
+    }
+  ],
+
+  "add_on_vetoes": [
+    {
+      "ticker": "string",
+      "reason": "T1灾难新闻否决理由"
+    }
+  ],
+
   "position_actions": [
     {
       "ticker": "string",
@@ -119,4 +143,6 @@ USER:
 - action=REDUCE 时 shares_to_sell 为必填（= 总股数 × suggested_reduce_pct / 100，向下取整）
 - action=HOLD 或 EXIT 时 shares_to_sell 必须为 null
 - 若无新交易，new_trade 设为字符串 "NO NEW TRADE"
+- 若无加仓动作，add_on_trades 设为空数组 []
+- 若无加仓否决，add_on_vetoes 设为空数组 []
 - position_actions 必须包含所有持仓——即使操作为 HOLD
