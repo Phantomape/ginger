@@ -1,0 +1,166 @@
+{
+  "experiment_id": "exp-20260427-034",
+  "timestamp": "2026-04-27T20:08:37.042233+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "experiment_type": "state_qualified_risk_restoration",
+  "change_type": "capital_allocation_shadow",
+  "hypothesis": "Trend Industrials restoration can be alpha-positive only in an extremely risk-on tape; restore 0.10x risk when min(SPY, QQQ) pct_from_ma is at least 10%, otherwise keep the current 0x rule.",
+  "why_tested": "exp-20260427-029 rejected broad non-zero trend Industrials multipliers, and exp-20260427-030 showed weak-window slot displacement. This tested whether a single broad-market extension discriminator could preserve the late strong upside while avoiding weak-window pollution.",
+  "parameters": {
+    "single_causal_variable": "state-qualified trend Industrials risk restoration",
+    "baseline_multiplier": 0.0,
+    "candidate_multiplier": 0.1,
+    "state_min_index_pct_from_ma": 0.1,
+    "fixed_config": {
+      "REGIME_AWARE_EXIT": true,
+      "ADDON_ENABLED": true,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+      "MAX_POSITIONS": 5
+    },
+    "unchanged": [
+      "entries",
+      "exits",
+      "LLM/news replay",
+      "follow-through add-ons",
+      "scarce-slot breakout routing",
+      "all non-Industrials sizing rules"
+    ]
+  },
+  "date_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5788,
+      "sharpe_daily": 4.26,
+      "total_pnl": 37059.79,
+      "total_return_pct": 0.3706,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.6818,
+      "trade_count": 22,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5742,
+      "sharpe_daily": 2.56,
+      "total_pnl": 22427.75,
+      "total_return_pct": 0.2243,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.066,
+      "sharpe_daily": 0.79,
+      "total_pnl": 8352.27,
+      "total_return_pct": 0.0835,
+      "max_drawdown_pct": 0.0546,
+      "win_rate": 0.32,
+      "trade_count": 25,
+      "survival_rate": 0.9206
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": -0.0067,
+      "total_pnl_delta": -68.9,
+      "sharpe_daily_delta": -0.01,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0033,
+      "total_pnl_delta": 40.14,
+      "sharpe_daily_delta": 0.01,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "old_thin": {
+      "expected_value_score_delta": -0.0956,
+      "total_pnl_delta": -4582.53,
+      "sharpe_daily_delta": -0.46,
+      "max_drawdown_pct_delta": 0.0104
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.099,
+      "total_pnl_delta_sum": -4611.29,
+      "windows_improved": 1,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0104,
+      "targeted_trade_count": 3,
+      "targeted_trade_pnl": -96.51
+    },
+    "gate4_basis": "Rejected because EV regressed in two of three fixed windows, aggregate EV fell by -0.099, aggregate PnL fell by $4,611.29, and old_thin drawdown increased by 1.04 pp."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic capital-allocation alpha was tested instead."
+  },
+  "rejection_reason": "A simple extreme-index-extension state discriminator does not rescue trend Industrials restoration. It still opens weak-window damage and does not even preserve late_strong.",
+  "next_retry_requires": [
+    "Do not retry trend Industrials restoration using only min(SPY, QQQ) pct_from_ma >= 10% or nearby broad-market extension thresholds.",
+    "A valid retry needs ticker/sleeve-specific event quality or forward/paper evidence, not another broad state threshold.",
+    "Keep TREND_INDUSTRIALS_RISK_MULTIPLIER at 0.0 in production."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260427_034_state_qualified_industrials_trend.py",
+    "data/experiments/exp-20260427-034/exp_20260427_034_state_qualified_industrials_trend.json",
+    "docs/experiments/logs/exp-20260427-034.json"
+  ],
+  "notes": "Alpha search, not measurement repair. The experiment changed one independent causal variable and did not alter production strategy code."
+}

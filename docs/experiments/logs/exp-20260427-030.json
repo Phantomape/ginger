@@ -1,0 +1,74 @@
+{
+  "experiment_id": "exp-20260427-030",
+  "status": "completed",
+  "decision": "observed_only",
+  "experiment_type": "displacement_audit",
+  "change_type": "capital_allocation_audit",
+  "source_experiment": "exp-20260427-029",
+  "hypothesis": "Trend Industrials restoration fails mainly because small Industrials entries displace stronger trades or alter portfolio path, not because their own small PnL alone explains the regression.",
+  "parameters": {
+    "baseline_multiplier": 0.0,
+    "candidate_multiplier": 0.1,
+    "single_causal_variable": "TREND_INDUSTRIALS_RISK_MULTIPLIER",
+    "replay_llm": false,
+    "replay_news": false,
+    "regime_aware_exit": true
+  },
+  "date_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "summary": {
+    "aggregate_added_trade_pnl": -4024.43,
+    "aggregate_removed_trade_pnl": 5798.51,
+    "aggregate_net_trade_set_pnl_delta": -9822.94,
+    "windows_with_negative_net_trade_set_delta": ["mid_weak", "old_thin"]
+  },
+  "window_findings": [
+    {
+      "window": "late_strong",
+      "ev_delta": 0.0088,
+      "pnl_delta": 121.41,
+      "added_trade_pnl": 131.98,
+      "removed_trade_pnl": 0.0,
+      "interpretation": "No displacement occurred; small Industrials entries were mildly positive."
+    },
+    {
+      "window": "mid_weak",
+      "ev_delta": -0.0945,
+      "pnl_delta": -2025.05,
+      "added_trade_pnl": -1097.73,
+      "removed_trade_pnl": 739.87,
+      "interpretation": "Industrials restoration added weak trades and removed a stronger AMD trend trade."
+    },
+    {
+      "window": "old_thin",
+      "ev_delta": -0.1383,
+      "pnl_delta": -8183.58,
+      "added_trade_pnl": -3058.68,
+      "removed_trade_pnl": 5058.64,
+      "interpretation": "Industrials restoration added several weak trades and displaced major winners in APP and GLD."
+    }
+  ],
+  "mechanism_insight": "The broad trend Industrials zero-risk rule is protecting scarce portfolio capacity. The bad mechanism is low-priority signal pollution and path/slot displacement, not merely direct Industrials trade loss.",
+  "do_not_repeat": [
+    "Do not retest broad non-zero trend Industrials multipliers.",
+    "Do not combine Industrials restoration with generic scarce-slot sorting; exp-20260427-019 through exp-20260427-028 already narrowed that family.",
+    "A valid retry needs a genuinely new discriminator that predicts when Industrials trend entries will not displace higher-quality existing sleeves."
+  ],
+  "artifact": "data/exp_20260427_030_industrials_displacement_audit.json",
+  "runner": "quant/exp_20260427_030_industrials_displacement_audit.py"
+}

@@ -1,0 +1,57 @@
+{
+  "experiment_id": "exp-20260428-007",
+  "status": "rejected",
+  "lane": "alpha_discovery",
+  "owner": "codex-alpha-search",
+  "hypothesis": "A strict extension weak-followthrough subset may identify post-entry failures without the broader winner collateral observed in exp-20260427-022.",
+  "change_type": "exit_lifecycle_audit",
+  "single_causal_variable": "strict all-three weak-followthrough subset definition",
+  "baseline_result_file": "data/backtest_results_20260427.json",
+  "allowed_write_scope": [
+    "docs/experiments/logs/exp-20260428-007.json",
+    "docs/experiments/tickets/exp-20260428-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "entries",
+    "exits",
+    "position sizing",
+    "LLM/news replay",
+    "follow-through add-ons",
+    "scarce-slot routing"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "observed-only; require positive naive net and low winner collateral before any replay or production change",
+  "created_at": "2026-04-27T22:21:47-07:00",
+  "completed_at": "2026-04-27T22:21:47-07:00",
+  "result": {
+    "decision": "rejected",
+    "rejection_reason": "Strict subset still had negative naive net PnL and winner collateral in late_strong and mid_weak.",
+    "delta_metrics": {
+      "family_loss_pnl_that_rule_would_avoid": 3626.04,
+      "winner_pnl_at_risk": 3828.88,
+      "naive_net_pnl_delta_estimate": -202.84
+    }
+  }
+}

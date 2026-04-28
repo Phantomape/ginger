@@ -1,0 +1,165 @@
+{
+  "experiment_id": "exp-20260428-001",
+  "timestamp": "2026-04-28T00:00:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "experiment_type": "trend_overflow_slot_replay",
+  "change_type": "capital_allocation_shadow",
+  "hypothesis": "A trend-only overflow slot can recover the useful part of wider capacity without repeating global MAX_POSITIONS expansion: use MAX_POSITIONS=6 while deferring breakout_long whenever slots <= 2.",
+  "why_tested": "Global MAX_POSITIONS changes were rejected, but the most plausible remaining capacity hypothesis was that the extra slot should be sleeve-restricted rather than universal. LLM soft ranking remains sample-limited, so this deterministic allocation alpha was tested instead.",
+  "parameters": {
+    "single_causal_variable": "trend-only overflow slot policy",
+    "baseline_config": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "candidate_config": {
+      "REGIME_AWARE_EXIT": true,
+      "MAX_POSITIONS": 6,
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 2
+    },
+    "locked_variables": [
+      "entries",
+      "exits",
+      "position sizing",
+      "day-2 follow-through add-on trigger",
+      "LLM/news replay",
+      "earnings strategy",
+      "initial single-position cap"
+    ]
+  },
+  "date_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.3476,
+      "sharpe_daily": 4.14,
+      "total_pnl": 32549.2,
+      "total_return_pct": 0.3255,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.6364,
+      "trade_count": 22,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.6487,
+      "sharpe_daily": 2.53,
+      "total_pnl": 25641.87,
+      "total_return_pct": 0.2564,
+      "max_drawdown_pct": 0.0366,
+      "win_rate": 0.5217,
+      "trade_count": 23,
+      "survival_rate": 0.7963
+    },
+    "old_thin": {
+      "expected_value_score": 0.1072,
+      "sharpe_daily": 1.03,
+      "total_pnl": 10408.43,
+      "total_return_pct": 0.1041,
+      "max_drawdown_pct": 0.0462,
+      "win_rate": 0.3333,
+      "trade_count": 27,
+      "survival_rate": 0.9077
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": -0.2379,
+      "total_pnl_delta": -4579.49,
+      "sharpe_daily_delta": -0.13,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0778,
+      "total_pnl_delta": 3254.26,
+      "sharpe_daily_delta": -0.02,
+      "max_drawdown_pct_delta": 0.0112
+    },
+    "old_thin": {
+      "expected_value_score_delta": -0.0544,
+      "total_pnl_delta": -2526.37,
+      "sharpe_daily_delta": -0.22,
+      "max_drawdown_pct_delta": 0.002
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.2145,
+      "total_pnl_delta_sum": -3851.6,
+      "windows_improved": 1,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0112,
+      "trade_count_delta_sum": 8,
+      "breakout_deferred_delta_sum": 5
+    },
+    "gate4_basis": "Rejected because only mid_weak improved; late_strong and old_thin regressed, aggregate EV fell by -0.2145, aggregate PnL fell by $3,851.60, and mid_weak drawdown increased by 1.12 pp."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic capital-allocation alpha was tested instead."
+  },
+  "rejection_reason": "The trend-only overflow slot still behaves like a capacity expansion that adds low-quality exposure in strong and older weak tapes. It helps mid_weak but is not robust enough for production or a default-off promotion.",
+  "next_retry_requires": [
+    "Do not retry MAX_POSITIONS=6 combined with DEFER_BREAKOUT_WHEN_SLOTS_LTE=2 as a simple trend-overflow policy.",
+    "Any future capacity expansion needs a new state or candidate-quality discriminator that protects late_strong and old_thin from extra low-quality exposure.",
+    "Keep the current five-slot default and one-slot scarce breakout deferral as the best tested production form."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_001_trend_overflow_slot.py",
+    "data/experiments/exp-20260428-001/exp_20260428_001_trend_overflow_slot.json",
+    "docs/experiments/logs/exp-20260428-001.json"
+  ],
+  "notes": "Alpha search, not measurement repair. Production strategy code was unchanged."
+}

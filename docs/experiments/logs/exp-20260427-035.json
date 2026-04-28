@@ -1,0 +1,187 @@
+{
+  "experiment_id": "exp-20260427-035",
+  "timestamp": "2026-04-27T21:24:39Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "experiment_type": "second_followthrough_addon",
+  "change_type": "capital_allocation",
+  "hypothesis": "A second day-5 follow-through add-on can improve lifecycle alpha by allocating extra risk only to positions that already absorbed the accepted day-2 add-on and continue to outperform SPY.",
+  "why_tested": "LLM soft-ranking remains sample-limited, so this run tested a deterministic lifecycle alpha source. The direction is distinct from rejected local day-2 trigger tuning: it uses a later confirmation checkpoint after the accepted add-on has already fired.",
+  "parameters": {
+    "single_causal_variable": "second follow-through add-on policy",
+    "baseline": {
+      "SECOND_ADDON_ENABLED": false
+    },
+    "tested_variants": {
+      "frac15_cap45": {
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.15,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.45
+      },
+      "frac25_cap50": {
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.50
+      },
+      "frac35_cap60": {
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.35,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.60
+      }
+    },
+    "fixed_config": {
+      "REGIME_AWARE_EXIT": true,
+      "ADDON_ENABLED": true,
+      "ADDON_MAX_POSITION_PCT": 0.35,
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+      "MAX_POSITIONS": 5
+    },
+    "unchanged": [
+      "entries",
+      "exits",
+      "initial position cap",
+      "day-2 add-on trigger",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "best_variant": "frac35_cap60",
+    "late_strong": {
+      "expected_value_score": 1.6086,
+      "sharpe_daily": 4.26,
+      "total_pnl": 37762.35,
+      "total_return_pct": 0.3776,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "second_addon_executed": 4
+    },
+    "mid_weak": {
+      "expected_value_score": 0.6133,
+      "sharpe_daily": 2.62,
+      "total_pnl": 23412.77,
+      "total_return_pct": 0.2341,
+      "max_drawdown_pct": 0.0255,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298,
+      "second_addon_executed": 3
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167,
+      "second_addon_executed": 0
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": 0.0231,
+      "total_pnl_delta": 633.66,
+      "sharpe_daily_delta": -0.01,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0424,
+      "total_pnl_delta": 1025.16,
+      "sharpe_daily_delta": 0.07,
+      "max_drawdown_pct_delta": 0.0001
+    },
+    "old_thin": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0655,
+      "total_pnl_delta_sum": 1658.82,
+      "windows_improved": 2,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0001,
+      "second_addon_executed": 7
+    }
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic lifecycle alpha was tested instead."
+  },
+  "rejection_reason": "The best second-add-on variant had positive directionality but failed Gate 4 materiality: EV delta was below 10%, PnL delta was below 5%, and no fixed window improved Sharpe by more than 0.1.",
+  "next_retry_requires": [
+    "Do not promote a second follow-through add-on from this evidence alone.",
+    "A valid retry needs forward/paper confirmation or a new independent evidence source that increases effect size without expanding concentration risk.",
+    "Do not spend another run on nearby second-add-on size/cap tuning alone."
+  ],
+  "related_files": [
+    "quant/backtester.py",
+    "quant/experiments/exp_20260427_035_second_followthrough_addon.py",
+    "data/experiments/exp-20260427-035/exp_20260427_035_second_followthrough_addon.json",
+    "docs/experiments/logs/exp-20260427-035.json"
+  ],
+  "notes": "Alpha search, not measurement repair. The backtester hook is default-off; production behavior is unchanged."
+}

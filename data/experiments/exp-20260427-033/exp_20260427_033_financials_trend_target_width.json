@@ -1,0 +1,574 @@
+{
+  "experiment_id": "exp-20260427-033",
+  "timestamp": "2026-04-27T19:08:10.663379+00:00",
+  "hypothesis": "`trend_long | Financials` winners may be target-truncated; a single 6.0 ATR target for that sleeve can improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
+  "change_type": "alpha_search_exit_rule",
+  "parameters": {
+    "single_causal_variable": "trend_long Financials target width",
+    "baseline_target_source": "existing production target logic",
+    "tested_target_mult": 6.0,
+    "unchanged": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM/news replay",
+      "follow-through add-ons",
+      "scarce-slot breakout routing",
+      "non-Financials exits",
+      "breakout exits"
+    ]
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "variants": {
+    "baseline": {
+      "target_mult": null
+    },
+    "financials_trend_target_6_0": {
+      "target_mult": 6.0
+    }
+  },
+  "summary": {
+    "by_window": {
+      "late_strong": {
+        "before": {
+          "window": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "variant": "baseline",
+          "target_mult": null,
+          "metrics": {
+            "expected_value_score": 1.5855,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37128.69,
+            "total_return_pct": 0.3713,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431
+          },
+          "eligible_signals": 0,
+          "adjusted_signals": 0,
+          "financials_trend_trade_count": 0,
+          "financials_trend_pnl": 0,
+          "financials_trend_exits": []
+        },
+        "after": {
+          "window": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "variant": "financials_trend_target_6_0",
+          "target_mult": 6.0,
+          "metrics": {
+            "expected_value_score": 1.5855,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37128.69,
+            "total_return_pct": 0.3713,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431
+          },
+          "eligible_signals": 0,
+          "adjusted_signals": 0,
+          "financials_trend_trade_count": 0,
+          "financials_trend_pnl": 0,
+          "financials_trend_exits": []
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0
+        }
+      },
+      "mid_weak": {
+        "before": {
+          "window": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "variant": "baseline",
+          "target_mult": null,
+          "metrics": {
+            "expected_value_score": 0.5709,
+            "sharpe_daily": 2.55,
+            "total_pnl": 22387.61,
+            "total_return_pct": 0.2239,
+            "max_drawdown_pct": 0.0254,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298
+          },
+          "eligible_signals": 0,
+          "adjusted_signals": 0,
+          "financials_trend_trade_count": 2,
+          "financials_trend_pnl": 5935.36,
+          "financials_trend_exits": [
+            {
+              "ticker": "COIN",
+              "entry_date": "2025-05-14",
+              "exit_date": "2025-06-24",
+              "exit_reason": "target",
+              "pnl": 3212.15,
+              "pnl_pct_net": 0.245409
+            },
+            {
+              "ticker": "COIN",
+              "entry_date": "2025-06-26",
+              "exit_date": "2025-07-18",
+              "exit_reason": "target",
+              "pnl": 2723.21,
+              "pnl_pct_net": 0.226608
+            }
+          ]
+        },
+        "after": {
+          "window": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "variant": "financials_trend_target_6_0",
+          "target_mult": 6.0,
+          "metrics": {
+            "expected_value_score": 0.3647,
+            "sharpe_daily": 1.88,
+            "total_pnl": 19402.19,
+            "total_return_pct": 0.194,
+            "max_drawdown_pct": 0.0456,
+            "win_rate": 0.45,
+            "trade_count": 20,
+            "survival_rate": 0.8261
+          },
+          "eligible_signals": 4,
+          "adjusted_signals": 4,
+          "financials_trend_trade_count": 2,
+          "financials_trend_pnl": 3365.11,
+          "financials_trend_exits": [
+            {
+              "ticker": "COIN",
+              "entry_date": "2025-05-14",
+              "exit_date": "2025-06-24",
+              "exit_reason": "target",
+              "pnl": 4312.9,
+              "pnl_pct_net": 0.329503
+            },
+            {
+              "ticker": "COIN",
+              "entry_date": "2025-06-26",
+              "exit_date": "2025-08-01",
+              "exit_reason": "stop",
+              "pnl": -947.79,
+              "pnl_pct_net": -0.078853
+            }
+          ]
+        },
+        "delta": {
+          "expected_value_score": -0.2062,
+          "sharpe_daily": -0.67,
+          "total_pnl": -2985.42,
+          "total_return_pct": -0.0299,
+          "max_drawdown_pct": 0.0202,
+          "win_rate": -0.05,
+          "trade_count": 0,
+          "survival_rate": -0.0037
+        }
+      },
+      "old_thin": {
+        "before": {
+          "window": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "variant": "baseline",
+          "target_mult": null,
+          "metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167
+          },
+          "eligible_signals": 0,
+          "adjusted_signals": 0,
+          "financials_trend_trade_count": 4,
+          "financials_trend_pnl": 3247.42,
+          "financials_trend_exits": [
+            {
+              "ticker": "JPM",
+              "entry_date": "2024-10-14",
+              "exit_date": "2024-11-06",
+              "exit_reason": "target",
+              "pnl": 2124.78,
+              "pnl_pct_net": 0.085618
+            },
+            {
+              "ticker": "V",
+              "entry_date": "2024-11-26",
+              "exit_date": "2025-01-10",
+              "exit_reason": "stop",
+              "pnl": -793.37,
+              "pnl_pct_net": -0.029707
+            },
+            {
+              "ticker": "GS",
+              "entry_date": "2025-01-16",
+              "exit_date": "2025-02-18",
+              "exit_reason": "target",
+              "pnl": 2711.0,
+              "pnl_pct_net": 0.087302
+            },
+            {
+              "ticker": "V",
+              "entry_date": "2025-03-03",
+              "exit_date": "2025-03-04",
+              "exit_reason": "stop",
+              "pnl": -794.99,
+              "pnl_pct_net": -0.028361
+            }
+          ]
+        },
+        "after": {
+          "window": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "variant": "financials_trend_target_6_0",
+          "target_mult": 6.0,
+          "metrics": {
+            "expected_value_score": 0.0397,
+            "sharpe_daily": 0.69,
+            "total_pnl": 5750.17,
+            "total_return_pct": 0.0575,
+            "max_drawdown_pct": 0.0796,
+            "win_rate": 0.3182,
+            "trade_count": 22,
+            "survival_rate": 0.9388
+          },
+          "eligible_signals": 6,
+          "adjusted_signals": 6,
+          "financials_trend_trade_count": 4,
+          "financials_trend_pnl": -291.83,
+          "financials_trend_exits": [
+            {
+              "ticker": "JPM",
+              "entry_date": "2024-10-14",
+              "exit_date": "2024-11-25",
+              "exit_reason": "target",
+              "pnl": 2902.51,
+              "pnl_pct_net": 0.116952
+            },
+            {
+              "ticker": "V",
+              "entry_date": "2024-11-26",
+              "exit_date": "2025-01-10",
+              "exit_reason": "stop",
+              "pnl": -774.92,
+              "pnl_pct_net": -0.029707
+            },
+            {
+              "ticker": "GS",
+              "entry_date": "2025-01-16",
+              "exit_date": "2025-03-04",
+              "exit_reason": "stop",
+              "pnl": -1655.0,
+              "pnl_pct_net": -0.054313
+            },
+            {
+              "ticker": "V",
+              "entry_date": "2025-03-03",
+              "exit_date": "2025-03-04",
+              "exit_reason": "stop",
+              "pnl": -764.42,
+              "pnl_pct_net": -0.028361
+            }
+          ]
+        },
+        "delta": {
+          "expected_value_score": -0.1219,
+          "sharpe_daily": -0.56,
+          "total_pnl": -7184.63,
+          "total_return_pct": -0.0718,
+          "max_drawdown_pct": 0.0354,
+          "win_rate": -0.0731,
+          "trade_count": -1,
+          "survival_rate": 0.0221
+        }
+      }
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.3281,
+      "total_pnl_delta_sum": -10170.05,
+      "windows_improved": 0,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0354
+    }
+  },
+  "results": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "variant": "baseline",
+      "target_mult": null,
+      "metrics": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "total_return_pct": 0.3713,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "financials_trend_trade_count": 0,
+      "financials_trend_pnl": 0,
+      "financials_trend_exits": []
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "variant": "financials_trend_target_6_0",
+      "target_mult": 6.0,
+      "metrics": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "total_return_pct": 0.3713,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "financials_trend_trade_count": 0,
+      "financials_trend_pnl": 0,
+      "financials_trend_exits": []
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "variant": "baseline",
+      "target_mult": null,
+      "metrics": {
+        "expected_value_score": 0.5709,
+        "sharpe_daily": 2.55,
+        "total_pnl": 22387.61,
+        "total_return_pct": 0.2239,
+        "max_drawdown_pct": 0.0254,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "financials_trend_trade_count": 2,
+      "financials_trend_pnl": 5935.36,
+      "financials_trend_exits": [
+        {
+          "ticker": "COIN",
+          "entry_date": "2025-05-14",
+          "exit_date": "2025-06-24",
+          "exit_reason": "target",
+          "pnl": 3212.15,
+          "pnl_pct_net": 0.245409
+        },
+        {
+          "ticker": "COIN",
+          "entry_date": "2025-06-26",
+          "exit_date": "2025-07-18",
+          "exit_reason": "target",
+          "pnl": 2723.21,
+          "pnl_pct_net": 0.226608
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "variant": "financials_trend_target_6_0",
+      "target_mult": 6.0,
+      "metrics": {
+        "expected_value_score": 0.3647,
+        "sharpe_daily": 1.88,
+        "total_pnl": 19402.19,
+        "total_return_pct": 0.194,
+        "max_drawdown_pct": 0.0456,
+        "win_rate": 0.45,
+        "trade_count": 20,
+        "survival_rate": 0.8261
+      },
+      "eligible_signals": 4,
+      "adjusted_signals": 4,
+      "financials_trend_trade_count": 2,
+      "financials_trend_pnl": 3365.11,
+      "financials_trend_exits": [
+        {
+          "ticker": "COIN",
+          "entry_date": "2025-05-14",
+          "exit_date": "2025-06-24",
+          "exit_reason": "target",
+          "pnl": 4312.9,
+          "pnl_pct_net": 0.329503
+        },
+        {
+          "ticker": "COIN",
+          "entry_date": "2025-06-26",
+          "exit_date": "2025-08-01",
+          "exit_reason": "stop",
+          "pnl": -947.79,
+          "pnl_pct_net": -0.078853
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "variant": "baseline",
+      "target_mult": null,
+      "metrics": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "total_return_pct": 0.1293,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "financials_trend_trade_count": 4,
+      "financials_trend_pnl": 3247.42,
+      "financials_trend_exits": [
+        {
+          "ticker": "JPM",
+          "entry_date": "2024-10-14",
+          "exit_date": "2024-11-06",
+          "exit_reason": "target",
+          "pnl": 2124.78,
+          "pnl_pct_net": 0.085618
+        },
+        {
+          "ticker": "V",
+          "entry_date": "2024-11-26",
+          "exit_date": "2025-01-10",
+          "exit_reason": "stop",
+          "pnl": -793.37,
+          "pnl_pct_net": -0.029707
+        },
+        {
+          "ticker": "GS",
+          "entry_date": "2025-01-16",
+          "exit_date": "2025-02-18",
+          "exit_reason": "target",
+          "pnl": 2711.0,
+          "pnl_pct_net": 0.087302
+        },
+        {
+          "ticker": "V",
+          "entry_date": "2025-03-03",
+          "exit_date": "2025-03-04",
+          "exit_reason": "stop",
+          "pnl": -794.99,
+          "pnl_pct_net": -0.028361
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "variant": "financials_trend_target_6_0",
+      "target_mult": 6.0,
+      "metrics": {
+        "expected_value_score": 0.0397,
+        "sharpe_daily": 0.69,
+        "total_pnl": 5750.17,
+        "total_return_pct": 0.0575,
+        "max_drawdown_pct": 0.0796,
+        "win_rate": 0.3182,
+        "trade_count": 22,
+        "survival_rate": 0.9388
+      },
+      "eligible_signals": 6,
+      "adjusted_signals": 6,
+      "financials_trend_trade_count": 4,
+      "financials_trend_pnl": -291.83,
+      "financials_trend_exits": [
+        {
+          "ticker": "JPM",
+          "entry_date": "2024-10-14",
+          "exit_date": "2024-11-25",
+          "exit_reason": "target",
+          "pnl": 2902.51,
+          "pnl_pct_net": 0.116952
+        },
+        {
+          "ticker": "V",
+          "entry_date": "2024-11-26",
+          "exit_date": "2025-01-10",
+          "exit_reason": "stop",
+          "pnl": -774.92,
+          "pnl_pct_net": -0.029707
+        },
+        {
+          "ticker": "GS",
+          "entry_date": "2025-01-16",
+          "exit_date": "2025-03-04",
+          "exit_reason": "stop",
+          "pnl": -1655.0,
+          "pnl_pct_net": -0.054313
+        },
+        {
+          "ticker": "V",
+          "entry_date": "2025-03-03",
+          "exit_date": "2025-03-04",
+          "exit_reason": "stop",
+          "pnl": -764.42,
+          "pnl_pct_net": -0.028361
+        }
+      ]
+    }
+  ]
+}

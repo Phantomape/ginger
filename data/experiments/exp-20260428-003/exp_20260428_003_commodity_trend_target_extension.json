@@ -1,0 +1,1742 @@
+{
+  "experiment_id": "exp-20260428-003",
+  "timestamp": "2026-04-28T02:16:36.182667+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "hypothesis": "Commodity trend target exits may still contain continuation alpha, but re-entry after exit was inert under production execution. Extending only `trend_long | Commodities` targets before exit may capture that continuation without changing entry or allocation rules.",
+  "change_type": "alpha_search_exit_sweep",
+  "parameters": {
+    "single_causal_variable": "trend_long Commodities target width above current 7 ATR",
+    "baseline_target_source": "current production TREND_COMMODITIES_TARGET_ATR_MULT = 7.0",
+    "tested_target_mults": [
+      8.0,
+      9.0,
+      10.0
+    ],
+    "locked_variables": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM/news replay",
+      "follow-through add-ons",
+      "scarce-slot breakout routing",
+      "Technology trend target width",
+      "all breakout exits",
+      "all non-Commodity trend exits"
+    ]
+  },
+  "prior_related_results": [
+    {
+      "experiment_id": "exp-20260425-031",
+      "decision": "accepted",
+      "reason": "7 ATR Commodity trend target width improved convex winner capture."
+    },
+    {
+      "experiment_id": "exp-20260428-002",
+      "decision": "rejected",
+      "reason": "Same-ticker post-target re-entry scheduled signals but created 0 incremental trades."
+    }
+  ],
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "variants": {
+    "baseline": {
+      "target_mult": null
+    },
+    "commodity_trend_target_8_0": {
+      "target_mult": 8.0
+    },
+    "commodity_trend_target_9_0": {
+      "target_mult": 9.0
+    },
+    "commodity_trend_target_10_0": {
+      "target_mult": 10.0
+    }
+  },
+  "summary": {
+    "commodity_trend_target_8_0": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "window": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 1.5855,
+              "sharpe_daily": 4.27,
+              "total_pnl": 37128.69,
+              "total_return_pct": 0.3713,
+              "max_drawdown_pct": 0.0281,
+              "win_rate": 0.7143,
+              "trade_count": 21,
+              "survival_rate": 0.8431
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 4,
+            "commodity_trend_pnl": 9950.08,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-12-02",
+                "exit_date": "2025-12-23",
+                "exit_reason": "target",
+                "pnl": 4173.35,
+                "pnl_pct_net": 0.20059,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2026-01-15",
+                "exit_date": "2026-01-16",
+                "exit_reason": "stop",
+                "pnl": -371.2,
+                "pnl_pct_net": -0.025894,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-28",
+                "exit_reason": "target",
+                "pnl": 3070.15,
+                "pnl_pct_net": 0.111917,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-28",
+                "exit_reason": "target",
+                "pnl": 3077.78,
+                "pnl_pct_net": 0.111708,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "variant": "commodity_trend_target_8_0",
+            "target_mult": 8.0,
+            "metrics": {
+              "expected_value_score": 1.7485,
+              "sharpe_daily": 4.43,
+              "total_pnl": 39472.85,
+              "total_return_pct": 0.3947,
+              "max_drawdown_pct": 0.028,
+              "win_rate": 0.7143,
+              "trade_count": 21,
+              "survival_rate": 0.8039
+            },
+            "eligible_signals": 9,
+            "adjusted_signals": 9,
+            "commodity_trend_trade_count": 4,
+            "commodity_trend_pnl": 11983.7,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-12-02",
+                "exit_date": "2025-12-23",
+                "exit_reason": "target",
+                "pnl": 4460.53,
+                "pnl_pct_net": 0.214393,
+                "target_mult_used": 8.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2026-01-15",
+                "exit_date": "2026-01-16",
+                "exit_reason": "stop",
+                "pnl": -371.2,
+                "pnl_pct_net": -0.025894,
+                "target_mult_used": 8.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-29",
+                "exit_reason": "target",
+                "pnl": 3931.6,
+                "pnl_pct_net": 0.143316,
+                "target_mult_used": 8.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-29",
+                "exit_reason": "target",
+                "pnl": 3962.77,
+                "pnl_pct_net": 0.143354,
+                "target_mult_used": 8.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": 0.163,
+            "sharpe_daily": 0.16,
+            "total_pnl": 2344.16,
+            "total_return_pct": 0.0234,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": -0.0392
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "window": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 0.5709,
+              "sharpe_daily": 2.55,
+              "total_pnl": 22387.61,
+              "total_return_pct": 0.2239,
+              "max_drawdown_pct": 0.0254,
+              "win_rate": 0.5,
+              "trade_count": 20,
+              "survival_rate": 0.8298
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 3,
+            "commodity_trend_pnl": 7998.57,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-06-03",
+                "exit_date": "2025-07-23",
+                "exit_reason": "target",
+                "pnl": 3998.27,
+                "pnl_pct_net": 0.128445,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-09-02",
+                "exit_date": "2025-09-22",
+                "exit_reason": "target",
+                "pnl": 2411.21,
+                "pnl_pct_net": 0.086541,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-09-03",
+                "exit_date": "2025-09-23",
+                "exit_reason": "target",
+                "pnl": 1589.09,
+                "pnl_pct_net": 0.057905,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "variant": "commodity_trend_target_8_0",
+            "target_mult": 8.0,
+            "metrics": {
+              "expected_value_score": 0.4674,
+              "sharpe_daily": 2.3,
+              "total_pnl": 20317.05,
+              "total_return_pct": 0.2032,
+              "max_drawdown_pct": 0.031,
+              "win_rate": 0.4545,
+              "trade_count": 22,
+              "survival_rate": 0.8235
+            },
+            "eligible_signals": 7,
+            "adjusted_signals": 7,
+            "commodity_trend_trade_count": 3,
+            "commodity_trend_pnl": 6289.13,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-06-03",
+                "exit_date": "2025-09-02",
+                "exit_reason": "target",
+                "pnl": 4805.2,
+                "pnl_pct_net": 0.154365,
+                "target_mult_used": 8.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2025-09-17",
+                "exit_date": "2025-09-18",
+                "exit_reason": "stop",
+                "pnl": -425.46,
+                "pnl_pct_net": -0.015309,
+                "target_mult_used": 8.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-09-03",
+                "exit_date": "2025-09-29",
+                "exit_reason": "target",
+                "pnl": 1909.39,
+                "pnl_pct_net": 0.068756,
+                "target_mult_used": 8.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": -0.1035,
+            "sharpe_daily": -0.25,
+            "total_pnl": -2070.56,
+            "total_return_pct": -0.0207,
+            "max_drawdown_pct": 0.0056,
+            "win_rate": -0.0455,
+            "trade_count": 2,
+            "survival_rate": -0.0063
+          }
+        },
+        "old_thin": {
+          "before": {
+            "window": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 0.1616,
+              "sharpe_daily": 1.25,
+              "total_pnl": 12934.8,
+              "total_return_pct": 0.1293,
+              "max_drawdown_pct": 0.0442,
+              "win_rate": 0.3913,
+              "trade_count": 23,
+              "survival_rate": 0.9167
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 1100.55,
+            "commodity_trend_exits": [
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-01-31",
+                "exit_date": "2025-03-14",
+                "exit_reason": "target",
+                "pnl": 1691.28,
+                "pnl_pct_net": 0.061783,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-03-14",
+                "exit_date": "2025-03-21",
+                "exit_reason": "stop",
+                "pnl": -590.73,
+                "pnl_pct_net": -0.038091,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "variant": "commodity_trend_target_8_0",
+            "target_mult": 8.0,
+            "metrics": {
+              "expected_value_score": 0.1705,
+              "sharpe_daily": 1.28,
+              "total_pnl": 13318.03,
+              "total_return_pct": 0.1332,
+              "max_drawdown_pct": 0.0442,
+              "win_rate": 0.3913,
+              "trade_count": 23,
+              "survival_rate": 0.9167
+            },
+            "eligible_signals": 3,
+            "adjusted_signals": 3,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 1483.78,
+            "commodity_trend_exits": [
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-01-31",
+                "exit_date": "2025-03-18",
+                "exit_reason": "target",
+                "pnl": 2074.51,
+                "pnl_pct_net": 0.075779,
+                "target_mult_used": 8.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-03-14",
+                "exit_date": "2025-03-21",
+                "exit_reason": "stop",
+                "pnl": -590.73,
+                "pnl_pct_net": -0.038091,
+                "target_mult_used": 8.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": 0.0089,
+            "sharpe_daily": 0.03,
+            "total_pnl": 383.23,
+            "total_return_pct": 0.0039,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.0684,
+        "total_pnl_delta_sum": 656.83,
+        "windows_improved": 2,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.0056
+      }
+    },
+    "commodity_trend_target_9_0": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "window": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 1.5855,
+              "sharpe_daily": 4.27,
+              "total_pnl": 37128.69,
+              "total_return_pct": 0.3713,
+              "max_drawdown_pct": 0.0281,
+              "win_rate": 0.7143,
+              "trade_count": 21,
+              "survival_rate": 0.8431
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 4,
+            "commodity_trend_pnl": 9950.08,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-12-02",
+                "exit_date": "2025-12-23",
+                "exit_reason": "target",
+                "pnl": 4173.35,
+                "pnl_pct_net": 0.20059,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2026-01-15",
+                "exit_date": "2026-01-16",
+                "exit_reason": "stop",
+                "pnl": -371.2,
+                "pnl_pct_net": -0.025894,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-28",
+                "exit_reason": "target",
+                "pnl": 3070.15,
+                "pnl_pct_net": 0.111917,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-28",
+                "exit_reason": "target",
+                "pnl": 3077.78,
+                "pnl_pct_net": 0.111708,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "variant": "commodity_trend_target_9_0",
+            "target_mult": 9.0,
+            "metrics": {
+              "expected_value_score": 0.8852,
+              "sharpe_daily": 3.01,
+              "total_pnl": 29410.71,
+              "total_return_pct": 0.2941,
+              "max_drawdown_pct": 0.0722,
+              "win_rate": 0.5909,
+              "trade_count": 22,
+              "survival_rate": 0.7843
+            },
+            "eligible_signals": 9,
+            "adjusted_signals": 9,
+            "commodity_trend_trade_count": 4,
+            "commodity_trend_pnl": 3725.33,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-12-02",
+                "exit_date": "2025-12-26",
+                "exit_reason": "target",
+                "pnl": 5806.03,
+                "pnl_pct_net": 0.27906,
+                "target_mult_used": 9.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2026-01-15",
+                "exit_date": "2026-01-16",
+                "exit_reason": "stop",
+                "pnl": -375.37,
+                "pnl_pct_net": -0.025894,
+                "target_mult_used": 9.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-30",
+                "exit_reason": "stop",
+                "pnl": -852.68,
+                "pnl_pct_net": -0.030574,
+                "target_mult_used": 9.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-30",
+                "exit_reason": "stop",
+                "pnl": -852.65,
+                "pnl_pct_net": -0.030529,
+                "target_mult_used": 9.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": -0.7003,
+            "sharpe_daily": -1.26,
+            "total_pnl": -7717.98,
+            "total_return_pct": -0.0772,
+            "max_drawdown_pct": 0.0441,
+            "win_rate": -0.1234,
+            "trade_count": 1,
+            "survival_rate": -0.0588
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "window": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 0.5709,
+              "sharpe_daily": 2.55,
+              "total_pnl": 22387.61,
+              "total_return_pct": 0.2239,
+              "max_drawdown_pct": 0.0254,
+              "win_rate": 0.5,
+              "trade_count": 20,
+              "survival_rate": 0.8298
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 3,
+            "commodity_trend_pnl": 7998.57,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-06-03",
+                "exit_date": "2025-07-23",
+                "exit_reason": "target",
+                "pnl": 3998.27,
+                "pnl_pct_net": 0.128445,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-09-02",
+                "exit_date": "2025-09-22",
+                "exit_reason": "target",
+                "pnl": 2411.21,
+                "pnl_pct_net": 0.086541,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-09-03",
+                "exit_date": "2025-09-23",
+                "exit_reason": "target",
+                "pnl": 1589.09,
+                "pnl_pct_net": 0.057905,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "variant": "commodity_trend_target_9_0",
+            "target_mult": 9.0,
+            "metrics": {
+              "expected_value_score": 0.4937,
+              "sharpe_daily": 2.36,
+              "total_pnl": 20924.39,
+              "total_return_pct": 0.2092,
+              "max_drawdown_pct": 0.0309,
+              "win_rate": 0.4545,
+              "trade_count": 22,
+              "survival_rate": 0.8235
+            },
+            "eligible_signals": 7,
+            "adjusted_signals": 7,
+            "commodity_trend_trade_count": 3,
+            "commodity_trend_pnl": 6884.88,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-06-03",
+                "exit_date": "2025-09-02",
+                "exit_reason": "target",
+                "pnl": 5218.51,
+                "pnl_pct_net": 0.167642,
+                "target_mult_used": 9.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2025-09-17",
+                "exit_date": "2025-09-18",
+                "exit_reason": "stop",
+                "pnl": -427.58,
+                "pnl_pct_net": -0.015309,
+                "target_mult_used": 9.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-09-03",
+                "exit_date": "2025-09-30",
+                "exit_reason": "target",
+                "pnl": 2093.95,
+                "pnl_pct_net": 0.0754,
+                "target_mult_used": 9.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": -0.0772,
+            "sharpe_daily": -0.19,
+            "total_pnl": -1463.22,
+            "total_return_pct": -0.0147,
+            "max_drawdown_pct": 0.0055,
+            "win_rate": -0.0455,
+            "trade_count": 2,
+            "survival_rate": -0.0063
+          }
+        },
+        "old_thin": {
+          "before": {
+            "window": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 0.1616,
+              "sharpe_daily": 1.25,
+              "total_pnl": 12934.8,
+              "total_return_pct": 0.1293,
+              "max_drawdown_pct": 0.0442,
+              "win_rate": 0.3913,
+              "trade_count": 23,
+              "survival_rate": 0.9167
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 1100.55,
+            "commodity_trend_exits": [
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-01-31",
+                "exit_date": "2025-03-14",
+                "exit_reason": "target",
+                "pnl": 1691.28,
+                "pnl_pct_net": 0.061783,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-03-14",
+                "exit_date": "2025-03-21",
+                "exit_reason": "stop",
+                "pnl": -590.73,
+                "pnl_pct_net": -0.038091,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "variant": "commodity_trend_target_9_0",
+            "target_mult": 9.0,
+            "metrics": {
+              "expected_value_score": 0.1734,
+              "sharpe_daily": 1.29,
+              "total_pnl": 13437.34,
+              "total_return_pct": 0.1344,
+              "max_drawdown_pct": 0.0442,
+              "win_rate": 0.3913,
+              "trade_count": 23,
+              "survival_rate": 0.9167
+            },
+            "eligible_signals": 3,
+            "adjusted_signals": 3,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 1603.09,
+            "commodity_trend_exits": [
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-01-31",
+                "exit_date": "2025-03-19",
+                "exit_reason": "target",
+                "pnl": 2193.82,
+                "pnl_pct_net": 0.080137,
+                "target_mult_used": 9.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-03-14",
+                "exit_date": "2025-03-21",
+                "exit_reason": "stop",
+                "pnl": -590.73,
+                "pnl_pct_net": -0.038091,
+                "target_mult_used": 9.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": 0.0118,
+            "sharpe_daily": 0.04,
+            "total_pnl": 502.54,
+            "total_return_pct": 0.0051,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.7657,
+        "total_pnl_delta_sum": -8678.66,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0441
+      }
+    },
+    "commodity_trend_target_10_0": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "window": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 1.5855,
+              "sharpe_daily": 4.27,
+              "total_pnl": 37128.69,
+              "total_return_pct": 0.3713,
+              "max_drawdown_pct": 0.0281,
+              "win_rate": 0.7143,
+              "trade_count": 21,
+              "survival_rate": 0.8431
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 4,
+            "commodity_trend_pnl": 9950.08,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-12-02",
+                "exit_date": "2025-12-23",
+                "exit_reason": "target",
+                "pnl": 4173.35,
+                "pnl_pct_net": 0.20059,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2026-01-15",
+                "exit_date": "2026-01-16",
+                "exit_reason": "stop",
+                "pnl": -371.2,
+                "pnl_pct_net": -0.025894,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-28",
+                "exit_reason": "target",
+                "pnl": 3070.15,
+                "pnl_pct_net": 0.111917,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-28",
+                "exit_reason": "target",
+                "pnl": 3077.78,
+                "pnl_pct_net": 0.111708,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "variant": "commodity_trend_target_10_0",
+            "target_mult": 10.0,
+            "metrics": {
+              "expected_value_score": 0.8852,
+              "sharpe_daily": 3.01,
+              "total_pnl": 29410.71,
+              "total_return_pct": 0.2941,
+              "max_drawdown_pct": 0.0722,
+              "win_rate": 0.5909,
+              "trade_count": 22,
+              "survival_rate": 0.7843
+            },
+            "eligible_signals": 9,
+            "adjusted_signals": 9,
+            "commodity_trend_trade_count": 4,
+            "commodity_trend_pnl": 3725.33,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-12-02",
+                "exit_date": "2025-12-26",
+                "exit_reason": "target",
+                "pnl": 5806.03,
+                "pnl_pct_net": 0.27906,
+                "target_mult_used": 10.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2026-01-15",
+                "exit_date": "2026-01-16",
+                "exit_reason": "stop",
+                "pnl": -375.37,
+                "pnl_pct_net": -0.025894,
+                "target_mult_used": 10.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-30",
+                "exit_reason": "stop",
+                "pnl": -852.68,
+                "pnl_pct_net": -0.030574,
+                "target_mult_used": 10.0
+              },
+              {
+                "ticker": "IAU",
+                "entry_date": "2026-01-22",
+                "exit_date": "2026-01-30",
+                "exit_reason": "stop",
+                "pnl": -852.65,
+                "pnl_pct_net": -0.030529,
+                "target_mult_used": 10.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": -0.7003,
+            "sharpe_daily": -1.26,
+            "total_pnl": -7717.98,
+            "total_return_pct": -0.0772,
+            "max_drawdown_pct": 0.0441,
+            "win_rate": -0.1234,
+            "trade_count": 1,
+            "survival_rate": -0.0588
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "window": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 0.5709,
+              "sharpe_daily": 2.55,
+              "total_pnl": 22387.61,
+              "total_return_pct": 0.2239,
+              "max_drawdown_pct": 0.0254,
+              "win_rate": 0.5,
+              "trade_count": 20,
+              "survival_rate": 0.8298
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 3,
+            "commodity_trend_pnl": 7998.57,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-06-03",
+                "exit_date": "2025-07-23",
+                "exit_reason": "target",
+                "pnl": 3998.27,
+                "pnl_pct_net": 0.128445,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-09-02",
+                "exit_date": "2025-09-22",
+                "exit_reason": "target",
+                "pnl": 2411.21,
+                "pnl_pct_net": 0.086541,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-09-03",
+                "exit_date": "2025-09-23",
+                "exit_reason": "target",
+                "pnl": 1589.09,
+                "pnl_pct_net": 0.057905,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "variant": "commodity_trend_target_10_0",
+            "target_mult": 10.0,
+            "metrics": {
+              "expected_value_score": 0.4628,
+              "sharpe_daily": 2.18,
+              "total_pnl": 21234.99,
+              "total_return_pct": 0.2123,
+              "max_drawdown_pct": 0.0469,
+              "win_rate": 0.4286,
+              "trade_count": 21,
+              "survival_rate": 0.8269
+            },
+            "eligible_signals": 6,
+            "adjusted_signals": 6,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 8160.3,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-06-03",
+                "exit_date": "2025-09-08",
+                "exit_reason": "target",
+                "pnl": 5818.78,
+                "pnl_pct_net": 0.186924,
+                "target_mult_used": 10.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-09-03",
+                "exit_date": "2025-10-02",
+                "exit_reason": "target",
+                "pnl": 2341.52,
+                "pnl_pct_net": 0.088476,
+                "target_mult_used": 10.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": -0.1081,
+            "sharpe_daily": -0.37,
+            "total_pnl": -1152.62,
+            "total_return_pct": -0.0116,
+            "max_drawdown_pct": 0.0215,
+            "win_rate": -0.0714,
+            "trade_count": 1,
+            "survival_rate": -0.0029
+          }
+        },
+        "old_thin": {
+          "before": {
+            "window": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "variant": "baseline",
+            "target_mult": null,
+            "metrics": {
+              "expected_value_score": 0.1616,
+              "sharpe_daily": 1.25,
+              "total_pnl": 12934.8,
+              "total_return_pct": 0.1293,
+              "max_drawdown_pct": 0.0442,
+              "win_rate": 0.3913,
+              "trade_count": 23,
+              "survival_rate": 0.9167
+            },
+            "eligible_signals": 0,
+            "adjusted_signals": 0,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 1100.55,
+            "commodity_trend_exits": [
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-01-31",
+                "exit_date": "2025-03-14",
+                "exit_reason": "target",
+                "pnl": 1691.28,
+                "pnl_pct_net": 0.061783,
+                "target_mult_used": 7.0
+              },
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-03-14",
+                "exit_date": "2025-03-21",
+                "exit_reason": "stop",
+                "pnl": -590.73,
+                "pnl_pct_net": -0.038091,
+                "target_mult_used": 7.0
+              }
+            ]
+          },
+          "after": {
+            "window": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "variant": "commodity_trend_target_10_0",
+            "target_mult": 10.0,
+            "metrics": {
+              "expected_value_score": 0.1799,
+              "sharpe_daily": 1.31,
+              "total_pnl": 13731.89,
+              "total_return_pct": 0.1373,
+              "max_drawdown_pct": 0.0442,
+              "win_rate": 0.3913,
+              "trade_count": 23,
+              "survival_rate": 0.9167
+            },
+            "eligible_signals": 3,
+            "adjusted_signals": 3,
+            "commodity_trend_trade_count": 2,
+            "commodity_trend_pnl": 1897.64,
+            "commodity_trend_exits": [
+              {
+                "ticker": "SLV",
+                "entry_date": "2025-03-14",
+                "exit_date": "2025-03-21",
+                "exit_reason": "stop",
+                "pnl": -590.73,
+                "pnl_pct_net": -0.038091,
+                "target_mult_used": 10.0
+              },
+              {
+                "ticker": "GLD",
+                "entry_date": "2025-01-31",
+                "exit_date": "2025-03-28",
+                "exit_reason": "target",
+                "pnl": 2488.37,
+                "pnl_pct_net": 0.090895,
+                "target_mult_used": 10.0
+              }
+            ]
+          },
+          "delta": {
+            "expected_value_score": 0.0183,
+            "sharpe_daily": 0.06,
+            "total_pnl": 797.09,
+            "total_return_pct": 0.008,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.7901,
+        "total_pnl_delta_sum": -8073.51,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0441
+      }
+    }
+  },
+  "results": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "variant": "baseline",
+      "target_mult": null,
+      "metrics": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "total_return_pct": 0.3713,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "commodity_trend_trade_count": 4,
+      "commodity_trend_pnl": 9950.08,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-12-02",
+          "exit_date": "2025-12-23",
+          "exit_reason": "target",
+          "pnl": 4173.35,
+          "pnl_pct_net": 0.20059,
+          "target_mult_used": 7.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-01-16",
+          "exit_reason": "stop",
+          "pnl": -371.2,
+          "pnl_pct_net": -0.025894,
+          "target_mult_used": 7.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-28",
+          "exit_reason": "target",
+          "pnl": 3070.15,
+          "pnl_pct_net": 0.111917,
+          "target_mult_used": 7.0
+        },
+        {
+          "ticker": "IAU",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-28",
+          "exit_reason": "target",
+          "pnl": 3077.78,
+          "pnl_pct_net": 0.111708,
+          "target_mult_used": 7.0
+        }
+      ]
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "variant": "commodity_trend_target_8_0",
+      "target_mult": 8.0,
+      "metrics": {
+        "expected_value_score": 1.7485,
+        "sharpe_daily": 4.43,
+        "total_pnl": 39472.85,
+        "total_return_pct": 0.3947,
+        "max_drawdown_pct": 0.028,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8039
+      },
+      "eligible_signals": 9,
+      "adjusted_signals": 9,
+      "commodity_trend_trade_count": 4,
+      "commodity_trend_pnl": 11983.7,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-12-02",
+          "exit_date": "2025-12-23",
+          "exit_reason": "target",
+          "pnl": 4460.53,
+          "pnl_pct_net": 0.214393,
+          "target_mult_used": 8.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-01-16",
+          "exit_reason": "stop",
+          "pnl": -371.2,
+          "pnl_pct_net": -0.025894,
+          "target_mult_used": 8.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-29",
+          "exit_reason": "target",
+          "pnl": 3931.6,
+          "pnl_pct_net": 0.143316,
+          "target_mult_used": 8.0
+        },
+        {
+          "ticker": "IAU",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-29",
+          "exit_reason": "target",
+          "pnl": 3962.77,
+          "pnl_pct_net": 0.143354,
+          "target_mult_used": 8.0
+        }
+      ]
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "variant": "commodity_trend_target_9_0",
+      "target_mult": 9.0,
+      "metrics": {
+        "expected_value_score": 0.8852,
+        "sharpe_daily": 3.01,
+        "total_pnl": 29410.71,
+        "total_return_pct": 0.2941,
+        "max_drawdown_pct": 0.0722,
+        "win_rate": 0.5909,
+        "trade_count": 22,
+        "survival_rate": 0.7843
+      },
+      "eligible_signals": 9,
+      "adjusted_signals": 9,
+      "commodity_trend_trade_count": 4,
+      "commodity_trend_pnl": 3725.33,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-12-02",
+          "exit_date": "2025-12-26",
+          "exit_reason": "target",
+          "pnl": 5806.03,
+          "pnl_pct_net": 0.27906,
+          "target_mult_used": 9.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-01-16",
+          "exit_reason": "stop",
+          "pnl": -375.37,
+          "pnl_pct_net": -0.025894,
+          "target_mult_used": 9.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-30",
+          "exit_reason": "stop",
+          "pnl": -852.68,
+          "pnl_pct_net": -0.030574,
+          "target_mult_used": 9.0
+        },
+        {
+          "ticker": "IAU",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-30",
+          "exit_reason": "stop",
+          "pnl": -852.65,
+          "pnl_pct_net": -0.030529,
+          "target_mult_used": 9.0
+        }
+      ]
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "variant": "commodity_trend_target_10_0",
+      "target_mult": 10.0,
+      "metrics": {
+        "expected_value_score": 0.8852,
+        "sharpe_daily": 3.01,
+        "total_pnl": 29410.71,
+        "total_return_pct": 0.2941,
+        "max_drawdown_pct": 0.0722,
+        "win_rate": 0.5909,
+        "trade_count": 22,
+        "survival_rate": 0.7843
+      },
+      "eligible_signals": 9,
+      "adjusted_signals": 9,
+      "commodity_trend_trade_count": 4,
+      "commodity_trend_pnl": 3725.33,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-12-02",
+          "exit_date": "2025-12-26",
+          "exit_reason": "target",
+          "pnl": 5806.03,
+          "pnl_pct_net": 0.27906,
+          "target_mult_used": 10.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-01-16",
+          "exit_reason": "stop",
+          "pnl": -375.37,
+          "pnl_pct_net": -0.025894,
+          "target_mult_used": 10.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-30",
+          "exit_reason": "stop",
+          "pnl": -852.68,
+          "pnl_pct_net": -0.030574,
+          "target_mult_used": 10.0
+        },
+        {
+          "ticker": "IAU",
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-30",
+          "exit_reason": "stop",
+          "pnl": -852.65,
+          "pnl_pct_net": -0.030529,
+          "target_mult_used": 10.0
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "variant": "baseline",
+      "target_mult": null,
+      "metrics": {
+        "expected_value_score": 0.5709,
+        "sharpe_daily": 2.55,
+        "total_pnl": 22387.61,
+        "total_return_pct": 0.2239,
+        "max_drawdown_pct": 0.0254,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "commodity_trend_trade_count": 3,
+      "commodity_trend_pnl": 7998.57,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-06-03",
+          "exit_date": "2025-07-23",
+          "exit_reason": "target",
+          "pnl": 3998.27,
+          "pnl_pct_net": 0.128445,
+          "target_mult_used": 7.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-09-02",
+          "exit_date": "2025-09-22",
+          "exit_reason": "target",
+          "pnl": 2411.21,
+          "pnl_pct_net": 0.086541,
+          "target_mult_used": 7.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-09-03",
+          "exit_date": "2025-09-23",
+          "exit_reason": "target",
+          "pnl": 1589.09,
+          "pnl_pct_net": 0.057905,
+          "target_mult_used": 7.0
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "variant": "commodity_trend_target_8_0",
+      "target_mult": 8.0,
+      "metrics": {
+        "expected_value_score": 0.4674,
+        "sharpe_daily": 2.3,
+        "total_pnl": 20317.05,
+        "total_return_pct": 0.2032,
+        "max_drawdown_pct": 0.031,
+        "win_rate": 0.4545,
+        "trade_count": 22,
+        "survival_rate": 0.8235
+      },
+      "eligible_signals": 7,
+      "adjusted_signals": 7,
+      "commodity_trend_trade_count": 3,
+      "commodity_trend_pnl": 6289.13,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-06-03",
+          "exit_date": "2025-09-02",
+          "exit_reason": "target",
+          "pnl": 4805.2,
+          "pnl_pct_net": 0.154365,
+          "target_mult_used": 8.0
+        },
+        {
+          "ticker": "IAU",
+          "entry_date": "2025-09-17",
+          "exit_date": "2025-09-18",
+          "exit_reason": "stop",
+          "pnl": -425.46,
+          "pnl_pct_net": -0.015309,
+          "target_mult_used": 8.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-09-03",
+          "exit_date": "2025-09-29",
+          "exit_reason": "target",
+          "pnl": 1909.39,
+          "pnl_pct_net": 0.068756,
+          "target_mult_used": 8.0
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "variant": "commodity_trend_target_9_0",
+      "target_mult": 9.0,
+      "metrics": {
+        "expected_value_score": 0.4937,
+        "sharpe_daily": 2.36,
+        "total_pnl": 20924.39,
+        "total_return_pct": 0.2092,
+        "max_drawdown_pct": 0.0309,
+        "win_rate": 0.4545,
+        "trade_count": 22,
+        "survival_rate": 0.8235
+      },
+      "eligible_signals": 7,
+      "adjusted_signals": 7,
+      "commodity_trend_trade_count": 3,
+      "commodity_trend_pnl": 6884.88,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-06-03",
+          "exit_date": "2025-09-02",
+          "exit_reason": "target",
+          "pnl": 5218.51,
+          "pnl_pct_net": 0.167642,
+          "target_mult_used": 9.0
+        },
+        {
+          "ticker": "IAU",
+          "entry_date": "2025-09-17",
+          "exit_date": "2025-09-18",
+          "exit_reason": "stop",
+          "pnl": -427.58,
+          "pnl_pct_net": -0.015309,
+          "target_mult_used": 9.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-09-03",
+          "exit_date": "2025-09-30",
+          "exit_reason": "target",
+          "pnl": 2093.95,
+          "pnl_pct_net": 0.0754,
+          "target_mult_used": 9.0
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "variant": "commodity_trend_target_10_0",
+      "target_mult": 10.0,
+      "metrics": {
+        "expected_value_score": 0.4628,
+        "sharpe_daily": 2.18,
+        "total_pnl": 21234.99,
+        "total_return_pct": 0.2123,
+        "max_drawdown_pct": 0.0469,
+        "win_rate": 0.4286,
+        "trade_count": 21,
+        "survival_rate": 0.8269
+      },
+      "eligible_signals": 6,
+      "adjusted_signals": 6,
+      "commodity_trend_trade_count": 2,
+      "commodity_trend_pnl": 8160.3,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-06-03",
+          "exit_date": "2025-09-08",
+          "exit_reason": "target",
+          "pnl": 5818.78,
+          "pnl_pct_net": 0.186924,
+          "target_mult_used": 10.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-09-03",
+          "exit_date": "2025-10-02",
+          "exit_reason": "target",
+          "pnl": 2341.52,
+          "pnl_pct_net": 0.088476,
+          "target_mult_used": 10.0
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "variant": "baseline",
+      "target_mult": null,
+      "metrics": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "total_return_pct": 0.1293,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "eligible_signals": 0,
+      "adjusted_signals": 0,
+      "commodity_trend_trade_count": 2,
+      "commodity_trend_pnl": 1100.55,
+      "commodity_trend_exits": [
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-01-31",
+          "exit_date": "2025-03-14",
+          "exit_reason": "target",
+          "pnl": 1691.28,
+          "pnl_pct_net": 0.061783,
+          "target_mult_used": 7.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-03-14",
+          "exit_date": "2025-03-21",
+          "exit_reason": "stop",
+          "pnl": -590.73,
+          "pnl_pct_net": -0.038091,
+          "target_mult_used": 7.0
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "variant": "commodity_trend_target_8_0",
+      "target_mult": 8.0,
+      "metrics": {
+        "expected_value_score": 0.1705,
+        "sharpe_daily": 1.28,
+        "total_pnl": 13318.03,
+        "total_return_pct": 0.1332,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "eligible_signals": 3,
+      "adjusted_signals": 3,
+      "commodity_trend_trade_count": 2,
+      "commodity_trend_pnl": 1483.78,
+      "commodity_trend_exits": [
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-01-31",
+          "exit_date": "2025-03-18",
+          "exit_reason": "target",
+          "pnl": 2074.51,
+          "pnl_pct_net": 0.075779,
+          "target_mult_used": 8.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-03-14",
+          "exit_date": "2025-03-21",
+          "exit_reason": "stop",
+          "pnl": -590.73,
+          "pnl_pct_net": -0.038091,
+          "target_mult_used": 8.0
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "variant": "commodity_trend_target_9_0",
+      "target_mult": 9.0,
+      "metrics": {
+        "expected_value_score": 0.1734,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13437.34,
+        "total_return_pct": 0.1344,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "eligible_signals": 3,
+      "adjusted_signals": 3,
+      "commodity_trend_trade_count": 2,
+      "commodity_trend_pnl": 1603.09,
+      "commodity_trend_exits": [
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-01-31",
+          "exit_date": "2025-03-19",
+          "exit_reason": "target",
+          "pnl": 2193.82,
+          "pnl_pct_net": 0.080137,
+          "target_mult_used": 9.0
+        },
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-03-14",
+          "exit_date": "2025-03-21",
+          "exit_reason": "stop",
+          "pnl": -590.73,
+          "pnl_pct_net": -0.038091,
+          "target_mult_used": 9.0
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "variant": "commodity_trend_target_10_0",
+      "target_mult": 10.0,
+      "metrics": {
+        "expected_value_score": 0.1799,
+        "sharpe_daily": 1.31,
+        "total_pnl": 13731.89,
+        "total_return_pct": 0.1373,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "eligible_signals": 3,
+      "adjusted_signals": 3,
+      "commodity_trend_trade_count": 2,
+      "commodity_trend_pnl": 1897.64,
+      "commodity_trend_exits": [
+        {
+          "ticker": "SLV",
+          "entry_date": "2025-03-14",
+          "exit_date": "2025-03-21",
+          "exit_reason": "stop",
+          "pnl": -590.73,
+          "pnl_pct_net": -0.038091,
+          "target_mult_used": 10.0
+        },
+        {
+          "ticker": "GLD",
+          "entry_date": "2025-01-31",
+          "exit_date": "2025-03-28",
+          "exit_reason": "target",
+          "pnl": 2488.37,
+          "pnl_pct_net": 0.090895,
+          "target_mult_used": 10.0
+        }
+      ]
+    }
+  ],
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic exit alpha was tested instead."
+  },
+  "rejection_reason": "Rejected for production promotion. The best variant, 8 ATR, improved late_strong and old_thin but regressed mid_weak EV by -0.1035, Sharpe by -0.25, PnL by -$2,070.56, and drawdown by +0.56 pp; 9/10 ATR materially damaged late_strong and aggregate EV.",
+  "next_retry_requires": [
+    "Do not keep sweeping nearby Commodity trend targets above 7 ATR.",
+    "A valid retry needs a state or event discriminator explaining when late/old continuation should be held without damaging mid_weak.",
+    "Do not use post-target continuation audits alone as production evidence; require production-path replay."
+  ],
+  "strategy_behavior_changed": false
+}

@@ -1,0 +1,78 @@
+{
+  "experiment_id": "exp-20260428-003",
+  "timestamp": "2026-04-28T02:09:37Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "experiment_type": "commodity_trend_target_extension",
+  "change_type": "alpha_search_exit_sweep",
+  "hypothesis": "Commodity trend target exits may still contain continuation alpha, but the prior post-target re-entry path was inert. Extending only `trend_long | Commodities` targets before exit may capture that continuation without changing entries, allocation, LLM/news, add-ons, scarce-slot routing, or other exits.",
+  "why_tested": "This follows the explicit next-valid retry from exp-20260428-002: test an exit-before-reentry semantic instead of another same-ticker re-entry signal. LLM soft ranking remains sample-limited, so this deterministic exit alpha was tested instead.",
+  "parameters": {
+    "single_causal_variable": "trend_long Commodities target width above current 7 ATR",
+    "baseline_target_source": "current production TREND_COMMODITIES_TARGET_ATR_MULT = 7.0",
+    "tested_target_mults": [8.0, 9.0, 10.0],
+    "locked_variables": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM/news replay",
+      "follow-through add-ons",
+      "scarce-slot breakout routing",
+      "Technology trend target width",
+      "all breakout exits",
+      "all non-Commodity trend exits"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {"start": "2025-04-23", "end": "2025-10-22"},
+    {"start": "2024-10-02", "end": "2025-04-22"}
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 1.5855, "sharpe_daily": 4.27, "total_pnl": 37128.69, "total_return_pct": 0.3713, "max_drawdown_pct": 0.0281, "win_rate": 0.7143, "trade_count": 21, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.5709, "sharpe_daily": 2.55, "total_pnl": 22387.61, "total_return_pct": 0.2239, "max_drawdown_pct": 0.0254, "win_rate": 0.5, "trade_count": 20, "survival_rate": 0.8298},
+    "old_thin": {"expected_value_score": 0.1616, "sharpe_daily": 1.25, "total_pnl": 12934.8, "total_return_pct": 0.1293, "max_drawdown_pct": 0.0442, "win_rate": 0.3913, "trade_count": 23, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "best_variant": "commodity_trend_target_8_0",
+    "late_strong": {"expected_value_score": 1.7485, "sharpe_daily": 4.43, "total_pnl": 39472.85, "total_return_pct": 0.3947, "max_drawdown_pct": 0.028, "win_rate": 0.7143, "trade_count": 21, "survival_rate": 0.8039},
+    "mid_weak": {"expected_value_score": 0.4674, "sharpe_daily": 2.3, "total_pnl": 20317.05, "total_return_pct": 0.2032, "max_drawdown_pct": 0.031, "win_rate": 0.4545, "trade_count": 22, "survival_rate": 0.8235},
+    "old_thin": {"expected_value_score": 0.1705, "sharpe_daily": 1.28, "total_pnl": 13318.03, "total_return_pct": 0.1332, "max_drawdown_pct": 0.0442, "win_rate": 0.3913, "trade_count": 23, "survival_rate": 0.9167},
+    "rejected_variants": {
+      "commodity_trend_target_9_0": {"aggregate_expected_value_score_delta": -0.7657, "aggregate_total_pnl_delta": -8678.66, "windows_improved": 1, "windows_regressed": 2, "max_drawdown_delta_max": 0.0441},
+      "commodity_trend_target_10_0": {"aggregate_expected_value_score_delta": -0.7901, "aggregate_total_pnl_delta": -8073.51, "windows_improved": 1, "windows_regressed": 2, "max_drawdown_delta_max": 0.0441}
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "commodity_trend_target_8_0",
+    "late_strong": {"expected_value_score_delta": 0.163, "total_pnl_delta": 2344.16, "sharpe_daily_delta": 0.16, "max_drawdown_pct_delta": -0.0001},
+    "mid_weak": {"expected_value_score_delta": -0.1035, "total_pnl_delta": -2070.56, "sharpe_daily_delta": -0.25, "max_drawdown_pct_delta": 0.0056},
+    "old_thin": {"expected_value_score_delta": 0.0089, "total_pnl_delta": 383.23, "sharpe_daily_delta": 0.03, "max_drawdown_pct_delta": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": 0.0684, "total_pnl_delta_sum": 656.83, "windows_improved": 2, "windows_regressed": 1, "max_drawdown_delta_max": 0.0056},
+    "gate4_basis": "Rejected for production promotion. Although 8 ATR improved two windows and late_strong Sharpe by +0.16, it damaged mid_weak EV by -0.1035, Sharpe by -0.25, PnL by -$2,070.56, and win rate by -4.55 pp. The aggregate PnL gain was only $656.83, and wider 9/10 ATR variants materially damaged late_strong."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic exit alpha was tested instead."
+  },
+  "rejection_reason": "The continuation exists in late/old, but a uniform target extension above 7 ATR is not robust enough because it materially hurts the rotation-heavy mid_weak window.",
+  "next_retry_requires": [
+    "Do not keep sweeping nearby Commodity trend targets above 7 ATR.",
+    "A valid retry needs a state or event discriminator explaining when late/old continuation should be held without damaging mid_weak.",
+    "Do not use post-target continuation audits alone as production evidence; require production-path replay."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_003_commodity_trend_target_extension.py",
+    "data/experiments/exp-20260428-003/exp_20260428_003_commodity_trend_target_extension.json",
+    "docs/experiments/logs/exp-20260428-003.json"
+  ],
+  "notes": "Alpha search, not measurement repair. Production strategy code was unchanged."
+}

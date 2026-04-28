@@ -1,0 +1,166 @@
+{
+  "experiment_id": "exp-20260428-005",
+  "timestamp": "2026-04-28T00:00:00Z",
+  "status": "accepted",
+  "decision": "promote_addon_fraction_50",
+  "experiment_type": "followthrough_addon_fraction_materiality",
+  "change_type": "alpha_search_capital_allocation",
+  "hypothesis": "The accepted day-2 follow-through add-on is directionally correct, but 25% of original shares under-allocates to confirmed winners. Raising only the add-on fraction should improve EV and PnL across the fixed windows while preserving existing caps and triggers.",
+  "why_tested": "LLM soft ranking remains sample-limited, and recent experiments rejected target-width, global capacity, and simple sleeve-ordering variants. This tested a distinct lifecycle capital-allocation variable rather than another entry or exit threshold.",
+  "parameters": {
+    "single_causal_variable": "ADDON_FRACTION_OF_ORIGINAL_SHARES",
+    "old_value": 0.25,
+    "new_value": 0.50,
+    "screened_values": [0.35, 0.50],
+    "unchanged": [
+      "entries",
+      "exits",
+      "ADDON_CHECKPOINT_DAYS",
+      "ADDON_MIN_UNREALIZED_PCT",
+      "ADDON_MIN_RS_VS_SPY",
+      "ADDON_MAX_POSITION_PCT",
+      "MAX_POSITION_PCT",
+      "MAX_POSITIONS",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "addon_executed": 6
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298,
+      "addon_executed": 6
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167,
+      "addon_executed": 4
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.6495,
+      "sharpe_daily": 4.29,
+      "total_pnl": 38452.19,
+      "total_return_pct": 0.3845,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "addon_executed": 6
+    },
+    "mid_weak": {
+      "expected_value_score": 0.6083,
+      "sharpe_daily": 2.54,
+      "total_pnl": 23949.98,
+      "total_return_pct": 0.2395,
+      "max_drawdown_pct": 0.0263,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298,
+      "addon_executed": 6
+    },
+    "old_thin": {
+      "expected_value_score": 0.1765,
+      "sharpe_daily": 1.29,
+      "total_pnl": 13683.1,
+      "total_return_pct": 0.1368,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167,
+      "addon_executed": 4
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": 0.064,
+      "total_pnl_delta": 1323.5,
+      "sharpe_daily_delta": 0.02,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0374,
+      "total_pnl_delta": 1562.37,
+      "sharpe_daily_delta": -0.01,
+      "max_drawdown_pct_delta": 0.0009
+    },
+    "old_thin": {
+      "expected_value_score_delta": 0.0149,
+      "total_pnl_delta": 748.3,
+      "sharpe_daily_delta": 0.04,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.1163,
+      "total_pnl_delta_sum": 3634.17,
+      "baseline_total_pnl_sum": 72451.1,
+      "total_pnl_delta_pct": 0.05016,
+      "windows_improved": 3,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0009
+    },
+    "gate4_basis": "Accepted because EV improved in all three fixed windows, aggregate PnL improved by 5.016%, and max drawdown increased by only 0.09 pp at worst."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic follow-through capital-allocation alpha was tested instead."
+  },
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not continue sweeping nearby add-on fractions without forward/paper concentration evidence.",
+    "Do not change the day-2 follow-through trigger thresholds from this result.",
+    "Monitor add-on concentration because the rule intentionally allocates more to confirmed winners."
+  ],
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "quant/experiments/exp_20260428_005_addon_fraction_materiality.py",
+    "data/experiments/exp-20260428-005/exp_20260428_005_addon_fraction_materiality.json",
+    "docs/experiments/logs/exp-20260428-005.json"
+  ],
+  "notes": "Alpha search, not measurement repair. The change modifies one independent causal variable: the size of the already-confirmed day-2 follow-through add-on."
+}

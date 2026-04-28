@@ -1,0 +1,225 @@
+{
+  "experiment_id": "exp-20260428-002",
+  "timestamp": "2026-04-28T01:13:54.527718+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "hypothesis": "Commodity trend target exits may still contain continuation alpha; re-entering the same ticker after a target exit can improve lifecycle EV without changing entry rules, LLM/news, target widths, or sizing.",
+  "change_type": "alpha_search_lifecycle_reentry_shadow",
+  "parameters": {
+    "single_causal_variable": "trend_long Commodities target-exit re-entry",
+    "baseline_config": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "candidate_rule": {
+      "source_exit_reason": "target",
+      "source_strategy": "trend_long",
+      "source_sector": "Commodities",
+      "signal_date": "source exit_date",
+      "fill": "existing next-trading-day entry model",
+      "risk_and_exit": "existing trend_long Commodity risk enrichment"
+    },
+    "locked_variables": [
+      "normal entries",
+      "target widths",
+      "position sizing",
+      "day-2 follow-through add-on trigger",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "prior_related_results": [
+    {
+      "experiment_id": "exp-20260425-031",
+      "decision": "accepted",
+      "reason": "Commodity trend wider targets carried useful convexity."
+    },
+    {
+      "experiment_id": "exp-20260425-034",
+      "decision": "audit_only",
+      "reason": "Post-target Commodity trend continuation was positive in late/mid samples."
+    }
+  ],
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "results": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "before_metrics": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "total_return_pct": 0.3713,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431,
+        "addon_executed": 6
+      },
+      "after_metrics": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "total_return_pct": 0.3713,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431,
+        "addon_executed": 6
+      },
+      "delta_metrics": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0,
+        "addon_executed": 0
+      },
+      "scheduled_reentry_signal_count": 3,
+      "scheduled_reentry_dates": [
+        "2025-12-23",
+        "2026-01-28"
+      ],
+      "candidate_reentry_trade_count": 0,
+      "candidate_reentry_pnl": 0,
+      "candidate_reentry_trades": []
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "before_metrics": {
+        "expected_value_score": 0.5709,
+        "sharpe_daily": 2.55,
+        "total_pnl": 22387.61,
+        "total_return_pct": 0.2239,
+        "max_drawdown_pct": 0.0254,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298,
+        "addon_executed": 6
+      },
+      "after_metrics": {
+        "expected_value_score": 0.5709,
+        "sharpe_daily": 2.55,
+        "total_pnl": 22387.61,
+        "total_return_pct": 0.2239,
+        "max_drawdown_pct": 0.0254,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298,
+        "addon_executed": 6
+      },
+      "delta_metrics": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0,
+        "addon_executed": 0
+      },
+      "scheduled_reentry_signal_count": 3,
+      "scheduled_reentry_dates": [
+        "2025-07-23",
+        "2025-09-22",
+        "2025-09-23"
+      ],
+      "candidate_reentry_trade_count": 0,
+      "candidate_reentry_pnl": 0,
+      "candidate_reentry_trades": []
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "before_metrics": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "total_return_pct": 0.1293,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167,
+        "addon_executed": 4
+      },
+      "after_metrics": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "total_return_pct": 0.1293,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167,
+        "addon_executed": 4
+      },
+      "delta_metrics": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0,
+        "addon_executed": 0
+      },
+      "scheduled_reentry_signal_count": 1,
+      "scheduled_reentry_dates": [
+        "2025-03-14"
+      ],
+      "candidate_reentry_trade_count": 0,
+      "candidate_reentry_pnl": 0,
+      "candidate_reentry_trades": []
+    }
+  ],
+  "summary": {
+    "expected_value_score_delta_sum": 0.0,
+    "total_pnl_delta_sum": 0.0,
+    "windows_improved": 0,
+    "windows_regressed": 0,
+    "max_drawdown_delta_max": 0.0,
+    "scheduled_reentry_signal_count": 7,
+    "candidate_reentry_trade_count": 0,
+    "candidate_reentry_pnl": 0
+  },
+  "rejection_reason": "No Gate 4 condition passed across the fixed three-window comparison.",
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic lifecycle alpha was tested instead."
+  },
+  "strategy_behavior_changed": false
+}

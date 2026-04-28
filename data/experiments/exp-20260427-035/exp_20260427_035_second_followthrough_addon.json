@@ -1,0 +1,631 @@
+{
+  "experiment_id": "exp-20260427-035",
+  "timestamp": "2026-04-27T21:24:39.225189+00:00",
+  "hypothesis": "A second smaller day-5 follow-through add-on may improve lifecycle alpha by allocating more budget only to positions that already absorbed the day-2 add-on and continue to outperform SPY.",
+  "change_type": "capital_allocation",
+  "parameters": {
+    "single_causal_variable": "second follow-through add-on policy",
+    "baseline": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "candidate_variants": {
+      "frac15_cap45": {
+        "REGIME_AWARE_EXIT": true,
+        "SECOND_ADDON_ENABLED": true,
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.15,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.45
+      },
+      "frac25_cap50": {
+        "REGIME_AWARE_EXIT": true,
+        "SECOND_ADDON_ENABLED": true,
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.5
+      },
+      "frac35_cap60": {
+        "REGIME_AWARE_EXIT": true,
+        "SECOND_ADDON_ENABLED": true,
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.35,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.6
+      }
+    },
+    "unchanged": [
+      "entries",
+      "exits",
+      "initial position cap",
+      "day-2 add-on trigger",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "addon_scheduled": 8,
+      "addon_executed": 6,
+      "second_addon_scheduled": 0,
+      "second_addon_executed": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298,
+      "addon_scheduled": 7,
+      "addon_executed": 6,
+      "second_addon_scheduled": 0,
+      "second_addon_executed": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167,
+      "addon_scheduled": 4,
+      "addon_executed": 4,
+      "second_addon_scheduled": 0,
+      "second_addon_executed": 0
+    }
+  },
+  "variants": {
+    "frac15_cap45": {
+      "config": {
+        "REGIME_AWARE_EXIT": true,
+        "SECOND_ADDON_ENABLED": true,
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.15,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.45
+      },
+      "results": [
+        {
+          "window": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "state_note": "slow-melt bull / accepted-stack dominant tape",
+          "before_metrics": {
+            "expected_value_score": 1.5855,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37128.69,
+            "total_return_pct": 0.3713,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431,
+            "addon_scheduled": 8,
+            "addon_executed": 6,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 1.597,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37396.9,
+            "total_return_pct": 0.374,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431,
+            "addon_scheduled": 12,
+            "addon_executed": 10,
+            "second_addon_scheduled": 4,
+            "second_addon_executed": 4
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0115,
+            "sharpe_daily": 0.0,
+            "total_pnl": 268.21,
+            "total_return_pct": 0.0027,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 4,
+            "second_addon_executed": 4
+          }
+        },
+        {
+          "window": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+          "before_metrics": {
+            "expected_value_score": 0.5709,
+            "sharpe_daily": 2.55,
+            "total_pnl": 22387.61,
+            "total_return_pct": 0.2239,
+            "max_drawdown_pct": 0.0254,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298,
+            "addon_scheduled": 7,
+            "addon_executed": 6,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 0.5867,
+            "sharpe_daily": 2.58,
+            "total_pnl": 22742.73,
+            "total_return_pct": 0.2274,
+            "max_drawdown_pct": 0.0254,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298,
+            "addon_scheduled": 10,
+            "addon_executed": 7,
+            "second_addon_scheduled": 3,
+            "second_addon_executed": 1
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0158,
+            "sharpe_daily": 0.03,
+            "total_pnl": 355.12,
+            "total_return_pct": 0.0035,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 3,
+            "addon_executed": 1,
+            "second_addon_scheduled": 3,
+            "second_addon_executed": 1
+          }
+        },
+        {
+          "window": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "state_note": "mixed-to-weak older tape with lower win rate",
+          "before_metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 0,
+            "addon_executed": 0,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          }
+        }
+      ],
+      "summary": {
+        "expected_value_score_delta_sum": 0.0273,
+        "total_pnl_delta_sum": 623.33,
+        "windows_improved": 2,
+        "windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0,
+        "second_addon_executed": 5
+      }
+    },
+    "frac25_cap50": {
+      "config": {
+        "REGIME_AWARE_EXIT": true,
+        "SECOND_ADDON_ENABLED": true,
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.5
+      },
+      "results": [
+        {
+          "window": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "state_note": "slow-melt bull / accepted-stack dominant tape",
+          "before_metrics": {
+            "expected_value_score": 1.5855,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37128.69,
+            "total_return_pct": 0.3713,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431,
+            "addon_scheduled": 8,
+            "addon_executed": 6,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 1.6013,
+            "sharpe_daily": 4.26,
+            "total_pnl": 37594.21,
+            "total_return_pct": 0.3759,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431,
+            "addon_scheduled": 12,
+            "addon_executed": 10,
+            "second_addon_scheduled": 4,
+            "second_addon_executed": 4
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0158,
+            "sharpe_daily": -0.01,
+            "total_pnl": 465.52,
+            "total_return_pct": 0.0046,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 4,
+            "second_addon_executed": 4
+          }
+        },
+        {
+          "window": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+          "before_metrics": {
+            "expected_value_score": 0.5709,
+            "sharpe_daily": 2.55,
+            "total_pnl": 22387.61,
+            "total_return_pct": 0.2239,
+            "max_drawdown_pct": 0.0254,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298,
+            "addon_scheduled": 7,
+            "addon_executed": 6,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 0.598,
+            "sharpe_daily": 2.59,
+            "total_pnl": 23087.42,
+            "total_return_pct": 0.2309,
+            "max_drawdown_pct": 0.0255,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298,
+            "addon_scheduled": 10,
+            "addon_executed": 9,
+            "second_addon_scheduled": 3,
+            "second_addon_executed": 3
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0271,
+            "sharpe_daily": 0.04,
+            "total_pnl": 699.81,
+            "total_return_pct": 0.007,
+            "max_drawdown_pct": 0.0001,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 3,
+            "addon_executed": 3,
+            "second_addon_scheduled": 3,
+            "second_addon_executed": 3
+          }
+        },
+        {
+          "window": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "state_note": "mixed-to-weak older tape with lower win rate",
+          "before_metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 0,
+            "addon_executed": 0,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          }
+        }
+      ],
+      "summary": {
+        "expected_value_score_delta_sum": 0.0429,
+        "total_pnl_delta_sum": 1165.33,
+        "windows_improved": 2,
+        "windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0001,
+        "second_addon_executed": 7
+      }
+    },
+    "frac35_cap60": {
+      "config": {
+        "REGIME_AWARE_EXIT": true,
+        "SECOND_ADDON_ENABLED": true,
+        "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+        "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+        "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.35,
+        "SECOND_ADDON_MAX_POSITION_PCT": 0.6
+      },
+      "results": [
+        {
+          "window": "late_strong",
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "state_note": "slow-melt bull / accepted-stack dominant tape",
+          "before_metrics": {
+            "expected_value_score": 1.5855,
+            "sharpe_daily": 4.27,
+            "total_pnl": 37128.69,
+            "total_return_pct": 0.3713,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431,
+            "addon_scheduled": 8,
+            "addon_executed": 6,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 1.6086,
+            "sharpe_daily": 4.26,
+            "total_pnl": 37762.35,
+            "total_return_pct": 0.3776,
+            "max_drawdown_pct": 0.0281,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431,
+            "addon_scheduled": 12,
+            "addon_executed": 10,
+            "second_addon_scheduled": 4,
+            "second_addon_executed": 4
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0231,
+            "sharpe_daily": -0.01,
+            "total_pnl": 633.66,
+            "total_return_pct": 0.0063,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 4,
+            "second_addon_executed": 4
+          }
+        },
+        {
+          "window": "mid_weak",
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+          "before_metrics": {
+            "expected_value_score": 0.5709,
+            "sharpe_daily": 2.55,
+            "total_pnl": 22387.61,
+            "total_return_pct": 0.2239,
+            "max_drawdown_pct": 0.0254,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298,
+            "addon_scheduled": 7,
+            "addon_executed": 6,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 0.6133,
+            "sharpe_daily": 2.62,
+            "total_pnl": 23412.77,
+            "total_return_pct": 0.2341,
+            "max_drawdown_pct": 0.0255,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298,
+            "addon_scheduled": 10,
+            "addon_executed": 9,
+            "second_addon_scheduled": 3,
+            "second_addon_executed": 3
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0424,
+            "sharpe_daily": 0.07,
+            "total_pnl": 1025.16,
+            "total_return_pct": 0.0102,
+            "max_drawdown_pct": 0.0001,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 3,
+            "addon_executed": 3,
+            "second_addon_scheduled": 3,
+            "second_addon_executed": 3
+          }
+        },
+        {
+          "window": "old_thin",
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "state_note": "mixed-to-weak older tape with lower win rate",
+          "before_metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "after_metrics": {
+            "expected_value_score": 0.1616,
+            "sharpe_daily": 1.25,
+            "total_pnl": 12934.8,
+            "total_return_pct": 0.1293,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167,
+            "addon_scheduled": 4,
+            "addon_executed": 4,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          },
+          "delta_metrics": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "addon_scheduled": 0,
+            "addon_executed": 0,
+            "second_addon_scheduled": 0,
+            "second_addon_executed": 0
+          }
+        }
+      ],
+      "summary": {
+        "expected_value_score_delta_sum": 0.0655,
+        "total_pnl_delta_sum": 1658.82,
+        "windows_improved": 2,
+        "windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0001,
+        "second_addon_executed": 7
+      }
+    }
+  },
+  "best_variant": "frac35_cap60",
+  "summary": {
+    "expected_value_score_delta_sum": 0.0655,
+    "total_pnl_delta_sum": 1658.82,
+    "windows_improved": 2,
+    "windows_regressed": 0,
+    "max_drawdown_delta_max": 0.0001,
+    "second_addon_executed": 7
+  },
+  "decision": "rejected",
+  "rejection_reason": "Best variant improved 2/3 windows and regressed none, but did not meet Gate 4 materiality: EV delta <10%, PnL delta <5%, and Sharpe improvement <0.1 in every fixed window."
+}

@@ -1,0 +1,1295 @@
+{
+  "experiment_id": "exp-20260427-020",
+  "created_at": "2026-04-27T17:52:41.385011+00:00",
+  "change_type": "ranking_rule_observed_audit",
+  "single_causal_variable": "entry extension plus weak next-day follow-through ranking penalty",
+  "strategy_behavior_changed": false,
+  "windows": {
+    "late_strong": {
+      "range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "regime": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 1.5855,
+        "sharpe_daily": 4.27,
+        "total_pnl": 37128.69,
+        "max_drawdown_pct": 0.0281,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431
+      },
+      "trade_count": 21
+    },
+    "mid_weak": {
+      "range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "regime": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.5709,
+        "sharpe_daily": 2.55,
+        "total_pnl": 22387.61,
+        "max_drawdown_pct": 0.0254,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298
+      },
+      "trade_count": 20
+    },
+    "old_thin": {
+      "range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "regime": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1616,
+        "sharpe_daily": 1.25,
+        "total_pnl": 12934.8,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "trade_count": 23
+    }
+  },
+  "definition": {
+    "extended_entry": "signal-day close >=8% above SMA20, or prior 10d return >=12%, or top 5% of 20d range while >=4% above SMA10",
+    "weak_followthrough": "entry day red, or next close below entry open, or next close RS vs SPY < 0",
+    "note": "Weak follow-through is observed after entry; this audit does not define a pre-entry production rule."
+  },
+  "aggregate": {
+    "trade_count": 64,
+    "loss_count": 30,
+    "win_count": 34,
+    "extended_loss_count": 23,
+    "extended_winner_count": 18,
+    "family_loss_count": 15,
+    "family_loss_coverage_rate": 0.5,
+    "winner_collateral_count": 11,
+    "winner_collateral_rate": 0.3235,
+    "family_loss_pnl_that_rule_would_avoid": 4883.62,
+    "winner_pnl_at_risk": 26491.47,
+    "naive_net_pnl_delta_estimate": -21607.85,
+    "decision_hint": "observed_only_do_not_promote"
+  },
+  "family_summary": {
+    "count": 15,
+    "pnl_sum": -4883.62,
+    "avg_pnl": -325.57,
+    "strategy_counts": {
+      "breakout_long": 2,
+      "trend_long": 13
+    },
+    "sector_counts": {
+      "Communication Services": 1,
+      "Energy": 1,
+      "Healthcare": 1,
+      "Technology": 11,
+      "Unknown": 1
+    },
+    "window_counts": {
+      "late_strong": 2,
+      "mid_weak": 4,
+      "old_thin": 9
+    }
+  },
+  "winner_collateral_summary": {
+    "count": 11,
+    "pnl_sum": 26491.47,
+    "avg_pnl": 2408.32,
+    "strategy_counts": {
+      "breakout_long": 4,
+      "trend_long": 7
+    },
+    "sector_counts": {
+      "Commodities": 3,
+      "Communication Services": 1,
+      "Financials": 2,
+      "Technology": 5
+    },
+    "window_counts": {
+      "late_strong": 3,
+      "mid_weak": 7,
+      "old_thin": 1
+    }
+  },
+  "family_rows": [
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "strategy": "trend_long",
+      "sector": "Energy",
+      "entry_date": "2026-01-06",
+      "exit_date": "2026-01-06",
+      "exit_reason": "stop",
+      "pnl": -1010.77,
+      "pnl_pct_net": -0.036728,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2026-01-05",
+        "signal_close": 162.2626953125,
+        "prior_5d_return": 0.092188,
+        "prior_10d_return": 0.109418,
+        "close_vs_sma10": 0.075103,
+        "close_vs_sma20": 0.086135,
+        "range_pos_20d": 0.90135,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.050582,
+        "next_close_return_from_entry_open": -0.058709,
+        "spy_next_close_return": 0.002399,
+        "rs_vs_spy_next_close": -0.061108,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2026-01-16",
+      "exit_date": "2026-01-20",
+      "exit_reason": "stop",
+      "pnl": -20.93,
+      "pnl_pct_net": -0.060734,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2026-01-15",
+        "signal_close": 340.6800537109375,
+        "prior_5d_return": 0.074306,
+        "prior_10d_return": 0.124223,
+        "close_vs_sma10": 0.047545,
+        "close_vs_sma20": 0.100611,
+        "range_pos_20d": 0.872918,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.011861,
+        "next_close_return_from_entry_open": -0.055843,
+        "spy_next_close_return": -0.023181,
+        "rs_vs_spy_next_close": -0.032661,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-07-18",
+      "exit_date": "2025-07-22",
+      "exit_reason": "stop",
+      "pnl": -55.6,
+      "pnl_pct_net": -0.038208,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-07-17",
+        "signal_close": 243.48239135742188,
+        "prior_5d_return": 0.068942,
+        "prior_10d_return": 0.05137,
+        "close_vs_sma10": 0.052898,
+        "close_vs_sma20": 0.080482,
+        "range_pos_20d": 0.936312,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.020016,
+        "next_close_return_from_entry_open": -0.026334,
+        "spy_next_close_return": -0.000842,
+        "rs_vs_spy_next_close": -0.025492,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "META",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-08-01",
+      "exit_date": "2025-08-20",
+      "exit_reason": "stop",
+      "pnl": -20.56,
+      "pnl_pct_net": -0.027155,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-07-31",
+        "signal_close": 771.6278076171875,
+        "prior_5d_return": 0.082037,
+        "prior_10d_return": 0.102693,
+        "close_vs_sma10": 0.081825,
+        "close_vs_sma20": 0.080179,
+        "range_pos_20d": 0.879102,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.014092,
+        "next_close_return_from_entry_open": 0.020559,
+        "spy_next_close_return": 0.007776,
+        "rs_vs_spy_next_close": 0.012783,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": false,
+          "next_day_rs_vs_spy_negative": false
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SNOW",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-08-29",
+      "exit_date": "2025-09-04",
+      "exit_reason": "stop",
+      "pnl": -260.97,
+      "pnl_pct_net": -0.064975,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-08-28",
+        "signal_close": 241.0,
+        "prior_5d_return": 0.237929,
+        "prior_10d_return": 0.236532,
+        "close_vs_sma10": 0.201001,
+        "close_vs_sma20": 0.201626,
+        "range_pos_20d": 0.854977,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.007302,
+        "next_close_return_from_entry_open": -0.014055,
+        "spy_next_close_return": -0.01112,
+        "rs_vs_spy_next_close": -0.002935,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-10-09",
+      "exit_date": "2025-10-10",
+      "exit_reason": "stop",
+      "pnl": -280.1,
+      "pnl_pct_net": -0.07925,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-10-08",
+        "signal_close": 235.55999755859375,
+        "prior_5d_return": 0.436254,
+        "prior_10d_return": 0.464197,
+        "close_vs_sma10": 0.313724,
+        "close_vs_sma20": 0.3918,
+        "range_pos_20d": 0.996396,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.014431,
+        "next_close_return_from_entry_open": -0.090563,
+        "spy_next_close_return": -0.030452,
+        "rs_vs_spy_next_close": -0.060111,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "DDOG",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2024-10-11",
+      "exit_date": "2024-10-16",
+      "exit_reason": "stop",
+      "pnl": -886.02,
+      "pnl_pct_net": -0.041708,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-10-10",
+        "signal_close": 130.08999633789062,
+        "prior_5d_return": 0.106866,
+        "prior_10d_return": 0.139042,
+        "close_vs_sma10": 0.083154,
+        "close_vs_sma20": 0.111486,
+        "range_pos_20d": 0.993147,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.000616,
+        "next_close_return_from_entry_open": -0.005928,
+        "spy_next_close_return": 0.014356,
+        "rs_vs_spy_next_close": -0.020285,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-10-18",
+      "exit_date": "2024-10-28",
+      "exit_reason": "stop",
+      "pnl": -232.95,
+      "pnl_pct_net": -0.055068,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-10-17",
+        "signal_close": 201.89154052734375,
+        "prior_5d_return": 0.107977,
+        "prior_10d_return": 0.146869,
+        "close_vs_sma10": 0.090191,
+        "close_vs_sma20": 0.122634,
+        "range_pos_20d": 0.838355,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.025103,
+        "next_close_return_from_entry_open": -0.019422,
+        "spy_next_close_return": -0.000753,
+        "rs_vs_spy_next_close": -0.018669,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "ISRG",
+      "strategy": "trend_long",
+      "sector": "Healthcare",
+      "entry_date": "2024-10-21",
+      "exit_date": "2024-10-31",
+      "exit_reason": "stop",
+      "pnl": -808.39,
+      "pnl_pct_net": -0.035492,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-10-18",
+        "signal_close": 521.1500244140625,
+        "prior_5d_return": 0.075024,
+        "prior_10d_return": 0.081336,
+        "close_vs_sma10": 0.074853,
+        "close_vs_sma20": 0.074961,
+        "range_pos_20d": 0.958896,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": false,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.000347,
+        "next_close_return_from_entry_open": -0.002967,
+        "spy_next_close_return": -0.000908,
+        "rs_vs_spy_next_close": -0.002059,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "strategy": "breakout_long",
+      "sector": "Communication Services",
+      "entry_date": "2024-11-22",
+      "exit_date": "2024-11-25",
+      "exit_reason": "stop",
+      "pnl": -55.59,
+      "pnl_pct_net": -0.036597,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-11-21",
+        "signal_close": 89.74800109863281,
+        "prior_5d_return": 0.071925,
+        "prior_10d_return": 0.126723,
+        "close_vs_sma10": 0.066984,
+        "close_vs_sma20": 0.119286,
+        "range_pos_20d": 0.934344,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.001998,
+        "next_close_return_from_entry_open": -0.03394,
+        "spy_next_close_return": 0.006519,
+        "rs_vs_spy_next_close": -0.040459,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "AVGO",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-12-17",
+      "exit_date": "2024-12-17",
+      "exit_reason": "stop",
+      "pnl": -22.71,
+      "pnl_pct_net": -0.03197,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-12-16",
+        "signal_close": 246.58180236816406,
+        "prior_5d_return": 0.397116,
+        "prior_10d_return": 0.501411,
+        "close_vs_sma10": 0.331118,
+        "close_vs_sma20": 0.421108,
+        "range_pos_20d": 0.980072,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.001745,
+        "next_close_return_from_entry_open": -0.070767,
+        "spy_next_close_return": -0.029643,
+        "rs_vs_spy_next_close": -0.041124,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "GOOG",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-12-12",
+      "exit_date": "2024-12-18",
+      "exit_reason": "stop",
+      "pnl": -235.83,
+      "pnl_pct_net": -0.037817,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-12-11",
+        "signal_close": 195.80921936035156,
+        "prior_5d_return": 0.118366,
+        "prior_10d_return": 0.154221,
+        "close_vs_sma10": 0.109373,
+        "close_vs_sma20": 0.12006,
+        "range_pos_20d": 0.994334,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.013602,
+        "next_close_return_from_entry_open": -0.025064,
+        "spy_next_close_return": -0.003907,
+        "rs_vs_spy_next_close": -0.021157,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "DDOG",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-11-25",
+      "exit_date": "2024-12-19",
+      "exit_reason": "stop",
+      "pnl": -9.86,
+      "pnl_pct_net": -0.063499,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-11-22",
+        "signal_close": 154.8300018310547,
+        "prior_5d_return": 0.227932,
+        "prior_10d_return": 0.244114,
+        "close_vs_sma10": 0.168299,
+        "close_vs_sma20": 0.195391,
+        "range_pos_20d": 0.982968,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.005973,
+        "next_close_return_from_entry_open": -0.008414,
+        "spy_next_close_return": 0.001885,
+        "rs_vs_spy_next_close": -0.010298,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-01-07",
+      "exit_date": "2025-01-08",
+      "exit_reason": "stop",
+      "pnl": -72.74,
+      "pnl_pct_net": -0.055845,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-01-06",
+        "signal_close": 216.47496032714844,
+        "prior_5d_return": 0.091157,
+        "prior_10d_return": 0.130343,
+        "close_vs_sma10": 0.076544,
+        "close_vs_sma20": 0.095822,
+        "range_pos_20d": 0.932475,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.044386,
+        "next_close_return_from_entry_open": -0.063822,
+        "spy_next_close_return": -0.013274,
+        "rs_vs_spy_next_close": -0.050548,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TRIP",
+      "strategy": "trend_long",
+      "sector": "Unknown",
+      "entry_date": "2025-01-24",
+      "exit_date": "2025-02-20",
+      "exit_reason": "stop",
+      "pnl": -910.6,
+      "pnl_pct_net": -0.055011,
+      "is_loss": true,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": true,
+      "winner_collateral_match": false,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-01-23",
+        "signal_close": 17.93000030517578,
+        "prior_5d_return": 0.174967,
+        "prior_10d_return": 0.168078,
+        "close_vs_sma10": 0.157073,
+        "close_vs_sma20": 0.184984,
+        "range_pos_20d": 0.995555,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.007308,
+        "next_close_return_from_entry_open": -0.006745,
+        "spy_next_close_return": -0.01712,
+        "rs_vs_spy_next_close": 0.010375,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": false
+        },
+        "weak_followthrough": true
+      }
+    }
+  ],
+  "winner_collateral_rows": [
+    {
+      "window": "late_strong",
+      "ticker": "GOOG",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-10-31",
+      "exit_date": "2025-11-25",
+      "exit_reason": "target",
+      "pnl": 3156.91,
+      "pnl_pct_net": 0.149291,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-10-30",
+        "signal_close": 281.5178527832031,
+        "prior_5d_return": 0.111023,
+        "prior_10d_return": 0.119184,
+        "close_vs_sma10": 0.074171,
+        "close_vs_sma20": 0.107875,
+        "range_pos_20d": 0.818445,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.00489,
+        "next_close_return_from_entry_open": 0.003231,
+        "spy_next_close_return": -0.002482,
+        "rs_vs_spy_next_close": 0.005712,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": false,
+          "next_day_rs_vs_spy_negative": false
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "MU",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2026-01-07",
+      "exit_date": "2026-01-27",
+      "exit_reason": "target",
+      "pnl": 2871.83,
+      "pnl_pct_net": 0.216879,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2026-01-06",
+        "signal_close": 343.2857666015625,
+        "prior_5d_return": 0.166661,
+        "prior_10d_return": 0.292,
+        "close_vs_sma10": 0.157388,
+        "close_vs_sma20": 0.262857,
+        "range_pos_20d": 0.990891,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.003405,
+        "next_close_return_from_entry_open": -0.040181,
+        "spy_next_close_return": -0.003872,
+        "rs_vs_spy_next_close": -0.036309,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "AMD",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2026-04-17",
+      "exit_date": "2026-04-21",
+      "exit_reason": "end_of_backtest",
+      "pnl": 165.94,
+      "pnl_pct_net": 0.00791,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2026-04-16",
+        "signal_close": 278.260009765625,
+        "prior_5d_return": 0.175879,
+        "prior_10d_return": 0.323724,
+        "close_vs_sma10": 0.154132,
+        "close_vs_sma20": 0.247425,
+        "range_pos_20d": 0.987516,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.009288,
+        "next_close_return_from_entry_open": -0.02153,
+        "spy_next_close_return": 0.003654,
+        "rs_vs_spy_next_close": -0.025184,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-05-14",
+      "exit_date": "2025-06-24",
+      "exit_reason": "target",
+      "pnl": 3212.15,
+      "pnl_pct_net": 0.245409,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-05-13",
+        "signal_close": 256.8999938964844,
+        "prior_5d_return": 0.304789,
+        "prior_10d_return": 0.246301,
+        "close_vs_sma10": 0.239919,
+        "close_vs_sma20": 0.29114,
+        "range_pos_20d": 0.961706,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.0255,
+        "next_close_return_from_entry_open": -0.048353,
+        "spy_next_close_return": 0.004508,
+        "rs_vs_spy_next_close": -0.052861,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-06-17",
+      "exit_date": "2025-07-15",
+      "exit_reason": "target",
+      "pnl": 791.11,
+      "pnl_pct_net": 0.20677,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-06-16",
+        "signal_close": 126.38999938964844,
+        "prior_5d_return": 0.038281,
+        "prior_10d_return": 0.102591,
+        "close_vs_sma10": 0.057719,
+        "close_vs_sma20": 0.088598,
+        "range_pos_20d": 0.914509,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.006488,
+        "next_close_return_from_entry_open": -0.008911,
+        "spy_next_close_return": -0.004615,
+        "rs_vs_spy_next_close": -0.004296,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-06-26",
+      "exit_date": "2025-07-18",
+      "exit_reason": "target",
+      "pnl": 2723.21,
+      "pnl_pct_net": 0.226608,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-06-25",
+        "signal_close": 355.3699951171875,
+        "prior_5d_return": 0.399921,
+        "prior_10d_return": 0.393936,
+        "close_vs_sma10": 0.241984,
+        "close_vs_sma20": 0.321144,
+        "range_pos_20d": 0.896186,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": true,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.057936,
+        "next_close_return_from_entry_open": -0.003103,
+        "spy_next_close_return": 0.009721,
+        "rs_vs_spy_next_close": -0.012824,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SLV",
+      "strategy": "trend_long",
+      "sector": "Commodities",
+      "entry_date": "2025-06-03",
+      "exit_date": "2025-07-23",
+      "exit_reason": "target",
+      "pnl": 3998.27,
+      "pnl_pct_net": 0.128445,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-06-02",
+        "signal_close": 31.59000015258789,
+        "prior_5d_return": 0.037438,
+        "prior_10d_return": 0.078157,
+        "close_vs_sma10": 0.043814,
+        "close_vs_sma20": 0.055093,
+        "range_pos_20d": 0.996,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": false,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.005437,
+        "next_close_return_from_entry_open": 0.002239,
+        "spy_next_close_return": 0.006061,
+        "rs_vs_spy_next_close": -0.003822,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": false,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AAPL",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2025-08-11",
+      "exit_date": "2025-09-22",
+      "exit_reason": "target",
+      "pnl": 3159.04,
+      "pnl_pct_net": 0.101882,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-08-08",
+        "signal_close": 228.65419006347656,
+        "prior_5d_return": 0.133264,
+        "prior_10d_return": 0.07233,
+        "close_vs_sma10": 0.085311,
+        "close_vs_sma20": 0.084146,
+        "range_pos_20d": 0.944068,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": -0.003247,
+        "next_close_return_from_entry_open": 0.00759,
+        "spy_next_close_return": 0.008204,
+        "rs_vs_spy_next_close": -0.000614,
+        "weak_followthrough_flags": {
+          "entry_day_red": true,
+          "next_close_below_entry_open": false,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "GLD",
+      "strategy": "trend_long",
+      "sector": "Commodities",
+      "entry_date": "2025-09-03",
+      "exit_date": "2025-09-23",
+      "exit_reason": "target",
+      "pnl": 1589.09,
+      "pnl_pct_net": 0.057905,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-09-02",
+        "signal_close": 325.5899963378906,
+        "prior_5d_return": 0.050867,
+        "prior_10d_return": 0.060726,
+        "close_vs_sma10": 0.041951,
+        "close_vs_sma20": 0.046863,
+        "range_pos_20d": 0.98408,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": false,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.001159,
+        "next_close_return_from_entry_open": -0.003265,
+        "spy_next_close_return": 0.010036,
+        "rs_vs_spy_next_close": -0.013301,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SLV",
+      "strategy": "breakout_long",
+      "sector": "Commodities",
+      "entry_date": "2025-09-29",
+      "exit_date": "2025-10-09",
+      "exit_reason": "target",
+      "pnl": 2527.13,
+      "pnl_pct_net": 0.085175,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2025-09-26",
+        "signal_close": 41.86000061035156,
+        "prior_5d_return": 0.072234,
+        "prior_10d_return": 0.09181,
+        "close_vs_sma10": 0.060042,
+        "close_vs_sma20": 0.090189,
+        "range_pos_20d": 0.932953,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": true,
+          "entry_top_5pct_20d_and_above_sma10": false
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.000942,
+        "next_close_return_from_entry_open": -0.00212,
+        "spy_next_close_return": 0.002739,
+        "rs_vs_spy_next_close": -0.004859,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "strategy": "trend_long",
+      "sector": "Communication Services",
+      "entry_date": "2024-10-21",
+      "exit_date": "2024-11-19",
+      "exit_reason": "target",
+      "pnl": 2296.79,
+      "pnl_pct_net": 0.111854,
+      "is_loss": false,
+      "extended_entry": true,
+      "weak_followthrough": true,
+      "family_match": false,
+      "winner_collateral_match": true,
+      "extension_features": {
+        "data_status": "ok",
+        "signal_date": "2024-10-18",
+        "signal_close": 76.38899993896484,
+        "prior_5d_return": 0.056863,
+        "prior_10d_return": 0.061401,
+        "close_vs_sma10": 0.064401,
+        "close_vs_sma20": 0.068552,
+        "range_pos_20d": 0.972964,
+        "extension_flags": {
+          "entry_ge_12pct_prior_10d": false,
+          "entry_ge_8pct_above_sma20": false,
+          "entry_top_5pct_20d_and_above_sma10": true
+        },
+        "extended_entry": true
+      },
+      "followthrough_features": {
+        "followthrough_status": "ok",
+        "entry_day_return": 0.00824,
+        "next_close_return_from_entry_open": -0.001985,
+        "spy_next_close_return": -0.000908,
+        "rs_vs_spy_next_close": -0.001077,
+        "weak_followthrough_flags": {
+          "entry_day_red": false,
+          "next_close_below_entry_open": true,
+          "next_day_rs_vs_spy_negative": true
+        },
+        "weak_followthrough": true
+      }
+    }
+  ]
+}

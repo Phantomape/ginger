@@ -1,0 +1,175 @@
+{
+  "experiment_id": "exp-20260428-002",
+  "timestamp": "2026-04-28T01:13:54Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "experiment_type": "commodity_trend_target_reentry_replay",
+  "change_type": "alpha_search_lifecycle_reentry_shadow",
+  "hypothesis": "Commodity trend target exits may still contain continuation alpha; re-entering the same ticker after a target exit can improve lifecycle EV without changing entry rules, LLM/news, target widths, or sizing.",
+  "why_tested": "exp-20260425-031 accepted wider Commodity trend targets, and exp-20260425-034 showed positive post-target Commodity trend continuation in late/mid windows. LLM soft ranking remains sample-limited, so this deterministic lifecycle alpha was tested instead.",
+  "parameters": {
+    "single_causal_variable": "trend_long Commodities target-exit re-entry",
+    "baseline_config": {
+      "REGIME_AWARE_EXIT": true
+    },
+    "candidate_rule": {
+      "source_exit_reason": "target",
+      "source_strategy": "trend_long",
+      "source_sector": "Commodities",
+      "signal_date": "source exit_date",
+      "fill": "existing next-trading-day entry model",
+      "risk_and_exit": "existing trend_long Commodity risk enrichment"
+    },
+    "locked_variables": [
+      "normal entries",
+      "target widths",
+      "position sizing",
+      "day-2 follow-through add-on trigger",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431,
+      "scheduled_reentry_signal_count": 3,
+      "candidate_reentry_trade_count": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298,
+      "scheduled_reentry_signal_count": 3,
+      "candidate_reentry_trade_count": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167,
+      "scheduled_reentry_signal_count": 1,
+      "candidate_reentry_trade_count": 0
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "old_thin": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "windows_improved": 0,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0,
+      "scheduled_reentry_signal_count": 7,
+      "candidate_reentry_trade_count": 0,
+      "candidate_reentry_pnl": 0
+    },
+    "gate4_basis": "Rejected because the rule was inert under production slot/sizing/execution constraints: 7 scheduled re-entry signals became 0 incremental trades, so no Gate 4 criterion passed."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic lifecycle alpha was tested instead."
+  },
+  "rejection_reason": "Simple Commodity trend target-exit re-entry does not survive the real execution/allocation path. Post-target forward continuation exists in audit data, but the actual portfolio path provides no incremental fills.",
+  "next_retry_requires": [
+    "Do not retry simple same-ticker target-exit re-entry without first proving it can create incremental fills under slot and held-ticker constraints.",
+    "A valid retry needs a different execution semantic, such as explicit target-extension before exit or a reserved lifecycle budget, and must be tested as its own causal variable.",
+    "Do not use post-target forward-return audits alone as production evidence; require production-path replay."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_002_commodity_trend_target_reentry.py",
+    "data/experiments/exp-20260428-002/exp_20260428_002_commodity_trend_target_reentry.json",
+    "docs/experiments/logs/exp-20260428-002.json"
+  ],
+  "notes": "Alpha search, not measurement repair. Production strategy code was unchanged."
+}

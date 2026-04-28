@@ -1,0 +1,153 @@
+{
+  "experiment_id": "exp-20260427-033",
+  "timestamp": "2026-04-27T19:08:40Z",
+  "status": "rejected",
+  "hypothesis": "Financials trend winners may be target-truncated by the shared target width; widening only `trend_long | Financials` to a single 6.0 ATR target could improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
+  "change_summary": "Tested a runtime-only monkeypatch that retargeted only `trend_long` Financials signals to 6.0 ATR. No production strategy code was changed.",
+  "change_type": "alpha_search_exit_rule",
+  "component": "quant/experiments/exp_20260427_033_financials_trend_target_width.py, data/experiments/exp-20260427-033/exp_20260427_033_financials_trend_target_width.json",
+  "parameters": {
+    "single_causal_variable": "trend_long Financials target width",
+    "old_value": "existing production target logic",
+    "new_value": "6.0 ATR for trend_long | Financials only",
+    "unchanged": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM/news replay",
+      "follow-through add-ons",
+      "scarce-slot breakout routing",
+      "non-Financials exits",
+      "breakout exits"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.3647,
+      "sharpe_daily": 1.88,
+      "total_pnl": 19402.19,
+      "total_return_pct": 0.194,
+      "max_drawdown_pct": 0.0456,
+      "win_rate": 0.45,
+      "trade_count": 20,
+      "survival_rate": 0.8261
+    },
+    "old_thin": {
+      "expected_value_score": 0.0397,
+      "sharpe_daily": 0.69,
+      "total_pnl": 5750.17,
+      "total_return_pct": 0.0575,
+      "max_drawdown_pct": 0.0796,
+      "win_rate": 0.3182,
+      "trade_count": 22,
+      "survival_rate": 0.9388
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": -0.2062,
+      "total_pnl_delta": -2985.42,
+      "sharpe_daily_delta": -0.67,
+      "max_drawdown_pct_delta": 0.0202
+    },
+    "old_thin": {
+      "expected_value_score_delta": -0.1219,
+      "total_pnl_delta": -7184.63,
+      "sharpe_daily_delta": -0.56,
+      "max_drawdown_pct_delta": 0.0354
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.3281,
+      "total_pnl_delta_sum": -10170.05,
+      "windows_improved": 0,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0354
+    }
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic exit alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Financials trend target widening delayed exits and damaged the weaker windows, reducing aggregate EV by -0.3281 and PnL by -$10,170.05.",
+  "next_retry_requires": [
+    "Do not retry broad Financials trend target widening or nearby 6.0-style target expansion without new forward evidence.",
+    "Any Financials trend exit retry needs a specific event or state discriminator that explains why wider targets will not delay exits in mid_weak and old_thin.",
+    "Do not generalize the accepted Technology/Commodity target-width mechanism to Financials."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260427_033_financials_trend_target_width.py",
+    "data/experiments/exp-20260427-033/exp_20260427_033_financials_trend_target_width.json",
+    "docs/experiments/logs/exp-20260427-033.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. This tested one deterministic exit variable and was rejected before production promotion."
+}

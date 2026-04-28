@@ -1,0 +1,170 @@
+{
+  "experiment_id": "exp-20260428-004",
+  "timestamp": "2026-04-28T00:00:00Z",
+  "status": "rejected",
+  "hypothesis": "`breakout_long | Technology` may contain convex winners that the shared breakout target clips too early; wider ATR targets for this sleeve could improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
+  "change_summary": "Added an experiment-only runner that monkeypatches Technology breakout target width to 5.0/6.0/7.0 ATR across the fixed three-window snapshot set. Production strategy code and defaults were unchanged.",
+  "change_type": "alpha_search_exit_sweep",
+  "component": "quant/experiments/exp_20260428_004_technology_breakout_target_width.py",
+  "parameters": {
+    "single_causal_variable": "breakout_long Technology target width",
+    "baseline_target_source": "existing production target logic",
+    "tested_target_mults": [5.0, 6.0, 7.0],
+    "locked_variables": [
+      "entries",
+      "position sizing",
+      "allocation ranking",
+      "LLM/news replay",
+      "follow-through add-ons",
+      "scarce-slot breakout routing",
+      "trend exits",
+      "non-Technology breakout exits"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.5855,
+      "sharpe_daily": 4.27,
+      "total_pnl": 37128.69,
+      "total_return_pct": 0.3713,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.5709,
+      "sharpe_daily": 2.55,
+      "total_pnl": 22387.61,
+      "total_return_pct": 0.2239,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "best_variant": "technology_breakout_target_6_0",
+    "late_strong": {
+      "expected_value_score": 1.4207,
+      "sharpe_daily": 3.72,
+      "total_pnl": 38187.6,
+      "total_return_pct": 0.3819,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8776
+    },
+    "mid_weak": {
+      "expected_value_score": 0.6011,
+      "sharpe_daily": 2.56,
+      "total_pnl": 23482.9,
+      "total_return_pct": 0.2348,
+      "max_drawdown_pct": 0.0254,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8085
+    },
+    "old_thin": {
+      "expected_value_score": 0.1616,
+      "sharpe_daily": 1.25,
+      "total_pnl": 12934.8,
+      "total_return_pct": 0.1293,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    },
+    "rejected_variants": {
+      "technology_breakout_target_5_0": {
+        "aggregate_expected_value_score_delta": -0.1675,
+        "aggregate_total_pnl_delta": 763.27,
+        "windows_improved": 1,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.0
+      },
+      "technology_breakout_target_7_0": {
+        "aggregate_expected_value_score_delta": -0.3785,
+        "aggregate_total_pnl_delta": -1636.23,
+        "windows_improved": 1,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.0
+      }
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "technology_breakout_target_6_0",
+    "late_strong": {
+      "expected_value_score_delta": -0.1648,
+      "total_pnl_delta": 1058.91,
+      "sharpe_daily_delta": -0.55,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0302,
+      "total_pnl_delta": 1095.29,
+      "sharpe_daily_delta": 0.01,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "old_thin": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.1346,
+      "total_pnl_delta_sum": 2154.2,
+      "windows_improved": 1,
+      "windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0
+    },
+    "gate4_basis": "Rejected. The best variant increased aggregate PnL by $2,154.20 but reduced aggregate EV, damaged late_strong EV by -0.1648, and cut late_strong Sharpe daily by -0.55. That violates the multi-window EV-first gate."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic exit alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Technology breakout wider targets create tempting PnL but lower EV/Sharpe in the dominant late_strong window and are inert in old_thin, so they do not pass stable multi-window promotion.",
+  "next_retry_requires": [
+    "Do not retry Technology breakout target-width widening by only nudging 5-7 ATR values.",
+    "A valid retry needs an independent event/state discriminator that explains when the mid_weak PnL benefit should be allowed without damaging late_strong Sharpe.",
+    "Do not mechanically extend accepted Technology trend target width to Technology breakouts."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_004_technology_breakout_target_width.py",
+    "data/experiments/exp-20260428-004/exp_20260428_004_technology_breakout_target_width.json",
+    "docs/experiments/logs/exp-20260428-004.json"
+  ],
+  "notes": "Alpha search, not measurement repair. Production strategy code was unchanged."
+}

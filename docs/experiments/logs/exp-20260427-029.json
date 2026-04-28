@@ -1,0 +1,68 @@
+{
+  "experiment_id": "exp-20260427-029",
+  "status": "completed",
+  "decision": "rejected",
+  "experiment_type": "shadow_multiplier_sweep",
+  "change_type": "risk_multiplier_shadow",
+  "single_causal_variable": "TREND_INDUSTRIALS_RISK_MULTIPLIER",
+  "hypothesis": "A small non-zero trend Industrials risk sleeve may recover missed upside from no_shares events without reopening full-size drag.",
+  "why_tested": "Entry skip oracle showed trend_industrials_risk_multiplier_applied=0.0 had 3 no_shares samples with positive forward upper-bound returns, including one DE sample with +19.1548% max forward return.",
+  "parameters": {
+    "baseline_multiplier": 0.0,
+    "tested_multipliers": [0.1, 0.25, 0.5, 1.0],
+    "replay_llm": false,
+    "replay_news": false,
+    "regime_aware_exit": true
+  },
+  "date_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "summary": {
+    "best_candidate_multiplier": 0.1,
+    "best_candidate_ev_improved_windows": 1,
+    "best_candidate_material_ev_regressions": ["mid_weak", "old_thin"],
+    "best_candidate_ev_delta_sum": -0.224,
+    "best_candidate_pnl_delta_sum": -10087.22
+  },
+  "window_results_best_candidate": [
+    {
+      "window": "late_strong",
+      "baseline_ev": 1.5855,
+      "candidate_ev": 1.5943,
+      "baseline_pnl": 37128.69,
+      "candidate_pnl": 37250.1
+    },
+    {
+      "window": "mid_weak",
+      "baseline_ev": 0.5709,
+      "candidate_ev": 0.4764,
+      "baseline_pnl": 22387.61,
+      "candidate_pnl": 20362.56
+    },
+    {
+      "window": "old_thin",
+      "baseline_ev": 0.1616,
+      "candidate_ev": 0.0233,
+      "baseline_pnl": 12934.8,
+      "candidate_pnl": 4751.22
+    }
+  ],
+  "rejection_reason": "All non-zero trend Industrials multipliers improved only the late_strong window and materially regressed both mid_weak and old_thin. The apparent DE upside is not stable enough to justify reopening the sleeve.",
+  "next_do_not_repeat": "Do not retest a broad non-zero trend Industrials multiplier without a narrower context filter that explains why mid_weak and old_thin Industrials trend entries failed.",
+  "artifact": "data/exp_20260427_029_trend_industrials_risk_sweep.json",
+  "runner": "quant/exp_20260427_029_trend_industrials_risk_sweep.py"
+}
