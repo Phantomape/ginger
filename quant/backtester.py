@@ -92,10 +92,16 @@ DEFAULT_CONFIG = {
     "ADDON_CHECKPOINT_DAYS": 2,
     "ADDON_MIN_UNREALIZED_PCT": 0.02,
     "ADDON_MIN_RS_VS_SPY": 0.0,
-    "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.25,
+    "ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.50,
     "ADDON_MAX_POSITION_PCT": 0.35,
     "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": False,
     "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": False,
+    "SECOND_ADDON_ENABLED": False,
+    "SECOND_ADDON_CHECKPOINT_DAYS": 5,
+    "SECOND_ADDON_MIN_UNREALIZED_PCT": 0.05,
+    "SECOND_ADDON_MIN_RS_VS_SPY": 0.0,
+    "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES": 0.15,
+    "SECOND_ADDON_MAX_POSITION_PCT": 0.45,
     "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
     "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": None,
 }
@@ -941,14 +947,20 @@ class BacktestEngine:
                 return 0.0
             return pos.shares * (price - pos.stop_price)
 
-        def _cap_addon_shares(pos, raw_open, requested_shares, current_prices):
+        def _cap_addon_shares(
+                pos,
+                raw_open,
+                requested_shares,
+                current_prices,
+                addon_position_cap=None):
             """Respect existing single-position and portfolio heat caps."""
             if requested_shares <= 0 or raw_open <= 0:
                 return 0, "no_requested_shares"
 
-            addon_position_cap = self.config.get("ADDON_MAX_POSITION_PCT")
             if addon_position_cap is None:
-                addon_position_cap = MAX_POSITION_PCT
+                addon_position_cap = self.config.get("ADDON_MAX_POSITION_PCT")
+                if addon_position_cap is None:
+                    addon_position_cap = MAX_POSITION_PCT
             max_total_shares = math.floor(equity * addon_position_cap / raw_open)
             cap_room = max_total_shares - pos.shares
             if cap_room <= 0:
@@ -1015,15 +1027,18 @@ class BacktestEngine:
 
                 row = df.loc[today]
                 raw_open = _scalar_price(row, "Open")
-                requested = math.floor(
-                    pos.original_shares
-                    * self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES", 0.25)
-                )
+                requested = addon.get("requested_shares")
+                if requested is None:
+                    requested = math.floor(
+                        pos.original_shares
+                        * self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES", 0.25)
+                    )
                 addon_shares, skip_reason = _cap_addon_shares(
                     pos,
                     raw_open,
                     requested,
                     current_prices,
+                    addon_position_cap=addon.get("addon_position_cap"),
                 )
                 if addon_shares <= 0:
                     addon_skipped_count += 1
@@ -1050,6 +1065,8 @@ class BacktestEngine:
                 )
                 pos.shares = new_shares
                 pos.addon_count += 1
+                max_addon_count = 2 if self.config.get("SECOND_ADDON_ENABLED") else 1
+                pos.addon_done = pos.addon_count >= max_addon_count
                 pos.addon_shares += addon_shares
                 pos.addon_cost += entry_fill * addon_shares
                 pos.high_water = max(pos.high_water, raw_open)
@@ -1061,6 +1078,7 @@ class BacktestEngine:
                     "entry_fill": round(entry_fill, 4),
                     "requested_shares": requested,
                     "addon_shares": addon_shares,
+                    "addon_number": addon.get("addon_number", pos.addon_count),
                     "new_total_shares": new_shares,
                     "new_avg_entry": pos.entry_price,
                 })
@@ -1080,12 +1098,43 @@ class BacktestEngine:
             require_improving_followthrough = bool(
                 self.config.get("ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH")
             )
+            second_addon_enabled = bool(self.config.get("SECOND_ADDON_ENABLED"))
             if spy_df is None:
                 return
 
             for pos in positions:
                 if pos.addon_done:
                     continue
+                addon_number = pos.addon_count + 1
+                if addon_number == 1:
+                    active_checkpoint_days = checkpoint_days
+                    active_min_unrealized = min_unrealized
+                    active_min_rs = min_rs
+                    active_fraction = self.config.get(
+                        "ADDON_FRACTION_OF_ORIGINAL_SHARES",
+                        0.25,
+                    )
+                elif second_addon_enabled and addon_number == 2:
+                    active_checkpoint_days = int(
+                        self.config.get("SECOND_ADDON_CHECKPOINT_DAYS", 5)
+                    )
+                    active_min_unrealized = self.config.get(
+                        "SECOND_ADDON_MIN_UNREALIZED_PCT",
+                        0.05,
+                    )
+                    active_min_rs = self.config.get("SECOND_ADDON_MIN_RS_VS_SPY", 0.0)
+                    active_fraction = self.config.get(
+                        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES",
+                        0.15,
+                    )
+                    active_position_cap = self.config.get(
+                        "SECOND_ADDON_MAX_POSITION_PCT",
+                        self.config.get("ADDON_MAX_POSITION_PCT"),
+                    )
+                else:
+                    continue
+                if addon_number == 1:
+                    active_position_cap = self.config.get("ADDON_MAX_POSITION_PCT")
                 df = ohlcv_all.get(pos.ticker)
                 if df is None or today not in df.index:
                     continue
@@ -1096,7 +1145,7 @@ class BacktestEngine:
                     spy_today_idx = spy_df.index.get_loc(today)
                 except KeyError:
                     continue
-                if today_idx - entry_idx != checkpoint_days:
+                if today_idx - entry_idx != active_checkpoint_days:
                     continue
 
                 close = _scalar_price(df.loc[today], "Close")
@@ -1110,7 +1159,7 @@ class BacktestEngine:
                 ticker_ret = (close - entry_close) / entry_close
                 spy_ret = (spy_close - spy_entry_close) / spy_entry_close
                 rs_vs_spy = ticker_ret - spy_ret
-                if unrealized < min_unrealized or rs_vs_spy <= min_rs:
+                if unrealized < active_min_unrealized or rs_vs_spy <= active_min_rs:
                     continue
 
                 followthrough_state = {}
@@ -1140,7 +1189,8 @@ class BacktestEngine:
                             "strategy": pos.strategy,
                             "sector": pos.sector,
                             "checkpoint_date": str(today.date()),
-                            "checkpoint_days": checkpoint_days,
+                            "checkpoint_days": active_checkpoint_days,
+                            "addon_number": addon_number,
                             "unrealized_pct": round(unrealized, 6),
                             "rs_vs_spy": round(rs_vs_spy, 6),
                             "original_shares": pos.original_shares,
@@ -1149,16 +1199,14 @@ class BacktestEngine:
                         })
                         continue
 
-                requested = math.floor(
-                    pos.original_shares
-                    * self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES", 0.25)
-                )
+                requested = math.floor(pos.original_shares * active_fraction)
                 checkpoint_candidate = {
                     "ticker": pos.ticker,
                     "strategy": pos.strategy,
                     "sector": pos.sector,
                     "checkpoint_date": str(today.date()),
-                    "checkpoint_days": checkpoint_days,
+                    "checkpoint_days": active_checkpoint_days,
+                    "addon_number": addon_number,
                     "unrealized_pct": round(unrealized, 6),
                     "rs_vs_spy": round(rs_vs_spy, 6),
                     "original_shares": pos.original_shares,
@@ -1171,6 +1219,7 @@ class BacktestEngine:
                         close,
                         requested,
                         checkpoint_prices,
+                        addon_position_cap=active_position_cap,
                     )
                     if checkpoint_shares <= 0:
                         addon_checkpoint_rejected_count += 1
@@ -1189,6 +1238,8 @@ class BacktestEngine:
                 addon_scheduled_count += 1
                 pending_addons.setdefault(str(fill_date.date()), []).append({
                     **checkpoint_candidate,
+                    "addon_position_cap": active_position_cap,
+                    "requested_shares": requested,
                     "scheduled_fill_date": str(fill_date.date()),
                 })
 
@@ -2226,6 +2277,14 @@ class BacktestEngine:
             "max_position_pct": self.config.get("ADDON_MAX_POSITION_PCT"),
             "require_checkpoint_cap_room": self.config.get("ADDON_REQUIRE_CHECKPOINT_CAP_ROOM"),
             "require_improving_followthrough": self.config.get("ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH"),
+            "second_addon_enabled": self.config.get("SECOND_ADDON_ENABLED"),
+            "second_addon_checkpoint_days": self.config.get("SECOND_ADDON_CHECKPOINT_DAYS"),
+            "second_addon_min_unrealized_pct": self.config.get("SECOND_ADDON_MIN_UNREALIZED_PCT"),
+            "second_addon_min_rs_vs_spy": self.config.get("SECOND_ADDON_MIN_RS_VS_SPY"),
+            "second_addon_fraction_of_original_shares": self.config.get(
+                "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES"
+            ),
+            "second_addon_max_position_pct": self.config.get("SECOND_ADDON_MAX_POSITION_PCT"),
             "scheduled": addon_scheduled_count,
             "executed": addon_executed_count,
             "skipped": addon_skipped_count,

@@ -568,10 +568,18 @@ def test_backtester_addon_cap_defaults_to_production_cap():
     from backtester import BacktestEngine, DEFAULT_CONFIG
 
     assert DEFAULT_CONFIG["ADDON_ENABLED"] is True
+    assert DEFAULT_CONFIG["ADDON_FRACTION_OF_ORIGINAL_SHARES"] == 0.50
     assert DEFAULT_CONFIG["ADDON_MAX_POSITION_PCT"] == 0.35
+    assert DEFAULT_CONFIG["SECOND_ADDON_ENABLED"] is False
+    assert DEFAULT_CONFIG["SECOND_ADDON_CHECKPOINT_DAYS"] == 5
+    assert DEFAULT_CONFIG["SECOND_ADDON_MIN_UNREALIZED_PCT"] == 0.05
+    assert DEFAULT_CONFIG["SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES"] == 0.15
+    assert DEFAULT_CONFIG["SECOND_ADDON_MAX_POSITION_PCT"] == 0.45
     engine = BacktestEngine(universe=["SPY"])
     assert engine.config["ADDON_ENABLED"] is True
+    assert engine.config["ADDON_FRACTION_OF_ORIGINAL_SHARES"] == 0.50
     assert engine.config["ADDON_MAX_POSITION_PCT"] == 0.35
+    assert engine.config["SECOND_ADDON_ENABLED"] is False
 
 
 def test_backtester_accepts_addon_specific_position_cap():
