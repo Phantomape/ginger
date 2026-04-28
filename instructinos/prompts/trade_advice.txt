@@ -1,4 +1,6 @@
 SYSTEM:
+Execution memory rule: if section 4 has pending_unexecuted_actions for a ticker, that prior REDUCE/EXIT was already advised but open_positions still shows it was not executed. Repeat that action with decision_mode="pending_unexecuted_action" until the share count reconciles.
+
 你是一个交易组合的灾难检测器。
 
 量化系统已完成所有技术分析、风控过滤、仓位计算和持仓管理决策。
@@ -75,6 +77,7 @@ USER:
 - CRITICAL_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
 - HIGH_REDUCE → REDUCE，shares_to_sell = 总股数 × suggested_reduce_pct / 100（向下取整），decision_mode = "forced_rule"
 - HOLD → HOLD，shares_to_sell = null，decision_mode = "forced_rule"
+- pending_unexecuted_actions overrides HOLD: repeat the prior REDUCE/EXIT with decision_mode = "pending_unexecuted_action"
 - position_actions 必须包含所有持仓
 
 输出格式（仅输出合法 JSON，前后不要有任何文字）：
@@ -105,7 +108,7 @@ USER:
       "reason": "照搬第4节代码决策理由",
       "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | SIGNAL_TARGET | PROFIT_TARGET | PROFIT_LADDER_50 | PROFIT_LADDER_30 | TIME_STOP | APPROACHING_HARD_STOP",
       "shares_to_sell": 整数或null,
-      "decision_mode": "forced_rule",
+      "decision_mode": "forced_rule | pending_unexecuted_action",
       "suggested_new_stop": 数字或null
     }
   ]

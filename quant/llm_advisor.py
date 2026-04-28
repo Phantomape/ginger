@@ -416,6 +416,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # verdict, not the raw flags — reducing the chance of conflicting rule
     # interpretations and "优先HOLD"/"必须EXIT" contradictions.
     from preflight_validator import enrich_positions_with_breach_status, compute_account_state
+    from pending_actions import get_open_pending_actions
     if trend_signals:
         enrich_positions_with_breach_status(trend_signals)
     preflight = compute_account_state(
@@ -429,6 +430,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         trend_signals["preflight"] = preflight
     # Merge preflight data_warnings with the existing field-missing warnings
     combined_warnings = (preflight.get("data_warnings") or []) + (_data_warnings or [])
+    pending_actions = get_open_pending_actions(open_positions, data_dir="data")
 
     pos_mgmt_data = {
         # ── Machine state summary (LLM reads this first) ──────────────────
@@ -436,6 +438,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "new_trade_locked": preflight["new_trade_locked"],
         "lock_reason":      preflight["lock_reason"],
         "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | HIGH_REDUCE | HOLD}
+        "pending_unexecuted_actions": pending_actions,
         # Pre-computed reduce % for HIGH_REDUCE positions — LLM reads directly, no table lookup needed.
         "suggested_reduce_pct": preflight["suggested_reduce_pct"],  # {ticker: int}
         # Pre-computed BEAR emergency stops — LLM uses directly if regime=BEAR.
@@ -803,6 +806,39 @@ def save_advice(advice, filepath, token_usage=None):
 
         # Try to parse structured JSON from advice
         parsed_advice = parse_json_advice(advice)
+        basename = os.path.basename(filepath)
+        data_dir = os.path.dirname(filepath) or "data"
+        advice_date = None
+        if basename.startswith("investment_advice_") and basename.endswith(".json"):
+            advice_date = basename[len("investment_advice_"):-len(".json")]
+
+        pending_overrides = []
+        if isinstance(parsed_advice, dict):
+            try:
+                from pending_actions import (
+                    apply_pending_action_overrides,
+                    load_pending_actions,
+                    register_pending_actions_from_advice,
+                    save_pending_actions,
+                )
+
+                open_positions = load_open_positions()
+                parsed_advice, pending_overrides = apply_pending_action_overrides(
+                    parsed_advice,
+                    open_positions,
+                    data_dir=data_dir,
+                    as_of_date=advice_date,
+                )
+                pending_records = register_pending_actions_from_advice(
+                    parsed_advice,
+                    open_positions,
+                    existing_actions=load_pending_actions(data_dir),
+                    as_of_date=advice_date,
+                    source_file=basename,
+                )
+                save_pending_actions(pending_records, data_dir)
+            except Exception as e:
+                logger.warning("Pending-action reconciliation skipped: %s", e)
 
         output = {
             "timestamp": datetime.now().isoformat(),
@@ -810,8 +846,17 @@ def save_advice(advice, filepath, token_usage=None):
             "advice_parsed": parsed_advice,
             "token_usage": token_usage
         }
+        if pending_overrides:
+            output["pending_action_overrides"] = [
+                {
+                    "ticker": item.get("ticker"),
+                    "action": item.get("action"),
+                    "first_advice_date": item.get("first_advice_date"),
+                    "exit_rule_triggered": item.get("exit_rule_triggered"),
+                }
+                for item in pending_overrides
+            ]
 
-        basename = os.path.basename(filepath)
         if basename.startswith("investment_advice_") and basename.endswith(".json"):
             date_str = basename[len("investment_advice_"):-len(".json")]
             if len(date_str) == 8 and date_str.isdigit():
