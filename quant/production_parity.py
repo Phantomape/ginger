@@ -10,6 +10,7 @@ import math
 import pandas as pd
 
 from constants import (
+    ADVERSE_GAP_CANCEL_PCT,
     ADDON_CHECKPOINT_DAYS,
     ADDON_ENABLED,
     ADDON_FRACTION_OF_ORIGINAL_SHARES,
@@ -112,6 +113,27 @@ def plan_entry_candidates(
         ),
         "min_index_pct_from_ma": min_index_pct_from_ma,
     }
+
+
+def classify_entry_open_cancel(
+    fill_price,
+    signal_entry,
+    stop_price=None,
+    upside_gap_cancel_pct=None,
+    adverse_gap_cancel_pct=ADVERSE_GAP_CANCEL_PCT,
+):
+    """Return the shared next-open cancel reason, or None when entry may fill."""
+    if fill_price is None or signal_entry is None:
+        return None
+    fill = float(fill_price)
+    entry = float(signal_entry)
+    if upside_gap_cancel_pct is not None and fill > entry * (1.0 + upside_gap_cancel_pct):
+        return "gap_cancel"
+    if adverse_gap_cancel_pct is not None and fill < entry * (1.0 - adverse_gap_cancel_pct):
+        return "adverse_gap_down_cancel"
+    if stop_price is not None and fill <= float(stop_price):
+        return "stop_breach_cancel"
+    return None
 
 
 def _latest_close(df):

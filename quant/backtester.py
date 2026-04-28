@@ -63,6 +63,7 @@ if _script_dir not in sys.path:
 from constants import (
     MAX_POSITIONS,
     MAX_PER_SECTOR,
+    ADVERSE_GAP_CANCEL_PCT,
     CANCEL_GAP_PCT,
     ATR_STOP_MULT,
     ATR_TARGET_MULT,
@@ -90,12 +91,13 @@ from constants import (
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
 )
 from regime_exit import compute_regime_exit_profile
-from production_parity import plan_entry_candidates
+from production_parity import classify_entry_open_cancel, plan_entry_candidates
 from yfinance_bootstrap import configure_yfinance_runtime
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
     "MAX_POSITIONS":       MAX_POSITIONS,
+    "MAX_POSITION_PCT":    MAX_POSITION_PCT,
     "ENABLED_STRATEGIES":  ENABLED_STRATEGIES,
     "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
     "BREAKOUT_RANK_BY_52W_HIGH": BREAKOUT_RANK_BY_52W_HIGH,
@@ -121,6 +123,7 @@ DEFAULT_CONFIG = {
     "SECOND_ADDON_MAX_POSITION_PCT": SECOND_ADDON_MAX_POSITION_PCT,
     "DEFER_BREAKOUT_WHEN_SLOTS_LTE": DEFER_BREAKOUT_WHEN_SLOTS_LTE,
     "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
+    "ADVERSE_GAP_CANCEL_PCT": ADVERSE_GAP_CANCEL_PCT,
 }
 
 
@@ -130,7 +133,15 @@ def should_cancel_gap(fill_price, signal_entry, sig=None, today=None, ohlcv_all=
     Extra arguments are accepted so shadow diagnostics can monkeypatch this
     function with context-aware predicates without changing production defaults.
     """
-    return fill_price > signal_entry * (1 + CANCEL_GAP_PCT)
+    return (
+        classify_entry_open_cancel(
+            fill_price,
+            signal_entry,
+            upside_gap_cancel_pct=CANCEL_GAP_PCT,
+            adverse_gap_cancel_pct=None,
+        )
+        == "gap_cancel"
+    )
 
 
 SIZING_MULTIPLIER_KEYS = (
@@ -1694,17 +1705,21 @@ class BacktestEngine:
                 # cancel boundary is determined by market conditions, not by our
                 # own execution-cost assumptions.
                 signal_entry = sig.get("entry_price", fill_price)
-                if should_cancel_gap(
+                cancel_reason = classify_entry_open_cancel(
                     fill_price,
                     signal_entry,
-                    sig=sig,
-                    today=today,
-                    ohlcv_all=ohlcv_all,
-                ):
+                    stop_price=stop,
+                    upside_gap_cancel_pct=CANCEL_GAP_PCT,
+                    adverse_gap_cancel_pct=self.config.get(
+                        "ADVERSE_GAP_CANCEL_PCT",
+                        ADVERSE_GAP_CANCEL_PCT,
+                    ),
+                )
+                if cancel_reason in {"gap_cancel", "adverse_gap_down_cancel"}:
                     _record_entry_decision(
                         today,
                         sig,
-                        "gap_cancel",
+                        cancel_reason,
                         slots,
                         rank,
                         {
@@ -1712,6 +1727,10 @@ class BacktestEngine:
                             "fill_price": round(fill_price, 4),
                             "signal_entry": round(float(signal_entry), 4) if signal_entry else None,
                             "cancel_gap_pct": CANCEL_GAP_PCT,
+                            "adverse_gap_cancel_pct": self.config.get(
+                                "ADVERSE_GAP_CANCEL_PCT",
+                                ADVERSE_GAP_CANCEL_PCT,
+                            ),
                         },
                     )
                     continue
@@ -1719,7 +1738,7 @@ class BacktestEngine:
                 # Symmetric cancel: if overnight gap-down pushes the fill at or below
                 # the pre-computed stop, the position is already stopped-out on day 0.
                 # No valid R:R remains — skip the entry entirely.
-                if stop is not None and fill_price <= stop:
+                if cancel_reason == "stop_breach_cancel":
                     _record_entry_decision(
                         today,
                         sig,

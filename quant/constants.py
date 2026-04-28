@@ -113,7 +113,7 @@ TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER = 0.0
 # snapshot trio showed this MCD-like pocket losing in late/old windows and absent
 # in mid. Zero only this replayable cross-state sleeve; do not generalize it into
 # broad Consumer Discretionary or near-high trend cuts.
-MAX_POSITION_PCT        = 0.25       # Single position capped at 25% of portfolio; exp-20260425-033
+MAX_POSITION_PCT        = 0.40       # Initial position cap; exp-20260428-025
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap
 MAX_PER_SECTOR          = 2          # Same-day sector concentration cap
@@ -162,3 +162,4 @@ REGIME_AWARE_EXIT       = True       # Adopt entry-day regime-aware target width
 ROUND_TRIP_COST_PCT     = 0.0035     # Slippage + commission round trip (matches performance_engine)
 EXEC_LAG_PCT            = 0.005      # +0.5% assumed next-day open gap (conservative)
 CANCEL_GAP_PCT          = 0.015      # Cancel entry if next-day Open > signal entry * (1 + CANCEL_GAP_PCT)
+ADVERSE_GAP_CANCEL_PCT  = 0.02       # Cancel entry if next-day Open < signal entry * (1 - pct); exp-20260428-017

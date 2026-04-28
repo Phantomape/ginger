@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from production_parity import (  # noqa: E402
     build_followthrough_addon_actions,
+    classify_entry_open_cancel,
     plan_entry_candidates,
 )
 import backtester  # noqa: E402
@@ -96,8 +97,33 @@ def test_build_followthrough_addon_actions_emits_day_two_add():
     assert any(row["status"] == "eligible" for row in audit)
 
 
+def test_classify_entry_open_cancel_uses_shared_gap_rules():
+    assert classify_entry_open_cancel(
+        102.0,
+        100.0,
+        stop_price=95.0,
+        upside_gap_cancel_pct=0.015,
+    ) == "gap_cancel"
+    assert classify_entry_open_cancel(
+        97.9,
+        100.0,
+        stop_price=95.0,
+        upside_gap_cancel_pct=0.015,
+        adverse_gap_cancel_pct=0.02,
+    ) == "adverse_gap_down_cancel"
+    assert classify_entry_open_cancel(
+        94.9,
+        100.0,
+        stop_price=95.0,
+        upside_gap_cancel_pct=0.015,
+        adverse_gap_cancel_pct=None,
+    ) == "stop_breach_cancel"
+
+
 def test_backtester_addon_and_slot_defaults_share_constants():
     shared_keys = [
+        "MAX_POSITION_PCT",
+        "ADVERSE_GAP_CANCEL_PCT",
         "ADDON_ENABLED",
         "ADDON_CHECKPOINT_DAYS",
         "ADDON_MIN_UNREALIZED_PCT",

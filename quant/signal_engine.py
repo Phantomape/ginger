@@ -201,7 +201,10 @@ def strategy_a_trend(ticker, features, market_context=None):
     # use 1.5%; trend/breakout should be consistent.
     # exec_lag_adj_net_rr is computed at +0.5% gap (conservative average); the
     # 1.5% cancel cap is the MAXIMUM we'll tolerate, not the assumed average.
-    entry_note = "Execute next-day open; cancel if open > entry_price × 1.015"
+    entry_note = (
+        "Execute next-day open; cancel if open > entry_price x 1.015 "
+        "or open < entry_price x 0.980"
+    )
     if dte is not None and 4 <= dte <= 8:
         # Position may be held days/weeks, crossing the upcoming earnings event.
         # Trend/breakout positions are sized for ATR risk (2-5%), NOT for the
@@ -329,7 +332,10 @@ def strategy_b_breakout(
     ])
 
     # Same cancel threshold as strategy_a: ×1.015 (1.5%) — see strategy_a comment.
-    entry_note = "Execute next-day open; cancel if open > entry_price × 1.015"
+    entry_note = (
+        "Execute next-day open; cancel if open > entry_price x 1.015 "
+        "or open < entry_price x 0.980"
+    )
     if dte is not None and 4 <= dte <= 8:
         entry_note += (
             f"; ⚠ EARNINGS IN {dte} TRADING DAYS — close this position at least "
@@ -450,7 +456,10 @@ def strategy_c_earnings(ticker, features, market_context=None):
         # setups that are simply experiencing normal pre-event drift.
         # 1.5% threshold: allows normal PEAD gap-ups while still rejecting
         # runaway pre-earnings momentum (>1.5% overnight ≈ crowd piling in, risk elevated).
-        "entry_note":       "Execute next-day open; cancel if open > entry_price × 1.015",
+        "entry_note": (
+            "Execute next-day open; cancel if open > entry_price x 1.015 "
+            "or open < entry_price x 0.980"
+        ),
         "conditions_met": {
             "earnings_event_window":     event_window,
             "momentum_10d_pct":          momentum_10d,

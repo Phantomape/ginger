@@ -1266,8 +1266,8 @@ def test_prompt_position_cap_present():
     pre-computed before data reaches the LLM.
     """
     from position_manager import MAX_POSITION_PCT
-    assert MAX_POSITION_PCT == 0.25, (
-        "Position cap must be 25% in code (position_manager.MAX_POSITION_PCT)."
+    assert MAX_POSITION_PCT == 0.40, (
+        "Position cap must be 40% in code (position_manager.MAX_POSITION_PCT)."
     )
 
 
@@ -2252,6 +2252,30 @@ def test_strategy_b_entry_note_uses_1_5_pct_cancel():
     assert "1.015" in sig["entry_note"], (
         f"entry_note must reference ×1.015 cancel threshold; got: {sig['entry_note']}"
     )
+
+
+def test_strategy_entry_notes_include_adverse_gap_down_cancel():
+    from signal_engine import strategy_a_trend, strategy_b_breakout, strategy_c_earnings
+
+    feat = _make_features()
+    trend = strategy_a_trend("TEST", feat)
+    breakout = strategy_b_breakout("TEST", feat)
+    earnings = strategy_c_earnings("TEST", {
+        "earnings_event_window": True,
+        "momentum_10d_pct": 0.08,
+        "positive_surprise_history": True,
+        "close": 100.0,
+        "atr": 2.0,
+        "days_to_earnings": 7,
+        "above_200ma": True,
+    })
+
+    assert trend is not None
+    assert breakout is not None
+    assert earnings is not None
+    assert "0.980" in trend["entry_note"]
+    assert "0.980" in breakout["entry_note"]
+    assert "0.980" in earnings["entry_note"]
 
 
 def test_strategy_a_entry_note_earnings_warning_dte_7():
