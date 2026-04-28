@@ -44,6 +44,25 @@ def test_plan_entry_candidates_defers_breakouts_when_slots_are_scarce():
     assert [s["ticker"] for s in planned] == ["NVDA"]
     assert [s["ticker"] for s in plan["deferred_breakout_signals"]] == ["AAPL"]
     assert plan["available_slots"] == 1
+    assert plan["signals_after_deferral"] == 1
+
+
+def test_plan_entry_candidates_accepts_backtester_position_count():
+    signals = [
+        {"ticker": "AAPL", "strategy": "trend_long"},
+        {"ticker": "NVDA", "strategy": "trend_long"},
+    ]
+
+    planned, plan = plan_entry_candidates(
+        signals,
+        open_positions=None,
+        max_positions=3,
+        active_positions_count=2,
+    )
+
+    assert [s["ticker"] for s in planned] == ["AAPL"]
+    assert [s["ticker"] for s in plan["slot_sliced_signals"]] == ["NVDA"]
+    assert plan["available_slots"] == 1
 
 
 def test_build_followthrough_addon_actions_emits_day_two_add():

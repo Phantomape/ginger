@@ -90,6 +90,7 @@ from constants import (
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
 )
 from regime_exit import compute_regime_exit_profile
+from production_parity import plan_entry_candidates
 from yfinance_bootstrap import configure_yfinance_runtime
 
 DEFAULT_CONFIG = {
@@ -1571,71 +1572,60 @@ class BacktestEngine:
                     news_signals_passed    += len(signals)
 
             # ── 3. Enter positions at next-day open ─────────────────────────
-            slots = self.config["MAX_POSITIONS"] - len(positions)
-            defer_breakout_slots_lte = self.config.get("DEFER_BREAKOUT_WHEN_SLOTS_LTE")
-            defer_breakout_max_min_index_pct = self.config.get(
-                "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA"
+            signals, entry_plan = plan_entry_candidates(
+                signals,
+                None,
+                market_context={
+                    "spy_pct_from_ma": spy_pct,
+                    "qqq_pct_from_ma": qqq_pct,
+                },
+                max_positions=self.config["MAX_POSITIONS"],
+                defer_breakout_when_slots_lte=self.config.get(
+                    "DEFER_BREAKOUT_WHEN_SLOTS_LTE"
+                ),
+                defer_breakout_max_min_index_pct_from_ma=self.config.get(
+                    "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA"
+                ),
+                active_positions_count=len(positions),
             )
-            defer_breakout_state_ok = True
-            min_index_pct_from_ma = None
-            if defer_breakout_max_min_index_pct is not None:
-                if spy_pct is not None and qqq_pct is not None:
-                    min_index_pct_from_ma = min(spy_pct, qqq_pct)
-                    defer_breakout_state_ok = (
-                        min_index_pct_from_ma <= defer_breakout_max_min_index_pct
-                    )
-                else:
-                    defer_breakout_state_ok = False
-            if (
-                    defer_breakout_slots_lte is not None
-                    and slots <= defer_breakout_slots_lte
-                    and defer_breakout_state_ok):
-                kept = []
-                for sig in signals:
-                    if sig.get("strategy") == "breakout_long":
-                        scarce_slot_breakout_deferred_count += 1
-                        scarce_slot_deferred_events.append({
-                            "date": str(today.date()) if hasattr(today, "date") else str(today),
-                            "ticker": (sig.get("ticker") or "").upper(),
-                            "strategy": sig.get("strategy", "unknown"),
-                            "sector": sig.get("sector", "Unknown"),
-                            "available_slots": slots,
-                            "trade_quality_score": sig.get("trade_quality_score"),
-                            "confidence_score": sig.get("confidence_score"),
-                            "pct_from_52w_high": sig.get("pct_from_52w_high"),
-                            "entry_price": sig.get("entry_price"),
-                            "stop_price": sig.get("stop_price"),
-                            "target_price": sig.get("target_price"),
-                            "min_index_pct_from_ma": min_index_pct_from_ma,
-                        })
-                        _record_entry_decision(
-                            today,
-                            sig,
-                            "scarce_slot_breakout_deferred",
-                            slots,
-                            None,
-                            {
-                                "active_positions": len(positions),
-                                "defer_breakout_slots_lte": defer_breakout_slots_lte,
-                                "defer_breakout_max_min_index_pct_from_ma": (
-                                    defer_breakout_max_min_index_pct
-                                ),
-                                "min_index_pct_from_ma": min_index_pct_from_ma,
-                            },
-                        )
-                    else:
-                        kept.append(sig)
-                signals = kept
-            for rank, sig in enumerate(signals[slots:], start=slots + 1):
+            slots = entry_plan["available_slots"]
+            for deferred in entry_plan["deferred_breakout_signals"]:
+                scarce_slot_breakout_deferred_count += 1
+                event = {
+                    **deferred,
+                    "date": str(today.date()) if hasattr(today, "date") else str(today),
+                    "ticker": (deferred.get("ticker") or "").upper(),
+                    "strategy": deferred.get("strategy", "unknown"),
+                }
+                scarce_slot_deferred_events.append(event)
+                _record_entry_decision(
+                    today,
+                    deferred,
+                    "scarce_slot_breakout_deferred",
+                    slots,
+                    None,
+                    {
+                        "active_positions": len(positions),
+                        "defer_breakout_slots_lte": entry_plan.get(
+                            "defer_breakout_when_slots_lte"
+                        ),
+                        "defer_breakout_max_min_index_pct_from_ma": entry_plan.get(
+                            "defer_breakout_max_min_index_pct_from_ma"
+                        ),
+                        "min_index_pct_from_ma": entry_plan.get("min_index_pct_from_ma"),
+                    },
+                )
+            for rank, sig in enumerate(
+                    entry_plan["slot_sliced_signals"], start=slots + 1):
                 _record_entry_decision(
                     today,
                     sig,
                     "slot_sliced",
                     slots,
                     rank,
-                    {"signal_count": len(signals)},
+                    {"signal_count": entry_plan.get("signals_after_deferral")},
                 )
-            for rank, sig in enumerate(signals[:slots], start=1):
+            for rank, sig in enumerate(signals, start=1):
                 ticker = sig["ticker"]
                 # Skip if already holding
                 if any(p.ticker == ticker for p in positions):

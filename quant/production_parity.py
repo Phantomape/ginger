@@ -43,11 +43,16 @@ def plan_entry_candidates(
     max_positions=MAX_POSITIONS,
     defer_breakout_when_slots_lte=DEFER_BREAKOUT_WHEN_SLOTS_LTE,
     defer_breakout_max_min_index_pct_from_ma=DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
+    active_positions_count=None,
 ):
     """Apply the backtester's scarce-slot breakout deferral and slot slicing."""
     market_context = market_context or {}
     input_signals = list(signals or [])
-    active_positions = len(_positive_positions(open_positions))
+    active_positions = (
+        int(active_positions_count)
+        if active_positions_count is not None
+        else len(_positive_positions(open_positions))
+    )
     slots = max(0, max_positions - active_positions)
 
     planned = list(input_signals)
@@ -88,6 +93,7 @@ def plan_entry_candidates(
                 kept.append(sig)
         planned = kept
 
+    signals_after_deferral = len(planned)
     slot_sliced = planned[slots:] if slots >= 0 else planned
     planned = planned[:slots]
 
@@ -96,6 +102,7 @@ def plan_entry_candidates(
         "max_positions": max_positions,
         "available_slots": slots,
         "signals_before_entry_plan": len(input_signals),
+        "signals_after_deferral": signals_after_deferral,
         "signals_after_entry_plan": len(planned),
         "deferred_breakout_signals": deferred_breakouts,
         "slot_sliced_signals": slot_sliced,

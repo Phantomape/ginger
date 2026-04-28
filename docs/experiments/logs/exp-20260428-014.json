@@ -1,0 +1,77 @@
+{
+  "experiment_id": "exp-20260428-014",
+  "timestamp": "2026-04-27T23:08:00-07:00",
+  "category": "measurement_repair",
+  "change_type": "production_backtest_parity_refactor",
+  "status": "accepted",
+  "hypothesis": "Backtester scarce-slot routing should call the same shared entry planning helper as run.py so future routing experiments cannot become backtester-only logic.",
+  "alpha_hypothesis": {
+    "type": "measurement_repair_supporting_alpha",
+    "statement": "Future scarce-slot or capacity alpha experiments are more trustworthy if the existing accepted routing behavior is shared by production and backtest adapters."
+  },
+  "why_not_direct_alpha_search": "The user requested implementing the parity architecture. This refactor removes an existing duplicate implementation without changing strategy parameters.",
+  "changes": [
+    "Extended production_parity.plan_entry_candidates with active_positions_count so the backtester can use it without converting Position objects into open_positions JSON.",
+    "Replaced the inline scarce-slot breakout deferral and slot slicing block in backtester.py with a call to production_parity.plan_entry_candidates.",
+    "Added test coverage for the backtester-style active position count path."
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "parameters": {
+    "strategy_parameters_changed": false
+  },
+  "validation": {
+    "unit_tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py -q -> 4 passed",
+    "py_compile_note": "py_compile hit the existing Windows __pycache__ permission issue; pytest imported the edited modules successfully.",
+    "fixed_windows": [
+      {
+        "name": "late_strong",
+        "date_range": "2025-10-23 to 2026-04-21",
+        "expected_value_score": 1.6495,
+        "sharpe_daily": 4.29,
+        "max_drawdown": 0.0281,
+        "total_pnl": 38452.19,
+        "win_rate": 0.714,
+        "trades": 21,
+        "survival_rate": 0.843
+      },
+      {
+        "name": "mid_weak",
+        "date_range": "2025-04-23 to 2025-10-22",
+        "expected_value_score": 0.6083,
+        "sharpe_daily": 2.54,
+        "max_drawdown": 0.0263,
+        "total_pnl": 23949.98,
+        "win_rate": 0.5,
+        "trades": 20,
+        "survival_rate": 0.83
+      },
+      {
+        "name": "old_thin",
+        "date_range": "2024-10-02 to 2025-04-22",
+        "expected_value_score": 0.1765,
+        "sharpe_daily": 1.29,
+        "max_drawdown": 0.0442,
+        "total_pnl": 13683.1,
+        "win_rate": 0.391,
+        "trades": 23,
+        "survival_rate": 0.917
+      }
+    ]
+  },
+  "decision": "accepted",
+  "expected_value_score_delta": 0.0,
+  "rationale": "All fixed-window metrics are unchanged while one duplicated adapter implementation was removed.",
+  "kept_unchanged": [
+    "entry and exit thresholds",
+    "scarce-slot parameters",
+    "add-on parameters",
+    "LLM/news replay semantics"
+  ],
+  "main_risk": "Only scarce-slot routing was migrated in this slice; add-on execution still has simulator-specific fill mechanics that should be migrated separately if a shared execution policy is introduced."
+}
