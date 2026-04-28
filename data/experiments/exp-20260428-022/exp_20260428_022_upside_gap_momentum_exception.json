@@ -1,0 +1,1254 @@
+{
+  "experiment_id": "exp-20260428-022",
+  "timestamp": "2026-04-28T08:08:46.061908+00:00",
+  "status": "rejected",
+  "decision": "do_not_promote_upside_gap_exception",
+  "hypothesis": "For sleeves with accepted winner-truncation evidence, an upside next-open gap may be momentum confirmation rather than overextension; a narrow exception to the existing 1.5% upside-gap cancel may improve EV without changing the global threshold.",
+  "change_type": "alpha_search_entry_execution_state_exception",
+  "parameters": {
+    "single_causal_variable": "upside gap cancel exception cohort",
+    "baseline_cancel_gap_pct": 0.015,
+    "adverse_gap_cancel_pct": 0.02,
+    "variants": {
+      "baseline_no_exception": {
+        "strategy": null,
+        "sectors": []
+      },
+      "trend_technology_exception": {
+        "strategy": "trend_long",
+        "sectors": [
+          "Technology"
+        ]
+      },
+      "trend_commodity_exception": {
+        "strategy": "trend_long",
+        "sectors": [
+          "Commodities"
+        ]
+      },
+      "trend_technology_commodity_exception": {
+        "strategy": "trend_long",
+        "sectors": [
+          "Technology",
+          "Commodities"
+        ]
+      }
+    },
+    "locked_variables": [
+      "CANCEL_GAP_PCT",
+      "ADVERSE_GAP_CANCEL_PCT",
+      "signal generation",
+      "risk sizing",
+      "all exits",
+      "day-2 follow-through add-on settings",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "rows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "baseline_no_exception",
+      "exception_strategy": null,
+      "exception_sectors": [],
+      "metrics": {
+        "expected_value_score": 1.7213,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39295.69,
+        "total_return_pct": 0.393,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 5,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "trend_technology_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Technology"
+      ],
+      "metrics": {
+        "expected_value_score": 2.0939,
+        "sharpe_daily": 5.65,
+        "total_pnl": 37058.58,
+        "total_return_pct": 0.3706,
+        "max_drawdown_pct": 0.0246,
+        "win_rate": 0.7273,
+        "trade_count": 22,
+        "survival_rate": 0.8333
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 5,
+      "exception_count": 2,
+      "exception_events": [
+        {
+          "ticker": "MU",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 276.9217,
+          "signal_entry": 265.7,
+          "gap_pct": 0.042235
+        },
+        {
+          "ticker": "CRDO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 164.54,
+          "signal_entry": 159.52,
+          "gap_pct": 0.031469
+        }
+      ],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 22,
+        "gap_cancel": 4,
+        "no_future_fill": 1,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 1,
+        "slot_sliced": 2
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "trend_commodity_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Commodities"
+      ],
+      "metrics": {
+        "expected_value_score": 1.4051,
+        "sharpe_daily": 4.01,
+        "total_pnl": 35041.14,
+        "total_return_pct": 0.3504,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7143,
+        "trade_count": 21,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 5,
+      "exception_count": 2,
+      "exception_events": [
+        {
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "fill_price": 509.51,
+          "signal_entry": 494.56,
+          "gap_pct": 0.030229
+        },
+        {
+          "ticker": "IAU",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "fill_price": 104.37,
+          "signal_entry": 101.25,
+          "gap_pct": 0.030815
+        }
+      ],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "trend_technology_commodity_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Technology",
+        "Commodities"
+      ],
+      "metrics": {
+        "expected_value_score": 1.7169,
+        "sharpe_daily": 5.22,
+        "total_pnl": 32885.8,
+        "total_return_pct": 0.3289,
+        "max_drawdown_pct": 0.0246,
+        "win_rate": 0.6667,
+        "trade_count": 24,
+        "survival_rate": 0.8333
+      },
+      "gap_cancel_count": 2,
+      "adverse_gap_down_cancel_count": 5,
+      "exception_count": 4,
+      "exception_events": [
+        {
+          "ticker": "MU",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 276.9217,
+          "signal_entry": 265.7,
+          "gap_pct": 0.042235
+        },
+        {
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "fill_price": 509.51,
+          "signal_entry": 494.56,
+          "gap_pct": 0.030229
+        },
+        {
+          "ticker": "IAU",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "fill_price": 104.37,
+          "signal_entry": 101.25,
+          "gap_pct": 0.030815
+        },
+        {
+          "ticker": "CRDO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 164.54,
+          "signal_entry": 159.52,
+          "gap_pct": 0.031469
+        }
+      ],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 24,
+        "gap_cancel": 2,
+        "no_future_fill": 1,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 1,
+        "slot_sliced": 2
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "baseline_no_exception",
+      "exception_strategy": null,
+      "exception_sectors": [],
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "trend_technology_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Technology"
+      ],
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "trend_commodity_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Commodities"
+      ],
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "trend_technology_commodity_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Technology",
+        "Commodities"
+      ],
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "baseline_no_exception",
+      "exception_strategy": null,
+      "exception_sectors": [],
+      "metrics": {
+        "expected_value_score": 0.1767,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13704.83,
+        "total_return_pct": 0.137,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "trend_technology_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Technology"
+      ],
+      "metrics": {
+        "expected_value_score": 0.172,
+        "sharpe_daily": 1.23,
+        "total_pnl": 13980.95,
+        "total_return_pct": 0.1398,
+        "max_drawdown_pct": 0.04,
+        "win_rate": 0.4,
+        "trade_count": 25,
+        "survival_rate": 0.8889
+      },
+      "gap_cancel_count": 2,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 3,
+      "exception_events": [
+        {
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 175.0,
+          "signal_entry": 171.35,
+          "gap_pct": 0.021301
+        },
+        {
+          "ticker": "CRDO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 72.11,
+          "signal_entry": 70.69,
+          "gap_pct": 0.020088
+        },
+        {
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 228.6208,
+          "signal_entry": 221.73,
+          "gap_pct": 0.031077
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 25,
+        "gap_cancel": 2,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 6,
+        "slot_sliced": 13
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "trend_commodity_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Commodities"
+      ],
+      "metrics": {
+        "expected_value_score": 0.1767,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13704.83,
+        "total_return_pct": 0.137,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "trend_technology_commodity_exception",
+      "exception_strategy": "trend_long",
+      "exception_sectors": [
+        "Technology",
+        "Commodities"
+      ],
+      "metrics": {
+        "expected_value_score": 0.172,
+        "sharpe_daily": 1.23,
+        "total_pnl": 13980.95,
+        "total_return_pct": 0.1398,
+        "max_drawdown_pct": 0.04,
+        "win_rate": 0.4,
+        "trade_count": 25,
+        "survival_rate": 0.8889
+      },
+      "gap_cancel_count": 2,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 3,
+      "exception_events": [
+        {
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 175.0,
+          "signal_entry": 171.35,
+          "gap_pct": 0.021301
+        },
+        {
+          "ticker": "CRDO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 72.11,
+          "signal_entry": 70.69,
+          "gap_pct": 0.020088
+        },
+        {
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "fill_price": 228.6208,
+          "signal_entry": 221.73,
+          "gap_pct": 0.031077
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 25,
+        "gap_cancel": 2,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 6,
+        "slot_sliced": 13
+      }
+    }
+  ],
+  "summary": {
+    "trend_technology_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 2.0939,
+            "sharpe_daily": 5.65,
+            "total_pnl": 37058.58,
+            "total_return_pct": 0.3706,
+            "max_drawdown_pct": 0.0246,
+            "win_rate": 0.7273,
+            "trade_count": 22,
+            "survival_rate": 0.8333
+          },
+          "delta": {
+            "expected_value_score": 0.3726,
+            "sharpe_daily": 1.27,
+            "total_pnl": -2237.11,
+            "total_return_pct": -0.0224,
+            "max_drawdown_pct": -0.0036,
+            "win_rate": -0.0622,
+            "trade_count": 3,
+            "survival_rate": -0.0098
+          },
+          "gap_cancel_count": 4,
+          "exception_count": 2,
+          "exception_events": [
+            {
+              "ticker": "MU",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 276.9217,
+              "signal_entry": 265.7,
+              "gap_pct": 0.042235
+            },
+            {
+              "ticker": "CRDO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 164.54,
+              "signal_entry": 159.52,
+              "gap_pct": 0.031469
+            }
+          ]
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 4,
+          "exception_count": 0,
+          "exception_events": []
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.172,
+            "sharpe_daily": 1.23,
+            "total_pnl": 13980.95,
+            "total_return_pct": 0.1398,
+            "max_drawdown_pct": 0.04,
+            "win_rate": 0.4,
+            "trade_count": 25,
+            "survival_rate": 0.8889
+          },
+          "delta": {
+            "expected_value_score": -0.0047,
+            "sharpe_daily": -0.06,
+            "total_pnl": 276.12,
+            "total_return_pct": 0.0028,
+            "max_drawdown_pct": -0.0042,
+            "win_rate": -0.0091,
+            "trade_count": 3,
+            "survival_rate": -0.0278
+          },
+          "gap_cancel_count": 2,
+          "exception_count": 3,
+          "exception_events": [
+            {
+              "ticker": "SNOW",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 175.0,
+              "signal_entry": 171.35,
+              "gap_pct": 0.021301
+            },
+            {
+              "ticker": "CRDO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 72.11,
+              "signal_entry": 70.69,
+              "gap_pct": 0.020088
+            },
+            {
+              "ticker": "AVGO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 228.6208,
+              "signal_entry": 221.73,
+              "gap_pct": 0.031077
+            }
+          ]
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.3679,
+        "total_pnl_delta_sum": -1960.99,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.024389,
+        "windows_improved": 1,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.0,
+        "exception_count": 5,
+        "gap_cancel_count": 10
+      }
+    },
+    "trend_commodity_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.4051,
+            "sharpe_daily": 4.01,
+            "total_pnl": 35041.14,
+            "total_return_pct": 0.3504,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7143,
+            "trade_count": 21,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": -0.3162,
+            "sharpe_daily": -0.37,
+            "total_pnl": -4254.55,
+            "total_return_pct": -0.0426,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0752,
+            "trade_count": 2,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 4,
+          "exception_count": 2,
+          "exception_events": [
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "fill_price": 509.51,
+              "signal_entry": 494.56,
+              "gap_pct": 0.030229
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "fill_price": 104.37,
+              "signal_entry": 101.25,
+              "gap_pct": 0.030815
+            }
+          ]
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 4,
+          "exception_count": 0,
+          "exception_events": []
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 5,
+          "exception_count": 0,
+          "exception_events": []
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.3162,
+        "total_pnl_delta_sum": -4254.55,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.052914,
+        "windows_improved": 0,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.0,
+        "exception_count": 2,
+        "gap_cancel_count": 13
+      }
+    },
+    "trend_technology_commodity_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.7169,
+            "sharpe_daily": 5.22,
+            "total_pnl": 32885.8,
+            "total_return_pct": 0.3289,
+            "max_drawdown_pct": 0.0246,
+            "win_rate": 0.6667,
+            "trade_count": 24,
+            "survival_rate": 0.8333
+          },
+          "delta": {
+            "expected_value_score": -0.0044,
+            "sharpe_daily": 0.84,
+            "total_pnl": -6409.89,
+            "total_return_pct": -0.0641,
+            "max_drawdown_pct": -0.0036,
+            "win_rate": -0.1228,
+            "trade_count": 5,
+            "survival_rate": -0.0098
+          },
+          "gap_cancel_count": 2,
+          "exception_count": 4,
+          "exception_events": [
+            {
+              "ticker": "MU",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 276.9217,
+              "signal_entry": 265.7,
+              "gap_pct": 0.042235
+            },
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "fill_price": 509.51,
+              "signal_entry": 494.56,
+              "gap_pct": 0.030229
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "fill_price": 104.37,
+              "signal_entry": 101.25,
+              "gap_pct": 0.030815
+            },
+            {
+              "ticker": "CRDO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 164.54,
+              "signal_entry": 159.52,
+              "gap_pct": 0.031469
+            }
+          ]
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 4,
+          "exception_count": 0,
+          "exception_events": []
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.172,
+            "sharpe_daily": 1.23,
+            "total_pnl": 13980.95,
+            "total_return_pct": 0.1398,
+            "max_drawdown_pct": 0.04,
+            "win_rate": 0.4,
+            "trade_count": 25,
+            "survival_rate": 0.8889
+          },
+          "delta": {
+            "expected_value_score": -0.0047,
+            "sharpe_daily": -0.06,
+            "total_pnl": 276.12,
+            "total_return_pct": 0.0028,
+            "max_drawdown_pct": -0.0042,
+            "win_rate": -0.0091,
+            "trade_count": 3,
+            "survival_rate": -0.0278
+          },
+          "gap_cancel_count": 2,
+          "exception_count": 3,
+          "exception_events": [
+            {
+              "ticker": "SNOW",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 175.0,
+              "signal_entry": 171.35,
+              "gap_pct": 0.021301
+            },
+            {
+              "ticker": "CRDO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 72.11,
+              "signal_entry": 70.69,
+              "gap_pct": 0.020088
+            },
+            {
+              "ticker": "AVGO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "fill_price": 228.6208,
+              "signal_entry": 221.73,
+              "gap_pct": 0.031077
+            }
+          ]
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.0091,
+        "total_pnl_delta_sum": -6133.77,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.076286,
+        "windows_improved": 0,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0,
+        "exception_count": 7,
+        "gap_cancel_count": 8
+      }
+    }
+  },
+  "best_variant": "trend_technology_exception",
+  "best_variant_summary": {
+    "by_window": {
+      "late_strong": {
+        "before": {
+          "expected_value_score": 1.7213,
+          "sharpe_daily": 4.38,
+          "total_pnl": 39295.69,
+          "total_return_pct": 0.393,
+          "max_drawdown_pct": 0.0282,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8431
+        },
+        "after": {
+          "expected_value_score": 2.0939,
+          "sharpe_daily": 5.65,
+          "total_pnl": 37058.58,
+          "total_return_pct": 0.3706,
+          "max_drawdown_pct": 0.0246,
+          "win_rate": 0.7273,
+          "trade_count": 22,
+          "survival_rate": 0.8333
+        },
+        "delta": {
+          "expected_value_score": 0.3726,
+          "sharpe_daily": 1.27,
+          "total_pnl": -2237.11,
+          "total_return_pct": -0.0224,
+          "max_drawdown_pct": -0.0036,
+          "win_rate": -0.0622,
+          "trade_count": 3,
+          "survival_rate": -0.0098
+        },
+        "gap_cancel_count": 4,
+        "exception_count": 2,
+        "exception_events": [
+          {
+            "ticker": "MU",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "fill_price": 276.9217,
+            "signal_entry": 265.7,
+            "gap_pct": 0.042235
+          },
+          {
+            "ticker": "CRDO",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "fill_price": 164.54,
+            "signal_entry": 159.52,
+            "gap_pct": 0.031469
+          }
+        ]
+      },
+      "mid_weak": {
+        "before": {
+          "expected_value_score": 0.7097,
+          "sharpe_daily": 2.59,
+          "total_pnl": 27404.74,
+          "total_return_pct": 0.274,
+          "max_drawdown_pct": 0.0403,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925
+        },
+        "after": {
+          "expected_value_score": 0.7097,
+          "sharpe_daily": 2.59,
+          "total_pnl": 27404.74,
+          "total_return_pct": 0.274,
+          "max_drawdown_pct": 0.0403,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0
+        },
+        "gap_cancel_count": 4,
+        "exception_count": 0,
+        "exception_events": []
+      },
+      "old_thin": {
+        "before": {
+          "expected_value_score": 0.1767,
+          "sharpe_daily": 1.29,
+          "total_pnl": 13704.83,
+          "total_return_pct": 0.137,
+          "max_drawdown_pct": 0.0442,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167
+        },
+        "after": {
+          "expected_value_score": 0.172,
+          "sharpe_daily": 1.23,
+          "total_pnl": 13980.95,
+          "total_return_pct": 0.1398,
+          "max_drawdown_pct": 0.04,
+          "win_rate": 0.4,
+          "trade_count": 25,
+          "survival_rate": 0.8889
+        },
+        "delta": {
+          "expected_value_score": -0.0047,
+          "sharpe_daily": -0.06,
+          "total_pnl": 276.12,
+          "total_return_pct": 0.0028,
+          "max_drawdown_pct": -0.0042,
+          "win_rate": -0.0091,
+          "trade_count": 3,
+          "survival_rate": -0.0278
+        },
+        "gap_cancel_count": 2,
+        "exception_count": 3,
+        "exception_events": [
+          {
+            "ticker": "SNOW",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "fill_price": 175.0,
+            "signal_entry": 171.35,
+            "gap_pct": 0.021301
+          },
+          {
+            "ticker": "CRDO",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "fill_price": 72.11,
+            "signal_entry": 70.69,
+            "gap_pct": 0.020088
+          },
+          {
+            "ticker": "AVGO",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "fill_price": 228.6208,
+            "signal_entry": 221.73,
+            "gap_pct": 0.031077
+          }
+        ]
+      }
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.3679,
+      "total_pnl_delta_sum": -1960.99,
+      "baseline_total_pnl_sum": 80405.26,
+      "total_pnl_delta_pct": -0.024389,
+      "windows_improved": 1,
+      "windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0,
+      "exception_count": 5,
+      "gap_cancel_count": 10
+    }
+  },
+  "history_guardrails": {
+    "does_not_repeat_global_upside_gap_threshold_sweep": true,
+    "does_not_repeat_adverse_gap_threshold_sweep": true,
+    "does_not_repeat_addon_threshold_tuning": true,
+    "does_not_use_llm_soft_ranking_sample": true,
+    "does_not_reopen_c_strategy_single_field_repair": true
+  },
+  "gate4_basis": "Rejected because no exception cohort passed multi-window Gate 4.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic entry-execution alpha was tested instead."
+  }
+}

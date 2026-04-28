@@ -1,0 +1,194 @@
+{
+  "experiment_id": "exp-20260428-021",
+  "timestamp": "2026-04-28T00:00:00Z",
+  "status": "rejected",
+  "hypothesis": "The current 1.5% upside next-open entry cancel may be mis-sized. A tighter cancel might avoid overextended fills, while a looser cancel might preserve momentum confirmation.",
+  "change_summary": "Added an experiment-only runner that swept CANCEL_GAP_PCT across 1%, 1.5%, 2%, 3%, 5%, and disabled on the fixed backtesting.md windows. Production strategy defaults were unchanged.",
+  "change_type": "alpha_search_entry_execution",
+  "component": "quant/experiments/exp_20260428_021_upside_gap_cancel_sweep.py",
+  "parameters": {
+    "single_causal_variable": "upside next-open entry cancel threshold",
+    "baseline_cancel_gap_pct": 0.015,
+    "tested_cancel_gap_pct": [0.01, 0.015, 0.02, 0.03, 0.05, null],
+    "locked_variables": [
+      "signal generation",
+      "risk sizing",
+      "exits",
+      "day-2 follow-through add-on settings",
+      "adverse gap-down cancel threshold",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7213,
+      "sharpe_daily": 4.38,
+      "total_pnl": 39295.69,
+      "max_drawdown_pct": 0.0282,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "gap_cancel_count": 6
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7097,
+      "sharpe_daily": 2.59,
+      "total_pnl": 27404.74,
+      "max_drawdown_pct": 0.0403,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "gap_cancel_count": 4
+    },
+    "old_thin": {
+      "expected_value_score": 0.1767,
+      "sharpe_daily": 1.29,
+      "total_pnl": 13704.83,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "gap_cancel_count": 5
+    }
+  },
+  "after_metrics": {
+    "best_nonbaseline_variant": "upside_gap_cancel_2pct",
+    "late_strong": {
+      "expected_value_score": 1.7213,
+      "sharpe_daily": 4.38,
+      "total_pnl": 39295.69,
+      "max_drawdown_pct": 0.0282,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "gap_cancel_count": 6
+    },
+    "mid_weak": {
+      "expected_value_score": 0.6262,
+      "sharpe_daily": 2.43,
+      "total_pnl": 25770.92,
+      "max_drawdown_pct": 0.0274,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "gap_cancel_count": 3
+    },
+    "old_thin": {
+      "expected_value_score": 0.1211,
+      "sharpe_daily": 1.11,
+      "total_pnl": 10914.75,
+      "max_drawdown_pct": 0.0441,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167,
+      "gap_cancel_count": 5
+    },
+    "rejected_variants": {
+      "upside_gap_cancel_1pct": {
+        "aggregate_expected_value_score_delta": -0.3313,
+        "aggregate_total_pnl_delta": -11894.16,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0117
+      },
+      "upside_gap_cancel_3pct": {
+        "aggregate_expected_value_score_delta": -0.281,
+        "aggregate_total_pnl_delta": -8125.67,
+        "windows_improved": 0,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0082
+      },
+      "upside_gap_cancel_5pct": {
+        "aggregate_expected_value_score_delta": -0.7903,
+        "aggregate_total_pnl_delta": -18451.5,
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "max_drawdown_delta_max": 0.0225
+      },
+      "upside_gap_cancel_disabled": {
+        "aggregate_expected_value_score_delta": -0.7824,
+        "aggregate_total_pnl_delta": -17821.97,
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "max_drawdown_delta_max": 0.0224
+      }
+    }
+  },
+  "delta_metrics": {
+    "best_nonbaseline_variant": "upside_gap_cancel_2pct",
+    "late_strong": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": -0.0835,
+      "total_pnl_delta": -1633.82,
+      "sharpe_daily_delta": -0.16,
+      "max_drawdown_pct_delta": -0.0129
+    },
+    "old_thin": {
+      "expected_value_score_delta": -0.0556,
+      "total_pnl_delta": -2790.08,
+      "sharpe_daily_delta": -0.18,
+      "max_drawdown_pct_delta": -0.0001
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.1391,
+      "total_pnl_delta_sum": -4423.9,
+      "baseline_total_pnl_sum": 80405.26,
+      "total_pnl_delta_pct": -0.05502,
+      "windows_improved": 0,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0
+    },
+    "gate4_basis": "Rejected. No tested nonbaseline threshold improved aggregate EV or PnL. Tightening to 1% only helped late_strong by a trivial amount but damaged mid_weak and old_thin. Loosening or disabling the upside cancel admitted lower-quality fills and regressed EV materially."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains below the replay sample threshold, so this deterministic entry-execution alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "The current 1.5% upside gap cancel remains the best tested production setting. Nearby tightening, loosening, and disabling do not pass Gate 4 and mostly damage the weaker windows.",
+  "next_retry_requires": [
+    "Do not repeat nearby global CANCEL_GAP_PCT sweeps around 1-5%.",
+    "A valid retry needs a state or event discriminator explaining when upside gaps are momentum confirmation instead of overextension.",
+    "Do not combine this with adverse-gap or add-on threshold changes without separate evidence."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_021_upside_gap_cancel_sweep.py",
+    "data/experiments/exp-20260428-021/exp_20260428_021_upside_gap_cancel_sweep.json",
+    "docs/experiments/logs/exp-20260428-021.json",
+    "docs/experiments/tickets/exp-20260428-021.json"
+  ],
+  "notes": "Alpha search, not bug repair. Production strategy code was unchanged because Gate 4 failed."
+}

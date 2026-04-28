@@ -1,0 +1,184 @@
+﻿{
+    "experiment_id":  "exp-20260428-024",
+    "timestamp":  "2026-04-28T11:07:42.880720+00:00",
+    "status":  "rejected",
+    "hypothesis":  "Existing A/B signals that fail to close in the upper part of their own signal-day range may be weaker execution candidates; canceling those next-open entries could improve quality without changing signal generation, exits, sizing, add-ons, or LLM/news replay.",
+    "change_summary":  "Tested an experiment-only signal-day close-location entry cancel at 0.50/0.60/0.70 across the fixed backtesting windows; production defaults were unchanged.",
+    "change_type":  "entry_execution_signal_day_quality_screen",
+    "component":  "quant/experiments/exp_20260428_024_signal_day_close_location_entry_cancel.py, data/experiments/exp-20260428-024/exp_20260428_024_signal_day_close_location_entry_cancel.json, docs/experiments/logs/exp-20260428-024.json, docs/experiments/tickets/exp-20260428-024.json, docs/experiment_log.jsonl, docs/alpha-optimization-playbook.md",
+    "parameters":  {
+                       "single_causal_variable":  "signal-day close-location entry cancel threshold",
+                       "tested_min_signal_day_close_location":  [
+                                                                    0.5,
+                                                                    0.6,
+                                                                    0.7
+                                                                ],
+                       "best_variant":  "close_location_cancel_lt_50",
+                       "existing_gap_cancels_locked":  {
+                                                           "CANCEL_GAP_PCT":  0.015,
+                                                           "ADVERSE_GAP_CANCEL_PCT":  0.02
+                                                       },
+                       "locked_variables":  [
+                                                "signal generation",
+                                                "risk sizing",
+                                                "all exits",
+                                                "day-2 follow-through add-on settings",
+                                                "scarce-slot breakout routing",
+                                                "LLM/news replay",
+                                                "earnings strategy"
+                                            ]
+                   },
+    "date_range":  {
+                       "start":  "2025-10-23",
+                       "end":  "2026-04-21"
+                   },
+    "secondary_windows":  [
+                              {
+                                  "start":  "2025-04-23",
+                                  "end":  "2025-10-22"
+                              },
+                              {
+                                  "start":  "2024-10-02",
+                                  "end":  "2025-04-22"
+                              }
+                          ],
+    "market_regime_summary":  {
+                                  "late_strong":  "slow-melt bull / accepted-stack dominant tape",
+                                  "mid_weak":  "rotation-heavy bull where strategy makes money but lags indexes",
+                                  "old_thin":  "mixed-to-weak older tape with lower win rate"
+                              },
+    "before_metrics":  {
+                           "late_strong":  {
+                                               "expected_value_score":  1.7213,
+                                               "sharpe_daily":  4.38,
+                                               "total_pnl":  39295.69,
+                                               "total_return_pct":  0.393,
+                                               "max_drawdown_pct":  0.0282,
+                                               "win_rate":  0.7895,
+                                               "trade_count":  19,
+                                               "survival_rate":  0.8431
+                                           },
+                           "mid_weak":  {
+                                            "expected_value_score":  0.7097,
+                                            "sharpe_daily":  2.59,
+                                            "total_pnl":  27404.74,
+                                            "total_return_pct":  0.274,
+                                            "max_drawdown_pct":  0.0403,
+                                            "win_rate":  0.5238,
+                                            "trade_count":  21,
+                                            "survival_rate":  0.7925
+                                        },
+                           "old_thin":  {
+                                            "expected_value_score":  0.1767,
+                                            "sharpe_daily":  1.29,
+                                            "total_pnl":  13704.83,
+                                            "total_return_pct":  0.137,
+                                            "max_drawdown_pct":  0.0442,
+                                            "win_rate":  0.4091,
+                                            "trade_count":  22,
+                                            "survival_rate":  0.9167
+                                        }
+                       },
+    "after_metrics":  {
+                          "best_variant":  "close_location_cancel_lt_50",
+                          "late_strong":  {
+                                              "expected_value_score":  1.2336,
+                                              "sharpe_daily":  3.9,
+                                              "total_pnl":  31634.76,
+                                              "total_return_pct":  0.3163,
+                                              "max_drawdown_pct":  0.0248,
+                                              "win_rate":  0.8,
+                                              "trade_count":  15,
+                                              "survival_rate":  0.8627
+                                          },
+                          "mid_weak":  {
+                                           "expected_value_score":  0.5359,
+                                           "sharpe_daily":  2.34,
+                                           "total_pnl":  22896.82,
+                                           "total_return_pct":  0.229,
+                                           "max_drawdown_pct":  0.0403,
+                                           "win_rate":  0.5556,
+                                           "trade_count":  18,
+                                           "survival_rate":  0.8
+                                       },
+                          "old_thin":  {
+                                           "expected_value_score":  0.04,
+                                           "sharpe_daily":  0.77,
+                                           "total_pnl":  5196.0,
+                                           "total_return_pct":  0.052,
+                                           "max_drawdown_pct":  0.0336,
+                                           "win_rate":  0.28,
+                                           "trade_count":  25,
+                                           "survival_rate":  0.9254
+                                       }
+                      },
+    "delta_metrics":  {
+                          "late_strong":  {
+                                              "expected_value_score":  -0.4877,
+                                              "sharpe_daily":  -0.48,
+                                              "total_pnl":  -7660.93,
+                                              "total_return_pct":  -0.0767,
+                                              "max_drawdown_pct":  -0.0034,
+                                              "win_rate":  0.0105,
+                                              "trade_count":  -4,
+                                              "survival_rate":  0.0196
+                                          },
+                          "mid_weak":  {
+                                           "expected_value_score":  -0.1738,
+                                           "sharpe_daily":  -0.25,
+                                           "total_pnl":  -4507.92,
+                                           "total_return_pct":  -0.045,
+                                           "max_drawdown_pct":  0.0,
+                                           "win_rate":  0.0318,
+                                           "trade_count":  -3,
+                                           "survival_rate":  0.0075
+                                       },
+                          "old_thin":  {
+                                           "expected_value_score":  -0.1367,
+                                           "sharpe_daily":  -0.52,
+                                           "total_pnl":  -8508.83,
+                                           "total_return_pct":  -0.085,
+                                           "max_drawdown_pct":  -0.0106,
+                                           "win_rate":  -0.1291,
+                                           "trade_count":  3,
+                                           "survival_rate":  0.0087
+                                       },
+                          "aggregate":  {
+                                            "expected_value_score_delta_sum":  -0.7982,
+                                            "total_pnl_delta_sum":  -20677.68,
+                                            "baseline_total_pnl_sum":  80405.26,
+                                            "total_pnl_delta_pct":  -0.257168,
+                                            "windows_improved":  0,
+                                            "windows_regressed":  3,
+                                            "max_drawdown_delta_max":  0.0,
+                                            "trade_count_delta_sum":  -4,
+                                            "signal_day_close_location_cancel_count":  13
+                                        },
+                          "gate4_basis":  "Rejected because all three fixed windows regressed EV and aggregate PnL fell by 25.7168%."
+                      },
+    "production_impact":  {
+                              "shared_policy_changed":  false,
+                              "backtester_adapter_changed":  false,
+                              "run_adapter_changed":  false,
+                              "replay_only":  true,
+                              "parity_test_added":  false
+                          },
+    "llm_metrics":  {
+                        "used_llm":  false,
+                        "blocker_relation":  "LLM soft-ranking remains sample-limited, so this deterministic entry-execution alpha was tested instead."
+                    },
+    "decision":  "rejected",
+    "rejection_reason":  "Signal-day weak close-location is not a useful A/B entry quality filter; even the loosest 0.50 threshold regressed EV, PnL, and trade count in all fixed windows.",
+    "next_retry_requires":  [
+                                "Do not retry simple signal-day close-location entry cancels or nearby 0.50-0.70 thresholds.",
+                                "A valid retry needs orthogonal event, intraday reclaim, or forward/paper evidence showing weak closes are recoverable or harmful by context.",
+                                "Do not combine this price-only cancel with gap-cancel threshold changes without separate evidence."
+                            ],
+    "related_files":  [
+                          "quant/experiments/exp_20260428_024_signal_day_close_location_entry_cancel.py",
+                          "data/experiments/exp-20260428-024/exp_20260428_024_signal_day_close_location_entry_cancel.json",
+                          "docs/experiments/logs/exp-20260428-024.json",
+                          "docs/experiments/tickets/exp-20260428-024.json"
+                      ],
+    "notes":  "Alpha search, not bug repair. Production strategy code was unchanged because Gate 4 failed."
+}

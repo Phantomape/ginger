@@ -1,0 +1,210 @@
+{
+    "experiment_id":  "exp-20260428-022",
+    "timestamp":  "2026-04-28T08:08:46.061908+00:00",
+    "status":  "rejected",
+    "hypothesis":  "For sleeves with accepted winner-truncation evidence, an upside next-open gap may be momentum confirmation rather than overextension; a narrow exception to the existing 1.5% upside-gap cancel may improve EV without changing the global threshold.",
+    "change_summary":  "Added an experiment-only runner that tested narrow upside-gap cancel exceptions for trend_long Technology, trend_long Commodities, and both cohorts on the fixed backtesting.md windows. Production strategy defaults were unchanged.",
+    "change_type":  "alpha_search_entry_execution_state_exception",
+    "component":  "quant/experiments/exp_20260428_022_upside_gap_momentum_exception.py",
+    "parameters":  {
+                       "single_causal_variable":  "upside gap cancel exception cohort",
+                       "baseline_cancel_gap_pct":  0.015,
+                       "adverse_gap_cancel_pct":  0.02,
+                       "variants":  {
+                                        "baseline_no_exception":  {
+                                                                      "strategy":  null,
+                                                                      "sectors":  [
+
+                                                                                  ]
+                                                                  },
+                                        "trend_technology_exception":  {
+                                                                           "strategy":  "trend_long",
+                                                                           "sectors":  [
+                                                                                           "Technology"
+                                                                                       ]
+                                                                       },
+                                        "trend_commodity_exception":  {
+                                                                          "strategy":  "trend_long",
+                                                                          "sectors":  [
+                                                                                          "Commodities"
+                                                                                      ]
+                                                                      },
+                                        "trend_technology_commodity_exception":  {
+                                                                                     "strategy":  "trend_long",
+                                                                                     "sectors":  [
+                                                                                                     "Technology",
+                                                                                                     "Commodities"
+                                                                                                 ]
+                                                                                 }
+                                    },
+                       "locked_variables":  [
+                                                "CANCEL_GAP_PCT",
+                                                "ADVERSE_GAP_CANCEL_PCT",
+                                                "signal generation",
+                                                "risk sizing",
+                                                "all exits",
+                                                "day-2 follow-through add-on settings",
+                                                "scarce-slot breakout routing",
+                                                "LLM/news replay",
+                                                "earnings strategy"
+                                            ]
+                   },
+    "date_range":  {
+                       "start":  "2025-10-23",
+                       "end":  "2026-04-21"
+                   },
+    "secondary_windows":  [
+                              {
+                                  "start":  "2025-04-23",
+                                  "end":  "2025-10-22"
+                              },
+                              {
+                                  "start":  "2024-10-02",
+                                  "end":  "2025-04-22"
+                              }
+                          ],
+    "market_regime_summary":  {
+                                  "late_strong":  "slow-melt bull / accepted-stack dominant tape",
+                                  "old_thin":  "mixed-to-weak older tape with lower win rate",
+                                  "mid_weak":  "rotation-heavy bull where strategy makes money but lags indexes"
+                              },
+    "before_metrics":  {
+                           "late_strong":  {
+                                               "expected_value_score":  1.7213,
+                                               "sharpe_daily":  4.38,
+                                               "total_pnl":  39295.69,
+                                               "total_return_pct":  0.393,
+                                               "max_drawdown_pct":  0.0282,
+                                               "win_rate":  0.7895,
+                                               "trade_count":  19,
+                                               "survival_rate":  0.8431
+                                           },
+                           "old_thin":  {
+                                            "expected_value_score":  0.1767,
+                                            "sharpe_daily":  1.29,
+                                            "total_pnl":  13704.83,
+                                            "total_return_pct":  0.137,
+                                            "max_drawdown_pct":  0.0442,
+                                            "win_rate":  0.4091,
+                                            "trade_count":  22,
+                                            "survival_rate":  0.9167
+                                        },
+                           "mid_weak":  {
+                                            "expected_value_score":  0.7097,
+                                            "sharpe_daily":  2.59,
+                                            "total_pnl":  27404.74,
+                                            "total_return_pct":  0.274,
+                                            "max_drawdown_pct":  0.0403,
+                                            "win_rate":  0.5238,
+                                            "trade_count":  21,
+                                            "survival_rate":  0.7925
+                                        }
+                       },
+    "after_metrics":  {
+                          "best_variant":  "trend_technology_exception",
+                          "late_strong":  {
+                                              "expected_value_score":  2.0939,
+                                              "sharpe_daily":  5.65,
+                                              "total_pnl":  37058.58,
+                                              "total_return_pct":  0.3706,
+                                              "max_drawdown_pct":  0.0246,
+                                              "win_rate":  0.7273,
+                                              "trade_count":  22,
+                                              "survival_rate":  0.8333
+                                          },
+                          "mid_weak":  {
+                                           "expected_value_score":  0.7097,
+                                           "sharpe_daily":  2.59,
+                                           "total_pnl":  27404.74,
+                                           "total_return_pct":  0.274,
+                                           "max_drawdown_pct":  0.0403,
+                                           "win_rate":  0.5238,
+                                           "trade_count":  21,
+                                           "survival_rate":  0.7925
+                                       },
+                          "old_thin":  {
+                                           "expected_value_score":  0.172,
+                                           "sharpe_daily":  1.23,
+                                           "total_pnl":  13980.95,
+                                           "total_return_pct":  0.1398,
+                                           "max_drawdown_pct":  0.04,
+                                           "win_rate":  0.4,
+                                           "trade_count":  25,
+                                           "survival_rate":  0.8889
+                                       },
+                          "rejected_variants":  {
+                                                    "trend_technology_exception":  {
+                                                                                       "expected_value_score_delta_sum":  0.3679,
+                                                                                       "total_pnl_delta_sum":  -1960.99,
+                                                                                       "baseline_total_pnl_sum":  80405.26,
+                                                                                       "total_pnl_delta_pct":  -0.024389,
+                                                                                       "windows_improved":  1,
+                                                                                       "windows_regressed":  1,
+                                                                                       "max_drawdown_delta_max":  0.0,
+                                                                                       "exception_count":  5,
+                                                                                       "gap_cancel_count":  10
+                                                                                   },
+                                                    "trend_commodity_exception":  {
+                                                                                      "expected_value_score_delta_sum":  -0.3162,
+                                                                                      "total_pnl_delta_sum":  -4254.55,
+                                                                                      "baseline_total_pnl_sum":  80405.26,
+                                                                                      "total_pnl_delta_pct":  -0.052914,
+                                                                                      "windows_improved":  0,
+                                                                                      "windows_regressed":  1,
+                                                                                      "max_drawdown_delta_max":  0.0,
+                                                                                      "exception_count":  2,
+                                                                                      "gap_cancel_count":  13
+                                                                                  },
+                                                    "trend_technology_commodity_exception":  {
+                                                                                                 "expected_value_score_delta_sum":  -0.0091,
+                                                                                                 "total_pnl_delta_sum":  -6133.77,
+                                                                                                 "baseline_total_pnl_sum":  80405.26,
+                                                                                                 "total_pnl_delta_pct":  -0.076286,
+                                                                                                 "windows_improved":  0,
+                                                                                                 "windows_regressed":  2,
+                                                                                                 "max_drawdown_delta_max":  0.0,
+                                                                                                 "exception_count":  7,
+                                                                                                 "gap_cancel_count":  8
+                                                                                             }
+                                                }
+                      },
+    "delta_metrics":  {
+                          "aggregate":  {
+                                            "expected_value_score_delta_sum":  0.3679,
+                                            "total_pnl_delta_sum":  -1960.99,
+                                            "baseline_total_pnl_sum":  80405.26,
+                                            "total_pnl_delta_pct":  -0.024389,
+                                            "windows_improved":  1,
+                                            "windows_regressed":  1,
+                                            "max_drawdown_delta_max":  0.0,
+                                            "exception_count":  5,
+                                            "gap_cancel_count":  10
+                                        },
+                          "gate4_basis":  "Rejected because no exception cohort passed multi-window Gate 4."
+                      },
+    "production_impact":  {
+                              "shared_policy_changed":  false,
+                              "backtester_adapter_changed":  false,
+                              "run_adapter_changed":  false,
+                              "replay_only":  true,
+                              "parity_test_added":  false
+                          },
+    "llm_metrics":  {
+                        "used_llm":  false,
+                        "blocker_relation":  "LLM soft ranking remains sample-limited, so this deterministic entry-execution alpha was tested instead."
+                    },
+    "decision":  "rejected",
+    "rejection_reason":  "The best cohort exception improved late_strong EV but reduced aggregate PnL and regressed old_thin EV; Commodity exceptions damaged late_strong. No variant passed multi-window Gate 4.",
+    "next_retry_requires":  [
+                                "Do not treat accepted winner-truncation sleeves as sufficient evidence for upside-gap momentum exceptions.",
+                                "A valid retry needs an orthogonal event/state source explaining why a specific upside gap is confirmation, not just sector/strategy membership.",
+                                "Do not repeat Technology/Commodity trend upside-gap exceptions without forward or news/event evidence."
+                            ],
+    "related_files":  [
+                          "quant/experiments/exp_20260428_022_upside_gap_momentum_exception.py",
+                          "data\\experiments\\exp-20260428-022\\exp_20260428_022_upside_gap_momentum_exception.json",
+                          "docs\\experiments\\logs\\exp-20260428-022.json",
+                          "docs\\experiments\\tickets\\exp-20260428-022.json"
+                      ],
+    "notes":  "Alpha search, not bug repair. Production strategy code was unchanged because Gate 4 failed."
+}

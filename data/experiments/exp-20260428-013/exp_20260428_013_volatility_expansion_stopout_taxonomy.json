@@ -1,0 +1,314 @@
+{
+  "aggregate": {
+    "family_loss_abs": 0.0,
+    "family_loss_count": 0,
+    "family_loss_dollar_share": 0.0,
+    "family_loss_frequency_share": 0.0,
+    "loss_count": 30,
+    "oracle_avoid_loss_minus_winner_collateral": 0.0,
+    "tail_family_abs": 0.0,
+    "tail_family_count": 0,
+    "tail_loss_abs": 7152.46,
+    "tail_loss_count": 8,
+    "tail_loss_share_explained": 0.0,
+    "total_loss_abs": 11267.06,
+    "trade_count": 64,
+    "win_count": 34,
+    "winner_collateral_count": 0,
+    "winner_collateral_pnl": 0.0
+  },
+  "audit_rows": [],
+  "change_type": "failure_taxonomy",
+  "created_at": "2026-04-28T05:58:21.036927+00:00",
+  "experiment_id": "exp-20260428-013",
+  "family_loss_summary": {
+    "avg_pnl": null,
+    "count": 0,
+    "median_pnl": null,
+    "pnl_sum": 0,
+    "sector_counts": {},
+    "strategy_counts": {},
+    "tickers": [],
+    "window_counts": {}
+  },
+  "future_candidate_fix_shape": {
+    "candidate_type": "observed-only lifecycle risk monitor or position-size decay, not a hard entry filter",
+    "next_test": "Default-off replay that halves remaining risk only after two in-position days with range expansion >=1.5x and MFE <1R, then compare with winner collateral.",
+    "risk": "May cut noisy eventual winners before target, especially in trend regimes with volatility expansion that resolves upward.",
+    "why": "The condition is only knowable after entry and has measurable winner collateral, so direct veto would be an oracle rule."
+  },
+  "history_guardrails": {
+    "distinct_from_extension": "uses post-entry realized range, not pre-entry extension or next-day followthrough",
+    "distinct_from_gap_down": "uses high-low range expansion, not overnight gap",
+    "distinct_from_low_mfe": "requires MFE >= +1% and MFE < 1R, so it is not the zero-MFE stopout family",
+    "does_not_add_filter": true,
+    "does_not_change_strategy_logic": true
+  },
+  "lane": "loss_attribution",
+  "loss_sensitivity_diagnostics": {
+    "all_except_avg_expansion": {
+      "count": 3,
+      "loss_pnl_abs": 1309.3,
+      "summary": {
+        "avg_pnl": -436.43,
+        "count": 3,
+        "median_pnl": -280.1,
+        "pnl_sum": -1309.3,
+        "sector_counts": {
+          "Financials": 1,
+          "Technology": 2
+        },
+        "strategy_counts": {
+          "trend_long": 3
+        },
+        "tickers": [
+          "AMD",
+          "GOOG",
+          "V"
+        ],
+        "window_counts": {
+          "mid_weak": 1,
+          "old_thin": 2
+        }
+      }
+    },
+    "all_except_mfe_floor": {
+      "count": 2,
+      "loss_pnl_abs": 1836.39,
+      "summary": {
+        "avg_pnl": -918.19,
+        "count": 2,
+        "median_pnl": -918.19,
+        "pnl_sum": -1836.39,
+        "sector_counts": {
+          "Energy": 2
+        },
+        "strategy_counts": {
+          "breakout_long": 1,
+          "trend_long": 1
+        },
+        "tickers": [
+          "CVX",
+          "XOM"
+        ],
+        "window_counts": {
+          "late_strong": 2
+        }
+      }
+    },
+    "avg_expansion_gte_1_25": {
+      "count": 12,
+      "loss_pnl_abs": 3689.5,
+      "summary": {
+        "avg_pnl": -307.46,
+        "count": 12,
+        "median_pnl": -154.28,
+        "pnl_sum": -3689.5,
+        "sector_counts": {
+          "Energy": 2,
+          "Financials": 1,
+          "Healthcare": 1,
+          "Technology": 8
+        },
+        "strategy_counts": {
+          "breakout_long": 2,
+          "trend_long": 10
+        },
+        "tickers": [
+          "AMD",
+          "CVX",
+          "DDOG",
+          "GOOG",
+          "ISRG",
+          "PLTR",
+          "TSM",
+          "V",
+          "XOM"
+        ],
+        "window_counts": {
+          "late_strong": 4,
+          "mid_weak": 5,
+          "old_thin": 3
+        }
+      }
+    },
+    "avg_expansion_gte_1_50": {
+      "count": 4,
+      "loss_pnl_abs": 2671.27,
+      "summary": {
+        "avg_pnl": -667.82,
+        "count": 4,
+        "median_pnl": -815.4,
+        "pnl_sum": -2671.27,
+        "sector_counts": {
+          "Energy": 2,
+          "Financials": 1,
+          "Healthcare": 1
+        },
+        "strategy_counts": {
+          "breakout_long": 2,
+          "trend_long": 2
+        },
+        "tickers": [
+          "CVX",
+          "ISRG",
+          "V",
+          "XOM"
+        ],
+        "window_counts": {
+          "late_strong": 2,
+          "mid_weak": 1,
+          "old_thin": 1
+        }
+      }
+    },
+    "max_expansion_gte_2_00": {
+      "count": 9,
+      "loss_pnl_abs": 4550.67,
+      "summary": {
+        "avg_pnl": -505.63,
+        "count": 9,
+        "median_pnl": -280.1,
+        "pnl_sum": -4550.67,
+        "sector_counts": {
+          "Communication Services": 1,
+          "Energy": 2,
+          "Financials": 2,
+          "Technology": 4
+        },
+        "strategy_counts": {
+          "breakout_long": 2,
+          "trend_long": 7
+        },
+        "tickers": [
+          "AMD",
+          "CVX",
+          "GOOG",
+          "GS",
+          "NFLX",
+          "PLTR",
+          "SNOW",
+          "V",
+          "XOM"
+        ],
+        "window_counts": {
+          "late_strong": 3,
+          "mid_weak": 3,
+          "old_thin": 3
+        }
+      }
+    },
+    "mfe_between_1pct_and_1r": {
+      "count": 9,
+      "loss_pnl_abs": 4248.07,
+      "summary": {
+        "avg_pnl": -472.01,
+        "count": 9,
+        "median_pnl": -280.1,
+        "pnl_sum": -4248.07,
+        "sector_counts": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 1,
+          "Financials": 1,
+          "Technology": 5,
+          "Unknown": 1
+        },
+        "strategy_counts": {
+          "breakout_long": 2,
+          "trend_long": 7
+        },
+        "tickers": [
+          "AMD",
+          "DDOG",
+          "GOOG",
+          "MCD",
+          "NFLX",
+          "SNOW",
+          "TRIP",
+          "V"
+        ],
+        "window_counts": {
+          "mid_weak": 3,
+          "old_thin": 6
+        }
+      }
+    }
+  },
+  "single_causal_variable": "post-entry volatility expansion stopout taxonomy",
+  "strategy_behavior_changed": false,
+  "taxonomy_definition": {
+    "criteria": {
+      "exit_reason": "stop",
+      "hold_avg_range_expansion_gte": 1.5,
+      "hold_max_range_expansion_gte": 2.0,
+      "mfe_pct_gte": 0.01,
+      "mfe_r_lt": 1.0,
+      "pre_entry_range_days": 10
+    },
+    "interpretation": "The trade made some progress, but post-entry realized range expanded sharply before it ever earned 1R; future fixes should be lifecycle sizing/monitoring candidates, not entry filters.",
+    "name": "post_entry_volatility_expansion_stopout"
+  },
+  "windows": {
+    "late_strong": {
+      "metrics": {
+        "expected_value_score": 1.6495,
+        "max_drawdown_pct": 0.0281,
+        "sharpe_daily": 4.29,
+        "strategy_total_return_pct": 0.3845,
+        "survival_rate": 0.8431,
+        "total_pnl": 38452.19,
+        "trade_count": 21,
+        "win_rate": 0.7143
+      },
+      "range": {
+        "end": "2026-04-21",
+        "start": "2025-10-23"
+      },
+      "regime": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "metrics": {
+        "expected_value_score": 0.6083,
+        "max_drawdown_pct": 0.0263,
+        "sharpe_daily": 2.54,
+        "strategy_total_return_pct": 0.2395,
+        "survival_rate": 0.8298,
+        "total_pnl": 23949.98,
+        "trade_count": 20,
+        "win_rate": 0.5
+      },
+      "range": {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      "regime": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "metrics": {
+        "expected_value_score": 0.1765,
+        "max_drawdown_pct": 0.0442,
+        "sharpe_daily": 1.29,
+        "strategy_total_return_pct": 0.1368,
+        "survival_rate": 0.9167,
+        "total_pnl": 13683.1,
+        "trade_count": 23,
+        "win_rate": 0.3913
+      },
+      "range": {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      },
+      "regime": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "winner_collateral_summary": {
+    "avg_pnl": null,
+    "count": 0,
+    "median_pnl": null,
+    "pnl_sum": 0,
+    "sector_counts": {},
+    "strategy_counts": {},
+    "tickers": [],
+    "window_counts": {}
+  }
+}

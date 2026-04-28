@@ -1,0 +1,1393 @@
+{
+  "experiment_id": "exp-20260428-021",
+  "created_at": "2026-04-28T07:09:28.185146+00:00",
+  "lane": "alpha_search",
+  "change_type": "entry_execution_cancel_sweep",
+  "single_causal_variable": "upside next-open gap cancel threshold",
+  "hypothesis": "The 1.5% upside next-open cancel may be mis-sized; tuning only this execution threshold may improve expected value without touching the signal, exit, add-on, scarce-slot, LLM/news, or earnings layers.",
+  "history_guardrails": {
+    "does_not_repeat_adverse_gap_down_thresholds": true,
+    "does_not_repeat_addon_threshold_tuning": true,
+    "does_not_use_llm_soft_ranking_sample": true,
+    "does_not_promote_price_only_weak_hold_exit": true,
+    "production_strategy_changed": false
+  },
+  "parameters": {
+    "baseline_cancel_gap_pct": 0.015,
+    "tested_cancel_gap_pct": [
+      0.01,
+      0.015,
+      0.02,
+      0.03,
+      0.05,
+      null
+    ],
+    "locked_variables": [
+      "signal generation",
+      "risk sizing",
+      "exits",
+      "day-2 follow-through add-on settings",
+      "adverse gap-down cancel threshold",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "rows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "upside_gap_cancel_1pct",
+      "cancel_gap_pct": 0.01,
+      "metrics": {
+        "expected_value_score": 1.7222,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39316.62,
+        "total_return_pct": 0.3932,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.8333,
+        "trade_count": 18,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 7,
+      "adverse_gap_down_cancel_count": 5,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 18,
+        "gap_cancel": 7,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "baseline_upside_gap_cancel_1_5pct",
+      "cancel_gap_pct": 0.015,
+      "metrics": {
+        "expected_value_score": 1.7213,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39295.69,
+        "total_return_pct": 0.393,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 5,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "upside_gap_cancel_2pct",
+      "cancel_gap_pct": 0.02,
+      "metrics": {
+        "expected_value_score": 1.7213,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39295.69,
+        "total_return_pct": 0.393,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 5,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "upside_gap_cancel_3pct",
+      "cancel_gap_pct": 0.03,
+      "metrics": {
+        "expected_value_score": 1.7213,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39295.69,
+        "total_return_pct": 0.393,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 5,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "upside_gap_cancel_5pct",
+      "cancel_gap_pct": 0.05,
+      "metrics": {
+        "expected_value_score": 1.2307,
+        "sharpe_daily": 4.3,
+        "total_pnl": 28624.64,
+        "total_return_pct": 0.2862,
+        "max_drawdown_pct": 0.0246,
+        "win_rate": 0.6154,
+        "trade_count": 26,
+        "survival_rate": 0.8333
+      },
+      "gap_cancel_count": 0,
+      "adverse_gap_down_cancel_count": 5,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 26,
+        "no_future_fill": 1,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 1,
+        "slot_sliced": 2
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "upside_gap_cancel_disabled",
+      "cancel_gap_pct": null,
+      "metrics": {
+        "expected_value_score": 1.2307,
+        "sharpe_daily": 4.3,
+        "total_pnl": 28624.64,
+        "total_return_pct": 0.2862,
+        "max_drawdown_pct": 0.0246,
+        "win_rate": 0.6154,
+        "trade_count": 26,
+        "survival_rate": 0.8333
+      },
+      "gap_cancel_count": 0,
+      "adverse_gap_down_cancel_count": 5,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 26,
+        "no_future_fill": 1,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 1,
+        "slot_sliced": 2
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "upside_gap_cancel_1pct",
+      "cancel_gap_pct": 0.01,
+      "metrics": {
+        "expected_value_score": 0.4561,
+        "sharpe_daily": 2.34,
+        "total_pnl": 19485.5,
+        "total_return_pct": 0.1949,
+        "max_drawdown_pct": 0.0335,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.7966
+      },
+      "gap_cancel_count": 7,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 7,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 7
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "baseline_upside_gap_cancel_1_5pct",
+      "cancel_gap_pct": 0.015,
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "upside_gap_cancel_2pct",
+      "cancel_gap_pct": 0.02,
+      "metrics": {
+        "expected_value_score": 0.6262,
+        "sharpe_daily": 2.43,
+        "total_pnl": 25770.92,
+        "total_return_pct": 0.2577,
+        "max_drawdown_pct": 0.0274,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.8163
+      },
+      "gap_cancel_count": 3,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 3,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 3,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "upside_gap_cancel_3pct",
+      "cancel_gap_pct": 0.03,
+      "metrics": {
+        "expected_value_score": 0.5072,
+        "sharpe_daily": 2.19,
+        "total_pnl": 23163.68,
+        "total_return_pct": 0.2316,
+        "max_drawdown_pct": 0.0485,
+        "win_rate": 0.5,
+        "trade_count": 22,
+        "survival_rate": 0.8163
+      },
+      "gap_cancel_count": 2,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 2,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 3,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "upside_gap_cancel_5pct",
+      "cancel_gap_pct": 0.05,
+      "metrics": {
+        "expected_value_score": 0.4901,
+        "sharpe_daily": 2.18,
+        "total_pnl": 22480.84,
+        "total_return_pct": 0.2248,
+        "max_drawdown_pct": 0.0487,
+        "win_rate": 0.5,
+        "trade_count": 22,
+        "survival_rate": 0.7959
+      },
+      "gap_cancel_count": 1,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 1,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 3,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "upside_gap_cancel_disabled",
+      "cancel_gap_pct": null,
+      "metrics": {
+        "expected_value_score": 0.4953,
+        "sharpe_daily": 2.16,
+        "total_pnl": 22925.02,
+        "total_return_pct": 0.2293,
+        "max_drawdown_pct": 0.0487,
+        "win_rate": 0.5217,
+        "trade_count": 23,
+        "survival_rate": 0.7959
+      },
+      "gap_cancel_count": 0,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 23,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 5
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "upside_gap_cancel_1pct",
+      "cancel_gap_pct": 0.01,
+      "metrics": {
+        "expected_value_score": 0.0981,
+        "sharpe_daily": 1.01,
+        "total_pnl": 9708.98,
+        "total_return_pct": 0.0971,
+        "max_drawdown_pct": 0.0559,
+        "win_rate": 0.3636,
+        "trade_count": 22,
+        "survival_rate": 0.9242
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 2,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 2,
+        "entered": 22,
+        "gap_cancel": 6,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 13
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "baseline_upside_gap_cancel_1_5pct",
+      "cancel_gap_pct": 0.015,
+      "metrics": {
+        "expected_value_score": 0.1767,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13704.83,
+        "total_return_pct": 0.137,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "upside_gap_cancel_2pct",
+      "cancel_gap_pct": 0.02,
+      "metrics": {
+        "expected_value_score": 0.1211,
+        "sharpe_daily": 1.11,
+        "total_pnl": 10914.75,
+        "total_return_pct": 0.1091,
+        "max_drawdown_pct": 0.0441,
+        "win_rate": 0.3478,
+        "trade_count": 23,
+        "survival_rate": 0.9153
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 23,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 7,
+        "slot_sliced": 8
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "upside_gap_cancel_3pct",
+      "cancel_gap_pct": 0.03,
+      "metrics": {
+        "expected_value_score": 0.0982,
+        "sharpe_daily": 1.0,
+        "total_pnl": 9820.22,
+        "total_return_pct": 0.0982,
+        "max_drawdown_pct": 0.0441,
+        "win_rate": 0.3333,
+        "trade_count": 24,
+        "survival_rate": 0.9153
+      },
+      "gap_cancel_count": 3,
+      "adverse_gap_down_cancel_count": 1,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 24,
+        "gap_cancel": 3,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "upside_gap_cancel_5pct",
+      "cancel_gap_pct": 0.05,
+      "metrics": {
+        "expected_value_score": 0.0966,
+        "sharpe_daily": 0.89,
+        "total_pnl": 10848.28,
+        "total_return_pct": 0.1085,
+        "max_drawdown_pct": 0.0667,
+        "win_rate": 0.3704,
+        "trade_count": 27,
+        "survival_rate": 0.871
+      },
+      "gap_cancel_count": 1,
+      "adverse_gap_down_cancel_count": 0,
+      "entry_reason_counts": {
+        "entered": 27,
+        "gap_cancel": 1,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 6,
+        "slot_sliced": 11
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "upside_gap_cancel_disabled",
+      "cancel_gap_pct": null,
+      "metrics": {
+        "expected_value_score": 0.0993,
+        "sharpe_daily": 0.9,
+        "total_pnl": 11033.63,
+        "total_return_pct": 0.1103,
+        "max_drawdown_pct": 0.0666,
+        "win_rate": 0.3929,
+        "trade_count": 28,
+        "survival_rate": 0.871
+      },
+      "gap_cancel_count": 0,
+      "adverse_gap_down_cancel_count": 0,
+      "entry_reason_counts": {
+        "entered": 28,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 6,
+        "slot_sliced": 11
+      }
+    }
+  ],
+  "summary": {
+    "upside_gap_cancel_1pct": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.7222,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39316.62,
+            "total_return_pct": 0.3932,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.8333,
+            "trade_count": 18,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": 0.0009,
+            "sharpe_daily": 0.0,
+            "total_pnl": 20.93,
+            "total_return_pct": 0.0002,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0438,
+            "trade_count": -1,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 7,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 5,
+            "entered": 18,
+            "gap_cancel": 7,
+            "no_future_fill": 1,
+            "no_shares": 9,
+            "slot_sliced": 3
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.4561,
+            "sharpe_daily": 2.34,
+            "total_pnl": 19485.5,
+            "total_return_pct": 0.1949,
+            "max_drawdown_pct": 0.0335,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.7966
+          },
+          "delta": {
+            "expected_value_score": -0.2536,
+            "sharpe_daily": -0.25,
+            "total_pnl": -7919.24,
+            "total_return_pct": -0.0791,
+            "max_drawdown_pct": -0.0068,
+            "win_rate": -0.1147,
+            "trade_count": 1,
+            "survival_rate": 0.0041
+          },
+          "gap_cancel_count": 7,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 22,
+            "gap_cancel": 7,
+            "no_shares": 10,
+            "scarce_slot_breakout_deferred": 7
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.0981,
+            "sharpe_daily": 1.01,
+            "total_pnl": 9708.98,
+            "total_return_pct": 0.0971,
+            "max_drawdown_pct": 0.0559,
+            "win_rate": 0.3636,
+            "trade_count": 22,
+            "survival_rate": 0.9242
+          },
+          "delta": {
+            "expected_value_score": -0.0786,
+            "sharpe_daily": -0.28,
+            "total_pnl": -3995.85,
+            "total_return_pct": -0.0399,
+            "max_drawdown_pct": 0.0117,
+            "win_rate": -0.0455,
+            "trade_count": 0,
+            "survival_rate": 0.0075
+          },
+          "gap_cancel_count": 6,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 2,
+            "entered": 22,
+            "gap_cancel": 6,
+            "no_shares": 10,
+            "scarce_slot_breakout_deferred": 8,
+            "slot_sliced": 13
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.3313,
+        "total_pnl_delta_sum": -11894.16,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.147928,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0117,
+        "gap_cancel_count": 20
+      }
+    },
+    "upside_gap_cancel_2pct": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 6,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 5,
+            "entered": 19,
+            "gap_cancel": 6,
+            "no_future_fill": 1,
+            "no_shares": 9,
+            "slot_sliced": 3
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.6262,
+            "sharpe_daily": 2.43,
+            "total_pnl": 25770.92,
+            "total_return_pct": 0.2577,
+            "max_drawdown_pct": 0.0274,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.8163
+          },
+          "delta": {
+            "expected_value_score": -0.0835,
+            "sharpe_daily": -0.16,
+            "total_pnl": -1633.82,
+            "total_return_pct": -0.0163,
+            "max_drawdown_pct": -0.0129,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0238
+          },
+          "gap_cancel_count": 3,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 21,
+            "gap_cancel": 3,
+            "no_shares": 11,
+            "scarce_slot_breakout_deferred": 3,
+            "slot_sliced": 1
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.1211,
+            "sharpe_daily": 1.11,
+            "total_pnl": 10914.75,
+            "total_return_pct": 0.1091,
+            "max_drawdown_pct": 0.0441,
+            "win_rate": 0.3478,
+            "trade_count": 23,
+            "survival_rate": 0.9153
+          },
+          "delta": {
+            "expected_value_score": -0.0556,
+            "sharpe_daily": -0.18,
+            "total_pnl": -2790.08,
+            "total_return_pct": -0.0279,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": -0.0613,
+            "trade_count": 1,
+            "survival_rate": -0.0014
+          },
+          "gap_cancel_count": 5,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 23,
+            "gap_cancel": 5,
+            "no_shares": 10,
+            "scarce_slot_breakout_deferred": 7,
+            "slot_sliced": 8
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.1391,
+        "total_pnl_delta_sum": -4423.9,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.05502,
+        "windows_improved": 0,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0,
+        "gap_cancel_count": 14
+      }
+    },
+    "upside_gap_cancel_3pct": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "gap_cancel_count": 6,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 5,
+            "entered": 19,
+            "gap_cancel": 6,
+            "no_future_fill": 1,
+            "no_shares": 9,
+            "slot_sliced": 3
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.5072,
+            "sharpe_daily": 2.19,
+            "total_pnl": 23163.68,
+            "total_return_pct": 0.2316,
+            "max_drawdown_pct": 0.0485,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.8163
+          },
+          "delta": {
+            "expected_value_score": -0.2025,
+            "sharpe_daily": -0.4,
+            "total_pnl": -4241.06,
+            "total_return_pct": -0.0424,
+            "max_drawdown_pct": 0.0082,
+            "win_rate": -0.0238,
+            "trade_count": 1,
+            "survival_rate": 0.0238
+          },
+          "gap_cancel_count": 2,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 22,
+            "gap_cancel": 2,
+            "no_shares": 11,
+            "scarce_slot_breakout_deferred": 3,
+            "slot_sliced": 1
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.0982,
+            "sharpe_daily": 1.0,
+            "total_pnl": 9820.22,
+            "total_return_pct": 0.0982,
+            "max_drawdown_pct": 0.0441,
+            "win_rate": 0.3333,
+            "trade_count": 24,
+            "survival_rate": 0.9153
+          },
+          "delta": {
+            "expected_value_score": -0.0785,
+            "sharpe_daily": -0.29,
+            "total_pnl": -3884.61,
+            "total_return_pct": -0.0388,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": -0.0758,
+            "trade_count": 2,
+            "survival_rate": -0.0014
+          },
+          "gap_cancel_count": 3,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 24,
+            "gap_cancel": 3,
+            "no_shares": 9,
+            "scarce_slot_breakout_deferred": 8,
+            "slot_sliced": 9
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.281,
+        "total_pnl_delta_sum": -8125.67,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.101059,
+        "windows_improved": 0,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0082,
+        "gap_cancel_count": 11
+      }
+    },
+    "upside_gap_cancel_5pct": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.2307,
+            "sharpe_daily": 4.3,
+            "total_pnl": 28624.64,
+            "total_return_pct": 0.2862,
+            "max_drawdown_pct": 0.0246,
+            "win_rate": 0.6154,
+            "trade_count": 26,
+            "survival_rate": 0.8333
+          },
+          "delta": {
+            "expected_value_score": -0.4906,
+            "sharpe_daily": -0.08,
+            "total_pnl": -10671.05,
+            "total_return_pct": -0.1068,
+            "max_drawdown_pct": -0.0036,
+            "win_rate": -0.1741,
+            "trade_count": 7,
+            "survival_rate": -0.0098
+          },
+          "gap_cancel_count": 0,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 5,
+            "entered": 26,
+            "no_future_fill": 1,
+            "no_shares": 10,
+            "scarce_slot_breakout_deferred": 1,
+            "slot_sliced": 2
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.4901,
+            "sharpe_daily": 2.18,
+            "total_pnl": 22480.84,
+            "total_return_pct": 0.2248,
+            "max_drawdown_pct": 0.0487,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.7959
+          },
+          "delta": {
+            "expected_value_score": -0.2196,
+            "sharpe_daily": -0.41,
+            "total_pnl": -4923.9,
+            "total_return_pct": -0.0492,
+            "max_drawdown_pct": 0.0084,
+            "win_rate": -0.0238,
+            "trade_count": 1,
+            "survival_rate": 0.0034
+          },
+          "gap_cancel_count": 1,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 22,
+            "gap_cancel": 1,
+            "no_shares": 11,
+            "scarce_slot_breakout_deferred": 3,
+            "slot_sliced": 1
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.0966,
+            "sharpe_daily": 0.89,
+            "total_pnl": 10848.28,
+            "total_return_pct": 0.1085,
+            "max_drawdown_pct": 0.0667,
+            "win_rate": 0.3704,
+            "trade_count": 27,
+            "survival_rate": 0.871
+          },
+          "delta": {
+            "expected_value_score": -0.0801,
+            "sharpe_daily": -0.4,
+            "total_pnl": -2856.55,
+            "total_return_pct": -0.0285,
+            "max_drawdown_pct": 0.0225,
+            "win_rate": -0.0387,
+            "trade_count": 5,
+            "survival_rate": -0.0457
+          },
+          "gap_cancel_count": 1,
+          "entry_reason_counts": {
+            "entered": 27,
+            "gap_cancel": 1,
+            "no_shares": 9,
+            "scarce_slot_breakout_deferred": 6,
+            "slot_sliced": 11
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.7903,
+        "total_pnl_delta_sum": -18451.5,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.229481,
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "max_drawdown_delta_max": 0.0225,
+        "gap_cancel_count": 2
+      }
+    },
+    "upside_gap_cancel_disabled": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.2307,
+            "sharpe_daily": 4.3,
+            "total_pnl": 28624.64,
+            "total_return_pct": 0.2862,
+            "max_drawdown_pct": 0.0246,
+            "win_rate": 0.6154,
+            "trade_count": 26,
+            "survival_rate": 0.8333
+          },
+          "delta": {
+            "expected_value_score": -0.4906,
+            "sharpe_daily": -0.08,
+            "total_pnl": -10671.05,
+            "total_return_pct": -0.1068,
+            "max_drawdown_pct": -0.0036,
+            "win_rate": -0.1741,
+            "trade_count": 7,
+            "survival_rate": -0.0098
+          },
+          "gap_cancel_count": 0,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 5,
+            "entered": 26,
+            "no_future_fill": 1,
+            "no_shares": 10,
+            "scarce_slot_breakout_deferred": 1,
+            "slot_sliced": 2
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.4953,
+            "sharpe_daily": 2.16,
+            "total_pnl": 22925.02,
+            "total_return_pct": 0.2293,
+            "max_drawdown_pct": 0.0487,
+            "win_rate": 0.5217,
+            "trade_count": 23,
+            "survival_rate": 0.7959
+          },
+          "delta": {
+            "expected_value_score": -0.2144,
+            "sharpe_daily": -0.43,
+            "total_pnl": -4479.72,
+            "total_return_pct": -0.0447,
+            "max_drawdown_pct": 0.0084,
+            "win_rate": -0.0021,
+            "trade_count": 2,
+            "survival_rate": 0.0034
+          },
+          "gap_cancel_count": 0,
+          "entry_reason_counts": {
+            "adverse_gap_down_cancel": 1,
+            "entered": 23,
+            "no_shares": 10,
+            "scarce_slot_breakout_deferred": 5
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.0993,
+            "sharpe_daily": 0.9,
+            "total_pnl": 11033.63,
+            "total_return_pct": 0.1103,
+            "max_drawdown_pct": 0.0666,
+            "win_rate": 0.3929,
+            "trade_count": 28,
+            "survival_rate": 0.871
+          },
+          "delta": {
+            "expected_value_score": -0.0774,
+            "sharpe_daily": -0.39,
+            "total_pnl": -2671.2,
+            "total_return_pct": -0.0267,
+            "max_drawdown_pct": 0.0224,
+            "win_rate": -0.0162,
+            "trade_count": 6,
+            "survival_rate": -0.0457
+          },
+          "gap_cancel_count": 0,
+          "entry_reason_counts": {
+            "entered": 28,
+            "no_shares": 9,
+            "scarce_slot_breakout_deferred": 6,
+            "slot_sliced": 11
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.7824,
+        "total_pnl_delta_sum": -17821.97,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.221652,
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "max_drawdown_delta_max": 0.0224,
+        "gap_cancel_count": 0
+      }
+    }
+  },
+  "best_variant": "upside_gap_cancel_2pct",
+  "best_variant_summary": {
+    "by_window": {
+      "late_strong": {
+        "before": {
+          "expected_value_score": 1.7213,
+          "sharpe_daily": 4.38,
+          "total_pnl": 39295.69,
+          "total_return_pct": 0.393,
+          "max_drawdown_pct": 0.0282,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8431
+        },
+        "after": {
+          "expected_value_score": 1.7213,
+          "sharpe_daily": 4.38,
+          "total_pnl": 39295.69,
+          "total_return_pct": 0.393,
+          "max_drawdown_pct": 0.0282,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8431
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0
+        },
+        "gap_cancel_count": 6,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 6,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        }
+      },
+      "mid_weak": {
+        "before": {
+          "expected_value_score": 0.7097,
+          "sharpe_daily": 2.59,
+          "total_pnl": 27404.74,
+          "total_return_pct": 0.274,
+          "max_drawdown_pct": 0.0403,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925
+        },
+        "after": {
+          "expected_value_score": 0.6262,
+          "sharpe_daily": 2.43,
+          "total_pnl": 25770.92,
+          "total_return_pct": 0.2577,
+          "max_drawdown_pct": 0.0274,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.8163
+        },
+        "delta": {
+          "expected_value_score": -0.0835,
+          "sharpe_daily": -0.16,
+          "total_pnl": -1633.82,
+          "total_return_pct": -0.0163,
+          "max_drawdown_pct": -0.0129,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0238
+        },
+        "gap_cancel_count": 3,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 3,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 3,
+          "slot_sliced": 1
+        }
+      },
+      "old_thin": {
+        "before": {
+          "expected_value_score": 0.1767,
+          "sharpe_daily": 1.29,
+          "total_pnl": 13704.83,
+          "total_return_pct": 0.137,
+          "max_drawdown_pct": 0.0442,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167
+        },
+        "after": {
+          "expected_value_score": 0.1211,
+          "sharpe_daily": 1.11,
+          "total_pnl": 10914.75,
+          "total_return_pct": 0.1091,
+          "max_drawdown_pct": 0.0441,
+          "win_rate": 0.3478,
+          "trade_count": 23,
+          "survival_rate": 0.9153
+        },
+        "delta": {
+          "expected_value_score": -0.0556,
+          "sharpe_daily": -0.18,
+          "total_pnl": -2790.08,
+          "total_return_pct": -0.0279,
+          "max_drawdown_pct": -0.0001,
+          "win_rate": -0.0613,
+          "trade_count": 1,
+          "survival_rate": -0.0014
+        },
+        "gap_cancel_count": 5,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 23,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 7,
+          "slot_sliced": 8
+        }
+      }
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.1391,
+      "total_pnl_delta_sum": -4423.9,
+      "baseline_total_pnl_sum": 80405.26,
+      "total_pnl_delta_pct": -0.05502,
+      "windows_improved": 0,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0,
+      "gap_cancel_count": 14
+    }
+  }
+}

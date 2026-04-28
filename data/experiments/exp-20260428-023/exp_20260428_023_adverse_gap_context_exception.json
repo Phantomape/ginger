@@ -1,0 +1,1620 @@
+{
+  "experiment_id": "exp-20260428-023",
+  "timestamp": "2026-04-28T10:12:00.758290+00:00",
+  "status": "rejected",
+  "decision": "do_not_promote_adverse_gap_context_exception",
+  "hypothesis": "A narrow context exception may identify adverse next-open gap-down fills that are better treated as discounted high-quality entries than as low-quality execution failures.",
+  "change_type": "alpha_search_entry_execution_state_exception",
+  "parameters": {
+    "single_causal_variable": "adverse gap cancel exception predicate",
+    "adverse_gap_cancel_pct": 0.02,
+    "upside_gap_cancel_pct": 0.015,
+    "variants": {
+      "baseline_no_exception": {
+        "kind": "none"
+      },
+      "trend_commodities_exception": {
+        "kind": "strategy_sector",
+        "strategy": "trend_long",
+        "sectors": [
+          "Commodities"
+        ]
+      },
+      "breakout_energy_exception": {
+        "kind": "strategy_sector",
+        "strategy": "breakout_long",
+        "sectors": [
+          "Energy"
+        ]
+      },
+      "full_risk_trend_exception": {
+        "kind": "full_risk_trend"
+      },
+      "high_tqs_exception": {
+        "kind": "min_tqs",
+        "min_tqs": 0.9
+      }
+    },
+    "locked_variables": [
+      "CANCEL_GAP_PCT",
+      "ADVERSE_GAP_CANCEL_PCT",
+      "signal generation",
+      "risk sizing",
+      "all exits",
+      "day-2 follow-through add-on settings",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "rows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "baseline_no_exception",
+      "variant_cfg": {
+        "kind": "none"
+      },
+      "metrics": {
+        "expected_value_score": 1.7213,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39295.69,
+        "total_return_pct": 0.393,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 5,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "trend_commodities_exception",
+      "variant_cfg": {
+        "kind": "strategy_sector",
+        "strategy": "trend_long",
+        "sectors": [
+          "Commodities"
+        ]
+      },
+      "metrics": {
+        "expected_value_score": 1.4934,
+        "sharpe_daily": 3.89,
+        "total_pnl": 38388.84,
+        "total_return_pct": 0.3839,
+        "max_drawdown_pct": 0.0422,
+        "win_rate": 0.6522,
+        "trade_count": 23,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 4,
+      "exception_events": [
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 65.66,
+          "signal_entry": 71.12,
+          "gap_pct": -0.076772,
+          "variant": "trend_commodities_exception"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 80.74,
+          "signal_entry": 84.56,
+          "gap_pct": -0.045175,
+          "variant": "trend_commodities_exception"
+        },
+        {
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 466.25,
+          "signal_entry": 495.9,
+          "gap_pct": -0.05979,
+          "variant": "trend_commodities_exception"
+        },
+        {
+          "ticker": "IAU",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 95.49,
+          "signal_entry": 101.57,
+          "gap_pct": -0.05986,
+          "variant": "trend_commodities_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 23,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "breakout_energy_exception",
+      "variant_cfg": {
+        "kind": "strategy_sector",
+        "strategy": "breakout_long",
+        "sectors": [
+          "Energy"
+        ]
+      },
+      "metrics": {
+        "expected_value_score": 1.7213,
+        "sharpe_daily": 4.38,
+        "total_pnl": 39295.69,
+        "total_return_pct": 0.393,
+        "max_drawdown_pct": 0.0282,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 5,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "full_risk_trend_exception",
+      "variant_cfg": {
+        "kind": "full_risk_trend"
+      },
+      "metrics": {
+        "expected_value_score": 1.4615,
+        "sharpe_daily": 3.84,
+        "total_pnl": 38056.38,
+        "total_return_pct": 0.3806,
+        "max_drawdown_pct": 0.0422,
+        "win_rate": 0.625,
+        "trade_count": 24,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 5,
+      "exception_events": [
+        {
+          "ticker": "DDOG",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 184.29,
+          "signal_entry": 190.82,
+          "gap_pct": -0.034221,
+          "variant": "full_risk_trend_exception"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 65.66,
+          "signal_entry": 71.12,
+          "gap_pct": -0.076772,
+          "variant": "full_risk_trend_exception"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 80.74,
+          "signal_entry": 84.56,
+          "gap_pct": -0.045175,
+          "variant": "full_risk_trend_exception"
+        },
+        {
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 466.25,
+          "signal_entry": 495.9,
+          "gap_pct": -0.05979,
+          "variant": "full_risk_trend_exception"
+        },
+        {
+          "ticker": "IAU",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 95.49,
+          "signal_entry": 101.57,
+          "gap_pct": -0.05986,
+          "variant": "full_risk_trend_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 24,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "variant": "high_tqs_exception",
+      "variant_cfg": {
+        "kind": "min_tqs",
+        "min_tqs": 0.9
+      },
+      "metrics": {
+        "expected_value_score": 1.4615,
+        "sharpe_daily": 3.84,
+        "total_pnl": 38056.38,
+        "total_return_pct": 0.3806,
+        "max_drawdown_pct": 0.0422,
+        "win_rate": 0.625,
+        "trade_count": 24,
+        "survival_rate": 0.8431
+      },
+      "gap_cancel_count": 6,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 5,
+      "exception_events": [
+        {
+          "ticker": "DDOG",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 184.29,
+          "signal_entry": 190.82,
+          "gap_pct": -0.034221,
+          "variant": "high_tqs_exception"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 65.66,
+          "signal_entry": 71.12,
+          "gap_pct": -0.076772,
+          "variant": "high_tqs_exception"
+        },
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 80.74,
+          "signal_entry": 84.56,
+          "gap_pct": -0.045175,
+          "variant": "high_tqs_exception"
+        },
+        {
+          "ticker": "GLD",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 466.25,
+          "signal_entry": 495.9,
+          "gap_pct": -0.05979,
+          "variant": "high_tqs_exception"
+        },
+        {
+          "ticker": "IAU",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 95.49,
+          "signal_entry": 101.57,
+          "gap_pct": -0.05986,
+          "variant": "high_tqs_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 24,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "baseline_no_exception",
+      "variant_cfg": {
+        "kind": "none"
+      },
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "trend_commodities_exception",
+      "variant_cfg": {
+        "kind": "strategy_sector",
+        "strategy": "trend_long",
+        "sectors": [
+          "Commodities"
+        ]
+      },
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "breakout_energy_exception",
+      "variant_cfg": {
+        "kind": "strategy_sector",
+        "strategy": "breakout_long",
+        "sectors": [
+          "Energy"
+        ]
+      },
+      "metrics": {
+        "expected_value_score": 0.7097,
+        "sharpe_daily": 2.59,
+        "total_pnl": 27404.74,
+        "total_return_pct": 0.274,
+        "max_drawdown_pct": 0.0403,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "full_risk_trend_exception",
+      "variant_cfg": {
+        "kind": "full_risk_trend"
+      },
+      "metrics": {
+        "expected_value_score": 0.6083,
+        "sharpe_daily": 2.54,
+        "total_pnl": 23949.98,
+        "total_return_pct": 0.2395,
+        "max_drawdown_pct": 0.0263,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 1,
+      "exception_events": [
+        {
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 198.505,
+          "signal_entry": 203.18,
+          "gap_pct": -0.023009,
+          "variant": "full_risk_trend_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 20,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 3,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "variant": "high_tqs_exception",
+      "variant_cfg": {
+        "kind": "min_tqs",
+        "min_tqs": 0.9
+      },
+      "metrics": {
+        "expected_value_score": 0.6083,
+        "sharpe_daily": 2.54,
+        "total_pnl": 23949.98,
+        "total_return_pct": 0.2395,
+        "max_drawdown_pct": 0.0263,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.8298
+      },
+      "gap_cancel_count": 4,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 1,
+      "exception_events": [
+        {
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 198.505,
+          "signal_entry": 203.18,
+          "gap_pct": -0.023009,
+          "variant": "high_tqs_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 20,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 3,
+        "slot_sliced": 1
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "baseline_no_exception",
+      "variant_cfg": {
+        "kind": "none"
+      },
+      "metrics": {
+        "expected_value_score": 0.1767,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13704.83,
+        "total_return_pct": 0.137,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "trend_commodities_exception",
+      "variant_cfg": {
+        "kind": "strategy_sector",
+        "strategy": "trend_long",
+        "sectors": [
+          "Commodities"
+        ]
+      },
+      "metrics": {
+        "expected_value_score": 0.1767,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13704.83,
+        "total_return_pct": 0.137,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "breakout_energy_exception",
+      "variant_cfg": {
+        "kind": "strategy_sector",
+        "strategy": "breakout_long",
+        "sectors": [
+          "Energy"
+        ]
+      },
+      "metrics": {
+        "expected_value_score": 0.1767,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13704.83,
+        "total_return_pct": 0.137,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 1,
+      "exception_count": 0,
+      "exception_events": [],
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "full_risk_trend_exception",
+      "variant_cfg": {
+        "kind": "full_risk_trend"
+      },
+      "metrics": {
+        "expected_value_score": 0.1765,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13683.1,
+        "total_return_pct": 0.1368,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 1,
+      "exception_events": [
+        {
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 237.3596,
+          "signal_entry": 246.58,
+          "gap_pct": -0.037393,
+          "variant": "full_risk_trend_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 23,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "variant": "high_tqs_exception",
+      "variant_cfg": {
+        "kind": "min_tqs",
+        "min_tqs": 0.9
+      },
+      "metrics": {
+        "expected_value_score": 0.1765,
+        "sharpe_daily": 1.29,
+        "total_pnl": 13683.1,
+        "total_return_pct": 0.1368,
+        "max_drawdown_pct": 0.0442,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167
+      },
+      "gap_cancel_count": 5,
+      "adverse_gap_down_cancel_count": 0,
+      "exception_count": 1,
+      "exception_events": [
+        {
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "trade_quality_score": 1.0,
+          "confidence_score": 1.0,
+          "fill_price": 237.3596,
+          "signal_entry": 246.58,
+          "gap_pct": -0.037393,
+          "variant": "high_tqs_exception"
+        }
+      ],
+      "entry_reason_counts": {
+        "entered": 23,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    }
+  ],
+  "summary": {
+    "trend_commodities_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.4934,
+            "sharpe_daily": 3.89,
+            "total_pnl": 38388.84,
+            "total_return_pct": 0.3839,
+            "max_drawdown_pct": 0.0422,
+            "win_rate": 0.6522,
+            "trade_count": 23,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": -0.2279,
+            "sharpe_daily": -0.49,
+            "total_pnl": -906.85,
+            "total_return_pct": -0.0091,
+            "max_drawdown_pct": 0.014,
+            "win_rate": -0.1373,
+            "trade_count": 4,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 1,
+          "exception_count": 4,
+          "exception_events": [
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 65.66,
+              "signal_entry": 71.12,
+              "gap_pct": -0.076772,
+              "variant": "trend_commodities_exception"
+            },
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 80.74,
+              "signal_entry": 84.56,
+              "gap_pct": -0.045175,
+              "variant": "trend_commodities_exception"
+            },
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 466.25,
+              "signal_entry": 495.9,
+              "gap_pct": -0.05979,
+              "variant": "trend_commodities_exception"
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 95.49,
+              "signal_entry": 101.57,
+              "gap_pct": -0.05986,
+              "variant": "trend_commodities_exception"
+            }
+          ]
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 1,
+          "exception_count": 0,
+          "exception_events": []
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 1,
+          "exception_count": 0,
+          "exception_events": []
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.2279,
+        "total_pnl_delta_sum": -906.85,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.011278,
+        "windows_improved": 0,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.014,
+        "exception_count": 4,
+        "adverse_gap_cancel_count": 3
+      }
+    },
+    "breakout_energy_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 5,
+          "exception_count": 0,
+          "exception_events": []
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 1,
+          "exception_count": 0,
+          "exception_events": []
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 1,
+          "exception_count": 0,
+          "exception_events": []
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.0,
+        "total_pnl_delta_sum": 0.0,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": 0.0,
+        "windows_improved": 0,
+        "windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0,
+        "exception_count": 0,
+        "adverse_gap_cancel_count": 7
+      }
+    },
+    "full_risk_trend_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.4615,
+            "sharpe_daily": 3.84,
+            "total_pnl": 38056.38,
+            "total_return_pct": 0.3806,
+            "max_drawdown_pct": 0.0422,
+            "win_rate": 0.625,
+            "trade_count": 24,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": -0.2598,
+            "sharpe_daily": -0.54,
+            "total_pnl": -1239.31,
+            "total_return_pct": -0.0124,
+            "max_drawdown_pct": 0.014,
+            "win_rate": -0.1645,
+            "trade_count": 5,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 0,
+          "exception_count": 5,
+          "exception_events": [
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 184.29,
+              "signal_entry": 190.82,
+              "gap_pct": -0.034221,
+              "variant": "full_risk_trend_exception"
+            },
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 65.66,
+              "signal_entry": 71.12,
+              "gap_pct": -0.076772,
+              "variant": "full_risk_trend_exception"
+            },
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 80.74,
+              "signal_entry": 84.56,
+              "gap_pct": -0.045175,
+              "variant": "full_risk_trend_exception"
+            },
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 466.25,
+              "signal_entry": 495.9,
+              "gap_pct": -0.05979,
+              "variant": "full_risk_trend_exception"
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 95.49,
+              "signal_entry": 101.57,
+              "gap_pct": -0.05986,
+              "variant": "full_risk_trend_exception"
+            }
+          ]
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.6083,
+            "sharpe_daily": 2.54,
+            "total_pnl": 23949.98,
+            "total_return_pct": 0.2395,
+            "max_drawdown_pct": 0.0263,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298
+          },
+          "delta": {
+            "expected_value_score": -0.1014,
+            "sharpe_daily": -0.05,
+            "total_pnl": -3454.76,
+            "total_return_pct": -0.0345,
+            "max_drawdown_pct": -0.014,
+            "win_rate": -0.0238,
+            "trade_count": -1,
+            "survival_rate": 0.0373
+          },
+          "adverse_gap_cancel_count": 0,
+          "exception_count": 1,
+          "exception_events": [
+            {
+              "ticker": "SNOW",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 198.505,
+              "signal_entry": 203.18,
+              "gap_pct": -0.023009,
+              "variant": "full_risk_trend_exception"
+            }
+          ]
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.1765,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13683.1,
+            "total_return_pct": 0.1368,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": -0.0002,
+            "sharpe_daily": 0.0,
+            "total_pnl": -21.73,
+            "total_return_pct": -0.0002,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0178,
+            "trade_count": 1,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 0,
+          "exception_count": 1,
+          "exception_events": [
+            {
+              "ticker": "AVGO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 237.3596,
+              "signal_entry": 246.58,
+              "gap_pct": -0.037393,
+              "variant": "full_risk_trend_exception"
+            }
+          ]
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.3614,
+        "total_pnl_delta_sum": -4715.8,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.05865,
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "max_drawdown_delta_max": 0.014,
+        "exception_count": 7,
+        "adverse_gap_cancel_count": 0
+      }
+    },
+    "high_tqs_exception": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7213,
+            "sharpe_daily": 4.38,
+            "total_pnl": 39295.69,
+            "total_return_pct": 0.393,
+            "max_drawdown_pct": 0.0282,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431
+          },
+          "after": {
+            "expected_value_score": 1.4615,
+            "sharpe_daily": 3.84,
+            "total_pnl": 38056.38,
+            "total_return_pct": 0.3806,
+            "max_drawdown_pct": 0.0422,
+            "win_rate": 0.625,
+            "trade_count": 24,
+            "survival_rate": 0.8431
+          },
+          "delta": {
+            "expected_value_score": -0.2598,
+            "sharpe_daily": -0.54,
+            "total_pnl": -1239.31,
+            "total_return_pct": -0.0124,
+            "max_drawdown_pct": 0.014,
+            "win_rate": -0.1645,
+            "trade_count": 5,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 0,
+          "exception_count": 5,
+          "exception_events": [
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 184.29,
+              "signal_entry": 190.82,
+              "gap_pct": -0.034221,
+              "variant": "high_tqs_exception"
+            },
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 65.66,
+              "signal_entry": 71.12,
+              "gap_pct": -0.076772,
+              "variant": "high_tqs_exception"
+            },
+            {
+              "ticker": "SLV",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 80.74,
+              "signal_entry": 84.56,
+              "gap_pct": -0.045175,
+              "variant": "high_tqs_exception"
+            },
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 466.25,
+              "signal_entry": 495.9,
+              "gap_pct": -0.05979,
+              "variant": "high_tqs_exception"
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 95.49,
+              "signal_entry": 101.57,
+              "gap_pct": -0.05986,
+              "variant": "high_tqs_exception"
+            }
+          ]
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7097,
+            "sharpe_daily": 2.59,
+            "total_pnl": 27404.74,
+            "total_return_pct": 0.274,
+            "max_drawdown_pct": 0.0403,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.6083,
+            "sharpe_daily": 2.54,
+            "total_pnl": 23949.98,
+            "total_return_pct": 0.2395,
+            "max_drawdown_pct": 0.0263,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8298
+          },
+          "delta": {
+            "expected_value_score": -0.1014,
+            "sharpe_daily": -0.05,
+            "total_pnl": -3454.76,
+            "total_return_pct": -0.0345,
+            "max_drawdown_pct": -0.014,
+            "win_rate": -0.0238,
+            "trade_count": -1,
+            "survival_rate": 0.0373
+          },
+          "adverse_gap_cancel_count": 0,
+          "exception_count": 1,
+          "exception_events": [
+            {
+              "ticker": "SNOW",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 198.505,
+              "signal_entry": 203.18,
+              "gap_pct": -0.023009,
+              "variant": "high_tqs_exception"
+            }
+          ]
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1767,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13704.83,
+            "total_return_pct": 0.137,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.1765,
+            "sharpe_daily": 1.29,
+            "total_pnl": 13683.1,
+            "total_return_pct": 0.1368,
+            "max_drawdown_pct": 0.0442,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": -0.0002,
+            "sharpe_daily": 0.0,
+            "total_pnl": -21.73,
+            "total_return_pct": -0.0002,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0178,
+            "trade_count": 1,
+            "survival_rate": 0.0
+          },
+          "adverse_gap_cancel_count": 0,
+          "exception_count": 1,
+          "exception_events": [
+            {
+              "ticker": "AVGO",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "trade_quality_score": 1.0,
+              "confidence_score": 1.0,
+              "fill_price": 237.3596,
+              "signal_entry": 246.58,
+              "gap_pct": -0.037393,
+              "variant": "high_tqs_exception"
+            }
+          ]
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.3614,
+        "total_pnl_delta_sum": -4715.8,
+        "baseline_total_pnl_sum": 80405.26,
+        "total_pnl_delta_pct": -0.05865,
+        "windows_improved": 0,
+        "windows_regressed": 3,
+        "max_drawdown_delta_max": 0.014,
+        "exception_count": 7,
+        "adverse_gap_cancel_count": 0
+      }
+    }
+  },
+  "best_variant": "breakout_energy_exception",
+  "best_variant_summary": {
+    "by_window": {
+      "late_strong": {
+        "before": {
+          "expected_value_score": 1.7213,
+          "sharpe_daily": 4.38,
+          "total_pnl": 39295.69,
+          "total_return_pct": 0.393,
+          "max_drawdown_pct": 0.0282,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8431
+        },
+        "after": {
+          "expected_value_score": 1.7213,
+          "sharpe_daily": 4.38,
+          "total_pnl": 39295.69,
+          "total_return_pct": 0.393,
+          "max_drawdown_pct": 0.0282,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8431
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0
+        },
+        "adverse_gap_cancel_count": 5,
+        "exception_count": 0,
+        "exception_events": []
+      },
+      "mid_weak": {
+        "before": {
+          "expected_value_score": 0.7097,
+          "sharpe_daily": 2.59,
+          "total_pnl": 27404.74,
+          "total_return_pct": 0.274,
+          "max_drawdown_pct": 0.0403,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925
+        },
+        "after": {
+          "expected_value_score": 0.7097,
+          "sharpe_daily": 2.59,
+          "total_pnl": 27404.74,
+          "total_return_pct": 0.274,
+          "max_drawdown_pct": 0.0403,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0
+        },
+        "adverse_gap_cancel_count": 1,
+        "exception_count": 0,
+        "exception_events": []
+      },
+      "old_thin": {
+        "before": {
+          "expected_value_score": 0.1767,
+          "sharpe_daily": 1.29,
+          "total_pnl": 13704.83,
+          "total_return_pct": 0.137,
+          "max_drawdown_pct": 0.0442,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167
+        },
+        "after": {
+          "expected_value_score": 0.1767,
+          "sharpe_daily": 1.29,
+          "total_pnl": 13704.83,
+          "total_return_pct": 0.137,
+          "max_drawdown_pct": 0.0442,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167
+        },
+        "delta": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0
+        },
+        "adverse_gap_cancel_count": 1,
+        "exception_count": 0,
+        "exception_events": []
+      }
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "baseline_total_pnl_sum": 80405.26,
+      "total_pnl_delta_pct": 0.0,
+      "windows_improved": 0,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0,
+      "exception_count": 0,
+      "adverse_gap_cancel_count": 7
+    }
+  },
+  "history_guardrails": {
+    "does_not_repeat_global_adverse_gap_threshold_sweep": true,
+    "does_not_repeat_global_upside_gap_threshold_sweep": true,
+    "does_not_repeat_addon_threshold_tuning": true,
+    "does_not_use_llm_soft_ranking_sample": true,
+    "does_not_reopen_c_strategy_single_field_repair": true
+  },
+  "gate4_basis": "Rejected because no exception predicate passed multi-window Gate 4.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains below the replay sample threshold, so this deterministic entry-execution alpha was tested instead."
+  }
+}

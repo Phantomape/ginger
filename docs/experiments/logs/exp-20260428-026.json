@@ -1,0 +1,72 @@
+{
+  "experiment_id": "exp-20260428-026",
+  "timestamp": "2026-04-28T14:16:45Z",
+  "status": "rejected",
+  "hypothesis": "After promoting MAX_POSITION_PCT to 40%, positions already down-weighted by existing risk multipliers may deserve a lower initial concentration cap than full-risk entries.",
+  "change_summary": "Ran an experiment-only replay that capped non-zero reduced-risk signals at 20%, 25%, and 30% while leaving entries, exits, risk multipliers, add-ons, gap cancels, scarce-slot routing, LLM/news replay, and earnings unchanged.",
+  "change_type": "alpha_search_capital_allocation_quality_cap",
+  "component": "quant/experiments/exp_20260428_026_reduced_risk_initial_cap.py",
+  "parameters": {
+    "single_causal_variable": "reduced-risk initial position cap",
+    "baseline_global_initial_cap_pct": 0.40,
+    "tested_reduced_risk_initial_cap_pct": [0.20, 0.25, 0.30],
+    "reduced_risk_definition": "0 < actual signal risk_pct < base risk_pct"
+  },
+  "date_range": {"start": "2025-10-23", "end": "2026-04-21"},
+  "secondary_windows": [
+    {"start": "2025-04-23", "end": "2025-10-22"},
+    {"start": "2024-10-02", "end": "2025-04-22"}
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 1.7839, "sharpe_daily": 4.28, "total_pnl": 41678.03, "max_drawdown_pct": 0.0329, "win_rate": 0.7895, "trade_count": 19},
+    "mid_weak": {"expected_value_score": 0.7738, "sharpe_daily": 2.57, "total_pnl": 30108.49, "max_drawdown_pct": 0.0411, "win_rate": 0.5238, "trade_count": 21},
+    "old_thin": {"expected_value_score": 0.1834, "sharpe_daily": 1.29, "total_pnl": 14221.09, "max_drawdown_pct": 0.0489, "win_rate": 0.4091, "trade_count": 22}
+  },
+  "after_metrics": {
+    "best_variant": "reduced_risk_cap_20",
+    "late_strong": {"expected_value_score": 1.7839, "sharpe_daily": 4.28, "total_pnl": 41678.03, "max_drawdown_pct": 0.0329, "win_rate": 0.7895, "trade_count": 19},
+    "mid_weak": {"expected_value_score": 0.7738, "sharpe_daily": 2.57, "total_pnl": 30108.49, "max_drawdown_pct": 0.0411, "win_rate": 0.5238, "trade_count": 21},
+    "old_thin": {"expected_value_score": 0.1834, "sharpe_daily": 1.29, "total_pnl": 14221.09, "max_drawdown_pct": 0.0489, "win_rate": 0.4091, "trade_count": 22}
+  },
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "total_pnl_delta_pct": 0.0,
+      "windows_improved": 0,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "cap_bind_count_sum": 0
+    },
+    "gate4_basis": "Rejected because no tested reduced-risk cap ever bound a position, so the replay was a strict null."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic allocation alpha was tested instead."
+  },
+  "decision": "rejected",
+  "rejection_reason": "Reduced-risk cap tightening is not a live allocation lever under the current stack because non-zero reduced-risk positions are already too small to hit even a 20% cap.",
+  "next_retry_requires": [
+    "Do not retry nearby reduced-risk cap values without new concentration evidence.",
+    "A valid retry needs a more specific quality bucket than all non-zero reduced-risk signals.",
+    "Do not use this to reopen global MAX_POSITION_PCT or ADDON_MAX_POSITION_PCT sweeps."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_026_reduced_risk_initial_cap.py",
+    "data/experiments/exp-20260428-026/exp_20260428_026_reduced_risk_initial_cap.json"
+  ],
+  "notes": "Alpha search, not bug repair. Production strategy code was unchanged because Gate 4 failed."
+}

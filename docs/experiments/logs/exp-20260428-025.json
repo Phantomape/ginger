@@ -1,0 +1,225 @@
+{
+  "experiment_id": "exp-20260428-025",
+  "timestamp": "2026-04-28T17:56:21.490Z",
+  "status": "accepted",
+  "hypothesis": "The accepted 50% day-2 add-on may make the old 25% initial cap too front-loaded. Lowering only the initial fill cap could reserve capacity for confirmed follow-through winners; raising it tests whether the stack is under-allocated at entry.",
+  "change_summary": "Promoted MAX_POSITION_PCT from 25% to 40% after a fixed-window initial-position-cap sweep showed that the accepted stack is under-allocated at entry, not over-front-loaded. Entries, exits, gap cancels, add-on trigger/fraction/cap, scarce-slot routing, LLM/news replay, and earnings remained locked.",
+  "change_type": "capital_allocation_initial_position_cap",
+  "component": "quant/constants.py, quant/experiments/exp_20260428_025_initial_position_cap_allocation.py, data/experiments/exp-20260428-025/exp_20260428_025_initial_position_cap_allocation.json, docs/experiments/logs/exp-20260428-025.json, docs/experiments/tickets/exp-20260428-025.json, docs/experiment_log.jsonl, docs/alpha-optimization-playbook.md",
+  "parameters": {
+    "single_causal_variable": "initial position max position cap",
+    "old_value": 0.25,
+    "new_value": 0.4,
+    "tested_initial_position_cap_pct": [
+      0.15,
+      0.2,
+      0.3,
+      0.35,
+      0.4
+    ],
+    "addon_max_position_pct_locked": 0.35,
+    "locked_variables": [
+      "signal generation",
+      "risk multipliers",
+      "all exits",
+      "upside/adverse gap cancels",
+      "day-2 add-on trigger and fraction",
+      "add-on max position cap",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7213,
+      "sharpe_daily": 4.38,
+      "total_pnl": 39295.69,
+      "total_return_pct": 0.393,
+      "max_drawdown_pct": 0.0282,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "addon_scheduled": 7,
+      "addon_executed": 5,
+      "addon_skipped": 2,
+      "addon_checkpoint_rejected": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7097,
+      "sharpe_daily": 2.59,
+      "total_pnl": 27404.74,
+      "total_return_pct": 0.274,
+      "max_drawdown_pct": 0.0403,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "addon_scheduled": 7,
+      "addon_executed": 6,
+      "addon_skipped": 1,
+      "addon_checkpoint_rejected": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.1767,
+      "sharpe_daily": 1.29,
+      "total_pnl": 13704.83,
+      "total_return_pct": 0.137,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "addon_scheduled": 4,
+      "addon_executed": 4,
+      "addon_skipped": 0,
+      "addon_checkpoint_rejected": 0
+    }
+  },
+  "after_metrics": {
+    "best_variant": "initial_cap_40pct",
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "addon_scheduled": 7,
+      "addon_executed": 5,
+      "addon_skipped": 2,
+      "addon_checkpoint_rejected": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "addon_scheduled": 7,
+      "addon_executed": 6,
+      "addon_skipped": 1,
+      "addon_checkpoint_rejected": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "addon_scheduled": 4,
+      "addon_executed": 4,
+      "addon_skipped": 0,
+      "addon_checkpoint_rejected": 0
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0626,
+      "sharpe_daily": -0.1,
+      "total_pnl": 2382.34,
+      "total_return_pct": 0.0238,
+      "max_drawdown_pct": 0.0047,
+      "win_rate": 0,
+      "trade_count": 0,
+      "survival_rate": 0,
+      "addon_scheduled": 0,
+      "addon_executed": 0,
+      "addon_skipped": 0,
+      "addon_checkpoint_rejected": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0641,
+      "sharpe_daily": -0.02,
+      "total_pnl": 2703.75,
+      "total_return_pct": 0.0271,
+      "max_drawdown_pct": 0.0008,
+      "win_rate": 0,
+      "trade_count": 0,
+      "survival_rate": 0,
+      "addon_scheduled": 0,
+      "addon_executed": 0,
+      "addon_skipped": 0,
+      "addon_checkpoint_rejected": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0067,
+      "sharpe_daily": 0,
+      "total_pnl": 516.26,
+      "total_return_pct": 0.0052,
+      "max_drawdown_pct": 0.0047,
+      "win_rate": 0,
+      "trade_count": 0,
+      "survival_rate": 0,
+      "addon_scheduled": 0,
+      "addon_executed": 0,
+      "addon_skipped": 0,
+      "addon_checkpoint_rejected": 0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.1334,
+      "total_pnl_delta_sum": 5602.35,
+      "baseline_total_pnl_sum": 80405.26,
+      "total_pnl_delta_pct": 0.069676,
+      "windows_improved": 3,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0047,
+      "trade_count_delta_sum": 0,
+      "addon_executed_delta_sum": 0
+    },
+    "gate4_basis": "Accepted because 40% initial cap improved EV in all three fixed windows and aggregate PnL by 6.9676%, passing the >5% PnL Gate 4 criterion. Trade count and add-on execution count were unchanged; max drawdown increased by at most 0.47pp."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this deterministic capital-allocation alpha was tested instead."
+  },
+  "decision": "accepted",
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not repeat nearby initial-position-cap sweeps around 30-40% without forward concentration evidence.",
+    "Monitor whether the higher initial cap increases live drawdown or single-name concentration beyond the fixed-window tradeoff.",
+    "Do not combine this with add-on cap/fraction changes unless each branch has separate evidence."
+  ],
+  "related_files": [
+    "quant/constants.py",
+    "quant/experiments/exp_20260428_025_initial_position_cap_allocation.py",
+    "data/experiments/exp-20260428-025/exp_20260428_025_initial_position_cap_allocation.json",
+    "docs/experiments/logs/exp-20260428-025.json",
+    "docs/experiments/tickets/exp-20260428-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not bug repair. This changes one shared capital-allocation constant. Main risk is higher concentration: max drawdown rose in all three windows, but by less than 0.5pp while PnL improved materially."
+}

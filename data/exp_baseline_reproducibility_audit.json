@@ -1,0 +1,113 @@
+{
+  "experiment_id": "exp-20260428-015",
+  "generated_at_utc": "2026-04-28T05:54:13.911793+00:00",
+  "lane": "measurement_repair",
+  "change_type": "measurement_instrumentation",
+  "single_causal_variable": "fixed-window baseline result artifact consistency",
+  "alpha_hypothesis_released": "multi-window alpha promotion tests can use a preflight baseline manifest to avoid comparing against missing, stale, or single-window result artifacts",
+  "strategy_behavior_changed": false,
+  "backtesting_doc": {
+    "path": "docs/backtesting.md",
+    "exists": true,
+    "fixed_window_command_count": 3,
+    "snapshot_files_exist": {
+      "data/ohlcv_snapshot_20251023_20260421.json": true,
+      "data/ohlcv_snapshot_20250423_20251022.json": true,
+      "data/ohlcv_snapshot_20241002_20250422.json": true
+    }
+  },
+  "fixed_windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "required_metrics": [
+    "period",
+    "trading_days",
+    "total_trades",
+    "win_rate",
+    "total_pnl",
+    "sharpe_daily",
+    "max_drawdown_pct",
+    "signals_generated",
+    "signals_survived",
+    "survival_rate",
+    "expected_value_score",
+    "by_strategy",
+    "benchmarks",
+    "known_biases",
+    "capital_efficiency",
+    "single_window_quality",
+    "trades"
+  ],
+  "result_file_count": 21,
+  "unreadable_result_files": [],
+  "latest_fixed_window_results": {
+    "late_strong": {
+      "path": "data/backtest_results_20260426.json",
+      "period": "2025-10-23 → 2026-04-21",
+      "window_label": "late_strong",
+      "modified_utc": "2026-04-27T06:22:10.741362+00:00",
+      "missing_required_metrics": [],
+      "trade_count_matches_trades_len": true,
+      "has_snapshot_provenance": true,
+      "metrics": {
+        "expected_value_score": 0.9608,
+        "sharpe_daily": 3.19,
+        "max_drawdown_pct": 0.0316,
+        "total_pnl": 30119.68,
+        "win_rate": 0.6522,
+        "total_trades": 23,
+        "survival_rate": 0.8462
+      }
+    },
+    "mid_weak": null,
+    "old_thin": {
+      "path": "data/backtest_results_20260427.json",
+      "period": "2024-10-02 → 2025-04-22",
+      "window_label": "old_thin",
+      "modified_utc": "2026-04-28T05:47:34.035663+00:00",
+      "missing_required_metrics": [],
+      "trade_count_matches_trades_len": true,
+      "has_snapshot_provenance": true,
+      "metrics": {
+        "expected_value_score": 0.1765,
+        "sharpe_daily": 1.29,
+        "max_drawdown_pct": 0.0442,
+        "total_pnl": 13683.1,
+        "win_rate": 0.3913,
+        "total_trades": 23,
+        "survival_rate": 0.9167
+      }
+    }
+  },
+  "fixed_window_result_counts": {
+    "late_strong": 4,
+    "mid_weak": 0,
+    "old_thin": 2
+  },
+  "non_fixed_window_result_count": 15,
+  "ticket_baseline": {
+    "ticket_path": "docs/experiments/tickets/exp-20260428-015.json",
+    "baseline_result_file": "data\\backtest_results_20260427.json",
+    "baseline_window_label": "old_thin"
+  },
+  "issues": [
+    "missing_fixed_window_result:mid_weak",
+    "ticket_baseline_is_single_window:old_thin;multi_window_comparison_needs_all_windows"
+  ],
+  "measurement_status": "ready_with_warnings",
+  "next_alpha_experiment_less_blocked": "any fixed-window alpha_discovery promotion or production wiring test that needs judge-ready before/after artifacts"
+}

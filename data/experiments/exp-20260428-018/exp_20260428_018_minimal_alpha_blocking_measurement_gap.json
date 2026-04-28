@@ -1,0 +1,171 @@
+{
+  "experiment_id": "exp-20260428-018",
+  "status": "observed_only",
+  "created_at": "2026-04-28T06:26:43.402759+00:00",
+  "hypothesis": "A minimal audit artifact can remove a current measurement blocker for the next alpha experiment without changing strategy behavior.",
+  "single_causal_variable": "minimal alpha-blocking measurement gap",
+  "production_code_changed": false,
+  "strategy_behavior_changed": false,
+  "source_artifacts": {
+    "llm_replay_coverage": {
+      "path": "data\\experiments\\exp-20260428-008\\exp_20260428_008_llm_replay_attribution_coverage.json",
+      "exists": true
+    },
+    "positive_clean_news": {
+      "path": "data\\experiments\\exp-20260428-010\\exp_20260428_010_news_confirmed_ab_candidate_quality.json",
+      "exists": true
+    },
+    "negative_clean_news": {
+      "path": "data\\experiments\\exp-20260428-016\\exp_20260428_016_fresh_negative_clean_news_context_for_existing_a_b_candidates.json",
+      "exists": true
+    }
+  },
+  "clean_news_coverage": {
+    "positive": {
+      "available": true,
+      "news_archive": {
+        "archive_file_count": 26,
+        "archive_date_min": "2026-01-23",
+        "archive_date_max": "2026-04-27",
+        "total_items": 240,
+        "positive_items": 95,
+        "positive_tickers": 15
+      },
+      "by_window": {
+        "late_strong": {
+          "ab_entry_count": 21,
+          "scarce_slot_deferred_count": 0,
+          "matched_ab_entries": 1,
+          "matched_deferred_candidates": 0,
+          "matched_total": 1,
+          "candidate_total": 21,
+          "match_rate": 0.0476
+        },
+        "mid_weak": {
+          "ab_entry_count": 20,
+          "scarce_slot_deferred_count": 3,
+          "matched_ab_entries": 0,
+          "matched_deferred_candidates": 0,
+          "matched_total": 0,
+          "candidate_total": 23,
+          "match_rate": 0.0
+        },
+        "old_thin": {
+          "ab_entry_count": 23,
+          "scarce_slot_deferred_count": 8,
+          "matched_ab_entries": 0,
+          "matched_deferred_candidates": 0,
+          "matched_total": 0,
+          "candidate_total": 31,
+          "match_rate": 0.0
+        }
+      },
+      "totals": {
+        "ab_entry_count": 64,
+        "scarce_slot_deferred_count": 11,
+        "candidate_total": 75,
+        "matched_total": 1,
+        "windows_with_matches": 1,
+        "match_rate": 0.0133
+      }
+    },
+    "negative": {
+      "available": true,
+      "news_archive": {
+        "archive_file_count": 26,
+        "archive_date_min": "2026-01-23",
+        "archive_date_max": "2026-04-27",
+        "total_items": 240,
+        "tier_counts": {
+          "NONE": 73,
+          "T3": 158,
+          "T1": 9
+        },
+        "negative_items": 37,
+        "strict_t1_negative_items": 0,
+        "negative_tickers": 14
+      },
+      "by_window": {
+        "late_strong": {
+          "ab_entry_count": 21,
+          "scarce_slot_deferred_count": 0,
+          "matched_ab_entries": 0,
+          "matched_deferred_candidates": 0,
+          "matched_total": 0,
+          "candidate_total": 21,
+          "match_rate": 0.0
+        },
+        "mid_weak": {
+          "ab_entry_count": 20,
+          "scarce_slot_deferred_count": 3,
+          "matched_ab_entries": 0,
+          "matched_deferred_candidates": 0,
+          "matched_total": 0,
+          "candidate_total": 23,
+          "match_rate": 0.0
+        },
+        "old_thin": {
+          "ab_entry_count": 23,
+          "scarce_slot_deferred_count": 8,
+          "matched_ab_entries": 0,
+          "matched_deferred_candidates": 0,
+          "matched_total": 0,
+          "candidate_total": 31,
+          "match_rate": 0.0
+        }
+      },
+      "totals": {
+        "ab_entry_count": 64,
+        "scarce_slot_deferred_count": 11,
+        "candidate_total": 75,
+        "matched_total": 0,
+        "windows_with_matches": 0,
+        "match_rate": 0.0
+      }
+    }
+  },
+  "llm_replay_coverage": {
+    "available": true,
+    "summary": {
+      "archive_context_present_in_window": 7,
+      "archive_context_present_total": 10,
+      "baseline_candidate_signals_total": 55,
+      "baseline_effective_candidate_days": 0,
+      "baseline_effective_candidate_signals": 0,
+      "baseline_replay_enabled": false,
+      "covered_but_not_ranking_eligible_days_in_window": 4,
+      "decision_log_sidecars_in_window": 7,
+      "decision_log_sidecars_total": 11,
+      "legacy_missing_context_dates_in_window": [
+        "2026-02-19",
+        "2026-02-20",
+        "2026-04-18"
+      ],
+      "legacy_missing_context_days_in_window": 3,
+      "ranking_ready_days_in_window": 3,
+      "ranking_ready_presented_signals_in_window": 8,
+      "replay_files_in_window": 10,
+      "replay_files_total": 14,
+      "sidecar_backfill_candidate_dates_in_window": [],
+      "sidecar_backfill_candidate_days_in_window": 0
+    }
+  },
+  "readiness": {
+    "event_ranking_ready": false,
+    "clean_news_ready": false,
+    "llm_replay_ready": false,
+    "thresholds": {
+      "min_matched_signals": 10,
+      "min_windows_with_matches": 2
+    },
+    "observed": {
+      "combined_clean_news_matched_signals": 1,
+      "clean_news_windows_with_matches": [
+        "late_strong"
+      ],
+      "llm_ranking_ready_presented_signals": 8
+    },
+    "blocker": "Event-aware ranking remains sample-limited; do not run another production-promotion ranking test until clean-news or LLM replay coverage clears the manifest thresholds.",
+    "alpha_hypothesis_unblocked": "Event-aware ranking of existing A/B candidates can improve candidate quality once a reproducible matched event-context sample exists."
+  }
+}

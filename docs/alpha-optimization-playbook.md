@@ -652,3 +652,207 @@ Evidence: best variants all matched at `ADDON_MAX_POSITION_PCT=0.40+`, with EV d
 Do not repeat: nearby add-on cap sweeps above 0.35 as a production-promotion attempt. The cap leak is real but too small in the fixed windows.
 
 Next valid retry requires: forward/paper concentration evidence, or a new independent add-on allocation signal that increases materiality without reopening day-2 trigger threshold tuning.
+
+### 2026-04-28 mechanism update: Adverse next-open entry cancel
+
+Status: accepted / production default.
+
+Core conclusion: exp-20260428-017 tested whether entries that open modestly below signal entry are lower-quality fills rather than bargains. A 2% adverse next-open cancel improved EV in all three fixed windows and passed Gate 4 on aggregate PnL, while 1% was too tight and 3% lost the mid_weak benefit.
+
+Evidence: versus the no-adverse-cancel baseline, `ADVERSE_GAP_CANCEL_PCT=0.02` produced EV deltas `late_strong +0.0718`, `mid_weak +0.1014`, and `old_thin +0.0002`; aggregate PnL delta was `+$4,319.99` / `+5.678%`. The rule cancelled 7 adverse-gap entries across the three fixed windows.
+
+Risk: `mid_weak` max drawdown increased by `+1.40 pp`, so forward monitoring should focus on whether the rule improves PnL by admitting replacement trades while increasing interim drawdown.
+
+Do not repeat: tightening the adverse gap threshold to 1%, or treating 3% as equivalent to 2%. The tested 1% threshold regressed late_strong and mid_weak; 3% preserved late/old but lost the mid_weak materiality.
+
+Next valid retry requires: a genuinely different state discriminator around adverse gaps, or forward evidence that the mid_weak drawdown tradeoff is undesirable. Do not combine this with add-on threshold tuning or LLM/news ranking until each branch has separate evidence.
+
+### 2026-04-28 mechanism update: Upside next-open entry cancel
+
+Status: rejected.
+
+Core conclusion: exp-20260428-021 tested whether the existing `CANCEL_GAP_PCT=0.015` upside next-open cancel was mis-sized. It was not. Tightening to 1% helped `late_strong` only trivially and materially damaged `mid_weak` and `old_thin`; loosening to 2%/3%/5% or disabling the rule admitted lower-quality fills and regressed aggregate EV/PnL.
+
+Evidence: the best nonbaseline variant by aggregate EV was 2%, but it still had aggregate EV delta `-0.1391` and PnL delta `-$4,423.90` versus the current 1.5% baseline. Tightening to 1% had aggregate EV delta `-0.3313` and PnL `-$11,894.16`; disabling the upside cancel had aggregate EV delta `-0.7824` and PnL `-$17,821.97`.
+
+Do not repeat: nearby global `CANCEL_GAP_PCT` sweeps around 1-5%, including disabling the upside gap cancel.
+
+Next valid retry requires: a state or event discriminator explaining when upside gaps are momentum confirmation instead of overextension. Do not combine this with adverse-gap or add-on threshold changes without separate evidence.
+
+### 2026-04-28 mechanism update: Upside-gap sleeve exception
+
+Status: rejected.
+
+Core conclusion: exp-20260428-022 tested whether accepted winner-truncation sleeves could justify an exception to the existing 1.5% upside next-open cancel. They cannot. `trend_long | Technology` improved late_strong EV but reduced aggregate PnL and regressed old_thin; `trend_long | Commodities` damaged late_strong; combining both cohorts was worse.
+
+Evidence: best variant `trend_technology_exception` had EV deltas `late_strong +0.3726`, `mid_weak +0.0000`, and `old_thin -0.0047`, but aggregate PnL delta was `-$1,960.99`. `trend_commodity_exception` had aggregate EV delta `-0.3162` and PnL `-$4,254.55`; combined Technology+Commodity had aggregate PnL `-$6,133.77`.
+
+Do not repeat: Technology/Commodity trend upside-gap cancel exceptions based only on accepted target-width or winner-truncation evidence.
+
+Next valid retry requires: an orthogonal event/state source explaining why a specific upside gap is confirmation, such as fresh positive news, earnings context, or forward/paper evidence. Sector/strategy membership alone is not enough.
+
+### 2026-04-28 mechanism update: Adverse-gap context exceptions
+
+Status: rejected.
+
+Core conclusion: exp-20260428-023 tested whether the newly accepted 2% adverse next-open cancel should have narrow context exceptions. It should not, at least not from simple sector, strategy, full-risk, or TQS predicates. The active exception variants either regressed the strong window or regressed all three fixed windows; the only zero-delta variant was inert because it found no qualifying exceptions.
+
+Evidence: `trend_commodities_exception` allowed 4 late_strong adverse-gap entries and reduced aggregate EV by `-0.2279`, PnL by `-$906.85`, and increased max drawdown by `+1.40 pp`. `full_risk_trend_exception` and `high_tqs_exception` each allowed 7 adverse-gap entries, regressed all three windows, and reduced aggregate PnL by `-$4,715.80`. `breakout_energy_exception` triggered 0 exceptions and is not evidence of edge.
+
+Do not repeat: adverse-gap exceptions based only on sector, strategy, full-risk status, or TQS. Do not weaken `ADVERSE_GAP_CANCEL_PCT=0.02` with a simple context allowlist.
+
+Next valid retry requires: an orthogonal signal that explains why a specific adverse open is recoverable, such as intraday reclaim behavior, fresh positive event context, or forward/paper evidence. Keep the accepted 2% adverse-gap cancel unchanged meanwhile.
+
+### 2026-04-28 mechanism update: Signal-day weak close entry cancel
+
+Status: rejected.
+
+Core conclusion: exp-20260428-024 tested whether A/B signals that failed to
+close in the upper part of their own signal-day range should be cancelled at
+next open. They should not. Even the loosest tested threshold,
+`close_location < 0.50`, regressed EV and PnL in all three fixed windows.
+
+Evidence: versus the current baseline, the best variant had EV deltas
+`late_strong -0.4877`, `mid_weak -0.1738`, and `old_thin -0.1367`.
+Aggregate PnL fell by `$20,677.68` / `-25.7168%`, with 13 signal-day
+close-location cancels across the three windows.
+
+Do not repeat: simple signal-day close-location entry cancels or nearby
+0.50-0.70 thresholds as price-only signal-quality filters.
+
+Next valid retry requires: an orthogonal event, intraday reclaim, or
+forward/paper signal explaining why a weak signal-day close is harmful in one
+context but not another. Do not combine this with gap-cancel threshold changes
+without separate evidence.
+
+### 2026-04-28 mechanism update: Initial position cap
+
+Status: accepted / production default.
+
+Core conclusion: exp-20260428-025 tested whether the accepted 50% day-2 add-on
+made the old 25% initial position cap too front-loaded. The opposite was true:
+raising only the initial cap to 40% improved EV in all three fixed windows and
+aggregate PnL by 6.97%, while trade count and add-on execution count were
+unchanged.
+
+Evidence: versus the 25% baseline, `MAX_POSITION_PCT=0.40` produced EV deltas
+`late_strong +0.0626`, `mid_weak +0.0641`, and `old_thin +0.0067`; aggregate
+PnL delta was `+$5,602.35`. The tradeoff is concentration risk: max drawdown
+rose in all windows, with worst increase `+0.47 pp`.
+
+Do not repeat: nearby initial-cap sweeps around 30-40% without forward
+concentration evidence. This result changes only initial position capacity; it
+does not reopen add-on trigger, add-on cap, gap-cancel, or scarce-slot tuning.
+
+Next valid retry requires: live/paper concentration evidence, or a new
+independent allocation signal that controls when higher initial concentration
+is worth the drawdown tradeoff.
+
+### 2026-04-28 mechanism update: Initial position cap allocation
+
+Status: accepted / production default.
+
+Core conclusion: exp-20260428-025 tested whether the accepted 50% day-2 add-on
+made the old 25% initial position cap too conservative. Raising only
+`MAX_POSITION_PCT` to 40% improved EV in all three fixed windows and passed
+Gate 4 on aggregate PnL. Lower caps at 15% and 20% damaged all windows; 30% was
+directionally positive but missed materiality.
+
+Evidence: versus the 25% baseline, the 40% cap produced EV deltas
+`late_strong +0.0626`, `mid_weak +0.0641`, and `old_thin +0.0067`.
+Aggregate PnL improved by `$5,602.35` / `+6.9676%`; max drawdown increased by
+at most `+0.47 pp`; trade count did not change.
+
+Risk: this is a capital-allocation change, not a new entry edge. It increases
+single-name concentration and should be monitored for tail-loss clustering in
+forward/paper runs.
+
+Do not repeat: nearby initial-cap sweeps above 40% or below 25% without new
+forward concentration evidence. The next valid retry needs an independent
+allocation signal rather than simply raising the cap again.
+
+### 2026-04-28 mechanism update: Reduced-risk initial cap
+
+Status: rejected / strict null.
+
+Core conclusion: exp-20260428-026 tested whether non-zero reduced-risk signals
+should use a lower initial concentration cap after `MAX_POSITION_PCT` moved to
+40%. They should not be changed globally. The tested 20%/25%/30% caps never
+bound any reduced-risk position in the fixed windows, so the mechanism is not a
+current allocation leak.
+
+Evidence: EV, PnL, Sharpe, drawdown, trade count, and win rate deltas were all
+exactly `0.0000` in `late_strong`, `mid_weak`, and `old_thin`; aggregate cap
+bind count was `0`.
+
+Do not repeat: nearby reduced-risk initial-cap values or generic "lower cap for
+all reduced-risk positions" ideas.
+
+Next valid retry requires: new concentration evidence or a narrower quality
+bucket that actually reaches the position cap.
+
+### 2026-04-28 mechanism update: Same-day sector cap
+
+Status: rejected.
+
+Core conclusion: exp-20260428-027 tested whether the global same-day sector cap
+should move from `2` to `1` or `3`. Keep it at `2`. Tightening to `1` removed
+profitable clustered exposure in all three fixed windows; relaxing to `3` was a
+strict null under current slot competition.
+
+Evidence: `MAX_PER_SECTOR=1` EV deltas were `late_strong -0.3724`,
+`mid_weak -0.0566`, and `old_thin -0.0545`, with aggregate PnL
+`-$14,411.22`. `MAX_PER_SECTOR=3` had aggregate EV/PnL deltas `0.0000`.
+
+Do not repeat: nearby global sector-cap values as a capital-allocation shortcut.
+
+Next valid retry requires: a state- or sleeve-specific sector leadership signal,
+not a global cap change.
+
+### 2026-04-28 mechanism update: Portfolio heat budget
+
+Status: rejected.
+
+Core conclusion: exp-20260428-028 tested whether the accepted 40% initial cap
+and 50% day-2 add-on made the global `MAX_PORTFOLIO_HEAT=0.08` too tight. It
+did not. Raising heat to 10%/12% released two late-strong add-ons and slightly
+improved old_thin, but left mid_weak unchanged and missed Gate 4 by a wide
+margin; lowering heat to 6% damaged all active windows.
+
+Evidence: best variant `MAX_PORTFOLIO_HEAT=0.10` had EV deltas
+`late_strong +0.0244`, `mid_weak +0.0000`, and `old_thin +0.0003`.
+Aggregate PnL improved only `$588.01` / `+0.6837%`, with no drawdown, win-rate,
+or trade-count improvement. The 12% variant matched 10%, so the effect already
+saturated.
+
+Do not repeat: nearby global portfolio-heat sweeps around 6-12% as a simple
+materiality unlock for add-ons.
+
+Next valid retry requires: an independent allocation signal or forward/paper
+concentration evidence explaining when extra heat should be spent. Do not
+combine heat-budget changes with add-on trigger, add-on cap, or initial-cap
+changes without separate evidence.
+
+### 2026-04-28 mechanism update: Candidate quality ordering
+
+Status: rejected.
+
+Core conclusion: exp-20260428-029 tested whether same-day slot competition
+should globally sort candidates by existing `trade_quality_score` or
+`confidence_score` before entry planning. It should not. The native ordering
+plus the current breakout-only 52-week-high rerank remains better than a broad
+quality-score sort.
+
+Evidence: the best tested nonbaseline variant, `confidence_desc_order`, was
+unchanged in `late_strong` but regressed `mid_weak` and `old_thin`; aggregate
+EV delta was `-0.1425`, and aggregate PnL fell `$6,212.28` / `-7.2229%`.
+`tqs_desc_order` also regressed all three fixed windows, including
+`late_strong`.
+
+Do not repeat: simple global candidate ordering by TQS, confidence, or nearby
+score-only rank keys as a same-day allocation shortcut.
+
+Next valid retry requires: a state-specific or event-backed ordering
+discriminator that explains when the native order should be overridden. Do not
+combine ordering changes with cap, heat, gap-cancel, or add-on parameter
+changes without separate evidence.

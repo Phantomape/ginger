@@ -1,0 +1,80 @@
+{
+  "experiment_id": "exp-20260428-017",
+  "status": "accepted",
+  "lane": "alpha_search",
+  "owner": "alpha-search",
+  "hypothesis": "A 2% adverse next-open entry cancel improves entry quality by avoiding weak fills that tend to become low-MFE stopouts.",
+  "change_type": "alpha_search_entry_execution",
+  "single_causal_variable": "ADVERSE_GAP_CANCEL_PCT",
+  "baseline_result_file": "data/experiments/exp-20260428-017/exp_20260428_017_adverse_gap_down_entry_cancel.json",
+  "allowed_write_scope": [
+    "quant/constants.py",
+    "quant/production_parity.py",
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/test_production_parity.py",
+    "quant/test_quant.py",
+    "quant/experiments/exp_20260428_017_adverse_gap_down_entry_cancel.py",
+    "data/experiments/exp-20260428-017/exp_20260428_017_adverse_gap_down_entry_cancel.json",
+    "docs/experiments/logs/exp-20260428-017.json",
+    "docs/experiments/tickets/exp-20260428-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "must_not_touch": [
+    "LLM prompt/ranking",
+    "news replay",
+    "earnings strategy",
+    "add-on trigger thresholds",
+    "scarce-slot routing"
+  ],
+  "locked_variables": [
+    "signal generation",
+    "risk sizing",
+    "exits",
+    "day-2 follow-through add-on settings",
+    "scarce-slot breakout routing",
+    "LLM/news replay",
+    "earnings strategy"
+  ],
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Gate 4: aggregate PnL improved >5% and EV improved in all three fixed windows.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "created_at": "2026-04-28T06:35:00Z",
+  "completed_at": "2026-04-28T06:35:00Z",
+  "result": {
+    "decision": "accepted",
+    "before_result_file": "data/experiments/exp-20260428-017/exp_20260428_017_adverse_gap_down_entry_cancel.json",
+    "after_result_file": "data/experiments/exp-20260428-017/exp_20260428_017_adverse_gap_down_entry_cancel.json",
+    "delta_metrics": {
+      "expected_value_score_delta_sum": 0.1734,
+      "total_pnl_delta_sum": 4319.99,
+      "total_pnl_delta_pct": 0.056778,
+      "windows_improved": 3,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.014
+    }
+  }
+}

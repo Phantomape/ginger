@@ -1,0 +1,170 @@
+{
+  "experiment_id": "exp-20260428-017",
+  "timestamp": "2026-04-28T06:35:00Z",
+  "status": "accepted",
+  "hypothesis": "Entries that open modestly below signal entry may be lower-quality fills that produce low-MFE stopouts. Adding a 2% adverse next-open cancel should improve entry quality without changing signal generation, exits, sizing, add-ons, scarce-slot routing, LLM/news replay, or earnings.",
+  "change_summary": "Promoted ADVERSE_GAP_CANCEL_PCT=0.02 into shared entry-open cancel policy after a fixed three-window sweep of 1%/2%/3%. Backtester now calls production_parity.classify_entry_open_cancel; signal entry notes expose the same instruction.",
+  "change_type": "alpha_search_entry_execution",
+  "component": "quant/constants.py, quant/production_parity.py, quant/backtester.py, quant/signal_engine.py, quant/test_production_parity.py, quant/test_quant.py, quant/experiments/exp_20260428_017_adverse_gap_down_entry_cancel.py",
+  "parameters": {
+    "single_causal_variable": "adverse next-open gap-down entry cancel threshold",
+    "old_value": null,
+    "new_value": 0.02,
+    "screened_values": [0.01, 0.02, 0.03],
+    "locked_variables": [
+      "signal generation",
+      "risk sizing",
+      "exits",
+      "day-2 follow-through add-on settings",
+      "scarce-slot breakout routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.6495,
+      "sharpe_daily": 4.29,
+      "total_pnl": 38452.19,
+      "total_return_pct": 0.3845,
+      "max_drawdown_pct": 0.0281,
+      "win_rate": 0.7143,
+      "trade_count": 21,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.6083,
+      "sharpe_daily": 2.54,
+      "total_pnl": 23949.98,
+      "total_return_pct": 0.2395,
+      "max_drawdown_pct": 0.0263,
+      "win_rate": 0.5,
+      "trade_count": 20,
+      "survival_rate": 0.8298
+    },
+    "old_thin": {
+      "expected_value_score": 0.1765,
+      "sharpe_daily": 1.29,
+      "total_pnl": 13683.1,
+      "total_return_pct": 0.1368,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7213,
+      "sharpe_daily": 4.38,
+      "total_pnl": 39295.69,
+      "total_return_pct": 0.393,
+      "max_drawdown_pct": 0.0282,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "adverse_gap_down_cancel_count": 5
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7097,
+      "sharpe_daily": 2.59,
+      "total_pnl": 27404.74,
+      "total_return_pct": 0.274,
+      "max_drawdown_pct": 0.0403,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "adverse_gap_down_cancel_count": 1
+    },
+    "old_thin": {
+      "expected_value_score": 0.1767,
+      "sharpe_daily": 1.29,
+      "total_pnl": 13704.83,
+      "total_return_pct": 0.137,
+      "max_drawdown_pct": 0.0442,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "adverse_gap_down_cancel_count": 1
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score_delta": 0.0718,
+      "total_pnl_delta": 843.5,
+      "sharpe_daily_delta": 0.09,
+      "max_drawdown_pct_delta": 0.0001
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.1014,
+      "total_pnl_delta": 3454.76,
+      "sharpe_daily_delta": 0.05,
+      "max_drawdown_pct_delta": 0.014
+    },
+    "old_thin": {
+      "expected_value_score_delta": 0.0002,
+      "total_pnl_delta": 21.73,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.1734,
+      "total_pnl_delta_sum": 4319.99,
+      "baseline_total_pnl_sum": 76085.27,
+      "total_pnl_delta_pct": 0.056778,
+      "windows_improved": 3,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.014,
+      "adverse_gap_down_cancel_count": 7
+    },
+    "gate4_basis": "Accepted because EV improved in all three fixed windows and aggregate PnL improved by 5.678%, passing Gate 4. Mid_weak drawdown increased by 1.40 pp, so this rule needs forward drawdown monitoring."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains small-sample; this deterministic entry-execution alpha avoids that data limitation."
+  },
+  "decision": "accepted",
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not tighten to 1%; it regressed late_strong and mid_weak.",
+    "Do not loosen above 2% as a materiality argument; 3% lost the mid_weak gain.",
+    "Monitor mid_weak-style drawdown because the accepted 2% rule improved PnL while increasing that window's max drawdown."
+  ],
+  "related_files": [
+    "quant/constants.py",
+    "quant/production_parity.py",
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/test_production_parity.py",
+    "quant/test_quant.py",
+    "quant/experiments/exp_20260428_017_adverse_gap_down_entry_cancel.py",
+    "data/experiments/exp-20260428-017/exp_20260428_017_adverse_gap_down_entry_cancel.json"
+  ],
+  "notes": "Alpha search, not bug repair. This changes one execution-quality variable and keeps LLM/news/earnings unchanged."
+}
