@@ -68,6 +68,13 @@ large shared JSON document.
     }
   ],
   "acceptance_rule": "observed_only; must produce reproducible bad-trade taxonomy",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
   "created_at": "2026-04-25T00:00:00-07:00",
   "claimed_at": null,
   "completed_at": null,
@@ -88,6 +95,24 @@ repository gate:
 
 Measurement and analysis tickets may be marked `observed_only`, but they must
 still record the artifact that makes the next alpha experiment more testable.
+
+## Production Impact Rule
+
+Every ticket that can affect executable trade behavior must include
+`production_impact`. The fields mean:
+
+| Field | Meaning |
+| --- | --- |
+| `shared_policy_changed` | A shared decision module or strategy constant changed. |
+| `backtester_adapter_changed` | Historical replay wiring changed. |
+| `run_adapter_changed` | Daily production wiring, report, JSON, or prompt exposure changed. |
+| `replay_only` | The difference is an allowed historical-data limitation, not duplicate strategy logic. |
+| `parity_test_added` | A focused test or manifest update guards the production/backtest contract. |
+
+If `shared_policy_changed=true`, then either `run_adapter_changed=true` or
+`replay_only=true` must be true. Otherwise the experiment is backtester-only and
+must not be accepted. Allowed replay-only differences are listed in
+`docs/production_backtest_parity.md`.
 
 Example observed-only closeout:
 

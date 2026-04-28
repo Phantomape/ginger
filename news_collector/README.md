@@ -1,5 +1,12 @@
 # News Collector
 
+> Legacy note: this directory documents the older standalone news MVP. The
+> production daily pipeline now runs through `quant/run.py`. Treat this README
+> as historical/module-level context only; strategy rules, production/backtest
+> parity, LLM boundaries, and current run commands are governed by repository
+> root `README.md`, `AGENTS.md`, `docs/backtesting.md`, and
+> `docs/production_backtest_parity.md`.
+
 A minimal, reliable news collection module for stock market news aggregation.
 
 ## Overview

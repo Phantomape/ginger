@@ -72,3 +72,19 @@ The backtester emits these extra measurement fields for alpha experiments:
 | `sizing_rule_trade_attribution` | Shows observed trade outcomes for positions that carried non-neutral sizing multipliers. This is attribution, not a counterfactual PnL claim. |
 | `single_window_quality` | Summarizes whether the current window is positive on EV, return, daily Sharpe, and drawdown guardrails. |
 | `multi_window_robustness` | Added to cross-window diagnostics; summarizes positive windows, EV spread, worst drawdown, and an observation-only robustness score. |
+
+## Production Parity Check
+
+Backtests are acceptance evidence only when the tested behavior can be executed
+or surfaced by the daily production path. Before accepting a strategy-affecting
+change, check `docs/production_backtest_parity.md` and record whether the
+change is:
+
+- shared policy used by both `quant/backtester.py` and `quant/run.py`,
+- a production adapter/reporting update,
+- or an explicitly allowed replay-only difference such as LLM/news archive
+  coverage.
+
+If the fixed windows improve only because `backtester.py` contains logic that
+`run.py` cannot call or expose, treat the result as a measurement defect, not
+as accepted alpha.

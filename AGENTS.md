@@ -338,6 +338,32 @@ C 策略数据缺口：`positive_surprise_history` 和 `eps_estimate` 始终为 
 
 此时最高优先级任务是修复测量和决策一致性。
 
+### 6.1.1 禁止回测专属策略逻辑
+
+> 教训：回测实验很容易先在 `backtester.py` 中长出有效逻辑，但每日生产入口
+> `run.py` 没有同源执行或暴露该逻辑，导致纸面 alpha 无法被真实执行。
+
+任何影响买、卖、加仓、减仓、仓位大小、候选排序、组合热度、仓位槽、
+entry skip reason 的逻辑，都必须满足以下之一：
+
+1. 位于共享模块 / policy 中，并被 `backtester.py` 与 `run.py` 同时调用；
+2. 明确记录为 `docs/production_backtest_parity.md` 中允许的 replay-only 差异。
+
+禁止在 `backtester.py` 中长期保留生产链无法调用或无法在日报 / JSON / prompt
+中暴露的策略规则。LLM/news 因历史档案覆盖率导致的 replay 差异是允许的，但
+schema、tier 定义、veto 语义和归因字段仍必须同源。
+
+任何策略实验 closeout 都必须声明 `production_impact`：
+
+- `shared_policy_changed`
+- `backtester_adapter_changed`
+- `run_adapter_changed`
+- `replay_only`
+- `parity_test_added`
+
+如果 `shared_policy_changed=true` 且 `run_adapter_changed=false`，默认禁止提交，
+除非 `replay_only=true` 且差异已写入 `docs/production_backtest_parity.md`。
+
 ### 6.2 禁止把失败尝试只留在对话里
 
 > 教训：如果失败只存在于一次对话或一次临时思路里，下一次代理无法继承这段实验记忆，系统会退化成短期记忆生物。

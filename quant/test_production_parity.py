@@ -9,6 +9,8 @@ from production_parity import (  # noqa: E402
     build_followthrough_addon_actions,
     plan_entry_candidates,
 )
+import backtester  # noqa: E402
+import constants  # noqa: E402
 
 
 def _ohlcv(closes):
@@ -73,3 +75,25 @@ def test_build_followthrough_addon_actions_emits_day_two_add():
     assert actions[0]["shares_to_buy"] == 5
     assert actions[0]["fill_timing"] == "next_session_open"
     assert any(row["status"] == "eligible" for row in audit)
+
+
+def test_backtester_addon_and_slot_defaults_share_constants():
+    shared_keys = [
+        "ADDON_ENABLED",
+        "ADDON_CHECKPOINT_DAYS",
+        "ADDON_MIN_UNREALIZED_PCT",
+        "ADDON_MIN_RS_VS_SPY",
+        "ADDON_FRACTION_OF_ORIGINAL_SHARES",
+        "ADDON_MAX_POSITION_PCT",
+        "SECOND_ADDON_ENABLED",
+        "SECOND_ADDON_CHECKPOINT_DAYS",
+        "SECOND_ADDON_MIN_UNREALIZED_PCT",
+        "SECOND_ADDON_MIN_RS_VS_SPY",
+        "SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES",
+        "SECOND_ADDON_MAX_POSITION_PCT",
+        "DEFER_BREAKOUT_WHEN_SLOTS_LTE",
+        "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA",
+    ]
+
+    for key in shared_keys:
+        assert backtester.DEFAULT_CONFIG[key] == getattr(constants, key)

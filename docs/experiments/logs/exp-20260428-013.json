@@ -1,0 +1,72 @@
+{
+  "experiment_id": "exp-20260428-013",
+  "timestamp": "2026-04-27T23:05:00-07:00",
+  "category": "measurement_repair",
+  "change_type": "parity_governance",
+  "status": "accepted",
+  "hypothesis": "Repeated backtest experiments can be prevented from drifting away from production by making production/backtest parity an explicit contract, ticket field, log field, and test expectation.",
+  "alpha_hypothesis": {
+    "type": "measurement_repair_supporting_alpha",
+    "statement": "Future alpha experiments are more trustworthy when executable trade logic is forced into shared policy modules instead of being implemented only in backtester.py."
+  },
+  "why_not_direct_alpha_search": "The immediately preceding accepted add-on alpha exposed a production parity gap. This run installs the governance layer that prevents the same class of backtester-only result from recurring.",
+  "documents_read": [
+    "AGENTS.md",
+    "README.md",
+    "CLAUDE.md",
+    "archived/CLAUDE2.md",
+    "archived/CLAUDE3.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/backtesting.md",
+    "docs/experiment_log_format.md",
+    "docs/experiment_ticket_schema.md",
+    "docs/iteration_analysis.md",
+    "docs/oracle_diagnostics.md",
+    "docs/pending-actions.md",
+    "docs/regime_aware_exit_design.md",
+    "news_collector/README.md"
+  ],
+  "conflicts_found": [
+    {
+      "file": "README.md",
+      "issue": "Described LLM as final discretion and showed older output schema/strategy constants.",
+      "resolution": "Updated README to defer strategy truth to AGENTS/backtesting/parity docs and current constants; added add_on_trades schema mention."
+    },
+    {
+      "file": "news_collector/README.md",
+      "issue": "Documented old standalone pipeline as if it were current production.",
+      "resolution": "Marked as legacy module context and pointed current production docs to quant/run.py and parity docs."
+    }
+  ],
+  "changes": [
+    "Added docs/production_backtest_parity.md as the shared production/backtest parity contract.",
+    "Added AGENTS.md rule 6.1.1 banning backtester-only strategy logic.",
+    "Updated docs/backtesting.md with a production parity check before accepting strategy changes.",
+    "Updated experiment ticket and log schemas to require production_impact for executable trade behavior.",
+    "Updated README and legacy news_collector README to resolve stale guidance.",
+    "Added a parity constant guard test to quant/test_production_parity.py."
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "parameters": {
+    "strategy_parameters_changed": false
+  },
+  "validation": {
+    "unit_tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py -q -> 3 passed",
+    "backtest": "not run; docs/governance/test-only change with no strategy behavior change"
+  },
+  "decision": "accepted",
+  "expected_value_score_delta": 0.0,
+  "kept_unchanged": [
+    "strategy thresholds",
+    "entry/exit behavior",
+    "LLM/news replay semantics",
+    "backtester fixed-window commands"
+  ],
+  "main_risk": "The contract only works if future agents obey the required production_impact field and keep parity tests updated when adding new policy modules."
+}

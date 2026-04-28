@@ -94,6 +94,13 @@
     "before_value": 0.55,
     "after_value": 0.59
   },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true
+  },
   "decision": "rejected",
   "rejection_reason": "主目标退化，且回撤恶化，未通过 Gate 4",
   "next_retry_requires": [
@@ -127,6 +134,7 @@
 | `after_metrics` | 是 | 改动后指标 |
 | `delta_metrics` | 是 | 指标变化值 |
 | `llm_metrics` | 推荐 | 若涉及 LLM，则记录单独归因指标 |
+| `production_impact` | 策略改动必填 | 记录该实验是否改变共享 policy、回测 adapter、生产 adapter、是否 replay-only、是否加 parity 测试 |
 | `decision` | 是 | 最终结论 |
 | `rejection_reason` | 条件必填 | 被拒绝或回滚时必须写 |
 | `next_retry_requires` | 推荐 | 未来想重试，需要什么新证据 |
@@ -147,6 +155,11 @@
 - `after_metrics`
 - `delta_metrics`
 - `decision`
+
+若实验会影响真实可执行交易，还必须填 `production_impact`。如果
+`shared_policy_changed=true` 但 `run_adapter_changed=false`，默认视为
+backtester-only 结果，除非 `replay_only=true` 且差异已记录在
+`docs/production_backtest_parity.md`。
 
 ## 什么时候还要写进 Alpha 文档
 
