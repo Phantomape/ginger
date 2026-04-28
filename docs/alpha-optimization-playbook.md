@@ -725,29 +725,6 @@ forward/paper signal explaining why a weak signal-day close is harmful in one
 context but not another. Do not combine this with gap-cancel threshold changes
 without separate evidence.
 
-### 2026-04-28 mechanism update: Initial position cap
-
-Status: accepted / production default.
-
-Core conclusion: exp-20260428-025 tested whether the accepted 50% day-2 add-on
-made the old 25% initial position cap too front-loaded. The opposite was true:
-raising only the initial cap to 40% improved EV in all three fixed windows and
-aggregate PnL by 6.97%, while trade count and add-on execution count were
-unchanged.
-
-Evidence: versus the 25% baseline, `MAX_POSITION_PCT=0.40` produced EV deltas
-`late_strong +0.0626`, `mid_weak +0.0641`, and `old_thin +0.0067`; aggregate
-PnL delta was `+$5,602.35`. The tradeoff is concentration risk: max drawdown
-rose in all windows, with worst increase `+0.47 pp`.
-
-Do not repeat: nearby initial-cap sweeps around 30-40% without forward
-concentration evidence. This result changes only initial position capacity; it
-does not reopen add-on trigger, add-on cap, gap-cancel, or scarce-slot tuning.
-
-Next valid retry requires: live/paper concentration evidence, or a new
-independent allocation signal that controls when higher initial concentration
-is worth the drawdown tradeoff.
-
 ### 2026-04-28 mechanism update: Initial position cap allocation
 
 Status: accepted / production default.

@@ -123,13 +123,26 @@ def _exception_plan_entry_candidates(signals, *args, exception="none", **kwargs)
     if not exempt:
         return original_plan(input_signals, *args, **kwargs)
 
+    defer_slots_lte = kwargs.get("defer_breakout_when_slots_lte")
+    active_positions = kwargs.get("active_positions_count")
+    max_positions = kwargs.get("max_positions", 5)
+    if active_positions is None:
+        open_positions = args[0] if args else []
+        active_positions = len([
+            p for p in (open_positions or [])
+            if getattr(p, "shares", 0) > 0 or (isinstance(p, dict) and p.get("shares", 0) > 0)
+        ])
+    slots = max(0, int(max_positions) - int(active_positions))
+    if defer_slots_lte is None or slots > int(defer_slots_lte):
+        return original_plan(input_signals, *args, **kwargs)
+
     placeholder = {
         **kwargs,
         "defer_breakout_when_slots_lte": None,
         "defer_breakout_max_min_index_pct_from_ma": None,
     }
     planned, plan = original_plan(input_signals, *args, **placeholder)
-    slots = plan.get("available_slots", 0)
+    slots = plan.get("available_slots", slots)
     if slots <= 0:
         return planned, plan
 
