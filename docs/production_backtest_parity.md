@@ -37,6 +37,7 @@ in shared modules such as:
 | Scarce-slot routing | `production_parity.py` / backtester config | required | required | backtester records attribution; production emits plan |
 | Follow-through add-ons | `production_parity.py` / backtester config | schedule/execute in simulation | emit explicit `addon_actions` | fill price timing only |
 | Exit rule computation | `trend_signals.py`, related shared rules | required | required | backtester simulates fills |
+| Trailing partial reductions | `production_parity.py` / backtester `REPLAY_PARTIAL_REDUCES` | opt-in schedule/execute in simulation; disabled by shared policy unless explicitly enabled for replay comparison | disabled by shared policy | default backtest keeps legacy exits unless replay flag is on |
 | Pending unexecuted actions | `pending_actions.py` | normally not replayed | required | production-only execution memory |
 | LLM veto / ranking | `llm_advisor.py`, `llm_replay` path | replay archive when enabled | live prompt/response | archive coverage disclosed |
 | News veto | `filter.py`, `news_replay.py` | replay archive when enabled | live news files | archive coverage disclosed |
@@ -89,6 +90,8 @@ Minimum coverage examples:
 
 - Day-2 follow-through winner creates a backtest add-on and production
   `addon_actions`.
+- Trailing stop rule computes the same reduce percentage and whole-share count
+  for production prompts and backtest replay.
 - One remaining slot defers `breakout_long` consistently.
 - Heat-capped portfolios do not publish executable new-entry candidates.
 - Prompt schema fields exist when production emits a new action type.

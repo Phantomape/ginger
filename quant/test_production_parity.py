@@ -6,14 +6,19 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(__file__))
 
 from production_parity import (  # noqa: E402
+    TRAILING_PARTIAL_REDUCE_ENABLED,
     build_followthrough_addon_actions,
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
+    partial_reduce_shares,
     plan_entry_candidates,
+    production_trailing_stop_price,
     risk_pct_for_market_state,
+    suggested_reduce_pct_for_rules,
 )
 import backtester  # noqa: E402
 import constants  # noqa: E402
+from portfolio_engine import size_signals  # noqa: E402
 
 
 def _ohlcv(closes):
@@ -156,6 +161,26 @@ def test_classify_entry_open_cancel_uses_shared_gap_rules():
     ) == "stop_breach_cancel"
 
 
+def test_trailing_partial_reduce_policy_is_shared():
+    rules = [{"rule": "TRAILING_STOP", "urgency": "HIGH"}]
+
+    assert production_trailing_stop_price(100.0) == 92.0
+    assert TRAILING_PARTIAL_REDUCE_ENABLED is False
+    assert suggested_reduce_pct_for_rules(rules, 0.31) == 0
+    assert suggested_reduce_pct_for_rules(
+        rules,
+        0.31,
+        trailing_partial_reduce_enabled=True,
+    ) == 25
+    assert suggested_reduce_pct_for_rules(
+        rules,
+        0.10,
+        trailing_partial_reduce_enabled=True,
+    ) == 50
+    assert partial_reduce_shares(5, 25) == 1
+    assert partial_reduce_shares(25, 25) == 6
+
+
 def test_backtester_addon_and_slot_defaults_share_constants():
     shared_keys = [
         "MAX_POSITION_PCT",
@@ -175,7 +200,125 @@ def test_backtester_addon_and_slot_defaults_share_constants():
         "SECOND_ADDON_MAX_POSITION_PCT",
         "DEFER_BREAKOUT_WHEN_SLOTS_LTE",
         "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA",
+        "REPLAY_PARTIAL_REDUCES",
+        "PRODUCTION_TRAILING_STOP_PCT",
+        "TRAILING_PARTIAL_REDUCE_ENABLED",
     ]
 
     for key in shared_keys:
-        assert backtester.DEFAULT_CONFIG[key] == getattr(constants, key)
+        if key == "REPLAY_PARTIAL_REDUCES":
+            assert backtester.DEFAULT_CONFIG[key] is False
+        elif key == "PRODUCTION_TRAILING_STOP_PCT":
+            assert backtester.DEFAULT_CONFIG[key] == constants.TRAILING_STOP_PCT
+        elif key == "TRAILING_PARTIAL_REDUCE_ENABLED":
+            assert backtester.DEFAULT_CONFIG[key] == TRAILING_PARTIAL_REDUCE_ENABLED
+        else:
+            assert backtester.DEFAULT_CONFIG[key] == getattr(constants, key)
+
+
+def test_commodity_near_high_trend_risk_boost_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "GLD",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "conditions_met": {"pct_from_52w_high": -0.02},
+        },
+        {
+            "ticker": "SLV",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "conditions_met": {"pct_from_52w_high": -0.04},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    boosted = sized[0]["sizing"]
+    unboosted = sized[1]["sizing"]
+    assert boosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.5
+    assert unboosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.0
+    assert boosted["risk_pct"] > unboosted["risk_pct"]
+
+
+def test_financials_trend_risk_boost_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "GS",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "GS",
+            "strategy": "breakout_long",
+            "sector": "Financials",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    boosted = sized[0]["sizing"]
+    unboosted = sized[1]["sizing"]
+    assert boosted["trend_financials_risk_multiplier_applied"] == 1.5
+    assert unboosted["trend_financials_risk_multiplier_applied"] == 1.0
+    assert boosted["risk_pct"] > unboosted["risk_pct"]
+
+
+def test_risk_on_unmodified_risk_lift_does_not_stack_on_other_sizing_rules():
+    signals = [
+        {
+            "ticker": "XOM",
+            "strategy": "breakout_long",
+            "sector": "Energy",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "conditions_met": {},
+        },
+        {
+            "ticker": "GLD",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "conditions_met": {"pct_from_52w_high": -0.02},
+        },
+        {
+            "ticker": "XOM",
+            "strategy": "breakout_long",
+            "sector": "Energy",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "balanced",
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    risk_on_plain = sized[0]["sizing"]
+    risk_on_already_boosted = sized[1]["sizing"]
+    balanced_plain = sized[2]["sizing"]
+    assert risk_on_plain["risk_on_unmodified_risk_multiplier_applied"] == 1.25
+    assert risk_on_plain["risk_pct"] == 0.0125
+    assert risk_on_already_boosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.5
+    assert risk_on_already_boosted["risk_on_unmodified_risk_multiplier_applied"] == 1.0
+    assert balanced_plain["risk_on_unmodified_risk_multiplier_applied"] == 1.0

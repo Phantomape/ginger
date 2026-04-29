@@ -28,7 +28,10 @@ from constants import (
     SECOND_ADDON_MAX_POSITION_PCT,
     SECOND_ADDON_MIN_RS_VS_SPY,
     SECOND_ADDON_MIN_UNREALIZED_PCT,
+    TRAILING_STOP_PCT,
 )
+
+TRAILING_PARTIAL_REDUCE_ENABLED = False
 
 
 def _positive_positions(open_positions):
@@ -223,6 +226,47 @@ def classify_entry_open_cancel(
     if stop_price is not None and fill <= float(stop_price):
         return "stop_breach_cancel"
     return None
+
+
+def production_trailing_stop_price(high_water, trailing_stop_pct=TRAILING_STOP_PCT):
+    """Return the production trailing-stop trigger price from high-water mark."""
+    if high_water is None or high_water <= 0:
+        return None
+    return round(float(high_water) * (1.0 - trailing_stop_pct), 2)
+
+
+def suggested_reduce_pct_for_rules(
+    triggered_rules,
+    unrealized_pnl_pct,
+    trailing_partial_reduce_enabled=TRAILING_PARTIAL_REDUCE_ENABLED,
+):
+    """Return the shared production reduce percentage for triggered exit rules."""
+    rule_names = {r.get("rule", "") for r in triggered_rules or []}
+
+    if "HARD_STOP" in rule_names:
+        return 100
+    if "ATR_STOP" in rule_names:
+        return 100 if (unrealized_pnl_pct or 0) < -0.05 else 50
+    if "TRAILING_STOP" in rule_names and trailing_partial_reduce_enabled:
+        return 25 if (unrealized_pnl_pct or 0) > 0.30 else 50
+    if "TRAILING_STOP" in rule_names and len(rule_names) == 1:
+        return 0
+    if "APPROACHING_HARD_STOP" in rule_names:
+        return 50 if (unrealized_pnl_pct or 0) < 0 else 25
+    if "SIGNAL_TARGET" in rule_names:
+        return 33
+    if "PROFIT_TARGET" in rule_names:
+        return 50
+    if "PROFIT_LADDER_50" in rule_names:
+        return 25
+    return 50
+
+
+def partial_reduce_shares(current_shares, reduce_pct):
+    """Return whole shares to reduce using the production floor semantics."""
+    if current_shares is None or reduce_pct is None:
+        return 0
+    return max(0, math.floor(int(current_shares) * float(reduce_pct) / 100.0))
 
 
 def _latest_close(df):

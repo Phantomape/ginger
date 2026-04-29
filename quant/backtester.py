@@ -89,13 +89,18 @@ from constants import (
     SECOND_ADDON_MAX_POSITION_PCT,
     DEFER_BREAKOUT_WHEN_SLOTS_LTE,
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
+    TRAILING_STOP_PCT,
 )
 from regime_exit import compute_regime_exit_profile
 from production_parity import (
+    TRAILING_PARTIAL_REDUCE_ENABLED,
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
+    partial_reduce_shares,
     plan_entry_candidates,
+    production_trailing_stop_price,
     risk_pct_for_market_state,
+    suggested_reduce_pct_for_rules,
 )
 from yfinance_bootstrap import configure_yfinance_runtime
 
@@ -113,6 +118,9 @@ DEFAULT_CONFIG = {
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
+    "REPLAY_PARTIAL_REDUCES": False, # replay production trailing partial reduces
+    "PRODUCTION_TRAILING_STOP_PCT": TRAILING_STOP_PCT,
+    "TRAILING_PARTIAL_REDUCE_ENABLED": TRAILING_PARTIAL_REDUCE_ENABLED,
     "ADDON_ENABLED": ADDON_ENABLED,
     "ADDON_CHECKPOINT_DAYS": ADDON_CHECKPOINT_DAYS,
     "ADDON_MIN_UNREALIZED_PCT": ADDON_MIN_UNREALIZED_PCT,
@@ -152,7 +160,9 @@ def should_cancel_gap(fill_price, signal_entry, sig=None, today=None, ohlcv_all=
 
 SIZING_MULTIPLIER_KEYS = (
     "tqs_risk_multiplier_applied",
+    "risk_on_unmodified_risk_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
+    "trend_financials_risk_multiplier_applied",
     "trend_tech_tight_gap_risk_multiplier_applied",
     "trend_tech_gap_risk_multiplier_applied",
     "trend_tech_near_high_risk_multiplier_applied",
@@ -165,6 +175,7 @@ SIZING_MULTIPLIER_KEYS = (
     "breakout_healthcare_dte_risk_multiplier_applied",
     "trend_healthcare_dte_risk_multiplier_applied",
     "trend_consumer_near_high_dte_risk_multiplier_applied",
+    "trend_commodities_near_high_risk_multiplier_applied",
 )
 
 
@@ -858,7 +869,7 @@ class BacktestEngine:
         from regime           import compute_market_regime
         from fill_model       import (
             apply_entry_fill, apply_stop_fill, apply_target_fill,
-            apply_slippage,   SLIPPAGE_BPS_TARGET,
+            apply_slippage,   SLIPPAGE_BPS_STOP, SLIPPAGE_BPS_TARGET,
         )
 
         ohlcv_all = self._download_data()
@@ -934,6 +945,12 @@ class BacktestEngine:
         addon_executed_count = 0
         addon_skipped_count = 0
         addon_checkpoint_rejected_count = 0
+        partial_reduce_enabled = bool(self.config.get("REPLAY_PARTIAL_REDUCES"))
+        pending_partial_reduces = {}
+        partial_reduce_events = []
+        partial_reduce_scheduled_count = 0
+        partial_reduce_executed_count = 0
+        partial_reduce_skipped_count = 0
         scarce_slot_breakout_deferred_count = 0
         scarce_slot_deferred_events = []
 
@@ -1117,6 +1134,157 @@ class BacktestEngine:
                     "new_avg_entry": pos.entry_price,
                 })
 
+        def _record_partial_reduce_trade(pos, shares_to_sell, raw_open, today, action):
+            exit_price = apply_slippage(raw_open, SLIPPAGE_BPS_STOP, "sell")
+            cost = exit_price * ROUND_TRIP_COST_PCT * shares_to_sell
+            pnl = (exit_price - pos.entry_price) * shares_to_sell - cost
+            entry_slip = (pos.entry_price - pos.entry_open_price) * shares_to_sell
+            exit_slip = (raw_open - exit_price) * shares_to_sell
+            pnl_pct_net = (
+                (exit_price - pos.entry_price) / pos.entry_price
+                - ROUND_TRIP_COST_PCT
+            )
+            initial_risk_pct = (
+                ((pos.entry_price - pos.stop_price) / pos.entry_price)
+                if pos.stop_price and pos.entry_price else None
+            )
+            closed.append({
+                "ticker":           pos.ticker,
+                "strategy":         pos.strategy,
+                "sector":           pos.sector,
+                "entry_price":      pos.entry_price,
+                "entry_open_price": pos.entry_open_price,
+                "stop_price":       pos.stop_price,
+                "exit_price":       round(exit_price, 2),
+                "exit_raw_price":   round(raw_open, 4),
+                "shares":           shares_to_sell,
+                "pnl":              round(pnl, 2),
+                "pnl_pct_net":      round(pnl_pct_net, 6),
+                "initial_risk_pct": round(initial_risk_pct, 6) if initial_risk_pct else None,
+                "slippage_cost":    round(entry_slip + exit_slip, 2),
+                "target_mult_used": pos.target_mult_used,
+                "regime_exit_bucket": pos.regime_exit_bucket,
+                "regime_exit_score": pos.regime_exit_score,
+                "sizing_multipliers": dict(pos.sizing_multipliers),
+                "base_risk_pct":    pos.base_risk_pct,
+                "actual_risk_pct":  pos.actual_risk_pct,
+                "addon_count":      pos.addon_count,
+                "addon_shares":     pos.addon_shares,
+                "addon_cost":       round(pos.addon_cost, 2),
+                "exit_reason":      action.get("exit_reason", "partial_reduce_trailing_stop"),
+                "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
+                "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
+            })
+            return pnl, exit_price
+
+        def _execute_pending_partial_reduces(today):
+            nonlocal partial_reduce_executed_count, partial_reduce_skipped_count, equity
+            date_key = str(today.date())
+            todays_reduces = pending_partial_reduces.pop(date_key, [])
+            if not partial_reduce_enabled or not todays_reduces:
+                return
+
+            for action in todays_reduces:
+                pos = next((p for p in positions if p.ticker == action["ticker"]), None)
+                if pos is None:
+                    partial_reduce_skipped_count += 1
+                    partial_reduce_events.append({**action, "status": "skipped_position_closed"})
+                    continue
+
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or today not in df.index:
+                    partial_reduce_skipped_count += 1
+                    partial_reduce_events.append({**action, "status": "skipped_no_price"})
+                    continue
+
+                row = df.loc[today]
+                raw_open = _scalar_price(row, "Open")
+                shares_to_sell = min(int(action.get("shares_to_sell") or 0), pos.shares)
+                if shares_to_sell <= 0:
+                    partial_reduce_skipped_count += 1
+                    partial_reduce_events.append({
+                        **action,
+                        "status": "skipped_zero_shares",
+                        "current_shares": pos.shares,
+                    })
+                    continue
+
+                pnl, exit_price = _record_partial_reduce_trade(
+                    pos, shares_to_sell, raw_open, today, action
+                )
+                equity += pnl
+                pos.shares -= shares_to_sell
+                partial_reduce_executed_count += 1
+                partial_reduce_events.append({
+                    **action,
+                    "status": "executed",
+                    "raw_open": round(raw_open, 4),
+                    "exit_price": round(exit_price, 4),
+                    "shares_sold": shares_to_sell,
+                    "remaining_shares": pos.shares,
+                    "realized_pnl": round(pnl, 2),
+                })
+
+        def _schedule_partial_reduces(today):
+            nonlocal partial_reduce_scheduled_count
+            if not partial_reduce_enabled:
+                return
+
+            stop_pct = self.config.get(
+                "PRODUCTION_TRAILING_STOP_PCT",
+                TRAILING_STOP_PCT,
+            )
+            for pos in positions:
+                if pos.shares <= 0:
+                    continue
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or today not in df.index:
+                    continue
+                row = df.loc[today]
+                high = _scalar_price(row, "High")
+                close = _scalar_price(row, "Close")
+                pos.high_water = max(pos.high_water, high)
+                trailing_stop = production_trailing_stop_price(pos.high_water, stop_pct)
+                if trailing_stop is None or close > trailing_stop:
+                    continue
+                fill_date = _next_trade_date_for_ticker(pos.ticker, today)
+                if fill_date is None:
+                    continue
+
+                unrealized = (close - pos.entry_price) / pos.entry_price
+                triggered_rules = [{"rule": "TRAILING_STOP", "urgency": "HIGH"}]
+                reduce_pct = suggested_reduce_pct_for_rules(
+                    triggered_rules,
+                    unrealized,
+                    trailing_partial_reduce_enabled=self.config.get(
+                        "TRAILING_PARTIAL_REDUCE_ENABLED",
+                        TRAILING_PARTIAL_REDUCE_ENABLED,
+                    ),
+                )
+                shares_to_sell = partial_reduce_shares(pos.shares, reduce_pct)
+                if shares_to_sell <= 0:
+                    continue
+
+                partial_reduce_scheduled_count += 1
+                pending_partial_reduces.setdefault(str(fill_date.date()), []).append({
+                    "ticker": pos.ticker,
+                    "strategy": pos.strategy,
+                    "sector": pos.sector,
+                    "decision_mode": "code_trailing_partial_reduce",
+                    "trigger_date": str(today.date()),
+                    "scheduled_fill_date": str(fill_date.date()),
+                    "exit_reason": "partial_reduce_trailing_stop",
+                    "triggered_rule": "TRAILING_STOP",
+                    "trailing_stop_pct": stop_pct,
+                    "high_water": round(pos.high_water, 4),
+                    "trailing_stop_price": trailing_stop,
+                    "trigger_close": round(close, 4),
+                    "unrealized_pnl_pct": round(unrealized, 6),
+                    "reduce_pct": reduce_pct,
+                    "shares_before": pos.shares,
+                    "shares_to_sell": shares_to_sell,
+                })
+
         def _schedule_followthrough_addons(today):
             nonlocal addon_scheduled_count, addon_checkpoint_rejected_count
             if not addon_enabled:
@@ -1291,6 +1459,8 @@ class BacktestEngine:
 
             # ── 1. Check exits on today's prices ────────────────────────────
             _execute_pending_addons(today)
+            _execute_pending_partial_reduces(today)
+            positions = [p for p in positions if p.shares > 0]
 
             still_open = []
             for pos in positions:
@@ -1379,6 +1549,7 @@ class BacktestEngine:
                     still_open.append(pos)
 
             positions = still_open
+            _schedule_partial_reduces(today)
             _schedule_followthrough_addons(today)
 
             # ── 2. Generate signals using the REAL pipeline ─────────────────
@@ -2032,6 +2203,15 @@ class BacktestEngine:
                 "candidate_signals_covered":        llm_signals_presented,
                 "candidate_signals_total":          total_signals_survived,
             },
+            "partial_reduce_replay": {
+                "enabled": partial_reduce_enabled,
+                "shared_policy": "production_parity.py",
+                "default_behavior": "off",
+                "note": (
+                    "Production position_actions are replayed only when "
+                    "REPLAY_PARTIAL_REDUCES/--replay-partial-reduces is enabled."
+                ),
+            },
             "survivorship_bias_universe":  True,
             # Earnings strategy data quality: only days_to_earnings is historically
             # reconstructable from yfinance calendar. eps_estimate and
@@ -2051,6 +2231,7 @@ class BacktestEngine:
             "notes": [
                 "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
+                "Trailing partial reduces: production policy is shared; backtest replay is opt-in to preserve historical baseline comparability",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
                 "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
                 "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
@@ -2219,7 +2400,7 @@ class BacktestEngine:
             "notes": [
                 "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
                 "candidate_* metrics measure coverage over actual pre-LLM candidates, which is the relevant readiness gauge for LLM alpha experiments.",
-                "position_actions are NOT replayed — exits already run code-deterministic rule engine.",
+                "position_actions are replayed only for opt-in shared policies such as --replay-partial-reduces.",
                 "by_strategy shows per-strategy veto breakdown to quantify LLM selectivity.",
             ],
         }
@@ -2306,6 +2487,27 @@ class BacktestEngine:
                 "Incremental shares are capped by original-share fraction, single-position cap, and portfolio heat cap.",
             ],
         }
+        partial_reduce_attribution = {
+            "enabled": partial_reduce_enabled,
+            "production_trailing_stop_pct": self.config.get(
+                "PRODUCTION_TRAILING_STOP_PCT",
+                TRAILING_STOP_PCT,
+            ),
+            "trailing_partial_reduce_enabled": self.config.get(
+                "TRAILING_PARTIAL_REDUCE_ENABLED",
+                TRAILING_PARTIAL_REDUCE_ENABLED,
+            ),
+            "scheduled": partial_reduce_scheduled_count,
+            "executed": partial_reduce_executed_count,
+            "skipped": partial_reduce_skipped_count,
+            "events": partial_reduce_events,
+            "notes": [
+                "Opt-in replay of production trailing stop position_actions.",
+                "Trigger uses production high-water pct stop on daily close; fill uses next ticker open with stop-side slippage.",
+                "Reduce percentage and share rounding come from production_parity.py.",
+                "Default is disabled so legacy backtests remain byte-for-byte comparable unless the flag is supplied.",
+            ],
+        }
         scarce_slot_attribution = {
             "defer_breakout_when_slots_lte": self.config.get(
                 "DEFER_BREAKOUT_WHEN_SLOTS_LTE"
@@ -2352,6 +2554,7 @@ class BacktestEngine:
             "llm_attribution":     llm_attribution,
             "news_attribution":    news_attribution,
             "addon_attribution":   addon_attribution,
+            "partial_reduce_attribution": partial_reduce_attribution,
             "scarce_slot_attribution": scarce_slot_attribution,
             "entry_execution_attribution": entry_execution_attribution,
             "equity_curve_integrity": equity_curve_integrity,
@@ -2729,6 +2932,9 @@ def main():
                         help="Apply T1-negative news veto using "
                              "data/clean_trade_news_YYYYMMDD.json when the file exists. "
                              "Default: off.")
+    parser.add_argument("--replay-partial-reduces", action="store_true",
+                        help="Replay production trailing-stop partial reduce actions. "
+                             "Default: off.")
     parser.add_argument("--regime-aware-exit", action="store_true",
                         help="Use the entry-day regime exit profile to set ATR target width. "
                              "Default: off.")
@@ -2752,7 +2958,10 @@ def main():
         from filter import WATCHLIST
         universe = list(WATCHLIST)
 
-    cfg = {"REGIME_AWARE_EXIT": args.regime_aware_exit}
+    cfg = {
+        "REGIME_AWARE_EXIT": args.regime_aware_exit,
+        "REPLAY_PARTIAL_REDUCES": args.replay_partial_reduces,
+    }
     engine = BacktestEngine(universe, start=args.start, end=args.end,
                             config=cfg,
                             replay_llm=args.replay_llm,

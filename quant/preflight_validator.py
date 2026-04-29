@@ -31,6 +31,8 @@ breach_status per position:
 
 import logging
 
+from production_parity import suggested_reduce_pct_for_rules
+
 logger = logging.getLogger(__name__)
 
 # Heat threshold for DEFENSIVE state (below full 8% cap to give early warning)
@@ -61,38 +63,7 @@ def _suggested_reduce_pct(triggered_rules: list, unrealized_pnl_pct: float) -> i
 
     Returns an integer percentage (25, 33, 50, or 100).
     """
-    # Collect rule names (highest urgency was already determined by caller)
-    rule_names = {r.get("rule", "") for r in triggered_rules}
-
-    # Hard stop — should be CRITICAL_EXIT, but guard anyway
-    if "HARD_STOP" in rule_names:
-        return 100
-
-    # ATR stop
-    if "ATR_STOP" in rule_names:
-        # Deeper loss → bigger cut; use 100% if significantly below stop
-        return 100 if (unrealized_pnl_pct or 0) < -0.05 else 50
-
-    # Trailing stop — split on profit level
-    if "TRAILING_STOP" in rule_names:
-        return 25 if (unrealized_pnl_pct or 0) > 0.30 else 50
-
-    # APPROACHING_HARD_STOP — pre-emptive trim
-    if "APPROACHING_HARD_STOP" in rule_names:
-        return 50 if (unrealized_pnl_pct or 0) < 0 else 25
-
-    # Signal target reached (3.5×ATR)
-    if "SIGNAL_TARGET" in rule_names:
-        return 33
-
-    # Profit ladder rules
-    if "PROFIT_TARGET" in rule_names:
-        return 50
-    if "PROFIT_LADDER_50" in rule_names:
-        return 25
-
-    # Fallback for any other HIGH urgency rule
-    return 50
+    return suggested_reduce_pct_for_rules(triggered_rules, unrealized_pnl_pct)
 
 
 def enrich_positions_with_breach_status(trend_signals: dict) -> dict:
@@ -203,7 +174,12 @@ def compute_account_state(
 
         # Pre-compute reduce % for HIGH_REDUCE — eliminates REDUCE table lookup in prompt
         if decision_state == "HIGH_REDUCE" and triggered:
-            suggested_reduce_pct[ticker] = _suggested_reduce_pct(triggered, unrealized_pnl)
+            reduce_pct = _suggested_reduce_pct(triggered, unrealized_pnl)
+            if reduce_pct <= 0:
+                decision_state = "HOLD"
+                position_states[ticker] = decision_state
+            else:
+                suggested_reduce_pct[ticker] = reduce_pct
 
     # ── BEAR emergency stops (pre-compute for ALL positions with prices) ──────
     # When regime=BEAR the prompt rule requires current_price × 0.95 for every

@@ -19,6 +19,7 @@ from constants import (
     LOW_TQS_HAIRCUT_EXEMPT_SECTORS,
     LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER,
     TREND_INDUSTRIALS_RISK_MULTIPLIER,
+    TREND_FINANCIALS_RISK_MULTIPLIER,
     TREND_TECH_GAP_VULN_MIN,
     TREND_TECH_GAP_VULN_MAX,
     TREND_TECH_GAP_RISK_MULTIPLIER,
@@ -54,6 +55,9 @@ from constants import (
     TREND_CONSUMER_NEAR_HIGH_DTE_MAX,
     TREND_CONSUMER_NEAR_HIGH_MAX_PULLBACK,
     TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER,
+    TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK,
+    TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER,
+    RISK_ON_UNMODIFIED_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
     ATR_STOP_MULT,
@@ -327,6 +331,8 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             if strategy == "trend_long" and sector == "Industrials":
                 trend_industrials_risk_multiplier = TREND_INDUSTRIALS_RISK_MULTIPLIER
                 signal_risk_pct *= trend_industrials_risk_multiplier
+            trend_financials_risk_multiplier = 1.0
+            risk_on_unmodified_risk_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
                 strategy == "trend_long"
@@ -353,6 +359,9 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 signal_risk_pct *= trend_tech_gap_risk_multiplier
             trend_tech_near_high_risk_multiplier = 1.0
             pct_from_52w_high = (sig.get("conditions_met") or {}).get("pct_from_52w_high")
+            if strategy == "trend_long" and sector == "Financials":
+                trend_financials_risk_multiplier = TREND_FINANCIALS_RISK_MULTIPLIER
+                signal_risk_pct *= trend_financials_risk_multiplier
             if (
                 strategy == "trend_long"
                 and sector == "Technology"
@@ -488,6 +497,48 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                     TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER
                 )
                 signal_risk_pct *= trend_consumer_near_high_dte_risk_multiplier
+            trend_commodities_near_high_risk_multiplier = 1.0
+            if (
+                strategy == "trend_long"
+                and sector == "Commodities"
+                and pct_from_52w_high is not None
+                and pct_from_52w_high >= TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK
+            ):
+                # Commodity trend winners were concentrated near 52-week highs.
+                # Keep this as an allocation boost, not a new entry source.
+                trend_commodities_near_high_risk_multiplier = (
+                    TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= trend_commodities_near_high_risk_multiplier
+            existing_sizing_multipliers = (
+                tqs_risk_multiplier,
+                trend_industrials_risk_multiplier,
+                trend_financials_risk_multiplier,
+                trend_tech_tight_gap_risk_multiplier,
+                trend_tech_gap_risk_multiplier,
+                trend_tech_near_high_risk_multiplier,
+                trend_tech_dte_risk_multiplier,
+                breakout_industrials_gap_risk_multiplier,
+                breakout_comms_near_high_risk_multiplier,
+                breakout_comms_gap_risk_multiplier,
+                breakout_financials_dte_risk_multiplier,
+                breakout_tech_dte_risk_multiplier,
+                breakout_healthcare_dte_risk_multiplier,
+                trend_healthcare_dte_risk_multiplier,
+                trend_consumer_near_high_dte_risk_multiplier,
+                trend_commodities_near_high_risk_multiplier,
+            )
+            has_other_sizing_rule = any(
+                multiplier != 1.0 for multiplier in existing_sizing_multipliers
+            )
+            if (
+                sig.get("regime_exit_bucket") == "risk_on"
+                and not has_other_sizing_rule
+            ):
+                risk_on_unmodified_risk_multiplier = (
+                    RISK_ON_UNMODIFIED_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= risk_on_unmodified_risk_multiplier
             if signal_risk_pct <= 0:
                 sizing = _zero_risk_sizing(effective_risk_pct, entry, stop)
             elif strategy == "earnings_event_long":
@@ -516,6 +567,12 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sizing["tqs_risk_multiplier_applied"] = tqs_risk_multiplier
                 sizing["trend_industrials_risk_multiplier_applied"] = (
                     trend_industrials_risk_multiplier
+                )
+                sizing["trend_financials_risk_multiplier_applied"] = (
+                    trend_financials_risk_multiplier
+                )
+                sizing["risk_on_unmodified_risk_multiplier_applied"] = (
+                    risk_on_unmodified_risk_multiplier
                 )
                 sizing["trend_tech_tight_gap_risk_multiplier_applied"] = (
                     trend_tech_tight_gap_risk_multiplier
@@ -552,6 +609,9 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["trend_consumer_near_high_dte_risk_multiplier_applied"] = (
                     trend_consumer_near_high_dte_risk_multiplier
+                )
+                sizing["trend_commodities_near_high_risk_multiplier_applied"] = (
+                    trend_commodities_near_high_risk_multiplier
                 )
                 sig = {**sig, "sizing": sizing}
         sized.append(sig)
