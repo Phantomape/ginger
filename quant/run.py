@@ -122,6 +122,7 @@ def main():
         build_followthrough_addon_actions,
         filter_entry_signal_candidates,
         plan_entry_candidates,
+        risk_pct_for_market_state,
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
@@ -373,24 +374,13 @@ def main():
 
     log.info(f"Signals generated: {len(signals)}")
 
-    # ── Regime-adjusted risk per trade ───────────────────────────────────────
-    # Scale down position sizing in adverse regimes to reduce portfolio heat
-    # while keeping the trade structure (R:R, stop, target) unchanged.
-    #   BULL         : 1.00% (default)
-    #   NEUTRAL      : 0.75% — mixed market; reduce exposure, keep selectivity
-    #   BEAR_SHALLOW : 0.50% — both below MA; defensive-sector-only exposure
-    #   BEAR_DEEP    : N/A   — no signals generated
-    if _regime_str == "NEUTRAL":
-        _trade_risk_pct = 0.0075
-        log.info("NEUTRAL regime: position sizing at 0.75% risk per trade")
-    elif (_regime_str == "BEAR"
-          and spy_pct_from_ma is not None
-          and qqq_pct_from_ma is not None
-          and min(spy_pct_from_ma, qqq_pct_from_ma) > -0.05):
-        _trade_risk_pct = 0.005
-        log.info("BEAR_SHALLOW regime: position sizing at 0.50% risk per trade")
-    else:
-        _trade_risk_pct = None   # use portfolio_engine default (1.0%)
+    _trade_risk_pct = risk_pct_for_market_state(
+        _regime_str,
+        spy_pct_from_ma=spy_pct_from_ma,
+        qqq_pct_from_ma=qqq_pct_from_ma,
+    )
+    if _trade_risk_pct is not None:
+        log.info("Regime-adjusted position sizing: %.2f%% risk per trade", _trade_risk_pct * 100)
 
     # Current prices for heat + sizing
     current_prices = {

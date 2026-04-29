@@ -107,6 +107,25 @@ def filter_entry_signal_candidates(
     return planned, audit
 
 
+def risk_pct_for_market_state(
+    market_regime,
+    spy_pct_from_ma=None,
+    qqq_pct_from_ma=None,
+):
+    """Return shared regime-adjusted risk_pct override, or None for default."""
+    regime = str(market_regime or "").upper()
+    if regime == "NEUTRAL":
+        return 0.0075
+    if (
+        regime == "BEAR"
+        and spy_pct_from_ma is not None
+        and qqq_pct_from_ma is not None
+        and min(spy_pct_from_ma, qqq_pct_from_ma) > -0.05
+    ):
+        return 0.005
+    return None
+
+
 def plan_entry_candidates(
     signals,
     open_positions,

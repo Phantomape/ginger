@@ -1,0 +1,42 @@
+{
+  "experiment_id": "exp-20260429-008",
+  "timestamp": "2026-04-29T22:55:00-07:00",
+  "status": "accepted",
+  "lane": "production_backtest_parity_governance",
+  "hypothesis": "Regime-adjusted risk sizing remained duplicated between quant/run.py and quant/backtester.py. Moving the NEUTRAL and BEAR_SHALLOW risk_pct override into production_parity.py should prevent future sizing drift without changing strategy behavior.",
+  "change_summary": "Added production_parity.risk_pct_for_market_state and switched production and backtest adapters to call it. Added a focused parity test for BULL/default, NEUTRAL 0.75%, BEAR_SHALLOW 0.50%, and BEAR_DEEP/default behavior.",
+  "change_type": "measurement_repair_parity",
+  "component": "quant/production_parity.py, quant/run.py, quant/backtester.py, quant/test_production_parity.py, docs/production_backtest_parity.md",
+  "parameters": {
+    "single_causal_variable": "shared implementation location for regime risk_pct override",
+    "strategy_behavior_changed": false,
+    "locked_values": {
+      "neutral_risk_pct": 0.0075,
+      "bear_shallow_risk_pct": 0.005,
+      "default_risk_pct": null
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry candidate gates",
+      "entry open cancel",
+      "scarce-slot routing",
+      "add-ons",
+      "position sizing formula",
+      "exit rules",
+      "LLM/news replay"
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "decision": "accepted",
+  "rejection_reason": null,
+  "verification": [
+    ".venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py quant\\test_quant.py => 299 passed"
+  ],
+  "notes": "This is parity governance, not alpha search. No fixed-window backtest is required beyond no-behavior-change testing because only duplicate adapter arithmetic moved into a shared helper."
+}

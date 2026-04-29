@@ -10,6 +10,7 @@ from production_parity import (  # noqa: E402
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
     plan_entry_candidates,
+    risk_pct_for_market_state,
 )
 import backtester  # noqa: E402
 import constants  # noqa: E402
@@ -92,6 +93,13 @@ def test_filter_entry_signal_candidates_matches_shared_entry_gates():
     assert [s["ticker"] for s in audit["sector_cap_dropped"]] == ["C"]
     assert [s["ticker"] for s in audit["bear_shallow_dropped"]] == ["A", "B", "E"]
     assert audit["bear_shallow_active"] is True
+
+
+def test_risk_pct_for_market_state_matches_shared_regime_sizing():
+    assert risk_pct_for_market_state("BULL", 0.1, 0.1) is None
+    assert risk_pct_for_market_state("NEUTRAL", 0.1, -0.01) == 0.0075
+    assert risk_pct_for_market_state("BEAR", -0.03, -0.04) == 0.005
+    assert risk_pct_for_market_state("BEAR", -0.03, -0.06) is None
 
 
 def test_build_followthrough_addon_actions_emits_day_two_add():

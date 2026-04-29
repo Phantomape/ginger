@@ -95,6 +95,7 @@ from production_parity import (
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
     plan_entry_candidates,
+    risk_pct_for_market_state,
 )
 from yfinance_bootstrap import configure_yfinance_runtime
 
@@ -1449,15 +1450,11 @@ class BacktestEngine:
                 max_per_sector=self.config.get("MAX_PER_SECTOR", MAX_PER_SECTOR),
             )
 
-            # Regime-adjusted risk per trade
-            if regime_str == "NEUTRAL":
-                risk_pct = 0.0075
-            elif (regime_str == "BEAR"
-                  and spy_pct is not None and qqq_pct is not None
-                  and min(spy_pct, qqq_pct) > -0.05):
-                risk_pct = 0.005
-            else:
-                risk_pct = None  # default 1%
+            risk_pct = risk_pct_for_market_state(
+                regime_str,
+                spy_pct_from_ma=spy_pct,
+                qqq_pct_from_ma=qqq_pct,
+            )
 
             current_prices = {
                 ticker: feat["close"]
