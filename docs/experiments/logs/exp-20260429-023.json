@@ -1,0 +1,73 @@
+{
+  "experiment_id": "exp-20260429-023",
+  "timestamp": "2026-04-29T10:09:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected plain risk_on positions that pass the existing day-2 follow-through add-on checkpoint may deserve a larger first add-on fraction than the global 50% default.",
+  "parameters": {
+    "single_causal_variable": "first add-on fraction for positions whose initial sizing had risk_on_unmodified_risk_multiplier_applied",
+    "old_value": 0.5,
+    "tested_value": 0.75,
+    "locked_variables": [
+      "entry generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "exit rules",
+      "gap cancels",
+      "add-on trigger thresholds",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.2134, "sharpe_daily": 4.22, "total_pnl": 52449.97, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "addon_executed": 4},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "addon_executed": 3},
+    "old_thin": {"expected_value_score": 0.2113, "sharpe_daily": 1.26, "total_pnl": 16772.15, "max_drawdown_pct": 0.0647, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "addon_executed": 2}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.2134, "sharpe_daily": 4.22, "total_pnl": 52449.97, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "addon_executed": 4},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "addon_executed": 3},
+    "old_thin": {"expected_value_score": 0.2113, "sharpe_daily": 1.26, "total_pnl": 16772.15, "max_drawdown_pct": 0.0647, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "addon_executed": 2}
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0,
+    "sum": 0.0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "decision_reason": "The 75% fraction was inert in all three windows because existing add-on caps already constrained executed add-on shares. No trades, PnL, EV, drawdown, or add-on counts changed.",
+  "rejection_reason": "Failed Gate 4 materiality with zero metric movement in all fixed windows.",
+  "next_retry_requires": [
+    "A new independent evidence source showing the add-on cap, not the fraction, should change for a specific sleeve",
+    "Production position metadata sufficient to execute any sizing-multiplier-specific add-on rule without drift",
+    "Concentration evidence that a larger confirmed-winner add-on does not increase tail risk"
+  ],
+  "artifact": "data/experiments/exp-20260429-023/risk_on_unmodified_addon_fraction_0_75.json"
+}

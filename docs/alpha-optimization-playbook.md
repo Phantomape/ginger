@@ -108,6 +108,8 @@ PEAD / post-earnings drift 作为大类 alpha 仍有研究依据，但当前仓�
 
 - backlog classification 已区分 `snapshot_only` 与真实 `context_only` 缺口，避免继续恢复没有实际上下文的日期。
 - effective attribution subset 已加入，用于只统计生产对齐、ranking-eligible 的 LLM 样本。
+- 已持仓过滤、同日行业上限、`BEAR_SHALLOW` 入场 gate 与 `NEUTRAL` / `BEAR_SHALLOW` 风险降档都已收敛到共享 helper；后续不要再接受 run/backtester 双份实现。
+- trailing partial-reduce 现在已经可以共享回放；在有 15 次 partial reduction 的 fixed-window replay 中，它对当前 accepted stack 为负，因此“生产里看起来合理”不再是继续推广它的证据。
 
 ## 3. 当前优先级
 
@@ -117,7 +119,8 @@ PEAD / post-earnings drift 作为大类 alpha 仍有研究依据，但当前仓�
 2. lifecycle alpha，尤其是已方向性为正但未 production-promoted 的 entry follow-through add-on。
 3. meta-allocation / regime routing，重点解释 `mid_weak` 为什么赚钱但跑输指数。
 4. LLM / news attribution repair，只在它能释放 soft ranking、news-confirmed exit 或 C strategy grading 时插队。
-5. 新 universe / 新 entry 只做 shadow audit；不要直接接 production。
+5. production/backtest parity 只在它能释放新的 alpha 实验或消除真实漂移时插队；不要把纯 parity 整理当作默认主线。
+6. 新 universe / 新 entry 只做 shadow audit；不要直接接 production。
 
 当前不建议继续消耗迭代的方向：
 
@@ -126,6 +129,8 @@ PEAD / post-earnings drift 作为大类 alpha 仍有研究依据，但当前仓�
 - broad macro defensive overlay 的简单门控。
 - C 策略的单字段或小 checklist 修修补补。
 - entry follow-through add-on 的附近阈值微调。
+- 没有 alpha 释放价值的 parity-only 重构。
+- 仅凭直觉继续强化 production trailing partial-reduce 建议。
 
 ## 4. 机制状态表
 
@@ -135,11 +140,14 @@ PEAD / post-earnings drift 作为大类 alpha 仍有研究依据，但当前仓�
 | Technology trend wider target | accepted | winner-truncation repair 可在窄 cohort 上成立 | exp-20260425 target-width family |
 | Commodity trend wider target | accepted narrow | 部分 commodity trend winner 需要更宽 target，但不可泛化到 breakout | exp-20260425 target-width family |
 | Single-position cap 25% | accepted | 改善 winner capture / risk allocation，保留 | exp-20260425 cap family |
+| Trend Financials risk boost | accepted narrow | 已入选 Financials trend sleeve 在 mid/old 窗口重复贡献，适合 sizing boost；不要泛化成 sector priority | exp-20260429-015 |
 | Entry follow-through add-on | promising, default-off | day2 `>= +2%` 且 RS vs SPY `> 0` 的 25% add-on 三窗口方向性为正，但 materiality modest | exp-20260426-009/010/011/012/035, exp-20260427-010/011 |
 | LLM soft ranking | blocked / high-upside | 方向仍重要，但必须先有足够 production-aligned replay sample | exp-20260426-015/022/023 |
 | News-confirmed weak-hold exit | blocked, not falsified | 概念比 price-only exit 干净，但 archive coverage 不足 | exp-20260425-037 |
 | Earnings C strategy revival | deferred | PEAD 大类未死，但当前实现不是简单补数据能救 | exp-20260418+, C-gate families |
 | Meta-allocation / regime routing | promising but early | `mid_weak` 问题更像什么时候用哪个 sleeve，而不是缺一个 entry | exp-20260423 meta series |
+| Shared parity helpers | accepted governance | 入场 gate、regime risk sizing、partial-reduce 语义都应由共享 helper 驱动；未来不接受 run/backtester 双份逻辑 | exp-20260429-007/008/012 |
+| Trailing partial reductions | measurable but rejected alpha | 现在可回放，但 replay-on 对当前 stack 为负；保留为共享可审计机制，不作为默认 alpha | exp-20260429-012 |
 | Residual narrow sector pockets | accepted but overfit-prone | 可作为线索，不应无限挖残差 | exp-20260423/25 residual pocket series |
 | Universe expansion scouts | observed-only | 事件/高 beta/mid-cap scouts 有线索，但受 snapshot / coverage 限制 | exp-20260426-013/021/025/031 |
 
@@ -833,3 +841,658 @@ Next valid retry requires: a state-specific or event-backed ordering
 discriminator that explains when the native order should be overridden. Do not
 combine ordering changes with cap, heat, gap-cancel, or add-on parameter
 changes without separate evidence.
+
+### 2026-04-28 mechanism update: Scarce-slot breakout exceptions
+
+Status: rejected.
+
+Core conclusion: exp-20260428-030 tested whether the accepted one-slot
+scarce-slot breakout deferral should allow candidate-level exceptions for
+apparently stronger breakouts. It should not, at least not from existing
+`trade_quality_score` or 52-week-high proximity fields.
+
+Evidence: the best tested variant, `near_high_breakout_exception`, was
+unchanged in `late_strong` and `mid_weak` but regressed `old_thin` by
+`EV -0.0448` and PnL `-$2,169.46`. The diagnostic no-deferral variant and
+`high_tqs_breakout_exception` also failed Gate 4.
+
+Do not repeat: scarce-slot breakout exceptions based only on TQS,
+confidence-adjacent quality, or 52-week proximity.
+
+Next valid retry requires: an orthogonal event/state source that explains why a
+specific deferred breakout deserves the last slot. Keep the current one-slot
+scarce-slot breakout deferral unchanged.
+
+### 2026-04-28 mechanism update: Second follow-through add-on after cap promotion
+
+Status: rejected.
+
+Core conclusion: exp-20260428-031 retested the prior best day-5 second
+follow-through add-on after the production stack changed to a 50% day-2 add-on
+and 40% initial cap. The new capital base did not make the second add-on
+material. It helped only `mid_weak`, regressed `late_strong`, and was inert in
+`old_thin`.
+
+Evidence: versus the current default stack, enabling the day-5 second add-on
+with unrealized `>= +5%`, `RS vs SPY > 0`, 35% original shares, and 60% add-on
+cap produced EV deltas `late_strong -0.0081`, `mid_weak +0.0418`, and
+`old_thin +0.0000`. Aggregate PnL improved only `+$717.99` / `+0.8348%`,
+below Gate 4 materiality, with 4 second add-ons executed.
+
+Do not repeat: nearby second-add-on size/cap tuning after the 40% initial cap
+promotion. The mechanism remains directionally interesting but too small for
+production.
+
+Next valid retry requires: forward/paper evidence or an orthogonal confirmation
+source such as event context. Keep `SECOND_ADDON_ENABLED=false` meanwhile.
+
+### 2026-04-28 mechanism update: State-gated breakout deferral
+
+Status: rejected.
+
+Core conclusion: exp-20260428-032 tested whether the accepted one-slot
+scarce-slot breakout deferral should only fire when the weaker of SPY/QQQ is
+not far above its moving average. It should not be promoted. Relaxing deferral
+in stronger index states admitted lower-quality breakouts in the weaker
+windows, and the best tested gate still reduced aggregate EV/PnL.
+
+Evidence: the best variant, `DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA=0.08`,
+was unchanged in `late_strong` and `mid_weak`, but regressed `old_thin` by
+`EV -0.0099` and PnL `-$226.65` aggregate, while increasing max drawdown by
+`+1.58 pp`. Looser 0%/3%/5% gates damaged both `mid_weak` and `old_thin`.
+
+Do not repeat: nearby global SPY/QQQ moving-average distance thresholds as the
+state gate for scarce-slot breakout deferral.
+
+Next valid retry requires: a more explanatory state source such as breadth,
+dispersion, or event-backed breakout confirmation. Keep the current always-on
+one-slot breakout deferral unchanged.
+
+### 2026-04-28 mechanism update: Near-stop next-open entry cancel
+
+Status: rejected.
+
+Core conclusion: exp-20260428-033 tested whether entries that open below signal
+entry but still above the planned stop should be cancelled when most of the
+initial stop distance has already been consumed. This does not improve alpha.
+Tight 15%/25% remaining-risk thresholds were inert in all three fixed windows;
+looser 35%/50% thresholds only added one active cancel in `late_strong` and
+materially damaged that window.
+
+Evidence: best variants 15%/25% had aggregate EV and PnL deltas exactly
+`0.0000`. Active variants 35%/50% reduced `late_strong` EV by `-0.2531` and
+PnL by `-$4,154.41`, while `mid_weak` and `old_thin` were unchanged.
+
+Do not repeat: nearby near-stop / remaining-risk next-open cancel thresholds as
+a standalone entry execution filter.
+
+Next valid retry requires: a new discriminator such as intraday reclaim
+behavior, fresh event context, or forward/paper evidence. Keep the accepted
+2% adverse-gap cancel unchanged.
+
+### 2026-04-28 mechanism update: Profit-protective stop after early MFE
+
+Status: rejected.
+
+Core conclusion: exp-20260428-034 tested whether positions that first reached
+`+3%` MFE should have their stop raised to breakeven, `+1%`, or `+2%`. This is
+not a viable lifecycle alpha. It prevented some small losses, but it truncated
+far more trend and breakout winners across every fixed window.
+
+Evidence: the best variant, breakeven protection after `+3%` MFE, had EV deltas
+`late_strong -1.1759`, `mid_weak -0.5094`, and `old_thin -0.1420`. Aggregate
+PnL fell `-$49,004.06` / `-56.9764%`, with 0/3 windows improved and 53 changed
+trades.
+
+Do not repeat: simple breakeven / small-profit protective stops after early MFE,
+or nearby `0-2%` stop locks after `+3%` MFE.
+
+Next valid retry requires: an orthogonal adverse context such as failed
+intraday reclaim, fresh negative event context, or forward evidence that
+separates decaying losers from ordinary noisy winners. Do not add generic
+profit protection to the accepted stack.
+
+### 2026-04-28 mechanism update: ETF universe expansion
+
+Status: rejected.
+
+Core conclusion: exp-20260428-035 tested whether liquid sector/defensive ETF
+proxies already present in the fixed snapshots should become tradeable universe
+candidates. Broad ETF expansion and narrower sector/defensive variants did not
+pass the fixed-window Gate 4 checks. The best variant, `XLE + USO`, released
+large `late_strong` Energy continuation upside but displaced better A+B
+opportunities in `mid_weak` and still regressed `old_thin`.
+
+Evidence: `energy_only_etfs` produced EV deltas `late_strong +0.3609`,
+`mid_weak -0.2328`, and `old_thin -0.0226`; aggregate PnL improved only
+`+$334.72` / `+0.389%`, far below Gate 4 materiality, with 1/3 windows
+improved. Broad sector/defensive expansion had positive aggregate EV only
+because of `late_strong`, but aggregate PnL was `-$3,232.14`.
+
+Do not repeat: broad sector/defensive ETF additions as a simple tradeable
+universe expansion, or single-ETF additions such as XLE/XLP without a state
+discriminator.
+
+Next valid retry requires: a state or event discriminator explaining when
+Energy/USO continuation deserves scarce slot competition, plus sector mapping
+and production watchlist parity before any production promotion.
+
+### 2026-04-29 mechanism update: Global position slot count
+
+Status: rejected.
+
+Core conclusion: exp-20260429-001 tested whether the accepted 40% initial cap
+and 50% day-2 add-on changed the right global `MAX_POSITIONS` count. It did
+not. The current `MAX_POSITIONS=5` remains the most robust fixed-window setting.
+Cutting to 4 slots slightly improved `old_thin` but damaged the stronger
+`late_strong` and `mid_weak` windows; raising to 6 or 7 admitted weaker
+marginal trades and regressed all three windows.
+
+Evidence: best nonbaseline variant `MAX_POSITIONS=4` had EV deltas
+`late_strong -0.0748`, `mid_weak -0.1498`, and `old_thin +0.0069`, with
+aggregate PnL delta `-$6,900.39` / `-8.023%`. `MAX_POSITIONS=6` and `7`
+regressed all three fixed windows.
+
+Do not repeat: nearby global slot-count sweeps as a capital-allocation shortcut.
+
+Next valid retry requires: a state-specific or sleeve-specific allocation signal.
+If slot count is revisited, the variable should be routing which sleeve gets the
+scarce slot, not a global portfolio slot count.
+
+### 2026-04-29 mechanism update: Sector-persistence entry source
+
+Status: rejected.
+
+Core conclusion: exp-20260429-002 tested whether sector-relative persistence
+candidates should become a new executable entry source. The shadow signal did
+not survive real slot, gap-cancel, sizing, add-on, and exit mechanics. It
+injected many marginal trades and displaced stronger native A/B opportunities
+in every fixed window.
+
+Evidence: enabling `sector_persistence_long` produced EV deltas
+`late_strong -1.4585`, `mid_weak -0.6688`, and `old_thin -0.1613`. Aggregate
+PnL fell `-$53,807.02` / `-62.5608%`, with 0/3 windows improved and 97
+sector-persistence trades added across the three windows.
+
+Do not repeat: promoting sector-relative persistence from shadow forward-return
+evidence directly into an entry source, or nearby 20d/60d sector-relative
+threshold tuning without an orthogonal discriminator.
+
+Next valid retry requires: a state/event discriminator that explains when a
+sector-persistence candidate deserves scarce slot competition, or a different
+candidate-pool source with production watchlist parity. Treat simple sector
+momentum entries as noise until that evidence exists.
+
+### 2026-04-29 mechanism update: State-gated extra slot
+
+Status: rejected.
+
+Core conclusion: exp-20260429-003 tested whether the rejected global sixth slot
+could be rescued by allowing it only when both SPY and QQQ were strongly above
+their 200-day moving averages. It should not be promoted. The strictest tested
+gate helped the rotation-heavy `mid_weak` window, but still damaged
+`late_strong` and `old_thin`; looser gates admitted weak marginal trades.
+
+Evidence: best variant `min(SPY, QQQ) pct-from-200MA >= 10%` had EV deltas
+`late_strong -0.0423`, `mid_weak +0.4616`, and `old_thin -0.0322`; aggregate
+PnL fell `-$6,031.94` / `-7.0133%`, with only 1/3 windows improved.
+
+Do not repeat: nearby SPY/QQQ pct-from-200MA thresholds as a sixth-slot state
+gate, or simple index-distance gates as a capacity unlock.
+
+Next valid retry requires: a genuinely different state source such as breadth,
+dispersion, event context, or forward/paper evidence explaining which sleeve
+deserves extra capacity. Keep `MAX_POSITIONS=5`.
+
+### 2026-04-29 mechanism update: RS-gated Technology breakout target
+
+Status: rejected.
+
+Core conclusion: exp-20260429-004 tested whether the rejected broad Technology
+breakout target-width idea could be rescued by widening targets only for
+Technology breakouts with strong `rs_vs_spy`. It cannot be promoted. Candidate
+RS gating improved `mid_weak` and aggregate PnL, but the same late-window EV
+and Sharpe damage remained, so the variant failed the EV-first multi-window
+gate.
+
+Evidence: best variant `rs_vs_spy >= 5%` with a 6 ATR target had EV deltas
+`late_strong -0.1994`, `mid_weak +0.0439`, and `old_thin +0.0000`. Aggregate
+PnL improved `+$2,491.07` / `+2.8963%`, but aggregate EV fell `-0.1555` and
+`late_strong` Sharpe daily fell `-0.57`.
+
+Do not repeat: nearby Technology breakout target widths or simple
+`rs_vs_spy` thresholds as the discriminator for wider Technology breakout
+targets.
+
+Next valid retry requires: an orthogonal event/state source, such as fresh
+positive news, LLM event grading coverage, or forward evidence explaining why a
+specific Technology breakout deserves a wider target without degrading the
+dominant strong tape.
+
+### 2026-04-29 mechanism update: Sector-sleeve priority ordering
+
+Status: rejected.
+
+Core conclusion: exp-20260429-005 tested whether stable Commodities/Financials
+A+B candidates should be mechanically moved earlier in entry planning. They
+should not. The best variant, `commodities_first`, left `late_strong` and
+`old_thin` unchanged but damaged `mid_weak`; adding Financials priority
+further damaged `old_thin`.
+
+Evidence: best variant `commodities_first` had EV deltas
+`late_strong +0.0000`, `mid_weak -0.0566`, and `old_thin +0.0000`.
+Aggregate PnL fell `-$1,190.49` / `-1.3842%`, trade count rose by 1, and win
+rate fell by 2.38 pp in the active window. Financials-priority variants
+regressed `old_thin` more sharply.
+
+Do not repeat: simple Commodities/Financials priority ordering as a
+meta-allocation shortcut, or nearby sector-priority permutations without a new
+state/event discriminator.
+
+Next valid retry requires: breadth, dispersion, event context, or forward
+evidence explaining when a sector sleeve deserves earlier slot access. This is
+distinct from the already-rejected global sector cap and sector-persistence
+entry source, but it reaches the same conclusion: sector labels alone are not a
+strong enough allocation signal.
+
+### 2026-04-29 mechanism update: Index-dispersion extra slot
+
+Status: rejected.
+
+Core conclusion: exp-20260429-006 tested whether the rejected sixth slot could
+be rescued by using QQQ-vs-SPY 200MA-distance spread as a rotational-tape
+discriminator. It should not be promoted. Variants that actually released extra
+capacity damaged at least one fixed window; the apparent best EV/Sharpe variant
+released zero extra slots and changed no trades or PnL, so it was rejected as a
+harness artifact rather than alpha.
+
+Evidence: `qqq_leads_spy_by_2pct` released 20 extra-slot days but regressed
+`mid_weak` PnL by `-$3,613.11` and had 2/3 EV windows improved with 1/3
+regressed. `balanced_index_spread_lte_2pct` released 23 extra-slot days but
+reduced aggregate PnL by `-$1,989.77` and also regressed one window. The
+zero-behavior `qqq_leads_spy_by_4pct` showed aggregate EV delta `+1.5402` only
+because no trades changed; that is not valid promotion evidence.
+
+Do not repeat: nearby SPY/QQQ leadership-spread thresholds as a sixth-slot
+capacity unlock, or any extra-slot experiment that accepts Sharpe/EV movement
+without changed trades, PnL, or slot-release counts.
+
+Next valid retry requires: richer breadth/dispersion, event context, or
+forward/paper evidence explaining which sleeve deserves extra capacity. A clean
+extra-slot harness should also avoid the backtester top-level max-position skip
+artifact before using Sharpe as acceptance evidence.
+
+### 2026-04-29 mechanism update: ATR trailing full-exit lifecycle
+
+Status: rejected.
+
+Core conclusion: exp-20260429-009 tested whether current fixed target/stop
+exits should be replaced by ATR trailing full exits after a profit trigger.
+They should not. All six tested trigger/offset cells reduced EV and PnL in all
+three fixed windows.
+
+Evidence: the best variant, `TRAIL_TRIGGER_ATR_MULT=3.0` with
+`TRAIL_OFFSET_ATR_MULT=2.0`, had EV deltas `late_strong -0.5018`,
+`mid_weak -0.4186`, and `old_thin -0.1673`; aggregate PnL fell
+`-$30,150.41`. The worst tested variant fell `-$68,250.09` aggregate PnL.
+
+Do not repeat: broad ATR trailing-stop full exits or nearby trigger/offset
+cells as a lifecycle alpha. Also do not use trailing-stop backtest
+profitability to justify repeated production partial-reduce advice.
+
+Next valid retry requires: an orthogonal discriminator such as event/news
+context, forward evidence, or a state variable that separates decaying winners
+from ordinary noisy trends. Any accepted future exit rule must be implemented
+as a shared production/backtest policy before promotion.
+
+### 2026-04-29 mechanism update: Trend Commodities near-high risk boost
+
+Status: accepted.
+
+Core conclusion: exp-20260429-013 tested whether the repeat winning sleeve in
+`trend_long` Commodities should receive more risk only when the setup is already
+within 3% of its 52-week high. This narrow allocation boost passed the fixed
+snapshot windows without adding entries, filters, exits, or universe noise.
+
+Evidence: `TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER=1.5` with
+`pct_from_52w_high >= -0.03` moved EV by `late_strong +0.2315`,
+`mid_weak +0.0266`, and `old_thin +0.0000`; aggregate PnL improved
+`+$7,307.02`. Trade count, win rate, and survival rate were unchanged in all
+three windows, so the result came from sizing the same accepted trades.
+
+Do not repeat: broad Commodities risk boosts, deeper pullback thresholds, or
+2.0x+ multipliers as simple variants. Wider tests improved aggregate PnL but
+increased old_thin exposure to the weaker SLV shape, so the accepted mechanism
+is specifically "near-high commodity trend continuation," not "all commodities
+deserve more risk."
+
+Next valid retry requires: forward evidence, an event/news discriminator, or a
+separate risk-budget metric proving that a wider Commodities sleeve improves
+without old_thin regression. Keep any future allocation rule in shared
+`portfolio_engine` sizing, not in backtester-only code.
+
+### 2026-04-29 mechanism update: Low-TQS Commodity breakout risk boost
+
+Status: rejected.
+
+Core conclusion: exp-20260429-014 tested whether the already-exempt
+`breakout_long + Commodities + low-TQS` pocket should receive 1.5x risk. It
+should not be promoted. The effect was directionally positive only in
+`late_strong`, inert in `mid_weak` and `old_thin`, and too small to justify a
+new sizing branch.
+
+Evidence: the candidate moved EV by `late_strong +0.0398`, `mid_weak +0.0000`,
+and `old_thin +0.0000`. Aggregate PnL improved only `+$931.56` / `+0.998%`,
+below Gate 4 materiality, while max drawdown rose `+0.46 pp` in the only active
+window.
+
+Do not repeat: low-TQS Commodity breakout risk boosts, broad Commodity breakout
+boosts, or low-TQS risk boosts without an independent state/event
+discriminator.
+
+Next valid retry requires: forward evidence, news/event confirmation, or a
+state variable explaining when commodity breakouts deserve more risk. Keep the
+current low-TQS Commodities exemption but do not add extra risk.
+
+### 2026-04-29 mechanism update: Trend Financials risk boost
+
+Status: accepted.
+
+Core conclusion: exp-20260429-015 tested whether existing `trend_long +
+Financials` candidates deserve a 1.5x risk budget. This passed because it
+changed only sizing for already-selected trades, improved the two windows where
+the sleeve was active, and left the dominant `late_strong` window unchanged.
+
+Evidence: `TREND_FINANCIALS_RISK_MULTIPLIER=1.5` moved EV by `late_strong
++0.0000`, `mid_weak +0.1143`, and `old_thin +0.0135`; aggregate PnL improved
+`+$5,735.09` / `+6.15%`. Trade count, win rate, and survival rate were
+unchanged in all three fixed windows.
+
+Do not repeat: Financials sector priority ordering, new Financials entry
+sources, or broader Financials risk boosts as simple variants. This accepted
+mechanism is specifically "already-selected Financials trend candidates deserve
+more risk," not "Financials should get earlier slots."
+
+Next valid retry requires: forward evidence, a stricter state/event
+discriminator, or a risk-budget metric proving that a multiplier above 1.5x
+does not add tail risk. Keep any future allocation rule in shared
+`portfolio_engine` sizing.
+
+### 2026-04-29 mechanism update: Financials near-high risk lift
+
+Status: rejected.
+
+Core conclusion: exp-20260429-016 tested whether the accepted `trend_long +
+Financials` 1.5x sizing rule should be lifted to 2.0x when the setup is within
+3% of its 52-week high. It should not be promoted. The extra near-high lift was
+too small and only improved `old_thin`; it did not move `late_strong` or
+`mid_weak`.
+
+Evidence: versus the current accepted stack, the near-high 2.0x variant moved
+EV by `late_strong +0.0000`, `mid_weak +0.0000`, and `old_thin +0.0147`.
+Aggregate PnL improved only `+$892.55` / `+0.90%`, below Gate 4 materiality.
+A stricter pretest that replaced broad Financials 1.5x with only near-high
+2.0x regressed `mid_weak` from EV `0.9147` to `0.8004`.
+
+Do not repeat: nearby Financials near-high multiplier thresholds, 2.0x
+Financials trend sizing, or simple near-high narrowing of the accepted broad
+Financials trend sleeve.
+
+Next valid retry requires: forward evidence, an orthogonal event/state
+discriminator, or a risk-budget metric proving material improvement without
+damaging `mid_weak`.
+
+### 2026-04-29 mechanism update: Commodity breakout risk boost
+
+Status: rejected for production materiality.
+
+Core conclusion: exp-20260429-017 tested whether already-selected
+`breakout_long | Commodities` signals deserve a 1.5x risk budget after the
+current three-window audit showed positive late/mid trades and no old-thin
+exposure. The direction was positive, but not material enough to justify
+another production sizing rule.
+
+Evidence: versus the current accepted stack, the 1.5x boost improved
+`late_strong` EV by `+0.0398` and `mid_weak` EV by `+0.0550`, with `old_thin`
+unchanged. Aggregate EV delta was only `+0.0948`, just below the `+0.10` Gate
+4 threshold, and aggregate PnL improved only `+$2,217.84` / `+2.239%`, below
+the `+5%` PnL gate.
+
+Do not repeat: broad Commodity breakout risk-budget boosts at nearby 1.5x
+values, or another simple extension of Commodity trend convexity evidence into
+Commodity breakouts.
+
+Next valid retry requires: a new state/event discriminator that increases
+materiality without reopening rejected Commodity breakout target-width changes
+or low-TQS-only boosts.
+
+### 2026-04-29 mechanism update: Shared entry-gate parity
+
+Status: accepted governance.
+
+Core conclusion: exp-20260429-007 moved already-held filtering, same-day sector
+caps, and the `BEAR_SHALLOW` post-enrich entry gate into
+`production_parity.filter_entry_signal_candidates`. This is not new alpha, but
+it closes a real measurement drift vector. Future alpha conclusions should not
+depend on duplicated run/backtester gate code.
+
+Evidence: fixed-window metrics were unchanged after the refactor, while both
+`quant/run.py` and `quant/backtester.py` now call the same helper and
+production persists `entry_filter_audit` for inspection.
+
+Do not repeat: run-only or backtester-only implementations of already-held,
+same-day sector, or `BEAR_SHALLOW` entry gating logic.
+
+Next valid retry requires: a new alpha hypothesis that actually changes gate
+behavior, or a documented parity gap not already covered by the shared helper.
+
+### 2026-04-29 mechanism update: Shared regime risk sizing parity
+
+Status: accepted governance.
+
+Core conclusion: exp-20260429-008 moved the `NEUTRAL` and `BEAR_SHALLOW`
+`risk_pct` overrides into `production_parity.risk_pct_for_market_state`. This
+is also not new alpha, but it removes another silent drift path between
+production and replay.
+
+Evidence: `BULL`/default, `NEUTRAL 0.75%`, `BEAR_SHALLOW 0.50%`, and
+`BEAR_DEEP`/default sizing behavior is now covered by a shared helper and a
+focused parity test, with no intended metric movement.
+
+Do not repeat: duplicate adapter arithmetic for regime risk overrides, or
+backtester-only sizing interpretations of market state.
+
+Next valid retry requires: a real allocation hypothesis about when risk should
+change, not another refactor of already-shared arithmetic.
+
+### 2026-04-29 mechanism update: Trailing partial-reduce replay
+
+Status: measurable but rejected alpha.
+
+Core conclusion: exp-20260429-012 finished the missing parity work for
+production trailing partial-reduce advice and added opt-in
+`--replay-partial-reduces` support to BacktestEngine. That closes the audit
+gap. Once replayed, the mechanism was negative on the fixed windows, so it
+should stay off by default and should not be justified by intuition alone.
+
+Evidence: replay-on executed 15 partial reductions and produced aggregate
+`expected_value_score` delta `-0.3136` with aggregate PnL delta `-$9,441.76`
+versus the current accepted baseline.
+
+Do not repeat: promoting production partial-reduce advice without replay
+evidence, or using full trailing-stop exit intuition as a reason to keep
+partial reductions alive.
+
+Next valid retry requires: an orthogonal event/state discriminator that can
+separate decaying winners from normal trend noise, plus shared production and
+backtest policy from the start.
+
+### 2026-04-29 mechanism update: Risk-on unmodified sizing lift
+
+Status: accepted.
+
+Core conclusion: exp-20260429-018 tested whether already-selected `risk_on`
+signals with no other active sizing modifier deserve a small risk-budget lift.
+They do. The accepted rule is deliberately non-stacking: it does not apply to
+existing 1.5x Commodities/Financials boosts or to 0.25x/0x haircut sleeves.
+
+Evidence: `RISK_ON_UNMODIFIED_RISK_MULTIPLIER=1.25` moved EV by
+`late_strong +0.1980`, `mid_weak +0.0525`, and `old_thin +0.0144`.
+Aggregate PnL improved `+$8,404.99` / `+8.49%`. Trade count, win rate, and
+survival rate were unchanged in all three fixed windows; max drawdown rose by
+up to `+0.81 pp`, still below the Gate 4 drawdown materiality guardrail.
+
+Do not repeat: simple risk-on leverage above 1.25x, stacking this lift onto
+already-boosted sleeves, or using this result to relax low-TQS/sector haircut
+rules. This is a plain-inventory risk-budget rule, not a new entry source.
+
+Next valid retry requires: forward evidence, a tail-risk metric showing the
+extra drawdown is still compensated, or an orthogonal discriminator that
+separates the strongest unmodified risk-on candidates from the rest. Keep any
+future change in shared `portfolio_engine` sizing.
+
+### 2026-04-29 mechanism update: Breakout Energy risk boost
+
+Status: rejected.
+
+Core conclusion: exp-20260429-019 tested whether already-selected
+`breakout_long + Energy` signals deserved 1.5x risk. The sleeve had visible
+late-window continuation, but the effect was too concentrated and too small to
+justify another production sizing branch.
+
+Evidence: versus the current accepted stack, the candidate moved EV by
+`late_strong +0.0827`, `mid_weak +0.0000`, and `old_thin +0.0000`. Aggregate
+PnL improved only `+$2,216.67` / `+2.06%`, below Gate 4 materiality, and
+Sharpe did not improve.
+
+Do not repeat: simple `breakout_long + Energy` risk boosts at nearby
+multipliers, or using the rejected Energy ETF expansion result as indirect
+evidence for native Energy breakout sizing.
+
+Next valid retry requires: a state/event discriminator that proves Energy
+breakouts deserve scarce risk budget outside `late_strong`, without adding
+universe noise or changing slot priority.
+
+### 2026-04-29 mechanism update: Technology breakout risk boost
+
+Status: rejected alpha.
+
+Core conclusion: exp-20260429-020 tested whether already-selected
+`breakout_long + Technology` signals deserved a dedicated 1.5x risk budget
+instead of the generic risk-on 1.25x lift. The idea looked plausible from the
+trade audit because late_strong and mid_weak Technology breakouts were positive,
+but the fixed-window replay showed the extra risk was not worth carrying.
+late_strong PnL rose by `$866.07`, but daily Sharpe fell from `4.22` to `4.11`
+and EV fell from `2.2134` to `2.1915`. mid_weak added only `$191.59` and
+`+0.0048` EV. old_thin lost `$326.18` and EV fell from `0.2113` to `0.2040`.
+Aggregate EV declined by `-0.0244`; aggregate PnL improved only `+0.68%`.
+
+Mechanism insight: Technology breakout winners are not a clean sizing sleeve
+after the accepted stack. The pocket adds some upside in stronger windows, but
+it is Sharpe-dilutive and still exposes the system to old_thin false breakouts.
+This also reinforces the earlier Technology breakout target-width rejection:
+simple Technology breakout promotion is not enough without a stronger
+discriminator.
+
+Do not repeat: nearby `breakout_long + Technology` risk multipliers, or simple
+promotion of Technology breakouts based only on sector/strategy membership.
+Also do not reuse plain `rs_vs_spy` as the discriminator; that family was
+already rejected in the Technology breakout target experiment.
+
+Next valid retry requires: an orthogonal event/state discriminator that
+separates MU/AAPL-like winners from DDOG-like old_thin losses without changing
+target width, candidate ranking, or global risk-on leverage.
+
+### 2026-04-29 mechanism update: Risk-on score-threshold narrowing
+
+Status: rejected.
+
+Core conclusion: exp-20260429-021 tested whether the accepted non-stacking
+`risk_on_unmodified` 1.25x sizing lift should require
+`regime_exit_score >= 0.08`. It should not be promoted. The simple score
+threshold removed useful low-score risk-on winner exposure and did not improve
+trade count, win rate, survival, or drawdown.
+
+Evidence: versus the current accepted stack, the threshold moved EV by
+`late_strong -0.0333`, `mid_weak +0.0000`, and `old_thin -0.0197`.
+Aggregate PnL fell `-$1,616.20` / `-1.50%`, with 0/3 windows improved and
+2/3 windows regressed.
+
+Do not repeat: nearby `regime_exit_score` thresholds as eligibility gates for
+the broad `risk_on_unmodified` lift. This is distinct from raising the lift
+above 1.25x, which was already discouraged; simple narrowing also damages
+winner capture.
+
+Next valid retry requires: a richer state, event, or tail-risk discriminator
+that explains why a subset of plain risk-on inventory should lose the accepted
+1.25x lift without cutting late_strong and old_thin winners.
+
+### 2026-04-29 mechanism update: Technology trend unmodified risk lift
+
+Status: rejected.
+
+Core conclusion: exp-20260429-022 tested whether otherwise unmodified
+`trend_long + Technology` signals deserved a dedicated 1.5x risk budget instead
+of the accepted generic `risk_on_unmodified` 1.25x lift. The pocket was
+directionally positive but too sparse and too small to justify a new production
+sizing branch.
+
+Evidence: versus the current accepted stack, the candidate moved EV by
+`late_strong +0.0674`, `mid_weak +0.0000`, and `old_thin +0.0145`.
+Aggregate PnL improved `+$1,952.83` / `+1.82%`, below Gate 4 materiality, and
+no Sharpe improvement reached `+0.1`.
+
+Do not repeat: nearby `trend_long + Technology` unmodified risk multipliers
+without a broader sample or orthogonal discriminator. This is distinct from the
+rejected Technology breakout branch, but it reaches the same practical lesson:
+simple Technology sleeve promotion is not yet strong enough after the accepted
+stack.
+
+Next valid retry requires: evidence that the Technology trend pocket affects
+more than isolated winners across the fixed windows, or a state/event
+discriminator that increases sample quality without changing entry, ranking,
+target width, or global risk-on leverage.
+
+### 2026-04-29 mechanism update: Risk-on add-on fraction
+
+Status: rejected as inert.
+
+Core conclusion: exp-20260429-023 tested whether confirmed day-2 follow-through
+positions that originally received the accepted `risk_on_unmodified` 1.25x
+sizing lift should receive a larger first add-on fraction. The answer is no
+under the current cap stack: raising the sleeve-specific fraction from 50% to
+75% changed no executed shares and moved no metrics.
+
+Evidence: fixed-window EV deltas were `late_strong +0.0000`, `mid_weak
++0.0000`, and `old_thin +0.0000`; PnL, drawdown, trade count, win rate,
+survival rate, and add-on counts were unchanged in all three windows.
+
+Do not repeat: risk-on add-on fraction increases while `ADDON_MAX_POSITION_PCT`
+remains the binding constraint, or sizing-multiplier-specific production add-on
+rules without persisted position metadata.
+
+Next valid retry requires: concentration evidence for changing the add-on cap
+itself, plus production position metadata that can execute sleeve-specific
+add-on rules without drift.
+
+### 2026-04-29 mechanism update: Financials multiplier above 1.5x
+
+Status: rejected on risk-budget quality.
+
+Core conclusion: exp-20260429-024 retested the accepted `trend_long +
+Financials` sleeve by sweeping the risk multiplier above 1.5x. The only
+material variant, 2.0x, cleared aggregate EV but bought that improvement with
+too much mid-window drawdown expansion and a small Sharpe decline.
+
+Evidence: `TREND_FINANCIALS_RISK_MULTIPLIER=2.0` moved EV by `late_strong
++0.0000`, `mid_weak +0.1041`, and `old_thin +0.0146`, but increased
+`mid_weak` max drawdown by `+1.36 pp` and reduced `mid_weak` daily Sharpe by
+`-0.01`. The 1.75x and 1.9x variants did not clear EV materiality.
+
+Do not repeat: simple Financials trend multipliers above 1.5x, including
+nearby 1.75-2.0 sweeps, without a new discriminator that controls the V-like
+stop-out risk.
+
+Next valid retry requires: forward evidence or an event/state discriminator
+that separates COIN/GS/JPM winners from V stop-outs, plus a tail-risk metric
+showing the higher budget does not expand drawdown.

@@ -1,0 +1,188 @@
+{
+  "experiment_id": "exp-20260428-030",
+  "timestamp": "2026-04-28T18:08:10.773866+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "hypothesis": "Candidate-level exceptions to one-slot scarce breakout deferral may recover high-quality breakout winners without reopening global candidate ordering, global capacity, or broad breakout de-risking.",
+  "change_type": "alpha_search_scarce_slot_breakout_exception",
+  "parameters": {
+    "single_causal_variable": "candidate-level exception to scarce-slot breakout deferral",
+    "baseline": {
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+      "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": null
+    },
+    "tested_variants": {
+      "diagnostic_no_deferral": "disable one-slot breakout deferral",
+      "high_tqs_breakout_exception": "allow deferred breakout_long if trade_quality_score >= 0.95",
+      "near_high_breakout_exception": "allow deferred breakout_long if pct_from_52w_high >= -0.03"
+    },
+    "locked_variables": [
+      "signal generation",
+      "risk multipliers",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_POSITIONS",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "upside/adverse gap cancels",
+      "day-2 add-on trigger and fraction",
+      "add-on max position cap",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "breakout_deferred": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "breakout_deferred": 4
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "breakout_deferred": 8
+    }
+  },
+  "after_metrics": {
+    "best_variant": "near_high_breakout_exception",
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "breakout_deferred": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "breakout_deferred": 3
+    },
+    "old_thin": {
+      "expected_value_score": 0.1386,
+      "sharpe_daily": 1.15,
+      "total_pnl": 12051.63,
+      "total_return_pct": 0.1205,
+      "max_drawdown_pct": 0.0503,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.8947,
+      "breakout_deferred": 3
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "near_high_breakout_exception",
+    "late_strong": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "win_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "win_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": -0.0448,
+      "sharpe_daily": -0.14,
+      "total_pnl": -2169.46,
+      "max_drawdown_pct": 0.0014,
+      "trade_count": 1,
+      "win_rate": -0.0178
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.0448,
+      "total_pnl_delta_sum": -2169.46,
+      "baseline_total_pnl_sum": 86007.61,
+      "total_pnl_delta_pct": -0.025224,
+      "windows_improved": 0,
+      "windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0014,
+      "trade_count_delta_sum": 1,
+      "win_rate_delta_min": -0.0178,
+      "breakout_deferred_delta_sum": -6
+    },
+    "gate4_basis": "Rejected because no candidate-level breakout exception passed fixed-window Gate 4."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic candidate-level scarce-slot allocation alpha was tested instead."
+  },
+  "rejection_reason": "The tested breakout exceptions did not improve scarce-slot allocation robustly. Diagnostic no-deferral, high-TQS exceptions, and near-high exceptions all failed Gate 4; the best variant was unchanged in late_strong/mid_weak and regressed old_thin.",
+  "next_retry_requires": [
+    "Do not retry candidate-level scarce-slot breakout exceptions based only on TQS or 52-week proximity.",
+    "A valid retry needs a genuinely orthogonal event/state source, not another score-only deferral exception.",
+    "Keep the accepted one-slot scarce-slot breakout deferral unchanged unless a future replay passes all three windows."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_030_scarce_slot_breakout_exception.py",
+    "data/experiments/exp-20260428-030/exp_20260428_030_scarce_slot_breakout_exception.json",
+    "docs/experiments/logs/exp-20260428-030.json",
+    "docs/experiments/tickets/exp-20260428-030.json"
+  ],
+  "notes": "Alpha search, not measurement repair. Production defaults were unchanged."
+}

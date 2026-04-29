@@ -1,0 +1,79 @@
+{
+  "experiment_id": "exp-20260429-015",
+  "status": "accepted",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "Existing trend_long Financials candidates are a repeat positive sleeve and deserve 1.5x risk budget.",
+  "change_type": "capital_allocation",
+  "single_causal_variable": "trend_long + Financials risk multiplier",
+  "baseline_result_file": "data/backtest_results_20260429.json",
+  "allowed_write_scope": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_production_parity.py",
+    "quant/experiments/exp_20260429_015_trend_financials_risk_boost.py",
+    "data/experiments/exp-20260429-015/exp_20260429_015_trend_financials_risk_boost.json",
+    "docs/experiments/logs/exp-20260429-015.json",
+    "docs/experiments/tickets/exp-20260429-015.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/run.py",
+    "data/open_positions.json"
+  ],
+  "locked_variables": [
+    "signal generation",
+    "entry filters",
+    "candidate ranking",
+    "MAX_POSITIONS",
+    "MAX_POSITION_PCT",
+    "MAX_PORTFOLIO_HEAT",
+    "MAX_PER_SECTOR",
+    "all exits",
+    "gap cancels",
+    "add-ons",
+    "LLM/news replay",
+    "earnings strategy"
+  ],
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "accepted when majority fixed windows improve, no fixed window regresses, and aggregate EV/PnL materiality passes",
+  "created_at": "2026-04-29T09:05:00+00:00",
+  "completed_at": "2026-04-29T09:05:00+00:00",
+  "result": {
+    "decision": "accepted",
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.1278,
+      "total_pnl_delta_sum": 5735.09,
+      "total_pnl_delta_pct": 0.061459,
+      "windows_improved": 2,
+      "windows_regressed": 0
+    },
+    "production_impact": {
+      "shared_policy_changed": true,
+      "backtester_adapter_changed": true,
+      "run_adapter_changed": false,
+      "replay_only": false,
+      "parity_test_added": true
+    }
+  }
+}

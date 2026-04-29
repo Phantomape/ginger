@@ -1,0 +1,44 @@
+{
+  "experiment_id": "exp-20260428-036",
+  "title": "State-filtered Energy ETF universe replay",
+  "status": "completed",
+  "lane": "alpha_search",
+  "hypothesis": "Energy ETF proxies may be worth scarce slot competition only when their own signal-day state confirms relative strength or near-high momentum.",
+  "change_type": "state_filtered_universe_expansion",
+  "single_causal_variable": "Energy ETF tradeability state predicate",
+  "baseline_result_file": "data/backtest_results_20260428.json",
+  "artifact": "data/experiments/exp-20260428-036/exp_20260428_036_energy_etf_state_filter.json",
+  "log": "docs/experiments/logs/exp-20260428-036.json",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "acceptance_rule": "Gate 4 plus three fixed-window robustness; production promotion requires shared policy and watchlist/news parity.",
+  "decision": "rejected",
+  "rejection_reason": "Best variant improved only late_strong, regressed old_thin, and aggregate PnL improved only 3.0174%, below Gate 4.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "created_at": "2026-04-28T23:11:50Z",
+  "completed_at": "2026-04-28T23:11:50Z"
+}

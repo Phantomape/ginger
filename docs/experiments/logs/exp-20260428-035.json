@@ -1,0 +1,226 @@
+{
+  "experiment_id": "exp-20260428-035",
+  "created_at": "2026-04-28T22:25:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "universe_expansion_etf_sleeve",
+  "hypothesis": "Adding a small set of liquid sector/defensive ETF proxies may capture rotation alpha that the current single-stock-heavy universe misses.",
+  "parameters": {
+    "single_causal_variable": "tradeable ETF universe expansion",
+    "baseline_universe_size": 44,
+    "tested_variants": {
+      "broad_sector_defensive_etfs": ["XLE", "XLP", "XLU", "XLV", "TLT", "IEF", "USO", "UUP"],
+      "sector_select_etfs": ["XLE", "XLP", "XLU", "XLV"],
+      "energy_only_etfs": ["XLE", "USO"],
+      "staples_healthcare_etfs": ["XLP", "XLV"],
+      "rates_defense_etfs": ["TLT", "IEF", "UUP"],
+      "xle_only": ["XLE"],
+      "xlp_only": ["XLP"]
+    },
+    "locked_variables": [
+      "signal generation",
+      "risk multipliers",
+      "position caps and heat",
+      "candidate ordering",
+      "upside/adverse gap cancels",
+      "day-2 add-on trigger and fraction",
+      "all exits",
+      "scarce-slot routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "best_variant": "energy_only_etfs",
+    "late_strong": {
+      "expected_value_score": 2.1448,
+      "sharpe_daily": 4.37,
+      "total_pnl": 49079.96,
+      "total_return_pct": 0.4908,
+      "max_drawdown_pct": 0.0414,
+      "win_rate": 0.75,
+      "trade_count": 24
+    },
+    "mid_weak": {
+      "expected_value_score": 0.541,
+      "sharpe_daily": 2.3,
+      "total_pnl": 23518.39,
+      "total_return_pct": 0.2352,
+      "max_drawdown_pct": 0.0318,
+      "win_rate": 0.4545,
+      "trade_count": 22
+    },
+    "old_thin": {
+      "expected_value_score": 0.1608,
+      "sharpe_daily": 1.17,
+      "total_pnl": 13743.98,
+      "total_return_pct": 0.1374,
+      "max_drawdown_pct": 0.0445,
+      "win_rate": 0.4167,
+      "trade_count": 24
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "energy_only_etfs",
+    "late_strong": {
+      "expected_value_score": 0.3609,
+      "sharpe_daily": 0.09,
+      "total_pnl": 7401.93,
+      "total_return_pct": 0.074,
+      "max_drawdown_pct": 0.0085,
+      "win_rate": -0.0395,
+      "trade_count": 5
+    },
+    "mid_weak": {
+      "expected_value_score": -0.2328,
+      "sharpe_daily": -0.27,
+      "total_pnl": -6590.1,
+      "total_return_pct": -0.0659,
+      "max_drawdown_pct": -0.0093,
+      "win_rate": -0.0693,
+      "trade_count": 1
+    },
+    "old_thin": {
+      "expected_value_score": -0.0226,
+      "sharpe_daily": -0.12,
+      "total_pnl": -477.11,
+      "total_return_pct": -0.0048,
+      "max_drawdown_pct": -0.0044,
+      "win_rate": 0.0076,
+      "trade_count": 2
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.1055,
+      "total_pnl_delta_sum": 334.72,
+      "baseline_total_pnl_sum": 86007.61,
+      "total_pnl_delta_pct": 0.003892,
+      "windows_improved": 1,
+      "windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0085,
+      "trade_count_delta_sum": 8,
+      "win_rate_delta_min": -0.0693
+    },
+    "gate4_basis": "Rejected because no ETF expansion variant improved a majority of fixed windows without regression."
+  },
+  "variant_summary": {
+    "broad_sector_defensive_etfs": {
+      "expected_value_score_delta_sum": 0.0496,
+      "total_pnl_delta_sum": -3232.14,
+      "windows_improved": 1,
+      "windows_regressed": 2
+    },
+    "sector_select_etfs": {
+      "expected_value_score_delta_sum": -0.4202,
+      "total_pnl_delta_sum": -9301.71,
+      "windows_improved": 0,
+      "windows_regressed": 3
+    },
+    "energy_only_etfs": {
+      "expected_value_score_delta_sum": 0.1055,
+      "total_pnl_delta_sum": 334.72,
+      "windows_improved": 1,
+      "windows_regressed": 2
+    },
+    "staples_healthcare_etfs": {
+      "expected_value_score_delta_sum": -0.3889,
+      "total_pnl_delta_sum": -8162.96,
+      "windows_improved": 0,
+      "windows_regressed": 2
+    },
+    "rates_defense_etfs": {
+      "expected_value_score_delta_sum": -0.0156,
+      "total_pnl_delta_sum": -946.85,
+      "windows_improved": 0,
+      "windows_regressed": 1
+    },
+    "xle_only": {
+      "expected_value_score_delta_sum": -0.118,
+      "total_pnl_delta_sum": -1997.68,
+      "windows_improved": 1,
+      "windows_regressed": 1
+    },
+    "xlp_only": {
+      "expected_value_score_delta_sum": -0.261,
+      "total_pnl_delta_sum": -6790.58,
+      "windows_improved": 0,
+      "windows_regressed": 2
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this tested a deterministic candidate-pool alpha instead."
+  },
+  "rejection_reason": "ETF expansion released late_strong Energy/USO upside but displaced better A+B opportunities in mid_weak and old_thin.",
+  "next_retry_requires": [
+    "Do not add broad sector/defensive ETFs directly to the tradeable universe.",
+    "A valid retry needs a state discriminator for when Energy/USO continuation is worth slot competition.",
+    "Do not treat proxy ETFs as production candidates without sector mapping and news/watchlist parity."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_035_etf_universe_expansion.py",
+    "docs/experiments/logs/exp-20260428-035.json",
+    "docs/experiments/tickets/exp-20260428-035.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not bug repair. No production strategy behavior was promoted."
+}

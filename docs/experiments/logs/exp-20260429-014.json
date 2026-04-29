@@ -1,0 +1,187 @@
+{
+  "experiment_id": "exp-20260429-014",
+  "timestamp": "2026-04-29T08:08:30+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "The already-exempt low-TQS Commodities breakout pocket may deserve a 1.5x risk budget because commodity breakouts behaved differently from low-TQS breakouts elsewhere.",
+  "change_summary": "Temporarily tested a shared portfolio_engine sizing multiplier for breakout_long + Commodities + trade_quality_score < 0.85, then rolled the strategy code back because Gate 4 materiality failed.",
+  "component": "quant/constants.py, quant/portfolio_engine.py, quant/backtester.py, quant/test_production_parity.py",
+  "parameters": {
+    "single_causal_variable": "breakout_long + Commodities + low-TQS risk multiplier",
+    "old_value": 1.0,
+    "tested_value": 1.5,
+    "low_tqs_threshold": 0.85,
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but still lags QQQ",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.0154,
+      "sharpe_daily": 4.27,
+      "total_pnl": 47200.59,
+      "total_return_pct": 0.472,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.8004,
+      "sharpe_daily": 2.51,
+      "total_pnl": 31892.95,
+      "total_return_pct": 0.3189,
+      "max_drawdown_pct": 0.047,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.0552,
+      "sharpe_daily": 4.27,
+      "total_pnl": 48132.15,
+      "total_return_pct": 0.4813,
+      "max_drawdown_pct": 0.0375,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.8004,
+      "sharpe_daily": 2.51,
+      "total_pnl": 31892.95,
+      "total_return_pct": 0.3189,
+      "max_drawdown_pct": 0.047,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0398,
+      "sharpe_daily": 0.0,
+      "total_pnl": 931.56,
+      "total_return_pct": 0.0093,
+      "max_drawdown_pct": 0.0046,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0398,
+      "total_pnl_delta_sum": 931.56,
+      "baseline_total_pnl_sum": 93314.63,
+      "total_pnl_delta_pct": 0.009982,
+      "windows_improved": 1,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0046,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Rejected: only late_strong improved, aggregate EV delta was +0.0398 and aggregate PnL was +$931.56 / +0.998%, below Gate 4 materiality."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data remains insufficient; this deterministic allocation hypothesis did not change LLM responsibilities."
+  },
+  "history_guardrails": {
+    "not_repeating_broad_commodity_boost": true,
+    "not_repeating_addon_cap_sweep": true,
+    "not_repeating_sector_priority_ordering": true
+  },
+  "rejection_reason": "The cohort has positive direction only in late_strong and no material cross-window effect; higher commodity breakout risk is not worth adding complexity.",
+  "next_retry_requires": [
+    "Do not retry low-TQS Commodity breakout risk boosts without new forward evidence or an event/state discriminator.",
+    "Do not generalize this result into a broad Commodities or low-TQS boost.",
+    "If commodity breakout allocation is revisited, use independent news/event confirmation or a state variable explaining when the sleeve deserves more risk."
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260429-014.json",
+    "docs/experiments/tickets/exp-20260429-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "notes": "Alpha search, not measurement repair. The candidate code was reverted after failing Gate 4, so no rejected strategy logic remains in production."
+}

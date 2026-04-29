@@ -1,0 +1,94 @@
+{
+  "experiment_id": "exp-20260429-009",
+  "timestamp": "2026-04-28T23:28:48.1533007-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "hypothesis": "Full BacktestEngine replay can determine whether ATR trailing-stop full-exit semantics outperform the current fixed-target/stop accepted stack across the fixed windows.",
+  "change_summary": "Ran a fixed-window BacktestEngine replay comparing the current fixed-target/stop baseline against six ATR trailing-stop full-exit variants. Production defaults were unchanged because every trailing variant regressed EV and PnL in all three windows.",
+  "change_type": "exit_lifecycle_alpha_replay",
+  "component": "quant/experiments/exp_20260429_009_trailing_exit_full_backtest.py",
+  "parameters": {
+    "single_causal_variable": "backtested ATR trailing-stop full-exit semantics",
+    "baseline": {
+      "REGIME_AWARE_EXIT": true,
+      "TRAIL_TRIGGER_ATR_MULT": 0,
+      "TRAIL_OFFSET_ATR_MULT": 0
+    },
+    "tested_variants": {
+      "trail_2_0_offset_1_5": {"TRAIL_TRIGGER_ATR_MULT": 2.0, "TRAIL_OFFSET_ATR_MULT": 1.5},
+      "trail_2_0_offset_2_0": {"TRAIL_TRIGGER_ATR_MULT": 2.0, "TRAIL_OFFSET_ATR_MULT": 2.0},
+      "trail_3_0_offset_2_0": {"TRAIL_TRIGGER_ATR_MULT": 3.0, "TRAIL_OFFSET_ATR_MULT": 2.0},
+      "trail_3_0_offset_1_5": {"TRAIL_TRIGGER_ATR_MULT": 3.0, "TRAIL_OFFSET_ATR_MULT": 1.5},
+      "trail_4_0_offset_2_0": {"TRAIL_TRIGGER_ATR_MULT": 4.0, "TRAIL_OFFSET_ATR_MULT": 2.0},
+      "trail_4_0_offset_2_5": {"TRAIL_TRIGGER_ATR_MULT": 4.0, "TRAIL_OFFSET_ATR_MULT": 2.5}
+    },
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "risk sizing",
+      "MAX_POSITION_PCT=0.40",
+      "MAX_POSITIONS=5",
+      "MAX_PORTFOLIO_HEAT=0.08",
+      "entry open gap cancels",
+      "day-2 add-on settings",
+      "scarce-slot breakout deferral",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {"start": "2025-10-23", "end": "2026-04-21"},
+  "secondary_windows": [
+    {"start": "2025-04-23", "end": "2025-10-22"},
+    {"start": "2024-10-02", "end": "2025-04-22"}
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but can lag QQQ",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 1.7839, "sharpe_daily": 4.28, "total_pnl": 41678.03, "total_return_pct": 0.4168, "max_drawdown_pct": 0.0329, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.7738, "sharpe_daily": 2.57, "total_pnl": 30108.49, "total_return_pct": 0.3011, "max_drawdown_pct": 0.0411, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.1834, "sharpe_daily": 1.29, "total_pnl": 14221.09, "total_return_pct": 0.1422, "max_drawdown_pct": 0.0489, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "best_variant": "trail_3_0_offset_2_0",
+    "late_strong": {"expected_value_score": 1.2821, "sharpe_daily": 3.75, "total_pnl": 34194.87, "total_return_pct": 0.3419, "max_drawdown_pct": 0.0486, "win_rate": 0.7059, "trade_count": 17, "survival_rate": 0.7736},
+    "mid_weak": {"expected_value_score": 0.3552, "sharpe_daily": 1.94, "total_pnl": 18312.66, "total_return_pct": 0.1831, "max_drawdown_pct": 0.0364, "win_rate": 0.5217, "trade_count": 23, "survival_rate": 0.7719},
+    "old_thin": {"expected_value_score": 0.0161, "sharpe_daily": 0.48, "total_pnl": 3349.67, "total_return_pct": 0.0335, "max_drawdown_pct": 0.0569, "win_rate": 0.375, "trade_count": 24, "survival_rate": 0.9062}
+  },
+  "delta_metrics": {
+    "best_variant": "trail_3_0_offset_2_0",
+    "late_strong": {"expected_value_score": -0.5018, "sharpe_daily": -0.53, "total_pnl": -7483.16, "max_drawdown_pct": 0.0157, "win_rate": -0.0836, "trade_count": -2},
+    "mid_weak": {"expected_value_score": -0.4186, "sharpe_daily": -0.63, "total_pnl": -11795.83, "max_drawdown_pct": -0.0047, "win_rate": -0.0021, "trade_count": 2},
+    "old_thin": {"expected_value_score": -0.1673, "sharpe_daily": -0.81, "total_pnl": -10871.42, "max_drawdown_pct": 0.008, "win_rate": -0.0341, "trade_count": 2},
+    "aggregate": {"expected_value_score_delta_sum": -1.0877, "total_pnl_delta_sum": -30150.41, "windows_ev_improved": 0, "windows_pnl_improved": 0, "max_drawdown_delta_max": 0.0157},
+    "worst_variant": {"variant": "trail_2_0_offset_1_5", "expected_value_score_delta_sum": -2.3559, "total_pnl_delta_sum": -68250.09}
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data remains insufficient, so this tested deterministic lifecycle alpha instead."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "rejection_reason": "Rejected on EV-first multi-window Gate 4. Every ATR trailing full-exit variant reduced EV and PnL in all three fixed windows; the best variant still lost $30,150.41 aggregate PnL and reduced EV by 1.0877.",
+  "next_retry_requires": [
+    "Do not retry broad ATR trailing-stop full exits or nearby trigger/offset cells without a new discriminator.",
+    "Do not use trailing-stop backtest profitability to justify repeated production partial-reduce advice.",
+    "A valid lifecycle retry needs orthogonal adverse/positive context, such as event/news confirmation or forward evidence separating decaying winners from ordinary noisy trends.",
+    "If any future exit variant is positive, promote only through a shared production/backtest exit policy."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260429_009_trailing_exit_full_backtest.py",
+    "data/experiments/exp-20260429-009/exp_20260429_009_trailing_exit_full_backtest.json",
+    "docs/experiments/logs/exp-20260429-009.json",
+    "docs/experiments/tickets/exp-20260429-009.json"
+  ],
+  "notes": "Alpha search, not bug repair. Production strategy code remained unchanged because Gate 4 failed."
+}

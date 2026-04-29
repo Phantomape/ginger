@@ -1,0 +1,123 @@
+{
+  "experiment_id": "exp-20260428-034",
+  "timestamp": "2026-04-28T21:15:06.408285+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "exit_lifecycle_profit_protection",
+  "hypothesis": "A small protective stop after +3% MFE may prevent profit-decay losers without adding a new entry filter or weakening winner capture.",
+  "parameters": {
+    "single_causal_variable": "post-entry profit-protective stop level",
+    "baseline": "no profit-protective stop",
+    "tested": {
+      "trigger_mfe_pct": 0.03,
+      "stop_pct_after_trigger": [0.0, 0.01, 0.02]
+    },
+    "locked_variables": [
+      "signal generation",
+      "risk multipliers",
+      "position caps and heat",
+      "candidate ordering",
+      "upside/adverse gap cancels",
+      "day-2 add-on trigger and fraction",
+      "fixed/regime-aware target levels",
+      "scarce-slot routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22
+    }
+  },
+  "after_metrics": {
+    "best_variant": "protect_breakeven_after_3pct_mfe",
+    "late_strong": {
+      "expected_value_score": 0.608,
+      "sharpe_daily": 3.16,
+      "total_pnl": 19240.69,
+      "max_drawdown_pct": 0.0597,
+      "win_rate": 0.3913,
+      "trade_count": 23
+    },
+    "mid_weak": {
+      "expected_value_score": 0.2644,
+      "sharpe_daily": 2.1,
+      "total_pnl": 12594.13,
+      "max_drawdown_pct": 0.0306,
+      "win_rate": 0.25,
+      "trade_count": 28
+    },
+    "old_thin": {
+      "expected_value_score": 0.0414,
+      "sharpe_daily": 0.8,
+      "total_pnl": 5168.73,
+      "max_drawdown_pct": 0.0478,
+      "win_rate": 0.2222,
+      "trade_count": 27
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": -1.1759,
+    "mid_weak": -0.5094,
+    "old_thin": -0.142,
+    "aggregate_sum": -1.8273
+  },
+  "delta_metrics": {
+    "aggregate_total_pnl_delta": -49004.06,
+    "aggregate_total_pnl_delta_pct": -0.569764,
+    "windows_improved": 0,
+    "windows_regressed": 3,
+    "changed_trade_count": 53
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": true
+  },
+  "rejection_reason": "All tested protection stops truncated winners badly; best variant regressed EV/PnL in all three fixed windows.",
+  "next_retry_requires": [
+    "Do not retry nearby 0-2% protection stops after +3% MFE without new evidence.",
+    "A valid retry needs an orthogonal adverse context such as failed reclaim or fresh negative event."
+  ],
+  "artifacts": [
+    "data/experiments/exp-20260428-034/exp_20260428_034_profit_protective_stop.json",
+    "quant/experiments/exp_20260428_034_profit_protective_stop.py"
+  ]
+}

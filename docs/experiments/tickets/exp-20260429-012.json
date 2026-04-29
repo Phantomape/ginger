@@ -1,0 +1,68 @@
+{
+  "experiment_id": "exp-20260429-012",
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "codex-trailing-parity-fix",
+  "hypothesis": "Production trailing-stop partial-reduce advice must use the same shared policy as BacktestEngine replay so the mechanism is measurable and cannot drift silently.",
+  "change_type": "parity_fix",
+  "single_causal_variable": "shared trailing partial-reduce policy and replay switch",
+  "baseline_result_file": "data/backtest_results_20260428.json",
+  "allowed_write_scope": [
+    "quant/production_parity.py",
+    "quant/preflight_validator.py",
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "docs/production_backtest_parity.md",
+    "quant/experiments/exp-20260429-011_trailing_partial_reduce_parity.py",
+    "data/experiments/exp-20260429-011/exp-20260429-011_trailing_partial_reduce_parity.json",
+    "docs/experiments/tickets/exp-20260429-012.json",
+    "docs/experiments/logs/exp-20260429-012.json",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "data/open_positions.json",
+    "data/pending_actions.json"
+  ],
+  "locked_variables": [
+    "shared trailing partial-reduce policy and replay switch"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "measurement repair; tests pass, production preflight delegates reduce sizing to shared policy, backtester exposes opt-in partial-reduce replay metrics without changing default behavior",
+  "created_at": "2026-04-29T06:39:09+00:00",
+  "claimed_at": "2026-04-29T06:39:25+00:00",
+  "completed_at": "2026-04-29T06:40:11+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtest_results_20260428.json",
+    "after_result_file": "data/experiments/exp-20260429-011/exp-20260429-011_trailing_partial_reduce_parity.json",
+    "delta_metrics": {
+      "expected_value_score": null,
+      "sharpe": null,
+      "sharpe_daily": null,
+      "total_return_pct": null,
+      "max_drawdown_pct": null,
+      "win_rate": null,
+      "trade_count": null,
+      "survival_rate": null,
+      "total_pnl": null
+    }
+  }
+}

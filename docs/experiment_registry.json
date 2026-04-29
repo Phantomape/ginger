@@ -1,780 +1,915 @@
-﻿{
-    "schema_version": 1,
-    "updated_at": "2026-04-28T10:12:00.758290+00:00",
-    "experiments": [
-        {
-            "experiment_id": "exp-20260426-014",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "LLM soft ranking remains blocked by missing replay archives; recovering already-saved raw llm_output files into llm_prompt_resp files should increase replayable candidate coverage without changing strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-014.json",
-            "updated_at": "2026-04-27T00:33:52+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-040",
-            "status": "proposed",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Opening-range continuation after a strong prior-day move may surface replayable continuation candidates with useful forward returns and limited same-day A/B overlap.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-040.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-041",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "Opening-range continuation after a strong prior-day move may surface replayable continuation candidates with useful forward returns and limited same-day A/B overlap.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-041.json",
-            "updated_at": "2026-04-26T18:09:29+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-042",
-            "status": "proposed",
-            "lane": "loss_attribution",
-            "owner": null,
-            "hypothesis": "Add-on-only 35pct cap headroom failed materiality because newly executable add-ons may have identifiable adverse-outcome contexts; measuring those contexts should tell whether the follow-through add-on branch needs a stronger trigger or should wait for forward evidence.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-042.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-043",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss-attribution",
-            "hypothesis": "Add-on-only 35pct cap headroom failed materiality because newly executable add-ons may have identifiable adverse-outcome contexts; measuring those contexts should tell whether the follow-through add-on branch needs a stronger trigger or should wait for forward evidence.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-043.json",
-            "updated_at": "2026-04-26T18:08:36+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-044",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A daily gap-and-hold continuation shadow entry may surface institutional repricing candidates with useful forward returns and limited same-day A/B overlap, without changing production strategy code.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-044.json",
-            "updated_at": "2026-04-26T19:05:53+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-045",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A volatility-contraction breakout shadow entry may surface institutional accumulation candidates with useful forward returns and limited same-day A/B overlap, distinct from gap/opening-range continuation and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-045.json",
-            "updated_at": "2026-04-26T19:08:31+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-046",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss-attribution",
-            "hypothesis": "Accepted-stack bad trades may contain a reproducible near-target giveback family where positions approached their target or built meaningful MFE before reversing into poor exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-046.json",
-            "updated_at": "2026-04-26T19:09:50+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-047",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A multi-day pullback reclaim continuation shadow entry may surface trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent opening-range, gap-and-hold, volatility-contraction, and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-047.json",
-            "updated_at": "2026-04-26T20:07:56+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-048",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss-attribution",
-            "hypothesis": "Accepted-stack losses may contain a reproducible post-entry overnight gap-down damage family distinct from prior instant-failure, rollover, breakout false-positive, add-on adverse, and near-target giveback audits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-048.json",
-            "updated_at": "2026-04-26T20:07:02+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-049",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A sector-leadership relative-strength trend-continuation shadow entry may surface replayable candidates with useful forward returns and limited same-day A/B overlap, distinct from rejected macro-defensive static sectors and recent opening-range/gap/VCP shadow variants.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-049.json",
-            "updated_at": "2026-04-26T20:07:40+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-050",
-            "status": "proposed",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "The observed-positive multi-day pullback reclaim continuation shadow source can survive production-path replay with real sizing, slot competition, and existing exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-050.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-051",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "The observed-positive multi-day pullback reclaim continuation shadow source can survive production-path replay with real sizing, slot competition, and existing exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-051.json",
-            "updated_at": "2026-04-26T21:13:26+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-052",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss-attribution",
-            "hypothesis": "Accepted-stack losers may contain a reproducible low-MFE stopout lifecycle family where positions never achieve even 1 percent favorable excursion before stopping out, distinct from instant-failure, late-rollover, breakout, giveback, add-on, weak-hold, and overnight-gap families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-052.json",
-            "updated_at": "2026-04-26T21:11:13+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-053",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "The zero-winner-collateral low-MFE stopout family may support a narrow default-off lifecycle exit replay, distinct from rejected generic weak-hold exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-053.json",
-            "updated_at": "2026-04-26T22:08:07+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-054",
-            "status": "stale",
-            "lane": "loss_attribution",
-            "owner": null,
-            "hypothesis": "Low-MFE stopouts may cluster in reproducible entry/path contexts that explain why the broad family had zero observed winner collateral.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-054.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-055",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss-attribution",
-            "hypothesis": "Low-MFE stopouts may cluster in reproducible entry/path contexts that explain why the broad family had zero observed winner collateral.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-055.json",
-            "updated_at": "2026-04-26T22:08:01+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-056",
-            "status": "stale",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "An inside-day compression breakout continuation shadow entry may surface replayable trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent pullback reclaim, opening-range, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-056.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-057",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "An inside-day compression breakout continuation shadow entry may surface replayable trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent pullback reclaim, opening-range, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-057.json",
-            "updated_at": "2026-04-26T23:09:36+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-058",
-            "status": "stale",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "An inside-day compression breakout continuation shadow entry may surface replayable trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent pullback reclaim, opening-range, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-058.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-059",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss-attribution",
-            "hypothesis": "Accepted-stack bad trades may contain a reproducible post-entry sector-relative breakdown family distinct from low-MFE, overnight gap-down, near-target giveback, and price-only early adverse excursion audits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-059.json",
-            "updated_at": "2026-04-26T23:09:26+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-060",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe-scout",
-            "hypothesis": "A liquidity-qualified undercut-and-reclaim reversal shadow source may surface scarce, replayable candidates with lower A/B same-day overlap and useful forward returns, distinct from recent continuation shadow sources and without changing production universe or strategy logic.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-060.json",
-            "updated_at": "2026-04-27T00:47:30+00:00"
-        },
-        {
-            "experiment_id": "exp-20260426-061",
-            "status": "proposed",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "A market-pullback resilience breakout shadow entry may surface replayable continuation candidates when SPY is in a short pullback but the ticker holds above its recent base and closes at a short-term high, distinct from recent pullback reclaim, inside-day, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-061.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260426-062",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A market-pullback resilience breakout shadow entry may surface replayable continuation candidates when SPY is in a short pullback but the ticker holds above its recent base and closes at a short-term high, distinct from recent pullback reclaim, inside-day, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
-            "ticket_file": "docs/experiments/tickets/exp-20260426-062.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260427-001",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Post-news continuation after a fresh positive clean-news event may surface replayable candidates with useful forward returns and limited same-day A/B overlap, distinct from recent OHLCV-only continuation shadow sources.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-001.json",
-            "updated_at": "2026-04-27T00:14:42+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-002",
-            "status": "proposed",
-            "lane": "universe_scout",
-            "owner": null,
-            "hypothesis": "An event-sensitive liquidity-filtered shadow universe may identify scarce external candidates with sufficient data coverage, tradable liquidity, lower production overlap, and useful forward returns without adding tickers to production.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-002.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260427-003",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "Post-news continuation after a fresh positive clean-news event may surface replayable candidates with useful forward returns and limited same-day A/B overlap, distinct from recent OHLCV-only continuation shadow sources.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-003.json",
-            "updated_at": "2026-04-27T00:13:04+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-004",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss_attribution",
-            "hypothesis": "Accepted-stack bad trades may cluster by post-entry hold quality into repeated families with measurable future-fix candidates and good-trade collateral risk.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-004.json",
-            "updated_at": "2026-04-27T00:13:24+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-005",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe_scout",
-            "hypothesis": "An event-sensitive liquidity-filtered shadow universe may identify scarce external candidates with sufficient data coverage, tradable liquidity, lower production overlap, and useful forward returns without adding tickers to production.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-005.json",
-            "updated_at": "2026-04-27T00:12:15+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-006",
-            "status": "proposed",
-            "lane": "measurement_repair",
-            "owner": null,
-            "hypothesis": "LLM soft ranking is blocked because replay attribution cannot yet distinguish all usable ranking-eligible LLM samples from headline dated replay coverage; improving LLM replay attribution coverage makes the ranking alpha test auditable without changing strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-006.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260427-007",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement_repair_agent",
-            "hypothesis": "LLM soft ranking is blocked because replay attribution cannot yet expose archive metadata from covered LLM response files independently of broad backtester state; adding read-only replay attribution helpers for LLM archives makes usable coverage auditable without touching strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-007.json",
-            "updated_at": "2026-04-27T00:11:57+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-008",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss_attribution",
-            "hypothesis": "Accepted-stack bad trades may contain a narrow wide-stop-distance failure family distinct from today hold-quality lifecycle audit and prior low-MFE, gap-down, near-target, and sector-breakdown audits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-008.json",
-            "updated_at": "2026-04-27T00:49:34+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-009",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "Legacy LLM replay attribution remains partially unauditable when saved response files lack archive_context; a narrow audit artifact can identify which existing replay days can be backfilled from decision logs without changing strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-009.json",
-            "updated_at": "2026-04-27T00:47:27+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-011",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A sleeve-state scarce-slot contribution audit can identify whether trend_long or breakout_long deserves conditional risk in mid_weak without changing global capacity or production strategy logic.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-011.json",
-            "updated_at": "2026-04-27T02:02:29+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-012",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "codex-loss-attribution",
-            "hypothesis": "Accepted-stack bad trades may contain a narrow entry short-term extension failure family where trades entered after an already extended short-term move and then mean-reverted, distinct from hold-quality, wide-stop, low-MFE, overnight gap, near-target giveback, sector breakdown, and add-on adverse audits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-012.json",
-            "updated_at": "2026-04-27T03:04:36+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-013",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe_scout",
-            "hypothesis": "A liquidity-qualified gap-down recovery shadow universe can surface non-overlapping event-sensitive candidates with better multi-window forward returns than prior news-coverage-limited scouts, without adding tickers to production.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-013.json",
-            "updated_at": "2026-04-27T04:05:00+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-014",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "LLM soft ranking alpha remains blocked because the usable production-aligned replay sample is not available as a stable manifest; a read-only manifest of ranking-eligible replay dates can release the next default-off LLM ranking experiment without changing strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-014.json",
-            "updated_at": "2026-04-27T05:20:00+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-015",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "codex-loss-attribution",
-            "hypothesis": "Accepted-stack bad trades may contain a narrow entry short-term extension failure family where trades entered after an already extended short-term move and then mean-reverted, distinct from hold-quality, wide-stop, low-MFE, overnight gap, near-target giveback, sector breakdown, and add-on adverse audits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-015.json",
-            "updated_at": "2026-04-27T06:22:14+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-016",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha-discovery",
-            "hypothesis": "A sleeve-state scarce-slot contribution audit can identify whether trend_long or breakout_long deserves conditional risk in mid_weak without changing global capacity or production strategy logic.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-016.json",
-            "updated_at": "2026-04-27T06:26:37+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-017",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe_scout",
-            "hypothesis": "A liquidity-qualified gap-down recovery shadow universe can surface non-overlapping event-sensitive candidates with better multi-window forward returns than prior news-coverage-limited scouts, without adding tickers to production.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-017.json",
-            "updated_at": "2026-04-27T06:24:50+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-018",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "LLM soft ranking alpha remains blocked because the usable production-aligned replay sample is not available as a stable manifest; a read-only manifest of ranking-eligible replay dates can release the next default-off LLM ranking experiment without changing strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-018.json",
-            "updated_at": "2026-04-27T06:26:22+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-019",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "State-conditioned scarce-slot breakout deferral may have a narrow market-extension threshold that keeps the mid_weak benefit without damaging late_strong.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-019.json",
-            "updated_at": "2026-04-27T07:06:16+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-020",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "Entry extension is not harmful by itself, but extension followed by weak next-day follow-through may identify a safer ranking penalty candidate.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-020.json",
-            "updated_at": "2026-04-27T08:08:00+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-021",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "State-conditioned scarce-slot breakout deferral may have a narrow market-extension threshold that keeps the mid_weak benefit without damaging late_strong.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-021.json",
-            "updated_at": "2026-04-27T10:09:38Z"
-        },
-        {
-            "experiment_id": "exp-20260427-022",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "Entry extension is not harmful by itself, but extension followed by weak next-day follow-through may identify a safer ranking penalty candidate.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-022.json",
-            "updated_at": "2026-04-27T11:05:57.348650+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-023",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-023.json",
-            "updated_at": "2026-04-27T19:26:00Z"
-        },
-        {
-            "experiment_id": "exp-20260427-024",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-024.json",
-            "updated_at": "2026-04-27T20:34:00Z"
-        },
-        {
-            "experiment_id": "exp-20260427-025",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-025.json",
-            "updated_at": "2026-04-27T14:08:15Z"
-        },
-        {
-            "experiment_id": "exp-20260427-026",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-026.json",
-            "updated_at": "2026-04-27T15:08:50Z"
-        },
-        {
-            "experiment_id": "exp-20260427-027",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-027.json",
-            "updated_at": "2026-04-27T21:33:00Z"
-        },
-        {
-            "experiment_id": "exp-20260427-028",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-028.json",
-            "updated_at": "2026-04-27T17:06:16Z"
-        },
-        {
-            "experiment_id": "exp-20260427-029",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-029.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260427-030",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": null,
-            "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-030.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260427-031",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "State-conditioned scarce-slot breakout deferral may have a narrow market-extension threshold that keeps the mid_weak benefit without damaging late_strong.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-031.json",
-            "updated_at": null
-        },
-        {
-            "experiment_id": "exp-20260427-032",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "Entry extension is not harmful by itself, but extension followed by weak next-day follow-through may identify a safer ranking penalty candidate.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-032.json",
-            "updated_at": "2026-04-27T18:05:11+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-033",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-discovery",
-            "hypothesis": "Financials trend winners may be target-truncated by the shared target width; widen only `trend_long | Financials` to 6.0 ATR.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-033.json",
-            "updated_at": "2026-04-27T19:08:40Z"
-        },
-        {
-            "experiment_id": "exp-20260427-034",
-            "status": "rejected",
-            "lane": null,
-            "owner": null,
-            "hypothesis": "Trend Industrials restoration can be alpha-positive only in an extremely risk-on tape; restore 0.10x risk when min(SPY, QQQ) pct_from_ma is at least 10%, otherwise keep the current 0x rule.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-034.json",
-            "updated_at": "2026-04-27T20:08:37.042233+00:00"
-        },
-        {
-            "experiment_id": "exp-20260427-036",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": null,
-            "hypothesis": "Same-day sleeve ordering may be a cleaner allocation lever than wider scarce-slot deferral: when candidates compete for entry slots, rank trend_long ahead of breakout_long without changing signal generation, exits, sizing, LLM/news replay, or earnings.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-036.json",
-            "updated_at": "2026-04-27T22:13:18Z"
-        },
-        {
-            "experiment_id": "exp-20260427-037",
-            "status": "rejected",
-            "lane": null,
-            "owner": null,
-            "hypothesis": "`breakout_long | Commodities` may have convex winners that are clipped by the shared target width; wider ATR targets for this sleeve could improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260427-037.json",
-            "updated_at": "2026-04-27T22:54:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-001",
-            "status": "rejected",
-            "lane": null,
-            "owner": null,
-            "hypothesis": "A trend-only overflow slot can recover the useful part of wider capacity without repeating global MAX_POSITIONS expansion: use MAX_POSITIONS=6 while deferring breakout_long whenever slots <= 2.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-001.json",
-            "updated_at": "2026-04-28T00:00:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-004",
-            "status": "rejected",
-            "lane": null,
-            "owner": null,
-            "hypothesis": "`breakout_long | Technology` may contain convex winners that the shared breakout target clips too early; wider ATR targets for this sleeve could improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-004.json",
-            "updated_at": "2026-04-28T00:00:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-005",
-            "status": "accepted",
-            "lane": null,
-            "owner": null,
-            "hypothesis": "The accepted day-2 follow-through add-on is directionally correct, but 25% of original shares under-allocates to confirmed winners. Raising only the add-on fraction should improve EV and PnL across the fixed windows while preserving existing caps and triggers.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-005.json",
-            "updated_at": "2026-04-28T00:00:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-006",
-            "status": "rejected",
-            "lane": null,
-            "owner": null,
-            "hypothesis": "After promoting the day-2 follow-through add-on fraction to 50%, the add-on-specific position cap may still clip confirmed winners. Raising only ADDON_MAX_POSITION_PCT should improve EV without changing entries, exits, trigger thresholds, LLM/news replay, scarce-slot routing, or the initial-entry single-position cap.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-006.json",
-            "updated_at": "2026-04-28T05:08:13.698623+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-007",
-            "status": "rejected",
-            "lane": "alpha_discovery",
-            "owner": "codex-alpha-search",
-            "hypothesis": "A strict extension weak-followthrough subset may identify post-entry failures without the broader winner collateral observed in exp-20260427-022.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-007.json",
-            "updated_at": "2026-04-27T22:21:47-07:00"
-        },
-        {
-            "experiment_id": "exp-20260428-008",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "Stable LLM/event replay coverage and attribution are required before LLM/event ranking alpha can be evaluated.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-008.json",
-            "updated_at": "2026-04-28T05:40:57+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-009",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "codex-loss-attribution",
-            "hypothesis": "Accepted-stack bad trades may be better explained by overlap among prior reproducible loss families than by another new price-only trigger; a priority taxonomy can quantify dominant families, tail-loss share, and winner collateral for future alpha experiments.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-009.json",
-            "updated_at": "2026-04-28T05:44:09+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-010",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha_discovery_agent",
-            "hypothesis": "Fresh positive clean-news confirmation may identify higher-quality existing A/B candidates for event-aware ranking without creating a new entry sleeve.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-010.json",
-            "updated_at": "2026-04-28T05:44:19+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-011",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe_scout",
-            "hypothesis": "An OHLCV-event-sensitive liquidity-filtered shadow universe can produce replayable, low-overlap candidates across all fixed windows, avoiding the archived-news coverage gap in prior event scouts.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-011.json",
-            "updated_at": "2026-04-28T05:44:28+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-012",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha_discovery_agent",
-            "hypothesis": "Fresh T1-negative clean-news context may identify lower-quality existing A/B candidates for future event-aware ranking without creating a new entry sleeve.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-012.json",
-            "updated_at": "2026-04-27T22:47:40-07:00"
-        },
-        {
-            "experiment_id": "exp-20260428-013",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "codex-loss-attribution",
-            "hypothesis": "Accepted-stack bad trades may contain a reproducible post-entry volatility expansion stopout family where realized high-low range expands after entry without enough favorable progress, distinct from prior hold-quality, low-MFE, gap-down, near-target, sector, add-on, extension, and overlap-priority taxonomies.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-013.json",
-            "updated_at": "2026-04-27T23:05:00-07:00"
-        },
-        {
-            "experiment_id": "exp-20260428-014",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe_scout_agent",
-            "hypothesis": "A sector-relative-strength persistence shadow universe can identify replayable low-overlap candidates whose 10-20 day forward returns justify a future external universe source, without adding tickers to production.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-014.json",
-            "updated_at": "2026-04-27T23:08:00-07:00"
-        },
-        {
-            "experiment_id": "exp-20260428-015",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "Alpha experiments remain vulnerable to incomparable or incomplete baseline artifacts; a fixed-window baseline reproducibility audit can verify that judge-ready result files contain stable windows and required metrics before the next promotion test.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-015.json",
-            "updated_at": "2026-04-28T05:54:38+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-016",
-            "status": "observed_only",
-            "lane": "alpha_discovery",
-            "owner": "alpha_discovery_agent",
-            "hypothesis": "Fresh negative clean-news context may identify lower-quality existing A/B candidates for future event-aware ranking without creating a new entry sleeve.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-016.json",
-            "updated_at": "2026-04-28T06:00:17+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-017",
-            "status": "accepted",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "A 2% adverse next-open entry cancel improves entry quality by avoiding weak fills that tend to become low-MFE stopouts.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-017.json",
-            "updated_at": "2026-04-28T06:35:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-018",
-            "status": "observed_only",
-            "lane": "measurement_repair",
-            "owner": "measurement-repair",
-            "hypothesis": "A minimal audit artifact can remove a current measurement blocker for the next alpha experiment without changing strategy behavior.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-018.json",
-            "updated_at": "2026-04-28T06:26:53+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-019",
-            "status": "observed_only",
-            "lane": "loss_attribution",
-            "owner": "loss_attribution",
-            "hypothesis": "Accepted-stack bad trades contain a reproducible profit-decay failure family not already explained by recent taxonomies.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-019.json",
-            "updated_at": "2026-04-28T06:28:59+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-020",
-            "status": "observed_only",
-            "lane": "universe_scout",
-            "owner": "universe_scout",
-            "hypothesis": "A narrow shadow universe can surface replayable low-overlap candidates with useful forward returns without adding production tickers.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-020.json",
-            "updated_at": "2026-04-28T06:28:52+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-021",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "Sweeping the upside next-open entry cancel threshold may improve entry execution quality without changing signal generation or exits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-021.json",
-            "updated_at": "2026-04-28T00:00:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-022",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "A state-qualified exception to upside next-open cancel for accepted winner-truncation trend sleeves may preserve momentum-confirmed winners without reopening global gap-threshold tuning.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-022.json",
-            "updated_at": "2026-04-28T08:08:46.061908+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-024",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "Existing A/B signals that fail to close in the upper part of their own signal-day range may be weaker execution candidates; canceling those next-open entries could improve quality without changing signal generation, exits, sizing, add-ons, or LLM/news replay.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-024.json",
-            "updated_at": "2026-04-28T11:07:42.880720+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-025",
-            "status": "accepted",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "Raising only the initial position cap can improve capital allocation after the accepted 50% add-on showed confirmed winners can absorb more risk budget.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-025.json",
-            "updated_at": "2026-04-28T13:12:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-026",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "Reduced-risk initial entries may need a lower concentration cap after the accepted 40% initial-cap promotion.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-026.json",
-            "updated_at": "2026-04-28T20:22:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-027",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "The same-day sector cap may be mis-sized after recent capital-allocation improvements.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-027.json",
-            "updated_at": "2026-04-28T20:35:00Z"
-        },
-        {
-            "experiment_id": "exp-20260428-028",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "After the accepted 40% initial position cap and 50% day-2 add-on, the portfolio heat cap may be the remaining materiality ceiling. A modestly wider heat budget could let confirmed winners receive add-ons without changing entry quality.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-028.json",
-            "updated_at": "2026-04-28T15:10:28.599467+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-029",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "When same-day candidates compete for scarce entry slots, globally ranking by existing trade_quality_score may allocate capital to higher-expectancy candidates without changing entries or risk limits.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-029.json",
-            "updated_at": "2026-04-28T16:07:20.109968+00:00"
-        },
-        {
-            "experiment_id": "exp-20260428-023",
-            "status": "rejected",
-            "lane": "alpha_search",
-            "owner": "alpha-search",
-            "hypothesis": "Context-qualified exceptions to adverse next-open cancel may preserve discounted high-quality entries without reopening the global 2% threshold.",
-            "ticket_file": "docs/experiments/tickets/exp-20260428-023.json",
-            "updated_at": "2026-04-28T10:12:00.758290+00:00"
-        }
-    ]
+{
+  "schema_version": 1,
+  "updated_at": "2026-04-29T17:29:04+00:00",
+  "experiments": [
+    {
+      "experiment_id": "exp-20260426-014",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "LLM soft ranking remains blocked by missing replay archives; recovering already-saved raw llm_output files into llm_prompt_resp files should increase replayable candidate coverage without changing strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-014.json",
+      "updated_at": "2026-04-27T00:33:52+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-040",
+      "status": "proposed",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Opening-range continuation after a strong prior-day move may surface replayable continuation candidates with useful forward returns and limited same-day A/B overlap.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-040.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-041",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "Opening-range continuation after a strong prior-day move may surface replayable continuation candidates with useful forward returns and limited same-day A/B overlap.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-041.json",
+      "updated_at": "2026-04-26T18:09:29+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-042",
+      "status": "proposed",
+      "lane": "loss_attribution",
+      "owner": null,
+      "hypothesis": "Add-on-only 35pct cap headroom failed materiality because newly executable add-ons may have identifiable adverse-outcome contexts; measuring those contexts should tell whether the follow-through add-on branch needs a stronger trigger or should wait for forward evidence.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-042.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-043",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss-attribution",
+      "hypothesis": "Add-on-only 35pct cap headroom failed materiality because newly executable add-ons may have identifiable adverse-outcome contexts; measuring those contexts should tell whether the follow-through add-on branch needs a stronger trigger or should wait for forward evidence.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-043.json",
+      "updated_at": "2026-04-26T18:08:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-044",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A daily gap-and-hold continuation shadow entry may surface institutional repricing candidates with useful forward returns and limited same-day A/B overlap, without changing production strategy code.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-044.json",
+      "updated_at": "2026-04-26T19:05:53+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-045",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A volatility-contraction breakout shadow entry may surface institutional accumulation candidates with useful forward returns and limited same-day A/B overlap, distinct from gap/opening-range continuation and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-045.json",
+      "updated_at": "2026-04-26T19:08:31+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-046",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss-attribution",
+      "hypothesis": "Accepted-stack bad trades may contain a reproducible near-target giveback family where positions approached their target or built meaningful MFE before reversing into poor exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-046.json",
+      "updated_at": "2026-04-26T19:09:50+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-047",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A multi-day pullback reclaim continuation shadow entry may surface trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent opening-range, gap-and-hold, volatility-contraction, and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-047.json",
+      "updated_at": "2026-04-26T20:07:56+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-048",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss-attribution",
+      "hypothesis": "Accepted-stack losses may contain a reproducible post-entry overnight gap-down damage family distinct from prior instant-failure, rollover, breakout false-positive, add-on adverse, and near-target giveback audits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-048.json",
+      "updated_at": "2026-04-26T20:07:02+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-049",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A sector-leadership relative-strength trend-continuation shadow entry may surface replayable candidates with useful forward returns and limited same-day A/B overlap, distinct from rejected macro-defensive static sectors and recent opening-range/gap/VCP shadow variants.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-049.json",
+      "updated_at": "2026-04-26T20:07:40+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-050",
+      "status": "proposed",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "The observed-positive multi-day pullback reclaim continuation shadow source can survive production-path replay with real sizing, slot competition, and existing exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-050.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-051",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "The observed-positive multi-day pullback reclaim continuation shadow source can survive production-path replay with real sizing, slot competition, and existing exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-051.json",
+      "updated_at": "2026-04-26T21:13:26+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-052",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss-attribution",
+      "hypothesis": "Accepted-stack losers may contain a reproducible low-MFE stopout lifecycle family where positions never achieve even 1 percent favorable excursion before stopping out, distinct from instant-failure, late-rollover, breakout, giveback, add-on, weak-hold, and overnight-gap families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-052.json",
+      "updated_at": "2026-04-26T21:11:13+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-053",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "The zero-winner-collateral low-MFE stopout family may support a narrow default-off lifecycle exit replay, distinct from rejected generic weak-hold exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-053.json",
+      "updated_at": "2026-04-26T22:08:07+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-054",
+      "status": "stale",
+      "lane": "loss_attribution",
+      "owner": null,
+      "hypothesis": "Low-MFE stopouts may cluster in reproducible entry/path contexts that explain why the broad family had zero observed winner collateral.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-054.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-055",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss-attribution",
+      "hypothesis": "Low-MFE stopouts may cluster in reproducible entry/path contexts that explain why the broad family had zero observed winner collateral.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-055.json",
+      "updated_at": "2026-04-26T22:08:01+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-056",
+      "status": "stale",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "An inside-day compression breakout continuation shadow entry may surface replayable trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent pullback reclaim, opening-range, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-056.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-057",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "An inside-day compression breakout continuation shadow entry may surface replayable trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent pullback reclaim, opening-range, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-057.json",
+      "updated_at": "2026-04-26T23:09:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-058",
+      "status": "stale",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "An inside-day compression breakout continuation shadow entry may surface replayable trend-continuation candidates with useful forward returns and limited same-day A/B overlap, distinct from recent pullback reclaim, opening-range, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-058.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-059",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss-attribution",
+      "hypothesis": "Accepted-stack bad trades may contain a reproducible post-entry sector-relative breakdown family distinct from low-MFE, overnight gap-down, near-target giveback, and price-only early adverse excursion audits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-059.json",
+      "updated_at": "2026-04-26T23:09:26+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-060",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe-scout",
+      "hypothesis": "A liquidity-qualified undercut-and-reclaim reversal shadow source may surface scarce, replayable candidates with lower A/B same-day overlap and useful forward returns, distinct from recent continuation shadow sources and without changing production universe or strategy logic.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-060.json",
+      "updated_at": "2026-04-27T00:47:30+00:00"
+    },
+    {
+      "experiment_id": "exp-20260426-061",
+      "status": "proposed",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "A market-pullback resilience breakout shadow entry may surface replayable continuation candidates when SPY is in a short pullback but the ticker holds above its recent base and closes at a short-term high, distinct from recent pullback reclaim, inside-day, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-061.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260426-062",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A market-pullback resilience breakout shadow entry may surface replayable continuation candidates when SPY is in a short pullback but the ticker holds above its recent base and closes at a short-term high, distinct from recent pullback reclaim, inside-day, gap-and-hold, VCP, sector-leadership, and add-on trigger families.",
+      "ticket_file": "docs/experiments/tickets/exp-20260426-062.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260427-001",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Post-news continuation after a fresh positive clean-news event may surface replayable candidates with useful forward returns and limited same-day A/B overlap, distinct from recent OHLCV-only continuation shadow sources.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-001.json",
+      "updated_at": "2026-04-27T00:14:42+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-002",
+      "status": "proposed",
+      "lane": "universe_scout",
+      "owner": null,
+      "hypothesis": "An event-sensitive liquidity-filtered shadow universe may identify scarce external candidates with sufficient data coverage, tradable liquidity, lower production overlap, and useful forward returns without adding tickers to production.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-002.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260427-003",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "Post-news continuation after a fresh positive clean-news event may surface replayable candidates with useful forward returns and limited same-day A/B overlap, distinct from recent OHLCV-only continuation shadow sources.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-003.json",
+      "updated_at": "2026-04-27T00:13:04+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-004",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss_attribution",
+      "hypothesis": "Accepted-stack bad trades may cluster by post-entry hold quality into repeated families with measurable future-fix candidates and good-trade collateral risk.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-004.json",
+      "updated_at": "2026-04-27T00:13:24+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-005",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout",
+      "hypothesis": "An event-sensitive liquidity-filtered shadow universe may identify scarce external candidates with sufficient data coverage, tradable liquidity, lower production overlap, and useful forward returns without adding tickers to production.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-005.json",
+      "updated_at": "2026-04-27T00:12:15+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-006",
+      "status": "proposed",
+      "lane": "measurement_repair",
+      "owner": null,
+      "hypothesis": "LLM soft ranking is blocked because replay attribution cannot yet distinguish all usable ranking-eligible LLM samples from headline dated replay coverage; improving LLM replay attribution coverage makes the ranking alpha test auditable without changing strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-006.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260427-007",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement_repair_agent",
+      "hypothesis": "LLM soft ranking is blocked because replay attribution cannot yet expose archive metadata from covered LLM response files independently of broad backtester state; adding read-only replay attribution helpers for LLM archives makes usable coverage auditable without touching strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-007.json",
+      "updated_at": "2026-04-27T00:11:57+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-008",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss_attribution",
+      "hypothesis": "Accepted-stack bad trades may contain a narrow wide-stop-distance failure family distinct from today hold-quality lifecycle audit and prior low-MFE, gap-down, near-target, and sector-breakdown audits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-008.json",
+      "updated_at": "2026-04-27T00:49:34+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-009",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "Legacy LLM replay attribution remains partially unauditable when saved response files lack archive_context; a narrow audit artifact can identify which existing replay days can be backfilled from decision logs without changing strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-009.json",
+      "updated_at": "2026-04-27T00:47:27+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-011",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A sleeve-state scarce-slot contribution audit can identify whether trend_long or breakout_long deserves conditional risk in mid_weak without changing global capacity or production strategy logic.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-011.json",
+      "updated_at": "2026-04-27T02:02:29+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-012",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "codex-loss-attribution",
+      "hypothesis": "Accepted-stack bad trades may contain a narrow entry short-term extension failure family where trades entered after an already extended short-term move and then mean-reverted, distinct from hold-quality, wide-stop, low-MFE, overnight gap, near-target giveback, sector breakdown, and add-on adverse audits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-012.json",
+      "updated_at": "2026-04-27T03:04:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-013",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout",
+      "hypothesis": "A liquidity-qualified gap-down recovery shadow universe can surface non-overlapping event-sensitive candidates with better multi-window forward returns than prior news-coverage-limited scouts, without adding tickers to production.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-013.json",
+      "updated_at": "2026-04-27T04:05:00+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-014",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "LLM soft ranking alpha remains blocked because the usable production-aligned replay sample is not available as a stable manifest; a read-only manifest of ranking-eligible replay dates can release the next default-off LLM ranking experiment without changing strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-014.json",
+      "updated_at": "2026-04-27T05:20:00+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-015",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "codex-loss-attribution",
+      "hypothesis": "Accepted-stack bad trades may contain a narrow entry short-term extension failure family where trades entered after an already extended short-term move and then mean-reverted, distinct from hold-quality, wide-stop, low-MFE, overnight gap, near-target giveback, sector breakdown, and add-on adverse audits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-015.json",
+      "updated_at": "2026-04-27T06:22:14+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-016",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery",
+      "hypothesis": "A sleeve-state scarce-slot contribution audit can identify whether trend_long or breakout_long deserves conditional risk in mid_weak without changing global capacity or production strategy logic.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-016.json",
+      "updated_at": "2026-04-27T06:26:37+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-017",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout",
+      "hypothesis": "A liquidity-qualified gap-down recovery shadow universe can surface non-overlapping event-sensitive candidates with better multi-window forward returns than prior news-coverage-limited scouts, without adding tickers to production.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-017.json",
+      "updated_at": "2026-04-27T06:24:50+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-018",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "LLM soft ranking alpha remains blocked because the usable production-aligned replay sample is not available as a stable manifest; a read-only manifest of ranking-eligible replay dates can release the next default-off LLM ranking experiment without changing strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-018.json",
+      "updated_at": "2026-04-27T06:26:22+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-019",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "State-conditioned scarce-slot breakout deferral may have a narrow market-extension threshold that keeps the mid_weak benefit without damaging late_strong.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-019.json",
+      "updated_at": "2026-04-27T07:06:16+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-020",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "Entry extension is not harmful by itself, but extension followed by weak next-day follow-through may identify a safer ranking penalty candidate.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-020.json",
+      "updated_at": "2026-04-27T08:08:00+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-021",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "State-conditioned scarce-slot breakout deferral may have a narrow market-extension threshold that keeps the mid_weak benefit without damaging late_strong.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-021.json",
+      "updated_at": "2026-04-27T10:09:38Z"
+    },
+    {
+      "experiment_id": "exp-20260427-022",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "Entry extension is not harmful by itself, but extension followed by weak next-day follow-through may identify a safer ranking penalty candidate.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-022.json",
+      "updated_at": "2026-04-27T11:05:57.348650+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-023",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-023.json",
+      "updated_at": "2026-04-27T19:26:00Z"
+    },
+    {
+      "experiment_id": "exp-20260427-024",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-024.json",
+      "updated_at": "2026-04-27T20:34:00Z"
+    },
+    {
+      "experiment_id": "exp-20260427-025",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-025.json",
+      "updated_at": "2026-04-27T14:08:15Z"
+    },
+    {
+      "experiment_id": "exp-20260427-026",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-026.json",
+      "updated_at": "2026-04-27T15:08:50Z"
+    },
+    {
+      "experiment_id": "exp-20260427-027",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-027.json",
+      "updated_at": "2026-04-27T21:33:00Z"
+    },
+    {
+      "experiment_id": "exp-20260427-028",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-028.json",
+      "updated_at": "2026-04-27T17:06:16Z"
+    },
+    {
+      "experiment_id": "exp-20260427-029",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-029.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260427-030",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": null,
+      "hypothesis": "Reserved ticket to advance past pre-existing closeout log collision.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-030.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260427-031",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "State-conditioned scarce-slot breakout deferral may have a narrow market-extension threshold that keeps the mid_weak benefit without damaging late_strong.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-031.json",
+      "updated_at": null
+    },
+    {
+      "experiment_id": "exp-20260427-032",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "Entry extension is not harmful by itself, but extension followed by weak next-day follow-through may identify a safer ranking penalty candidate.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-032.json",
+      "updated_at": "2026-04-27T18:05:11+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-033",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-discovery",
+      "hypothesis": "Financials trend winners may be target-truncated by the shared target width; widen only `trend_long | Financials` to 6.0 ATR.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-033.json",
+      "updated_at": "2026-04-27T19:08:40Z"
+    },
+    {
+      "experiment_id": "exp-20260427-034",
+      "status": "rejected",
+      "lane": null,
+      "owner": null,
+      "hypothesis": "Trend Industrials restoration can be alpha-positive only in an extremely risk-on tape; restore 0.10x risk when min(SPY, QQQ) pct_from_ma is at least 10%, otherwise keep the current 0x rule.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-034.json",
+      "updated_at": "2026-04-27T20:08:37.042233+00:00"
+    },
+    {
+      "experiment_id": "exp-20260427-036",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": "Same-day sleeve ordering may be a cleaner allocation lever than wider scarce-slot deferral: when candidates compete for entry slots, rank trend_long ahead of breakout_long without changing signal generation, exits, sizing, LLM/news replay, or earnings.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-036.json",
+      "updated_at": "2026-04-27T22:13:18Z"
+    },
+    {
+      "experiment_id": "exp-20260427-037",
+      "status": "rejected",
+      "lane": null,
+      "owner": null,
+      "hypothesis": "`breakout_long | Commodities` may have convex winners that are clipped by the shared target width; wider ATR targets for this sleeve could improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260427-037.json",
+      "updated_at": "2026-04-27T22:54:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-001",
+      "status": "rejected",
+      "lane": null,
+      "owner": null,
+      "hypothesis": "A trend-only overflow slot can recover the useful part of wider capacity without repeating global MAX_POSITIONS expansion: use MAX_POSITIONS=6 while deferring breakout_long whenever slots <= 2.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-001.json",
+      "updated_at": "2026-04-28T00:00:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-004",
+      "status": "rejected",
+      "lane": null,
+      "owner": null,
+      "hypothesis": "`breakout_long | Technology` may contain convex winners that the shared breakout target clips too early; wider ATR targets for this sleeve could improve EV without changing entries, sizing, LLM/news, add-ons, scarce-slot routing, or other exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-004.json",
+      "updated_at": "2026-04-28T00:00:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-005",
+      "status": "accepted",
+      "lane": null,
+      "owner": null,
+      "hypothesis": "The accepted day-2 follow-through add-on is directionally correct, but 25% of original shares under-allocates to confirmed winners. Raising only the add-on fraction should improve EV and PnL across the fixed windows while preserving existing caps and triggers.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-005.json",
+      "updated_at": "2026-04-28T00:00:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-006",
+      "status": "rejected",
+      "lane": null,
+      "owner": null,
+      "hypothesis": "After promoting the day-2 follow-through add-on fraction to 50%, the add-on-specific position cap may still clip confirmed winners. Raising only ADDON_MAX_POSITION_PCT should improve EV without changing entries, exits, trigger thresholds, LLM/news replay, scarce-slot routing, or the initial-entry single-position cap.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-006.json",
+      "updated_at": "2026-04-28T05:08:13.698623+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-007",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "codex-alpha-search",
+      "hypothesis": "A strict extension weak-followthrough subset may identify post-entry failures without the broader winner collateral observed in exp-20260427-022.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-007.json",
+      "updated_at": "2026-04-27T22:21:47-07:00"
+    },
+    {
+      "experiment_id": "exp-20260428-008",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "Stable LLM/event replay coverage and attribution are required before LLM/event ranking alpha can be evaluated.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-008.json",
+      "updated_at": "2026-04-28T05:40:57+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-009",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "codex-loss-attribution",
+      "hypothesis": "Accepted-stack bad trades may be better explained by overlap among prior reproducible loss families than by another new price-only trigger; a priority taxonomy can quantify dominant families, tail-loss share, and winner collateral for future alpha experiments.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-009.json",
+      "updated_at": "2026-04-28T05:44:09+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-010",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha_discovery_agent",
+      "hypothesis": "Fresh positive clean-news confirmation may identify higher-quality existing A/B candidates for event-aware ranking without creating a new entry sleeve.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-010.json",
+      "updated_at": "2026-04-28T05:44:19+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-011",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout",
+      "hypothesis": "An OHLCV-event-sensitive liquidity-filtered shadow universe can produce replayable, low-overlap candidates across all fixed windows, avoiding the archived-news coverage gap in prior event scouts.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-011.json",
+      "updated_at": "2026-04-28T05:44:28+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-012",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha_discovery_agent",
+      "hypothesis": "Fresh T1-negative clean-news context may identify lower-quality existing A/B candidates for future event-aware ranking without creating a new entry sleeve.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-012.json",
+      "updated_at": "2026-04-27T22:47:40-07:00"
+    },
+    {
+      "experiment_id": "exp-20260428-013",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "codex-loss-attribution",
+      "hypothesis": "Accepted-stack bad trades may contain a reproducible post-entry volatility expansion stopout family where realized high-low range expands after entry without enough favorable progress, distinct from prior hold-quality, low-MFE, gap-down, near-target, sector, add-on, extension, and overlap-priority taxonomies.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-013.json",
+      "updated_at": "2026-04-27T23:05:00-07:00"
+    },
+    {
+      "experiment_id": "exp-20260428-014",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout_agent",
+      "hypothesis": "A sector-relative-strength persistence shadow universe can identify replayable low-overlap candidates whose 10-20 day forward returns justify a future external universe source, without adding tickers to production.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-014.json",
+      "updated_at": "2026-04-27T23:08:00-07:00"
+    },
+    {
+      "experiment_id": "exp-20260428-015",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "Alpha experiments remain vulnerable to incomparable or incomplete baseline artifacts; a fixed-window baseline reproducibility audit can verify that judge-ready result files contain stable windows and required metrics before the next promotion test.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-015.json",
+      "updated_at": "2026-04-28T05:54:38+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-016",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha_discovery_agent",
+      "hypothesis": "Fresh negative clean-news context may identify lower-quality existing A/B candidates for future event-aware ranking without creating a new entry sleeve.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-016.json",
+      "updated_at": "2026-04-28T06:00:17+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-017",
+      "status": "accepted",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "A 2% adverse next-open entry cancel improves entry quality by avoiding weak fills that tend to become low-MFE stopouts.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-017.json",
+      "updated_at": "2026-04-28T06:35:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-018",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "A minimal audit artifact can remove a current measurement blocker for the next alpha experiment without changing strategy behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-018.json",
+      "updated_at": "2026-04-28T06:26:53+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-019",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "loss_attribution",
+      "hypothesis": "Accepted-stack bad trades contain a reproducible profit-decay failure family not already explained by recent taxonomies.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-019.json",
+      "updated_at": "2026-04-28T06:28:59+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-020",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout",
+      "hypothesis": "A narrow shadow universe can surface replayable low-overlap candidates with useful forward returns without adding production tickers.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-020.json",
+      "updated_at": "2026-04-28T06:28:52+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-021",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Sweeping the upside next-open entry cancel threshold may improve entry execution quality without changing signal generation or exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-021.json",
+      "updated_at": "2026-04-28T00:00:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-022",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "A state-qualified exception to upside next-open cancel for accepted winner-truncation trend sleeves may preserve momentum-confirmed winners without reopening global gap-threshold tuning.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-022.json",
+      "updated_at": "2026-04-28T08:08:46.061908+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-024",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Existing A/B signals that fail to close in the upper part of their own signal-day range may be weaker execution candidates; canceling those next-open entries could improve quality without changing signal generation, exits, sizing, add-ons, or LLM/news replay.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-024.json",
+      "updated_at": "2026-04-28T11:07:42.880720+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-025",
+      "status": "accepted",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Raising only the initial position cap can improve capital allocation after the accepted 50% add-on showed confirmed winners can absorb more risk budget.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-025.json",
+      "updated_at": "2026-04-28T13:12:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-026",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Reduced-risk initial entries may need a lower concentration cap after the accepted 40% initial-cap promotion.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-026.json",
+      "updated_at": "2026-04-28T20:22:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-027",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "The same-day sector cap may be mis-sized after recent capital-allocation improvements.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-027.json",
+      "updated_at": "2026-04-28T20:35:00Z"
+    },
+    {
+      "experiment_id": "exp-20260428-028",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "After the accepted 40% initial position cap and 50% day-2 add-on, the portfolio heat cap may be the remaining materiality ceiling. A modestly wider heat budget could let confirmed winners receive add-ons without changing entry quality.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-028.json",
+      "updated_at": "2026-04-28T15:10:28.599467+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-029",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "When same-day candidates compete for scarce entry slots, globally ranking by existing trade_quality_score may allocate capital to higher-expectancy candidates without changing entries or risk limits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-029.json",
+      "updated_at": "2026-04-28T16:07:20.109968+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-030",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Candidate-level exceptions to one-slot scarce breakout deferral may recover high-quality breakout winners without reopening global candidate ordering, global capacity, or broad breakout de-risking.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-030.json",
+      "updated_at": "2026-04-28T18:08:10.773866+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-023",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Context-qualified exceptions to adverse next-open cancel may preserve discounted high-quality entries without reopening the global 2% threshold.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-023.json",
+      "updated_at": "2026-04-28T10:12:00.758290+00:00"
+    },
+    {
+      "experiment_id": "exp-20260428-032",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "Scarce-slot breakout deferral may be more profitable if it only fires when the weaker of SPY/QQQ is not far above its moving average.",
+      "ticket_file": "docs/experiments/tickets/exp-20260428-032.json",
+      "updated_at": "2026-04-28T19:10:24.624076+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-003",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "A sixth slot may add alpha only in strongly risk-on index states without reopening the rejected global slot-count sweep.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-003.json",
+      "updated_at": "2026-04-29T02:13:14.303039+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-006",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "A sixth slot may add alpha only when SPY/QQQ index leadership dispersion indicates a rotational tape.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-006.json",
+      "updated_at": "2026-04-29T05:16:27.036101+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-007",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "codex-trailing-reduce-audit",
+      "hypothesis": "Current trailing-stop partial reduce may over-repeat the same risk event; stateful repeat-trigger semantics may reduce repeated sell advice without materially increasing downside risk.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-007.json",
+      "updated_at": "2026-04-29T05:54:18+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-008",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "codex-trailing-profit-replay",
+      "hypothesis": "Archived production TRAILING_STOP partial-reduce advice may be less profitable than stateful alternatives that suppress duplicate same-breach sells while preserving deeper-risk exits.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-008.json",
+      "updated_at": "2026-04-29T06:24:53+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-009",
+      "status": "rejected",
+      "lane": "alpha_discovery",
+      "owner": "codex-trailing-full-backtest",
+      "hypothesis": "Full BacktestEngine replay can determine whether trailing-stop exit semantics outperform the current fixed-target/stop accepted stack across the fixed windows.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-009.json",
+      "updated_at": "2026-04-28T23:28:48.1533007-07:00"
+    },
+    {
+      "experiment_id": "exp-20260429-010",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "codex-trailing-parity-fix",
+      "hypothesis": "Production trailing-stop partial-reduce advice is not replayed by BacktestEngine; moving partial-reduce semantics into a shared policy and adding backtest replay will make the mechanism measurable before any strategy promotion.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-010.json",
+      "updated_at": "2026-04-29T06:29:09+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-011",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "codex-trailing-parity-fix",
+      "hypothesis": "Production trailing-stop partial-reduce advice is not replayed by BacktestEngine; a shared partial-reduce policy plus backtester replay switch will make the mechanism measurable and stop hidden production/backtest drift.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-011.json",
+      "updated_at": "2026-04-29T06:38:55+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-012",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "codex-trailing-parity-fix",
+      "hypothesis": "Production trailing-stop partial-reduce advice must use the same shared policy as BacktestEngine replay so the mechanism is measurable and cannot drift silently.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-012.json",
+      "updated_at": "2026-04-29T06:40:11+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-013",
+      "status": "accepted",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "Trend Commodities entries near 52-week highs are the system's highest-convexity repeat sleeve and deserve 1.5x risk budget.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-013.json",
+      "updated_at": "2026-04-29T07:39:23.965496+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-014",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "The already-exempt low-TQS Commodities breakout pocket may deserve a 1.5x risk budget because commodity breakouts behaved differently from low-TQS breakouts elsewhere.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-014.json",
+      "updated_at": "2026-04-29T08:08:30+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-015",
+      "status": "accepted",
+      "lane": "alpha_search",
+      "owner": "codex-alpha-search",
+      "hypothesis": "Existing trend_long Financials candidates are a repeat positive sleeve and deserve 1.5x risk budget.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-015.json",
+      "updated_at": "2026-04-29T09:05:00+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-016",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "codex-disable-trailing-partial-reduce",
+      "hypothesis": "关闭生产 TRAILING_STOP 触发的 daily partial reduce 可以避免重复削减赢家仓位，并提升固定窗口 expected_value_score。",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-016.json",
+      "updated_at": "2026-04-29T17:28:33+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-017",
+      "status": "claimed",
+      "lane": "alpha_discovery",
+      "owner": "codex-disable-trailing-partial-reduce",
+      "hypothesis": "关闭生产 TRAILING_STOP 触发的 daily partial reduce 可以避免重复削减赢家仓位，并提升固定窗口 expected_value_score。",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-017.json",
+      "updated_at": "2026-04-29T17:29:04+00:00"
+    }
+  ]
 }

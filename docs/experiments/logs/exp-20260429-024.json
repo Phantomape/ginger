@@ -1,0 +1,85 @@
+{
+  "experiment_id": "exp-20260429-024",
+  "timestamp": "2026-04-29T10:18:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "The accepted trend_long Financials 1.5x sizing sleeve may still be under-allocated; raising the multiplier could improve expected value without changing entries, exits, ranking, slots, or filters.",
+  "parameters": {
+    "single_causal_variable": "TREND_FINANCIALS_RISK_MULTIPLIER",
+    "old_value": 1.5,
+    "tested_values": [1.75, 1.9, 2.0],
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape; no active trend Financials trades",
+    "mid_weak": "rotation-heavy bull; active trend Financials winners but drawdown-sensitive",
+    "old_thin": "mixed-to-weak older tape; active trend Financials net-positive with two V stop-outs"
+  },
+  "baseline_metrics": {
+    "late_strong": {"expected_value_score": 2.2134, "sharpe_daily": 4.22, "total_pnl": 52449.97, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2113, "sharpe_daily": 1.26, "total_pnl": 16772.15, "max_drawdown_pct": 0.0647, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "variant_results": {
+    "1.75": {
+      "expected_value_score_delta": {"late_strong": 0.0, "mid_weak": 0.061, "old_thin": 0.0139, "sum": 0.0749},
+      "total_pnl_delta": {"late_strong": 0.0, "mid_weak": 2408.46, "old_thin": 818.5, "sum": 3226.96},
+      "max_drawdown_delta": {"late_strong": 0.0, "mid_weak": 0.0071, "old_thin": -0.0002},
+      "sharpe_daily_delta": {"late_strong": 0.0, "mid_weak": 0.0, "old_thin": 0.02}
+    },
+    "1.9": {
+      "expected_value_score_delta": {"late_strong": 0.0, "mid_weak": 0.0852, "old_thin": 0.0146, "sum": 0.0998},
+      "total_pnl_delta": {"late_strong": 0.0, "mid_weak": 3530.85, "old_thin": 875.03, "sum": 4405.88},
+      "max_drawdown_delta": {"late_strong": 0.0, "mid_weak": 0.011, "old_thin": -0.0003},
+      "sharpe_daily_delta": {"late_strong": 0.0, "mid_weak": -0.01, "old_thin": 0.02}
+    },
+    "2.0": {
+      "expected_value_score_delta": {"late_strong": 0.0, "mid_weak": 0.1041, "old_thin": 0.0146, "sum": 0.1187},
+      "total_pnl_delta": {"late_strong": 0.0, "mid_weak": 4280.74, "old_thin": 875.03, "sum": 5155.77},
+      "max_drawdown_delta": {"late_strong": 0.0, "mid_weak": 0.0136, "old_thin": -0.0003},
+      "sharpe_daily_delta": {"late_strong": 0.0, "mid_weak": -0.01, "old_thin": 0.02}
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "decision_reason": "The 2.0x variant cleared aggregate EV materiality, but it did so by increasing mid_weak max drawdown by 1.36 percentage points and reducing mid_weak daily Sharpe by 0.01. The 1.75x and 1.9x variants did not clear EV materiality, and 1.9x still worsened mid_weak drawdown by 1.10 percentage points.",
+  "rejection_reason": "Rejected on risk-budget quality: the only material variant adds tail risk in the active window, violating the playbook requirement for any retry above the accepted 1.5x Financials multiplier.",
+  "next_retry_requires": [
+    "Forward evidence that trend Financials can carry more than 1.5x without drawdown expansion",
+    "A non-price event/state discriminator that separates COIN/GS/JPM winners from V stop-outs",
+    "A risk-budget metric proving any higher multiplier compensates for mid_weak drawdown"
+  ],
+  "artifacts": [
+    "data/experiments/exp-20260429-024/trend_financials_multiplier_sweep.json",
+    "data/experiments/exp-20260429-024/trend_financials_multiplier_1_9.json"
+  ]
+}

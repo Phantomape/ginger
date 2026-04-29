@@ -1,0 +1,2678 @@
+{
+  "experiment_id": "exp-20260428-036",
+  "created_at": "2026-04-28T23:11:50.425244+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "state_filtered_universe_expansion",
+  "hypothesis": "Energy ETF proxies may be worth scarce slot competition only when their own signal-day state confirms relative strength or near-high momentum.",
+  "why_tested": "exp-20260428-035 rejected simple ETF expansion but identified Energy/USO late-window upside and required a state discriminator for any valid retry.",
+  "parameters": {
+    "single_causal_variable": "Energy ETF tradeability state predicate",
+    "energy_etfs": [
+      "USO",
+      "XLE"
+    ],
+    "tested_variants": {
+      "baseline": null,
+      "energy_etf_unfiltered": {
+        "min_rs_vs_spy": null,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "energy_etf_rs_positive": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "energy_etf_rs_3pct": {
+        "min_rs_vs_spy": 0.03,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "energy_etf_near_high_2pct": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": -0.02,
+        "strategy": "any"
+      },
+      "energy_etf_breakout_only": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "breakout_long"
+      }
+    },
+    "locked_variables": [
+      "existing stock universe",
+      "signal generation for all non-Energy-ETF tickers",
+      "risk multipliers",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_POSITIONS",
+      "MAX_PER_SECTOR",
+      "candidate ordering",
+      "upside/adverse gap cancels",
+      "day-2 add-on trigger and fraction",
+      "all exits",
+      "scarce-slot routing",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "tail_loss_share": 0.4923,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.471,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4047,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    }
+  },
+  "after_metrics": {
+    "best_variant": "energy_etf_near_high_2pct",
+    "late_strong": {
+      "expected_value_score": 1.8614,
+      "sharpe_daily": 4.12,
+      "total_pnl": 45181.73,
+      "total_return_pct": 0.4518,
+      "max_drawdown_pct": 0.0414,
+      "win_rate": 0.7727,
+      "trade_count": 22,
+      "survival_rate": 0.8136,
+      "tail_loss_share": 0.2845,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 22,
+        "gap_cancel": 8,
+        "no_future_fill": 1,
+        "no_shares": 8,
+        "slot_sliced": 4
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7368,
+      "tail_loss_share": 0.471,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.1624,
+      "sharpe_daily": 1.22,
+      "total_pnl": 13312.6,
+      "total_return_pct": 0.1331,
+      "max_drawdown_pct": 0.0491,
+      "win_rate": 0.3913,
+      "trade_count": 23,
+      "survival_rate": 0.8889,
+      "tail_loss_share": 0.3642,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 23,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      }
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "energy_etf_near_high_2pct",
+    "late_strong": {
+      "expected_value_score": 0.0775,
+      "sharpe_daily": -0.16,
+      "total_pnl": 3503.7,
+      "total_return_pct": 0.035,
+      "max_drawdown_pct": 0.0085,
+      "win_rate": -0.0168,
+      "trade_count": 3,
+      "survival_rate": -0.0295,
+      "tail_loss_share": -0.2078,
+      "entry_reason_counts": null
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": -0.0557,
+      "tail_loss_share": 0.0,
+      "entry_reason_counts": null
+    },
+    "old_thin": {
+      "expected_value_score": -0.021,
+      "sharpe_daily": -0.07,
+      "total_pnl": -908.49,
+      "total_return_pct": -0.0091,
+      "max_drawdown_pct": 0.0002,
+      "win_rate": -0.0178,
+      "trade_count": 1,
+      "survival_rate": -0.0278,
+      "tail_loss_share": -0.0405,
+      "entry_reason_counts": null
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0565,
+      "total_pnl_delta_sum": 2595.21,
+      "baseline_total_pnl_sum": 86007.61,
+      "total_pnl_delta_pct": 0.030174,
+      "windows_improved": 1,
+      "windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0085,
+      "trade_count_delta_sum": 4,
+      "win_rate_delta_min": -0.0178,
+      "energy_etf_trades": 4,
+      "energy_etf_state_dropped": 10
+    },
+    "gate4_basis": "Rejected because no state-filtered Energy ETF variant improved a majority of fixed windows without regression."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this deterministic candidate-pool alpha was tested instead."
+  },
+  "history_guardrails": {
+    "not_repeating_simple_etf_expansion": "This only retries exp-20260428-035 with the required state discriminator.",
+    "not_broad_macro_overlay": true,
+    "not_addon_or_gap_threshold_tuning": true
+  },
+  "rows": [
+    {
+      "window": "late_strong",
+      "variant": "baseline",
+      "rule": null,
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 1.7839,
+        "sharpe_daily": 4.28,
+        "total_pnl": 41678.03,
+        "total_return_pct": 0.4168,
+        "max_drawdown_pct": 0.0329,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431,
+        "tail_loss_share": 0.4923,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 6,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "late_strong",
+      "variant": "energy_etf_unfiltered",
+      "rule": {
+        "min_rs_vs_spy": null,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 2.1448,
+        "sharpe_daily": 4.37,
+        "total_pnl": 49079.96,
+        "total_return_pct": 0.4908,
+        "max_drawdown_pct": 0.0414,
+        "win_rate": 0.75,
+        "trade_count": 24,
+        "survival_rate": 0.8644,
+        "tail_loss_share": 0.4994,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 24,
+          "gap_cancel": 8,
+          "no_future_fill": 1,
+          "no_shares": 8,
+          "slot_sliced": 5
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "pnl": -1061.26,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-14",
+          "exit_date": "2026-01-15",
+          "pnl": -325.24,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-02-04",
+          "pnl": 2698.39,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-04",
+          "exit_date": "2026-03-06",
+          "pnl": 4186.27,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-03",
+          "exit_date": "2026-03-26",
+          "pnl": 2743.1,
+          "exit_reason": "target"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "late_strong",
+      "variant": "energy_etf_rs_positive",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 2.1448,
+        "sharpe_daily": 4.37,
+        "total_pnl": 49079.96,
+        "total_return_pct": 0.4908,
+        "max_drawdown_pct": 0.0414,
+        "win_rate": 0.75,
+        "trade_count": 24,
+        "survival_rate": 0.8644,
+        "tail_loss_share": 0.4994,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 24,
+          "gap_cancel": 8,
+          "no_future_fill": 1,
+          "no_shares": 8,
+          "slot_sliced": 5
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "pnl": -1061.26,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-14",
+          "exit_date": "2026-01-15",
+          "pnl": -325.24,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-02-04",
+          "pnl": 2698.39,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-04",
+          "exit_date": "2026-03-06",
+          "pnl": 4186.27,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-03",
+          "exit_date": "2026-03-26",
+          "pnl": 2743.1,
+          "exit_reason": "target"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "late_strong",
+      "variant": "energy_etf_rs_3pct",
+      "rule": {
+        "min_rs_vs_spy": 0.03,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 2.1448,
+        "sharpe_daily": 4.37,
+        "total_pnl": 49079.96,
+        "total_return_pct": 0.4908,
+        "max_drawdown_pct": 0.0414,
+        "win_rate": 0.75,
+        "trade_count": 24,
+        "survival_rate": 0.8644,
+        "tail_loss_share": 0.4994,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 24,
+          "gap_cancel": 8,
+          "no_future_fill": 1,
+          "no_shares": 8,
+          "slot_sliced": 5
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "pnl": -1061.26,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-14",
+          "exit_date": "2026-01-15",
+          "pnl": -325.24,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-02-04",
+          "pnl": 2698.39,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-04",
+          "exit_date": "2026-03-06",
+          "pnl": 4186.27,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-03",
+          "exit_date": "2026-03-26",
+          "pnl": 2743.1,
+          "exit_reason": "target"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "late_strong",
+      "variant": "energy_etf_near_high_2pct",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": -0.02,
+        "strategy": "any"
+      },
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 1.8614,
+        "sharpe_daily": 4.12,
+        "total_pnl": 45181.73,
+        "total_return_pct": 0.4518,
+        "max_drawdown_pct": 0.0414,
+        "win_rate": 0.7727,
+        "trade_count": 22,
+        "survival_rate": 0.8136,
+        "tail_loss_share": 0.2845,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 22,
+          "gap_cancel": 8,
+          "no_future_fill": 1,
+          "no_shares": 8,
+          "slot_sliced": 4
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "pnl": -1061.26,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-02-04",
+          "pnl": 2698.39,
+          "exit_reason": "target"
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2026-03-03",
+          "exit_date": "2026-03-26",
+          "pnl": 2752.01,
+          "exit_reason": "target"
+        }
+      ],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.047,
+            "pct_from_52w_high": -0.1312
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.839
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0846,
+            "pct_from_52w_high": -0.053
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.941
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1948,
+            "pct_from_52w_high": -0.0442,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1908,
+            "pct_from_52w_high": -0.0255,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        }
+      ]
+    },
+    {
+      "window": "late_strong",
+      "variant": "energy_etf_breakout_only",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "breakout_long"
+      },
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 1.7839,
+        "sharpe_daily": 4.28,
+        "total_pnl": 41678.03,
+        "total_return_pct": 0.4168,
+        "max_drawdown_pct": 0.0329,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.7167,
+        "tail_loss_share": 0.4923,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 6,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.052,
+            "pct_from_52w_high": -0.0091,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.957
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.047,
+            "pct_from_52w_high": -0.1312
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.839
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0641,
+            "pct_from_52w_high": -0.0121,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.954
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0846,
+            "pct_from_52w_high": -0.053
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.941
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1371,
+            "pct_from_52w_high": -0.0164,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0427,
+            "pct_from_52w_high": -0.0145
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.924
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1948,
+            "pct_from_52w_high": -0.0442,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1908,
+            "pct_from_52w_high": -0.0255,
+            "multi_strategy_confluence": false
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.37,
+            "pct_from_52w_high": -0.011
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "variant": "baseline",
+      "rule": null,
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.7738,
+        "sharpe_daily": 2.57,
+        "total_pnl": 30108.49,
+        "total_return_pct": 0.3011,
+        "max_drawdown_pct": 0.0411,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.471,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "mid_weak",
+      "variant": "energy_etf_unfiltered",
+      "rule": {
+        "min_rs_vs_spy": null,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.541,
+        "sharpe_daily": 2.3,
+        "total_pnl": 23518.39,
+        "total_return_pct": 0.2352,
+        "max_drawdown_pct": 0.0318,
+        "win_rate": 0.4545,
+        "trade_count": 22,
+        "survival_rate": 0.8302,
+        "tail_loss_share": 0.7039,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 4,
+          "no_shares": 12,
+          "scarce_slot_breakout_deferred": 3,
+          "slot_sliced": 2
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-06-16",
+          "exit_date": "2025-06-16",
+          "pnl": -604.64,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-06-18",
+          "exit_date": "2025-06-23",
+          "pnl": -1107.69,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "mid_weak",
+      "variant": "energy_etf_rs_positive",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.541,
+        "sharpe_daily": 2.3,
+        "total_pnl": 23518.39,
+        "total_return_pct": 0.2352,
+        "max_drawdown_pct": 0.0318,
+        "win_rate": 0.4545,
+        "trade_count": 22,
+        "survival_rate": 0.8302,
+        "tail_loss_share": 0.7039,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 4,
+          "no_shares": 12,
+          "scarce_slot_breakout_deferred": 3,
+          "slot_sliced": 2
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-06-16",
+          "exit_date": "2025-06-16",
+          "pnl": -604.64,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-06-18",
+          "exit_date": "2025-06-23",
+          "pnl": -1107.69,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "mid_weak",
+      "variant": "energy_etf_rs_3pct",
+      "rule": {
+        "min_rs_vs_spy": 0.03,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.541,
+        "sharpe_daily": 2.3,
+        "total_pnl": 23518.39,
+        "total_return_pct": 0.2352,
+        "max_drawdown_pct": 0.0318,
+        "win_rate": 0.4545,
+        "trade_count": 22,
+        "survival_rate": 0.8302,
+        "tail_loss_share": 0.7039,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 4,
+          "no_shares": 12,
+          "scarce_slot_breakout_deferred": 3,
+          "slot_sliced": 2
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-06-16",
+          "exit_date": "2025-06-16",
+          "pnl": -604.64,
+          "exit_reason": "stop"
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-06-18",
+          "exit_date": "2025-06-23",
+          "pnl": -1107.69,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "mid_weak",
+      "variant": "energy_etf_near_high_2pct",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": -0.02,
+        "strategy": "any"
+      },
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.7738,
+        "sharpe_daily": 2.57,
+        "total_pnl": 30108.49,
+        "total_return_pct": 0.3011,
+        "max_drawdown_pct": 0.0411,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7368,
+        "tail_loss_share": 0.471,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1817,
+            "pct_from_52w_high": -0.0515
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.956
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0677,
+            "pct_from_52w_high": -0.0857
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.877
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1752,
+            "pct_from_52w_high": -0.027
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        },
+        {
+          "ticker": "USO",
+          "strategy": "breakout_long",
+          "conditions_met": {
+            "daily_range_vs_atr": 1.6256,
+            "breakout_20d": true,
+            "volume_spike_ratio": 1.5438,
+            "above_200ma": true,
+            "rs_vs_spy": 0.0392,
+            "pct_from_52w_high": -0.0565,
+            "breakout_max_pullback_from_52w_high": -0.2
+          },
+          "confidence_score": 0.93,
+          "trade_quality_score": 0.817
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "variant": "energy_etf_breakout_only",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "breakout_long"
+      },
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 0.7738,
+        "sharpe_daily": 2.57,
+        "total_pnl": 30108.49,
+        "total_return_pct": 0.3011,
+        "max_drawdown_pct": 0.0411,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7544,
+        "tail_loss_share": 0.471,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 12,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1817,
+            "pct_from_52w_high": -0.0515
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.956
+        },
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0677,
+            "pct_from_52w_high": -0.0857
+          },
+          "confidence_score": 0.89,
+          "trade_quality_score": 0.877
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1752,
+            "pct_from_52w_high": -0.027
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "variant": "baseline",
+      "rule": null,
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1834,
+        "sharpe_daily": 1.29,
+        "total_pnl": 14221.09,
+        "total_return_pct": 0.1422,
+        "max_drawdown_pct": 0.0489,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4047,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "old_thin",
+      "variant": "energy_etf_unfiltered",
+      "rule": {
+        "min_rs_vs_spy": null,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1608,
+        "sharpe_daily": 1.17,
+        "total_pnl": 13743.98,
+        "total_return_pct": 0.1374,
+        "max_drawdown_pct": 0.0445,
+        "win_rate": 0.4167,
+        "trade_count": 24,
+        "survival_rate": 0.8939,
+        "tail_loss_share": 0.4607,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 24,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 6,
+          "slot_sliced": 13
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-01-13",
+          "exit_date": "2025-01-27",
+          "pnl": -1982.23,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "old_thin",
+      "variant": "energy_etf_rs_positive",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1608,
+        "sharpe_daily": 1.17,
+        "total_pnl": 13743.98,
+        "total_return_pct": 0.1374,
+        "max_drawdown_pct": 0.0445,
+        "win_rate": 0.4167,
+        "trade_count": 24,
+        "survival_rate": 0.8939,
+        "tail_loss_share": 0.4607,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 24,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 6,
+          "slot_sliced": 13
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-01-13",
+          "exit_date": "2025-01-27",
+          "pnl": -1982.23,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": []
+    },
+    {
+      "window": "old_thin",
+      "variant": "energy_etf_rs_3pct",
+      "rule": {
+        "min_rs_vs_spy": 0.03,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1608,
+        "sharpe_daily": 1.17,
+        "total_pnl": 13743.98,
+        "total_return_pct": 0.1374,
+        "max_drawdown_pct": 0.0445,
+        "win_rate": 0.4167,
+        "trade_count": 24,
+        "survival_rate": 0.8788,
+        "tail_loss_share": 0.4607,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 24,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 6,
+          "slot_sliced": 12
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-01-13",
+          "exit_date": "2025-01-27",
+          "pnl": -1982.23,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0192,
+            "pct_from_52w_high": -0.0392
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.913
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "variant": "energy_etf_near_high_2pct",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": -0.02,
+        "strategy": "any"
+      },
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1624,
+        "sharpe_daily": 1.22,
+        "total_pnl": 13312.6,
+        "total_return_pct": 0.1331,
+        "max_drawdown_pct": 0.0491,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.8889,
+        "tail_loss_share": 0.3642,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 23,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        }
+      },
+      "energy_etf_trades": [
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "sector": "Unknown",
+          "entry_date": "2025-01-14",
+          "exit_date": "2025-01-23",
+          "pnl": -889.08,
+          "exit_reason": "stop"
+        }
+      ],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0192,
+            "pct_from_52w_high": -0.0392
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.913
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1295,
+            "pct_from_52w_high": -0.0332
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.992
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "variant": "energy_etf_breakout_only",
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "breakout_long"
+      },
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.1834,
+        "sharpe_daily": 1.29,
+        "total_pnl": 14221.09,
+        "total_return_pct": 0.1422,
+        "max_drawdown_pct": 0.0489,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.873,
+        "tail_loss_share": 0.4047,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        }
+      },
+      "energy_etf_trades": [],
+      "energy_etf_state_dropped": [
+        {
+          "ticker": "XLE",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.0192,
+            "pct_from_52w_high": -0.0392
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.913
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1295,
+            "pct_from_52w_high": -0.0332
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 0.992
+        },
+        {
+          "ticker": "USO",
+          "strategy": "trend_long",
+          "conditions_met": {
+            "above_200ma": true,
+            "breakout_20d": true,
+            "volume_spike": true,
+            "rs_vs_spy": 0.1576,
+            "pct_from_52w_high": -0.0141
+          },
+          "confidence_score": 1.0,
+          "trade_quality_score": 1.0
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "energy_etf_unfiltered": {
+      "rule": {
+        "min_rs_vs_spy": null,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7839,
+            "sharpe_daily": 4.28,
+            "total_pnl": 41678.03,
+            "total_return_pct": 0.4168,
+            "max_drawdown_pct": 0.0329,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431,
+            "tail_loss_share": 0.4923,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 19,
+              "gap_cancel": 6,
+              "no_future_fill": 1,
+              "no_shares": 9,
+              "slot_sliced": 3
+            }
+          },
+          "after": {
+            "expected_value_score": 2.1448,
+            "sharpe_daily": 4.37,
+            "total_pnl": 49079.96,
+            "total_return_pct": 0.4908,
+            "max_drawdown_pct": 0.0414,
+            "win_rate": 0.75,
+            "trade_count": 24,
+            "survival_rate": 0.8644,
+            "tail_loss_share": 0.4994,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 24,
+              "gap_cancel": 8,
+              "no_future_fill": 1,
+              "no_shares": 8,
+              "slot_sliced": 5
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.3609,
+            "sharpe_daily": 0.09,
+            "total_pnl": 7401.93,
+            "total_return_pct": 0.074,
+            "max_drawdown_pct": 0.0085,
+            "win_rate": -0.0395,
+            "trade_count": 5,
+            "survival_rate": 0.0213,
+            "tail_loss_share": 0.0071,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "pnl": -1061.26,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-14",
+              "exit_date": "2026-01-15",
+              "pnl": -325.24,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-04",
+              "pnl": 2698.39,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-04",
+              "exit_date": "2026-03-06",
+              "pnl": 4186.27,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-03",
+              "exit_date": "2026-03-26",
+              "pnl": 2743.1,
+              "exit_reason": "target"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 11,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "after": {
+            "expected_value_score": 0.541,
+            "sharpe_daily": 2.3,
+            "total_pnl": 23518.39,
+            "total_return_pct": 0.2352,
+            "max_drawdown_pct": 0.0318,
+            "win_rate": 0.4545,
+            "trade_count": 22,
+            "survival_rate": 0.8302,
+            "tail_loss_share": 0.7039,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 4,
+              "no_shares": 12,
+              "scarce_slot_breakout_deferred": 3,
+              "slot_sliced": 2
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.2328,
+            "sharpe_daily": -0.27,
+            "total_pnl": -6590.1,
+            "total_return_pct": -0.0659,
+            "max_drawdown_pct": -0.0093,
+            "win_rate": -0.0693,
+            "trade_count": 1,
+            "survival_rate": 0.0377,
+            "tail_loss_share": 0.2329,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-06-16",
+              "exit_date": "2025-06-16",
+              "pnl": -604.64,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-06-18",
+              "exit_date": "2025-06-23",
+              "pnl": -1107.69,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1834,
+            "sharpe_daily": 1.29,
+            "total_pnl": 14221.09,
+            "total_return_pct": 0.1422,
+            "max_drawdown_pct": 0.0489,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4047,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "after": {
+            "expected_value_score": 0.1608,
+            "sharpe_daily": 1.17,
+            "total_pnl": 13743.98,
+            "total_return_pct": 0.1374,
+            "max_drawdown_pct": 0.0445,
+            "win_rate": 0.4167,
+            "trade_count": 24,
+            "survival_rate": 0.8939,
+            "tail_loss_share": 0.4607,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 24,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 6,
+              "slot_sliced": 13
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.0226,
+            "sharpe_daily": -0.12,
+            "total_pnl": -477.11,
+            "total_return_pct": -0.0048,
+            "max_drawdown_pct": -0.0044,
+            "win_rate": 0.0076,
+            "trade_count": 2,
+            "survival_rate": -0.0228,
+            "tail_loss_share": 0.056,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-01-13",
+              "exit_date": "2025-01-27",
+              "pnl": -1982.23,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.1055,
+        "total_pnl_delta_sum": 334.72,
+        "baseline_total_pnl_sum": 86007.61,
+        "total_pnl_delta_pct": 0.003892,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0085,
+        "trade_count_delta_sum": 8,
+        "win_rate_delta_min": -0.0693,
+        "energy_etf_trades": 8,
+        "energy_etf_state_dropped": 0
+      }
+    },
+    "energy_etf_rs_positive": {
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7839,
+            "sharpe_daily": 4.28,
+            "total_pnl": 41678.03,
+            "total_return_pct": 0.4168,
+            "max_drawdown_pct": 0.0329,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431,
+            "tail_loss_share": 0.4923,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 19,
+              "gap_cancel": 6,
+              "no_future_fill": 1,
+              "no_shares": 9,
+              "slot_sliced": 3
+            }
+          },
+          "after": {
+            "expected_value_score": 2.1448,
+            "sharpe_daily": 4.37,
+            "total_pnl": 49079.96,
+            "total_return_pct": 0.4908,
+            "max_drawdown_pct": 0.0414,
+            "win_rate": 0.75,
+            "trade_count": 24,
+            "survival_rate": 0.8644,
+            "tail_loss_share": 0.4994,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 24,
+              "gap_cancel": 8,
+              "no_future_fill": 1,
+              "no_shares": 8,
+              "slot_sliced": 5
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.3609,
+            "sharpe_daily": 0.09,
+            "total_pnl": 7401.93,
+            "total_return_pct": 0.074,
+            "max_drawdown_pct": 0.0085,
+            "win_rate": -0.0395,
+            "trade_count": 5,
+            "survival_rate": 0.0213,
+            "tail_loss_share": 0.0071,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "pnl": -1061.26,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-14",
+              "exit_date": "2026-01-15",
+              "pnl": -325.24,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-04",
+              "pnl": 2698.39,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-04",
+              "exit_date": "2026-03-06",
+              "pnl": 4186.27,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-03",
+              "exit_date": "2026-03-26",
+              "pnl": 2743.1,
+              "exit_reason": "target"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 11,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "after": {
+            "expected_value_score": 0.541,
+            "sharpe_daily": 2.3,
+            "total_pnl": 23518.39,
+            "total_return_pct": 0.2352,
+            "max_drawdown_pct": 0.0318,
+            "win_rate": 0.4545,
+            "trade_count": 22,
+            "survival_rate": 0.8302,
+            "tail_loss_share": 0.7039,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 4,
+              "no_shares": 12,
+              "scarce_slot_breakout_deferred": 3,
+              "slot_sliced": 2
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.2328,
+            "sharpe_daily": -0.27,
+            "total_pnl": -6590.1,
+            "total_return_pct": -0.0659,
+            "max_drawdown_pct": -0.0093,
+            "win_rate": -0.0693,
+            "trade_count": 1,
+            "survival_rate": 0.0377,
+            "tail_loss_share": 0.2329,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-06-16",
+              "exit_date": "2025-06-16",
+              "pnl": -604.64,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-06-18",
+              "exit_date": "2025-06-23",
+              "pnl": -1107.69,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1834,
+            "sharpe_daily": 1.29,
+            "total_pnl": 14221.09,
+            "total_return_pct": 0.1422,
+            "max_drawdown_pct": 0.0489,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4047,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "after": {
+            "expected_value_score": 0.1608,
+            "sharpe_daily": 1.17,
+            "total_pnl": 13743.98,
+            "total_return_pct": 0.1374,
+            "max_drawdown_pct": 0.0445,
+            "win_rate": 0.4167,
+            "trade_count": 24,
+            "survival_rate": 0.8939,
+            "tail_loss_share": 0.4607,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 24,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 6,
+              "slot_sliced": 13
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.0226,
+            "sharpe_daily": -0.12,
+            "total_pnl": -477.11,
+            "total_return_pct": -0.0048,
+            "max_drawdown_pct": -0.0044,
+            "win_rate": 0.0076,
+            "trade_count": 2,
+            "survival_rate": -0.0228,
+            "tail_loss_share": 0.056,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-01-13",
+              "exit_date": "2025-01-27",
+              "pnl": -1982.23,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.1055,
+        "total_pnl_delta_sum": 334.72,
+        "baseline_total_pnl_sum": 86007.61,
+        "total_pnl_delta_pct": 0.003892,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0085,
+        "trade_count_delta_sum": 8,
+        "win_rate_delta_min": -0.0693,
+        "energy_etf_trades": 8,
+        "energy_etf_state_dropped": 0
+      }
+    },
+    "energy_etf_rs_3pct": {
+      "rule": {
+        "min_rs_vs_spy": 0.03,
+        "min_pct_from_52w_high": null,
+        "strategy": "any"
+      },
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7839,
+            "sharpe_daily": 4.28,
+            "total_pnl": 41678.03,
+            "total_return_pct": 0.4168,
+            "max_drawdown_pct": 0.0329,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431,
+            "tail_loss_share": 0.4923,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 19,
+              "gap_cancel": 6,
+              "no_future_fill": 1,
+              "no_shares": 9,
+              "slot_sliced": 3
+            }
+          },
+          "after": {
+            "expected_value_score": 2.1448,
+            "sharpe_daily": 4.37,
+            "total_pnl": 49079.96,
+            "total_return_pct": 0.4908,
+            "max_drawdown_pct": 0.0414,
+            "win_rate": 0.75,
+            "trade_count": 24,
+            "survival_rate": 0.8644,
+            "tail_loss_share": 0.4994,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 24,
+              "gap_cancel": 8,
+              "no_future_fill": 1,
+              "no_shares": 8,
+              "slot_sliced": 5
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.3609,
+            "sharpe_daily": 0.09,
+            "total_pnl": 7401.93,
+            "total_return_pct": 0.074,
+            "max_drawdown_pct": 0.0085,
+            "win_rate": -0.0395,
+            "trade_count": 5,
+            "survival_rate": 0.0213,
+            "tail_loss_share": 0.0071,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "pnl": -1061.26,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-14",
+              "exit_date": "2026-01-15",
+              "pnl": -325.24,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-04",
+              "pnl": 2698.39,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-04",
+              "exit_date": "2026-03-06",
+              "pnl": 4186.27,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-03",
+              "exit_date": "2026-03-26",
+              "pnl": 2743.1,
+              "exit_reason": "target"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 11,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "after": {
+            "expected_value_score": 0.541,
+            "sharpe_daily": 2.3,
+            "total_pnl": 23518.39,
+            "total_return_pct": 0.2352,
+            "max_drawdown_pct": 0.0318,
+            "win_rate": 0.4545,
+            "trade_count": 22,
+            "survival_rate": 0.8302,
+            "tail_loss_share": 0.7039,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 4,
+              "no_shares": 12,
+              "scarce_slot_breakout_deferred": 3,
+              "slot_sliced": 2
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.2328,
+            "sharpe_daily": -0.27,
+            "total_pnl": -6590.1,
+            "total_return_pct": -0.0659,
+            "max_drawdown_pct": -0.0093,
+            "win_rate": -0.0693,
+            "trade_count": 1,
+            "survival_rate": 0.0377,
+            "tail_loss_share": 0.2329,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-06-16",
+              "exit_date": "2025-06-16",
+              "pnl": -604.64,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-06-18",
+              "exit_date": "2025-06-23",
+              "pnl": -1107.69,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 0
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1834,
+            "sharpe_daily": 1.29,
+            "total_pnl": 14221.09,
+            "total_return_pct": 0.1422,
+            "max_drawdown_pct": 0.0489,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4047,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "after": {
+            "expected_value_score": 0.1608,
+            "sharpe_daily": 1.17,
+            "total_pnl": 13743.98,
+            "total_return_pct": 0.1374,
+            "max_drawdown_pct": 0.0445,
+            "win_rate": 0.4167,
+            "trade_count": 24,
+            "survival_rate": 0.8788,
+            "tail_loss_share": 0.4607,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 24,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 6,
+              "slot_sliced": 12
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.0226,
+            "sharpe_daily": -0.12,
+            "total_pnl": -477.11,
+            "total_return_pct": -0.0048,
+            "max_drawdown_pct": -0.0044,
+            "win_rate": 0.0076,
+            "trade_count": 2,
+            "survival_rate": -0.0379,
+            "tail_loss_share": 0.056,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-01-13",
+              "exit_date": "2025-01-27",
+              "pnl": -1982.23,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 1
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.1055,
+        "total_pnl_delta_sum": 334.72,
+        "baseline_total_pnl_sum": 86007.61,
+        "total_pnl_delta_pct": 0.003892,
+        "windows_improved": 1,
+        "windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0085,
+        "trade_count_delta_sum": 8,
+        "win_rate_delta_min": -0.0693,
+        "energy_etf_trades": 8,
+        "energy_etf_state_dropped": 1
+      }
+    },
+    "energy_etf_near_high_2pct": {
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": -0.02,
+        "strategy": "any"
+      },
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7839,
+            "sharpe_daily": 4.28,
+            "total_pnl": 41678.03,
+            "total_return_pct": 0.4168,
+            "max_drawdown_pct": 0.0329,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431,
+            "tail_loss_share": 0.4923,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 19,
+              "gap_cancel": 6,
+              "no_future_fill": 1,
+              "no_shares": 9,
+              "slot_sliced": 3
+            }
+          },
+          "after": {
+            "expected_value_score": 1.8614,
+            "sharpe_daily": 4.12,
+            "total_pnl": 45181.73,
+            "total_return_pct": 0.4518,
+            "max_drawdown_pct": 0.0414,
+            "win_rate": 0.7727,
+            "trade_count": 22,
+            "survival_rate": 0.8136,
+            "tail_loss_share": 0.2845,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 22,
+              "gap_cancel": 8,
+              "no_future_fill": 1,
+              "no_shares": 8,
+              "slot_sliced": 4
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.0775,
+            "sharpe_daily": -0.16,
+            "total_pnl": 3503.7,
+            "total_return_pct": 0.035,
+            "max_drawdown_pct": 0.0085,
+            "win_rate": -0.0168,
+            "trade_count": 3,
+            "survival_rate": -0.0295,
+            "tail_loss_share": -0.2078,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "pnl": -1061.26,
+              "exit_reason": "stop"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-04",
+              "pnl": 2698.39,
+              "exit_reason": "target"
+            },
+            {
+              "ticker": "XLE",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2026-03-03",
+              "exit_date": "2026-03-26",
+              "pnl": 2752.01,
+              "exit_reason": "target"
+            }
+          ],
+          "energy_etf_state_dropped_count": 4
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 11,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "after": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7368,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 11,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": -0.0557,
+            "tail_loss_share": 0.0,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [],
+          "energy_etf_state_dropped_count": 4
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1834,
+            "sharpe_daily": 1.29,
+            "total_pnl": 14221.09,
+            "total_return_pct": 0.1422,
+            "max_drawdown_pct": 0.0489,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4047,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "after": {
+            "expected_value_score": 0.1624,
+            "sharpe_daily": 1.22,
+            "total_pnl": 13312.6,
+            "total_return_pct": 0.1331,
+            "max_drawdown_pct": 0.0491,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.8889,
+            "tail_loss_share": 0.3642,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 23,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "delta": {
+            "expected_value_score": -0.021,
+            "sharpe_daily": -0.07,
+            "total_pnl": -908.49,
+            "total_return_pct": -0.0091,
+            "max_drawdown_pct": 0.0002,
+            "win_rate": -0.0178,
+            "trade_count": 1,
+            "survival_rate": -0.0278,
+            "tail_loss_share": -0.0405,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [
+            {
+              "ticker": "USO",
+              "strategy": "trend_long",
+              "sector": "Unknown",
+              "entry_date": "2025-01-14",
+              "exit_date": "2025-01-23",
+              "pnl": -889.08,
+              "exit_reason": "stop"
+            }
+          ],
+          "energy_etf_state_dropped_count": 2
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.0565,
+        "total_pnl_delta_sum": 2595.21,
+        "baseline_total_pnl_sum": 86007.61,
+        "total_pnl_delta_pct": 0.030174,
+        "windows_improved": 1,
+        "windows_regressed": 1,
+        "max_drawdown_delta_max": 0.0085,
+        "trade_count_delta_sum": 4,
+        "win_rate_delta_min": -0.0178,
+        "energy_etf_trades": 4,
+        "energy_etf_state_dropped": 10
+      }
+    },
+    "energy_etf_breakout_only": {
+      "rule": {
+        "min_rs_vs_spy": 0.0,
+        "min_pct_from_52w_high": null,
+        "strategy": "breakout_long"
+      },
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 1.7839,
+            "sharpe_daily": 4.28,
+            "total_pnl": 41678.03,
+            "total_return_pct": 0.4168,
+            "max_drawdown_pct": 0.0329,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8431,
+            "tail_loss_share": 0.4923,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 19,
+              "gap_cancel": 6,
+              "no_future_fill": 1,
+              "no_shares": 9,
+              "slot_sliced": 3
+            }
+          },
+          "after": {
+            "expected_value_score": 1.7839,
+            "sharpe_daily": 4.28,
+            "total_pnl": 41678.03,
+            "total_return_pct": 0.4168,
+            "max_drawdown_pct": 0.0329,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.7167,
+            "tail_loss_share": 0.4923,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 5,
+              "entered": 19,
+              "gap_cancel": 6,
+              "no_future_fill": 1,
+              "no_shares": 9,
+              "slot_sliced": 3
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": -0.1264,
+            "tail_loss_share": 0.0,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [],
+          "energy_etf_state_dropped_count": 9
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 11,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "after": {
+            "expected_value_score": 0.7738,
+            "sharpe_daily": 2.57,
+            "total_pnl": 30108.49,
+            "total_return_pct": 0.3011,
+            "max_drawdown_pct": 0.0411,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7544,
+            "tail_loss_share": 0.471,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 21,
+              "gap_cancel": 4,
+              "no_shares": 12,
+              "scarce_slot_breakout_deferred": 4,
+              "slot_sliced": 1
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": -0.0381,
+            "tail_loss_share": 0.0,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [],
+          "energy_etf_state_dropped_count": 3
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.1834,
+            "sharpe_daily": 1.29,
+            "total_pnl": 14221.09,
+            "total_return_pct": 0.1422,
+            "max_drawdown_pct": 0.0489,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4047,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "after": {
+            "expected_value_score": 0.1834,
+            "sharpe_daily": 1.29,
+            "total_pnl": 14221.09,
+            "total_return_pct": 0.1422,
+            "max_drawdown_pct": 0.0489,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.873,
+            "tail_loss_share": 0.4047,
+            "entry_reason_counts": {
+              "adverse_gap_down_cancel": 1,
+              "entered": 22,
+              "gap_cancel": 5,
+              "no_shares": 10,
+              "scarce_slot_breakout_deferred": 8,
+              "slot_sliced": 9
+            }
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": -0.0437,
+            "tail_loss_share": 0.0,
+            "entry_reason_counts": null
+          },
+          "energy_etf_trades": [],
+          "energy_etf_state_dropped_count": 3
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.0,
+        "total_pnl_delta_sum": 0.0,
+        "baseline_total_pnl_sum": 86007.61,
+        "total_pnl_delta_pct": 0.0,
+        "windows_improved": 0,
+        "windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0,
+        "trade_count_delta_sum": 0,
+        "win_rate_delta_min": 0.0,
+        "energy_etf_trades": 0,
+        "energy_etf_state_dropped": 15
+      }
+    }
+  },
+  "rejection_reason": "Energy ETF state filters did not solve the slot displacement problem across fixed windows.",
+  "next_retry_requires": [
+    "Do not retry Energy ETF universe expansion with only self-OHLCV state predicates.",
+    "A valid retry needs an orthogonal event/state source, such as energy breadth, fresh commodity news, or production watchlist parity.",
+    "If a shadow result is promoted later, implement it in shared production/backtest policy first."
+  ]
+}

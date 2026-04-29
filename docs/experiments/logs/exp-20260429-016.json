@@ -1,0 +1,187 @@
+{
+  "experiment_id": "exp-20260429-016",
+  "timestamp": "2026-04-29T10:09:01Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected trend_long Financials candidates near 52-week highs may deserve an extra risk lift from the accepted 1.5x baseline to 2.0x.",
+  "change_summary": "Tested a stricter near-high Financials trend sizing lift in the shared portfolio sizing path. No entry, filter, ranking, exit, slot, add-on, LLM, news, earnings, or universe behavior changed. Strategy code was rolled back because Gate 4 failed.",
+  "component": "quant/constants.py, quant/portfolio_engine.py, quant/test_production_parity.py",
+  "parameters": {
+    "single_causal_variable": "trend_long + Financials + pct_from_52w_high >= -0.03 risk multiplier",
+    "old_value": 1.5,
+    "tested_value": 2.0,
+    "rolled_back_to": 1.5,
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "tradeable universe"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but historically lagged indexes before recent allocation improvements",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.0154,
+      "sharpe_daily": 4.27,
+      "total_pnl": 47200.59,
+      "total_return_pct": 0.472,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9147,
+      "sharpe_daily": 2.5,
+      "total_pnl": 36590.41,
+      "total_return_pct": 0.3659,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1969,
+      "sharpe_daily": 1.29,
+      "total_pnl": 15258.72,
+      "total_return_pct": 0.1526,
+      "max_drawdown_pct": 0.051,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.0154,
+      "sharpe_daily": 4.27,
+      "total_pnl": 47200.59,
+      "total_return_pct": 0.472,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9147,
+      "sharpe_daily": 2.5,
+      "total_pnl": 36590.41,
+      "total_return_pct": 0.3659,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2116,
+      "sharpe_daily": 1.31,
+      "total_pnl": 16151.27,
+      "total_return_pct": 0.1615,
+      "max_drawdown_pct": 0.0544,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0147,
+      "sharpe_daily": 0.02,
+      "total_pnl": 892.55,
+      "total_return_pct": 0.0089,
+      "max_drawdown_pct": 0.0034,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0147,
+      "total_pnl_delta_sum": 892.55,
+      "baseline_total_pnl_sum": 99049.72,
+      "total_pnl_delta_pct": 0.009011,
+      "windows_improved": 1,
+      "windows_regressed": 0,
+      "windows_unchanged": 2,
+      "max_drawdown_delta_max": 0.0034,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Rejected: aggregate EV delta +0.0147 and PnL delta +0.90% are below Gate 4 materiality, with only 1/3 windows improved."
+  },
+  "failed_pretest": {
+    "variant": "Replace accepted broad trend_long Financials 1.5x with only near-high 2.0x and non-near-high 1.0x",
+    "result": "Rejected before promotion because mid_weak regressed from EV 0.9147 / PnL 36590.41 to EV 0.8004 / PnL 31892.95.",
+    "interpretation": "The accepted broad 1.5x Financials trend sleeve should not be narrowed by simple near-high gating; doing so removes profitable COIN/GS-like exposure."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this tested deterministic shared sizing alpha instead of adding subjective LLM behavior."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "history_guardrails": {
+    "not_repeating_sector_priority_ordering": "This was sizing for already-selected trades only; no candidate ordering changed.",
+    "not_repeating_global_slot_count": true,
+    "not_repeating_financials_priority": "No Financials entries, filters, universe candidates, or earlier slot access were added."
+  },
+  "rejection_reason": "Extra near-high Financials risk lift is too small and only active in old_thin; strict near-high replacement damages mid_weak.",
+  "next_retry_requires": [
+    "Do not retry nearby Financials near-high multiplier thresholds or 2.0x sizing without forward evidence.",
+    "Do not narrow the accepted broad 1.5x trend Financials sleeve using simple pct_from_52w_high gating.",
+    "A valid retry needs an orthogonal event/state discriminator or a risk-budget metric showing material improvement without mid_weak damage."
+  ]
+}

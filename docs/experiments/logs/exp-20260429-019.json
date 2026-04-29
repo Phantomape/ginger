@@ -1,0 +1,188 @@
+{
+  "experiment_id": "exp-20260429-019",
+  "timestamp": "2026-04-29T13:11:33Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected breakout_long Energy signals may deserve 1.5x risk budget because the current accepted stack shows strong late-window Energy breakout continuation without adding universe noise or changing entry, ranking, exit, or slots.",
+  "change_summary": "Tested a shared portfolio_engine sizing branch for breakout_long Energy at 1.5x risk. The candidate was rolled back because it only improved late_strong, left the other two fixed windows unchanged, and missed Gate 4 materiality.",
+  "component": "quant/constants.py, quant/portfolio_engine.py (temporary patch reverted after rejection)",
+  "parameters": {
+    "single_causal_variable": "breakout_long + Energy risk multiplier",
+    "old_value": "risk_on_unmodified 1.25x when otherwise unmodified",
+    "tested_value": 1.5,
+    "rolled_back_to": "existing accepted stack",
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "tradeable universe"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape with active Energy breakout continuation",
+    "mid_weak": "rotation-heavy bull where strategy makes money but no tested Energy breakout exposure changed",
+    "old_thin": "mixed-to-weak older tape with no tested Energy breakout exposure changed"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2134,
+      "sharpe_daily": 4.22,
+      "total_pnl": 52449.97,
+      "total_return_pct": 0.5245,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2113,
+      "sharpe_daily": 1.26,
+      "total_pnl": 16772.15,
+      "total_return_pct": 0.1677,
+      "max_drawdown_pct": 0.0591,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2961,
+      "sharpe_daily": 4.2,
+      "total_pnl": 54666.64,
+      "total_return_pct": 0.5467,
+      "max_drawdown_pct": 0.041,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2113,
+      "sharpe_daily": 1.26,
+      "total_pnl": 16772.15,
+      "total_return_pct": 0.1677,
+      "max_drawdown_pct": 0.0591,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0827,
+      "sharpe_daily": -0.02,
+      "total_pnl": 2216.67,
+      "total_return_pct": 0.0222,
+      "max_drawdown_pct": 0.0009,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0827,
+      "total_pnl_delta_sum": 2216.67,
+      "baseline_total_pnl_sum": 107454.71,
+      "total_pnl_delta_pct": 0.020629,
+      "windows_improved": 1,
+      "windows_regressed": 0,
+      "windows_unchanged": 2,
+      "max_drawdown_delta_max": 0.0009,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Rejected: aggregate EV delta +0.0827 is below +0.10, aggregate PnL +2.06% is below +5%, Sharpe did not improve, and only 1/3 fixed windows improved."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tested deterministic shared sizing alpha instead of LLM behavior."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "history_guardrails": {
+    "not_repeating_etf_universe_expansion": "This did not add XLE, USO, or any new ticker; it only sized already-selected native Energy breakouts.",
+    "not_repeating_sector_priority_ordering": "No candidate ordering or slot priority changed.",
+    "not_repeating_global_risk_on_leverage": "The tested boost was sleeve-specific and did not raise the accepted broad risk_on_unmodified 1.25x rule."
+  },
+  "rejection_reason": "The Energy breakout sizing pocket is too concentrated in late_strong and too small in aggregate to justify another production sizing branch.",
+  "next_retry_requires": [
+    "Do not retry simple breakout Energy risk boosts at nearby multipliers without a new state/event discriminator.",
+    "A valid retry needs evidence that Energy breakouts deserve scarce risk budget outside late_strong, or a trigger that increases active windows without adding universe noise.",
+    "Keep future allocation rules in shared portfolio_engine sizing if promoted."
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260429-019.json",
+    "docs/experiments/tickets/exp-20260429-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

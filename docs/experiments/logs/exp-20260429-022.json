@@ -1,0 +1,191 @@
+{
+  "experiment_id": "exp-20260429-022",
+  "timestamp": "2026-04-29T16:45:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected trend_long Technology signals with no other sizing modifier may deserve a dedicated 1.5x risk budget instead of the generic risk_on_unmodified 1.25x lift because the accepted-stack audit showed two isolated unmodified Technology trend winners.",
+  "change_summary": "Temporarily added a shared portfolio_engine sizing branch for trend_long + Technology signals when no other sizing rule fired. The candidate replaced the generic 1.25x risk_on_unmodified lift with a 1.5x dedicated Technology trend lift. It was reverted after fixed three-window testing because the positive effect was too small to pass Gate 4.",
+  "component": "quant/constants.py, quant/portfolio_engine.py (temporary patch reverted after rejection)",
+  "parameters": {
+    "single_causal_variable": "trend_long + Technology + no other sizing modifier risk multiplier",
+    "old_value": "generic risk_on_unmodified 1.25x when otherwise unmodified",
+    "tested_value": 1.5,
+    "stacking_policy": "do not stack with risk_on_unmodified or any existing sizing multiplier",
+    "rolled_back_to": "existing accepted stack",
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "tradeable universe"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape with one affected Technology trend winner",
+    "mid_weak": "rotation-heavy bull where no realized trade changed",
+    "old_thin": "mixed-to-weak older tape with one affected Technology trend winner"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2134,
+      "sharpe_daily": 4.22,
+      "total_pnl": 52449.97,
+      "total_return_pct": 0.5245,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2113,
+      "sharpe_daily": 1.26,
+      "total_pnl": 16772.15,
+      "total_return_pct": 0.1677,
+      "max_drawdown_pct": 0.0591,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2808,
+      "sharpe_daily": 4.26,
+      "total_pnl": 53537.83,
+      "total_return_pct": 0.5354,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2258,
+      "sharpe_daily": 1.28,
+      "total_pnl": 17637.12,
+      "total_return_pct": 0.1764,
+      "max_drawdown_pct": 0.059,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0674,
+      "sharpe_daily": 0.04,
+      "total_pnl": 1087.86,
+      "total_return_pct": 0.0109,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0145,
+      "sharpe_daily": 0.02,
+      "total_pnl": 864.97,
+      "total_return_pct": 0.0087,
+      "max_drawdown_pct": -0.0001,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0819,
+      "total_pnl_delta_sum": 1952.83,
+      "baseline_total_pnl_sum": 107454.71,
+      "total_pnl_delta_pct": 0.018173,
+      "ev_windows_improved": 2,
+      "ev_windows_unchanged": 1,
+      "ev_windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Rejected: aggregate EV delta +0.0819 is below +0.10, aggregate PnL +1.82% is below +5%, no single-window Sharpe improvement reached +0.1, and trade count/win rate were unchanged."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tested deterministic shared sizing alpha instead of LLM behavior."
+  },
+  "history_guardrails": {
+    "not_repeating_technology_breakout": "This tested trend_long Technology only, not the rejected breakout_long Technology branch.",
+    "not_repeating_risk_on_score_threshold": "This did not narrow risk_on eligibility; it tested a narrow sector/strategy sizing pocket.",
+    "not_repeating_universe_expansion": true
+  },
+  "rejection_reason": "The affected Technology trend pocket is directionally positive but too sparse and too small to justify adding a new production sizing branch.",
+  "next_retry_requires": [
+    "Do not retry nearby trend_long Technology unmodified multipliers without a broader sample or orthogonal discriminator.",
+    "A valid retry needs evidence that the pocket affects more than isolated late/old winners while preserving mid_weak behavior.",
+    "If promoted later, keep the rule in shared portfolio_engine sizing and add parity coverage."
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260429-022.json",
+    "docs/experiments/tickets/exp-20260429-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

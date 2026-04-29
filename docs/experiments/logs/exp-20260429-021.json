@@ -1,0 +1,195 @@
+{
+  "experiment_id": "exp-20260429-021",
+  "timestamp": "2026-04-29T15:35:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "The accepted risk_on_unmodified 1.25x sizing lift may be too broad; requiring regime_exit_score >= 0.08 could keep the lift for stronger risk-on candidates while removing extra risk from weaker risk-on inventory.",
+  "change_summary": "Temporarily added RISK_ON_UNMODIFIED_MIN_REGIME_EXIT_SCORE=0.08 to the shared portfolio_engine sizing branch. The patch changed only whether the existing non-stacking risk_on_unmodified 1.25x multiplier fired. It was reverted after fixed-window testing because EV regressed in late_strong and old_thin while mid_weak was unchanged.",
+  "component": "quant/constants.py, quant/portfolio_engine.py (temporary patch reverted after rejection)",
+  "parameters": {
+    "single_causal_variable": "minimum regime_exit_score for risk_on_unmodified risk lift",
+    "old_value": "no minimum score beyond regime_exit_bucket == risk_on",
+    "tested_value": 0.08,
+    "risk_multiplier": 1.25,
+    "stacking_policy": "unchanged; applies only when no other sizing rule fired",
+    "rolled_back_to": "existing accepted stack",
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "tradeable universe"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape where low-score risk_on winners still mattered",
+    "mid_weak": "rotation-heavy bull where the threshold did not change realized trades",
+    "old_thin": "mixed-to-weak older tape where removing the low-score lift reduced winner capture more than it reduced losses"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2134,
+      "sharpe_daily": 4.22,
+      "total_pnl": 52449.97,
+      "total_return_pct": 0.5245,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2113,
+      "sharpe_daily": 1.26,
+      "total_pnl": 16772.15,
+      "total_return_pct": 0.1677,
+      "max_drawdown_pct": 0.0591,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.1801,
+      "sharpe_daily": 4.19,
+      "total_pnl": 52027.77,
+      "total_return_pct": 0.5203,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1916,
+      "sharpe_daily": 1.23,
+      "total_pnl": 15578.15,
+      "total_return_pct": 0.1558,
+      "max_drawdown_pct": 0.0592,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": -0.0333,
+      "sharpe_daily": -0.03,
+      "total_pnl": -422.2,
+      "total_return_pct": -0.0042,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": -0.0197,
+      "sharpe_daily": -0.03,
+      "total_pnl": -1194.0,
+      "total_return_pct": -0.0119,
+      "max_drawdown_pct": 0.0001,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.053,
+      "total_pnl_delta_sum": -1616.2,
+      "baseline_total_pnl_sum": 107454.71,
+      "total_pnl_delta_pct": -0.015041,
+      "ev_windows_improved": 0,
+      "ev_windows_unchanged": 1,
+      "ev_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0001,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Rejected: EV regressed in 2/3 fixed windows, aggregate EV fell -0.0530, and aggregate PnL fell -$1,616.20. Trade count, win rate, and survival did not improve."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tested deterministic shared sizing alpha instead of LLM behavior."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "history_guardrails": {
+    "not_repeating_simple_risk_on_leverage_above_1_25": "This did not raise the accepted 1.25x multiplier; it tested a stricter eligibility discriminator.",
+    "not_repeating_slot_or_sector_priority": "No slot capacity, candidate ordering, or sector priority changed.",
+    "not_repeating_technology_breakout": "The tested discriminator applied to plain unmodified risk_on inventory, not Technology breakout promotion."
+  },
+  "rejection_reason": "The 0.08 score threshold removed useful low-score risk_on winner exposure in late_strong and old_thin. The existing broad non-stacking risk_on_unmodified rule remains better than this simple score gate.",
+  "next_retry_requires": [
+    "Do not retry nearby regime_exit_score thresholds for risk_on_unmodified eligibility without a new tail-risk or event discriminator.",
+    "A valid retry must explain why low-score risk_on winners should be separated without cutting the late_strong and old_thin winner capture observed here.",
+    "Forward evidence or a richer state variable is needed before narrowing the accepted risk_on_unmodified lift."
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260429-021.json",
+    "docs/experiments/tickets/exp-20260429-021.json",
+    "data/experiments/exp-20260429-021/late_strong_result.json",
+    "data/experiments/exp-20260429-021/mid_weak_result.json",
+    "data/experiments/exp-20260429-021/old_thin_result.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

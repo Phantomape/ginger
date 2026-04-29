@@ -1,0 +1,44 @@
+{
+  "experiment_id": "exp-20260429-001",
+  "title": "Max position count allocation replay",
+  "status": "completed",
+  "lane": "alpha_search",
+  "hypothesis": "After the accepted 40% initial cap and 50% day-2 add-on, the portfolio may need fewer slots for concentration or more slots for capital deployment than the current MAX_POSITIONS=5.",
+  "change_type": "capital_allocation",
+  "single_causal_variable": "MAX_POSITIONS",
+  "baseline_result_file": "data/backtest_results_20260428.json",
+  "artifact": "data\\experiments\\exp-20260429-001\\exp_20260429_001_max_positions_allocation.json",
+  "log": "docs\\experiments\\logs\\exp-20260429-001.json",
+  "evaluation_windows": [
+    {
+      "label": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "label": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "label": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "acceptance_rule": "Gate 4 plus three fixed-window robustness; production promotion requires constants/shared-policy update.",
+  "decision": "rejected",
+  "rejection_reason": "MAX_POSITIONS=5 remained the best robust setting; fewer slots cut profitable exposure and more slots admitted weaker marginal trades.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "created_at": "2026-04-29T00:10:55.943543+00:00",
+  "completed_at": "2026-04-29T00:10:55.951522+00:00"
+}

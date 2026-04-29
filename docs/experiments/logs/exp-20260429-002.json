@@ -1,0 +1,875 @@
+{
+  "experiment_id": "exp-20260429-002",
+  "created_at": "2026-04-29T01:10:00.094970+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "entry_source_replay",
+  "hypothesis": "Sector-relative persistence candidates may add executable alpha when replayed through real slot, gap-cancel, sizing, add-on, and exit mechanics.",
+  "why_tested": "LLM soft ranking remains sample-limited, and recent global allocation and simple universe-expansion attempts were rejected. Prior shadow audit showed positive mid/old 10-20 day forward marks, but no slot-aware portfolio replay.",
+  "parameters": {
+    "single_causal_variable": "enable sector_persistence_long entry source",
+    "strategy": "sector_persistence_long",
+    "sector_persistence_trigger": {
+      "top_sectors_per_day": 2,
+      "sector_equal_weight_20d_return_minus_spy_gte": 0.015,
+      "sector_equal_weight_60d_return_minus_spy_gte": 0.025,
+      "ticker_20d_return_minus_sector_20d_gte": 0.0,
+      "close_above_50d_ma": true,
+      "volume_ratio_gte": 0.85
+    },
+    "locked_variables": [
+      "production A/B signal generation",
+      "risk multipliers",
+      "MAX_POSITION_PCT=0.40",
+      "MAX_POSITIONS=5",
+      "MAX_PORTFOLIO_HEAT=0.08",
+      "MAX_PER_SECTOR=2",
+      "upside/adverse gap cancels",
+      "day-2 add-on trigger/fraction/cap",
+      "all existing exits",
+      "scarce-slot breakout deferral",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "strategy_vs_spy_pct": 0.3627,
+      "strategy_vs_qqq_pct": 0.3588,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "tail_loss_share": 0.4923,
+      "pnl_per_trade_usd": 2193.58,
+      "pnl_per_calendar_slot_day_usd": 136.65,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 6,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      },
+      "sector_persistence_strategy": {},
+      "by_strategy": {
+        "breakout_long": {
+          "trade_count": 12,
+          "wins": 10,
+          "losses": 2,
+          "win_rate": 0.8333,
+          "avg_pnl_pct_net": 0.067,
+          "profit_factor": 12.538,
+          "avg_R": 1.855,
+          "total_pnl_usd": 25398.07
+        },
+        "trend_long": {
+          "trade_count": 7,
+          "wins": 5,
+          "losses": 2,
+          "win_rate": 0.7143,
+          "avg_pnl_pct_net": 0.0792,
+          "profit_factor": 6.69,
+          "avg_R": 2.411,
+          "total_pnl_usd": 16279.96
+        }
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "strategy_vs_spy_pct": 0.0467,
+      "strategy_vs_qqq_pct": -0.034,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.471,
+      "pnl_per_trade_usd": 1433.74,
+      "pnl_per_calendar_slot_day_usd": 66.91,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      },
+      "sector_persistence_strategy": {},
+      "by_strategy": {
+        "trend_long": {
+          "trade_count": 14,
+          "wins": 8,
+          "losses": 6,
+          "win_rate": 0.5714,
+          "avg_pnl_pct_net": 0.0725,
+          "profit_factor": 4.364,
+          "avg_R": 1.181,
+          "total_pnl_usd": 21569.65
+        },
+        "breakout_long": {
+          "trade_count": 7,
+          "wins": 3,
+          "losses": 4,
+          "win_rate": 0.4286,
+          "avg_pnl_pct_net": 0.0119,
+          "profit_factor": 1.485,
+          "avg_R": 0.629,
+          "total_pnl_usd": 8538.84
+        }
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "strategy_vs_spy_pct": 0.2094,
+      "strategy_vs_qqq_pct": 0.2171,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4047,
+      "pnl_per_trade_usd": 646.41,
+      "pnl_per_calendar_slot_day_usd": 30.92,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      },
+      "sector_persistence_strategy": {},
+      "by_strategy": {
+        "breakout_long": {
+          "trade_count": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_rate": 0.3333,
+          "avg_pnl_pct_net": -0.0035,
+          "profit_factor": 0.866,
+          "avg_R": -0.225,
+          "total_pnl_usd": 1582.72
+        },
+        "trend_long": {
+          "trade_count": 19,
+          "wins": 8,
+          "losses": 11,
+          "win_rate": 0.4211,
+          "avg_pnl_pct_net": 0.0233,
+          "profit_factor": 1.91,
+          "avg_R": 0.427,
+          "total_pnl_usd": 12638.37
+        }
+      }
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.3254,
+      "sharpe_daily": 1.97,
+      "total_pnl": 16522.24,
+      "total_return_pct": 0.1652,
+      "strategy_vs_spy_pct": 0.1111,
+      "strategy_vs_qqq_pct": 0.1073,
+      "max_drawdown_pct": 0.0428,
+      "win_rate": 0.4419,
+      "trade_count": 43,
+      "survival_rate": 0.525,
+      "tail_loss_share": 0.5254,
+      "pnl_per_trade_usd": 384.24,
+      "pnl_per_calendar_slot_day_usd": 25.15,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 4,
+        "entered": 43,
+        "gap_cancel": 10,
+        "no_future_fill": 1,
+        "no_shares": 5,
+        "scarce_slot_breakout_deferred": 5,
+        "slot_sliced": 16
+      },
+      "sector_persistence_strategy": {
+        "trade_count": 35,
+        "wins": 12,
+        "losses": 23,
+        "win_rate": 0.3429,
+        "avg_pnl_pct_net": -0.0031,
+        "profit_factor": 0.91,
+        "avg_R": -0.069,
+        "total_pnl_usd": 166.82
+      },
+      "by_strategy": {
+        "sector_persistence_long": {
+          "trade_count": 35,
+          "wins": 12,
+          "losses": 23,
+          "win_rate": 0.3429,
+          "avg_pnl_pct_net": -0.0031,
+          "profit_factor": 0.91,
+          "avg_R": -0.069,
+          "total_pnl_usd": 166.82
+        },
+        "trend_long": {
+          "trade_count": 4,
+          "wins": 3,
+          "losses": 1,
+          "win_rate": 0.75,
+          "avg_pnl_pct_net": 0.0988,
+          "profit_factor": 7.51,
+          "avg_R": 2.48,
+          "total_pnl_usd": 11129.45
+        },
+        "breakout_long": {
+          "trade_count": 4,
+          "wins": 4,
+          "losses": 0,
+          "win_rate": 1.0,
+          "avg_pnl_pct_net": 0.0389,
+          "profit_factor": Infinity,
+          "avg_R": 1.181,
+          "total_pnl_usd": 5225.97
+        }
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 0.105,
+      "sharpe_daily": 0.9,
+      "total_pnl": 11666.08,
+      "total_return_pct": 0.1167,
+      "strategy_vs_spy_pct": -0.1377,
+      "strategy_vs_qqq_pct": -0.2184,
+      "max_drawdown_pct": 0.0501,
+      "win_rate": 0.4286,
+      "trade_count": 42,
+      "survival_rate": 0.5077,
+      "tail_loss_share": 0.5069,
+      "pnl_per_trade_usd": 277.76,
+      "pnl_per_calendar_slot_day_usd": 14.75,
+      "entry_reason_counts": {
+        "entered": 42,
+        "gap_cancel": 7,
+        "no_shares": 1,
+        "scarce_slot_breakout_deferred": 9,
+        "slot_sliced": 40
+      },
+      "sector_persistence_strategy": {
+        "trade_count": 34,
+        "wins": 13,
+        "losses": 21,
+        "win_rate": 0.3824,
+        "avg_pnl_pct_net": 0.0163,
+        "profit_factor": 1.454,
+        "avg_R": 0.085,
+        "total_pnl_usd": -1425.51
+      },
+      "by_strategy": {
+        "sector_persistence_long": {
+          "trade_count": 34,
+          "wins": 13,
+          "losses": 21,
+          "win_rate": 0.3824,
+          "avg_pnl_pct_net": 0.0163,
+          "profit_factor": 1.454,
+          "avg_R": 0.085,
+          "total_pnl_usd": -1425.51
+        },
+        "trend_long": {
+          "trade_count": 8,
+          "wins": 5,
+          "losses": 3,
+          "win_rate": 0.625,
+          "avg_pnl_pct_net": 0.0884,
+          "profit_factor": 4.976,
+          "avg_R": 1.296,
+          "total_pnl_usd": 13091.59
+        }
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.0221,
+      "sharpe_daily": 0.55,
+      "total_pnl": 4012.27,
+      "total_return_pct": 0.0401,
+      "strategy_vs_spy_pct": 0.1074,
+      "strategy_vs_qqq_pct": 0.115,
+      "max_drawdown_pct": 0.0471,
+      "win_rate": 0.2564,
+      "trade_count": 39,
+      "survival_rate": 0.6312,
+      "tail_loss_share": 0.5087,
+      "pnl_per_trade_usd": 102.88,
+      "pnl_per_calendar_slot_day_usd": 4.89,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 39,
+        "gap_cancel": 8,
+        "no_shares": 4,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 29
+      },
+      "sector_persistence_strategy": {
+        "trade_count": 28,
+        "wins": 6,
+        "losses": 22,
+        "win_rate": 0.2143,
+        "avg_pnl_pct_net": -0.0253,
+        "profit_factor": 0.522,
+        "avg_R": -0.542,
+        "total_pnl_usd": -3138.2
+      },
+      "by_strategy": {
+        "sector_persistence_long": {
+          "trade_count": 28,
+          "wins": 6,
+          "losses": 22,
+          "win_rate": 0.2143,
+          "avg_pnl_pct_net": -0.0253,
+          "profit_factor": 0.522,
+          "avg_R": -0.542,
+          "total_pnl_usd": -3138.2
+        },
+        "trend_long": {
+          "trade_count": 9,
+          "wins": 3,
+          "losses": 6,
+          "win_rate": 0.3333,
+          "avg_pnl_pct_net": 0.0095,
+          "profit_factor": 1.249,
+          "avg_R": -0.028,
+          "total_pnl_usd": 6429.94
+        },
+        "breakout_long": {
+          "trade_count": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_rate": 0.5,
+          "avg_pnl_pct_net": 0.0431,
+          "profit_factor": 3.353,
+          "avg_R": 0.249,
+          "total_pnl_usd": 720.53
+        }
+      }
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": -1.4585,
+      "sharpe_daily": -2.31,
+      "total_pnl": -25155.79,
+      "total_return_pct": -0.2516,
+      "strategy_vs_spy_pct": -0.2516,
+      "strategy_vs_qqq_pct": -0.2515,
+      "max_drawdown_pct": 0.0099,
+      "win_rate": -0.3476,
+      "trade_count": 24,
+      "survival_rate": -0.3181,
+      "tail_loss_share": 0.0331,
+      "pnl_per_trade_usd": -1809.34,
+      "pnl_per_calendar_slot_day_usd": -111.5,
+      "entry_reason_counts": null,
+      "sector_persistence_strategy": null,
+      "by_strategy": null
+    },
+    "mid_weak": {
+      "expected_value_score": -0.6688,
+      "sharpe_daily": -1.67,
+      "total_pnl": -18442.41,
+      "total_return_pct": -0.1844,
+      "strategy_vs_spy_pct": -0.1844,
+      "strategy_vs_qqq_pct": -0.1844,
+      "max_drawdown_pct": 0.009,
+      "win_rate": -0.0952,
+      "trade_count": 21,
+      "survival_rate": -0.2848,
+      "tail_loss_share": 0.0359,
+      "pnl_per_trade_usd": -1155.98,
+      "pnl_per_calendar_slot_day_usd": -52.16,
+      "entry_reason_counts": null,
+      "sector_persistence_strategy": null,
+      "by_strategy": null
+    },
+    "old_thin": {
+      "expected_value_score": -0.1613,
+      "sharpe_daily": -0.74,
+      "total_pnl": -10208.82,
+      "total_return_pct": -0.1021,
+      "strategy_vs_spy_pct": -0.102,
+      "strategy_vs_qqq_pct": -0.1021,
+      "max_drawdown_pct": -0.0018,
+      "win_rate": -0.1527,
+      "trade_count": 17,
+      "survival_rate": -0.2855,
+      "tail_loss_share": 0.104,
+      "pnl_per_trade_usd": -543.53,
+      "pnl_per_calendar_slot_day_usd": -26.03,
+      "entry_reason_counts": null,
+      "sector_persistence_strategy": null,
+      "by_strategy": null
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -2.2886,
+      "total_pnl_delta_sum": -53807.02,
+      "baseline_total_pnl_sum": 86007.61,
+      "total_pnl_delta_pct": -0.625608,
+      "windows_improved": 0,
+      "windows_regressed": 3,
+      "max_drawdown_delta_max": 0.0099,
+      "trade_count_delta_sum": 62,
+      "win_rate_delta_min": -0.3476,
+      "sector_persistence_trade_count": 97
+    },
+    "gate4_basis": "Rejected because the executable sector-persistence entry source did not improve a majority of fixed windows without regression."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data is still insufficient, so this tested a deterministic, production-replayable entry alpha instead."
+  },
+  "history_guardrails": {
+    "not_repeating_addon_threshold_tuning": true,
+    "not_repeating_global_slot_count": true,
+    "not_repeating_simple_etf_expansion": true,
+    "not_repeating_ohlcv_only_pullback_reclaim": true,
+    "mechanism_family": "sector-relative persistence entry replay"
+  },
+  "rows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "before": {
+        "expected_value_score": 1.7839,
+        "sharpe_daily": 4.28,
+        "total_pnl": 41678.03,
+        "total_return_pct": 0.4168,
+        "strategy_vs_spy_pct": 0.3627,
+        "strategy_vs_qqq_pct": 0.3588,
+        "max_drawdown_pct": 0.0329,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431,
+        "tail_loss_share": 0.4923,
+        "pnl_per_trade_usd": 2193.58,
+        "pnl_per_calendar_slot_day_usd": 136.65,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 6,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        },
+        "sector_persistence_strategy": {},
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.067,
+            "profit_factor": 12.538,
+            "avg_R": 1.855,
+            "total_pnl_usd": 25398.07
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0792,
+            "profit_factor": 6.69,
+            "avg_R": 2.411,
+            "total_pnl_usd": 16279.96
+          }
+        }
+      },
+      "after": {
+        "expected_value_score": 0.3254,
+        "sharpe_daily": 1.97,
+        "total_pnl": 16522.24,
+        "total_return_pct": 0.1652,
+        "strategy_vs_spy_pct": 0.1111,
+        "strategy_vs_qqq_pct": 0.1073,
+        "max_drawdown_pct": 0.0428,
+        "win_rate": 0.4419,
+        "trade_count": 43,
+        "survival_rate": 0.525,
+        "tail_loss_share": 0.5254,
+        "pnl_per_trade_usd": 384.24,
+        "pnl_per_calendar_slot_day_usd": 25.15,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 4,
+          "entered": 43,
+          "gap_cancel": 10,
+          "no_future_fill": 1,
+          "no_shares": 5,
+          "scarce_slot_breakout_deferred": 5,
+          "slot_sliced": 16
+        },
+        "sector_persistence_strategy": {
+          "trade_count": 35,
+          "wins": 12,
+          "losses": 23,
+          "win_rate": 0.3429,
+          "avg_pnl_pct_net": -0.0031,
+          "profit_factor": 0.91,
+          "avg_R": -0.069,
+          "total_pnl_usd": 166.82
+        },
+        "by_strategy": {
+          "sector_persistence_long": {
+            "trade_count": 35,
+            "wins": 12,
+            "losses": 23,
+            "win_rate": 0.3429,
+            "avg_pnl_pct_net": -0.0031,
+            "profit_factor": 0.91,
+            "avg_R": -0.069,
+            "total_pnl_usd": 166.82
+          },
+          "trend_long": {
+            "trade_count": 4,
+            "wins": 3,
+            "losses": 1,
+            "win_rate": 0.75,
+            "avg_pnl_pct_net": 0.0988,
+            "profit_factor": 7.51,
+            "avg_R": 2.48,
+            "total_pnl_usd": 11129.45
+          },
+          "breakout_long": {
+            "trade_count": 4,
+            "wins": 4,
+            "losses": 0,
+            "win_rate": 1.0,
+            "avg_pnl_pct_net": 0.0389,
+            "profit_factor": Infinity,
+            "avg_R": 1.181,
+            "total_pnl_usd": 5225.97
+          }
+        }
+      },
+      "delta": {
+        "expected_value_score": -1.4585,
+        "sharpe_daily": -2.31,
+        "total_pnl": -25155.79,
+        "total_return_pct": -0.2516,
+        "strategy_vs_spy_pct": -0.2516,
+        "strategy_vs_qqq_pct": -0.2515,
+        "max_drawdown_pct": 0.0099,
+        "win_rate": -0.3476,
+        "trade_count": 24,
+        "survival_rate": -0.3181,
+        "tail_loss_share": 0.0331,
+        "pnl_per_trade_usd": -1809.34,
+        "pnl_per_calendar_slot_day_usd": -111.5,
+        "entry_reason_counts": null,
+        "sector_persistence_strategy": null,
+        "by_strategy": null
+      }
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "before": {
+        "expected_value_score": 0.7738,
+        "sharpe_daily": 2.57,
+        "total_pnl": 30108.49,
+        "total_return_pct": 0.3011,
+        "strategy_vs_spy_pct": 0.0467,
+        "strategy_vs_qqq_pct": -0.034,
+        "max_drawdown_pct": 0.0411,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.471,
+        "pnl_per_trade_usd": 1433.74,
+        "pnl_per_calendar_slot_day_usd": 66.91,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        },
+        "sector_persistence_strategy": {},
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0725,
+            "profit_factor": 4.364,
+            "avg_R": 1.181,
+            "total_pnl_usd": 21569.65
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0119,
+            "profit_factor": 1.485,
+            "avg_R": 0.629,
+            "total_pnl_usd": 8538.84
+          }
+        }
+      },
+      "after": {
+        "expected_value_score": 0.105,
+        "sharpe_daily": 0.9,
+        "total_pnl": 11666.08,
+        "total_return_pct": 0.1167,
+        "strategy_vs_spy_pct": -0.1377,
+        "strategy_vs_qqq_pct": -0.2184,
+        "max_drawdown_pct": 0.0501,
+        "win_rate": 0.4286,
+        "trade_count": 42,
+        "survival_rate": 0.5077,
+        "tail_loss_share": 0.5069,
+        "pnl_per_trade_usd": 277.76,
+        "pnl_per_calendar_slot_day_usd": 14.75,
+        "entry_reason_counts": {
+          "entered": 42,
+          "gap_cancel": 7,
+          "no_shares": 1,
+          "scarce_slot_breakout_deferred": 9,
+          "slot_sliced": 40
+        },
+        "sector_persistence_strategy": {
+          "trade_count": 34,
+          "wins": 13,
+          "losses": 21,
+          "win_rate": 0.3824,
+          "avg_pnl_pct_net": 0.0163,
+          "profit_factor": 1.454,
+          "avg_R": 0.085,
+          "total_pnl_usd": -1425.51
+        },
+        "by_strategy": {
+          "sector_persistence_long": {
+            "trade_count": 34,
+            "wins": 13,
+            "losses": 21,
+            "win_rate": 0.3824,
+            "avg_pnl_pct_net": 0.0163,
+            "profit_factor": 1.454,
+            "avg_R": 0.085,
+            "total_pnl_usd": -1425.51
+          },
+          "trend_long": {
+            "trade_count": 8,
+            "wins": 5,
+            "losses": 3,
+            "win_rate": 0.625,
+            "avg_pnl_pct_net": 0.0884,
+            "profit_factor": 4.976,
+            "avg_R": 1.296,
+            "total_pnl_usd": 13091.59
+          }
+        }
+      },
+      "delta": {
+        "expected_value_score": -0.6688,
+        "sharpe_daily": -1.67,
+        "total_pnl": -18442.41,
+        "total_return_pct": -0.1844,
+        "strategy_vs_spy_pct": -0.1844,
+        "strategy_vs_qqq_pct": -0.1844,
+        "max_drawdown_pct": 0.009,
+        "win_rate": -0.0952,
+        "trade_count": 21,
+        "survival_rate": -0.2848,
+        "tail_loss_share": 0.0359,
+        "pnl_per_trade_usd": -1155.98,
+        "pnl_per_calendar_slot_day_usd": -52.16,
+        "entry_reason_counts": null,
+        "sector_persistence_strategy": null,
+        "by_strategy": null
+      }
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "before": {
+        "expected_value_score": 0.1834,
+        "sharpe_daily": 1.29,
+        "total_pnl": 14221.09,
+        "total_return_pct": 0.1422,
+        "strategy_vs_spy_pct": 0.2094,
+        "strategy_vs_qqq_pct": 0.2171,
+        "max_drawdown_pct": 0.0489,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4047,
+        "pnl_per_trade_usd": 646.41,
+        "pnl_per_calendar_slot_day_usd": 30.92,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        },
+        "sector_persistence_strategy": {},
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.0035,
+            "profit_factor": 0.866,
+            "avg_R": -0.225,
+            "total_pnl_usd": 1582.72
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0233,
+            "profit_factor": 1.91,
+            "avg_R": 0.427,
+            "total_pnl_usd": 12638.37
+          }
+        }
+      },
+      "after": {
+        "expected_value_score": 0.0221,
+        "sharpe_daily": 0.55,
+        "total_pnl": 4012.27,
+        "total_return_pct": 0.0401,
+        "strategy_vs_spy_pct": 0.1074,
+        "strategy_vs_qqq_pct": 0.115,
+        "max_drawdown_pct": 0.0471,
+        "win_rate": 0.2564,
+        "trade_count": 39,
+        "survival_rate": 0.6312,
+        "tail_loss_share": 0.5087,
+        "pnl_per_trade_usd": 102.88,
+        "pnl_per_calendar_slot_day_usd": 4.89,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 39,
+          "gap_cancel": 8,
+          "no_shares": 4,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 29
+        },
+        "sector_persistence_strategy": {
+          "trade_count": 28,
+          "wins": 6,
+          "losses": 22,
+          "win_rate": 0.2143,
+          "avg_pnl_pct_net": -0.0253,
+          "profit_factor": 0.522,
+          "avg_R": -0.542,
+          "total_pnl_usd": -3138.2
+        },
+        "by_strategy": {
+          "sector_persistence_long": {
+            "trade_count": 28,
+            "wins": 6,
+            "losses": 22,
+            "win_rate": 0.2143,
+            "avg_pnl_pct_net": -0.0253,
+            "profit_factor": 0.522,
+            "avg_R": -0.542,
+            "total_pnl_usd": -3138.2
+          },
+          "trend_long": {
+            "trade_count": 9,
+            "wins": 3,
+            "losses": 6,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": 0.0095,
+            "profit_factor": 1.249,
+            "avg_R": -0.028,
+            "total_pnl_usd": 6429.94
+          },
+          "breakout_long": {
+            "trade_count": 2,
+            "wins": 1,
+            "losses": 1,
+            "win_rate": 0.5,
+            "avg_pnl_pct_net": 0.0431,
+            "profit_factor": 3.353,
+            "avg_R": 0.249,
+            "total_pnl_usd": 720.53
+          }
+        }
+      },
+      "delta": {
+        "expected_value_score": -0.1613,
+        "sharpe_daily": -0.74,
+        "total_pnl": -10208.82,
+        "total_return_pct": -0.1021,
+        "strategy_vs_spy_pct": -0.102,
+        "strategy_vs_qqq_pct": -0.1021,
+        "max_drawdown_pct": -0.0018,
+        "win_rate": -0.1527,
+        "trade_count": 17,
+        "survival_rate": -0.2855,
+        "tail_loss_share": 0.104,
+        "pnl_per_trade_usd": -543.53,
+        "pnl_per_calendar_slot_day_usd": -26.03,
+        "entry_reason_counts": null,
+        "sector_persistence_strategy": null,
+        "by_strategy": null
+      }
+    }
+  ],
+  "rejection_reason": "Sector-relative persistence did not survive slot-aware portfolio replay.",
+  "next_retry_requires": [
+    "Do not promote sector-persistence as an entry source unless a future replay has an orthogonal state discriminator.",
+    "A valid retry needs external universe breadth or event context, not nearby threshold nudges.",
+    "If accepted in a later run, implement as shared production/backtest policy before promotion."
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "experiment_id": "exp-20260429-018",
+  "timestamp": "2026-04-29T12:10:00Z",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected risk_on candidates that have no other sizing modifier deserve a modest 1.25x risk budget because the accepted de-risk/boost stack has already removed known weak sleeves and left this plain risk-on inventory positive across all fixed windows.",
+  "change_summary": "Added shared portfolio_engine sizing for risk_on signals with no other non-neutral sizing rule. The rule does not stack on accepted 1.5x Commodities/Financials boosts or 0.25x/0x haircuts. Entry, ranking, exits, slots, add-ons, LLM/news replay, and earnings behavior stayed unchanged.",
+  "component": "quant/constants.py, quant/portfolio_engine.py, quant/backtester.py, quant/test_production_parity.py",
+  "parameters": {
+    "single_causal_variable": "risk_on + no existing sizing modifier risk multiplier",
+    "old_value": 1.0,
+    "new_value": 1.25,
+    "stacking_policy": "apply only when all existing sizing multipliers are neutral",
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.0154,
+      "sharpe_daily": 4.27,
+      "total_pnl": 47200.59,
+      "total_return_pct": 0.472,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9147,
+      "sharpe_daily": 2.5,
+      "total_pnl": 36590.41,
+      "total_return_pct": 0.3659,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1969,
+      "sharpe_daily": 1.29,
+      "total_pnl": 15258.72,
+      "total_return_pct": 0.1526,
+      "max_drawdown_pct": 0.051,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2134,
+      "sharpe_daily": 4.22,
+      "total_pnl": 52449.97,
+      "total_return_pct": 0.5245,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "total_return_pct": 0.3823,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2113,
+      "sharpe_daily": 1.26,
+      "total_pnl": 16772.15,
+      "total_return_pct": 0.1677,
+      "max_drawdown_pct": 0.0591,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.198,
+      "sharpe_daily": -0.05,
+      "total_pnl": 5249.38,
+      "total_return_pct": 0.0525,
+      "max_drawdown_pct": 0.0072,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0525,
+      "sharpe_daily": 0.03,
+      "total_pnl": 1642.18,
+      "total_return_pct": 0.0164,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0144,
+      "sharpe_daily": -0.03,
+      "total_pnl": 1513.43,
+      "total_return_pct": 0.0151,
+      "max_drawdown_pct": 0.0081,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.2649,
+      "total_pnl_delta_sum": 8404.99,
+      "baseline_total_pnl_sum": 99049.72,
+      "total_pnl_delta_pct": 0.084856,
+      "windows_improved": 3,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0081,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Accepted: EV improved in all three fixed windows and aggregate PnL improved by 8.49%, while trade count and win rate were unchanged."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data remains insufficient, so this tested deterministic shared sizing alpha instead."
+  },
+  "history_guardrails": {
+    "not_repeating_risk_on_tqs_relaxation": "This does not relax low-TQS haircuts; it applies only after no other sizing rule fired.",
+    "not_repeating_financials_or_commodities_2x": "The rule explicitly does not stack on existing 1.5x sector boosts.",
+    "not_repeating_slot_unlock": "No capacity, ordering, or entry gate changed."
+  },
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not raise this multiplier above 1.25 without forward evidence or a tail-risk metric.",
+    "Monitor drawdown because max drawdown rose by up to 0.81 percentage points.",
+    "Do not stack this rule on existing sector boosts without a separate experiment."
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260429-018.json",
+    "docs/experiments/tickets/exp-20260429-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

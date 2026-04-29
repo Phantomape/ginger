@@ -1,0 +1,53 @@
+{
+  "experiment_id": "exp-20260429-017",
+  "status": "claimed",
+  "lane": "alpha_discovery",
+  "owner": "codex-disable-trailing-partial-reduce",
+  "hypothesis": "关闭生产 TRAILING_STOP 触发的 daily partial reduce 可以避免重复削减赢家仓位，并提升固定窗口 expected_value_score。",
+  "change_type": "exit_rule",
+  "single_causal_variable": "disable trailing-stop partial-reduce actions",
+  "baseline_result_file": "data/backtest_results_20260429.json",
+  "allowed_write_scope": [
+    "quant/production_parity.py",
+    "quant/preflight_validator.py",
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "quant/test_quant.py",
+    "docs/production_backtest_parity.md",
+    "quant/experiments/exp-20260429-011_trailing_partial_reduce_parity.py",
+    "data/experiments/exp-20260429-011/exp-20260429-011_trailing_partial_reduce_parity.json",
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "data/open_positions.json",
+    "data/pending_actions.json"
+  ],
+  "locked_variables": [
+    "disable trailing-stop partial-reduce actions"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "accepted only if disabling trailing-stop partial-reduce improves expected_value_score or PnL in a majority of fixed windows under --replay-partial-reduces, with production/backtest shared-policy parity and tests updated",
+  "created_at": "2026-04-29T17:28:57+00:00",
+  "claimed_at": "2026-04-29T17:29:04+00:00",
+  "completed_at": null,
+  "result": null
+}

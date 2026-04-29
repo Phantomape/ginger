@@ -1,0 +1,191 @@
+{
+  "experiment_id": "exp-20260428-033",
+  "timestamp": "2026-04-28T20:31:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "experiment_type": "entry_execution_quality",
+  "change_type": "alpha_search",
+  "hypothesis": "Next-open fills that remain above the planned stop but have already consumed most of the initial stop distance may be lower-quality entries; cancelling them could improve capital efficiency without changing signal generation or exits.",
+  "why_tested": "LLM soft ranking data remains insufficient, and recent add-on/gap/cap local threshold searches are exhausted. This tests a different production-observable execution-quality variable instead of waiting on LLM data.",
+  "parameters": {
+    "single_causal_variable": "near-stop next-open entry cancel threshold",
+    "baseline": {
+      "CANCEL_GAP_PCT": 0.015,
+      "ADVERSE_GAP_CANCEL_PCT": 0.02,
+      "near_stop_risk_remaining_threshold": null
+    },
+    "tested_thresholds": {
+      "near_stop_risk_remaining_le_15pct": 0.15,
+      "near_stop_risk_remaining_le_25pct": 0.25,
+      "near_stop_risk_remaining_le_35pct": 0.35,
+      "near_stop_risk_remaining_le_50pct": 0.5
+    },
+    "locked_variables": [
+      "signal generation",
+      "candidate ordering",
+      "risk multipliers",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_POSITIONS",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "upside gap cancel threshold",
+      "adverse gap cancel threshold",
+      "day-2 add-on trigger and fraction",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "best_variant": "near_stop_risk_remaining_le_15pct",
+    "best_threshold": 0.15,
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "total_return_pct": 0.4168,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "total_return_pct": 0.3011,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "total_return_pct": 0.1422,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "near_stop_risk_remaining_le_15pct",
+    "best_threshold": 0.15,
+    "late_strong": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "old_thin": {
+      "expected_value_score_delta": 0.0,
+      "total_pnl_delta": 0.0,
+      "sharpe_daily_delta": 0.0,
+      "max_drawdown_pct_delta": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "baseline_total_pnl_sum": 86007.61,
+      "total_pnl_delta_pct": 0.0,
+      "windows_improved": 0,
+      "windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "harmful_variants": {
+      "near_stop_risk_remaining_le_35pct": "late_strong EV -0.2531 and PnL -$4,154.41; mid_weak/old_thin unchanged",
+      "near_stop_risk_remaining_le_50pct": "same as 35pct; one extra late_strong adverse cancel removed a profitable/replacement path"
+    },
+    "gate4_basis": "Rejected because the best variants were inert and the active variants damaged late_strong. No Gate 4 criterion passed."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft ranking remains sample-limited, so this deterministic execution-quality alpha was tested instead."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "rejection_reason": "Near-stop next-open cancellation does not improve entry quality. Loose thresholds only create one active extra cancel in late_strong and materially reduce EV/PnL; tighter thresholds are inert.",
+  "next_retry_requires": [
+    "Do not retry nearby risk-distance thresholds without a new discriminator.",
+    "A valid retry needs intraday reclaim evidence, fresh event context, or forward/paper evidence.",
+    "Keep the accepted 2% adverse-gap cancel unchanged unless a separate replay passes all windows."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260428_033_near_stop_entry_cancel.py",
+    "data/experiments/exp-20260428-033/exp_20260428_033_near_stop_entry_cancel.json",
+    "docs/experiments/logs/exp-20260428-033.json"
+  ],
+  "notes": "Alpha search, not measurement repair. Production strategy code was unchanged."
+}
