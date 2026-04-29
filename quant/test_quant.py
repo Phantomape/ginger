@@ -3831,24 +3831,28 @@ def test_preflight_outputs_required_fields():
         )
 
 
-def test_preflight_suggested_reduce_pct_populated_for_high_reduce():
+def test_preflight_trailing_stop_only_no_longer_forces_reduce():
     """
-    Contract: HIGH_REDUCE positions must have a pre-computed reduce % in
-    suggested_reduce_pct.  If missing, LLM falls back to prose table lookup
-    (the error-prone path this field was designed to eliminate).
+    Contract: pure TRAILING_STOP no longer creates a daily HIGH_REDUCE loop.
+    Other HIGH_REDUCE rules still require pre-computed reduce percentages.
     """
     from preflight_validator import compute_account_state, enrich_positions_with_breach_status
     ts = _make_preflight_trend_signals(pnl=0.15)  # TRAILING_STOP → HIGH_REDUCE
     enrich_positions_with_breach_status(ts)
     result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
 
-    assert result["position_states"].get("TEST") == "HIGH_REDUCE", (
+    assert result["position_states"].get("TEST") == "HOLD", (
         "Expected TEST to be HIGH_REDUCE given TRAILING_STOP HIGH urgency"
     )
-    assert "TEST" in result["suggested_reduce_pct"], (
+    assert "TEST" not in result["suggested_reduce_pct"], (
         "HIGH_REDUCE position 'TEST' is missing from suggested_reduce_pct — "
         "LLM will fall back to prose table lookup"
     )
+    ts["signals"]["TEST"]["position"]["exit_signals"]["triggered_rules"] = [
+        {"rule": "ATR_STOP", "urgency": "HIGH", "message": "ATR stop hit"}
+    ]
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+    assert result["position_states"].get("TEST") == "HIGH_REDUCE"
     pct = result["suggested_reduce_pct"]["TEST"]
     assert pct in (25, 33, 50, 100), f"suggested_reduce_pct={pct} is not a valid percentage"
 
