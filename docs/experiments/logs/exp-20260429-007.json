@@ -1,0 +1,98 @@
+{
+  "experiment_id": "exp-20260429-007",
+  "timestamp": "2026-04-29T11:20:00-07:00",
+  "status": "accepted",
+  "lane": "production_backtest_parity_governance",
+  "hypothesis": "Production/backtest parity is still exposed because already-held filtering, same-day sector caps, and BEAR_SHALLOW post-enrich entry gates are implemented separately in quant/run.py and quant/backtester.py. Moving those gates into a shared helper should preserve fixed-window metrics while preventing future backtester-only or production-only drift.",
+  "change_summary": "Added production_parity.filter_entry_signal_candidates and switched both quant/run.py and quant/backtester.py to call it. Production now persists entry_filter_audit in quant_signals output, and parity tests cover already-held, sector-cap, and BEAR_SHALLOW behavior through the shared helper.",
+  "change_type": "measurement_repair_parity",
+  "component": "quant/production_parity.py, quant/run.py, quant/backtester.py, quant/test_production_parity.py, docs/production_backtest_parity.md",
+  "parameters": {
+    "single_causal_variable": "shared implementation location for pre-sizing entry candidate gates",
+    "strategy_behavior_changed": false,
+    "shared_gates": [
+      "already_held",
+      "same_day_sector_cap",
+      "bear_shallow_sector_and_tqs_gate"
+    ],
+    "locked_variables": [
+      "signal generation",
+      "risk sizing",
+      "entry open cancel",
+      "scarce-slot routing",
+      "add-ons",
+      "exit rules",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "before_metrics": {
+    "expected_behavior": "No metric movement; refactor only."
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 1.7839,
+      "sharpe_daily": 4.28,
+      "total_pnl": 41678.03,
+      "max_drawdown_pct": 0.0329,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.7738,
+      "sharpe_daily": 2.57,
+      "total_pnl": 30108.49,
+      "max_drawdown_pct": 0.0411,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.1834,
+      "sharpe_daily": 1.29,
+      "total_pnl": 14221.09,
+      "max_drawdown_pct": 0.0489,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "decision_basis": "Accepted as parity governance because the three fixed windows match the current accepted stack while duplicate adapter logic was removed from the strategy decision path."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "This refactor does not change LLM responsibilities; it prevents deterministic entry gates from drifting while LLM/news replay remains a disclosed archive-coverage gap."
+  },
+  "decision": "accepted",
+  "rejection_reason": null,
+  "verification": [
+    ".venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py quant\\test_quant.py => 299 passed",
+    ".venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --regime-aware-exit --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json => EV 1.7839, Sharpe daily 4.28, maxDD 3.29%, trades 19",
+    ".venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --regime-aware-exit --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json => EV 0.7738, Sharpe daily 2.57, maxDD 4.11%, trades 21",
+    ".venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --regime-aware-exit --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json => EV 0.1834, Sharpe daily 1.29, maxDD 4.89%, trades 22"
+  ],
+  "notes": "This is not alpha search. It removes a production/backtest drift vector that would make later alpha experiments less trustworthy."
+}

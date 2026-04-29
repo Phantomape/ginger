@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from production_parity import (  # noqa: E402
     build_followthrough_addon_actions,
     classify_entry_open_cancel,
+    filter_entry_signal_candidates,
     plan_entry_candidates,
 )
 import backtester  # noqa: E402
@@ -64,6 +65,33 @@ def test_plan_entry_candidates_accepts_backtester_position_count():
     assert [s["ticker"] for s in planned] == ["AAPL"]
     assert [s["ticker"] for s in plan["slot_sliced_signals"]] == ["NVDA"]
     assert plan["available_slots"] == 1
+
+
+def test_filter_entry_signal_candidates_matches_shared_entry_gates():
+    open_positions = {"positions": [{"ticker": "HELD", "shares": 10}]}
+    signals = [
+        {"ticker": "HELD", "sector": "Technology", "trade_quality_score": 0.95},
+        {"ticker": "A", "sector": "Technology", "trade_quality_score": 0.95},
+        {"ticker": "B", "sector": "Technology", "trade_quality_score": 0.90},
+        {"ticker": "C", "sector": "Technology", "trade_quality_score": 0.85},
+        {"ticker": "D", "sector": "Healthcare", "trade_quality_score": 0.80},
+        {"ticker": "E", "sector": "Commodities", "trade_quality_score": 0.70},
+    ]
+
+    filtered, audit = filter_entry_signal_candidates(
+        signals,
+        open_positions=open_positions,
+        market_regime="BEAR",
+        spy_pct_from_ma=-0.03,
+        qqq_pct_from_ma=-0.04,
+        max_per_sector=2,
+    )
+
+    assert [s["ticker"] for s in filtered] == ["D"]
+    assert [s["ticker"] for s in audit["already_held_dropped"]] == ["HELD"]
+    assert [s["ticker"] for s in audit["sector_cap_dropped"]] == ["C"]
+    assert [s["ticker"] for s in audit["bear_shallow_dropped"]] == ["A", "B", "E"]
+    assert audit["bear_shallow_active"] is True
 
 
 def test_build_followthrough_addon_actions_emits_day_two_add():
@@ -123,6 +151,7 @@ def test_classify_entry_open_cancel_uses_shared_gap_rules():
 def test_backtester_addon_and_slot_defaults_share_constants():
     shared_keys = [
         "MAX_POSITION_PCT",
+        "MAX_PER_SECTOR",
         "ADVERSE_GAP_CANCEL_PCT",
         "ADDON_ENABLED",
         "ADDON_CHECKPOINT_DAYS",

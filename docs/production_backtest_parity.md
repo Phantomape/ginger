@@ -31,6 +31,7 @@ in shared modules such as:
 | Position sizing | `portfolio_engine.py` | required | required | fill price may differ |
 | Portfolio heat | `portfolio_engine.py` | required | required | simulated vs latest prices |
 | Already-held handling | shared adapter policy | required | required | none |
+| Entry candidate gates | `production_parity.py` | required | required | none |
 | Entry open cancel | `production_parity.py` / signal `entry_note` | simulated next open | instruction for next-session execution | production cannot know next open until execution |
 | Scarce-slot routing | `production_parity.py` / backtester config | required | required | backtester records attribution; production emits plan |
 | Follow-through add-ons | `production_parity.py` / backtester config | schedule/execute in simulation | emit explicit `addon_actions` | fill price timing only |

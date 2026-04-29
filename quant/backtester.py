@@ -91,13 +91,18 @@ from constants import (
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
 )
 from regime_exit import compute_regime_exit_profile
-from production_parity import classify_entry_open_cancel, plan_entry_candidates
+from production_parity import (
+    classify_entry_open_cancel,
+    filter_entry_signal_candidates,
+    plan_entry_candidates,
+)
 from yfinance_bootstrap import configure_yfinance_runtime
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
     "MAX_POSITIONS":       MAX_POSITIONS,
     "MAX_POSITION_PCT":    MAX_POSITION_PCT,
+    "MAX_PER_SECTOR":      MAX_PER_SECTOR,
     "ENABLED_STRATEGIES":  ENABLED_STRATEGIES,
     "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
     "BREAKOUT_RANK_BY_52W_HIGH": BREAKOUT_RANK_BY_52W_HIGH,
@@ -1435,31 +1440,14 @@ class BacktestEngine:
                     )
                     s["regime_exit_bucket"] = exit_profile["bucket"]
                     s["regime_exit_score"] = exit_profile["score"]
-            # Production removes already-held tickers before sector-cap competition.
-            # If backtest delays that skip until entry time, a held ticker can still
-            # consume a capped sector slot and suppress the real candidate set.
-            held_tickers = {p.ticker for p in positions if p.ticker}
-            if held_tickers:
-                signals = [s for s in signals if s.get("ticker") not in held_tickers]
-            # Sector concentration cap (same as run.py)
-            _sector_counts = {}
-            _capped = []
-            for s in signals:
-                sec = s.get("sector", "Unknown")
-                _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
-                if _sector_counts[sec] <= MAX_PER_SECTOR:
-                    _capped.append(s)
-            signals = _capped
-
-            # BEAR_SHALLOW post-enrich filter (same as run.py)
-            if (regime_str == "BEAR"
-                    and spy_pct is not None and qqq_pct is not None
-                    and min(spy_pct, qqq_pct) > -0.05):
-                signals = [
-                    s for s in signals
-                    if s.get("sector") in {"Commodities", "Healthcare"}
-                    and (s.get("trade_quality_score") or 0) >= 0.75
-                ]
+            signals, entry_filter_audit = filter_entry_signal_candidates(
+                signals,
+                active_tickers={p.ticker for p in positions if p.ticker},
+                market_regime=regime_str,
+                spy_pct_from_ma=spy_pct,
+                qqq_pct_from_ma=qqq_pct,
+                max_per_sector=self.config.get("MAX_PER_SECTOR", MAX_PER_SECTOR),
+            )
 
             # Regime-adjusted risk per trade
             if regime_str == "NEUTRAL":

@@ -19,6 +19,7 @@ from constants import (
     ADDON_MIN_UNREALIZED_PCT,
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
     DEFER_BREAKOUT_WHEN_SLOTS_LTE,
+    MAX_PER_SECTOR,
     MAX_PORTFOLIO_HEAT,
     MAX_POSITIONS,
     SECOND_ADDON_CHECKPOINT_DAYS,
@@ -35,6 +36,75 @@ def _positive_positions(open_positions):
         p for p in (open_positions or {}).get("positions", [])
         if p.get("ticker") and (p.get("shares") or 0) > 0
     ]
+
+
+def filter_entry_signal_candidates(
+    signals,
+    open_positions=None,
+    active_tickers=None,
+    market_regime=None,
+    spy_pct_from_ma=None,
+    qqq_pct_from_ma=None,
+    max_per_sector=MAX_PER_SECTOR,
+):
+    """Apply shared pre-sizing entry candidate gates used by production/backtest."""
+    planned = list(signals or [])
+    audit = {
+        "signals_before_entry_filters": len(planned),
+        "already_held_dropped": [],
+        "sector_cap_dropped": [],
+        "bear_shallow_dropped": [],
+        "signals_after_entry_filters": None,
+        "max_per_sector": max_per_sector,
+        "bear_shallow_active": False,
+    }
+
+    held = set(active_tickers or [])
+    held.update(p.get("ticker") for p in _positive_positions(open_positions))
+    held.discard(None)
+    if held:
+        kept = []
+        for sig in planned:
+            if sig.get("ticker") in held:
+                audit["already_held_dropped"].append(sig)
+            else:
+                kept.append(sig)
+        planned = kept
+
+    sector_counts = {}
+    kept = []
+    for sig in planned:
+        sector = sig.get("sector", "Unknown")
+        sector_counts[sector] = sector_counts.get(sector, 0) + 1
+        if sector_counts[sector] <= max_per_sector:
+            kept.append(sig)
+        else:
+            audit["sector_cap_dropped"].append(sig)
+    planned = kept
+
+    regime = str(market_regime or "").upper()
+    bear_shallow = (
+        regime == "BEAR"
+        and spy_pct_from_ma is not None
+        and qqq_pct_from_ma is not None
+        and min(spy_pct_from_ma, qqq_pct_from_ma) > -0.05
+    )
+    audit["bear_shallow_active"] = bear_shallow
+    if bear_shallow:
+        bear_sectors = {"Commodities", "Healthcare"}
+        kept = []
+        for sig in planned:
+            if (
+                sig.get("sector") in bear_sectors
+                and (sig.get("trade_quality_score") or 0) >= 0.75
+            ):
+                kept.append(sig)
+            else:
+                audit["bear_shallow_dropped"].append(sig)
+        planned = kept
+
+    audit["signals_after_entry_filters"] = len(planned)
+    return planned, audit
 
 
 def plan_entry_candidates(

@@ -120,11 +120,11 @@ def main():
     from portfolio_engine   import size_signals, compute_portfolio_heat
     from production_parity  import (
         build_followthrough_addon_actions,
+        filter_entry_signal_candidates,
         plan_entry_candidates,
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
-    from constants          import MAX_PER_SECTOR
 
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
@@ -337,46 +337,30 @@ def main():
             s["regime_exit_bucket"] = exit_profile["bucket"]
             s["regime_exit_score"] = exit_profile["score"]
 
-    # ── Filter out tickers already held ──────────────────────────────────
-    # New entries match backtester.py's "already holding" skip. Additive
-    # exposure is handled separately below as explicit follow-through add-ons.
-    if open_positions and open_positions.get("positions"):
-        _held = {p["ticker"] for p in open_positions["positions"] if p.get("ticker")}
-        _before_held = len(signals)
-        _dropped_held = [s for s in signals if s["ticker"] in _held]
-        signals = [s for s in signals if s["ticker"] not in _held]
-        if _dropped_held:
-            log.info(
-                f"Already-held filter: {_before_held} → {len(signals)} signals "
-                f"(dropped {[s['ticker'] for s in _dropped_held]})"
-            )
-
-    # ── Same-day sector concentration cap ─────────────────────────────────
-    # Multiple correlated signals can fire on the same day (e.g. 3 tech stocks).
-    # Entering all of them turns 3 independent 1% risks into one concentrated bet.
-    # Cap at 2 signals per sector; signals are already sorted by confidence from
-    # generate_signals(), so the top-2 per sector survive.
-    _sector_counts: dict[str, int] = {}
-    _capped_signals = []
-    _dropped_sector = []
-    for s in signals:
-        sec = s.get("sector", "Unknown")
-        _sector_counts[sec] = _sector_counts.get(sec, 0) + 1
-        if _sector_counts[sec] <= MAX_PER_SECTOR:
-            _capped_signals.append(s)
-        else:
-            _dropped_sector.append(s)
-            log.warning(
-                f"{s['ticker']}: dropped — sector '{sec}' already has "
-                f"{MAX_PER_SECTOR} signals today"
-            )
-    if _dropped_sector:
+    signals, entry_filter_audit = filter_entry_signal_candidates(
+        signals,
+        open_positions=open_positions,
+        market_regime=market_regime.get("regime", "").upper(),
+        spy_pct_from_ma=spy_pct_from_ma,
+        qqq_pct_from_ma=qqq_pct_from_ma,
+    )
+    if entry_filter_audit["already_held_dropped"]:
         log.info(
-            f"Sector cap: {len(signals)} → {len(_capped_signals)} signals "
-            f"(dropped {len(_dropped_sector)} for concentration)"
+            "Already-held filter: dropped %s",
+            [s["ticker"] for s in entry_filter_audit["already_held_dropped"]],
         )
-    signals = _capped_signals
-
+    for s in entry_filter_audit["sector_cap_dropped"]:
+        log.warning(
+            "%s: dropped by sector cap for sector '%s'",
+            s.get("ticker"),
+            s.get("sector", "Unknown"),
+        )
+    if entry_filter_audit["bear_shallow_active"]:
+        log.info(
+            "BEAR_SHALLOW filter: %d -> %d signals",
+            entry_filter_audit["signals_before_entry_filters"],
+            entry_filter_audit["signals_after_entry_filters"],
+        )
     # Surface any signals dropped during enrichment (ATR missing, R:R too low)
     from risk_engine import last_dropped_signals
     if last_dropped_signals:
@@ -385,28 +369,7 @@ def main():
             + "; ".join(f"{d['ticker']} — {d['reason']}" for d in last_dropped_signals)
         )
 
-    # ── BEAR_SHALLOW post-enrich filter ──────────────────────────────────────
-    # signal_engine already drops BEAR_DEEP (both ≤ -5%) and individual tickers
-    # that are below their own 200MA.  After enrich_signals adds sector and TQS,
-    # apply the two remaining BEAR_SHALLOW gates:
-    #   1. Sector allowlist: Commodities + Healthcare only (negative-beta to tech BEAR)
-    #   2. TQS ≥ 0.75: stricter quality bar to compensate for elevated macro risk
     _regime_str = market_regime.get("regime", "").upper()
-    if (_regime_str == "BEAR"
-            and spy_pct_from_ma is not None
-            and qqq_pct_from_ma is not None
-            and min(spy_pct_from_ma, qqq_pct_from_ma) > -0.05):
-        _BEAR_SHALLOW_SECTORS = {"Commodities", "Healthcare"}
-        _before = len(signals)
-        signals = [
-            s for s in signals
-            if s.get("sector") in _BEAR_SHALLOW_SECTORS
-            and (s.get("trade_quality_score") or 0) >= 0.75
-        ]
-        log.info(
-            f"BEAR_SHALLOW filter: {_before} → {len(signals)} signals "
-            f"(Commodities+Healthcare only, TQS≥0.75)"
-        )
 
     log.info(f"Signals generated: {len(signals)}")
 
@@ -491,6 +454,7 @@ def main():
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
     trend_signals_dict["quant_signals"] = signals
     trend_signals_dict["addon_actions"] = addon_actions
+    trend_signals_dict["entry_filter_audit"] = entry_filter_audit
     trend_signals_dict["entry_execution_plan"] = entry_execution_plan
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
@@ -516,6 +480,7 @@ def main():
         "signals":        signals,
         "addon_actions":  addon_actions,
         "addon_audit":    addon_audit,
+        "entry_filter_audit": entry_filter_audit,
         "entry_execution_plan": entry_execution_plan,
         "heat_blocked_signals": heat_blocked_signals,
         "features":       features_dict,
