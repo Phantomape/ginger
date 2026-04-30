@@ -1,192 +1,65 @@
 {
-  "experiment_id": "exp-20260429-020",
-  "timestamp": "2026-04-29T14:15:44Z",
-  "status": "rejected",
-  "decision": "rejected",
-  "lane": "alpha_search",
-  "change_type": "capital_allocation",
-  "hypothesis": "Already-selected breakout_long Technology signals may deserve a dedicated 1.5x risk budget because the current accepted-stack trade audit showed positive Technology breakout PnL in late_strong and mid_weak, with only a small old_thin loss.",
-  "change_summary": "Tested a temporary shared portfolio_engine sizing branch for breakout_long + Technology at 1.5x risk. The branch replaced the generic risk_on_unmodified 1.25x path for this pocket and did not stack with it. The patch was reverted because EV regressed in 2/3 fixed windows and aggregate materiality missed Gate 4.",
-  "component": "quant/constants.py, quant/portfolio_engine.py, quant/backtester.py, quant/test_production_parity.py (temporary patch reverted after rejection)",
-  "parameters": {
-    "single_causal_variable": "breakout_long + Technology risk multiplier",
-    "old_value": "generic risk_on_unmodified 1.25x when no other sizing rule fired",
-    "tested_value": 1.5,
-    "stacking_policy": "do not stack with risk_on_unmodified",
-    "rolled_back_to": "existing accepted stack",
-    "locked_variables": [
-      "signal generation",
-      "entry filters",
-      "candidate ranking",
-      "MAX_POSITIONS",
-      "MAX_POSITION_PCT",
-      "MAX_PORTFOLIO_HEAT",
-      "MAX_PER_SECTOR",
-      "all exits",
-      "gap cancels",
-      "add-ons",
-      "LLM/news replay",
-      "earnings strategy",
-      "tradeable universe"
-    ]
-  },
-  "date_range": {
-    "start": "2025-10-23",
-    "end": "2026-04-21"
-  },
-  "secondary_windows": [
-    {
-      "start": "2025-04-23",
-      "end": "2025-10-22"
-    },
-    {
-      "start": "2024-10-02",
-      "end": "2025-04-22"
-    }
-  ],
-  "market_regime_summary": {
-    "late_strong": "slow-melt bull / accepted-stack dominant tape with positive but Sharpe-dilutive Technology breakout exposure",
-    "mid_weak": "rotation-heavy bull where the pocket improved only marginally",
-    "old_thin": "mixed-to-weak older tape where the pocket worsened the existing breakout Technology loss"
+  "after_metrics": {
+    "expected_value_score": 0.9672,
+    "max_drawdown_pct": 0.0616,
+    "sharpe": 4.43,
+    "sharpe_daily": 2.53,
+    "survival_rate": 0.7925,
+    "total_pnl": 38232.59,
+    "total_return_pct": 0.3823,
+    "trade_count": 21,
+    "win_rate": 0.5238
   },
   "before_metrics": {
-    "late_strong": {
-      "expected_value_score": 2.2134,
-      "sharpe_daily": 4.22,
-      "total_pnl": 52449.97,
-      "total_return_pct": 0.5245,
-      "max_drawdown_pct": 0.0401,
-      "win_rate": 0.7895,
-      "trade_count": 19,
-      "survival_rate": 0.8431
-    },
-    "mid_weak": {
-      "expected_value_score": 0.9672,
-      "sharpe_daily": 2.53,
-      "total_pnl": 38232.59,
-      "total_return_pct": 0.3823,
-      "max_drawdown_pct": 0.0616,
-      "win_rate": 0.5238,
-      "trade_count": 21,
-      "survival_rate": 0.7925
-    },
-    "old_thin": {
-      "expected_value_score": 0.2113,
-      "sharpe_daily": 1.26,
-      "total_pnl": 16772.15,
-      "total_return_pct": 0.1677,
-      "max_drawdown_pct": 0.0591,
-      "win_rate": 0.4091,
-      "trade_count": 22,
-      "survival_rate": 0.9167
-    }
+    "expected_value_score": 0.9672,
+    "max_drawdown_pct": 0.0616,
+    "sharpe": 4.43,
+    "sharpe_daily": 2.53,
+    "survival_rate": 0.7925,
+    "total_pnl": 38232.59,
+    "total_return_pct": 0.3823,
+    "trade_count": 21,
+    "win_rate": 0.5238
   },
-  "after_metrics": {
-    "late_strong": {
-      "expected_value_score": 2.1915,
-      "sharpe_daily": 4.11,
-      "total_pnl": 53316.04,
-      "total_return_pct": 0.5332,
-      "max_drawdown_pct": 0.0413,
-      "win_rate": 0.7895,
-      "trade_count": 19,
-      "survival_rate": 0.8431
-    },
-    "mid_weak": {
-      "expected_value_score": 0.972,
-      "sharpe_daily": 2.53,
-      "total_pnl": 38424.18,
-      "total_return_pct": 0.3842,
-      "max_drawdown_pct": 0.0616,
-      "win_rate": 0.5238,
-      "trade_count": 21,
-      "survival_rate": 0.7925
-    },
-    "old_thin": {
-      "expected_value_score": 0.204,
-      "sharpe_daily": 1.24,
-      "total_pnl": 16445.97,
-      "total_return_pct": 0.1645,
-      "max_drawdown_pct": 0.0591,
-      "win_rate": 0.4091,
-      "trade_count": 22,
-      "survival_rate": 0.9167
-    }
+  "change_summary": "Changed BacktestEngine defaults so production-parity behavior is automatic: REGIME_AWARE_EXIT defaults on and REPLAY_PARTIAL_REDUCES defaults on. CLI now supports --no-regime-aware-exit and --no-replay-partial-reduces for diagnostics. docs/backtesting.md now has one canonical command without manual parity flags.",
+  "change_type": "parity_fix",
+  "component": "quant/backtester.py, quant/test_production_parity.py, docs/backtesting.md, docs/production_backtest_parity.md, docs/experiments/tickets, docs/experiments/logs, docs/experiment_registry.json, docs/experiment_log.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
   },
+  "decision": "observed_only",
   "delta_metrics": {
-    "late_strong": {
-      "expected_value_score": -0.0219,
-      "sharpe_daily": -0.11,
-      "total_pnl": 866.07,
-      "total_return_pct": 0.0087,
-      "max_drawdown_pct": 0.0012,
-      "win_rate": 0.0,
-      "trade_count": 0,
-      "survival_rate": 0.0
-    },
-    "mid_weak": {
-      "expected_value_score": 0.0048,
-      "sharpe_daily": 0.0,
-      "total_pnl": 191.59,
-      "total_return_pct": 0.0019,
-      "max_drawdown_pct": 0.0,
-      "win_rate": 0.0,
-      "trade_count": 0,
-      "survival_rate": 0.0
-    },
-    "old_thin": {
-      "expected_value_score": -0.0073,
-      "sharpe_daily": -0.02,
-      "total_pnl": -326.18,
-      "total_return_pct": -0.0032,
-      "max_drawdown_pct": 0.0,
-      "win_rate": 0.0,
-      "trade_count": 0,
-      "survival_rate": 0.0
-    },
-    "aggregate": {
-      "expected_value_score_delta_sum": -0.0244,
-      "total_pnl_delta_sum": 731.48,
-      "baseline_total_pnl_sum": 107454.71,
-      "total_pnl_delta_pct": 0.006807,
-      "ev_windows_improved": 1,
-      "ev_windows_regressed": 2,
-      "pnl_windows_improved": 2,
-      "pnl_windows_regressed": 1,
-      "max_drawdown_delta_max": 0.0012,
-      "trade_count_delta_sum": 0,
-      "win_rate_delta_min": 0.0
-    },
-    "gate4_basis": "Rejected: aggregate EV declined by -0.0244, only 1/3 fixed windows improved on EV, aggregate PnL improved only +0.68%, and late_strong Sharpe fell by 0.11."
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
   },
+  "experiment_id": "exp-20260429-020",
+  "hypothesis": "Backtester defaults must match production strategy behavior for regime-aware exits and position-action replay so canonical backtests do not depend on humans remembering parity flags.",
   "llm_metrics": {
-    "used_llm": false,
-    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tested deterministic shared sizing alpha instead of LLM behavior."
+    "used_llm": false
   },
-  "production_impact": {
-    "shared_policy_changed": false,
-    "backtester_adapter_changed": false,
-    "run_adapter_changed": false,
-    "replay_only": false,
-    "parity_test_added": false,
-    "temporary_shared_policy_tested": true,
-    "rolled_back_after_rejection": true
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "",
+  "parameters": {
+    "locked_variables": [
+      "production-parity backtester defaults"
+    ],
+    "single_causal_variable": "production-parity backtester defaults"
   },
-  "history_guardrails": {
-    "not_repeating_technology_breakout_target_width": "This tested risk budget only, not target width or rs_vs_spy target widening.",
-    "not_repeating_global_risk_on_leverage": "This was sleeve-specific and did not raise the accepted broad risk_on_unmodified 1.25x rule.",
-    "not_repeating_candidate_ordering": "No entry order, slot priority, or candidate ranking changed."
-  },
-  "rejection_reason": "Simple Technology breakout sizing uplift is Sharpe-dilutive in late_strong and negative in old_thin; the small mid_weak PnL gain does not compensate.",
-  "next_retry_requires": [
-    "Do not retry nearby breakout_long Technology risk multipliers without a new event/state discriminator.",
-    "Do not use rs_vs_spy alone as the discriminator because the Technology breakout target experiment already rejected that family.",
-    "A valid retry needs orthogonal evidence that separates MU/AAPL-like winners from DDOG-like old_thin losses without changing target width."
-  ],
+  "rejection_reason": null,
   "related_files": [
-    "docs/experiments/logs/exp-20260429-020.json",
-    "docs/experiments/tickets/exp-20260429-020.json",
-    "docs/experiment_log.jsonl",
-    "docs/alpha-optimization-playbook.md"
-  ]
+    "data/backtest_results_20260429.json",
+    "data/backtest_results_20260429.json"
+  ],
+  "secondary_windows": [],
+  "status": "observed_only",
+  "timestamp": "2026-04-29T18:06:31+00:00"
 }

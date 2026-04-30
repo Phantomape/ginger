@@ -1,0 +1,131 @@
+{
+  "experiment_id": "exp-20260430-008",
+  "timestamp": "2026-04-29T23:17:50-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "universe_expansion",
+  "hypothesis": "Sector and commodity ETFs already present in the fixed OHLCV snapshots might improve candidate-pool quality without adding noisy single-stock tickers.",
+  "alpha_hypothesis_category": "entry_candidate_pool",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited, so this tested a deterministic candidate-pool alpha with full fixed-window replay.",
+  "parameters": {
+    "single_causal_variable": "tradeable ETF universe additions",
+    "baseline": {
+      "watchlist_additions": []
+    },
+    "tested_values": {
+      "sector_etf_bundle": ["USO", "XLE", "XLP", "XLU", "XLV"],
+      "xle_only": ["XLE"],
+      "uso_only": ["USO"],
+      "sector_ex_uso": ["XLE", "XLP", "XLU", "XLV"]
+    },
+    "runtime_sector_map": {
+      "USO": "Commodities",
+      "XLE": "Energy",
+      "XLP": "Consumer Staples",
+      "XLU": "Utilities",
+      "XLV": "Healthcare"
+    },
+    "locked_variables": [
+      "signal rules",
+      "candidate ordering",
+      "position sizing multipliers",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "sector_etf_bundle": {
+      "late_strong": {"expected_value_score": 3.0879, "sharpe_daily": 4.57, "total_pnl": 67571.20, "max_drawdown_pct": 0.0439, "win_rate": 0.7391, "trade_count": 23, "survival_rate": 0.8281},
+      "mid_weak": {"expected_value_score": 0.5735, "sharpe_daily": 2.11, "total_pnl": 27182.44, "max_drawdown_pct": 0.0548, "win_rate": 0.4348, "trade_count": 23, "survival_rate": 0.8364},
+      "old_thin": {"expected_value_score": 0.1996, "sharpe_daily": 1.12, "total_pnl": 17821.15, "max_drawdown_pct": 0.0613, "win_rate": 0.4000, "trade_count": 25, "survival_rate": 0.8955}
+    },
+    "xle_only": {
+      "late_strong": {"expected_value_score": 2.4011, "sharpe_daily": 4.24, "total_pnl": 56628.92, "max_drawdown_pct": 0.0473},
+      "mid_weak": {"expected_value_score": 0.7573, "sharpe_daily": 2.38, "total_pnl": 31819.30, "max_drawdown_pct": 0.0388},
+      "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691}
+    },
+    "uso_only": {
+      "late_strong": {"expected_value_score": 2.8610, "sharpe_daily": 4.37, "total_pnl": 65467.85, "max_drawdown_pct": 0.0439},
+      "mid_weak": {"expected_value_score": 0.5735, "sharpe_daily": 2.11, "total_pnl": 27182.44, "max_drawdown_pct": 0.0548},
+      "old_thin": {"expected_value_score": 0.2166, "sharpe_daily": 1.16, "total_pnl": 18666.46, "max_drawdown_pct": 0.0610}
+    },
+    "sector_ex_uso": {
+      "late_strong": {"expected_value_score": 2.3195, "sharpe_daily": 4.44, "total_pnl": 52240.08, "max_drawdown_pct": 0.0439},
+      "mid_weak": {"expected_value_score": 0.7573, "sharpe_daily": 2.38, "total_pnl": 31819.30, "max_drawdown_pct": 0.0388},
+      "old_thin": {"expected_value_score": 0.2074, "sharpe_daily": 1.17, "total_pnl": 17734.53, "max_drawdown_pct": 0.0694}
+    }
+  },
+  "expected_value_score_delta": {
+    "sector_etf_bundle": {"late_strong": 0.6092, "mid_weak": -0.4299, "old_thin": -0.0271, "aggregate": 0.1522},
+    "xle_only": {"late_strong": -0.0776, "mid_weak": -0.2461, "old_thin": 0.0, "aggregate": -0.3237},
+    "uso_only": {"late_strong": 0.3823, "mid_weak": -0.4299, "old_thin": -0.0101, "aggregate": -0.0577},
+    "sector_ex_uso": {"late_strong": -0.1592, "mid_weak": -0.2461, "old_thin": -0.0193, "aggregate": -0.4246}
+  },
+  "delta_metrics": {
+    "sector_etf_bundle": {
+      "aggregate_total_pnl_delta": -1059.91,
+      "windows_ev_improved": 1,
+      "windows_ev_regressed": 2,
+      "new_trade_pnl_by_window": {
+        "late_strong": 13719.03,
+        "mid_weak": -5213.45,
+        "old_thin": -2878.81
+      }
+    },
+    "best_subset": "None. USO-only improved late_strong and old_thin PnL but still regressed EV in two windows; XLE-only and sector_ex_USO regressed late/mid or mid/old."
+  },
+  "gate4_basis": "Rejected and not promoted. No variant improved expected_value_score in a majority of the three fixed windows. The full ETF bundle's late_strong lift was offset by mid_weak and old_thin damage, and aggregate PnL fell.",
+  "mechanism_insight": "Sector/commodity ETFs can add late-tape trend exposure, but they are not automatically higher-quality candidates. USO repeatedly displaced better opportunities in mid_weak, and broad sector ETFs added low-volatility slot competition without robust cross-window alpha.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "runtime_only_universe_patch_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this deterministic universe alpha was tested instead."
+  },
+  "rejection_reason": "Full bundle improved only late_strong while damaging mid_weak and old_thin. Narrow subsets failed Gate 4 or were materially negative.",
+  "do_not_repeat_without_new_evidence": [
+    "Adding USO/XLE/XLP/XLU/XLV as a simple sector ETF universe expansion",
+    "Adding USO as a commodity-trend proxy without a state discriminator",
+    "Treating sector ETFs as lower-noise substitutes without opportunity-cost evidence"
+  ],
+  "next_retry_requires": [
+    "A state discriminator showing when commodity/sector ETFs should compete for scarce slots",
+    "Forward evidence that sector ETFs add candidates without displacing higher-EV A/B single-name trades",
+    "A ranking signal that explicitly compares ETF candidates against same-sector single-name candidates"
+  ],
+  "artifacts": [
+    "data/experiments/exp-20260430-008/sector_etf_universe_expansion.json"
+  ]
+}

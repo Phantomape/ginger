@@ -1,0 +1,25 @@
+{
+  "experiment_id": "exp-20260430-011",
+  "title": "Disclose and shadow-measure exit advisory replay gap",
+  "lane": "measurement_repair",
+  "status": "accepted",
+  "priority": "high",
+  "hypothesis": "Explicitly disclosing the exit advisory replay gap prevents future agents from treating production advisory exits and backtest target exits as equivalent.",
+  "scope": [
+    "Add known_biases.exit_policy_unreplayed to backtest results.",
+    "Add exit_advisory_shadow_attribution without executing advisory rules.",
+    "Correct partial-reduce replay wording from default-off to default-on container with disabled pure trailing trims.",
+    "Update production/backtest parity docs and backtesting docs.",
+    "Add an anti-repeat pointer to exp-20260429-032."
+  ],
+  "non_goals": [
+    "Do not change stop, target, partial-reduce, add-on, entry, sizing, or LLM behavior.",
+    "Do not retry SIGNAL_TARGET partial-reduce replay."
+  ],
+  "acceptance": [
+    "Backtester result schema exposes the exit advisory replay gap.",
+    "Backtester result schema reports shadow-only advisory rule counts and grouped realized outcomes.",
+    "Docs no longer imply all production position actions are fully replayed.",
+    "A focused parity test covers the disclosure helper."
+  ]
+}

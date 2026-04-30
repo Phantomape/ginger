@@ -1,0 +1,50 @@
+{
+  "experiment_id": "exp-20260429-026",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "codex-alpha-search",
+  "hypothesis": "After the accepted low-score plain risk-on sizing lift, use a three-window meta-allocation cohort audit to decide whether any remaining sleeve deserves a new alpha rule.",
+  "change_type": "meta_allocation_audit",
+  "single_causal_variable": "analysis-only cohort attribution",
+  "baseline_result_file": "data/backtest_results_20260429.json",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260429-026/baseline_cohort_audit.json",
+    "docs/experiments/tickets/exp-20260429-026.json",
+    "docs/experiments/logs/exp-20260429-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/run.py"
+  ],
+  "locked_variables": [
+    "all executable strategy logic",
+    "all sizing constants",
+    "all entry and exit rules",
+    "LLM/news replay"
+  ],
+  "evaluation_windows": [
+    {"name": "late_strong", "start": "2025-10-23", "end": "2026-04-21", "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"},
+    {"name": "mid_weak", "start": "2025-04-23", "end": "2025-10-22", "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"},
+    {"name": "old_thin", "start": "2024-10-02", "end": "2025-04-22", "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"}
+  ],
+  "acceptance_rule": "observed_only; must produce a reproducible cohort audit and avoid promoting rules from tiny samples",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "created_at": "2026-04-29T12:10:58-07:00",
+  "claimed_at": "2026-04-29T12:10:58-07:00",
+  "completed_at": "2026-04-29T12:10:58-07:00",
+  "result": {
+    "decision": "observed_only",
+    "artifact": "data/experiments/exp-20260429-026/baseline_cohort_audit.json",
+    "summary": "No new production rule qualified; remaining weak cohorts were too small and too likely to overfit."
+  }
+}

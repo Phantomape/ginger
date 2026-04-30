@@ -1,0 +1,111 @@
+{
+  "experiment_id": "exp-20260429-025",
+  "timestamp": "2026-04-29T11:48:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Plain risk_on signals with no other sizing modifier and low regime_exit_score are not weak candidates; previous threshold narrowing proved those low-score winners should not be excluded, so they may deserve a larger non-stacking risk budget.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains high-upside but production-aligned replay samples are still too thin; this deterministic sizing sleeve is fully replayable and production-shared.",
+  "parameters": {
+    "single_causal_variable": "risk_on_unmodified low-score risk multiplier",
+    "old_value": {
+      "RISK_ON_UNMODIFIED_RISK_MULTIPLIER": 1.25,
+      "low_score_special_case": null
+    },
+    "new_value": {
+      "RISK_ON_UNMODIFIED_LOW_SCORE_MAX": 0.1,
+      "RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER": 1.5,
+      "fallback_RISK_ON_UNMODIFIED_RISK_MULTIPLIER": 1.25
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "existing sector-specific sizing boosts and haircuts"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape with low-score plain risk_on winners",
+    "mid_weak": "rotation-heavy bull with no affected low-score plain risk_on executed trades",
+    "old_thin": "mixed-to-weak older tape where low-score plain risk_on exposure remained net-positive"
+  },
+  "pre_experiment_evidence": {
+    "related_failure": "exp-20260429-021 rejected regime_exit_score >= 0.08 eligibility gate because it removed useful low-score winners.",
+    "cohort_audit": {
+      "risk_on_unmodified_multiplier_1_25_total_pnl": 54821.99,
+      "low_score_lt_0_10": {
+        "late_strong": {"trades": 3, "total_pnl": 11141.03, "win_rate": 1.0},
+        "mid_weak": {"trades": 0, "total_pnl": 0.0, "win_rate": null},
+        "old_thin": {"trades": 4, "total_pnl": 7842.39, "win_rate": 0.75}
+      },
+      "score_gte_0_10": {
+        "late_strong": {"trades": 10, "total_pnl": 22007.55, "win_rate": 0.8},
+        "mid_weak": {"trades": 4, "total_pnl": 11403.41, "win_rate": 0.75},
+        "old_thin": {"trades": 6, "total_pnl": 2427.61, "win_rate": 0.3333}
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.2134, "sharpe_daily": 4.22, "total_pnl": 52449.97, "total_return_pct": 0.5245, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "total_return_pct": 0.3823, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2113, "sharpe_daily": 1.26, "total_pnl": 16772.15, "total_return_pct": 0.1677, "max_drawdown_pct": 0.0591, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.3317, "sharpe_daily": 4.28, "total_pnl": 54479.38, "total_return_pct": 0.5448, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "total_return_pct": 0.3823, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2285, "sharpe_daily": 1.27, "total_pnl": 17991.28, "total_return_pct": 0.1799, "max_drawdown_pct": 0.0595, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.1183, "sharpe_daily": 0.06, "total_pnl": 2029.41, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": 0.0172, "sharpe_daily": 0.01, "total_pnl": 1219.13, "max_drawdown_pct": 0.0004, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": 0.1355, "total_pnl_delta_sum": 3248.54, "windows_ev_improved": 2, "windows_ev_regressed": 0}
+  },
+  "gate4_basis": "Accepted: aggregate EV delta +0.1355 clears the +0.10 materiality bar, two of three fixed windows improved, no window regressed, trade count/win rate/survival were unchanged, and max drawdown expansion was limited to +0.04 pp in old_thin.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "shared_policy_location": "quant/portfolio_engine.py::size_signals"
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking is still deferred because sample coverage is insufficient; this experiment deliberately used deterministic replayable sizing instead."
+  },
+  "risk_assessment": {
+    "may_hurt": "Low-score risk_on trades that are actually early tail-risk warnings could receive too much budget.",
+    "mitigation": "The rule applies only when the signal is already risk_on and has no existing sizing boost/haircut; missing regime_exit_score falls back to the accepted 1.25x baseline."
+  },
+  "do_not_repeat_without_new_evidence": [
+    "Nearby low-score multiplier tweaks above or below 1.5x",
+    "Reintroducing risk_on score eligibility thresholds",
+    "Stacking this rule on sector-specific boosts or risk haircuts"
+  ],
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_low_score_risk_on_sizing.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl"
+  ]
+}

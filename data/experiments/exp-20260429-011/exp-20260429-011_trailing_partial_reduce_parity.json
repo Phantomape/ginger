@@ -1,8 +1,8 @@
 {
-  "experiment_id": "exp-20260429-011",
-  "status": "observed_only",
-  "hypothesis": "Backtester can replay production trailing partial-reduce actions from a shared policy without changing default baseline behavior.",
-  "single_causal_variable": "shared trailing partial-reduce policy and replay switch",
+  "experiment_id": "exp-20260429-017",
+  "status": "accepted",
+  "hypothesis": "Disabling production TRAILING_STOP partial-reduce actions avoids repeated winner trims and improves fixed-window EV/PnL.",
+  "single_causal_variable": "disable trailing-stop partial-reduce actions",
   "production_impact": {
     "shared_policy_changed": true,
     "backtester_adapter_changed": true,
@@ -28,24 +28,26 @@
     }
   },
   "variants": {
-    "baseline_replay_off": {
+    "before_trailing_partial_reduce_enabled": {
       "REGIME_AWARE_EXIT": true,
-      "REPLAY_PARTIAL_REDUCES": false
+      "REPLAY_PARTIAL_REDUCES": true,
+      "TRAILING_PARTIAL_REDUCE_ENABLED": true
     },
-    "production_partial_reduce_replay_on": {
+    "after_trailing_partial_reduce_disabled": {
       "REGIME_AWARE_EXIT": true,
-      "REPLAY_PARTIAL_REDUCES": true
+      "REPLAY_PARTIAL_REDUCES": true,
+      "TRAILING_PARTIAL_REDUCE_ENABLED": false
     }
   },
   "metrics": {
-    "baseline_replay_off": {
+    "before_trailing_partial_reduce_enabled": {
       "late_strong": {
-        "expected_value_score": 1.7809,
-        "sharpe_daily": 4.28,
-        "sharpe": 6.63,
-        "total_pnl": 41605.12,
-        "total_return_pct": 0.4161,
-        "max_drawdown_pct": 0.0329,
+        "expected_value_score": 2.2134,
+        "sharpe_daily": 4.22,
+        "sharpe": 6.48,
+        "total_pnl": 52449.97,
+        "total_return_pct": 0.5245,
+        "max_drawdown_pct": 0.0401,
         "win_rate": 0.7895,
         "trade_count": 19,
         "survival_rate": 0.8431,
@@ -60,84 +62,23 @@
         "partial_reduce_events": []
       },
       "mid_weak": {
-        "expected_value_score": 0.7632,
-        "sharpe_daily": 2.55,
-        "sharpe": 4.53,
-        "total_pnl": 29925.64,
-        "total_return_pct": 0.2993,
-        "max_drawdown_pct": 0.0411,
-        "win_rate": 0.5238,
-        "trade_count": 21,
+        "expected_value_score": 0.5903,
+        "sharpe_daily": 2.22,
+        "sharpe": 2.77,
+        "total_pnl": 26585.66,
+        "total_return_pct": 0.2659,
+        "max_drawdown_pct": 0.0427,
+        "win_rate": 0.3871,
+        "trade_count": 31,
         "survival_rate": 0.7925,
         "exit_reason_counts": {
+          "partial_reduce_trailing_stop": 10,
           "target": 11,
           "stop": 9,
           "end_of_backtest": 1
         },
-        "partial_reduce_scheduled": 0,
-        "partial_reduce_executed": 0,
-        "partial_reduce_skipped": 0,
-        "partial_reduce_events": []
-      },
-      "old_thin": {
-        "expected_value_score": 0.1834,
-        "sharpe_daily": 1.29,
-        "sharpe": 2.15,
-        "total_pnl": 14221.09,
-        "total_return_pct": 0.1422,
-        "max_drawdown_pct": 0.0489,
-        "win_rate": 0.4091,
-        "trade_count": 22,
-        "survival_rate": 0.9167,
-        "exit_reason_counts": {
-          "stop": 13,
-          "target": 9
-        },
-        "partial_reduce_scheduled": 0,
-        "partial_reduce_executed": 0,
-        "partial_reduce_skipped": 0,
-        "partial_reduce_events": []
-      }
-    },
-    "production_partial_reduce_replay_on": {
-      "late_strong": {
-        "expected_value_score": 1.7809,
-        "sharpe_daily": 4.28,
-        "sharpe": 6.63,
-        "total_pnl": 41605.12,
-        "total_return_pct": 0.4161,
-        "max_drawdown_pct": 0.0329,
-        "win_rate": 0.7895,
-        "trade_count": 19,
-        "survival_rate": 0.8431,
-        "exit_reason_counts": {
-          "target": 13,
-          "stop": 4,
-          "end_of_backtest": 2
-        },
-        "partial_reduce_scheduled": 0,
-        "partial_reduce_executed": 0,
-        "partial_reduce_skipped": 0,
-        "partial_reduce_events": []
-      },
-      "mid_weak": {
-        "expected_value_score": 0.4822,
-        "sharpe_daily": 2.2,
-        "sharpe": 2.85,
-        "total_pnl": 21921.15,
-        "total_return_pct": 0.2192,
-        "max_drawdown_pct": 0.0319,
-        "win_rate": 0.4,
-        "trade_count": 30,
-        "survival_rate": 0.7925,
-        "exit_reason_counts": {
-          "partial_reduce_trailing_stop": 9,
-          "target": 11,
-          "stop": 9,
-          "end_of_backtest": 1
-        },
-        "partial_reduce_scheduled": 9,
-        "partial_reduce_executed": 9,
+        "partial_reduce_scheduled": 10,
+        "partial_reduce_executed": 10,
         "partial_reduce_skipped": 0,
         "partial_reduce_events": [
           {
@@ -153,16 +94,16 @@
             "high_water": 277.01,
             "trailing_stop_price": 254.85,
             "trigger_close": 254.29,
-            "unrealized_pnl_pct": -0.014189,
+            "unrealized_pnl_pct": -0.014227,
             "reduce_pct": 50,
-            "shares_before": 61,
-            "shares_to_sell": 30,
+            "shares_before": 93,
+            "shares_to_sell": 46,
             "status": "executed",
             "raw_open": 258.72,
             "exit_price": 258.4613,
-            "shares_sold": 30,
-            "remaining_shares": 31,
-            "realized_pnl": -11.8
+            "shares_sold": 46,
+            "remaining_shares": 47,
+            "realized_pnl": -18.55
           },
           {
             "ticker": "COIN",
@@ -177,16 +118,16 @@
             "high_water": 277.01,
             "trailing_stop_price": 254.85,
             "trigger_close": 248.84,
-            "unrealized_pnl_pct": -0.035317,
+            "unrealized_pnl_pct": -0.035354,
             "reduce_pct": 50,
-            "shares_before": 31,
-            "shares_to_sell": 15,
+            "shares_before": 47,
+            "shares_to_sell": 23,
             "status": "executed",
             "raw_open": 246.87,
             "exit_price": 246.6231,
-            "shares_sold": 15,
-            "remaining_shares": 16,
-            "realized_pnl": -182.85
+            "shares_sold": 23,
+            "remaining_shares": 24,
+            "realized_pnl": -280.6
           },
           {
             "ticker": "COIN",
@@ -201,16 +142,16 @@
             "high_water": 277.01,
             "trailing_stop_price": 254.85,
             "trigger_close": 246.62,
-            "unrealized_pnl_pct": -0.043923,
+            "unrealized_pnl_pct": -0.04396,
             "reduce_pct": 50,
-            "shares_before": 16,
-            "shares_to_sell": 8,
+            "shares_before": 24,
+            "shares_to_sell": 12,
             "status": "executed",
             "raw_open": 247.46,
             "exit_price": 247.2125,
-            "shares_sold": 8,
-            "remaining_shares": 8,
-            "realized_pnl": -92.82
+            "shares_sold": 12,
+            "remaining_shares": 12,
+            "realized_pnl": -139.35
           },
           {
             "ticker": "COIN",
@@ -225,16 +166,16 @@
             "high_water": 277.01,
             "trailing_stop_price": 254.85,
             "trigger_close": 246.72,
-            "unrealized_pnl_pct": -0.043536,
+            "unrealized_pnl_pct": -0.043573,
             "reduce_pct": 50,
-            "shares_before": 8,
-            "shares_to_sell": 4,
+            "shares_before": 12,
+            "shares_to_sell": 6,
             "status": "executed",
             "raw_open": 248.39,
             "exit_price": 248.1416,
-            "shares_sold": 4,
-            "remaining_shares": 4,
-            "realized_pnl": -42.71
+            "shares_sold": 6,
+            "remaining_shares": 6,
+            "realized_pnl": -64.12
           },
           {
             "ticker": "COIN",
@@ -249,16 +190,16 @@
             "high_water": 277.01,
             "trailing_stop_price": 254.85,
             "trigger_close": 244.2,
-            "unrealized_pnl_pct": -0.053305,
+            "unrealized_pnl_pct": -0.053342,
             "reduce_pct": 50,
-            "shares_before": 4,
-            "shares_to_sell": 2,
+            "shares_before": 6,
+            "shares_to_sell": 3,
             "status": "executed",
             "raw_open": 250.53,
             "exit_price": 250.2795,
-            "shares_sold": 2,
-            "remaining_shares": 2,
-            "realized_pnl": -17.09
+            "shares_sold": 3,
+            "remaining_shares": 3,
+            "realized_pnl": -25.67
           },
           {
             "ticker": "COIN",
@@ -273,16 +214,40 @@
             "high_water": 277.01,
             "trailing_stop_price": 254.85,
             "trigger_close": 251.27,
-            "unrealized_pnl_pct": -0.025896,
+            "unrealized_pnl_pct": -0.025934,
             "reduce_pct": 50,
-            "shares_before": 2,
+            "shares_before": 3,
             "shares_to_sell": 1,
             "status": "executed",
             "raw_open": 255.66,
             "exit_price": 255.4043,
             "shares_sold": 1,
+            "remaining_shares": 2,
+            "realized_pnl": -3.45
+          },
+          {
+            "ticker": "COIN",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "decision_mode": "code_trailing_partial_reduce",
+            "trigger_date": "2025-06-11",
+            "scheduled_fill_date": "2025-06-12",
+            "exit_reason": "partial_reduce_trailing_stop",
+            "triggered_rule": "TRAILING_STOP",
+            "trailing_stop_pct": 0.08,
+            "high_water": 277.01,
+            "trailing_stop_price": 254.85,
+            "trigger_close": 250.68,
+            "unrealized_pnl_pct": -0.028221,
+            "reduce_pct": 50,
+            "shares_before": 2,
+            "shares_to_sell": 1,
+            "status": "executed",
+            "raw_open": 246.52,
+            "exit_price": 246.2735,
+            "shares_sold": 1,
             "remaining_shares": 1,
-            "realized_pnl": -3.44
+            "realized_pnl": -12.55
           },
           {
             "ticker": "COIN",
@@ -299,14 +264,14 @@
             "trigger_close": 350.49,
             "unrealized_pnl_pct": -0.011897,
             "reduce_pct": 50,
-            "shares_before": 33,
-            "shares_to_sell": 16,
+            "shares_before": 49,
+            "shares_to_sell": 24,
             "status": "executed",
             "raw_open": 339.98,
             "exit_price": 339.64,
-            "shares_sold": 16,
-            "remaining_shares": 17,
-            "realized_pnl": -260.14
+            "shares_sold": 24,
+            "remaining_shares": 25,
+            "realized_pnl": -390.21
           },
           {
             "ticker": "COIN",
@@ -323,14 +288,14 @@
             "trigger_close": 335.33,
             "unrealized_pnl_pct": -0.054636,
             "reduce_pct": 50,
-            "shares_before": 17,
-            "shares_to_sell": 8,
+            "shares_before": 25,
+            "shares_to_sell": 12,
             "status": "executed",
             "raw_open": 340.58,
             "exit_price": 340.2394,
-            "shares_sold": 8,
-            "remaining_shares": 9,
-            "realized_pnl": -125.29
+            "shares_sold": 12,
+            "remaining_shares": 13,
+            "realized_pnl": -187.94
           },
           {
             "ticker": "AMD",
@@ -359,12 +324,12 @@
         ]
       },
       "old_thin": {
-        "expected_value_score": 0.1508,
-        "sharpe_daily": 1.18,
+        "expected_value_score": 0.1854,
+        "sharpe_daily": 1.19,
         "sharpe": 1.85,
-        "total_pnl": 12783.82,
-        "total_return_pct": 0.1278,
-        "max_drawdown_pct": 0.047,
+        "total_pnl": 15581.48,
+        "total_return_pct": 0.1558,
+        "max_drawdown_pct": 0.0548,
         "win_rate": 0.4643,
         "trade_count": 28,
         "survival_rate": 0.9167,
@@ -390,16 +355,16 @@
             "high_water": 215.9,
             "trailing_stop_price": 198.63,
             "trigger_close": 198.38,
-            "unrealized_pnl_pct": -0.009041,
+            "unrealized_pnl_pct": -0.001862,
             "reduce_pct": 50,
-            "shares_before": 163,
-            "shares_to_sell": 81,
+            "shares_before": 170,
+            "shares_to_sell": 85,
             "status": "executed",
             "raw_open": 198.25,
             "exit_price": 198.0517,
-            "shares_sold": 81,
-            "remaining_shares": 82,
-            "realized_pnl": -229.35
+            "shares_sold": 85,
+            "remaining_shares": 85,
+            "realized_pnl": -118.28
           },
           {
             "ticker": "AMZN",
@@ -414,16 +379,16 @@
             "high_water": 215.9,
             "trailing_stop_price": 198.63,
             "trigger_close": 197.12,
-            "unrealized_pnl_pct": -0.015335,
+            "unrealized_pnl_pct": -0.008201,
             "reduce_pct": 50,
-            "shares_before": 82,
-            "shares_to_sell": 41,
+            "shares_before": 85,
+            "shares_to_sell": 42,
             "status": "executed",
             "raw_open": 199.28,
             "exit_price": 199.0807,
-            "shares_sold": 41,
-            "remaining_shares": 41,
-            "realized_pnl": -74.05
+            "shares_sold": 42,
+            "remaining_shares": 43,
+            "realized_pnl": -15.38
           },
           {
             "ticker": "NFLX",
@@ -440,14 +405,14 @@
             "trigger_close": 97.724,
             "unrealized_pnl_pct": 0.019764,
             "reduce_pct": 50,
-            "shares_before": 192,
-            "shares_to_sell": 96,
+            "shares_before": 246,
+            "shares_to_sell": 123,
             "status": "executed",
             "raw_open": 97.76,
             "exit_price": 97.6622,
-            "shares_sold": 96,
-            "remaining_shares": 96,
-            "realized_pnl": 143.08
+            "shares_sold": 123,
+            "remaining_shares": 123,
+            "realized_pnl": 183.32
           },
           {
             "ticker": "NFLX",
@@ -464,14 +429,14 @@
             "trigger_close": 96.307,
             "unrealized_pnl_pct": 0.004978,
             "reduce_pct": 50,
-            "shares_before": 96,
-            "shares_to_sell": 48,
+            "shares_before": 123,
+            "shares_to_sell": 61,
             "status": "executed",
             "raw_open": 96.956,
             "exit_price": 96.859,
-            "shares_sold": 48,
-            "remaining_shares": 48,
-            "realized_pnl": 33.12
+            "shares_sold": 61,
+            "remaining_shares": 62,
+            "realized_pnl": 42.09
           },
           {
             "ticker": "NFLX",
@@ -488,14 +453,14 @@
             "trigger_close": 97.37,
             "unrealized_pnl_pct": 0.01607,
             "reduce_pct": 50,
-            "shares_before": 48,
-            "shares_to_sell": 24,
+            "shares_before": 62,
+            "shares_to_sell": 31,
             "status": "executed",
             "raw_open": 97.161,
             "exit_price": 97.0638,
-            "shares_sold": 24,
-            "remaining_shares": 24,
-            "realized_pnl": 21.46
+            "shares_sold": 31,
+            "remaining_shares": 31,
+            "realized_pnl": 27.72
           },
           {
             "ticker": "NFLX",
@@ -512,20 +477,81 @@
             "trigger_close": 97.258,
             "unrealized_pnl_pct": 0.014901,
             "reduce_pct": 50,
-            "shares_before": 24,
-            "shares_to_sell": 12,
+            "shares_before": 31,
+            "shares_to_sell": 15,
             "status": "executed",
             "raw_open": 97.362,
             "exit_price": 97.2646,
-            "shares_sold": 12,
-            "remaining_shares": 12,
-            "realized_pnl": 13.13
+            "shares_sold": 15,
+            "remaining_shares": 16,
+            "realized_pnl": 16.41
           }
         ]
       }
+    },
+    "after_trailing_partial_reduce_disabled": {
+      "late_strong": {
+        "expected_value_score": 2.2134,
+        "sharpe_daily": 4.22,
+        "sharpe": 6.48,
+        "total_pnl": 52449.97,
+        "total_return_pct": 0.5245,
+        "max_drawdown_pct": 0.0401,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431,
+        "exit_reason_counts": {
+          "target": 13,
+          "stop": 4,
+          "end_of_backtest": 2
+        },
+        "partial_reduce_scheduled": 0,
+        "partial_reduce_executed": 0,
+        "partial_reduce_skipped": 0,
+        "partial_reduce_events": []
+      },
+      "mid_weak": {
+        "expected_value_score": 0.9672,
+        "sharpe_daily": 2.53,
+        "sharpe": 4.43,
+        "total_pnl": 38232.59,
+        "total_return_pct": 0.3823,
+        "max_drawdown_pct": 0.0616,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "exit_reason_counts": {
+          "target": 11,
+          "stop": 9,
+          "end_of_backtest": 1
+        },
+        "partial_reduce_scheduled": 0,
+        "partial_reduce_executed": 0,
+        "partial_reduce_skipped": 0,
+        "partial_reduce_events": []
+      },
+      "old_thin": {
+        "expected_value_score": 0.2113,
+        "sharpe_daily": 1.26,
+        "sharpe": 2.09,
+        "total_pnl": 16772.15,
+        "total_return_pct": 0.1677,
+        "max_drawdown_pct": 0.0591,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "exit_reason_counts": {
+          "stop": 13,
+          "target": 9
+        },
+        "partial_reduce_scheduled": 0,
+        "partial_reduce_executed": 0,
+        "partial_reduce_skipped": 0,
+        "partial_reduce_events": []
+      }
     }
   },
-  "deltas_replay_on_vs_off": {
+  "deltas_disabled_vs_enabled": {
     "late_strong": {
       "expected_value_score": 0.0,
       "sharpe_daily": 0.0,
@@ -540,38 +566,39 @@
       "partial_reduce_executed": 0
     },
     "mid_weak": {
-      "expected_value_score": -0.281,
-      "sharpe_daily": -0.35,
-      "sharpe": -1.68,
-      "total_pnl": -8004.49,
-      "total_return_pct": -0.0801,
-      "max_drawdown_pct": -0.0092,
-      "win_rate": -0.1238,
-      "trade_count": 9,
+      "expected_value_score": 0.3769,
+      "sharpe_daily": 0.31,
+      "sharpe": 1.66,
+      "total_pnl": 11646.93,
+      "total_return_pct": 0.1164,
+      "max_drawdown_pct": 0.0189,
+      "win_rate": 0.1367,
+      "trade_count": -10,
       "survival_rate": 0.0,
-      "partial_reduce_scheduled": 9,
-      "partial_reduce_executed": 9
+      "partial_reduce_scheduled": -10,
+      "partial_reduce_executed": -10
     },
     "old_thin": {
-      "expected_value_score": -0.0326,
-      "sharpe_daily": -0.11,
-      "sharpe": -0.3,
-      "total_pnl": -1437.27,
-      "total_return_pct": -0.0144,
-      "max_drawdown_pct": -0.0019,
-      "win_rate": 0.0552,
-      "trade_count": 6,
+      "expected_value_score": 0.0259,
+      "sharpe_daily": 0.07,
+      "sharpe": 0.24,
+      "total_pnl": 1190.67,
+      "total_return_pct": 0.0119,
+      "max_drawdown_pct": 0.0043,
+      "win_rate": -0.0552,
+      "trade_count": -6,
       "survival_rate": 0.0,
-      "partial_reduce_scheduled": 6,
-      "partial_reduce_executed": 6
+      "partial_reduce_scheduled": -6,
+      "partial_reduce_executed": -6
     }
   },
   "aggregate": {
-    "ev_delta_sum": -0.3136,
-    "pnl_delta_sum": -9441.76,
-    "windows_ev_improved": 0,
-    "windows_pnl_improved": 0,
-    "partial_reduce_events_total": 15
+    "ev_delta_sum": 0.4028,
+    "pnl_delta_sum": 12837.6,
+    "windows_ev_improved": 2,
+    "windows_pnl_improved": 2,
+    "partial_reduce_events_before_enabled": 16,
+    "partial_reduce_events_after_disabled": 0
   },
-  "decision_basis": "This is a measurement repair. Replay-on profitability is reported for diagnosis, not promoted as alpha in this closeout."
+  "decision_basis": "Accepted if disabled improves EV or PnL in a majority of fixed windows without changing any non-trailing exit rules."
 }

@@ -102,6 +102,7 @@ from production_parity import (
     risk_pct_for_market_state,
     suggested_reduce_pct_for_rules,
 )
+from position_manager import compute_exit_levels, evaluate_exit_signals
 from yfinance_bootstrap import configure_yfinance_runtime
 
 DEFAULT_CONFIG = {
@@ -118,7 +119,7 @@ DEFAULT_CONFIG = {
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
     "TRAIL_TRIGGER_ATR_MULT": 0,     # activate trail when profit >= N × ATR (0=off)
     "TRAIL_OFFSET_ATR_MULT":  0,     # trailing stop = high_water - N × ATR
-    "REPLAY_PARTIAL_REDUCES": False, # replay production trailing partial reduces
+    "REPLAY_PARTIAL_REDUCES": True,  # replay production position-action policy
     "PRODUCTION_TRAILING_STOP_PCT": TRAILING_STOP_PCT,
     "TRAILING_PARTIAL_REDUCE_ENABLED": TRAILING_PARTIAL_REDUCE_ENABLED,
     "ADDON_ENABLED": ADDON_ENABLED,
@@ -139,6 +140,307 @@ DEFAULT_CONFIG = {
     "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
     "ADVERSE_GAP_CANCEL_PCT": ADVERSE_GAP_CANCEL_PCT,
 }
+
+EXIT_POLICY_ADVISORY_RULES = (
+    "SIGNAL_TARGET",
+    "PROFIT_TARGET",
+    "PROFIT_LADDER_30",
+    "PROFIT_LADDER_50",
+    "TIME_STOP",
+    "PENDING_REDUCE_EXIT_OVERRIDE",
+)
+
+EXIT_POLICY_SHADOW_RULES = tuple(
+    rule for rule in EXIT_POLICY_ADVISORY_RULES
+    if rule != "PENDING_REDUCE_EXIT_OVERRIDE"
+)
+
+
+def build_exit_policy_replay_bias(
+    partial_reduce_enabled=True,
+    trailing_partial_reduce_enabled=TRAILING_PARTIAL_REDUCE_ENABLED,
+):
+    """Describe production exit advice that the backtester does not execute."""
+    return {
+        "gap_present": True,
+        "production_sources": [
+            "trend_signals.compute_position_context",
+            "position_manager.evaluate_exit_signals",
+            "llm_advisor.get_investment_advice",
+            "pending_actions.apply_pending_action_overrides",
+        ],
+        "backtester_execution_scope": [
+            "stop_price full-position exit",
+            "target_price full-position exit",
+            "implemented shared partial-reduce replay hooks only",
+        ],
+        "production_advisory_actions_not_replayed": list(EXIT_POLICY_ADVISORY_RULES),
+        "target_price_semantic_gap": {
+            "backtester": (
+                "Position.target_price is simulated as a hard full-position "
+                "target exit when the intraday high reaches the level."
+            ),
+            "production": (
+                "open_positions.target_price is read as signal_target_price "
+                "and surfaces SIGNAL_TARGET as advisory reduce/review context "
+                "for the LLM and daily workflow."
+            ),
+            "impact": (
+                "Backtest target exits are not proof that production advisory "
+                "SIGNAL_TARGET trims, ladders, or time stops add alpha."
+            ),
+        },
+        "partial_reduce_replay_scope": {
+            "replay_container_enabled": bool(partial_reduce_enabled),
+            "trailing_partial_reduce_enabled": bool(
+                trailing_partial_reduce_enabled
+            ),
+            "note": (
+                "The default replay container is on for shared production "
+                "position-action policies, but rejected pure trailing trims "
+                "remain disabled by production_parity unless explicitly "
+                "enabled for diagnostics."
+            ),
+        },
+        "rejected_simple_replay": {
+            "experiment_id": "exp-20260429-032",
+            "tested_change": (
+                "reinterpret target_price as SIGNAL_TARGET 33% partial reduce"
+            ),
+            "decision": "rejected",
+            "reason": (
+                "EV and PnL regressed in all three fixed windows; do not "
+                "retry bare SIGNAL_TARGET trim variants without a complete "
+                "shared lifecycle policy."
+            ),
+        },
+        "recommended_next_step": (
+            "Use exit_advisory_shadow_attribution before promoting any "
+            "executable shared exit lifecycle."
+        ),
+    }
+
+
+def build_pending_action_replay_bias(data_dir):
+    """Describe the production pending-action ledger gap without using it."""
+    path = os.path.join(data_dir, "pending_actions.json")
+    payload = None
+    if os.path.exists(path):
+        try:
+            with open(path, encoding="utf-8") as f:
+                payload = json.load(f)
+        except Exception:
+            payload = None
+
+    actions = []
+    if isinstance(payload, dict) and isinstance(payload.get("pending_actions"), list):
+        actions = payload.get("pending_actions") or []
+    elif isinstance(payload, list):
+        actions = payload
+
+    open_actions = [
+        action for action in actions
+        if isinstance(action, dict) and action.get("status", "open") == "open"
+    ]
+
+    def _count_action(kind):
+        return sum(
+            1 for action in open_actions
+            if str(action.get("action", "")).upper() == kind
+        )
+
+    return {
+        "gap_present": True,
+        "ledger_present": os.path.exists(path),
+        "ledger_path": path if os.path.exists(path) else None,
+        "ledger_updated_at": payload.get("updated_at") if isinstance(payload, dict) else None,
+        "open_actions_count": len(open_actions),
+        "open_reduce_actions_count": _count_action("REDUCE"),
+        "open_exit_actions_count": _count_action("EXIT"),
+        "historical_replay_enabled": False,
+        "production_behavior": (
+            "pending_actions.apply_pending_action_overrides can preserve "
+            "unexecuted REDUCE/EXIT advice across daily runs."
+        ),
+        "backtester_behavior": (
+            "canonical backtests do not replay the current pending_actions "
+            "ledger because it is not a point-in-time historical account log."
+        ),
+        "next_step": (
+            "Only promote this to replay after daily point-in-time action "
+            "ledger snapshots exist and can be matched to simulated positions."
+        ),
+    }
+
+
+def build_earnings_event_data_quality(earnings_snapshots, sim_dates):
+    """Summarize earnings snapshot availability for Strategy C disclosure."""
+    snapshots = earnings_snapshots or {}
+    snapshot_dates = sorted(snapshots)
+
+    def _date_key(value):
+        if hasattr(value, "strftime"):
+            return value.strftime("%Y%m%d")
+        return str(value).replace("-", "")[:8]
+
+    sim_date_keys = [_date_key(day) for day in (sim_dates or [])]
+    exact_snapshot_dates = [
+        date_key for date_key in sim_date_keys
+        if date_key in snapshots
+    ]
+    walk_forward_dates = []
+    for date_key in sim_date_keys:
+        if any(snapshot_date <= date_key for snapshot_date in snapshot_dates):
+            walk_forward_dates.append(date_key)
+
+    row_count = 0
+    eps_rows = 0
+    surprise_rows = 0
+    for snapshot in snapshots.values():
+        if not isinstance(snapshot, dict):
+            continue
+        for item in snapshot.values():
+            if not isinstance(item, dict):
+                continue
+            row_count += 1
+            if item.get("eps_estimate") is not None:
+                eps_rows += 1
+            if (
+                item.get("avg_historical_surprise_pct") is not None
+                or bool(item.get("historical_surprise_pct"))
+            ):
+                surprise_rows += 1
+
+    trading_days = len(sim_date_keys)
+    has_snapshots = bool(snapshot_dates)
+    return {
+        "days_to_earnings_source": (
+            "yfinance calendar plus walk-forward simulation date"
+        ),
+        "snapshot_archive_present": has_snapshots,
+        "snapshot_count": len(snapshot_dates),
+        "first_snapshot_date": snapshot_dates[0] if snapshot_dates else None,
+        "last_snapshot_date": snapshot_dates[-1] if snapshot_dates else None,
+        "exact_snapshot_coverage_fraction": (
+            round(len(exact_snapshot_dates) / trading_days, 4)
+            if trading_days else 0.0
+        ),
+        "walk_forward_snapshot_coverage_fraction": (
+            round(len(walk_forward_dates) / trading_days, 4)
+            if trading_days else 0.0
+        ),
+        "snapshot_rows_total": row_count,
+        "snapshot_rows_with_eps_estimate": eps_rows,
+        "snapshot_rows_with_surprise_history": surprise_rows,
+        "eps_estimate": (
+            "snapshot-backed when available; None before first snapshot or "
+            "for uncovered tickers"
+        ),
+        "positive_surprise_history": (
+            "derived from avg_historical_surprise_pct when snapshot-backed; "
+            "None before first snapshot or for uncovered tickers"
+        ),
+        "confidence_cap_when_missing_snapshot": 0.83,
+        "legacy_gap_resolved": has_snapshots,
+        "remaining_gap": (
+            "coverage/ticker-level sparsity, not an always-None field"
+            if has_snapshots else
+            "no earnings snapshots available in data_dir"
+        ),
+        "note": (
+            "Do not describe Strategy C as days_to_earnings-only when "
+            "snapshot_archive_present is true; use the coverage fields above."
+        ),
+    }
+
+
+def build_exit_advisory_shadow_attribution(events, closed_trades):
+    """Summarize production advisory exit rules without changing fills."""
+    by_rule = {}
+    for event in events:
+        rule = event.get("rule")
+        if not rule:
+            continue
+        bucket = by_rule.setdefault(rule, {
+            "daily_triggers": 0,
+            "unique_trades": set(),
+            "first_trigger_trades": set(),
+            "sample_events": [],
+        })
+        bucket["daily_triggers"] += 1
+        trade_key = event.get("trade_key")
+        if trade_key:
+            bucket["unique_trades"].add(trade_key)
+            if event.get("is_first_for_trade"):
+                bucket["first_trigger_trades"].add(trade_key)
+        if len(bucket["sample_events"]) < 10:
+            bucket["sample_events"].append(event)
+
+    for trade in closed_trades:
+        trade_key = trade.get("trade_key")
+        for rule in trade.get("exit_advisory_rules_seen", []):
+            bucket = by_rule.setdefault(rule, {
+                "daily_triggers": 0,
+                "unique_trades": set(),
+                "first_trigger_trades": set(),
+                "sample_events": [],
+            })
+            outcome = bucket.setdefault("outcome", {
+                "closed_trades": 0,
+                "wins": 0,
+                "pnl": 0.0,
+                "exit_reasons": {},
+            })
+            outcome["closed_trades"] += 1
+            pnl = float(trade.get("pnl", 0.0) or 0.0)
+            outcome["pnl"] += pnl
+            if pnl > 0:
+                outcome["wins"] += 1
+            exit_reason = trade.get("exit_reason", "unknown")
+            outcome["exit_reasons"][exit_reason] = (
+                outcome["exit_reasons"].get(exit_reason, 0) + 1
+            )
+            if trade_key:
+                bucket["unique_trades"].add(trade_key)
+
+    serializable = {}
+    for rule, bucket in sorted(by_rule.items()):
+        outcome = bucket.get("outcome", {
+            "closed_trades": 0,
+            "wins": 0,
+            "pnl": 0.0,
+            "exit_reasons": {},
+        })
+        closed_n = outcome["closed_trades"]
+        serializable[rule] = {
+            "daily_triggers": bucket["daily_triggers"],
+            "unique_trades": len(bucket["unique_trades"]),
+            "first_trigger_trades": len(bucket["first_trigger_trades"]),
+            "outcome": {
+                "closed_trades": closed_n,
+                "wins": outcome["wins"],
+                "win_rate": round(outcome["wins"] / closed_n, 4)
+                if closed_n else None,
+                "pnl": round(outcome["pnl"], 2),
+                "avg_pnl": round(outcome["pnl"] / closed_n, 2)
+                if closed_n else None,
+                "exit_reasons": outcome["exit_reasons"],
+            },
+            "sample_events": bucket["sample_events"],
+        }
+
+    return {
+        "enabled": True,
+        "mode": "shadow_only_no_trade_execution",
+        "rules_observed": sorted(serializable.keys()),
+        "total_daily_triggers": len(events),
+        "by_rule": serializable,
+        "notes": [
+            "Computed from production position_manager advisory rules using backtest positions and daily close.",
+            "No fills, position sizes, stops, targets, or metrics are changed by this attribution.",
+            "Use this to choose candidate exit lifecycle experiments; it is not counterfactual PnL.",
+        ],
+    }
 
 
 def should_cancel_gap(fill_price, signal_entry, sig=None, today=None, ohlcv_all=None):
@@ -553,7 +855,8 @@ class Position:
                  "regime_exit_bucket", "regime_exit_score",
                  "sizing_multipliers", "base_risk_pct", "actual_risk_pct",
                  "original_shares", "addon_done", "addon_count",
-                 "addon_shares", "addon_cost")
+                 "addon_shares", "addon_cost", "exit_advisory_rules_seen",
+                 "exit_advisory_first_seen")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
@@ -585,6 +888,8 @@ class Position:
         self.addon_count = 0
         self.addon_shares = 0
         self.addon_cost = 0.0
+        self.exit_advisory_rules_seen = set()
+        self.exit_advisory_first_seen = {}
 
 
 class BacktestEngine:
@@ -951,6 +1256,7 @@ class BacktestEngine:
         partial_reduce_scheduled_count = 0
         partial_reduce_executed_count = 0
         partial_reduce_skipped_count = 0
+        exit_advisory_shadow_events = []
         scarce_slot_breakout_deferred_count = 0
         scarce_slot_deferred_events = []
 
@@ -1285,6 +1591,62 @@ class BacktestEngine:
                     "shares_to_sell": shares_to_sell,
                 })
 
+        def _record_exit_advisory_shadow(pos, today, df, close):
+            entry_ts = pd.Timestamp(pos.entry_date)
+            history = df.loc[(df.index >= entry_ts) & (df.index <= today)]
+            if history.empty:
+                high_since_entry = max(pos.high_water, close)
+                days_held = 0
+            else:
+                high_since_entry = float(history["High"].max())
+                days_held = max(len(history.index) - 1, 0)
+
+            exit_levels = compute_exit_levels(
+                pos.entry_price,
+                atr=pos.atr,
+                override_stop_price=pos.stop_price,
+                current_price=close,
+                signal_target_price=pos.target_price,
+            )
+            advisory = evaluate_exit_signals(
+                close,
+                pos.entry_price,
+                exit_levels,
+                high_water_mark=high_since_entry,
+                legacy_basis=False,
+                days_held=days_held,
+            )
+            trade_key = (
+                f"{pos.ticker}:"
+                f"{entry_ts.date() if hasattr(entry_ts, 'date') else entry_ts}:"
+                f"{pos.entry_price:.4f}"
+            )
+            for triggered in advisory.get("triggered_rules", []):
+                rule = triggered.get("rule")
+                if rule not in EXIT_POLICY_SHADOW_RULES:
+                    continue
+                is_first = rule not in pos.exit_advisory_rules_seen
+                if is_first:
+                    pos.exit_advisory_first_seen[rule] = str(today.date())
+                pos.exit_advisory_rules_seen.add(rule)
+                exit_advisory_shadow_events.append({
+                    "date": str(today.date()),
+                    "ticker": pos.ticker,
+                    "strategy": pos.strategy,
+                    "sector": pos.sector,
+                    "trade_key": trade_key,
+                    "rule": rule,
+                    "urgency": triggered.get("urgency"),
+                    "is_first_for_trade": is_first,
+                    "close": round(close, 4),
+                    "entry_price": round(pos.entry_price, 4),
+                    "unrealized_pct": round(
+                        (close - pos.entry_price) / pos.entry_price, 6
+                    ) if pos.entry_price else None,
+                    "days_held": days_held,
+                    "high_since_entry": round(high_since_entry, 4),
+                })
+
         def _schedule_followthrough_addons(today):
             nonlocal addon_scheduled_count, addon_checkpoint_rejected_count
             if not addon_enabled:
@@ -1473,10 +1835,13 @@ class BacktestEngine:
                 opn  = float(row["Open"].item()  if hasattr(row["Open"],  "item") else row["Open"])
                 low  = float(row["Low"].item()   if hasattr(row["Low"],   "item") else row["Low"])
                 high = float(row["High"].item()  if hasattr(row["High"],  "item") else row["High"])
+                close = float(row["Close"].item() if hasattr(row["Close"], "item") else row["Close"])
 
                 exit_price    = None      # slippage-adjusted fill
                 exit_raw_price = None     # theoretical trigger level (pre-slippage)
                 exit_reason   = None
+
+                _record_exit_advisory_shadow(pos, today, df, close)
 
                 # Trailing stop logic: update high_water, check activation,
                 # dynamically raise stop if trailing is active.
@@ -1519,6 +1884,11 @@ class BacktestEngine:
                     initial_risk_pct = (((pos.entry_price - pos.stop_price) / pos.entry_price)
                                         if pos.stop_price and pos.entry_price else None)
                     closed.append({
+                        "trade_key": (
+                            f"{pos.ticker}:"
+                            f"{pd.Timestamp(pos.entry_date).date()}:"
+                            f"{pos.entry_price:.4f}"
+                        ),
                         "ticker":           pos.ticker,
                         "strategy":         pos.strategy,
                         "sector":           pos.sector,
@@ -1542,6 +1912,8 @@ class BacktestEngine:
                         "addon_shares":     pos.addon_shares,
                         "addon_cost":       round(pos.addon_cost, 2),
                         "exit_reason":      exit_reason,
+                        "exit_advisory_rules_seen": sorted(pos.exit_advisory_rules_seen),
+                        "exit_advisory_first_seen": dict(pos.exit_advisory_first_seen),
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                         "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
                     })
@@ -1981,6 +2353,11 @@ class BacktestEngine:
             initial_risk_pct = (((pos.entry_price - pos.stop_price) / pos.entry_price)
                                 if pos.stop_price and pos.entry_price else None)
             closed.append({
+                "trade_key": (
+                    f"{pos.ticker}:"
+                    f"{pd.Timestamp(pos.entry_date).date()}:"
+                    f"{pos.entry_price:.4f}"
+                ),
                 "ticker":           pos.ticker,
                 "strategy":         pos.strategy,
                 "sector":           pos.sector,
@@ -2004,6 +2381,8 @@ class BacktestEngine:
                 "addon_shares":     pos.addon_shares,
                 "addon_cost":       round(pos.addon_cost, 2),
                 "exit_reason":      "end_of_backtest",
+                "exit_advisory_rules_seen": sorted(pos.exit_advisory_rules_seen),
+                "exit_advisory_first_seen": dict(pos.exit_advisory_first_seen),
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                 "exit_date":   str(last_day.date()),
             })
@@ -2203,16 +2582,30 @@ class BacktestEngine:
                 "candidate_signals_covered":        llm_signals_presented,
                 "candidate_signals_total":          total_signals_survived,
             },
+            "exit_policy_unreplayed": build_exit_policy_replay_bias(
+                partial_reduce_enabled=partial_reduce_enabled,
+                trailing_partial_reduce_enabled=self.config.get(
+                    "TRAILING_PARTIAL_REDUCE_ENABLED",
+                    TRAILING_PARTIAL_REDUCE_ENABLED,
+                ),
+            ),
             "partial_reduce_replay": {
                 "enabled": partial_reduce_enabled,
                 "shared_policy": "production_parity.py",
-                "default_behavior": "off",
+                "default_behavior": (
+                    "on_for_replay_container; pure_trailing_trims_disabled"
+                ),
                 "note": (
-                    "Production position_actions are replayed only when "
-                    "REPLAY_PARTIAL_REDUCES/--replay-partial-reduces is enabled."
+                    "Production position-action replay hooks are enabled by "
+                    "default, but production_parity.py may return 0% for "
+                    "advisory rules that have not been accepted for execution."
                 ),
             },
+            "pending_action_replay_unreplayed": build_pending_action_replay_bias(
+                self.data_dir
+            ),
             "survivorship_bias_universe":  True,
+            # Legacy placeholder overwritten below by live snapshot coverage.
             # Earnings strategy data quality: only days_to_earnings is historically
             # reconstructable from yfinance calendar. eps_estimate and
             # positive_surprise_history are always None in backtest (no snapshot
@@ -2231,12 +2624,35 @@ class BacktestEngine:
             "notes": [
                 "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
-                "Trailing partial reduces: production policy is shared; backtest replay is opt-in to preserve historical baseline comparability",
+                "Exit policy: production advisory SIGNAL_TARGET/ladder/time-stop actions are disclosed under exit_policy_unreplayed and are not executed by default backtests",
+                "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
                 "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
                 "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
             ],
         }
+        # Refresh legacy earnings disclosure after the dict literal so older
+        # comments/keys cannot keep reporting snapshot-backed fields as absent.
+        known_biases["earnings_event_long_data_quality"] = (
+            build_earnings_event_data_quality(
+                self._earnings_snapshots,
+                sim_dates,
+            )
+        )
+        known_biases["notes"] = [
+            note for note in known_biases["notes"]
+            if not note.startswith("earnings_event_long: runs with partial data")
+        ]
+        known_biases["notes"].append(
+            "Pending actions: production can preserve unexecuted REDUCE/EXIT "
+            "through pending_actions.json; canonical backtests disclose but "
+            "do not replay the current ledger"
+        )
+        known_biases["notes"].append(
+            "earnings_event_long: uses earnings snapshots when present; "
+            "remaining bias is coverage/ticker sparsity, not always-missing "
+            "eps/surprise fields"
+        )
         capital_efficiency = _build_capital_efficiency(
             closed,
             self.config["INITIAL_CAPITAL"],
@@ -2400,7 +2816,7 @@ class BacktestEngine:
             "notes": [
                 "Counts include only days where llm_prompt_resp_YYYYMMDD.json was present.",
                 "candidate_* metrics measure coverage over actual pre-LLM candidates, which is the relevant readiness gauge for LLM alpha experiments.",
-                "position_actions are replayed only for opt-in shared policies such as --replay-partial-reduces.",
+                "LLM position_actions and pending_actions.json are not replayed by canonical backtests; see known_biases.pending_action_replay_unreplayed.",
                 "by_strategy shows per-strategy veto breakdown to quantify LLM selectivity.",
             ],
         }
@@ -2502,12 +2918,16 @@ class BacktestEngine:
             "skipped": partial_reduce_skipped_count,
             "events": partial_reduce_events,
             "notes": [
-                "Opt-in replay of production trailing stop position_actions.",
+                "Default-on replay container for implemented shared production position-action policies.",
                 "Trigger uses production high-water pct stop on daily close; fill uses next ticker open with stop-side slippage.",
                 "Reduce percentage and share rounding come from production_parity.py.",
-                "Default is disabled so legacy backtests remain byte-for-byte comparable unless the flag is supplied.",
+                "Pure trailing trims remain disabled by shared policy unless explicitly enabled for diagnostics.",
             ],
         }
+        exit_advisory_shadow_attribution = build_exit_advisory_shadow_attribution(
+            exit_advisory_shadow_events,
+            closed,
+        )
         scarce_slot_attribution = {
             "defer_breakout_when_slots_lte": self.config.get(
                 "DEFER_BREAKOUT_WHEN_SLOTS_LTE"
@@ -2555,6 +2975,7 @@ class BacktestEngine:
             "news_attribution":    news_attribution,
             "addon_attribution":   addon_attribution,
             "partial_reduce_attribution": partial_reduce_attribution,
+            "exit_advisory_shadow_attribution": exit_advisory_shadow_attribution,
             "scarce_slot_attribution": scarce_slot_attribution,
             "entry_execution_attribution": entry_execution_attribution,
             "equity_curve_integrity": equity_curve_integrity,
@@ -2571,7 +2992,14 @@ class BacktestEngine:
                     "live runs are still accepted here. Treat metrics as an "
                     "OPTIMISTIC upper bound.",
                 ]
-            ),
+            )
+            + [
+                "exit_policy_unreplayed: production advisory SIGNAL_TARGET, "
+                "profit-ladder, time-stop, and pending "
+                "REDUCE/EXIT actions are disclosed but not executed by "
+                "default backtests; target_price is a full-position simulated "
+                "target exit in backtest."
+            ],
             "equity_curve":        equity_curve,
             "trades":              closed,
         }
@@ -2932,12 +3360,14 @@ def main():
                         help="Apply T1-negative news veto using "
                              "data/clean_trade_news_YYYYMMDD.json when the file exists. "
                              "Default: off.")
-    parser.add_argument("--replay-partial-reduces", action="store_true",
-                        help="Replay production trailing-stop partial reduce actions. "
-                             "Default: off.")
-    parser.add_argument("--regime-aware-exit", action="store_true",
-                        help="Use the entry-day regime exit profile to set ATR target width. "
-                             "Default: off.")
+    parser.add_argument("--replay-partial-reduces",
+                        action=argparse.BooleanOptionalAction,
+                        default=True,
+                        help="Replay production position-action policy. Default: on.")
+    parser.add_argument("--regime-aware-exit",
+                        action=argparse.BooleanOptionalAction,
+                        default=True,
+                        help="Use the entry-day regime exit profile to set ATR target width. Default: on.")
     parser.add_argument("--ohlcv-snapshot", type=str, default=None,
                         help="Load OHLCV from a saved snapshot JSON instead of live yfinance.")
     parser.add_argument("--save-ohlcv-snapshot", type=str, default=None,

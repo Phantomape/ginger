@@ -1,0 +1,51 @@
+{
+  "experiment_id": "exp-20260430-020",
+  "timestamp": "2026-04-30T23:55:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "hypothesis": "Risk-on Commodities signals may deserve a larger final risk budget because current accepted-stack trade attribution shows Commodities as the most stable positive sleeve, while the known weak SLV shape occurs in defensive state.",
+  "change_type": "capital_allocation",
+  "component": "runtime-only monkeypatch of portfolio_engine.size_signals; no strategy code kept",
+  "parameters": {
+    "single_causal_variable": "final risk budget for sector == Commodities and regime_exit_bucket == risk_on",
+    "tested_final_multipliers": {"risk_on_commodities_1_8x": 1.8, "risk_on_commodities_2_0x": 2.0}
+  },
+  "date_range": {"start": "2025-10-23", "end": "2026-04-21"},
+  "secondary_windows": [
+    {"start": "2025-04-23", "end": "2025-10-22"},
+    {"start": "2024-10-02", "end": "2025-04-22"}
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "best_variant": "risk_on_commodities_2_0x",
+    "late_strong": {"expected_value_score": 2.6604, "sharpe_daily": 4.28, "total_pnl": 62157.51, "max_drawdown_pct": 0.0437, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.1817, "sharpe_daily": 0.10, "total_pnl": 2853.32, "max_drawdown_pct": -0.0002, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": 0.1817, "total_pnl_delta_sum": 2853.32, "total_pnl_delta_pct": 0.0243, "windows_improved": 1, "windows_regressed": 0}
+  },
+  "llm_metrics": {"used_llm": false},
+  "production_impact": {"shared_policy_changed": false, "backtester_adapter_changed": false, "run_adapter_changed": false, "replay_only": false, "parity_test_added": false},
+  "rejection_reason": "Rejected by multi-window robustness: only late_strong improved; mid_weak and old_thin were unchanged because position caps already constrained realized sizing.",
+  "next_retry_requires": [
+    "Do not retry nearby risk_on Commodities final multipliers without cap/headroom evidence.",
+    "A valid retry must move realized shares in at least two fixed windows.",
+    "Forward evidence is needed before increasing commodity concentration further."
+  ],
+  "related_files": [
+    "data/experiments/exp-20260430-020/exp_20260430_020_risk_on_commodities_final_budget.json"
+  ]
+}

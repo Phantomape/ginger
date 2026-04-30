@@ -1,0 +1,142 @@
+{
+  "experiment_id": "exp-20260430-003",
+  "timestamp": "2026-04-30T19:08:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "The accepted one-slot breakout deferral might be too broad after the newer sizing stack, so restricting it by market-state extension could preserve the mid/old slot-routing benefit without unnecessary deferrals.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited; this test used deterministic shared production/backtest config already implemented in production_parity.py.",
+  "pre_experiment_checks": {
+    "mechanism_insight_conflicts_checked": true,
+    "avoided_recent_do_not_repeat_families": [
+      "No C strategy single-field repair.",
+      "No OHLCV-only new entry replay.",
+      "No Technology trend score-band haircut.",
+      "No nearby risk_on score-bucket multiplier tuning.",
+      "No global MAX_POSITIONS sweep."
+    ],
+    "candidate_alpha_hypothesis": "Scarce-slot breakout deferral eligibility is a capital-allocation alpha lever because it changes which already-generated sleeve gets scarce portfolio slots."
+  },
+  "parameters": {
+    "single_causal_variable": "scarce-slot breakout deferral eligibility",
+    "baseline": {
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+      "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": null
+    },
+    "tested_values": {
+      "disable_scarce_slot_deferral": {
+        "DEFER_BREAKOUT_WHEN_SLOTS_LTE": null
+      },
+      "state_cap_deferral_min_index_le_0": {
+        "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+        "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": 0.0
+      },
+      "state_cap_deferral_min_index_le_005": {
+        "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+        "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": 0.05
+      }
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "all sizing multipliers"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "breakouts_deferred": 0},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "breakouts_deferred": 4},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "breakouts_deferred": 8}
+  },
+  "after_metrics": {
+    "best_variant": "none",
+    "disable_scarce_slot_deferral": {
+      "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "breakouts_deferred": 0},
+      "mid_weak": {"expected_value_score": 0.8404, "sharpe_daily": 2.24, "total_pnl": 37523.67, "max_drawdown_pct": 0.0616, "win_rate": 0.5, "trade_count": 22, "survival_rate": 0.8077, "breakouts_deferred": 0},
+      "old_thin": {"expected_value_score": 0.2028, "sharpe_daily": 1.17, "total_pnl": 17334.5, "max_drawdown_pct": 0.0666, "win_rate": 0.3913, "trade_count": 23, "survival_rate": 0.8929, "breakouts_deferred": 0}
+    },
+    "state_cap_deferral_min_index_le_0": {
+      "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "breakouts_deferred": 0},
+      "mid_weak": {"expected_value_score": 0.8404, "sharpe_daily": 2.24, "total_pnl": 37523.67, "max_drawdown_pct": 0.0616, "win_rate": 0.5, "trade_count": 22, "survival_rate": 0.8077, "breakouts_deferred": 0},
+      "old_thin": {"expected_value_score": 0.2028, "sharpe_daily": 1.17, "total_pnl": 17334.5, "max_drawdown_pct": 0.0666, "win_rate": 0.3913, "trade_count": 23, "survival_rate": 0.8929, "breakouts_deferred": 0}
+    },
+    "state_cap_deferral_min_index_le_005": {
+      "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "breakouts_deferred": 0},
+      "mid_weak": {"expected_value_score": 0.8404, "sharpe_daily": 2.24, "total_pnl": 37523.67, "max_drawdown_pct": 0.0616, "win_rate": 0.5, "trade_count": 22, "survival_rate": 0.8077, "breakouts_deferred": 0},
+      "old_thin": {"expected_value_score": 0.2028, "sharpe_daily": 1.17, "total_pnl": 17334.5, "max_drawdown_pct": 0.0666, "win_rate": 0.3913, "trade_count": 23, "survival_rate": 0.8929, "breakouts_deferred": 0}
+    }
+  },
+  "delta_metrics": {
+    "disable_or_state_cap_variants": {
+      "late_strong": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+      "mid_weak": {"expected_value_score": -0.163, "sharpe_daily": -0.31, "total_pnl": -1822.76, "max_drawdown_pct": 0.0, "win_rate": -0.0238, "trade_count": 1, "survival_rate": 0.0152},
+      "old_thin": {"expected_value_score": -0.0239, "sharpe_daily": -0.05, "total_pnl": -1249.58, "max_drawdown_pct": -0.0025, "win_rate": -0.0178, "trade_count": 1, "survival_rate": -0.0238},
+      "aggregate": {"expected_value_score_delta_sum": -0.1869, "total_pnl_delta_sum": -3072.34, "windows_ev_improved": 0, "windows_ev_regressed": 2, "windows_unchanged": 1}
+    }
+  },
+  "gate4_basis": "Rejected and no source change kept. Every restriction of the accepted one-slot breakout deferral was equivalent to disabling it in the canonical windows: late_strong was unchanged, but mid_weak and old_thin EV/PnL regressed.",
+  "mechanism_insight": "The current one-slot breakout deferral remains useful after the newer sizing stack. The benefit is not limited to an obvious index-extension state; simple min(SPY, QQQ) distance caps remove all useful deferrals in mid_weak and old_thin.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_config_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this deterministic shared allocation hook was tested instead."
+  },
+  "side_observation_not_part_of_decision": {
+    "disable_addon": {
+      "late_strong": {"expected_value_score": 2.4682, "total_pnl": 59190.73},
+      "mid_weak": {"expected_value_score": 0.978, "total_pnl": 37334.17},
+      "old_thin": {"expected_value_score": 0.2267, "total_pnl": 18584.08},
+      "note": "Disabling add-ons did not improve aggregate EV or PnL; this was a screening observation, not the promoted causal variable."
+    }
+  },
+  "rejection_reason": "The tested state caps made the rule inert in the windows where it adds value, regressing aggregate EV by -0.1869 and PnL by -$3072.34.",
+  "do_not_repeat_without_new_evidence": [
+    "Disabling one-slot breakout deferral",
+    "Simple min(SPY, QQQ) pct-from-200MA caps for one-slot breakout deferral",
+    "Treating current scarce-slot deferral as stale just because later sizing rules were accepted"
+  ],
+  "next_retry_requires": [
+    "A different, production-shared discriminator such as candidate forward-quality context or persisted sector-state fields",
+    "Forward/paper evidence that the deferred breakouts are no longer marginally weak",
+    "A materiality unlock that preserves mid_weak and old_thin benefits without damaging late_strong"
+  ],
+  "related_files": [
+    "quant/production_parity.py",
+    "quant/backtester.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiments/logs/exp-20260430-003.json",
+    "docs/experiments/tickets/exp-20260430-003.json"
+  ]
+}

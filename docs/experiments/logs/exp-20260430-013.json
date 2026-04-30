@@ -1,0 +1,78 @@
+{
+  "experiment_id": "exp-20260430-013",
+  "timestamp": "2026-04-30T00:00:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "measurement_repair",
+  "change_type": "exit_advisory_simplification",
+  "hypothesis": "After exp-20260430-012 rejected APPROACHING_HARD_STOP as an executable warning, continuing to generate it as advisory context adds prompt noise without proven alpha value.",
+  "alpha_hypothesis_category": "exit",
+  "parameters": {
+    "single_causal_variable": "remove APPROACHING_HARD_STOP from generated advisory exit rules",
+    "strategy_behavior_changed": false,
+    "deterministic_backtest_fill_logic_changed": false,
+    "production_prompt_context_changed": true,
+    "shared_reduce_mapping_changed": {
+      "APPROACHING_HARD_STOP": "0% reduce"
+    },
+    "anti_repeat_guardrail": "exp-20260430-012"
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": []
+  },
+  "market_regime_summary": {
+    "late_strong": "used for deterministic no-metric-drift check"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "basis": "deterministic stop/target execution unchanged"
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "This removes noisy advisory context from future LLM prompts; historical LLM impact cannot be replayed without archives."
+  },
+  "decision_reason": "Accepted as simplification: the rule's executable replay was rejected, it has no deterministic backtest benefit, and keeping it as advisory context risks LLM prompt noise.",
+  "risk": "If future LLM prompt archives show this warning improves discretionary exits, it can be reintroduced behind a more specific discriminator.",
+  "do_not_repeat_without_new_evidence": [
+    "Reintroducing APPROACHING_HARD_STOP as a standalone generated rule",
+    "Mapping APPROACHING_HARD_STOP directly to REDUCE/EXIT without a discriminator"
+  ],
+  "related_files": [
+    "quant/position_manager.py",
+    "quant/production_parity.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "quant/test_production_parity.py",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "experiment_id": "exp-20260430-007",
+  "timestamp": "2026-04-30T22:15:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "The same-day sector cap might be suppressing existing A/B alpha in strong leadership clusters; changing MAX_PER_SECTOR could release or protect alpha without adding entries, exits, LLM behavior, or universe noise.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited, so this tested a deterministic production-shared allocation knob instead.",
+  "parameters": {
+    "single_causal_variable": "MAX_PER_SECTOR",
+    "baseline": {
+      "MAX_PER_SECTOR": 2
+    },
+    "tested_values": {
+      "tighten_same_day_sector_cap": 1,
+      "loosen_same_day_sector_cap": 3
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "all sizing multipliers",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "universe"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "MAX_PER_SECTOR_1": {
+      "late_strong": {"expected_value_score": 1.9576, "sharpe_daily": 4.36, "total_pnl": 44898.01, "max_drawdown_pct": 0.0365, "win_rate": 0.7059, "trade_count": 17, "survival_rate": 0.7647},
+      "mid_weak": {"expected_value_score": 0.9429, "sharpe_daily": 2.48, "total_pnl": 38016.04, "max_drawdown_pct": 0.0616, "win_rate": 0.5, "trade_count": 22, "survival_rate": 0.7358},
+      "old_thin": {"expected_value_score": 0.1518, "sharpe_daily": 1.03, "total_pnl": 14742.12, "max_drawdown_pct": 0.1042, "win_rate": 0.381, "trade_count": 21, "survival_rate": 0.8596}
+    },
+    "MAX_PER_SECTOR_3": {
+      "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+      "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.8302},
+      "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9333}
+    }
+  },
+  "expected_value_score_delta": {
+    "MAX_PER_SECTOR_1": {
+      "late_strong": -0.5211,
+      "mid_weak": -0.0605,
+      "old_thin": -0.0749,
+      "aggregate": -0.6565
+    },
+    "MAX_PER_SECTOR_3": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0,
+      "aggregate": 0.0
+    }
+  },
+  "delta_metrics": {
+    "MAX_PER_SECTOR_1": {
+      "aggregate_total_pnl_delta": -19578.53,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 3
+    },
+    "MAX_PER_SECTOR_3": {
+      "aggregate_total_pnl_delta": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_unchanged": 3,
+      "note": "Only survival_rate changed in mid_weak and old_thin; trade count, EV, PnL, drawdown, and win rate were unchanged."
+    }
+  },
+  "gate4_basis": "Rejected and not promoted. Tightening the same-day sector cap materially damaged all three fixed windows; loosening it to 3 was inert on executed trades and failed every Gate 4 improvement criterion.",
+  "mechanism_insight": "The current same-day sector cap is not the binding alpha bottleneck. Sector clustering that survives the accepted stack is valuable enough that tightening to 1 removes winners, while loosening to 3 does not release additional executable PnL under the current slot and heat stack.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_config_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this deterministic capital-allocation alpha was tested instead."
+  },
+  "rejection_reason": "MAX_PER_SECTOR=1 regressed aggregate EV by -0.6565 and aggregate PnL by -$19,578.53; MAX_PER_SECTOR=3 produced no executed-trade metric improvement.",
+  "do_not_repeat_without_new_evidence": [
+    "Global MAX_PER_SECTOR tightening to 1",
+    "Global MAX_PER_SECTOR loosening to 3",
+    "Using candidate survival-rate improvement alone as evidence for same-day sector-cap alpha"
+  ],
+  "next_retry_requires": [
+    "A state-specific sector crowding discriminator that changes executed trades, not just candidate survival",
+    "Forward evidence that a third same-day sector entry has better opportunity cost than the existing selected candidate",
+    "A production-shared ranking signal that chooses among same-sector candidates rather than changing the global cap"
+  ],
+  "artifacts": [
+    "data/experiments/exp-20260430-007/max_per_sector_sweep.json"
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260430-007.json",
+    "docs/experiments/tickets/exp-20260430-007.json"
+  ]
+}

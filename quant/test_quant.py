@@ -683,7 +683,23 @@ def test_evaluate_exit_signals_hard_stop_critical():
     assert "HARD_STOP" in rules
 
 
-def test_evaluate_exit_signals_trailing_stop():
+def test_evaluate_exit_signals_does_not_emit_approaching_hard_stop():
+    """APPROACHING_HARD_STOP was removed after exp-20260430-012."""
+    from position_manager import evaluate_exit_signals, compute_exit_levels
+
+    levels = compute_exit_levels(avg_cost=100.0)
+    result = evaluate_exit_signals(
+        current_price=88.2,
+        avg_cost=100.0,
+        exit_levels=levels,
+    )
+
+    rules = [r["rule"] for r in result["triggered_rules"]]
+    assert "HARD_STOP" not in rules
+    assert "APPROACHING_HARD_STOP" not in rules
+
+
+def test_evaluate_exit_signals_does_not_emit_pure_trailing_stop():
     from position_manager import evaluate_exit_signals, compute_exit_levels
     levels = compute_exit_levels(avg_cost=100.0)
     # High water mark 200, trailing stop = 200 × 0.92 = 184; current = 183 → triggered
@@ -692,7 +708,7 @@ def test_evaluate_exit_signals_trailing_stop():
         high_water_mark=200.0
     )
     rules = [r["rule"] for r in result["triggered_rules"]]
-    assert "TRAILING_STOP" in rules
+    assert "TRAILING_STOP" not in rules
 
 
 def test_evaluate_exit_signals_hold():
@@ -3842,11 +3858,11 @@ def test_preflight_trailing_stop_only_no_longer_forces_reduce():
     result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
 
     assert result["position_states"].get("TEST") == "HOLD", (
-        "Expected TEST to be HIGH_REDUCE given TRAILING_STOP HIGH urgency"
+        "Expected pure TRAILING_STOP to remain HOLD after disabling daily partial reduces"
     )
     assert "TEST" not in result["suggested_reduce_pct"], (
         "HIGH_REDUCE position 'TEST' is missing from suggested_reduce_pct — "
-        "LLM will fall back to prose table lookup"
+        "Pure TRAILING_STOP should not emit a suggested_reduce_pct after disabling daily trims"
     )
     ts["signals"]["TEST"]["position"]["exit_signals"]["triggered_rules"] = [
         {"rule": "ATR_STOP", "urgency": "HIGH", "message": "ATR stop hit"}
@@ -5969,6 +5985,14 @@ def test_backtester_run_returns_by_strategy(monkeypatch):
     test_df = _flat_then_trigger_df(idx, trigger_open=112.0,
                                     trigger_high=113.0, trigger_low=112.0)
     engine = _backtest_harness(monkeypatch, test_df, spy_df)
+    engine._earnings_snapshots = {
+        "20251001": {
+            "TEST": {
+                "eps_estimate": 1.0,
+                "avg_historical_surprise_pct": 2.0,
+            }
+        }
+    }
     result = engine.run()
 
     assert "by_strategy" in result
@@ -6358,8 +6382,33 @@ def test_backtester_emits_known_biases_and_integrity(monkeypatch):
     assert llm_gate.get("enabled") is False
     assert "coverage_fraction" in llm_gate
     assert isinstance(llm_gate.get("dates_covered"), list)
+    exit_policy = kb.get("exit_policy_unreplayed")
+    assert isinstance(exit_policy, dict)
+    assert exit_policy.get("gap_present") is True
+    assert "SIGNAL_TARGET" in exit_policy.get(
+        "production_advisory_actions_not_replayed", []
+    )
+    assert (
+        exit_policy.get("rejected_simple_replay", {}).get("experiment_id")
+        == "exp-20260429-032"
+    )
+    exit_shadow = result.get("exit_advisory_shadow_attribution")
+    assert isinstance(exit_shadow, dict)
+    assert exit_shadow.get("mode") == "shadow_only_no_trade_execution"
+    assert "by_rule" in exit_shadow
+    pending_gap = kb.get("pending_action_replay_unreplayed")
+    assert isinstance(pending_gap, dict)
+    assert pending_gap.get("gap_present") is True
+    assert pending_gap.get("historical_replay_enabled") is False
+    earnings_quality = kb.get("earnings_event_long_data_quality")
+    assert isinstance(earnings_quality, dict)
+    assert earnings_quality.get("snapshot_archive_present") is True
+    assert earnings_quality.get("legacy_gap_resolved") is True
+    assert "always None" not in earnings_quality.get("eps_estimate", "")
     assert kb.get("survivorship_bias_universe") is True
     assert isinstance(kb.get("notes"), list) and len(kb["notes"]) >= 3
+    assert any("Pending actions:" in note for note in kb["notes"])
+    assert any("earnings_event_long: uses earnings snapshots" in note for note in kb["notes"])
 
     integ = result.get("equity_curve_integrity") or {}
     assert "cash_field_present_in_open_positions" in integ

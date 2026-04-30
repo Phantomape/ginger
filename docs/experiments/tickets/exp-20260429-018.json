@@ -1,12 +1,57 @@
 {
   "experiment_id": "exp-20260429-018",
-  "title": "Risk-on unmodified sizing lift",
-  "lane": "alpha_search",
-  "status": "accepted",
-  "hypothesis": "Plain risk-on signals with no other sizing modifier deserve 1.25x risk.",
-  "change_type": "capital_allocation",
-  "single_causal_variable": "risk_on + no existing sizing modifier risk multiplier",
-  "acceptance": "Three fixed windows improved EV; aggregate PnL +8.49%; no trade count or win-rate change.",
-  "production_parity": "Implemented in shared portfolio_engine sizing and covered by test_production_parity.",
-  "next_retry_requires": "Forward evidence or tail-risk metric before raising above 1.25x."
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "codex-backtesting-docs",
+  "hypothesis": "backtesting.md must distinguish standard fixed-window backtests from production partial-reduce parity checks so future agents do not confuse the two measurement modes.",
+  "change_type": "logging_fix",
+  "single_causal_variable": "backtesting command documentation for partial-reduce parity",
+  "baseline_result_file": "data/backtest_results_20260429.json",
+  "allowed_write_scope": [
+    "docs/backtesting.md",
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/backtester.py",
+    "quant/production_parity.py",
+    "quant/preflight_validator.py",
+    "data/open_positions.json",
+    "data/pending_actions.json"
+  ],
+  "locked_variables": [
+    "backtesting command documentation for partial-reduce parity"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    }
+  ],
+  "acceptance_rule": "observed_only documentation repair; backtesting.md lists standard fixed-window commands, optional partial-reduce replay command, and current accepted fixed-window metrics",
+  "created_at": "2026-04-29T17:57:57+00:00",
+  "claimed_at": "2026-04-29T17:58:04+00:00",
+  "completed_at": "2026-04-29T17:58:56+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtest_results_20260429.json",
+    "after_result_file": "data/backtest_results_20260429.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  }
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-04-29T17:29:04+00:00",
+  "updated_at": "2026-04-30T06:32:29+00:00",
   "experiments": [
     {
       "experiment_id": "exp-20260426-014",
@@ -904,12 +904,147 @@
     },
     {
       "experiment_id": "exp-20260429-017",
-      "status": "claimed",
+      "status": "accepted",
       "lane": "alpha_discovery",
       "owner": "codex-disable-trailing-partial-reduce",
       "hypothesis": "关闭生产 TRAILING_STOP 触发的 daily partial reduce 可以避免重复削减赢家仓位，并提升固定窗口 expected_value_score。",
       "ticket_file": "docs/experiments/tickets/exp-20260429-017.json",
-      "updated_at": "2026-04-29T17:29:04+00:00"
+      "updated_at": "2026-04-29T17:37:34+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-018",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "codex-backtesting-docs",
+      "hypothesis": "backtesting.md must distinguish standard fixed-window backtests from production partial-reduce parity checks so future agents do not confuse the two measurement modes.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-018.json",
+      "updated_at": "2026-04-29T17:58:56+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-019",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "codex-backtesting-canonical-command",
+      "hypothesis": "backtesting.md should expose exactly one canonical production-parity backtest command and make partial-reduce replay explicit to avoid future measurement drift.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-019.json",
+      "updated_at": "2026-04-29T18:02:54+00:00"
+    },
+    {
+      "experiment_id": "exp-20260429-020",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "codex-production-parity-defaults",
+      "hypothesis": "Backtester defaults must match production strategy behavior for regime-aware exits and position-action replay so canonical backtests do not depend on humans remembering parity flags.",
+      "ticket_file": "docs/experiments/tickets/exp-20260429-020.json",
+      "updated_at": "2026-04-29T18:06:31+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-001",
+      "status": "observed_only",
+      "lane": "universe_scout",
+      "owner": "universe_scout_agent",
+      "hypothesis": "一个流动性过滤后的事件敏感 universe 可以在当前 trend/breakout 覆盖之外产生非重叠高质量候选。",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-001.json",
+      "updated_at": "2026-04-30T06:29:25+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-002",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": "Already-selected trend_long Technology signals in a marginal risk-on regime_exit_score band may be lower-quality trend noise, so cutting their risk to 25% could reduce weak-window leakage without changing entries, exits, ranking, or LLM behavior.",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-002.json",
+      "updated_at": "2026-04-30T18:09:00-07:00"
+    },
+    {
+      "experiment_id": "exp-20260430-003",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "alpha-discovery-post-news",
+      "hypothesis": "一种新的 post-news continuation 策略可以为 trend/breakout 提供非重叠候选，并且不降低 expected value。",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-003.json",
+      "updated_at": "2026-04-30T06:32:29+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-004",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": "Low regime_exit_score Technology trend signals may be over-de-risked by the accepted Technology-specific haircuts; releasing those haircuts for low-score Technology trend candidates could recover delayed winners without changing entries, exits, ranking, LLM behavior, or the universe.",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-004.json",
+      "updated_at": "2026-04-30T06:27:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-005",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": null,
+      "ticket_file": "docs/experiments/tickets/exp-20260430-005.json",
+      "updated_at": "2026-04-30T06:27:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-006",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": null,
+      "ticket_file": "docs/experiments/tickets/exp-20260430-006.json",
+      "updated_at": "2026-04-30T06:27:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-007",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": null,
+      "ticket_file": "docs/experiments/tickets/exp-20260430-007.json",
+      "updated_at": "2026-04-30T06:27:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-008",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": null,
+      "hypothesis": null,
+      "ticket_file": "docs/experiments/tickets/exp-20260430-008.json",
+      "updated_at": "2026-04-30T06:27:36+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-009",
+      "status": "observed_only",
+      "lane": "measurement_repair",
+      "owner": "measurement-repair",
+      "hypothesis": "在 LLM/event ranking alpha 可被评估前，必须稳定持久化 replay coverage 和 attribution。",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-009.json",
+      "updated_at": "2026-04-30T06:30:32+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-010",
+      "status": "observed_only",
+      "lane": "loss_attribution",
+      "owner": "all-in-one-loss-attribution",
+      "hypothesis": "Current accepted-stack bad trades may still concentrate in a reproducible hold-quality or follow-through family; an oracle hold-quality attribution refresh can quantify fixable loss dollars and winner collateral before any alpha or risk experiment.",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-010.json",
+      "updated_at": "2026-04-30T06:32:00+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-015",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "When same-day sector cap has to drop candidates, choosing higher-quality same-sector candidates may improve capital allocation without changing MAX_PER_SECTOR.",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-015.json",
+      "updated_at": "2026-04-30T09:15:01.487879+00:00"
+    },
+    {
+      "experiment_id": "exp-20260430-018",
+      "status": "rejected",
+      "lane": "alpha_search",
+      "owner": "alpha-search",
+      "hypothesis": "The accepted Technology trend near-high haircut may be too punitive; lifting the multiplier from 0.25 to 0.50 could recover delayed winners while keeping the cohort de-risked.",
+      "ticket_file": "docs/experiments/tickets/exp-20260430-018.json",
+      "updated_at": "2026-04-30T12:08:00+00:00"
     }
   ]
 }

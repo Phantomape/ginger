@@ -1,0 +1,104 @@
+{
+  "experiment_id": "exp-20260430-001",
+  "timestamp": "2026-04-30T00:20:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected risk_on signals with no other sizing modifier and regime_exit_score >= 0.20 may deserve a larger non-stacking risk budget than the generic 1.25x plain risk_on lift.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited; this experiment used deterministic fields already present in both production and backtest sizing. The data limitation did not block this capital-allocation alpha test.",
+  "parameters": {
+    "single_causal_variable": "risk_on_unmodified high-score risk multiplier",
+    "old_value": {
+      "RISK_ON_UNMODIFIED_RISK_MULTIPLIER": 1.25,
+      "RISK_ON_UNMODIFIED_LOW_SCORE_MAX": 0.1,
+      "RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER": 1.5,
+      "RISK_ON_UNMODIFIED_MID_SCORE_MAX": 0.2,
+      "RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER": 1.6,
+      "high_score_special_case": null
+    },
+    "tested_value": {
+      "RISK_ON_UNMODIFIED_HIGH_SCORE_MIN": 0.2,
+      "RISK_ON_UNMODIFIED_HIGH_SCORE_RISK_MULTIPLIER": 1.5
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "sector-specific sizing boosts and haircuts",
+      "low-score and mid-score risk_on sizing"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with the weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": 0.0, "total_pnl_delta_sum": 0.0, "total_pnl_delta_pct": 0.0, "windows_ev_improved": 0, "windows_ev_regressed": 0, "windows_unchanged": 3}
+  },
+  "gate4_basis": "Rejected and rolled back. The temporary shared policy patch produced no metric movement in any fixed window, so it failed all Gate 4 improvement criteria.",
+  "mechanism_insight": "The remaining high-score plain risk_on inventory is not an obvious materiality unlock under current cap/heat/position constraints. A simple 1.5x high-score lift changed the intended multiplier path but released no executed alpha.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_patch_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this deterministic sizing alpha was tested instead."
+  },
+  "rejection_reason": "No EV, PnL, Sharpe, drawdown, trade count, win rate, or survival-rate change in any of the three canonical windows.",
+  "do_not_repeat_without_new_evidence": [
+    "Simple high-score plain risk_on 1.5x promotion",
+    "Nearby high-score plain risk_on multiplier tuning",
+    "Further broad risk_on score-bucket sizing unless a cap/heat attribution proves the change can execute"
+  ],
+  "next_retry_requires": [
+    "Position-level evidence that high-score plain risk_on signals are not cap/heat constrained",
+    "Forward sample showing high-score plain risk_on trades have distinct tail-adjusted expectancy",
+    "An orthogonal event/state discriminator rather than another score-bucket multiplier"
+  ],
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_low_score_risk_on_sizing.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiments/logs/exp-20260430-001.json"
+  ]
+}

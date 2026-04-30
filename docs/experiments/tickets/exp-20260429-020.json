@@ -1,12 +1,57 @@
 {
   "experiment_id": "exp-20260429-020",
-  "title": "Technology breakout sizing boost",
-  "lane": "alpha_search",
-  "status": "rejected",
-  "hypothesis": "Already-selected breakout_long Technology signals deserve dedicated 1.5x risk.",
-  "change_type": "capital_allocation",
-  "single_causal_variable": "breakout_long + Technology risk multiplier",
-  "acceptance": "Rejected: EV regressed in late_strong and old_thin; aggregate EV -0.0244 and PnL +0.68% missed Gate 4.",
-  "production_parity": "Temporary shared portfolio_engine sizing patch was reverted; no backtester-only behavior remains.",
-  "next_retry_requires": "New event/state discriminator separating Technology breakout winners from old_thin losses."
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "codex-production-parity-defaults",
+  "hypothesis": "Backtester defaults must match production strategy behavior for regime-aware exits and position-action replay so canonical backtests do not depend on humans remembering parity flags.",
+  "change_type": "parity_fix",
+  "single_causal_variable": "production-parity backtester defaults",
+  "baseline_result_file": "data/backtest_results_20260429.json",
+  "allowed_write_scope": [
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "docs/backtesting.md",
+    "docs/production_backtest_parity.md",
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "data/open_positions.json",
+    "data/pending_actions.json"
+  ],
+  "locked_variables": [
+    "production-parity backtester defaults"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    }
+  ],
+  "acceptance_rule": "observed_only parity repair; backtester defaults enable production-equivalent regime-aware exits and partial-reduce replay, CLI flags become opt-out or unnecessary, docs canonical command has no manual parity flags",
+  "created_at": "2026-04-29T18:03:19+00:00",
+  "claimed_at": "2026-04-29T18:03:26+00:00",
+  "completed_at": "2026-04-29T18:06:31+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtest_results_20260429.json",
+    "after_result_file": "data/backtest_results_20260429.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  }
 }

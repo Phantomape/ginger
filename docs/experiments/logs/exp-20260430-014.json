@@ -1,0 +1,83 @@
+{
+  "experiment_id": "exp-20260430-014",
+  "timestamp": "2026-04-30T00:00:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "measurement_repair",
+  "change_type": "exit_advisory_simplification",
+  "hypothesis": "Pure TRAILING_STOP advisory output should be disabled because trailing partial-reduce replay was already negative and pure trailing-stop actions are disabled by shared production policy.",
+  "alpha_hypothesis_category": "exit",
+  "parameters": {
+    "single_causal_variable": "disable pure TRAILING_STOP advisory rule generation",
+    "strategy_behavior_changed": false,
+    "deterministic_backtest_fill_logic_changed": false,
+    "production_prompt_context_changed": true,
+    "kept_unchanged": [
+      "TRAILING_STOP_PCT constant",
+      "portfolio heat effective-stop calculation",
+      "production_trailing_stop_price helper",
+      "backtester stop/target execution",
+      "shared reduce helper defensive behavior returning 0 for pure trailing stop by default"
+    ],
+    "anti_repeat_guardrail": [
+      "exp-20260429-011",
+      "exp-20260429-017"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": []
+  },
+  "market_regime_summary": {
+    "late_strong": "used for deterministic no-metric-drift check"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "basis": "deterministic stop/target execution unchanged"
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "This removes noisy advisory context from future LLM prompts; historical LLM impact cannot be replayed without prompt/response archives."
+  },
+  "decision_reason": "Accepted as simplification: pure trailing-stop partial reduces were already rejected, pure trailing maps to 0% reduce by default, and removing the advisory rule does not move deterministic backtest metrics.",
+  "risk": "If future LLM archives show trailing-stop warnings improve discretionary exits, reintroduce only with a discriminator and replay evidence.",
+  "do_not_repeat_without_new_evidence": [
+    "Reintroducing pure TRAILING_STOP as a standalone advisory reduce trigger",
+    "Promoting trailing-stop partial reduces without new forward/LLM evidence"
+  ],
+  "related_files": [
+    "quant/position_manager.py",
+    "quant/test_quant.py",
+    "docs/experiments/logs/exp-20260430-014.json",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

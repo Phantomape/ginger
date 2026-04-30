@@ -1,0 +1,52 @@
+{
+  "experiment_id": "exp-20260429-029",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "Test whether already-selected risk_on breakout_long signals with no other sizing modifier deserve a non-stacking 1.5x risk budget.",
+  "change_type": "capital_allocation",
+  "single_causal_variable": "risk_on_unmodified breakout sizing multiplier",
+  "allowed_write_scope": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/test_low_score_risk_on_sizing.py",
+    "quant/test_production_parity.py",
+    "docs/experiments/logs/exp-20260429-029.json",
+    "docs/experiments/tickets/exp-20260429-029.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "locked_variables": [
+    "entry logic",
+    "exit logic",
+    "candidate ranking",
+    "add-ons",
+    "LLM/news replay",
+    "earnings strategy",
+    "existing sizing branches"
+  ],
+  "evaluation_windows": [
+    {"name": "late_strong", "start": "2025-10-23", "end": "2026-04-21", "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"},
+    {"name": "mid_weak", "start": "2025-04-23", "end": "2025-10-22", "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"},
+    {"name": "old_thin", "start": "2024-10-02", "end": "2025-04-22", "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"}
+  ],
+  "acceptance_rule": "Accept only if Gate 4 materiality clears and the shared sizing policy remains production/backtest aligned.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "temporary_shared_policy_patch_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "created_at": "2026-04-29T14:15:00-07:00",
+  "claimed_at": "2026-04-29T14:15:00-07:00",
+  "completed_at": "2026-04-29T14:15:00-07:00",
+  "result": {
+    "decision": "rejected",
+    "summary": "Directionally positive but below materiality; code rolled back.",
+    "log": "docs/experiments/logs/exp-20260429-029.json"
+  }
+}

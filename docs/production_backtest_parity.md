@@ -36,9 +36,10 @@ in shared modules such as:
 | Entry open cancel | `production_parity.py` / signal `entry_note` | simulated next open | instruction for next-session execution | production cannot know next open until execution |
 | Scarce-slot routing | `production_parity.py` / backtester config | required | required | backtester records attribution; production emits plan |
 | Follow-through add-ons | `production_parity.py` / backtester config | schedule/execute in simulation | emit explicit `addon_actions` | fill price timing only |
-| Exit rule computation | `trend_signals.py`, related shared rules | required | required | backtester simulates fills |
-| Trailing partial reductions | `production_parity.py` / backtester `REPLAY_PARTIAL_REDUCES` | opt-in schedule/execute in simulation; disabled by shared policy unless explicitly enabled for replay comparison | disabled by shared policy | default backtest keeps legacy exits unless replay flag is on |
-| Pending unexecuted actions | `pending_actions.py` | normally not replayed | required | production-only execution memory |
+| Production advisory exit context | `trend_signals.py`, `position_manager.py`, `llm_advisor.py` | disclosed as `known_biases.exit_policy_unreplayed`; not executed except explicit shared replay hooks | required for daily report / LLM prompt / pending action memory | advisory rules require shadow attribution before promotion |
+| Backtest price exits | `backtester.py` execution model | full-position `stop_price` / `target_price` fills | manual/live execution from reported actions | `target_price` semantic gap disclosed |
+| Trailing partial reductions | `production_parity.py` / backtester `REPLAY_PARTIAL_REDUCES` | replay container on by default; pure trailing trims disabled by shared policy unless explicitly enabled for comparison | disabled by shared policy | opt out only for diagnostics |
+| Pending unexecuted actions | `pending_actions.py` | disclosed as `known_biases.pending_action_replay_unreplayed`; not replayed from current ledger | required | production-only execution memory without point-in-time ledger snapshots |
 | LLM veto / ranking | `llm_advisor.py`, `llm_replay` path | replay archive when enabled | live prompt/response | archive coverage disclosed |
 | News veto | `filter.py`, `news_replay.py` | replay archive when enabled | live news files | archive coverage disclosed |
 | Fill / slippage | fill/backtester execution model | simulated next open | manual/live execution | disclosed execution model |
@@ -62,6 +63,30 @@ Every strategy-affecting experiment must state its production impact:
 Use `replay_only: true` only when the difference is caused by data availability
 that cannot exist in historical replay, such as LLM/news archives. Replay-only
 does not allow duplicate business logic.
+
+## Exit Advisory Replay Caveat
+
+Production held-position exits have two layers:
+
+- code computes context and advisory rules such as `SIGNAL_TARGET`,
+  `PROFIT_LADDER_30`, `PROFIT_LADDER_50`, and `TIME_STOP`;
+- the LLM / daily workflow can turn those rules into `REDUCE` or `EXIT`
+  instructions, and `pending_actions.py` can keep unexecuted `REDUCE`/`EXIT`
+  actions alive across days.
+
+The canonical backtest does not execute that full advisory lifecycle. It
+simulates full-position `stop_price` and `target_price` fills, plus only the
+shared replay hooks that have been explicitly implemented and accepted. The
+current gap is intentionally surfaced as
+`result["known_biases"]["exit_policy_unreplayed"]`, with non-executing rule
+counts and realized outcome grouping in
+`result["exit_advisory_shadow_attribution"]`.
+
+Do not close this gap by simply reinterpreting `target_price` as a
+`SIGNAL_TARGET` partial reduce. `exp-20260429-032` tested that replay-only
+variant and rejected it after EV and PnL regressed in all three fixed windows.
+The next valid step is shadow attribution for advisory exit rules, followed by
+a complete shared lifecycle policy only if the attribution supports it.
 
 ## Merge Blockers
 

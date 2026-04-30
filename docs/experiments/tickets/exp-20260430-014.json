@@ -1,0 +1,23 @@
+{
+  "experiment_id": "exp-20260430-014",
+  "title": "Disable pure trailing-stop advisory output",
+  "lane": "measurement_repair",
+  "status": "accepted",
+  "priority": "closed",
+  "hypothesis": "Pure TRAILING_STOP should stop being generated as an advisory rule because trailing partial-reduce replay was rejected and shared policy already maps pure trailing to 0% reduce.",
+  "scope": [
+    "Disable TRAILING_STOP advisory rule generation in position_manager.evaluate_exit_signals.",
+    "Keep trailing stop risk-reference fields and portfolio heat effective-stop logic unchanged.",
+    "Update focused tests and record no-drift backtest evidence."
+  ],
+  "non_goals": [
+    "Do not remove TRAILING_STOP_PCT.",
+    "Do not remove production_trailing_stop_price.",
+    "Do not change portfolio heat or deterministic stop/target execution."
+  ],
+  "acceptance": [
+    "High-water trailing-stop scenario no longer emits TRAILING_STOP from evaluate_exit_signals.",
+    "Focused tests pass.",
+    "Late-strong fixed-window metrics remain unchanged."
+  ]
+}

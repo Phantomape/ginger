@@ -1,0 +1,23 @@
+{
+  "experiment_id": "exp-20260430-013",
+  "title": "Remove noisy approaching-stop advisory rule",
+  "lane": "measurement_repair",
+  "status": "accepted",
+  "priority": "closed",
+  "hypothesis": "APPROACHING_HARD_STOP should stop being generated because its executable replay was rejected and it adds LLM prompt noise.",
+  "scope": [
+    "Disable APPROACHING_HARD_STOP generation in position_manager.evaluate_exit_signals.",
+    "Map APPROACHING_HARD_STOP to 0% reduce if encountered by shared reduce helper.",
+    "Remove it from backtester exit-policy unreplayed advisory list.",
+    "Add focused tests."
+  ],
+  "non_goals": [
+    "Do not change hard stop execution.",
+    "Do not add a replacement reduce/exit rule."
+  ],
+  "acceptance": [
+    "Near-hard-stop prices no longer emit APPROACHING_HARD_STOP.",
+    "Shared reduce helper returns 0 for APPROACHING_HARD_STOP.",
+    "Default deterministic backtest metrics do not move."
+  ]
+}

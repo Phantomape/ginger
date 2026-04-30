@@ -1,0 +1,216 @@
+{
+  "experiment_id": "exp-20260429-031",
+  "timestamp": "2026-04-29T23:55:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected risk_on signals with no other sizing modifier and mid-range regime_exit_score are a positive residual budget sleeve, so they should receive a larger non-stacking risk budget than the generic 1.25x plain risk_on lift.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited; this experiment used deterministic fields already present in both production and backtest sizing.",
+  "parameters": {
+    "single_causal_variable": "risk_on_unmodified mid-score risk multiplier",
+    "old_value": {
+      "RISK_ON_UNMODIFIED_RISK_MULTIPLIER": 1.25,
+      "RISK_ON_UNMODIFIED_LOW_SCORE_MAX": 0.1,
+      "RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER": 1.5,
+      "mid_score_special_case": null
+    },
+    "new_value": {
+      "RISK_ON_UNMODIFIED_MID_SCORE_MAX": 0.2,
+      "RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER": 1.6
+    },
+    "same_variable_checks": {
+      "1.4": {
+        "aggregate_ev_delta": 0.0708,
+        "aggregate_pnl_delta": 2831.55,
+        "decision": "rejected",
+        "reason": "Reduced old_thin damage but failed materiality."
+      },
+      "1.5": {
+        "aggregate_ev_delta": 0.1223,
+        "aggregate_pnl_delta": 4567.31,
+        "decision": "rejected_for_materiality",
+        "reason": "EV improved but total PnL improved only 4.13%, below the 5% Gate 4 PnL threshold."
+      },
+      "1.6": {
+        "aggregate_ev_delta": 0.1814,
+        "aggregate_pnl_delta": 6531.45,
+        "decision": "accepted",
+        "reason": "Cleared +5% aggregate PnL, improved EV in 2/3 windows, and kept drawdown expansion under 1 percentage point."
+      }
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "sector-specific sizing boosts and haircuts"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with the weakest win rate"
+  },
+  "pre_experiment_evidence": {
+    "recent_blockers_avoided": [
+      "No LLM soft-ranking because production-aligned replay sample is still thin.",
+      "No C strategy repair because single-field/checklist C fixes were downgraded.",
+      "No OHLCV-only new entry because recent shadow entries were noisy or sparse."
+    ],
+    "cohort_audit": {
+      "mid_score_risk_on_unmodified": {
+        "trades": 20,
+        "wins": 13,
+        "win_rate": 0.65,
+        "total_pnl": 35827.34,
+        "avg_pnl": 1791.37,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.3317,
+      "sharpe_daily": 4.28,
+      "total_pnl": 54479.38,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2285,
+      "sharpe_daily": 1.27,
+      "total_pnl": 17991.28,
+      "max_drawdown_pct": 0.0595,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 1.0034,
+      "sharpe_daily": 2.55,
+      "total_pnl": 39346.43,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2267,
+      "sharpe_daily": 1.22,
+      "total_pnl": 18584.08,
+      "max_drawdown_pct": 0.0691,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.147,
+      "sharpe_daily": -0.1,
+      "total_pnl": 4824.81,
+      "max_drawdown_pct": 0.0038,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0362,
+      "sharpe_daily": 0.02,
+      "total_pnl": 1113.84,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": -0.0018,
+      "sharpe_daily": -0.05,
+      "total_pnl": 592.8,
+      "max_drawdown_pct": 0.0096,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.1814,
+      "total_pnl_delta_sum": 6531.45,
+      "total_pnl_delta_pct": 0.059,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1
+    }
+  },
+  "gate4_basis": "Accepted: aggregate PnL improved +$6531.45 / +5.90%, EV improved in 2/3 fixed windows, trade count/win rate/survival were unchanged, and worst drawdown expansion was +0.96 pp, below the 1 pp guardrail.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "shared_policy_location": "quant/portfolio_engine.py::size_signals"
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking is still deferred because sample coverage is insufficient; this experiment deliberately used deterministic replayable sizing."
+  },
+  "risk_assessment": {
+    "may_hurt": "The accepted 1.6x budget is risk-quality close to the line: old_thin EV fell slightly and max drawdown rose by 0.96 pp.",
+    "mitigation": "Do not continue nearby multiplier tuning. Future retry requires tail-risk or forward evidence, not another local sweep."
+  },
+  "do_not_repeat_without_new_evidence": [
+    "Nearby risk_on_unmodified mid-score multipliers",
+    "Using this result to stack risk_on lifts on sector-specific boosts or haircuts",
+    "Raising broad risk_on leverage without an orthogonal state or tail-risk discriminator"
+  ],
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_low_score_risk_on_sizing.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/backtesting.md",
+    "docs/experiment_log.jsonl"
+  ]
+}

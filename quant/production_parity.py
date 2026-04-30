@@ -252,7 +252,7 @@ def suggested_reduce_pct_for_rules(
     if "TRAILING_STOP" in rule_names and len(rule_names) == 1:
         return 0
     if "APPROACHING_HARD_STOP" in rule_names:
-        return 50 if (unrealized_pnl_pct or 0) < 0 else 25
+        return 0
     if "SIGNAL_TARGET" in rule_names:
         return 33
     if "PROFIT_TARGET" in rule_names:

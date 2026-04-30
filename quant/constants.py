@@ -56,6 +56,10 @@ TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER = 0.0
 TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK = -0.03
 TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER = 1.5
 RISK_ON_UNMODIFIED_RISK_MULTIPLIER = 1.25
+RISK_ON_UNMODIFIED_LOW_SCORE_MAX = 0.10
+RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER = 1.5
+RISK_ON_UNMODIFIED_MID_SCORE_MAX = 0.20
+RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER = 1.6
 # Low-TQS breakouts were net-negative in Consumer Discretionary/Financials/Technology
 # but net-positive in Commodities across the validated windows. Keep the accepted
 # haircut everywhere else and exempt only the defensive commodity breakout pocket.
@@ -129,6 +133,12 @@ RISK_ON_UNMODIFIED_RISK_MULTIPLIER = 1.25
 # risk-on signals with no other sizing modifier remained positive across all
 # fixed windows. Give only that unmodified risk-on inventory a small lift; do
 # not stack this on existing 1.5x sector boosts or 0.25x/0x haircuts.
+# exp-20260429-025 candidate: exp-20260429-021 showed low-score plain risk-on
+# winners were damaged by simple score-threshold narrowing. Test whether that
+# low-score plain sleeve deserves a larger non-stacking risk budget.
+# exp-20260429-031 accepted the adjacent mid-score plain risk-on sleeve at 1.6x.
+# The old_thin drawdown expansion was close to the 1 pp guardrail, so do not
+# continue nearby multiplier tuning without forward or tail-risk evidence.
 MAX_POSITION_PCT        = 0.40       # Initial position cap; exp-20260428-025
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap

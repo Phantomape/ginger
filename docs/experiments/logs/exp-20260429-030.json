@@ -1,0 +1,958 @@
+{
+  "experiment_id": "exp-20260429-030",
+  "timestamp": "2026-04-29T22:12:33.528238+00:00",
+  "status": "observed_only",
+  "decision": "observed_only",
+  "lane": "alpha_search",
+  "change_type": "meta_allocation_audit",
+  "hypothesis": "Entry-day sector breadth, sector 20-day return, dispersion, and ticker-vs-sector relative strength may expose a robust allocation state that is better than another local multiplier tweak.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains sample-limited for production-aligned replay, so this run tested a deterministic state map instead.",
+  "parameters": {
+    "single_causal_variable": "analysis-only sector state attribution; no executable policy changed",
+    "state_features": [
+      "sector_breadth_50",
+      "sector_breadth_200",
+      "sector_avg_ret20",
+      "sector_dispersion_20",
+      "ticker_ret20_minus_sector_avg_ret20"
+    ],
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "all sizing multipliers"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with the weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.3317,
+      "sharpe_daily": 4.28,
+      "total_pnl": 54479.38,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2285,
+      "sharpe_daily": 1.27,
+      "total_pnl": 17991.28,
+      "max_drawdown_pct": 0.0595,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.3317,
+      "sharpe_daily": 4.28,
+      "total_pnl": 54479.38,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2285,
+      "sharpe_daily": 1.27,
+      "total_pnl": 17991.28,
+      "max_drawdown_pct": 0.0595,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "run_metrics_observed": {
+    "late_strong": {
+      "expected_value_score": 2.3317,
+      "sharpe_daily": 4.28,
+      "total_pnl": 54479.38,
+      "max_drawdown_pct": 0.0401,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 0.9672,
+      "sharpe_daily": 2.53,
+      "total_pnl": 38232.59,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2285,
+      "sharpe_daily": 1.27,
+      "total_pnl": 17991.28,
+      "max_drawdown_pct": 0.0595,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0,
+    "aggregate": 0.0
+  },
+  "analysis": {
+    "by_breadth_200": {
+      "breadth_gte_75": {
+        "trades": 54,
+        "wins": 31,
+        "win_rate": 0.5741,
+        "pnl": 103141.12,
+        "avg_pnl": 1910.02,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "breadth_50_75": {
+        "trades": 5,
+        "wins": 3,
+        "win_rate": 0.6,
+        "pnl": 6671.57,
+        "avg_pnl": 1334.31,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "breadth_lt_50": {
+        "trades": 2,
+        "wins": 1,
+        "win_rate": 0.5,
+        "pnl": 2065.65,
+        "avg_pnl": 1032.83,
+        "windows": [
+          "late_strong",
+          "mid_weak"
+        ]
+      },
+      "unknown": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "by_breadth_50": {
+      "breadth_gte_75": {
+        "trades": 45,
+        "wins": 29,
+        "win_rate": 0.6444,
+        "pnl": 98618.24,
+        "avg_pnl": 2191.52,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "breadth_50_75": {
+        "trades": 13,
+        "wins": 5,
+        "win_rate": 0.3846,
+        "pnl": 10536.05,
+        "avg_pnl": 810.47,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "breadth_lt_50": {
+        "trades": 3,
+        "wins": 1,
+        "win_rate": 0.3333,
+        "pnl": 2724.05,
+        "avg_pnl": 908.02,
+        "windows": [
+          "late_strong",
+          "old_thin"
+        ]
+      },
+      "unknown": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "by_sector_ret20": {
+      "ret20_gte_5": {
+        "trades": 44,
+        "wins": 26,
+        "win_rate": 0.5909,
+        "pnl": 85790.18,
+        "avg_pnl": 1949.78,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "ret20_0_5": {
+        "trades": 10,
+        "wins": 5,
+        "win_rate": 0.5,
+        "pnl": 15107.35,
+        "avg_pnl": 1510.74,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "ret20_negative": {
+        "trades": 7,
+        "wins": 4,
+        "win_rate": 0.5714,
+        "pnl": 10980.81,
+        "avg_pnl": 1568.69,
+        "windows": [
+          "late_strong",
+          "old_thin"
+        ]
+      },
+      "unknown": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "by_sector_dispersion_20": {
+      "disp_gte_10": {
+        "trades": 23,
+        "wins": 11,
+        "win_rate": 0.4783,
+        "pnl": 37548.44,
+        "avg_pnl": 1632.54,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "disp_5_10": {
+        "trades": 20,
+        "wins": 13,
+        "win_rate": 0.65,
+        "pnl": 37780.93,
+        "avg_pnl": 1889.05,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "disp_lt_5": {
+        "trades": 18,
+        "wins": 11,
+        "win_rate": 0.6111,
+        "pnl": 36548.97,
+        "avg_pnl": 2030.5,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "unknown": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "by_ticker_vs_sector_ret20": {
+      "sector_leader": {
+        "trades": 38,
+        "wins": 21,
+        "win_rate": 0.5526,
+        "pnl": 73894.94,
+        "avg_pnl": 1944.6,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "sector_inline": {
+        "trades": 16,
+        "wins": 10,
+        "win_rate": 0.625,
+        "pnl": 24538.97,
+        "avg_pnl": 1533.69,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "sector_laggard": {
+        "trades": 7,
+        "wins": 4,
+        "win_rate": 0.5714,
+        "pnl": 13444.43,
+        "avg_pnl": 1920.63,
+        "windows": [
+          "late_strong",
+          "old_thin"
+        ]
+      },
+      "unknown": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "by_strategy_sector_breadth_200": {
+      "('trend_long', 'Technology', 'breadth_gte_75')": {
+        "trades": 15,
+        "wins": 5,
+        "win_rate": 0.3333,
+        "pnl": 9404.18,
+        "avg_pnl": 626.95,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "('trend_long', 'Commodities', 'breadth_gte_75')": {
+        "trades": 8,
+        "wins": 7,
+        "win_rate": 0.875,
+        "pnl": 31394.09,
+        "avg_pnl": 3924.26,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "('trend_long', 'Financials', 'breadth_gte_75')": {
+        "trades": 7,
+        "wins": 5,
+        "win_rate": 0.7143,
+        "pnl": 18374.95,
+        "avg_pnl": 2624.99,
+        "windows": [
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "('breakout_long', 'Energy', 'breadth_gte_75')": {
+        "trades": 4,
+        "wins": 3,
+        "win_rate": 0.75,
+        "pnl": 12867.97,
+        "avg_pnl": 3216.99,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('breakout_long', 'Commodities', 'breadth_gte_75')": {
+        "trades": 3,
+        "wins": 3,
+        "win_rate": 1.0,
+        "pnl": 8779.37,
+        "avg_pnl": 2926.46,
+        "windows": [
+          "late_strong",
+          "mid_weak"
+        ]
+      },
+      "('breakout_long', 'Financials', 'breadth_gte_75')": {
+        "trades": 3,
+        "wins": 1,
+        "win_rate": 0.3333,
+        "pnl": 2864.1,
+        "avg_pnl": 954.7,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "('breakout_long', 'Technology', 'breadth_gte_75')": {
+        "trades": 3,
+        "wins": 2,
+        "win_rate": 0.6667,
+        "pnl": 6834.44,
+        "avg_pnl": 2278.15,
+        "windows": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "('trend_long', 'Consumer Discretionary', 'breadth_gte_75')": {
+        "trades": 3,
+        "wins": 2,
+        "win_rate": 0.6667,
+        "pnl": 5605.24,
+        "avg_pnl": 1868.41,
+        "windows": [
+          "old_thin"
+        ]
+      },
+      "('breakout_long', 'Communication Services', 'breadth_gte_75')": {
+        "trades": 2,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -110.1,
+        "avg_pnl": -55.05,
+        "windows": [
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "('breakout_long', 'Healthcare', 'breadth_50_75')": {
+        "trades": 2,
+        "wins": 1,
+        "win_rate": 0.5,
+        "pnl": 3599.88,
+        "avg_pnl": 1799.94,
+        "windows": [
+          "late_strong",
+          "mid_weak"
+        ]
+      },
+      "('trend_long', 'Energy', 'breadth_gte_75')": {
+        "trades": 2,
+        "wins": 1,
+        "win_rate": 0.5,
+        "pnl": 1399.08,
+        "avg_pnl": 699.54,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('breakout_long', 'Consumer Discretionary', 'breadth_lt_50')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 2539.12,
+        "avg_pnl": 2539.12,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('breakout_long', 'ETF', 'breadth_gte_75')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 3239.03,
+        "avg_pnl": 3239.03,
+        "windows": [
+          "mid_weak"
+        ]
+      },
+      "('breakout_long', 'Healthcare', 'breadth_lt_50')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -473.47,
+        "avg_pnl": -473.47,
+        "windows": [
+          "mid_weak"
+        ]
+      },
+      "('breakout_long', 'Industrials', 'breadth_gte_75')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 4925.52,
+        "avg_pnl": 4925.52,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('breakout_long', 'Technology', 'breadth_50_75')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 232.31,
+        "avg_pnl": 232.31,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('trend_long', 'Communication Services', 'breadth_50_75')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 2860.31,
+        "avg_pnl": 2860.31,
+        "windows": [
+          "old_thin"
+        ]
+      },
+      "('trend_long', 'Communication Services', 'breadth_gte_75')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1426.26,
+        "avg_pnl": -1426.26,
+        "windows": [
+          "old_thin"
+        ]
+      },
+      "('trend_long', 'Healthcare', 'breadth_gte_75')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1010.49,
+        "avg_pnl": -1010.49,
+        "windows": [
+          "old_thin"
+        ]
+      },
+      "('trend_long', 'Technology', 'breadth_50_75')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -20.93,
+        "avg_pnl": -20.93,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('trend_long', 'Unknown', 'unknown')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "by_window_breadth_200": {
+      "('old_thin', 'breadth_gte_75')": {
+        "trades": 20,
+        "wins": 8,
+        "win_rate": 0.4,
+        "pnl": 16306.06,
+        "avg_pnl": 815.3,
+        "windows": [
+          "old_thin"
+        ]
+      },
+      "('mid_weak', 'breadth_gte_75')": {
+        "trades": 19,
+        "wins": 11,
+        "win_rate": 0.5789,
+        "pnl": 38747.78,
+        "avg_pnl": 2039.36,
+        "windows": [
+          "mid_weak"
+        ]
+      },
+      "('late_strong', 'breadth_gte_75')": {
+        "trades": 15,
+        "wins": 12,
+        "win_rate": 0.8,
+        "pnl": 48087.28,
+        "avg_pnl": 3205.82,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('late_strong', 'breadth_50_75')": {
+        "trades": 3,
+        "wins": 2,
+        "win_rate": 0.6667,
+        "pnl": 3852.98,
+        "avg_pnl": 1284.33,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('late_strong', 'breadth_lt_50')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 2539.12,
+        "avg_pnl": 2539.12,
+        "windows": [
+          "late_strong"
+        ]
+      },
+      "('mid_weak', 'breadth_50_75')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -41.72,
+        "avg_pnl": -41.72,
+        "windows": [
+          "mid_weak"
+        ]
+      },
+      "('mid_weak', 'breadth_lt_50')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -473.47,
+        "avg_pnl": -473.47,
+        "windows": [
+          "mid_weak"
+        ]
+      },
+      "('old_thin', 'breadth_50_75')": {
+        "trades": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "pnl": 2860.31,
+        "avg_pnl": 2860.31,
+        "windows": [
+          "old_thin"
+        ]
+      },
+      "('old_thin', 'unknown')": {
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "pnl": -1175.09,
+        "avg_pnl": -1175.09,
+        "windows": [
+          "old_thin"
+        ]
+      }
+    },
+    "candidate_state_notes": [
+      {
+        "view": "strategy_sector_breadth200",
+        "top_stable_positive": [
+          {
+            "group": "('trend_long', 'Commodities', 'breadth_gte_75')",
+            "trades": 8,
+            "wins": 7,
+            "win_rate": 0.875,
+            "pnl": 31394.09,
+            "avg_pnl": 3924.26,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('trend_long', 'Financials', 'breadth_gte_75')",
+            "trades": 7,
+            "wins": 5,
+            "win_rate": 0.7143,
+            "pnl": 18374.95,
+            "avg_pnl": 2624.99,
+            "windows": [
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('trend_long', 'Technology', 'breadth_gte_75')",
+            "trades": 15,
+            "wins": 5,
+            "win_rate": 0.3333,
+            "pnl": 9404.18,
+            "avg_pnl": 626.95,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          }
+        ],
+        "bottom_stable_negative": [
+          {
+            "group": "('trend_long', 'Technology', 'breadth_gte_75')",
+            "trades": 15,
+            "wins": 5,
+            "win_rate": 0.3333,
+            "pnl": 9404.18,
+            "avg_pnl": 626.95,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('trend_long', 'Financials', 'breadth_gte_75')",
+            "trades": 7,
+            "wins": 5,
+            "win_rate": 0.7143,
+            "pnl": 18374.95,
+            "avg_pnl": 2624.99,
+            "windows": [
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('trend_long', 'Commodities', 'breadth_gte_75')",
+            "trades": 8,
+            "wins": 7,
+            "win_rate": 0.875,
+            "pnl": 31394.09,
+            "avg_pnl": 3924.26,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          }
+        ]
+      },
+      {
+        "view": "sector_breadth200_ret20",
+        "top_stable_positive": [
+          {
+            "group": "('Commodities', 'breadth_gte_75', 'ret20_gte_5')",
+            "trades": 9,
+            "wins": 9,
+            "win_rate": 1.0,
+            "pnl": 35243.09,
+            "avg_pnl": 3915.9,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('Technology', 'breadth_gte_75', 'ret20_gte_5')",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "pnl": 12597.0,
+            "avg_pnl": 839.8,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('Financials', 'breadth_gte_75', 'ret20_gte_5')",
+            "trades": 6,
+            "wins": 3,
+            "win_rate": 0.5,
+            "pnl": 11296.58,
+            "avg_pnl": 1882.76,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          }
+        ],
+        "bottom_stable_negative": [
+          {
+            "group": "('Financials', 'breadth_gte_75', 'ret20_gte_5')",
+            "trades": 6,
+            "wins": 3,
+            "win_rate": 0.5,
+            "pnl": 11296.58,
+            "avg_pnl": 1882.76,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('Technology', 'breadth_gte_75', 'ret20_gte_5')",
+            "trades": 15,
+            "wins": 6,
+            "win_rate": 0.4,
+            "pnl": 12597.0,
+            "avg_pnl": 839.8,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('Commodities', 'breadth_gte_75', 'ret20_gte_5')",
+            "trades": 9,
+            "wins": 9,
+            "win_rate": 1.0,
+            "pnl": 35243.09,
+            "avg_pnl": 3915.9,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          }
+        ]
+      },
+      {
+        "view": "strategy_sector_relative",
+        "top_stable_positive": [
+          {
+            "group": "('trend_long', 'Financials', 'sector_leader')",
+            "trades": 5,
+            "wins": 4,
+            "win_rate": 0.8,
+            "pnl": 16497.75,
+            "avg_pnl": 3299.55,
+            "windows": [
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('trend_long', 'Technology', 'sector_leader')",
+            "trades": 12,
+            "wins": 3,
+            "win_rate": 0.25,
+            "pnl": 8131.09,
+            "avg_pnl": 677.59,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          }
+        ],
+        "bottom_stable_negative": [
+          {
+            "group": "('trend_long', 'Technology', 'sector_leader')",
+            "trades": 12,
+            "wins": 3,
+            "win_rate": 0.25,
+            "pnl": 8131.09,
+            "avg_pnl": 677.59,
+            "windows": [
+              "late_strong",
+              "mid_weak",
+              "old_thin"
+            ]
+          },
+          {
+            "group": "('trend_long', 'Financials', 'sector_leader')",
+            "trades": 5,
+            "wins": 4,
+            "win_rate": 0.8,
+            "pnl": 16497.75,
+            "avg_pnl": 3299.55,
+            "windows": [
+              "mid_weak",
+              "old_thin"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "decision_reason": "Observed only. The audit creates a reusable state map but does not promote a rule because no production-shared policy was tested.",
+  "next_retry_requires": [
+    "A promoted sector-state rule must be implemented in shared production/backtest policy.",
+    "Require at least two windows and material Gate 4 improvement before adding a state gate.",
+    "Do not convert tiny one-sector pockets into filters without forward evidence."
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited; this alpha search deliberately used OHLCV-derived state features."
+  },
+  "snapshot_metadata": {
+    "late_strong": {
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "tickers": 52
+    },
+    "mid_weak": {
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "tickers": 52
+    },
+    "old_thin": {
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "tickers": 52
+    }
+  },
+  "related_files": [
+    "data/experiments/exp-20260429-030/sector_state_alpha_audit.json",
+    "docs/experiments/logs/exp-20260429-030.json",
+    "docs/experiments/tickets/exp-20260429-030.json"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "experiment_id": "exp-20260430-024",
+  "title": "Repair stale earnings and pending-action known_bias disclosure",
+  "lane": "measurement_repair",
+  "status": "accepted",
+  "priority": "closed",
+  "hypothesis": "Backtest metadata should distinguish snapshot-backed earnings fields from true missing data, and should explicitly disclose that production pending actions are not historically replayed.",
+  "scope": [
+    "Refresh earnings_event_long known_bias from loaded earnings snapshot coverage.",
+    "Add pending_action_replay_unreplayed to known_biases.",
+    "Correct LLM attribution notes so position_actions/pending_actions are not described as replayed.",
+    "Add focused schema test coverage and no-drift evidence."
+  ],
+  "non_goals": [
+    "Do not change Strategy C signal logic.",
+    "Do not replay pending_actions.json from the current production ledger.",
+    "Do not change LLM new_trade replay behavior.",
+    "Do not change news replay behavior."
+  ],
+  "acceptance": [
+    "known_biases.earnings_event_long_data_quality reports snapshot coverage rather than always-None fields.",
+    "known_biases.pending_action_replay_unreplayed is present and says historical_replay_enabled=false.",
+    "Focused tests pass.",
+    "Late-strong fixed-window metrics remain unchanged."
+  ]
+}

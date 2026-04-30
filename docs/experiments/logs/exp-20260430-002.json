@@ -1,0 +1,111 @@
+{
+  "experiment_id": "exp-20260430-002",
+  "timestamp": "2026-04-30T18:09:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected trend_long Technology signals in a marginal risk-on regime_exit_score band may be lower-quality trend noise, so cutting their risk to 25% could reduce weak-window leakage without changing entries, exits, ranking, or LLM behavior.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited; this deterministic test used fields already present in both production and backtest sizing. The LLM data limitation did not block this separate capital-allocation alpha test.",
+  "pre_experiment_checks": {
+    "mechanism_insight_conflicts_checked": true,
+    "avoided_recent_do_not_repeat_families": [
+      "No high-score plain risk_on retry after exp-20260430-001 rejected it as inert.",
+      "No C strategy single-field repair.",
+      "No OHLCV-only new entry or weak-hold early exit.",
+      "No nearby accepted low/mid risk_on score-bucket multiplier tuning."
+    ],
+    "candidate_alpha_hypothesis": "Technology trend marginal risk-on de-risking might reduce residual Technology trend leakage with a production-shared sizing discriminator."
+  },
+  "parameters": {
+    "single_causal_variable": "trend_long Technology marginal risk-on risk multiplier",
+    "old_value": {
+      "trend_tech_marginal_risk_on_special_case": null
+    },
+    "tested_value": {
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "regime_exit_score_min": 0.10,
+      "regime_exit_score_max_exclusive": 0.13,
+      "risk_multiplier": 0.25
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "accepted Commodities/Financials/risk_on allocation rules"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9917, "sharpe_daily": 2.55, "total_pnl": 38893.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2325, "sharpe_daily": 1.23, "total_pnl": 18895.56, "max_drawdown_pct": 0.0692, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": -0.0117, "sharpe_daily": 0.0, "total_pnl": -452.84, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": 0.0058, "sharpe_daily": 0.01, "total_pnl": 311.48, "max_drawdown_pct": 0.0001, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": -0.0059, "total_pnl_delta_sum": -141.36, "total_pnl_delta_pct": -0.0012, "windows_ev_improved": 1, "windows_ev_regressed": 1, "windows_unchanged": 1}
+  },
+  "gate4_basis": "Rejected and rolled back. The rule improved old_thin slightly but damaged mid_weak and did not improve aggregate EV or PnL. It failed all Gate 4 acceptance criteria.",
+  "mechanism_insight": "Technology trend marginal risk-on score is not a clean de-risking discriminator. The same 0.10-0.13 score band includes weak TSM/AMD-like losers and useful APP/AAPL-like winners, so a simple score sleeve cuts valid convex Technology trend exposure.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_patch_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this deterministic sizing alpha was tested instead."
+  },
+  "rejection_reason": "Mid_weak EV and PnL regressed, aggregate EV/PnL regressed, and no trade count, win rate, survival, or drawdown improvement offset the damage.",
+  "do_not_repeat_without_new_evidence": [
+    "Simple trend_long Technology marginal risk-on score-band de-risking around 0.10-0.13",
+    "Using regime_exit_score alone as the missing Technology trend discriminator",
+    "Adding another Technology trend risk haircut without event/state evidence that separates APP/AAPL-like winners from TSM/AMD/SNOW-like losers"
+  ],
+  "next_retry_requires": [
+    "A non-score event/state discriminator for Technology trend lifecycle quality",
+    "Forward sample showing marginal-score Technology trend trades have distinct tail-adjusted expectancy",
+    "Production-shared inputs that can distinguish delayed winners from normal weak trend noise"
+  ],
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiments/logs/exp-20260430-002.json"
+  ]
+}

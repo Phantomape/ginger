@@ -1,12 +1,57 @@
 {
   "experiment_id": "exp-20260429-019",
-  "title": "Breakout Energy sizing boost",
-  "lane": "alpha_search",
-  "status": "rejected",
-  "hypothesis": "Already-selected breakout_long Energy signals deserve 1.5x risk.",
-  "change_type": "capital_allocation",
-  "single_causal_variable": "breakout_long + Energy risk multiplier",
-  "acceptance": "Rejected: only late_strong improved; aggregate EV +0.0827 and PnL +2.06% missed Gate 4.",
-  "production_parity": "Temporary shared portfolio_engine sizing patch was reverted; no backtester-only behavior remains.",
-  "next_retry_requires": "New state/event discriminator proving Energy breakout allocation outside late_strong."
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "codex-backtesting-canonical-command",
+  "hypothesis": "backtesting.md should expose exactly one canonical production-parity backtest command and make partial-reduce replay explicit to avoid future measurement drift.",
+  "change_type": "logging_fix",
+  "single_causal_variable": "single canonical production-parity backtesting command",
+  "baseline_result_file": "data/backtest_results_20260429.json",
+  "allowed_write_scope": [
+    "docs/backtesting.md",
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/experiment_registry.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/backtester.py",
+    "quant/production_parity.py",
+    "quant/preflight_validator.py",
+    "data/open_positions.json",
+    "data/pending_actions.json"
+  ],
+  "locked_variables": [
+    "single canonical production-parity backtesting command"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    }
+  ],
+  "acceptance_rule": "observed_only documentation repair; docs/backtesting.md maintains one canonical production-parity command including --replay-partial-reduces",
+  "created_at": "2026-04-29T18:01:26+00:00",
+  "claimed_at": "2026-04-29T18:01:34+00:00",
+  "completed_at": "2026-04-29T18:02:54+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtest_results_20260429.json",
+    "after_result_file": "data/backtest_results_20260429.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  }
 }

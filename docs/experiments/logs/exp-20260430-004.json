@@ -1,0 +1,120 @@
+{
+  "experiment_id": "exp-20260430-004",
+  "timestamp": "2026-04-30T20:18:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Low regime_exit_score Technology trend signals may be over-de-risked by the accepted Technology-specific haircuts; releasing those haircuts for low-score Technology trend candidates could recover delayed winners without changing entries, exits, ranking, LLM behavior, or the universe.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited; this deterministic test used fields already present in shared production/backtest sizing.",
+  "pre_experiment_checks": {
+    "mechanism_insight_conflicts_checked": true,
+    "avoided_recent_do_not_repeat_families": [
+      "No C strategy single-field repair.",
+      "No OHLCV-only new entry replay.",
+      "No Technology trend score-band de-risking retry from exp-20260430-002.",
+      "No nearby risk_on score-bucket multiplier tuning.",
+      "No Commodity breakout or Energy/Technology breakout risk boost retry."
+    ],
+    "candidate_alpha_hypothesis": "Technology trend low-score full-risk override is a capital-allocation test: it checks whether accepted Technology haircuts are too punitive for low-score delayed winners."
+  },
+  "parameters": {
+    "single_causal_variable": "low-score Technology trend haircut release",
+    "baseline": {
+      "trend_tech_gap_risk_multiplier": 0.25,
+      "trend_tech_near_high_risk_multiplier": 0.25,
+      "trend_tech_dte_risk_multiplier": 0.25,
+      "trend_tech_tight_gap_risk_multiplier": 0.0,
+      "risk_on_unmodified_low_score_max": 0.1
+    },
+    "tested_value": {
+      "condition": "strategy == trend_long and sector == Technology and regime_exit_score < 0.10",
+      "action": "clear Technology-specific gap/near-high/DTE/tight-gap haircuts before risk_on_unmodified sizing",
+      "production_path": "temporary shared portfolio_engine.size_signals patch"
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "accepted Commodities/Financials/risk_on allocation rules outside this tested override"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 1.0034, "sharpe_daily": 2.55, "total_pnl": 39346.43, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2267, "sharpe_daily": 1.22, "total_pnl": 18584.08, "max_drawdown_pct": 0.0691, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.4787, "sharpe_daily": 4.18, "total_pnl": 59304.19, "max_drawdown_pct": 0.0439, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.8360, "sharpe_daily": 2.20, "total_pnl": 37999.89, "max_drawdown_pct": 0.0701, "win_rate": 0.5000, "trade_count": 22, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2209, "sharpe_daily": 1.15, "total_pnl": 19211.01, "max_drawdown_pct": 0.0692, "win_rate": 0.3913, "trade_count": 23, "survival_rate": 0.9167}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": -0.1674, "sharpe_daily": -0.35, "total_pnl": -1346.54, "max_drawdown_pct": 0.0085, "win_rate": -0.0238, "trade_count": 1, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": -0.0058, "sharpe_daily": -0.07, "total_pnl": 626.93, "max_drawdown_pct": 0.0001, "win_rate": -0.0178, "trade_count": 1, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": -0.1732, "total_pnl_delta_sum": -719.61, "windows_ev_improved": 0, "windows_ev_regressed": 2, "windows_unchanged": 1}
+  },
+  "gate4_basis": "Rejected and rolled back. The shared sizing override damaged mid_weak materially, reduced old_thin EV despite a small PnL gain, and improved zero EV windows.",
+  "mechanism_insight": "Low regime_exit_score is not enough to justify releasing Technology trend haircuts. The override amplified PLTR/META/MSFT-like weak-window stop-outs more than it recovered AMD/NOW-like delayed winners, so the accepted Technology risk haircuts should stay in force.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "temporary_shared_policy_patch_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains data-limited, so this deterministic capital-allocation alpha was tested instead."
+  },
+  "rejection_reason": "Aggregate EV regressed by -0.1732, aggregate PnL fell by $719.61, mid_weak Sharpe fell by -0.35, and no window improved on EV.",
+  "do_not_repeat_without_new_evidence": [
+    "Full-risk or risk_on-unmodified release of low-score Technology trend haircuts",
+    "Using regime_exit_score < 0.10 alone as evidence that Technology trend haircuts are too punitive",
+    "Technology trend haircut release without an orthogonal event, news, or lifecycle discriminator"
+  ],
+  "next_retry_requires": [
+    "A production-shared event/state discriminator that separates AMD/NOW-like delayed winners from PLTR/META/MSFT-like stop-outs",
+    "Forward evidence that low-score Technology trend winners dominate weak-window stop-outs",
+    "Tail-risk evidence showing any Technology trend risk release does not expand mid_weak drawdown"
+  ],
+  "artifacts": [
+    "data/experiments/exp-20260430-004/baseline_late_strong.json",
+    "data/experiments/exp-20260430-004/baseline_mid_weak.json",
+    "data/experiments/exp-20260430-004/baseline_old_thin.json",
+    "data/experiments/exp-20260430-004/candidate_late_strong.json",
+    "data/experiments/exp-20260430-004/candidate_mid_weak.json",
+    "data/experiments/exp-20260430-004/candidate_old_thin.json"
+  ],
+  "related_files": [
+    "quant/portfolio_engine.py",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiments/logs/exp-20260430-004.json"
+  ]
+}

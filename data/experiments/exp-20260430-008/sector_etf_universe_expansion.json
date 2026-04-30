@@ -1,0 +1,123 @@
+{
+  "experiment_id": "exp-20260430-008",
+  "timestamp": "2026-04-29T23:17:50-07:00",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "change_type": "universe_expansion",
+  "hypothesis": "Sector and commodity ETFs already present in the fixed OHLCV snapshots might improve candidate-pool quality without adding noisy single-stock tickers.",
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    },
+    "mid_weak": {
+      "expected_value_score": 1.0034,
+      "sharpe_daily": 2.55,
+      "total_pnl": 39346.43,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2267,
+      "sharpe_daily": 1.22,
+      "total_pnl": 18584.08,
+      "max_drawdown_pct": 0.0691,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "variants": {
+    "sector_etf_bundle": {
+      "tickers": ["USO", "XLE", "XLP", "XLU", "XLV"],
+      "sector_map": {
+        "USO": "Commodities",
+        "XLE": "Energy",
+        "XLP": "Consumer Staples",
+        "XLU": "Utilities",
+        "XLV": "Healthcare"
+      },
+      "metrics": {
+        "late_strong": {
+          "expected_value_score": 3.0879,
+          "sharpe_daily": 4.57,
+          "total_pnl": 67571.20,
+          "max_drawdown_pct": 0.0439,
+          "win_rate": 0.7391,
+          "trade_count": 23,
+          "survival_rate": 0.8281
+        },
+        "mid_weak": {
+          "expected_value_score": 0.5735,
+          "sharpe_daily": 2.11,
+          "total_pnl": 27182.44,
+          "max_drawdown_pct": 0.0548,
+          "win_rate": 0.4348,
+          "trade_count": 23,
+          "survival_rate": 0.8364
+        },
+        "old_thin": {
+          "expected_value_score": 0.1996,
+          "sharpe_daily": 1.12,
+          "total_pnl": 17821.15,
+          "max_drawdown_pct": 0.0613,
+          "win_rate": 0.4000,
+          "trade_count": 25,
+          "survival_rate": 0.8955
+        }
+      },
+      "new_trade_pnl": {
+        "late_strong": 13719.03,
+        "mid_weak": -5213.45,
+        "old_thin": -2878.81
+      }
+    },
+    "xle_only": {
+      "tickers": ["XLE"],
+      "metrics": {
+        "late_strong": {"expected_value_score": 2.4011, "total_pnl": 56628.92, "sharpe_daily": 4.24, "max_drawdown_pct": 0.0473},
+        "mid_weak": {"expected_value_score": 0.7573, "total_pnl": 31819.30, "sharpe_daily": 2.38, "max_drawdown_pct": 0.0388},
+        "old_thin": {"expected_value_score": 0.2267, "total_pnl": 18584.08, "sharpe_daily": 1.22, "max_drawdown_pct": 0.0691}
+      }
+    },
+    "uso_only": {
+      "tickers": ["USO"],
+      "metrics": {
+        "late_strong": {"expected_value_score": 2.8610, "total_pnl": 65467.85, "sharpe_daily": 4.37, "max_drawdown_pct": 0.0439},
+        "mid_weak": {"expected_value_score": 0.5735, "total_pnl": 27182.44, "sharpe_daily": 2.11, "max_drawdown_pct": 0.0548},
+        "old_thin": {"expected_value_score": 0.2166, "total_pnl": 18666.46, "sharpe_daily": 1.16, "max_drawdown_pct": 0.0610}
+      }
+    },
+    "sector_ex_uso": {
+      "tickers": ["XLE", "XLP", "XLU", "XLV"],
+      "metrics": {
+        "late_strong": {"expected_value_score": 2.3195, "total_pnl": 52240.08, "sharpe_daily": 4.44, "max_drawdown_pct": 0.0439},
+        "mid_weak": {"expected_value_score": 0.7573, "total_pnl": 31819.30, "sharpe_daily": 2.38, "max_drawdown_pct": 0.0388},
+        "old_thin": {"expected_value_score": 0.2074, "total_pnl": 17734.53, "sharpe_daily": 1.17, "max_drawdown_pct": 0.0694}
+      }
+    }
+  },
+  "decision_basis": "Rejected. The full sector ETF bundle improved late_strong but materially damaged mid_weak and old_thin. Narrow variants either regressed two windows or failed to improve a majority of windows.",
+  "commands": [
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json",
+    "runtime-only Python harness adding USO/XLE/XLP/XLU/XLV to universe and risk_engine.SECTOR_MAP"
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "runtime_only_universe_patch_tested": true,
+    "rolled_back_after_rejection": true
+  }
+}

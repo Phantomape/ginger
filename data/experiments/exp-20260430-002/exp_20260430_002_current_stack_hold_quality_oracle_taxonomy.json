@@ -1,0 +1,2708 @@
+{
+  "experiment_id": "exp-20260430-010",
+  "created_at": "2026-04-30T06:34:46.309329+00:00",
+  "lane": "loss_attribution",
+  "change_type": "failure_taxonomy",
+  "single_causal_variable": "current-stack hold-quality oracle taxonomy",
+  "strategy_behavior_changed": false,
+  "history_guardrails": {
+    "does_not_add_filter": true,
+    "does_not_modify_production_strategy": true,
+    "does_not_treat_1_to_3_trades_as_rule": true,
+    "checks_winner_collateral": true
+  },
+  "family_definitions": {
+    "low_mfe_stopout": "stop exit with max favorable excursion below +1%",
+    "failed_followthrough": "at least two day-0/day-1 weak follow-through flags and MFE below +3%",
+    "overnight_gap_damage": "worst post-entry overnight gap <= -2% or <= -0.5R",
+    "sector_relative_breakdown": "stock underperformed sector by >=2pp while sector underperformed SPY by >=2pp",
+    "giveback_after_mfe": "losing non-target trade after reaching at least +5% MFE",
+    "wide_stop_distance": "initial stop distance >=5% of entry"
+  },
+  "windows": {
+    "late_strong": {
+      "range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "regime": "accepted-stack strong tape",
+      "metrics": {
+        "expected_value_score": 2.4787,
+        "sharpe_daily": 4.18,
+        "total_pnl": 59304.19,
+        "max_drawdown_pct": 0.0439,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431
+      },
+      "trade_count": 19
+    },
+    "mid_weak": {
+      "range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "regime": "profitable but benchmark-lagging rotation tape",
+      "metrics": {
+        "expected_value_score": 1.0034,
+        "sharpe_daily": 2.55,
+        "total_pnl": 39346.43,
+        "max_drawdown_pct": 0.0616,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "trade_count": 21
+    },
+    "old_thin": {
+      "range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "regime": "older mixed tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.2267,
+        "sharpe_daily": 1.22,
+        "total_pnl": 18584.08,
+        "max_drawdown_pct": 0.0691,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "trade_count": 22
+    }
+  },
+  "aggregate": {
+    "trade_count": 62,
+    "loss_count": 27,
+    "win_count": 35,
+    "loss_pnl_abs": 16292.8,
+    "winner_pnl": 133527.5,
+    "primary_family_counts": {
+      "low_mfe_stopout": 9,
+      "overnight_gap_damage": 6,
+      "failed_followthrough": 5,
+      "giveback_after_mfe": 4,
+      "unclassified": 3
+    },
+    "primary_family_loss_pnl_abs": {
+      "low_mfe_stopout": 6712.45,
+      "overnight_gap_damage": 2402.66,
+      "failed_followthrough": 2372.43,
+      "giveback_after_mfe": 1920.78,
+      "unclassified": 2884.48
+    }
+  },
+  "family_stats": {
+    "low_mfe_stopout": {
+      "loss_count": 9,
+      "loss_pnl_abs": 6712.45,
+      "loss_dollar_share": 0.412,
+      "tail_loss_pnl_abs": 4429.93,
+      "tail_loss_share_of_family": 0.66,
+      "winner_collateral_count": 0,
+      "winner_collateral_pnl": 0,
+      "collateral_to_loss_abs": 0.0,
+      "oracle_loss_if_perfectly_avoided": 6712.45,
+      "naive_filter_net_after_collateral": 6712.45,
+      "loss_summary": {
+        "count": 9,
+        "pnl_sum": -6712.45,
+        "avg_pnl": -745.83,
+        "window_counts": {
+          "late_strong": 3,
+          "mid_weak": 1,
+          "old_thin": 5
+        },
+        "strategy_counts": {
+          "breakout_long": 1,
+          "trend_long": 8
+        },
+        "sector_counts": {
+          "Commodities": 1,
+          "Energy": 2,
+          "Financials": 1,
+          "Healthcare": 1,
+          "Technology": 4
+        },
+        "tickers": [
+          "CVX",
+          "ISRG",
+          "SLV",
+          "TSM",
+          "V",
+          "XOM"
+        ]
+      },
+      "winner_collateral_summary": {
+        "count": 0,
+        "pnl_sum": 0,
+        "avg_pnl": null,
+        "window_counts": {},
+        "strategy_counts": {},
+        "sector_counts": {},
+        "tickers": []
+      }
+    },
+    "failed_followthrough": {
+      "loss_count": 14,
+      "loss_pnl_abs": 9084.88,
+      "loss_dollar_share": 0.5576,
+      "tail_loss_pnl_abs": 5845.4,
+      "tail_loss_share_of_family": 0.6434,
+      "winner_collateral_count": 1,
+      "winner_collateral_pnl": 305.32,
+      "collateral_to_loss_abs": 0.0336,
+      "oracle_loss_if_perfectly_avoided": 9084.88,
+      "naive_filter_net_after_collateral": 8779.56,
+      "loss_summary": {
+        "count": 14,
+        "pnl_sum": -9084.88,
+        "avg_pnl": -648.92,
+        "window_counts": {
+          "late_strong": 3,
+          "mid_weak": 4,
+          "old_thin": 7
+        },
+        "strategy_counts": {
+          "breakout_long": 4,
+          "trend_long": 10
+        },
+        "sector_counts": {
+          "Commodities": 1,
+          "Communication Services": 1,
+          "Energy": 2,
+          "Financials": 2,
+          "Healthcare": 1,
+          "Technology": 7
+        },
+        "tickers": [
+          "AMD",
+          "COIN",
+          "CVX",
+          "DDOG",
+          "ISRG",
+          "NFLX",
+          "SLV",
+          "SNOW",
+          "TSM",
+          "V",
+          "XOM"
+        ]
+      },
+      "winner_collateral_summary": {
+        "count": 1,
+        "pnl_sum": 305.32,
+        "avg_pnl": 305.32,
+        "window_counts": {
+          "late_strong": 1
+        },
+        "strategy_counts": {
+          "breakout_long": 1
+        },
+        "sector_counts": {
+          "Technology": 1
+        },
+        "tickers": [
+          "AMD"
+        ]
+      }
+    },
+    "overnight_gap_damage": {
+      "loss_count": 8,
+      "loss_pnl_abs": 2911.93,
+      "loss_dollar_share": 0.1787,
+      "tail_loss_pnl_abs": 1520.59,
+      "tail_loss_share_of_family": 0.5222,
+      "winner_collateral_count": 15,
+      "winner_collateral_pnl": 54316.46,
+      "collateral_to_loss_abs": 18.6531,
+      "oracle_loss_if_perfectly_avoided": 2911.93,
+      "naive_filter_net_after_collateral": -51404.53,
+      "loss_summary": {
+        "count": 8,
+        "pnl_sum": -2911.93,
+        "avg_pnl": -363.99,
+        "window_counts": {
+          "late_strong": 1,
+          "mid_weak": 5,
+          "old_thin": 2
+        },
+        "strategy_counts": {
+          "breakout_long": 3,
+          "trend_long": 5
+        },
+        "sector_counts": {
+          "Communication Services": 1,
+          "Financials": 1,
+          "Healthcare": 1,
+          "Technology": 4,
+          "Unknown": 1
+        },
+        "tickers": [
+          "AMD",
+          "DIS",
+          "GS",
+          "LLY",
+          "META",
+          "SNOW",
+          "TRIP",
+          "TSM"
+        ]
+      },
+      "winner_collateral_summary": {
+        "count": 15,
+        "pnl_sum": 54316.46,
+        "avg_pnl": 3621.1,
+        "window_counts": {
+          "late_strong": 6,
+          "mid_weak": 6,
+          "old_thin": 3
+        },
+        "strategy_counts": {
+          "breakout_long": 6,
+          "trend_long": 9
+        },
+        "sector_counts": {
+          "Commodities": 3,
+          "Consumer Discretionary": 1,
+          "ETF": 1,
+          "Energy": 3,
+          "Financials": 4,
+          "Technology": 3
+        },
+        "tickers": [
+          "AMD",
+          "AMZN",
+          "APP",
+          "COIN",
+          "CVX",
+          "GLD",
+          "GOOG",
+          "GS",
+          "IAU",
+          "IWM",
+          "JPM",
+          "SLV",
+          "XOM"
+        ]
+      }
+    },
+    "sector_relative_breakdown": {
+      "loss_count": 3,
+      "loss_pnl_abs": 1236.0,
+      "loss_dollar_share": 0.0759,
+      "tail_loss_pnl_abs": 0,
+      "tail_loss_share_of_family": 0.0,
+      "winner_collateral_count": 0,
+      "winner_collateral_pnl": 0,
+      "collateral_to_loss_abs": 0.0,
+      "oracle_loss_if_perfectly_avoided": 1236.0,
+      "naive_filter_net_after_collateral": 1236.0,
+      "loss_summary": {
+        "count": 3,
+        "pnl_sum": -1236.0,
+        "avg_pnl": -412.0,
+        "window_counts": {
+          "mid_weak": 2,
+          "old_thin": 1
+        },
+        "strategy_counts": {
+          "breakout_long": 1,
+          "trend_long": 2
+        },
+        "sector_counts": {
+          "Commodities": 1,
+          "Financials": 1,
+          "Technology": 1
+        },
+        "tickers": [
+          "AMD",
+          "COIN",
+          "SLV"
+        ]
+      },
+      "winner_collateral_summary": {
+        "count": 0,
+        "pnl_sum": 0,
+        "avg_pnl": null,
+        "window_counts": {},
+        "strategy_counts": {},
+        "sector_counts": {},
+        "tickers": []
+      }
+    },
+    "giveback_after_mfe": {
+      "loss_count": 5,
+      "loss_pnl_abs": 1972.02,
+      "loss_dollar_share": 0.121,
+      "tail_loss_pnl_abs": 1849.06,
+      "tail_loss_share_of_family": 0.9376,
+      "winner_collateral_count": 0,
+      "winner_collateral_pnl": 0,
+      "collateral_to_loss_abs": 0.0,
+      "oracle_loss_if_perfectly_avoided": 1972.02,
+      "naive_filter_net_after_collateral": 1972.02,
+      "loss_summary": {
+        "count": 5,
+        "pnl_sum": -1972.02,
+        "avg_pnl": -394.4,
+        "window_counts": {
+          "mid_weak": 3,
+          "old_thin": 2
+        },
+        "strategy_counts": {
+          "breakout_long": 2,
+          "trend_long": 3
+        },
+        "sector_counts": {
+          "Communication Services": 2,
+          "Healthcare": 1,
+          "Technology": 2
+        },
+        "tickers": [
+          "DDOG",
+          "DIS",
+          "ISRG",
+          "NFLX",
+          "PLTR"
+        ]
+      },
+      "winner_collateral_summary": {
+        "count": 0,
+        "pnl_sum": 0,
+        "avg_pnl": null,
+        "window_counts": {},
+        "strategy_counts": {},
+        "sector_counts": {},
+        "tickers": []
+      }
+    },
+    "wide_stop_distance": {
+      "loss_count": 8,
+      "loss_pnl_abs": 4327.91,
+      "loss_dollar_share": 0.2656,
+      "tail_loss_pnl_abs": 3369.65,
+      "tail_loss_share_of_family": 0.7786,
+      "winner_collateral_count": 8,
+      "winner_collateral_pnl": 24886.96,
+      "collateral_to_loss_abs": 5.7503,
+      "oracle_loss_if_perfectly_avoided": 4327.91,
+      "naive_filter_net_after_collateral": -20559.05,
+      "loss_summary": {
+        "count": 8,
+        "pnl_sum": -4327.91,
+        "avg_pnl": -540.99,
+        "window_counts": {
+          "late_strong": 1,
+          "mid_weak": 2,
+          "old_thin": 5
+        },
+        "strategy_counts": {
+          "breakout_long": 1,
+          "trend_long": 7
+        },
+        "sector_counts": {
+          "Communication Services": 1,
+          "Financials": 1,
+          "Technology": 5,
+          "Unknown": 1
+        },
+        "tickers": [
+          "AMD",
+          "COIN",
+          "DDOG",
+          "NFLX",
+          "TRIP",
+          "TSM"
+        ]
+      },
+      "winner_collateral_summary": {
+        "count": 8,
+        "pnl_sum": 24886.96,
+        "avg_pnl": 3110.87,
+        "window_counts": {
+          "late_strong": 3,
+          "mid_weak": 4,
+          "old_thin": 1
+        },
+        "strategy_counts": {
+          "breakout_long": 3,
+          "trend_long": 5
+        },
+        "sector_counts": {
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Technology": 5
+        },
+        "tickers": [
+          "AMD",
+          "AMZN",
+          "APP",
+          "COIN",
+          "MU"
+        ]
+      }
+    }
+  },
+  "future_test_candidates": [
+    {
+      "candidate": "low_mfe_stopout",
+      "why": "Repeated across windows with limited observed winner collateral.",
+      "not_a_rule_yet": true,
+      "next_test_shape": "shadow replay with an orthogonal event/state discriminator, not a direct filter",
+      "loss_count": 9,
+      "loss_pnl_abs": 6712.45,
+      "winner_collateral_count": 0,
+      "winner_collateral_pnl": 0
+    },
+    {
+      "candidate": "failed_followthrough",
+      "why": "Repeated across windows with limited observed winner collateral.",
+      "not_a_rule_yet": true,
+      "next_test_shape": "shadow replay with an orthogonal event/state discriminator, not a direct filter",
+      "loss_count": 14,
+      "loss_pnl_abs": 9084.88,
+      "winner_collateral_count": 1,
+      "winner_collateral_pnl": 305.32
+    },
+    {
+      "candidate": "sector_relative_breakdown",
+      "why": "Repeated across windows with limited observed winner collateral.",
+      "not_a_rule_yet": true,
+      "next_test_shape": "shadow replay with an orthogonal event/state discriminator, not a direct filter",
+      "loss_count": 3,
+      "loss_pnl_abs": 1236.0,
+      "winner_collateral_count": 0,
+      "winner_collateral_pnl": 0
+    },
+    {
+      "candidate": "giveback_after_mfe",
+      "why": "Repeated across windows with limited observed winner collateral.",
+      "not_a_rule_yet": true,
+      "next_test_shape": "shadow replay with an orthogonal event/state discriminator, not a direct filter",
+      "loss_count": 5,
+      "loss_pnl_abs": 1972.02,
+      "winner_collateral_count": 0,
+      "winner_collateral_pnl": 0
+    }
+  ],
+  "loss_rows": [
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "strategy": "trend_long",
+      "sector": "Energy",
+      "entry_date": "2026-01-06",
+      "exit_date": "2026-01-06",
+      "exit_reason": "stop",
+      "pnl": -1698.56,
+      "pnl_pct_net": -0.036728,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.000557,
+          "mae_pct": -0.053638,
+          "close_return": -0.051031,
+          "worst_gap_pct": null,
+          "worst_gap_r": null
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.050582,
+          "next_close_return": -0.058709,
+          "rs_vs_spy_next_close": -0.061108,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.03226,
+        "sector_return": -0.042443,
+        "spy_return": 0.00564,
+        "stock_vs_sector": 0.010183,
+        "sector_vs_spy": -0.048083
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "XOM",
+      "strategy": "breakout_long",
+      "sector": "Energy",
+      "entry_date": "2026-01-06",
+      "exit_date": "2026-01-06",
+      "exit_reason": "stop",
+      "pnl": -1386.0,
+      "pnl_pct_net": -0.030081,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.003107,
+          "mae_pct": -0.035168,
+          "close_return": -0.034769,
+          "worst_gap_pct": null,
+          "worst_gap_r": null
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.034304,
+          "next_close_return": -0.054727,
+          "rs_vs_spy_next_close": -0.057125,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.025606,
+        "sector_return": -0.042443,
+        "spy_return": 0.00564,
+        "stock_vs_sector": 0.016837,
+        "sector_vs_spy": -0.048083
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2026-01-16",
+      "exit_date": "2026-01-20",
+      "exit_reason": "stop",
+      "pnl": -20.93,
+      "pnl_pct_net": -0.060734,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.009132,
+          "mae_pct": -0.057067,
+          "close_return": -0.056317,
+          "worst_gap_pct": -0.004702,
+          "worst_gap_r": -0.083533
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.011861,
+          "next_close_return": -0.055843,
+          "rs_vs_spy_next_close": -0.032661,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.05629,
+        "sector_return": -0.01761,
+        "spy_return": -0.023181,
+        "stock_vs_sector": -0.03868,
+        "sector_vs_spy": 0.005571
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "GS",
+      "strategy": "breakout_long",
+      "sector": "Financials",
+      "entry_date": "2026-01-06",
+      "exit_date": "2026-02-02",
+      "exit_reason": "stop",
+      "pnl": -261.45,
+      "pnl_pct_net": -0.039653,
+      "is_loss": true,
+      "primary_family": "overnight_gap_damage",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.036654,
+          "mae_pct": -0.039797,
+          "close_return": -0.00374,
+          "worst_gap_pct": -0.021547,
+          "worst_gap_r": -0.612325
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.006383,
+          "next_close_return": -0.008837,
+          "rs_vs_spy_next_close": -0.011236,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.035189,
+        "sector_return": -0.003244,
+        "spy_return": 0.010873,
+        "stock_vs_sector": -0.031944,
+        "sector_vs_spy": -0.014117
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-07-18",
+      "exit_date": "2025-07-22",
+      "exit_reason": "stop",
+      "pnl": -55.6,
+      "pnl_pct_net": -0.038208,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.002175,
+          "mae_pct": -0.055722,
+          "close_return": -0.044151,
+          "worst_gap_pct": -0.004271,
+          "worst_gap_r": -0.126564
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.020016,
+          "next_close_return": -0.026334,
+          "rs_vs_spy_next_close": -0.025492,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.033742,
+        "sector_return": -0.02197,
+        "spy_return": -0.000699,
+        "stock_vs_sector": -0.011772,
+        "sector_vs_spy": -0.021271
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "strategy": "breakout_long",
+      "sector": "Financials",
+      "entry_date": "2025-07-21",
+      "exit_date": "2025-07-23",
+      "exit_reason": "stop",
+      "pnl": -304.33,
+      "pnl_pct_net": -0.089651,
+      "is_loss": true,
+      "primary_family": "failed_followthrough",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": true,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.024944,
+          "mae_pct": -0.090755,
+          "close_return": -0.065647,
+          "worst_gap_pct": -0.011003,
+          "worst_gap_r": -0.129087
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.028011,
+          "next_close_return": -0.049606,
+          "rs_vs_spy_next_close": -0.049749,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.085236,
+        "sector_return": -0.026685,
+        "spy_return": 0.008652,
+        "stock_vs_sector": -0.058551,
+        "sector_vs_spy": -0.035336
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-07-30",
+      "exit_date": "2025-08-01",
+      "exit_reason": "stop",
+      "pnl": -54.8,
+      "pnl_pct_net": -0.044699,
+      "is_loss": true,
+      "primary_family": "overnight_gap_damage",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.038702,
+          "mae_pct": -0.050541,
+          "close_return": -0.022766,
+          "worst_gap_pct": -0.034882,
+          "worst_gap_r": -0.866863
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.022208,
+          "next_close_return": 0.003986,
+          "rs_vs_spy_next_close": 0.010025,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.040239,
+        "sector_return": -0.010438,
+        "spy_return": -0.02233,
+        "stock_vs_sector": -0.029801,
+        "sector_vs_spy": 0.011892
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "DIS",
+      "strategy": "breakout_long",
+      "sector": "Communication Services",
+      "entry_date": "2025-06-11",
+      "exit_date": "2025-08-06",
+      "exit_reason": "stop",
+      "pnl": -51.24,
+      "pnl_pct_net": -0.033752,
+      "is_loss": true,
+      "primary_family": "overnight_gap_damage",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": true,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.057299,
+          "mae_pct": -0.048609,
+          "close_return": -0.023425,
+          "worst_gap_pct": -0.021467,
+          "worst_gap_r": -0.733146
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.00963,
+          "next_close_return": 0.001943,
+          "rs_vs_spy_next_close": 0.002671,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.029281,
+        "sector_return": -0.022967,
+        "spy_return": 0.050416,
+        "stock_vs_sector": -0.006314,
+        "sector_vs_spy": -0.073383
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "PLTR",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-08-06",
+      "exit_date": "2025-08-19",
+      "exit_reason": "stop",
+      "pnl": -8.11,
+      "pnl_pct_net": -0.047491,
+      "is_loss": true,
+      "primary_family": "giveback_after_mfe",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": true,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.109424,
+          "mae_pct": -0.083849,
+          "close_return": -0.078886,
+          "worst_gap_pct": -0.015342,
+          "worst_gap_r": -0.356513
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.048868,
+          "next_close_return": 0.064408,
+          "rs_vs_spy_next_close": 0.059321,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.043034,
+        "sector_return": 0.006106,
+        "spy_return": 0.017105,
+        "stock_vs_sector": -0.04914,
+        "sector_vs_spy": -0.011
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "META",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-08-01",
+      "exit_date": "2025-08-20",
+      "exit_reason": "stop",
+      "pnl": -41.11,
+      "pnl_pct_net": -0.027155,
+      "is_loss": true,
+      "primary_family": "overnight_gap_damage",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.046165,
+          "mae_pct": -0.039565,
+          "close_return": -0.017597,
+          "worst_gap_pct": -0.012913,
+          "worst_gap_r": -0.569424
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.014092,
+          "next_close_return": 0.020559,
+          "rs_vs_spy_next_close": 0.012783,
+          "weak_count": 1,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.022678,
+        "sector_return": -0.000829,
+        "spy_return": 0.018857,
+        "stock_vs_sector": -0.021849,
+        "sector_vs_spy": -0.019686
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SNOW",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-08-29",
+      "exit_date": "2025-09-04",
+      "exit_reason": "stop",
+      "pnl": -276.32,
+      "pnl_pct_net": -0.064975,
+      "is_loss": true,
+      "primary_family": "failed_followthrough",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": true,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.018772,
+          "mae_pct": -0.092807,
+          "close_return": -0.063911,
+          "worst_gap_pct": -0.02891,
+          "worst_gap_r": -0.67188
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.007302,
+          "next_close_return": -0.014055,
+          "rs_vs_spy_next_close": -0.002935,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.060536,
+        "sector_return": -0.003674,
+        "spy_return": 0.002548,
+        "stock_vs_sector": -0.056862,
+        "sector_vs_spy": -0.006223
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-10-09",
+      "exit_date": "2025-10-10",
+      "exit_reason": "stop",
+      "pnl": -317.45,
+      "pnl_pct_net": -0.07925,
+      "is_loss": true,
+      "primary_family": "failed_followthrough",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": true,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.015566,
+          "mae_pct": -0.098215,
+          "close_return": -0.091024,
+          "worst_gap_pct": -0.000515,
+          "worst_gap_r": -0.006886
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.014431,
+          "next_close_return": -0.090563,
+          "rs_vs_spy_next_close": -0.060111,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.074824,
+        "sector_return": -0.054168,
+        "spy_return": -0.030452,
+        "stock_vs_sector": -0.020656,
+        "sector_vs_spy": -0.023717
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "LLY",
+      "strategy": "breakout_long",
+      "sector": "Healthcare",
+      "entry_date": "2025-10-02",
+      "exit_date": "2025-10-17",
+      "exit_reason": "stop",
+      "pnl": -473.47,
+      "pnl_pct_net": -0.048132,
+      "is_loss": true,
+      "primary_family": "overnight_gap_damage",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.047707,
+          "mae_pct": -0.04987,
+          "close_return": -0.026864,
+          "worst_gap_pct": -0.037126,
+          "worst_gap_r": -0.90816
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.006741,
+          "next_close_return": 0.031325,
+          "rs_vs_spy_next_close": 0.033175,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.043676,
+        "sector_return": 0.003227,
+        "spy_return": -0.009039,
+        "stock_vs_sector": -0.046903,
+        "sector_vs_spy": 0.012266
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "ISRG",
+      "strategy": "breakout_long",
+      "sector": "Healthcare",
+      "entry_date": "2025-10-23",
+      "exit_date": "2025-10-22",
+      "exit_reason": "end_of_backtest",
+      "pnl": -53.75,
+      "pnl_pct_net": -0.001338,
+      "is_loss": true,
+      "primary_family": "giveback_after_mfe",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": true,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.05112,
+          "mae_pct": -0.006583,
+          "close_return": 0.048837,
+          "worst_gap_pct": -0.00315,
+          "worst_gap_r": -0.07124
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.049356,
+          "next_close_return": 0.040238,
+          "rs_vs_spy_next_close": 0.026573,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.002663,
+        "sector_return": 0.005319,
+        "spy_return": -0.000479,
+        "stock_vs_sector": -0.002655,
+        "sector_vs_spy": 0.005798
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "DDOG",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2024-10-11",
+      "exit_date": "2024-10-16",
+      "exit_reason": "stop",
+      "pnl": -1415.47,
+      "pnl_pct_net": -0.041708,
+      "is_loss": true,
+      "primary_family": "failed_followthrough",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.010235,
+          "mae_pct": -0.05125,
+          "close_return": -0.030396,
+          "worst_gap_pct": -0.005034,
+          "worst_gap_r": -0.13516
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.000616,
+          "next_close_return": -0.005928,
+          "rs_vs_spy_next_close": -0.020285,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.037245,
+        "sector_return": -0.007614,
+        "spy_return": 0.01085,
+        "stock_vs_sector": -0.029631,
+        "sector_vs_spy": -0.018464
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-10-18",
+      "exit_date": "2024-10-28",
+      "exit_reason": "stop",
+      "pnl": -232.95,
+      "pnl_pct_net": -0.055068,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": -0.000498,
+          "mae_pct": -0.055969,
+          "close_return": -0.055193,
+          "worst_gap_pct": -0.020547,
+          "worst_gap_r": -0.405908
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.025103,
+          "next_close_return": -0.019422,
+          "rs_vs_spy_next_close": -0.018669,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.050619,
+        "sector_return": 0.024972,
+        "spy_return": -0.005547,
+        "stock_vs_sector": -0.07559,
+        "sector_vs_spy": 0.030519
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "ISRG",
+      "strategy": "trend_long",
+      "sector": "Healthcare",
+      "entry_date": "2024-10-21",
+      "exit_date": "2024-10-31",
+      "exit_reason": "stop",
+      "pnl": -1286.08,
+      "pnl_pct_net": -0.035492,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.006489,
+          "mae_pct": -0.035875,
+          "close_return": -0.029771,
+          "worst_gap_pct": -0.008534,
+          "worst_gap_r": -0.275097
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.000347,
+          "next_close_return": -0.002967,
+          "rs_vs_spy_next_close": -0.002059,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.031023,
+        "sector_return": -0.029285,
+        "spy_return": -0.026051,
+        "stock_vs_sector": -0.001738,
+        "sector_vs_spy": -0.003234
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "strategy": "breakout_long",
+      "sector": "Communication Services",
+      "entry_date": "2024-11-22",
+      "exit_date": "2024-11-25",
+      "exit_reason": "stop",
+      "pnl": -58.86,
+      "pnl_pct_net": -0.036597,
+      "is_loss": true,
+      "primary_family": "failed_followthrough",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.010709,
+          "mae_pct": -0.035899,
+          "close_return": -0.034371,
+          "worst_gap_pct": 0.004745,
+          "worst_gap_r": 0.147686
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.001998,
+          "next_close_return": -0.03394,
+          "rs_vs_spy_next_close": -0.040459,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.032129,
+        "sector_return": -0.03394,
+        "spy_return": 0.006519,
+        "stock_vs_sector": 0.001811,
+        "sector_vs_spy": -0.040459
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "GOOG",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-12-12",
+      "exit_date": "2024-12-18",
+      "exit_reason": "stop",
+      "pnl": -250.57,
+      "pnl_pct_net": -0.037817,
+      "is_loss": true,
+      "primary_family": "unclassified",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.032997,
+          "mae_pct": -0.036249,
+          "close_return": -0.03182,
+          "worst_gap_pct": -0.004751,
+          "worst_gap_r": -0.142471
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.013602,
+          "next_close_return": -0.025064,
+          "rs_vs_spy_next_close": -0.021157,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.03335,
+        "sector_return": -0.040298,
+        "spy_return": -0.033466,
+        "stock_vs_sector": 0.006948,
+        "sector_vs_spy": -0.006832
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "DDOG",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-11-25",
+      "exit_date": "2024-12-19",
+      "exit_reason": "stop",
+      "pnl": -9.86,
+      "pnl_pct_net": -0.063499,
+      "is_loss": true,
+      "primary_family": "giveback_after_mfe",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": true,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.091796,
+          "mae_pct": -0.063615,
+          "close_return": -0.056811,
+          "worst_gap_pct": -0.011859,
+          "worst_gap_r": -0.200801
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.005973,
+          "next_close_return": -0.008414,
+          "rs_vs_spy_next_close": -0.010298,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.059058,
+        "sector_return": 0.009703,
+        "spy_return": -0.022385,
+        "stock_vs_sector": -0.068761,
+        "sector_vs_spy": 0.032088
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TSM",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-01-07",
+      "exit_date": "2025-01-08",
+      "exit_reason": "stop",
+      "pnl": -72.74,
+      "pnl_pct_net": -0.055845,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.000603,
+          "mae_pct": -0.069694,
+          "close_return": -0.064273,
+          "worst_gap_pct": -0.006858,
+          "worst_gap_r": -0.136532
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.044386,
+          "next_close_return": -0.063822,
+          "rs_vs_spy_next_close": -0.050548,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.051397,
+        "sector_return": -0.033462,
+        "spy_return": -0.013274,
+        "stock_vs_sector": -0.017934,
+        "sector_vs_spy": -0.020188
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "V",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2024-11-26",
+      "exit_date": "2025-01-10",
+      "exit_reason": "stop",
+      "pnl": -1328.44,
+      "pnl_pct_net": -0.029707,
+      "is_loss": true,
+      "primary_family": "unclassified",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.023097,
+          "mae_pct": -0.026624,
+          "close_return": -0.021152,
+          "worst_gap_pct": -0.01249,
+          "worst_gap_r": -0.494978
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.007575,
+          "next_close_return": 0.001591,
+          "rs_vs_spy_next_close": 0.001541,
+          "weak_count": 1,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.025233,
+        "sector_return": -0.040118,
+        "spy_return": -0.027315,
+        "stock_vs_sector": 0.014885,
+        "sector_vs_spy": -0.012803
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "MCD",
+      "strategy": "trend_long",
+      "sector": "Consumer Discretionary",
+      "entry_date": "2025-02-11",
+      "exit_date": "2025-02-19",
+      "exit_reason": "stop",
+      "pnl": -1305.47,
+      "pnl_pct_net": -0.027733,
+      "is_loss": true,
+      "primary_family": "unclassified",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.013239,
+          "mae_pct": -0.026043,
+          "close_return": -0.018141,
+          "worst_gap_pct": -0.004954,
+          "worst_gap_r": -0.212993
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.00924,
+          "next_close_return": 0.000748,
+          "rs_vs_spy_next_close": -0.000596,
+          "weak_count": 1,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.023257,
+        "sector_return": 0.001114,
+        "spy_return": 0.017227,
+        "stock_vs_sector": -0.024371,
+        "sector_vs_spy": -0.016112
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "TRIP",
+      "strategy": "trend_long",
+      "sector": "Unknown",
+      "entry_date": "2025-01-24",
+      "exit_date": "2025-02-20",
+      "exit_reason": "stop",
+      "pnl": -1520.59,
+      "pnl_pct_net": -0.055011,
+      "is_loss": true,
+      "primary_family": "overnight_gap_damage",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.048315,
+          "mae_pct": -0.103933,
+          "close_return": -0.073034,
+          "worst_gap_pct": -0.031891,
+          "worst_gap_r": -0.630723
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.007308,
+          "next_close_return": -0.006745,
+          "rs_vs_spy_next_close": 0.010375,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.050562,
+        "sector_return": -0.072513,
+        "spy_return": 0.000935,
+        "stock_vs_sector": 0.021951,
+        "sector_vs_spy": -0.073447
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "V",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-03-03",
+      "exit_date": "2025-03-04",
+      "exit_reason": "stop",
+      "pnl": -1345.37,
+      "pnl_pct_net": -0.028361,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.009257,
+          "mae_pct": -0.035184,
+          "close_return": -0.030145,
+          "worst_gap_pct": -0.004726,
+          "worst_gap_r": -0.19787
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.003251,
+          "next_close_return": -0.029669,
+          "rs_vs_spy_next_close": 0.002737,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.023885,
+        "sector_return": -0.049348,
+        "spy_return": -0.032406,
+        "stock_vs_sector": 0.025463,
+        "sector_vs_spy": -0.016942
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "NFLX",
+      "strategy": "trend_long",
+      "sector": "Communication Services",
+      "entry_date": "2025-01-23",
+      "exit_date": "2025-03-06",
+      "exit_reason": "stop",
+      "pnl": -1849.06,
+      "pnl_pct_net": -0.059021,
+      "is_loss": true,
+      "primary_family": "giveback_after_mfe",
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": true,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.110821,
+          "mae_pct": -0.06188,
+          "close_return": -0.0542,
+          "worst_gap_pct": -0.018094,
+          "worst_gap_r": -0.331543
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.028242,
+          "next_close_return": 0.020651,
+          "rs_vs_spy_next_close": 0.017069,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": -0.054576,
+        "sector_return": -0.053716,
+        "spy_return": -0.054622,
+        "stock_vs_sector": -0.00086,
+        "sector_vs_spy": 0.000906
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "SLV",
+      "strategy": "trend_long",
+      "sector": "Commodities",
+      "entry_date": "2025-03-14",
+      "exit_date": "2025-03-21",
+      "exit_reason": "stop",
+      "pnl": -614.22,
+      "pnl_pct_net": -0.038091,
+      "is_loss": true,
+      "primary_family": "low_mfe_stopout",
+      "family_flags": {
+        "low_mfe_stopout": true,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": true,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.007113,
+          "mae_pct": -0.039121,
+          "close_return": -0.029421,
+          "worst_gap_pct": -0.01561,
+          "worst_gap_r": -0.464244
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.00647,
+          "next_close_return": -0.003235,
+          "rs_vs_spy_next_close": -0.023087,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": -0.033624,
+        "sector_return": -0.010379,
+        "spy_return": 0.017203,
+        "stock_vs_sector": -0.023245,
+        "sector_vs_spy": -0.027581
+      }
+    }
+  ],
+  "winner_collateral_rows": [
+    {
+      "window": "late_strong",
+      "ticker": "GOOG",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-10-31",
+      "exit_date": "2025-11-25",
+      "exit_reason": "target",
+      "pnl": 5093.15,
+      "pnl_pct_net": 0.149291,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.159968,
+          "mae_pct": -0.042119,
+          "close_return": 0.142215,
+          "worst_gap_pct": -0.025885,
+          "worst_gap_r": -0.598884
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.00489,
+          "next_close_return": 0.003231,
+          "rs_vs_spy_next_close": 0.005712,
+          "weak_count": 1,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.153368,
+        "sector_return": -0.036744,
+        "spy_return": -0.014627,
+        "stock_vs_sector": 0.190112,
+        "sector_vs_spy": -0.022117
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "IAU",
+      "strategy": "breakout_long",
+      "sector": "Commodities",
+      "entry_date": "2025-12-15",
+      "exit_date": "2026-01-12",
+      "exit_reason": "target",
+      "pnl": 2428.9,
+      "pnl_pct_net": 0.055602,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.069816,
+          "mae_pct": -0.009693,
+          "close_return": 0.061227,
+          "worst_gap_pct": -0.031169,
+          "worst_gap_r": -1.149441
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.004665,
+          "next_close_return": -0.004665,
+          "rs_vs_spy_next_close": 0.005353,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.059632,
+        "sector_return": 0.152834,
+        "spy_return": 0.016732,
+        "stock_vs_sector": -0.093202,
+        "sector_vs_spy": 0.136102
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "GLD",
+      "strategy": "breakout_long",
+      "sector": "Commodities",
+      "entry_date": "2025-12-15",
+      "exit_date": "2026-01-12",
+      "exit_reason": "target",
+      "pnl": 2406.21,
+      "pnl_pct_net": 0.055172,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.069806,
+          "mae_pct": -0.009775,
+          "close_return": 0.060986,
+          "worst_gap_pct": -0.031386,
+          "worst_gap_r": -1.144864
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.004928,
+          "next_close_return": -0.004701,
+          "rs_vs_spy_next_close": 0.005317,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.059202,
+        "sector_return": 0.152834,
+        "spy_return": 0.016732,
+        "stock_vs_sector": -0.093632,
+        "sector_vs_spy": 0.136102
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "MU",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2026-01-07",
+      "exit_date": "2026-01-27",
+      "exit_reason": "target",
+      "pnl": 4860.01,
+      "pnl_pct_net": 0.216879,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.22168,
+          "mae_pct": -0.057272,
+          "close_return": 0.203462,
+          "worst_gap_pct": -0.013156,
+          "worst_gap_r": -0.20658
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.003405,
+          "next_close_return": -0.040181,
+          "rs_vs_spy_next_close": -0.036309,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.22099,
+        "sector_return": 0.124804,
+        "spy_return": 0.004767,
+        "stock_vs_sector": 0.096186,
+        "sector_vs_spy": 0.120037
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "XOM",
+      "strategy": "breakout_long",
+      "sector": "Energy",
+      "entry_date": "2026-01-15",
+      "exit_date": "2026-02-03",
+      "exit_reason": "target",
+      "pnl": 4523.06,
+      "pnl_pct_net": 0.09771,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.122408,
+          "mae_pct": -0.006931,
+          "close_return": 0.112501,
+          "worst_gap_pct": -0.012597,
+          "worst_gap_r": -0.535335
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.0,
+          "next_close_return": 0.005885,
+          "rs_vs_spy_next_close": 0.010075,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.101761,
+        "sector_return": 0.093541,
+        "spy_return": -0.007256,
+        "stock_vs_sector": 0.00822,
+        "sector_vs_spy": 0.100797
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "strategy": "breakout_long",
+      "sector": "Energy",
+      "entry_date": "2026-02-02",
+      "exit_date": "2026-03-02",
+      "exit_reason": "target",
+      "pnl": 5351.13,
+      "pnl_pct_net": 0.103482,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.113995,
+          "mae_pct": -0.005077,
+          "close_return": 0.103288,
+          "worst_gap_pct": -0.008773,
+          "worst_gap_r": -1.00508
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.003402,
+          "next_close_return": 0.026522,
+          "rs_vs_spy_next_close": 0.026595,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.107536,
+        "sector_return": 0.107065,
+        "spy_return": -0.004641,
+        "stock_vs_sector": 0.000471,
+        "sector_vs_spy": 0.111705
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "CVX",
+      "strategy": "trend_long",
+      "sector": "Energy",
+      "entry_date": "2026-03-13",
+      "exit_date": "2026-03-27",
+      "exit_reason": "target",
+      "pnl": 3022.23,
+      "pnl_pct_net": 0.078519,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.083427,
+          "mae_pct": -0.00719,
+          "close_return": 0.076747,
+          "worst_gap_pct": -0.015367,
+          "worst_gap_r": -0.575092
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.004184,
+          "next_close_return": 0.004286,
+          "rs_vs_spy_next_close": 0.004644,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.08256,
+        "sector_return": 0.092731,
+        "spy_return": -0.049977,
+        "stock_vs_sector": -0.010171,
+        "sector_vs_spy": 0.142708
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "AMZN",
+      "strategy": "breakout_long",
+      "sector": "Consumer Discretionary",
+      "entry_date": "2026-04-10",
+      "exit_date": "2026-04-21",
+      "exit_reason": "end_of_backtest",
+      "pnl": 2619.4,
+      "pnl_pct_net": 0.050668,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.081156,
+          "mae_pct": -0.007343,
+          "close_return": 0.054695,
+          "worst_gap_pct": -0.005468,
+          "worst_gap_r": -0.097266
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.01309,
+          "next_close_return": 0.019507,
+          "rs_vs_spy_next_close": 0.012491,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.054695,
+        "sector_return": 0.062091,
+        "spy_return": 0.033406,
+        "stock_vs_sector": -0.007396,
+        "sector_vs_spy": 0.028685
+      }
+    },
+    {
+      "window": "late_strong",
+      "ticker": "AMD",
+      "strategy": "breakout_long",
+      "sector": "Technology",
+      "entry_date": "2026-04-17",
+      "exit_date": "2026-04-21",
+      "exit_reason": "end_of_backtest",
+      "pnl": 305.32,
+      "pnl_pct_net": 0.00791,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": true,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.023013,
+          "mae_pct": -0.03251,
+          "close_return": 0.011916,
+          "worst_gap_pct": 0.007938,
+          "worst_gap_r": 0.120378
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.009288,
+          "next_close_return": -0.02153,
+          "rs_vs_spy_next_close": -0.025184,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.011916,
+        "sector_return": -0.01264,
+        "spy_return": -0.002917,
+        "stock_vs_sector": 0.024556,
+        "sector_vs_spy": -0.009723
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-05-14",
+      "exit_date": "2025-06-24",
+      "exit_reason": "target",
+      "pnl": 5820.24,
+      "pnl_pct_net": 0.243473,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.352807,
+          "mae_pct": -0.087882,
+          "close_return": 0.336719,
+          "worst_gap_pct": -0.032911,
+          "worst_gap_r": -0.373826
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.0255,
+          "next_close_return": -0.048353,
+          "rs_vs_spy_next_close": -0.052861,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.247597,
+        "sector_return": 0.222241,
+        "spy_return": 0.035324,
+        "stock_vs_sector": 0.025356,
+        "sector_vs_spy": 0.186916
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "AMD",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-06-17",
+      "exit_date": "2025-07-15",
+      "exit_reason": "target",
+      "pnl": 791.11,
+      "pnl_pct_net": 0.20677,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.239784,
+          "mae_pct": -0.017345,
+          "close_return": 0.215798,
+          "worst_gap_pct": -0.022058,
+          "worst_gap_r": -0.322646
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.006488,
+          "next_close_return": -0.008911,
+          "rs_vs_spy_next_close": -0.004296,
+          "weak_count": 3,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.210876,
+        "sector_return": 0.060172,
+        "spy_return": 0.039602,
+        "stock_vs_sector": 0.150704,
+        "sector_vs_spy": 0.020571
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-06-26",
+      "exit_date": "2025-07-18",
+      "exit_reason": "target",
+      "pnl": 4164.92,
+      "pnl_pct_net": 0.226608,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.253559,
+          "mae_pct": -0.058386,
+          "close_return": 0.183446,
+          "worst_gap_pct": -0.029987,
+          "worst_gap_r": -0.402899
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.057936,
+          "next_close_return": -0.003103,
+          "rs_vs_spy_next_close": -0.012824,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": true,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.230724,
+        "sector_return": 0.120087,
+        "spy_return": 0.030526,
+        "stock_vs_sector": 0.110637,
+        "sector_vs_spy": 0.089561
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "SLV",
+      "strategy": "trend_long",
+      "sector": "Commodities",
+      "entry_date": "2025-06-03",
+      "exit_date": "2025-07-23",
+      "exit_reason": "target",
+      "pnl": 5541.06,
+      "pnl_pct_net": 0.140383,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.147651,
+          "mae_pct": -0.007031,
+          "close_return": 0.14062,
+          "worst_gap_pct": -0.023395,
+          "worst_gap_r": -1.200066
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.005437,
+          "next_close_return": 0.002239,
+          "rs_vs_spy_next_close": -0.003822,
+          "weak_count": 1,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.144455,
+        "sector_return": 0.074907,
+        "spy_return": 0.073851,
+        "stock_vs_sector": 0.069549,
+        "sector_vs_spy": 0.001056
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "APP",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2025-09-09",
+      "exit_date": "2025-09-29",
+      "exit_reason": "target",
+      "pnl": 949.97,
+      "pnl_pct_net": 0.29043,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.362865,
+          "mae_pct": -0.003961,
+          "close_return": 0.302089,
+          "worst_gap_pct": -0.026561,
+          "worst_gap_r": -0.360129
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.020766,
+          "next_close_return": 0.037133,
+          "rs_vs_spy_next_close": 0.032141,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.294577,
+        "sector_return": 0.096787,
+        "spy_return": 0.025502,
+        "stock_vs_sector": 0.197789,
+        "sector_vs_spy": 0.071285
+      }
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "IWM",
+      "strategy": "breakout_long",
+      "sector": "ETF",
+      "entry_date": "2025-08-25",
+      "exit_date": "2025-10-15",
+      "exit_reason": "target",
+      "pnl": 3405.13,
+      "pnl_pct_net": 0.071737,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.082091,
+          "mae_pct": -0.011896,
+          "close_return": 0.071645,
+          "worst_gap_pct": -0.013522,
+          "worst_gap_r": -0.614976
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.007602,
+          "next_close_return": 0.000598,
+          "rs_vs_spy_next_close": -0.001141,
+          "weak_count": 2,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": true
+          }
+        },
+        "stock_return": 0.075775,
+        "sector_return": 0.072179,
+        "spy_return": 0.035672,
+        "stock_vs_sector": 0.003595,
+        "sector_vs_spy": 0.036508
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "APP",
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "entry_date": "2024-11-08",
+      "exit_date": "2024-11-19",
+      "exit_reason": "target",
+      "pnl": 5375.99,
+      "pnl_pct_net": 0.277549,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": false,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": true
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.298463,
+          "mae_pct": -0.023916,
+          "close_return": 0.288833,
+          "worst_gap_pct": -0.018957,
+          "worst_gap_r": -0.226048
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.164278,
+          "next_close_return": 0.149906,
+          "rs_vs_spy_next_close": 0.145561,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.28169,
+        "sector_return": 0.049545,
+        "spy_return": -0.009846,
+        "stock_vs_sector": 0.232145,
+        "sector_vs_spy": 0.059391
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "AMZN",
+      "strategy": "trend_long",
+      "sector": "Consumer Discretionary",
+      "entry_date": "2024-11-04",
+      "exit_date": "2024-12-04",
+      "exit_reason": "target",
+      "pnl": 3620.9,
+      "pnl_pct_net": 0.11413,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.119308,
+          "mae_pct": -0.011397,
+          "close_return": 0.109947,
+          "worst_gap_pct": -0.022319,
+          "worst_gap_r": -0.743517
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": -0.003411,
+          "next_close_return": 0.015526,
+          "rs_vs_spy_next_close": 0.005861,
+          "weak_count": 1,
+          "flags": {
+            "entry_day_red": true,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.118189,
+        "sector_return": 0.072153,
+        "spy_return": 0.063868,
+        "stock_vs_sector": 0.046036,
+        "sector_vs_spy": 0.008285
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "JPM",
+      "strategy": "breakout_long",
+      "sector": "Financials",
+      "entry_date": "2025-01-16",
+      "exit_date": "2025-02-06",
+      "exit_reason": "target",
+      "pnl": 3467.16,
+      "pnl_pct_net": 0.075516,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.089941,
+          "mae_pct": -0.007807,
+          "close_return": 0.089626,
+          "worst_gap_pct": -0.020464,
+          "worst_gap_r": -0.570931
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.001063,
+          "next_close_return": 0.020315,
+          "rs_vs_spy_next_close": 0.014576,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.079556,
+        "sector_return": 0.089905,
+        "spy_return": 0.020449,
+        "stock_vs_sector": -0.010349,
+        "sector_vs_spy": 0.069456
+      }
+    },
+    {
+      "window": "old_thin",
+      "ticker": "GS",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-01-16",
+      "exit_date": "2025-02-18",
+      "exit_reason": "target",
+      "pnl": 3731.29,
+      "pnl_pct_net": 0.095369,
+      "is_loss": false,
+      "primary_family": null,
+      "family_flags": {
+        "low_mfe_stopout": false,
+        "failed_followthrough": false,
+        "overnight_gap_damage": true,
+        "sector_relative_breakdown": false,
+        "giveback_after_mfe": false,
+        "wide_stop_distance": false
+      },
+      "features": {
+        "path": {
+          "status": "ok",
+          "mfe_pct": 0.101414,
+          "mae_pct": -0.007041,
+          "close_return": 0.101414,
+          "worst_gap_pct": -0.022486,
+          "worst_gap_r": -0.526493
+        },
+        "followthrough": {
+          "status": "ok",
+          "entry_day_return": 0.004918,
+          "next_close_return": 0.026148,
+          "rs_vs_spy_next_close": 0.020409,
+          "weak_count": 0,
+          "flags": {
+            "entry_day_red": false,
+            "next_close_below_entry_open": false,
+            "next_day_rs_vs_spy_negative": false
+          }
+        },
+        "stock_return": 0.099418,
+        "sector_return": 0.111941,
+        "spy_return": 0.02915,
+        "stock_vs_sector": -0.012522,
+        "sector_vs_spy": 0.082791
+      }
+    }
+  ],
+  "interpretation": {
+    "status": "observed_only",
+    "oracle_note": "Oracle dollars are an upper bound: they assume perfect identification before the exit path is known.",
+    "llm_news_context": "This audit did not use LLM/news context; future tests should only add it as an orthogonal event/state discriminator.",
+    "do_not_promote_directly": "No family here should be converted directly into a filter without a separate replay and collateral check."
+  }
+}

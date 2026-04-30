@@ -58,6 +58,10 @@ from constants import (
     TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK,
     TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER,
     RISK_ON_UNMODIFIED_RISK_MULTIPLIER,
+    RISK_ON_UNMODIFIED_LOW_SCORE_MAX,
+    RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER,
+    RISK_ON_UNMODIFIED_MID_SCORE_MAX,
+    RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
     ATR_STOP_MULT,
@@ -535,9 +539,25 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sig.get("regime_exit_bucket") == "risk_on"
                 and not has_other_sizing_rule
             ):
-                risk_on_unmodified_risk_multiplier = (
-                    RISK_ON_UNMODIFIED_RISK_MULTIPLIER
-                )
+                regime_exit_score = sig.get("regime_exit_score")
+                if (
+                    regime_exit_score is not None
+                    and regime_exit_score < RISK_ON_UNMODIFIED_LOW_SCORE_MAX
+                ):
+                    risk_on_unmodified_risk_multiplier = (
+                        RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER
+                    )
+                elif (
+                    regime_exit_score is not None
+                    and regime_exit_score < RISK_ON_UNMODIFIED_MID_SCORE_MAX
+                ):
+                    risk_on_unmodified_risk_multiplier = (
+                        RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER
+                    )
+                else:
+                    risk_on_unmodified_risk_multiplier = (
+                        RISK_ON_UNMODIFIED_RISK_MULTIPLIER
+                    )
                 signal_risk_pct *= risk_on_unmodified_risk_multiplier
             if signal_risk_pct <= 0:
                 sizing = _zero_risk_sizing(effective_risk_pct, entry, stop)

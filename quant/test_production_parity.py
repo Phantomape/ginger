@@ -181,6 +181,74 @@ def test_trailing_partial_reduce_policy_is_shared():
     assert partial_reduce_shares(25, 25) == 6
 
 
+def test_approaching_hard_stop_no_longer_maps_to_reduce():
+    rules = [{"rule": "APPROACHING_HARD_STOP", "urgency": "WARNING"}]
+
+    assert suggested_reduce_pct_for_rules(rules, -0.02) == 0
+    assert suggested_reduce_pct_for_rules(rules, 0.02) == 0
+
+
+def test_exit_policy_replay_bias_discloses_advisory_gap():
+    bias = backtester.build_exit_policy_replay_bias(
+        partial_reduce_enabled=True,
+        trailing_partial_reduce_enabled=False,
+    )
+
+    assert bias["gap_present"] is True
+    assert "SIGNAL_TARGET" in bias["production_advisory_actions_not_replayed"]
+    assert "TIME_STOP" in bias["production_advisory_actions_not_replayed"]
+    assert bias["target_price_semantic_gap"]["backtester"].startswith(
+        "Position.target_price is simulated as a hard full-position"
+    )
+    assert bias["partial_reduce_replay_scope"]["replay_container_enabled"] is True
+    assert bias["partial_reduce_replay_scope"][
+        "trailing_partial_reduce_enabled"
+    ] is False
+    assert bias["rejected_simple_replay"]["experiment_id"] == "exp-20260429-032"
+    assert bias["rejected_simple_replay"]["decision"] == "rejected"
+
+
+def test_exit_advisory_shadow_attribution_summarizes_without_execution():
+    events = [
+        {
+            "date": "2026-01-05",
+            "ticker": "AAA",
+            "trade_key": "AAA:2026-01-02:100.0000",
+            "rule": "SIGNAL_TARGET",
+            "is_first_for_trade": True,
+        },
+        {
+            "date": "2026-01-06",
+            "ticker": "AAA",
+            "trade_key": "AAA:2026-01-02:100.0000",
+            "rule": "SIGNAL_TARGET",
+            "is_first_for_trade": False,
+        },
+    ]
+    trades = [
+        {
+            "trade_key": "AAA:2026-01-02:100.0000",
+            "pnl": 250.0,
+            "exit_reason": "target",
+            "exit_advisory_rules_seen": ["SIGNAL_TARGET"],
+        }
+    ]
+
+    attribution = backtester.build_exit_advisory_shadow_attribution(
+        events,
+        trades,
+    )
+
+    signal_target = attribution["by_rule"]["SIGNAL_TARGET"]
+    assert attribution["mode"] == "shadow_only_no_trade_execution"
+    assert signal_target["daily_triggers"] == 2
+    assert signal_target["unique_trades"] == 1
+    assert signal_target["first_trigger_trades"] == 1
+    assert signal_target["outcome"]["closed_trades"] == 1
+    assert signal_target["outcome"]["win_rate"] == 1.0
+    assert signal_target["outcome"]["pnl"] == 250.0
+
+
 def test_backtester_addon_and_slot_defaults_share_constants():
     shared_keys = [
         "MAX_POSITION_PCT",
@@ -207,7 +275,7 @@ def test_backtester_addon_and_slot_defaults_share_constants():
 
     for key in shared_keys:
         if key == "REPLAY_PARTIAL_REDUCES":
-            assert backtester.DEFAULT_CONFIG[key] is False
+            assert backtester.DEFAULT_CONFIG[key] is True
         elif key == "PRODUCTION_TRAILING_STOP_PCT":
             assert backtester.DEFAULT_CONFIG[key] == constants.TRAILING_STOP_PCT
         elif key == "TRAILING_PARTIAL_REDUCE_ENABLED":

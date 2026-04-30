@@ -28,6 +28,9 @@ from constants import (
 
 logger = logging.getLogger(__name__)
 
+APPROACHING_HARD_STOP_RULE_ENABLED = False
+TRAILING_STOP_ADVISORY_RULE_ENABLED = False
+
 
 def compute_atr(data, period=ATR_PERIOD):
     """
@@ -241,7 +244,8 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
         })
 
     # 3. Trailing stop — HIGH (only once price has risen above entry)
-    if high_water_mark and high_water_mark > avg_cost:
+    # Pure trailing-stop advisory output is disabled after negative replay tests.
+    if TRAILING_STOP_ADVISORY_RULE_ENABLED and high_water_mark and high_water_mark > avg_cost:
         trailing_price = round(high_water_mark * (1 - TRAILING_STOP_PCT), 2)
         if current_price <= trailing_price:
             triggered.append({
@@ -330,7 +334,8 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
             })
 
     # 5. Approaching hard stop — WARNING (within 3% above stop)
-    if hard_stop > 0 and current_price > hard_stop:
+    # Disabled after exp-20260430-012: noisy warning, negative EV/PnL as action.
+    if APPROACHING_HARD_STOP_RULE_ENABLED and hard_stop > 0 and current_price > hard_stop:
         distance_pct = (current_price - hard_stop) / current_price
         if distance_pct < 0.03 and "HARD_STOP" not in [t["rule"] for t in triggered]:
             triggered.append({
@@ -363,5 +368,3 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
         "high_urgency":    any(t["urgency"] in ("CRITICAL", "HIGH") for t in triggered),
         "triggered_rules": triggered,
     }
-
-

@@ -1,0 +1,96 @@
+{
+  "experiment_id": "exp-20260429-029",
+  "timestamp": "2026-04-29T14:15:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Already-selected risk_on breakout_long signals with no other sizing modifier may deserve the same 1.5x non-stacking risk budget as accepted low-score plain risk_on signals.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "parameters": {
+    "single_causal_variable": "risk_on_unmodified breakout sizing multiplier",
+    "old_value": {
+      "RISK_ON_UNMODIFIED_RISK_MULTIPLIER": 1.25,
+      "breakout_special_case": null
+    },
+    "tested_value": {
+      "RISK_ON_UNMODIFIED_BREAKOUT_RISK_MULTIPLIER": 1.5,
+      "fallback_RISK_ON_UNMODIFIED_RISK_MULTIPLIER": 1.25,
+      "RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER": 1.5
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "all existing sector-specific sizing boosts and haircuts"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.3317, "sharpe_daily": 4.28, "total_pnl": 54479.38, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2285, "sharpe_daily": 1.27, "total_pnl": 17991.28, "max_drawdown_pct": 0.0595, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.3681, "sharpe_daily": 4.17, "total_pnl": 56787.78, "max_drawdown_pct": 0.0422, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9963, "sharpe_daily": 2.55, "total_pnl": 39068.46, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2215, "sharpe_daily": 1.25, "total_pnl": 17721.53, "max_drawdown_pct": 0.0597, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0364,
+    "mid_weak": 0.0291,
+    "old_thin": -0.007,
+    "aggregate": 0.0585
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.0364, "sharpe_daily": -0.11, "total_pnl": 2308.4, "max_drawdown_pct": 0.0021, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": 0.0291, "sharpe_daily": 0.02, "total_pnl": 835.87, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": -0.007, "sharpe_daily": -0.02, "total_pnl": -269.75, "max_drawdown_pct": 0.0002, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": 0.0585, "total_pnl_delta_sum": 2874.52, "total_pnl_delta_pct": 0.025966, "windows_ev_improved": 2, "windows_ev_regressed": 1}
+  },
+  "gate4_basis": "Rejected for insufficient materiality. EV improved in late_strong and mid_weak but regressed in old_thin; aggregate EV +0.0585 and PnL +2.60% did not clear the +0.10 EV or +5% PnL gates, and late_strong Sharpe fell by 0.11.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "temporary_shared_policy_patch_tested": true,
+    "rolled_back_after_rejection": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this deterministic sizing alpha was tested instead."
+  },
+  "rejection_reason": "The unmodified risk-on breakout subset is directionally positive but not material enough after the accepted stack, and the old_thin regression plus late Sharpe dilution argues against another production sizing branch.",
+  "do_not_repeat_without_new_evidence": [
+    "Simple risk_on_unmodified breakout_long 1.5x sizing promotion",
+    "Nearby breakout-only risk_on unmodified multipliers",
+    "Using the positive late/mid breakout attribution alone to justify a new branch"
+  ],
+  "next_retry_requires": [
+    "A richer event/state discriminator that removes old_thin breakout damage",
+    "Forward evidence that the breakout subset stays material under current cap/heat constraints",
+    "A tail-risk metric proving the late Sharpe dilution is compensated"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "experiment_id": "exp-20260430-011",
+  "timestamp": "2026-04-30T00:00:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "measurement_repair",
+  "change_type": "parity_disclosure",
+  "hypothesis": "The production/backtest exit gap should be disclosed explicitly and measured in shadow mode before any future exit lifecycle experiment, because production advisory exits and backtest target exits currently have different semantics.",
+  "alpha_hypothesis_category": "exit",
+  "why_not_direct_alpha": "A direct SIGNAL_TARGET partial-reduce replay was already rejected by exp-20260429-032; this repair keeps strategy behavior unchanged and improves measurement honesty.",
+  "parameters": {
+    "single_causal_variable": "known_biases, shadow attribution, and parity documentation for exit advisory replay scope",
+    "strategy_behavior_changed": false,
+    "new_known_bias": "exit_policy_unreplayed",
+    "new_shadow_metric": "exit_advisory_shadow_attribution",
+    "anti_repeat_guardrail": "exp-20260429-032"
+  },
+  "date_range": {
+    "primary": "not_applicable_behavior_unchanged",
+    "secondary": []
+  },
+  "market_regime_summary": {
+    "not_applicable": "metadata and documentation repair only"
+  },
+  "before_metrics": {
+    "expected_value_score": "unchanged_by_construction",
+    "sharpe_daily": "unchanged_by_construction",
+    "total_pnl": "unchanged_by_construction",
+    "max_drawdown_pct": "unchanged_by_construction",
+    "win_rate": "unchanged_by_construction",
+    "trade_count": "unchanged_by_construction",
+    "survival_rate": "unchanged_by_construction"
+  },
+  "after_metrics": {
+    "expected_value_score": "unchanged_by_construction",
+    "sharpe_daily": "unchanged_by_construction",
+    "total_pnl": "unchanged_by_construction",
+    "max_drawdown_pct": "unchanged_by_construction",
+    "win_rate": "unchanged_by_construction",
+    "trade_count": "unchanged_by_construction",
+    "survival_rate": "unchanged_by_construction"
+  },
+  "expected_value_score_delta": {
+    "aggregate": 0.0,
+    "basis": "no executable trading behavior changed"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "The LLM remains part of production exit action selection; this repair clarifies that its advisory/pending action lifecycle is not yet replayed."
+  },
+  "decision_reason": "Accepted because it closes a known measurement blind spot and creates non-executing attribution without adding strategy complexity or changing historical trades.",
+  "next_valid_steps": [
+    "Add shadow attribution for production advisory exit rules before any executable replay change.",
+    "Keep SIGNAL_TARGET bare partial-reduce variants blocked unless a complete shared lifecycle policy is tested.",
+    "If an exit lifecycle is promoted later, expose it through both run.py reporting and backtester replay."
+  ],
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "docs/production_backtest_parity.md",
+    "docs/backtesting.md",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

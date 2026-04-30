@@ -1,0 +1,95 @@
+{
+  "experiment_id": "exp-20260429-026",
+  "timestamp": "2026-04-29T12:10:58-07:00",
+  "status": "observed_only",
+  "decision": "observed_only",
+  "lane": "alpha_search",
+  "change_type": "meta_allocation_audit",
+  "hypothesis": "After the accepted low-score plain risk-on sizing lift, the next alpha decision should come from a three-window sleeve/sector/multiplier map rather than another local threshold or sector-size tweak.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains high-upside but production-aligned ranking-eligible replay samples are still too thin; this audit looked for deterministic allocation alpha instead.",
+  "parameters": {
+    "single_causal_variable": "analysis-only cohort attribution; no executable policy changed",
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "all sizing multipliers"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where accepted stack now beats indexes after recent allocation work",
+    "old_thin": "mixed-to-weak older tape; still the weakest EV and win-rate window"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.3317, "sharpe_daily": 4.28, "total_pnl": 54479.38, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2285, "sharpe_daily": 1.27, "total_pnl": 17991.28, "max_drawdown_pct": 0.0595, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.3317, "sharpe_daily": 4.28, "total_pnl": 54479.38, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2285, "sharpe_daily": 1.27, "total_pnl": 17991.28, "max_drawdown_pct": 0.0595, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "mid_weak": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "old_thin": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0},
+    "aggregate": {"expected_value_score_delta_sum": 0.0, "total_pnl_delta_sum": 0.0, "windows_ev_improved": 0, "windows_ev_regressed": 0}
+  },
+  "cohort_findings": {
+    "strong_confirmed_sleeves": [
+      "trend_commodities_near_high_risk_multiplier_applied: 7 trades, 100.0% win rate, +$32,004.78",
+      "trend_financials_risk_multiplier_applied: 7 trades, 71.4% win rate, +$18,374.95",
+      "risk_on_unmodified_risk_multiplier_applied=1.5: 7 trades, 85.7% win rate, +$22,172.67"
+    ],
+    "weak_but_too_small_for_rule": [
+      "breakout_financials_dte_risk_multiplier_applied: 2 trades, -$565.78",
+      "breakout_healthcare_dte_risk_multiplier_applied: 1 trade, -$473.47",
+      "breakout Communication Services gap/near-high overlap: 2 trades, -$110.10"
+    ],
+    "interpretation": "The remaining negative pockets are mostly tiny reduced-risk cohorts. Promoting a new rule from 1-3 trades would violate the anti-overfit guardrail and is unlikely to clear Gate 4 materiality."
+  },
+  "gate4_basis": "No strategy-affecting change was promoted. The audit explicitly keeps fixed-window metrics unchanged and records why no weak cohort qualified for a production rule.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data remains insufficient; this deterministic audit avoids depending on that blocked alpha source."
+  },
+  "decision_reason": "Observed only: the strongest allocation sleeves are already accepted, and the remaining negative pockets lack sample size and materiality for a new alpha rule.",
+  "next_retry_requires": [
+    "Do not add a zero-risk rule for breakout Financials DTE or similar tiny cohorts without forward evidence or an orthogonal state/event discriminator.",
+    "Prioritize a richer meta-allocation state map or forward/paper evidence over local sizing tweaks.",
+    "If a future rule is promoted, keep it in shared portfolio_engine or production_parity policy from the start."
+  ],
+  "related_files": [
+    "data/experiments/exp-20260429-026/baseline_cohort_audit.json",
+    "docs/experiments/logs/exp-20260429-026.json",
+    "docs/experiments/tickets/exp-20260429-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

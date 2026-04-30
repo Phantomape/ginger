@@ -1,0 +1,86 @@
+{
+  "experiment_id": "exp-20260429-028",
+  "timestamp": "2026-04-29T21:05:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "A second follow-through add-on after the accepted day-2 add-on may capture persistent winners better than only raising the first add-on cap.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "parameters": {
+    "single_causal_variable": "SECOND_ADDON_ENABLED",
+    "old_value": false,
+    "new_value": true,
+    "second_addon_checkpoint_days": 5,
+    "second_addon_min_unrealized_pct": 0.05,
+    "second_addon_min_rs_vs_spy": 0.0,
+    "second_addon_fraction_of_original_shares": 0.15,
+    "second_addon_max_position_pct": 0.45,
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "first add-on trigger and cap",
+      "LLM/news replay",
+      "earnings strategy",
+      "all sizing multipliers"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull after accepted allocation stack",
+    "old_thin": "mixed-to-weak older tape with weakest win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 2.3317, "sharpe_daily": 4.28, "total_pnl": 54479.38, "total_return_pct": 0.5448, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "addon_executed": 3, "addon_scheduled": 7, "addon_skipped": 4},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "total_return_pct": 0.3823, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "addon_executed": 3, "addon_scheduled": 7, "addon_skipped": 4},
+    "old_thin": {"expected_value_score": 0.2285, "sharpe_daily": 1.27, "total_pnl": 17991.28, "total_return_pct": 0.1799, "max_drawdown_pct": 0.0595, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "addon_executed": 0, "addon_scheduled": 4, "addon_skipped": 4}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 2.3322, "sharpe_daily": 4.28, "total_pnl": 54490.75, "total_return_pct": 0.5449, "max_drawdown_pct": 0.0401, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8431, "addon_executed": 5, "addon_scheduled": 10, "addon_skipped": 5},
+    "mid_weak": {"expected_value_score": 0.9672, "sharpe_daily": 2.53, "total_pnl": 38232.59, "total_return_pct": 0.3823, "max_drawdown_pct": 0.0616, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "addon_executed": 3, "addon_scheduled": 7, "addon_skipped": 4},
+    "old_thin": {"expected_value_score": 0.2285, "sharpe_daily": 1.27, "total_pnl": 17991.28, "total_return_pct": 0.1799, "max_drawdown_pct": 0.0595, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "addon_executed": 0, "addon_scheduled": 4, "addon_skipped": 4}
+  },
+  "delta_metrics": {
+    "late_strong": {"expected_value_score": 0.0005, "sharpe_daily": 0.0, "total_pnl": 11.37, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0, "addon_executed": 2},
+    "mid_weak": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0, "addon_executed": 0},
+    "old_thin": {"expected_value_score": 0.0, "sharpe_daily": 0.0, "total_pnl": 0.0, "max_drawdown_pct": 0.0, "win_rate": 0.0, "trade_count": 0, "survival_rate": 0.0, "addon_executed": 0},
+    "aggregate": {"expected_value_score_delta_sum": 0.0005, "total_pnl_delta_sum": 11.37, "windows_ev_improved": 1, "windows_ev_regressed": 0}
+  },
+  "gate4_basis": "Rejected as inert. Only late_strong moved, by EV +0.0005 and PnL +$11.37; mid_weak and old_thin were unchanged.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking was bypassed because available replay coverage remains insufficient for ranking attribution."
+  },
+  "rejection_reason": "The second add-on rule schedules a few extra actions but does not release material PnL or EV under the current cap/heat stack.",
+  "do_not_repeat_without_new_evidence": [
+    "Turning SECOND_ADDON_ENABLED on with the existing day-5 / +5% / 15% parameters",
+    "Nearby second-add-on parameter tweaks without a new event or concentration discriminator",
+    "Assuming more lifecycle actions are useful when cap/heat remains binding"
+  ],
+  "next_retry_requires": [
+    "Forward evidence that post-day-5 confirmed winners have materially higher continuation",
+    "A complete lifecycle design that changes what happens after add-ons, not just another small add",
+    "Production metadata proving second add-on state is tracked cleanly across daily runs"
+  ]
+}

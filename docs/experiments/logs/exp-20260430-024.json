@@ -1,0 +1,98 @@
+{
+  "experiment_id": "exp-20260430-024",
+  "timestamp": "2026-04-30T11:00:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "measurement_repair",
+  "change_type": "known_bias_disclosure_repair",
+  "hypothesis": "Backtest known_biases should disclose the current earnings snapshot reality and pending-action replay gap accurately without changing trading behavior.",
+  "alpha_hypothesis_category": "measurement",
+  "parameters": {
+    "single_causal_variable": "known_bias disclosure schema only",
+    "strategy_behavior_changed": false,
+    "deterministic_backtest_fill_logic_changed": false,
+    "production_prompt_context_changed": false,
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "risk sizing",
+      "candidate ranking",
+      "all exits",
+      "LLM replay gate behavior",
+      "news replay behavior",
+      "earnings signal logic"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21"
+  },
+  "market_regime_summary": {
+    "late_strong": "used for deterministic no-metric-drift check"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "basis": "known_bias disclosure only"
+  },
+  "new_disclosure_fields": {
+    "earnings_event_long_data_quality": {
+      "snapshot_archive_present": true,
+      "snapshot_count": 135,
+      "exact_snapshot_coverage_fraction": 1.0,
+      "walk_forward_snapshot_coverage_fraction": 1.0,
+      "remaining_gap": "coverage/ticker-level sparsity, not an always-None field"
+    },
+    "pending_action_replay_unreplayed": {
+      "ledger_present": true,
+      "open_actions_count": 1,
+      "historical_replay_enabled": false
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "This clarifies that LLM position_actions and pending_actions.json are still not replayed; future work needs point-in-time action ledger snapshots."
+  },
+  "decision_reason": "Accepted because it removes stale measurement metadata, adds an explicit pending-action gap bucket, and leaves fixed-window trading metrics unchanged.",
+  "risk": "Future readers might still see the legacy placeholder literal in code; the result dict overwrites it with live snapshot coverage before returning.",
+  "do_not_repeat_without_new_evidence": [
+    "Treating earnings_event_long as days_to_earnings-only when snapshot_archive_present is true.",
+    "Claiming LLM position_actions are replayed by canonical backtests.",
+    "Replaying the current pending_actions.json ledger as if it were point-in-time historical state."
+  ],
+  "related_files": [
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "docs/production_backtest_parity.md",
+    "docs/backtesting.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiments/logs/exp-20260430-024.json"
+  ]
+}
