@@ -1,0 +1,21 @@
+{
+  "experiment_id": "exp-20260501-030",
+  "title": "Add pilot outcome attribution rollups",
+  "status": "accepted",
+  "decision": "accepted",
+  "priority": "high",
+  "lane": "measurement_repair_supporting_alpha_search",
+  "created_at": "2026-05-01T23:58:00-07:00",
+  "summary": "Compute and surface direct pilot PnL, cash-relative PnL, replacement value, risk-adjusted replacement value, and pending counterfactual coverage from the append-only pilot competition log.",
+  "acceptance_checks": [
+    "Closed pilot trades with decision_id metadata append decision_outcome records.",
+    "Daily run includes pilot_attribution in trend_signals and quant_signals output.",
+    "Daily report includes a PILOT SLEEVE ATTRIBUTION section.",
+    "Replacement value is marked pending until all frozen counterfactual outcomes are known.",
+    "Core strategy entry, exit, ranking, and sizing are unchanged."
+  ],
+  "tests": [
+    "python -m pytest quant\\test_candidate_competition_logger.py quant\\test_pilot_sleeve.py quant\\test_universe_manager.py quant\\test_universe_adapter.py quant\\test_sources.py"
+  ],
+  "follow_up": "Build Phase 6 weekly promotion review after enough forward pilot outcomes exist."
+}

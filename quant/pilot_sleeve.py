@@ -239,6 +239,7 @@ def build_counterfactual_snapshots(
     ranking_snapshot = []
     for status, signals in (("pilot", pilot_signals), ("core", core_signals)):
         for rank, signal in enumerate(signals or [], start=1):
+            sizing = signal.get("sizing") or {}
             ranking_snapshot.append(
                 {
                     "rank": rank,
@@ -248,7 +249,12 @@ def build_counterfactual_snapshots(
                     "confidence_score": signal.get("confidence_score"),
                     "trade_quality_score": signal.get("trade_quality_score"),
                     "sector": signal.get("sector"),
-                    "shares_to_buy": (signal.get("sizing") or {}).get("shares_to_buy"),
+                    "entry_price": signal.get("entry_price"),
+                    "stop_price": signal.get("stop_price"),
+                    "target_price": signal.get("target_price"),
+                    "shares_to_buy": sizing.get("shares_to_buy"),
+                    "risk_amount_usd": sizing.get("risk_amount_usd"),
+                    "position_value_usd": sizing.get("position_value_usd"),
                 }
             )
     if not ranking_snapshot:
@@ -267,6 +273,7 @@ def build_counterfactual_snapshots(
             None,
         )
         if displaced:
+            displaced_sizing = displaced.get("sizing") or {}
             counterfactuals = [
                 {
                     "type": "primary_displaced_candidate",
@@ -274,6 +281,11 @@ def build_counterfactual_snapshots(
                     "shadow_weight": 0.5,
                     "strategy": displaced.get("strategy"),
                     "trade_quality_score": displaced.get("trade_quality_score"),
+                    "entry_price": displaced.get("entry_price"),
+                    "stop_price": displaced.get("stop_price"),
+                    "target_price": displaced.get("target_price"),
+                    "shares_to_buy": displaced_sizing.get("shares_to_buy"),
+                    "planned_risk": displaced_sizing.get("risk_amount_usd"),
                 },
                 {
                     "type": "cash_baseline",

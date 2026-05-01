@@ -59,7 +59,7 @@ Already added:
 | `data/universe_registry.json` | Current registry snapshot. |
 | `data/universe_events.jsonl` | Append-only universe event ledger. |
 | `quant/universe_manager.py` | Replay, validation, and hashing helpers. |
-| `quant/candidate_competition_logger.py` | Pre-trade counterfactual and outcome logger. |
+| `quant/candidate_competition_logger.py` | Pre-trade counterfactual, outcome logger, and replacement-value rollup. |
 | `quant/test_universe_manager.py` | Tests for PIT replay, eligibility gates, and counterfactual logging. |
 | `quant/pilot_sleeve.py` | Shared real-money pilot sleeve policy and pre-trade snapshot builder. |
 | `quant/test_pilot_sleeve.py` | Tests for trade-date gating, pilot scalars, slot limits, and snapshots. |
@@ -246,7 +246,7 @@ Activation requirements:
 - Phase 1-4 tests pass.
 - Counterfactual snapshot is active.
 - Event guard is active.
-- Daily report includes pilot PnL and replacement value fields.
+- Daily report includes pilot PnL and replacement value fields. Completed.
 - User explicitly approves enabling pilot trading.
 
 Initial eligible names:
@@ -344,9 +344,13 @@ Completed:
 4. Added pre-trade counterfactual snapshots before executable pilot entries.
 5. Kept pilot signals out of core `signals` so core watchlist behavior remains
    separated.
+6. Added closed-outcome attribution and daily replacement-value rollups through
+   `candidate_competition_logger`, `performance_engine`, `run.py`, and
+   `report_generator`.
 
-Next implementation slice should add outcome attribution for closed pilot
-positions and replacement-value rollups.
+Next implementation slice should add Phase 6 weekly promotion review output once
+forward pilot decisions exist. Until then, the system should accumulate
+decision snapshots, closed outcomes, and replacement-value coverage.
 
 ## Gate Before Real Pilot Trading
 
@@ -357,7 +361,7 @@ following remain true:
 - counterfactual snapshots are written before entry;
 - pilot sleeve risk limits are active;
 - pilot recommendations remain separate from core recommendations;
-- outcome attribution is added before any promotion to `limited_production`;
+- outcome attribution is active before any promotion to `limited_production`;
 - user approval is required for any wider pilot list.
 
 ## Key Risks
@@ -376,4 +380,6 @@ following remain true:
 Run the daily pipeline normally. If `INTC`, `LITE`, or `BE` produces a valid
 signal, it appears under `pilot_signals` with `AI_INFRA_PILOT` metadata and a
 pre-trade decision hash. Do not move any pilot name into `core` until live
-replacement-value attribution supports promotion.
+replacement-value attribution supports promotion. Closed pilot outcomes now roll
+up into `pilot_attribution` in `quant_signals_YYYYMMDD.json` and the daily
+report.

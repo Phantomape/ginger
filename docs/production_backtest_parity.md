@@ -32,6 +32,7 @@ in shared modules such as:
 | Sector-relative sizing features | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Position sizing | `portfolio_engine.py` | required | required | fill price may differ |
 | Pilot sleeve sizing | `pilot_sleeve.py` after `portfolio_engine.size_signals` | dedicated pilot replay required for historical pilot attribution | required for `pilot_signals` | canonical core backtest does not execute post-2026-05-01 pilot sleeve in earlier windows |
+| Pilot outcome attribution | `candidate_competition_logger.py`, `performance_engine.py`, `report_generator.py` | forward-only unless a dedicated pilot replay log is supplied | daily run reports direct PnL, cash-relative PnL, replacement value, and pending counterfactual coverage | replacement value is incomplete until frozen counterfactual outcomes are known |
 | Portfolio heat | `portfolio_engine.py` | required | required | simulated vs latest prices |
 | Already-held handling | shared adapter policy | required | required | none |
 | Entry candidate gates | `production_parity.py` | required | required | none |

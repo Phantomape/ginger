@@ -37,7 +37,8 @@ logger = logging.getLogger(__name__)
 def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            metrics=None, market_regime=None, open_positions=None,
                            dropped_signals=None, addon_actions=None,
-                           entry_execution_plan=None):
+                           entry_execution_plan=None,
+                           pilot_attribution=None):
     """
     Build a human-readable daily trade report string.
 
@@ -50,6 +51,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         open_positions   (dict):        Raw open_positions.json content
         dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
+        pilot_attribution (dict):       Pilot direct/replacement-value summary
 
     Returns:
         str: Formatted report
@@ -119,6 +121,39 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"RS vs SPY: {action.get('rs_vs_spy', 0)*100:.1f}%"
             )
             lines.append(f"   Reason:     {action.get('reason', '')}")
+
+    if pilot_attribution:
+        lines.append("\n" + "-" * 60)
+        lines.append("PILOT SLEEVE ATTRIBUTION")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Decision snapshots: {pilot_attribution.get('decision_snapshots', 0)}"
+        )
+        lines.append(
+            f"  Outcome records:    {pilot_attribution.get('outcome_records', 0)}"
+        )
+        if pilot_attribution.get("outcome_records", 0) > 0:
+            direct_pnl = pilot_attribution.get("direct_pilot_pnl", 0.0)
+            cash_pnl = pilot_attribution.get("cash_relative_pnl", 0.0)
+            repl_value = pilot_attribution.get("replacement_value")
+            repl_text = (
+                f"${repl_value:,.2f}"
+                if isinstance(repl_value, (int, float))
+                else "pending"
+            )
+            lines.append(f"  Direct pilot P&L:  ${direct_pnl:,.2f}")
+            lines.append(f"  Cash-relative P&L: ${cash_pnl:,.2f}")
+            lines.append(f"  Replacement value: {repl_text}")
+            lines.append(
+                "  Replacement outcomes: "
+                f"{pilot_attribution.get('complete_replacement_outcomes', 0)} complete, "
+                f"{pilot_attribution.get('pending_replacement_outcomes', 0)} pending"
+            )
+            rav = pilot_attribution.get("risk_adjusted_replacement_value_avg")
+            if rav is not None:
+                lines.append(f"  Avg risk-adjusted replacement value: {rav}")
+        else:
+            lines.append("  No closed pilot outcomes logged yet.")
 
     # ── Trade candidates ────────────────────────────────────────────────────
     lines.append("\n" + "-" * 60)

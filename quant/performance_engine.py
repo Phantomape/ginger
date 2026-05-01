@@ -57,7 +57,7 @@ def save_trades(trades, filepath=None):
 
 
 def open_trade(ticker, strategy, entry_price, stop_price, shares,
-               target_price=None, notes="", filepath=None):
+               target_price=None, notes="", filepath=None, metadata=None):
     """
     Record a new trade entry to the diary.
 
@@ -83,6 +83,8 @@ def open_trade(ticker, strategy, entry_price, stop_price, shares,
         "holding_days": None,
         "notes":        notes,
     }
+    if metadata:
+        trade["metadata"] = metadata
 
     trades.append(trade)
     save_trades(trades, filepath)
@@ -130,11 +132,62 @@ def close_trade(trade_id, exit_price, notes="", filepath=None):
                 trade["notes"] = (trade["notes"] + " | " + notes).strip(" | ")
 
             save_trades(trades, filepath)
+            _append_pilot_outcome_if_needed(trade)
             logger.info(f"Closed {trade_id}: P&L = ${pnl:,.2f}")
             return trade
 
     logger.warning(f"Trade '{trade_id}' not found or already closed")
     return None
+
+
+def _append_pilot_outcome_if_needed(trade):
+    metadata = trade.get("metadata") or {}
+    pilot_meta = metadata.get("pilot_sleeve") or trade.get("pilot_sleeve") or {}
+    decision_id = (
+        pilot_meta.get("decision_id")
+        or metadata.get("pilot_decision_id")
+        or trade.get("pilot_decision_id")
+    )
+    if not decision_id:
+        return
+
+    planned_risk = None
+    entry = trade.get("entry_price")
+    stop = trade.get("stop_price")
+    shares = trade.get("shares")
+    if entry and stop and shares and entry > stop:
+        planned_risk = round((entry - stop) * shares, 6)
+
+    outcome = {
+        "sleeve": pilot_meta.get("name") or metadata.get("sleeve"),
+        "pilot_ticker": trade.get("ticker"),
+        "pilot_pnl": trade.get("profit_loss"),
+        "pilot_risk": planned_risk,
+        "pilot_trade": {
+            "trade_id": trade.get("trade_id"),
+            "ticker": trade.get("ticker"),
+            "strategy": trade.get("strategy"),
+            "entry_date": trade.get("entry_date"),
+            "exit_date": trade.get("exit_date"),
+            "entry_price": trade.get("entry_price"),
+            "exit_price": trade.get("exit_price"),
+            "stop_price": trade.get("stop_price"),
+            "shares": trade.get("shares"),
+            "profit_loss": trade.get("profit_loss"),
+            "planned_risk": planned_risk,
+        },
+        "counterfactual_outcomes": metadata.get("counterfactual_outcomes", []),
+    }
+    try:
+        from candidate_competition_logger import append_decision_outcome
+
+        decision_log_path = metadata.get("pilot_decision_log_path")
+        if decision_log_path:
+            append_decision_outcome(decision_id, outcome, path=decision_log_path)
+        else:
+            append_decision_outcome(decision_id, outcome)
+    except Exception as exc:
+        logger.error(f"Failed to append pilot outcome for {decision_id}: {exc}")
 
 
 def compute_metrics(filepath=None, portfolio_value=None):

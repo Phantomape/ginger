@@ -91,6 +91,7 @@ data\quant_signals_YYYYMMDD.json -> pilot_signals
 - `pilot_signals` 不为空时，它是真钱 pilot 候选，但仍要和 core signals 分开看。
 - pilot 会使用正常 signal chain，再经过 `quant\pilot_sleeve.py` 做风险缩放、slot 限制和 pre-trade counterfactual logging。
 - pilot 入场会带 `pilot_sleeve`、`pilot_entry_execution_plan`、`pilot_decision_hashes` 等字段。
+- pilot 平仓后，如果交易记录带有 frozen `decision_id`，日报和 `quant_signals_YYYYMMDD.json` 会在 `pilot_attribution` 汇总 direct PnL、cash-relative PnL、replacement value 和 pending counterfactual coverage。
 - INTC / LITE / BE 不是 core ticker。它们只是通过 pilot sleeve 收集 forward evidence。
 
 如果配置了 OpenAI API key，系统会尝试生成 LLM 决策；如果 API 不可用，仍可使用 `llm_prompt_YYYYMMDD.txt` 手动复制给 ChatGPT / Claude。
@@ -184,6 +185,7 @@ quant\run.py
 | --- | --- |
 | `data\report_YYYYMMDD.txt` | 人类可读日报。 |
 | `data\quant_signals_YYYYMMDD.json` | 完整量化输出，含 core `signals` 和 pilot `pilot_signals`。 |
+| `data\quant_signals_YYYYMMDD.json -> pilot_attribution` | Pilot direct PnL、replacement value 和 counterfactual coverage。 |
 | `data\trend_signals_YYYYMMDD.json` | 持仓状态和 exit 信号。 |
 | `data\llm_prompt_YYYYMMDD.txt` | LLM 输入提示词。 |
 | `data\llm_decision_log_YYYYMMDD.json` | LLM 决策日志。 |

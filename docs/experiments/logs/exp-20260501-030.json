@@ -1,0 +1,92 @@
+{
+  "experiment_id": "exp-20260501-030",
+  "timestamp": "2026-05-01T23:58:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "measurement_repair_supporting_alpha_search",
+  "change_type": "pilot_outcome_attribution_rollup",
+  "hypothesis": "Real-money pilot sleeve exploration becomes scientifically usable only if closed pilot trades are appended against their frozen pre-trade counterfactuals and daily output reports direct PnL, replacement value, and pending counterfactual coverage.",
+  "alpha_hypothesis_category": "candidate_universe_forward_attribution",
+  "why_not_direct_alpha_parameter_change": "The pilot sleeve is already trade-enabled. The next blocker is proving whether a pilot trade beat the slot it consumed; changing signal thresholds before this attribution exists would make the new universe experiment less trustworthy.",
+  "parameters": {
+    "single_causal_variable": "closed pilot outcome attribution and replacement-value rollup",
+    "decision_log": "data/pilot_competition_decisions.jsonl",
+    "new_rollup_fields": [
+      "decision_snapshots",
+      "outcome_records",
+      "direct_pilot_pnl",
+      "cash_relative_pnl",
+      "complete_replacement_outcomes",
+      "pending_replacement_outcomes",
+      "replacement_value",
+      "risk_adjusted_replacement_value_avg",
+      "by_ticker"
+    ],
+    "daily_outputs": [
+      "data/quant_signals_YYYYMMDD.json -> pilot_attribution",
+      "data/trend_signals_YYYYMMDD.json -> pilot_attribution",
+      "data/report_YYYYMMDD.txt -> PILOT SLEEVE ATTRIBUTION"
+    ],
+    "closed_trade_hook": "performance_engine.close_trade appends decision_outcome when trade metadata carries pilot_sleeve.decision_id",
+    "locked_variables": [
+      "core universe",
+      "pilot trade eligibility",
+      "signal generation",
+      "candidate ranking",
+      "position sizing",
+      "entry filters",
+      "exit rules",
+      "LLM responsibilities"
+    ]
+  },
+  "date_range": {
+    "production_effective_as_of": "2026-05-01",
+    "backtest_effect": "none; forward attribution/reporting only"
+  },
+  "before_metrics": {
+    "pilot_attribution_available_in_daily_output": false,
+    "closed_pilot_outcome_auto_append": false,
+    "replacement_value_rollup": false
+  },
+  "after_metrics": {
+    "pilot_attribution_available_in_daily_output": true,
+    "closed_pilot_outcome_auto_append": true,
+    "replacement_value_rollup": true,
+    "targeted_tests": "17 passed"
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "note": "This change reports and records pilot outcomes only. It does not alter entry, exit, ranking, or sizing decisions."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_role_changed": false
+  },
+  "decision_reason": "Accepted because it removes the largest remaining blocker to evaluating the live AI infrastructure pilot sleeve: raw pilot PnL can now be compared against frozen counterfactuals without changing strategy behavior.",
+  "known_risks": [
+    "Replacement value remains pending until counterfactual outcomes are known.",
+    "If pilot trades are executed outside performance_engine without preserving decision_id metadata, outcomes must be appended manually.",
+    "No pilot trade has closed yet, so this is attribution plumbing rather than positive alpha evidence."
+  ],
+  "next_steps": [
+    "Let daily runs accumulate decision snapshots and closed outcomes.",
+    "Add Phase 6 weekly promotion review after enough forward pilot decisions exist.",
+    "Do not promote pilot names to limited_production before replacement-value evidence is positive and non-concentrated."
+  ],
+  "related_files": [
+    "quant/candidate_competition_logger.py",
+    "quant/performance_engine.py",
+    "quant/report_generator.py",
+    "quant/run.py",
+    "quant/pilot_sleeve.py",
+    "quant/test_candidate_competition_logger.py",
+    "docs/universe_governance_rollout_plan.md",
+    "docs/production_backtest_parity.md",
+    "docs/universe_promotion_protocol.md",
+    "README.md"
+  ]
+}

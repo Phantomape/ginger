@@ -127,6 +127,7 @@ def main():
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
     from universe_adapter   import save_universe_state_report, universe_segments_as_of
+    from candidate_competition_logger import summarize_pilot_competition
     from pilot_sleeve       import (
         append_pilot_decision_snapshots,
         apply_pilot_sizing_policy,
@@ -594,6 +595,15 @@ def main():
         )
 
     metrics = compute_metrics()
+    pilot_attribution = summarize_pilot_competition(sleeve="AI_INFRA_PILOT")
+    if pilot_attribution.get("outcome_records"):
+        log.info(
+            "Pilot attribution: outcomes=%s direct_pnl=$%s replacement_value=%s pending=%s",
+            pilot_attribution.get("outcome_records"),
+            pilot_attribution.get("direct_pilot_pnl"),
+            pilot_attribution.get("replacement_value"),
+            pilot_attribution.get("pending_replacement_outcomes"),
+        )
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
@@ -605,6 +615,7 @@ def main():
     trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
     trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
     trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
+    trend_signals_dict["pilot_attribution"] = pilot_attribution
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
@@ -618,6 +629,7 @@ def main():
         dropped_signals  = last_dropped_signals or None,
         addon_actions    = addon_actions,
         entry_execution_plan = entry_execution_plan,
+        pilot_attribution = pilot_attribution,
     )
     print("\n" + report)
     save_report(report)
@@ -636,6 +648,7 @@ def main():
         "pilot_entry_execution_plan": pilot_entry_execution_plan,
         "pilot_decision_snapshots": pilot_decision_snapshots,
         "pilot_decision_hashes": pilot_decision_hashes,
+        "pilot_attribution": pilot_attribution,
         "heat_blocked_signals": heat_blocked_signals,
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,

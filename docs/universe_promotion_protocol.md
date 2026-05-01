@@ -55,8 +55,9 @@ universe on any historical day.
 | `data/universe_registry.json` | Current universe state snapshot. |
 | `data/universe_events.jsonl` | Append-only universe event ledger. |
 | `quant/universe_manager.py` | Point-in-time replay, validation, and hashing helpers. |
-| `quant/candidate_competition_logger.py` | Pre-trade counterfactual snapshot and outcome logging. |
+| `quant/candidate_competition_logger.py` | Pre-trade counterfactual snapshot, outcome logging, and replacement-value rollups. |
 | `quant/pilot_sleeve.py` | Shared real-money pilot sleeve policy, risk scalar application, slot limits, and snapshot construction. |
+| `quant/performance_engine.py` | Appends closed pilot outcomes when trade metadata carries the frozen decision id. |
 
 The registry is convenient for current operations. The ledger is what prevents
 future information leakage.
