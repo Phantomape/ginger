@@ -96,9 +96,11 @@ Verification:
 Purpose: let production and backtest code inspect the same point-in-time
 universe state without using it to place trades.
 
+Status: initial adapter implemented.
+
 Implement:
 
-- `quant/universe_adapter.py`
+- `quant/universe_adapter.py` (added)
 - A function returning segmented universes:
   - `core`
   - `pilot`
@@ -123,11 +125,12 @@ candidate ranking, sizing, or order advice.
 
 Acceptance:
 
-- Daily run can print or save universe state.
-- Backtester can disclose universe governance state.
-- Existing canonical backtest metrics remain unchanged.
+- Daily run can print or save universe state. Pending production report wiring.
+- Backtester can disclose universe governance state. Pending read-only metadata wiring.
+- Existing canonical backtest metrics remain unchanged because adapter is not
+  consumed by signal generation.
 - Unit tests prove read-only adapter does not include pilot names in core
-  trading lists.
+  trading lists. Completed.
 
 ### Phase 2: Shadow Signal Attribution
 
@@ -350,4 +353,3 @@ No real pilot trade should be enabled until all are true:
 
 Proceed with Phase 1: read-only universe adapter. Do not yet modify the daily
 trading universe, watchlist, or order recommendation path.
-
