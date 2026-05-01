@@ -1,68 +1,133 @@
-# Ginger — 量化辅助交易系统
+# Ginger 量化辅助交易系统
 
-每日运行一次，输出量化日报、可审计 JSON 和 AI 提示词文件。把提示词粘贴到
-ChatGPT 或 Claude，得到结构化的持仓决策 JSON。
+Ginger 是一个每日运行一次的中短线交易辅助系统。它用共享的量化规则生成买卖、加仓、减仓和风控信息，再把新闻与持仓上下文整理成可审计的 LLM 提示词。
 
-> 设计原则：简单信号 · 严格风控 · 共享策略逻辑 · LLM 只做新闻/语义判断
+核心原则：
 
----
+- 代码负责硬规则：信号、仓位、止损、目标位、组合热度、候选排序。
+- LLM 负责语义判断：新闻理解、事件分级、灾难 veto、模糊风险解释。
+- 生产和回测必须尽量同源；不能把只在回测里赚钱的逻辑当成生产 alpha。
+- 新 ticker 先通过 point-in-time universe governance 和 pilot sleeve 验证，不能直接污染 core universe。
 
 ## 文档优先级
 
-本 README 是使用入口和系统概览。策略实验、生产/回测一致性、回测窗口和
-LLM 职责边界以以下文档为准：
+README 是使用入口。策略实验、回测口径、生产/回测一致性和 LLM 边界以这些文档为准：
 
 - `AGENTS.md`
 - `docs/alpha-optimization-playbook.md`
 - `docs/backtesting.md`
 - `docs/production_backtest_parity.md`
+- `docs/universe_promotion_protocol.md`
+- `docs/universe_governance_rollout_plan.md`
 
-如果 README 中的示例参数与上述文档或 `quant/constants.py` 不一致，以代码和
-上述规范文档为准。
-
-## 目录
-
-- [快速开始](#快速开始)
-- [持仓配置](#持仓配置)
-- [使用流程](#使用流程)
-- [系统架构](#系统架构)
-- [策略说明](#策略说明)
-- [风险规则](#风险规则)
-- [输出文件](#输出文件)
-- [开发与测试](#开发与测试)
-
----
+如果 README 和代码或上述文档冲突，以代码和规范文档为准。
 
 ## 快速开始
 
-### 1. 安装依赖
-
-```bash
-pip install -r news_collector/requirements.txt
+```powershell
+cd D:\Github\ginger
+pip install -r news_collector\requirements.txt
 ```
 
-主要依赖：`yfinance` · `pandas` · `feedparser` · `python-dateutil` · `openai`
+编辑持仓文件：
 
-### 2. 配置持仓
-
-编辑 `data/open_positions.json`（见[持仓配置](#持仓配置)）
-
-### 3. 运行
-
-```bash
-cd d:/Github/ginger
-python quant/run.py
+```powershell
+notepad data\open_positions.json
 ```
 
-### 4. 使用输出
+日常运行：
 
-打开 `data/llm_prompt_YYYYMMDD.txt`，复制全部内容，粘贴到 ChatGPT / Claude，获得持仓决策 JSON。
+```powershell
+.\.venv\Scripts\python.exe quant\run.py
+```
 
----
+如果没有使用虚拟环境，也可以用：
+
+```powershell
+python quant\run.py
+```
+
+运行后重点看：
+
+- `data\report_YYYYMMDD.txt`：人类可读日报。
+- `data\quant_signals_YYYYMMDD.json`：完整量化信号。
+- `data\llm_prompt_YYYYMMDD.txt`：可复制给 ChatGPT / Claude 的提示词。
+- `data\llm_decision_log_YYYYMMDD.json`：LLM 决策日志，如果当天调用了 LLM。
+
+## 日常交易用法
+
+日常入口没有改变，仍然跑：
+
+```powershell
+.\.venv\Scripts\python.exe quant\run.py
+```
+
+核心交易信号仍在：
+
+```text
+data\quant_signals_YYYYMMDD.json -> signals
+```
+
+AI infrastructure pilot sleeve 信号单独在：
+
+```text
+data\quant_signals_YYYYMMDD.json -> pilot_signals
+```
+
+当前真钱 pilot sleeve：
+
+| 字段 | 当前值 |
+| --- | --- |
+| Sleeve | `AI_INFRA_PILOT` |
+| Trade-enabled tickers | `INTC`, `LITE`, `BE` |
+| 生效日期 | `2026-05-01` |
+| Core promotion | 否 |
+| 最大同时 pilot 持仓 | 1 |
+| 归因方式 | 入场前冻结 counterfactual snapshot |
+
+重要解释：
+
+- `pilot_signals` 为空时，不做 pilot 新开仓。
+- `pilot_signals` 不为空时，它是真钱 pilot 候选，但仍要和 core signals 分开看。
+- pilot 会使用正常 signal chain，再经过 `quant\pilot_sleeve.py` 做风险缩放、slot 限制和 pre-trade counterfactual logging。
+- pilot 入场会带 `pilot_sleeve`、`pilot_entry_execution_plan`、`pilot_decision_hashes` 等字段。
+- INTC / LITE / BE 不是 core ticker。它们只是通过 pilot sleeve 收集 forward evidence。
+
+如果配置了 OpenAI API key，系统会尝试生成 LLM 决策；如果 API 不可用，仍可使用 `llm_prompt_YYYYMMDD.txt` 手动复制给 ChatGPT / Claude。
+
+## 标准回测
+
+标准回测仍然用 `quant\backtester.py`。按 `docs/backtesting.md`，当前固定看三个非重叠窗口：
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\ohlcv_snapshot_20251023_20260421.json
+```
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\ohlcv_snapshot_20250423_20251022.json
+```
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\ohlcv_snapshot_20241002_20250422.json
+```
+
+关键口径：
+
+- 标准三窗口是 core strategy 回测。
+- `INTC` / `LITE` / `BE` 的 `first_trade_allowed_as_of` 是 `2026-05-01`。
+- 因为标准窗口都早于 `2026-05-01`，所以标准回测不会把 pilot ticker 塞进历史 core universe。
+- 这不是漏接，而是 point-in-time 防未来泄漏。
+- 想看 pilot 的历史静态研究价值，需要单独标注为 static pool experiment，不能当生产级证据。
+- pilot 的生产级证据从 `2026-05-01` 之后的 forward decisions、direct PnL、replacement value、risk-adjusted replacement value 开始积累。
+
+最新 pilot sleeve 激活时的标准三窗口结果记录在：
+
+- `docs\experiments\logs\exp-20260501-029.json`
+- `docs\experiments\tickets\exp-20260501-029.json`
 
 ## 持仓配置
 
-编辑 `data/open_positions.json`：
+编辑 `data\open_positions.json`：
 
 ```json
 {
@@ -75,284 +140,90 @@ python quant/run.py
       "shares": 41,
       "avg_cost": 102.17,
       "entry_date": "2025-11-15",
-      "target_price": 145.00,
-      "risk_notes": "核心 AI 持仓"
+      "target_price": 145.0,
+      "risk_notes": "core AI holding"
     }
   ]
 }
 ```
 
-**字段说明：**
+字段说明：
 
 | 字段 | 必填 | 说明 |
-|------|------|------|
-| `portfolio_value_usd` | 是 | 账户总市值（含现金），用于热度和定仓计算 |
-| `cash_usd` | 否 | 现金余额，用于计算实时组合价值 |
-| `ticker` | 是 | 股票代码（大写） |
-| `shares` | 是 | 持仓股数 |
-| `avg_cost` | 是 | 平均建仓成本 |
-| `entry_date` | 推荐 | 建仓日期 `YYYY-MM-DD`；缺失则时间止损（45天）无法触发 |
-| `target_price` | 推荐 | 原始信号目标价；缺失则 SIGNAL_TARGET 出场规则无法触发 |
-| `override_stop_price` | 否 | 手动覆盖止损价（用于保本止损：盈利 ≥ 20% 后将此值设为 avg_cost） |
+| --- | --- | --- |
+| `portfolio_value_usd` | 是 | 账户总市值，含现金，用于热度和仓位计算。 |
+| `cash_usd` | 推荐 | 现金余额，用于实时组合价值和可交易性判断。 |
+| `ticker` | 是 | 股票代码，大写。 |
+| `shares` | 是 | 持仓股数。 |
+| `avg_cost` | 是 | 平均成本。 |
+| `entry_date` | 推荐 | 建仓日期，缺失会影响 time stop。 |
+| `target_price` | 推荐 | 原始信号目标价，缺失会影响 signal target exit。 |
+| `override_stop_price` | 可选 | 手动止损价，适合保本止损或风险事件后收紧。 |
 
-**自选股列表**：编辑 `quant/filter.py` 中的 `_BASE_WATCHLIST`，加入你想追踪新闻的标的。已持仓标的自动纳入监控。
+## 系统流程
 
----
-
-## 使用流程
-
-### 每日操作（约 2 分钟）
-
+```text
+quant\run.py
+  -> open_positions.json        持仓和账户状态
+  -> universe_adapter.py        point-in-time universe governance
+  -> pilot_sleeve.py            pilot ticker 风险缩放和 counterfactual snapshot
+  -> regime.py                  SPY/QQQ 市场状态
+  -> data_layer.py              OHLCV 和 earnings 数据
+  -> feature_layer.py           技术和事件特征
+  -> signal_engine.py           trend / breakout / earnings 信号
+  -> risk_engine.py             R:R、TQS、止损止盈
+  -> portfolio_engine.py        core 仓位和组合热度
+  -> preflight_validator.py     现有持仓硬风控预判
+  -> sources.py + filter.py     RSS 新闻收集和过滤
+  -> llm_advisor.py             LLM prompt / decision log
 ```
-python quant/run.py
-    ↓
-data/llm_prompt_YYYYMMDD.txt  ← 复制此文件内容
-    ↓
-粘贴到 ChatGPT / Claude
-    ↓
-获得 JSON 决策：new_trade + add_on_trades + position_actions
-    ↓
-按输出操作（手动下单）
-```
-
-### AI 输出格式
-
-```json
-{
-  "new_trade": "NO NEW TRADE",
-  "add_on_trades": [],
-  "add_on_vetoes": [],
-  "position_actions": [
-    {
-      "ticker": "NVDA",
-      "action": "HOLD",
-      "reason": "position_state=HOLD，无出场信号",
-      "exit_rule_triggered": "NONE",
-      "shares_to_sell": null,
-      "decision_mode": "forced_rule",
-      "data_quality": "clean",
-      "suggested_new_stop": null
-    },
-    {
-      "ticker": "APP",
-      "action": "EXIT",
-      "reason": "HISTORIC_BREACH：止损价远高于当前价，强制清仓",
-      "exit_rule_triggered": "HARD_STOP",
-      "shares_to_sell": null,
-      "decision_mode": "forced_rule",
-      "data_quality": "inconsistent",
-      "suggested_new_stop": null
-    }
-  ]
-}
-```
-
-**当 `suggested_new_stop` 非 null 时**，将该值写入对应持仓的 `override_stop_price` 字段，保本止损才会在下次运行时生效。
-
----
-
-## 系统架构
-
-```
-python quant/run.py
-│
-├── Step 1  open_positions.json       持仓 + 自选股
-├── Step 2  regime.py                 市场方向（SPY/QQQ vs 200日均线）
-├── Step 3  data_layer.py             OHLCV + 财报数据（yfinance）
-├── Step 4  feature_layer.py          趋势特征、ATR、财报特征
-├── Step 5  trend_signals.py          持仓出场信号检测
-│           preflight_validator.py    ← 预判断：account_state / position_states
-├── Step 6  signal_engine.py          三策略信号生成
-│           risk_engine.py            R:R / TQS / 止损止盈
-│           portfolio_engine.py       定仓 / 热度计算
-├── Step 7  report_generator.py       日报 → data/report_YYYYMMDD.txt
-├── Step 8  fetch_news.py + filter.py RSS 新闻 → 过滤 → T1/T2/T3 分层
-└── Step 9  llm_advisor.py            组装提示词 → data/llm_prompt_YYYYMMDD.txt
-```
-
-**关键设计：共享策略逻辑 + preflight_validator.py**
-
-会影响买、卖、加仓、减仓、仓位大小、候选排序、组合热度和仓位槽的逻辑，
-必须在共享模块中实现，并同时被 `quant/backtester.py` 与 `quant/run.py`
-调用或暴露。详见 `docs/production_backtest_parity.md`。
-
-在数据到达 LLM 之前，代码层预判断所有硬规则，注入 section 4：
-
-| 字段 | 含义 |
-|------|------|
-| `account_state` | `FIRE` / `DEFENSIVE` / `NORMAL` |
-| `new_trade_locked` | `true` 时 AI 直接输出 NO NEW TRADE，不分析新机会 |
-| `position_states` | `{ticker: CRITICAL_EXIT \| HIGH_REDUCE \| WATCH \| HOLD}` |
-| `suggested_reduce_pct` | `{ticker: 25\|33\|50\|100}` — HIGH_REDUCE 仓位的预计算减仓比例 |
-| `bear_emergency_stops` | `{ticker: float}` — BEAR 市场下每个仓位的紧急止损价 |
-| `current_prices` | `{ticker: float}` — 所有持仓的当日收盘价 |
-
-AI 读这些字段得出结论，不再做条件推理——减少了"LLM自行判断 vs 代码预判断"的不一致。
-
----
-
-## 策略说明
-
-### Strategy A — 趋势跟踪 (trend_long)
-
-| 条件 | 说明 |
-|------|------|
-| 价格 > 200日均线 | 大趋势向上 |
-| 今日收盘 > 20日最高价 | 突破确认 |
-| 成交量 > 20日均量 × 1.5 | 放量支撑 |
-| 近10日涨幅 ≥ 0% | RS 门（非下跌股） |
-
-### Strategy B — 波动突破 (breakout_long)
-
-| 条件 | 说明 |
-|------|------|
-| 当日波幅 > 1.5 × ATR | 异常大阳线 |
-| 今日收盘 > 20日最高价 | 突破确认 |
-| 成交量 > 1.2 × 均量 | 量价配合 |
-
-### Strategy C — 财报事件 (earnings_event_long)
-
-当前默认禁用，直到 earnings 数据质量和事件分级重新通过多窗口验证。
-
-| 条件 | 说明 |
-|------|------|
-| 财报在 6–8 天内 | 最佳 PEAD 窗口 |
-| 近10日涨幅 > SPY 同期 | 跑赢大盘（RS 强制门） |
-| 历史财报正向超预期 | 正向惊喜历史 |
-| ATR / 价格 ≤ 5% | 波动率控制 |
-
-**信号质量分（TQS）**：用于风险和候选质量审计；具体门槛和风险乘数以
-`quant/constants.py`、`quant/risk_engine.py` 为准。
-
----
-
-## 风险规则
-
-### 开仓参数
-
-```
-止损    = entry − 1.5 × ATR
-目标    = entry + 3.5 × ATR       R:R ≈ 2.3:1
-定仓    = floor(portfolio × 1% / (entry − stop + 执行成本))
-热度上限 = 8%（全组合最大风险敞口）
-仓位上限 = 以 `quant/constants.py` 的 `MAX_POSITION_PCT` 为准
-```
-
-财报仓位额外缩减约 60–75%（用 max(ATR止损, 8%跳空风险) 定仓，防止财报缺口绕过止损）。
-
-### 出场规则优先级
-
-| 优先级 | 规则 | 触发 | 动作 |
-|--------|------|------|------|
-| 1 | HARD_STOP | 价格 ≤ hard_stop_price | EXIT |
-| 2 | ATR_STOP | 价格 ≤ current_price − 1.5×ATR | EXIT |
-| 3 | TRAILING_STOP | 价格 ≤ 20日高点 × 0.92 | EXIT / REDUCE |
-| 4 | SIGNAL_TARGET | 价格 ≥ 3.5×ATR 目标价 | REDUCE 33% |
-| 5 | PROFIT_TARGET | 盈利 ≥ 20% | REDUCE 50% + 保本止损 |
-| 6 | PROFIT_LADDER_50 | 盈利 ≥ 50% | REDUCE 25% |
-| 7 | TIME_STOP | ≥ 45 交易日且不足目标一半 | EXIT |
-
-### 市场方向
-
-| 状态 | 判断 | 行为 |
-|------|------|------|
-| BULL | SPY + QQQ 均在 200日均线上方 | 允许新多仓 |
-| NEUTRAL | 混合信号 | 仅 confidence ≥ 0.88 的信号可入场 |
-| BEAR | 均在 200日均线下方 | 禁止新仓；止损收紧至 current_price × 0.95 |
-
----
 
 ## 输出文件
 
-每次运行生成以下文件（`data/` 目录）：
-
 | 文件 | 说明 |
-|------|------|
-| `llm_prompt_YYYYMMDD.txt` | **★ 主输出** — 粘贴到 AI 使用 |
-| `report_YYYYMMDD.txt` | 人类可读日报（信号摘要） |
-| `quant_signals_YYYYMMDD.json` | 完整量化信号 JSON |
-| `trend_signals_YYYYMMDD.json` | 持仓出场信号 JSON |
-| `clean_trade_news_YYYYMMDD.json` | 过滤后新闻（含 tier 字段） |
-| `news_YYYYMMDD.json` | 原始新闻 |
+| --- | --- |
+| `data\report_YYYYMMDD.txt` | 人类可读日报。 |
+| `data\quant_signals_YYYYMMDD.json` | 完整量化输出，含 core `signals` 和 pilot `pilot_signals`。 |
+| `data\trend_signals_YYYYMMDD.json` | 持仓状态和 exit 信号。 |
+| `data\llm_prompt_YYYYMMDD.txt` | LLM 输入提示词。 |
+| `data\llm_decision_log_YYYYMMDD.json` | LLM 决策日志。 |
+| `data\news_YYYYMMDD.json` | 原始新闻。 |
+| `data\clean_trade_news_YYYYMMDD.json` | 交易相关过滤后新闻。 |
+| `data\universe_state_YYYYMMDD.json` | 当日 universe governance 状态。 |
 
-## 实验日志
+## 实验记录
 
-策略修改和失败尝试统一记录到：
+策略修改和失败尝试必须落盘：
 
-- `docs/experiment_log.jsonl`：结构化实验主日志
-- `docs/experiment_log_format.md`：字段说明与填写规范
+- `docs\experiment_log.jsonl`：结构化实验主日志。
+- `docs\experiments\logs\`：单个实验详细记录。
+- `docs\experiments\tickets\`：实验 ticket。
+- `docs\experiment_log_format.md`：字段说明。
 
 原则：
 
-- 成功实验要记
-- 失败实验更要记
-- 失败记录必须包含参数、窗口、改前/改后指标，避免以后重复试错
-- 生产/回测一致性改动还必须记录 `production_impact`
+- 成功实验要记录。
+- 失败实验更要记录。
+- 记录必须包含参数、窗口、改前/改后指标、生产影响和失败原因。
+- 涉及生产/回测一致性的改动必须声明 `production_impact`。
 
----
+## 开发和测试
 
-## 开发与测试
+常规测试：
 
-### 运行测试
-
-```bash
-cd d:/Github/ginger
-python -m pytest quant/test_quant.py -v
+```powershell
+python -m pytest quant\test_quant.py -v
 ```
 
-测试覆盖包括：
-- 策略逻辑（Strategy A/B/C 信号条件）
-- 风险计算（TQS、R:R、定仓）
-- 出场规则（止损、止盈、移动止损）
-- **Contract 测试**（代码↔提示词接口验证）
+Pilot sleeve 相关测试：
 
-### Contract 测试（防止代码与提示词漂移）
-
-`PROMPT_FIELD_REGISTRY` 是代码层与 `trade_advice.txt` 的接口契约：
-
-```python
-# quant/test_quant.py
-PROMPT_FIELD_REGISTRY = {
-    "section4_top":      ["new_trade_locked", "position_states", "suggested_reduce_pct", ...],
-    "section3a_signal":  ["trade_quality_score", "exec_lag_adj_net_rr", "entry_note", ...],
-    "section3b_position":["breach_status", "daily_return_pct", "exit_levels", ...],
-}
+```powershell
+python -m pytest quant\test_pilot_sleeve.py quant\test_universe_manager.py quant\test_universe_adapter.py quant\test_sources.py
 ```
 
-两个互锁测试：
-- `test_registry_fields_exist_in_code_output` — 代码必须产出 registry 里的每个字段
-- `test_registry_fields_referenced_in_prompt` — 提示词必须引用 registry 里的每个字段名
+提交前至少确认：
 
-改字段名时三处同步更新（代码 + registry + 提示词），测试失败即发现漂移。
-
-### 文件结构
-
-```
-ginger/
-├── quant/
-│   ├── run.py                  # ★ 每日入口
-│   ├── data_layer.py           # OHLCV + 财报数据
-│   ├── feature_layer.py        # 特征计算
-│   ├── signal_engine.py        # 信号生成（3策略）
-│   ├── risk_engine.py          # R:R / TQS / 止损止盈
-│   ├── portfolio_engine.py     # 定仓 / 热度
-│   ├── performance_engine.py   # 交易日志 / P&L
-│   ├── trend_signals.py        # 持仓出场信号
-│   ├── preflight_validator.py  # 预判断状态机
-│   ├── regime.py               # 市场方向
-│   ├── llm_advisor.py          # 提示词构建
-│   ├── filter.py               # 新闻过滤 + 自选股
-│   ├── report_generator.py     # 日报生成
-│   └── test_quant.py           # 测试（含 contract 测试）
-│
-├── data/
-│   ├── open_positions.json     # ★ 持仓配置（手动维护）
-│   └── llm_prompt_YYYYMMDD.txt # ★ 每日 AI 提示词
-│
-└── instructinos/prompts/
-    └── trade_advice.txt        # LLM 系统提示词
-```
-
----
-
-*Python 3.10+ · yfinance · pandas · feedparser · openai*
+- 改动是否只改变一个独立因果变量。
+- 是否跑了对应测试或说明为什么没跑。
+- 策略逻辑是否同时被生产和回测共享，或已写入 `docs\production_backtest_parity.md` 作为允许差异。
+- 如果是 alpha 实验，是否按三窗口记录结果。
