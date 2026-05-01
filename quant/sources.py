@@ -79,7 +79,26 @@ SEC_FEEDS = [
 ]
 
 
-def get_all_sources():
+def _google_news_feed_for_ticker(ticker):
+    symbol = str(ticker).upper()
+    return {
+        "url": (
+            "https://news.google.com/rss/search?"
+            f"q={symbol}+stock&hl=en-US&gl=US&ceid=US:en"
+        ),
+        "keywords": [symbol],
+    }
+
+
+def _known_google_keywords():
+    known = set()
+    for feed in GOOGLE_NEWS_FEEDS:
+        for keyword in feed.get("keywords", []):
+            known.add(str(keyword).upper())
+    return known
+
+
+def get_all_sources(extra_tickers=None):
     """
     Returns all RSS feeds to fetch.
 
@@ -90,6 +109,17 @@ def get_all_sources():
 
     # Add Google News feeds
     for feed in GOOGLE_NEWS_FEEDS:
+        sources.append({
+            "url": feed["url"],
+            "source_type": "google_news",
+            "metadata": {"keywords": feed.get("keywords", [])}
+        })
+
+    known_keywords = _known_google_keywords()
+    for ticker in sorted({str(t).upper() for t in (extra_tickers or []) if t}):
+        if ticker in known_keywords:
+            continue
+        feed = _google_news_feed_for_ticker(ticker)
         sources.append({
             "url": feed["url"],
             "source_type": "google_news",

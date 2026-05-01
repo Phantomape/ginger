@@ -38,16 +38,16 @@ Ticker selection becomes a governed alpha surface, not a manually edited list.
 
 ## Non-Goals
 
-The first rollout does not:
+The first rollout still does not:
 
 - promote AI infrastructure names into `filter.WATCHLIST`;
-- change `quant/run.py` trade recommendations;
-- change position sizing, exits, add-ons, or ranking;
-- make `INTC`, `LITE`, or `BE` eligible for live orders by itself;
+- make `INTC`, `LITE`, or `BE` core candidates;
+- change core position sizing, exits, add-ons, or ranking;
 - use static pool backtests as production evidence.
 
-Any later change that lets pilot names place real trades must be explicit and
-must include production/backtest parity checks.
+`INTC`, `LITE`, and `BE` are now eligible only through the bounded
+`AI_INFRA_PILOT` sleeve. This is a real-money pilot path, not a core universe
+promotion.
 
 ## Current Foundation
 
@@ -61,12 +61,14 @@ Already added:
 | `quant/universe_manager.py` | Replay, validation, and hashing helpers. |
 | `quant/candidate_competition_logger.py` | Pre-trade counterfactual and outcome logger. |
 | `quant/test_universe_manager.py` | Tests for PIT replay, eligibility gates, and counterfactual logging. |
+| `quant/pilot_sleeve.py` | Shared real-money pilot sleeve policy and pre-trade snapshot builder. |
+| `quant/test_pilot_sleeve.py` | Tests for trade-date gating, pilot scalars, slot limits, and snapshots. |
 
 Current AI infrastructure metadata:
 
 | Bucket | Tickers | Current Meaning |
 | --- | --- | --- |
-| Pilot metadata | `INTC`, `LITE`, `BE` | Not production-wired; eligible by ledger only from `2026-05-06` if future adapters consume it. |
+| Trade-enabled pilot | `INTC`, `LITE`, `BE` | Daily run can generate separate `AI_INFRA_PILOT` signals from `2026-05-01`; not core. |
 | Research | `COHR`, `APLD` | Signal/shadow candidates only. |
 | Specialist | `SNDK`, `CRWV`, `CORZ`, `IREN`, `CIFR`, `WULF`, `RIOT`, `MARA` | Need short-history or BTC/HPC specialist handling. |
 | Quarantine | `DBRG`, `TLN`, `VST` | Do not trade until a distinct rule explains the prior failure mode. |
@@ -96,7 +98,7 @@ Verification:
 Purpose: let production and backtest code inspect the same point-in-time
 universe state without using it to place trades.
 
-Status: initial adapter implemented.
+Status: completed and consumed by daily run governance output.
 
 Implement:
 
@@ -139,6 +141,9 @@ Acceptance:
 Purpose: generate and record signals for non-core names without letting them
 compete for production slots.
 
+Status: partially superseded for `INTC`/`LITE`/`BE` by the pilot sleeve. Still
+needed for `research` and `specialist` names.
+
 Implement:
 
 - A shadow signal path for `pilot/research/specialist` tickers.
@@ -164,6 +169,9 @@ Acceptance:
 ### Phase 3: Competition Attribution Snapshot
 
 Purpose: before any pilot trade is allowed, freeze what it would replace.
+
+Status: initial implementation completed through `quant/pilot_sleeve.py` and
+`quant/candidate_competition_logger.py`.
 
 Implement:
 
@@ -192,6 +200,8 @@ Acceptance:
 
 Purpose: allow small real-money pilot trades with risk contribution limits.
 
+Status: initial implementation completed for daily production output.
+
 Implement:
 
 - `AI_INFRA_PILOT` sleeve configuration.
@@ -216,13 +226,20 @@ Acceptance:
 
 - Pilot sizing is computed separately from core sizing.
 - Pilot recommendation includes sleeve and risk contribution fields.
-- If event/calendar/risk data is missing, pilot entry is blocked.
-- Backtest and production share the same pilot sleeve policy before activation.
+- If event/calendar/risk data blocks the underlying signal, pilot entry is not
+  generated.
+- Production calls the shared pilot sleeve policy before activation.
+- Canonical historical backtests remain core-only under point-in-time rules
+  because the pilot trade date is `2026-05-01`; static pilot-pool experiments
+  remain hypothesis evidence, not promotion proof.
 
 ### Phase 5: Limited Live Pilot
 
 Purpose: buy real evidence without allowing a new theme to take over the core
 strategy.
+
+Status: activated for a bounded first sleeve after explicit user approval on
+2026-05-01.
 
 Activation requirements:
 
@@ -315,30 +332,33 @@ Any logic affecting these must be shared or explicitly disclosed:
 Backtester-only pilot logic is not acceptable production evidence unless it is
 documented as replay-only measurement.
 
-## First Implementation Slice
+## Implemented Slice
 
-The next code step should be Phase 1 only:
+Completed:
 
-1. Add `quant/universe_adapter.py`.
-2. Read `universe_manager.records_as_of`.
-3. Return segmented universe state.
-4. Add tests proving `pilot` names are visible but not in the core trade list.
-5. Optionally add a read-only CLI/report field.
+1. Added `quant/universe_adapter.py`.
+2. Added `quant/pilot_sleeve.py`.
+3. Wired `quant/run.py` to download pilot OHLCV, compute pilot features, run
+   the standard signal chain, apply pilot risk scalars, and emit
+   `pilot_signals`.
+4. Added pre-trade counterfactual snapshots before executable pilot entries.
+5. Kept pilot signals out of core `signals` so core watchlist behavior remains
+   separated.
 
-Stop before Phase 2 unless Phase 1 verifies that canonical trading behavior is
-unchanged.
+Next implementation slice should add outcome attribution for closed pilot
+positions and replacement-value rollups.
 
 ## Gate Before Real Pilot Trading
 
-No real pilot trade should be enabled until all are true:
+Real pilot trading is enabled only for `INTC`, `LITE`, and `BE` while the
+following remain true:
 
-- point-in-time adapter is used by production and backtest;
-- shadow reports are being generated;
+- point-in-time adapter is used by production;
 - counterfactual snapshots are written before entry;
 - pilot sleeve risk limits are active;
-- event guard blocks missing event data;
-- daily report shows direct PnL, replacement PnL, and risk-adjusted replacement value;
-- user explicitly approves enabling the pilot sleeve.
+- pilot recommendations remain separate from core recommendations;
+- outcome attribution is added before any promotion to `limited_production`;
+- user approval is required for any wider pilot list.
 
 ## Key Risks
 
@@ -353,5 +373,7 @@ No real pilot trade should be enabled until all are true:
 
 ## Current Recommendation
 
-Proceed with Phase 1: read-only universe adapter. Do not yet modify the daily
-trading universe, watchlist, or order recommendation path.
+Run the daily pipeline normally. If `INTC`, `LITE`, or `BE` produces a valid
+signal, it appears under `pilot_signals` with `AI_INFRA_PILOT` metadata and a
+pre-trade decision hash. Do not move any pilot name into `core` until live
+replacement-value attribution supports promotion.

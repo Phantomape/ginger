@@ -127,6 +127,15 @@ def main():
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
     from universe_adapter   import save_universe_state_report, universe_segments_as_of
+    from pilot_sleeve       import (
+        append_pilot_decision_snapshots,
+        apply_pilot_sizing_policy,
+        build_counterfactual_snapshots,
+        mark_pilot_signals,
+        pilot_governance_metadata,
+        pilot_records_as_of,
+        select_pilot_entry_candidates,
+    )
 
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
@@ -134,25 +143,49 @@ def main():
     universe          = get_universe()
     log.info(f"Universe ({len(universe)} tickers): {universe}")
     universe_governance_state = None
+    pilot_records = {}
+    pilot_universe = []
+    pilot_metadata = {}
     try:
+        today_iso = datetime.now().date().isoformat()
         universe_governance_state = universe_segments_as_of(
-            datetime.now().date().isoformat(),
+            today_iso,
             core_universe=universe,
         )
         save_universe_state_report(
             universe_governance_state,
             f"data/universe_state_{today}.json",
         )
+        pilot_records = pilot_records_as_of(today_iso)
+        pilot_universe = sorted(set(pilot_records) - set(universe))
+        pilot_metadata = pilot_governance_metadata()
+        if pilot_universe:
+            universe_governance_state["mode"] = "production_pilot_sleeve"
+            universe_governance_state["production_impact"] = {
+                "alters_signal_generation": True,
+                "alters_candidate_ranking": False,
+                "alters_sizing": True,
+                "alters_orders": True,
+                "scope": "pilot_sleeve_only",
+            }
+            universe_governance_state["pilot_trade_universe"] = pilot_universe
+            save_universe_state_report(
+                universe_governance_state,
+                f"data/universe_state_{today}.json",
+            )
         log.info(
-            "Universe governance read-only: core=%s pilot=%s research=%s specialist=%s quarantine=%s",
+            "Universe governance: core=%s pilot=%s trade-enabled-pilot=%s research=%s specialist=%s quarantine=%s",
             len(universe_governance_state["core_trade_universe"]),
             len(universe_governance_state["segments"]["pilot"]),
+            len(pilot_universe),
             len(universe_governance_state["segments"]["research"]),
             len(universe_governance_state["segments"]["specialist"]),
             len(universe_governance_state["segments"]["quarantine"]),
         )
+        if pilot_universe:
+            log.info("Pilot sleeve trade-enabled tickers: %s", pilot_universe)
     except Exception as e:
-        log.warning(f"Universe governance read-only adapter unavailable: {e}")
+        log.warning(f"Universe governance adapter unavailable: {e}")
 
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
@@ -168,7 +201,8 @@ def main():
     _print_section("STEP 3 — OHLCV + earnings data")
     ohlcv_dict    = {}
     earnings_dict = {}
-    for ticker in universe:
+    data_universe = sorted(set(universe) | set(pilot_universe))
+    for ticker in data_universe:
         ohlcv_dict[ticker]    = get_ohlcv(ticker)        # 350 calendar days
         earnings_dict[ticker] = get_earnings_data(ticker)
     spy_ohlcv = ohlcv_dict.get("SPY")
@@ -184,12 +218,12 @@ def main():
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
     features_dict = {}
-    for ticker in universe:
+    for ticker in data_universe:
         features_dict[ticker] = compute_features(
             ticker, ohlcv_dict[ticker], earnings_dict[ticker]
         )
     ok = sum(1 for f in features_dict.values() if f)
-    log.info(f"Features ready: {ok}/{len(universe)} tickers")
+    log.info(f"Features ready: {ok}/{len(data_universe)} tickers")
 
     # ── Live portfolio value ─────────────────────────────────────────────────
     # open_positions.json portfolio_value_usd is user-maintained and can be stale.
@@ -306,6 +340,8 @@ def main():
         "generated_at": datetime.now().isoformat(),
         "asof_date":    datetime.now().strftime("%Y-%m-%d"),
         "universe":     universe,
+        "pilot_universe": pilot_universe,
+        "data_universe": data_universe,
         "market_regime": market_regime,
         "signals":      trend_signals_signals,
     }
@@ -336,8 +372,19 @@ def main():
         log.info(f"SPY vs 200MA: {spy_pct_from_ma*100:+.2f}%   "
                  f"QQQ vs 200MA: {qqq_pct_from_ma*100:+.2f}%")
 
+    core_features_dict = {
+        ticker: features_dict.get(ticker)
+        for ticker in universe
+        if ticker in features_dict
+    }
+    pilot_features_dict = {
+        ticker: features_dict.get(ticker)
+        for ticker in pilot_universe
+        if ticker in features_dict
+    }
+
     signals = generate_signals(
-        features_dict,
+        core_features_dict,
         market_context=market_context,
         enabled_strategies=ENABLED_STRATEGIES,
         breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
@@ -395,6 +442,47 @@ def main():
 
     log.info(f"Signals generated: {len(signals)}")
 
+    pilot_signals = []
+    pilot_entry_filter_audit = {
+        "signals_before_entry_filters": 0,
+        "signals_after_entry_filters": 0,
+        "already_held_dropped": [],
+        "sector_cap_dropped": [],
+        "bear_shallow_dropped": [],
+    }
+    if pilot_features_dict:
+        pilot_signals = generate_signals(
+            pilot_features_dict,
+            market_context=market_context,
+            enabled_strategies=ENABLED_STRATEGIES,
+            breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+        )
+        if BREAKOUT_RANK_BY_52W_HIGH:
+            pilot_signals = rank_signals_for_allocation(pilot_signals)
+        pilot_signals = enrich_signals(
+            pilot_signals,
+            features_dict,
+            atr_target_mult=atr_target_mult,
+        )
+        if REGIME_AWARE_EXIT:
+            for s in pilot_signals:
+                s["target_mult_used"] = exit_profile["target_mult"]
+                s["regime_exit_bucket"] = exit_profile["bucket"]
+                s["regime_exit_score"] = exit_profile["score"]
+        pilot_signals = mark_pilot_signals(
+            pilot_signals,
+            pilot_records,
+            metadata=pilot_metadata,
+        )
+        pilot_signals, pilot_entry_filter_audit = filter_entry_signal_candidates(
+            pilot_signals,
+            open_positions=open_positions,
+            market_regime=market_regime.get("regime", "").upper(),
+            spy_pct_from_ma=spy_pct_from_ma,
+            qqq_pct_from_ma=qqq_pct_from_ma,
+        )
+        log.info(f"Pilot sleeve signals generated: {len(pilot_signals)}")
+
     _trade_risk_pct = risk_pct_for_market_state(
         _regime_str,
         spy_pct_from_ma=spy_pct_from_ma,
@@ -410,6 +498,7 @@ def main():
 
     portfolio_heat = None
     heat_blocked_signals = []
+    heat_blocked_pilot_signals = []
     if open_positions and portfolio_value:
         # Pass features_dict so heat uses effective stops (ATR/trailing) not just avg_cost stop
         portfolio_heat = compute_portfolio_heat(
@@ -419,17 +508,62 @@ def main():
         log.info(portfolio_heat["heat_note"])
         if portfolio_heat["can_add_new_positions"] and portfolio_value:
             signals = size_signals(signals, portfolio_value, risk_pct=_trade_risk_pct)
+            pilot_signals = size_signals(
+                pilot_signals,
+                portfolio_value,
+                risk_pct=_trade_risk_pct,
+            )
         else:
             heat_blocked_signals = signals
+            heat_blocked_pilot_signals = pilot_signals
             signals = []
+            pilot_signals = []
     elif portfolio_value:
         signals = size_signals(signals, portfolio_value, risk_pct=_trade_risk_pct)
+        pilot_signals = size_signals(
+            pilot_signals,
+            portfolio_value,
+            risk_pct=_trade_risk_pct,
+        )
 
     signals, entry_execution_plan = plan_entry_candidates(
         signals,
         open_positions,
         market_context=market_context,
     )
+    pilot_signals = apply_pilot_sizing_policy(pilot_signals, pilot_records)
+    pilot_signals, pilot_entry_execution_plan = select_pilot_entry_candidates(
+        pilot_signals,
+        pilot_records,
+        open_positions=open_positions,
+    )
+    pilot_decision_snapshots = build_counterfactual_snapshots(
+        pilot_signals,
+        core_signals=signals,
+        as_of=datetime.now().date().isoformat(),
+        market_context=market_context,
+        portfolio_heat=portfolio_heat,
+        metadata=pilot_metadata,
+    )
+    pilot_decision_hashes = []
+    if pilot_decision_snapshots:
+        try:
+            pilot_decision_hashes = append_pilot_decision_snapshots(
+                pilot_decision_snapshots
+            )
+            for sig, snapshot, decision_hash in zip(
+                pilot_signals,
+                pilot_decision_snapshots,
+                pilot_decision_hashes,
+            ):
+                sig.setdefault("pilot_sleeve", {})["decision_id"] = snapshot["decision_id"]
+                sig.setdefault("pilot_sleeve", {})["decision_hash"] = decision_hash
+            log.info(
+                "Pilot sleeve pre-trade snapshots logged: %s",
+                pilot_decision_hashes,
+            )
+        except Exception as e:
+            log.error(f"Pilot sleeve decision snapshot logging failed: {e}")
     if entry_execution_plan["deferred_breakout_signals"]:
         log.info(
             "Scarce-slot routing deferred %d breakout signal(s)",
@@ -464,9 +598,13 @@ def main():
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
     trend_signals_dict["quant_signals"] = signals
+    trend_signals_dict["pilot_quant_signals"] = pilot_signals
     trend_signals_dict["addon_actions"] = addon_actions
     trend_signals_dict["entry_filter_audit"] = entry_filter_audit
     trend_signals_dict["entry_execution_plan"] = entry_execution_plan
+    trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
+    trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
+    trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
@@ -489,11 +627,17 @@ def main():
         "market_regime":  market_regime,
         "portfolio_heat": portfolio_heat,
         "signals":        signals,
+        "pilot_signals":  pilot_signals,
         "addon_actions":  addon_actions,
         "addon_audit":    addon_audit,
         "entry_filter_audit": entry_filter_audit,
         "entry_execution_plan": entry_execution_plan,
+        "pilot_entry_filter_audit": pilot_entry_filter_audit,
+        "pilot_entry_execution_plan": pilot_entry_execution_plan,
+        "pilot_decision_snapshots": pilot_decision_snapshots,
+        "pilot_decision_hashes": pilot_decision_hashes,
         "heat_blocked_signals": heat_blocked_signals,
+        "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,
         "features":       features_dict,
     }, f"data/quant_signals_{today}.json")
@@ -507,7 +651,7 @@ def main():
         from filter  import apply_hygiene_filters, apply_trade_filters
 
         all_items  = []
-        sources    = get_all_sources()
+        sources    = get_all_sources(extra_tickers=pilot_universe)
         log.info(f"Fetching from {len(sources)} RSS sources...")
         for source in sources:
             try:
@@ -519,7 +663,11 @@ def main():
 
         sorted_items  = sort_items_by_date(deduplicate_items(all_items))
         hygiene_items = apply_hygiene_filters(sorted_items)["items"]
-        trade_items   = apply_trade_filters(sorted_items)["items"]
+        trade_watchlist = sorted(set(universe) | set(pilot_universe))
+        trade_items   = apply_trade_filters(
+            sorted_items,
+            watchlist=trade_watchlist,
+        )["items"]
 
         _save_json(sorted_items,  f"data/news_{today}.json")
         _save_json(hygiene_items, f"data/clean_news_{today}.json")
@@ -569,6 +717,7 @@ def main():
     _print_section("PIPELINE COMPLETE")
     log.info(f"  Tickers analyzed:   {len(universe)}")
     log.info(f"  Signals generated:  {len(signals)}")
+    log.info(f"  Pilot signals:      {len(pilot_signals)}")
     log.info(f"  Add-on actions:     {len(addon_actions)}")
     log.info(f"  News (trade):       {len(trade_items)}")
     log.info(f"  Regime:             {market_regime['regime']}")

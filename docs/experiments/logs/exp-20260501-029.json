@@ -1,0 +1,123 @@
+{
+  "experiment_id": "exp-20260501-029",
+  "timestamp": "2026-05-01T23:35:00-07:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "real_money_pilot_sleeve_activation",
+  "hypothesis": "INTC, LITE, and BE can be traded through a bounded real-money AI infrastructure pilot sleeve so the system can collect forward replacement-value evidence without promoting them into the core universe or polluting historical point-in-time backtests.",
+  "alpha_hypothesis_category": "candidate_universe_and_capital_allocation",
+  "why_not_more_static_pool_tests": "Prior static AI infrastructure tests already showed research value but also concentrated contribution and regime risk. The next scientific step is bounded forward trading attribution, not another broader static-pool pass.",
+  "parameters": {
+    "single_causal_variable": "production pilot sleeve activation for three preselected AI infrastructure candidates",
+    "pilot_sleeve": "AI_INFRA_PILOT",
+    "trade_enabled_pilot_tickers": ["BE", "INTC", "LITE"],
+    "first_trade_allowed_as_of": "2026-05-01",
+    "max_concurrent_pilot_positions": 1,
+    "ticker_scalars": {
+      "INTC": {"max_capital_scalar": 0.5, "max_risk_scalar": 0.35},
+      "LITE": {"max_capital_scalar": 0.5, "max_risk_scalar": 0.35},
+      "BE": {"max_capital_scalar": 0.35, "max_risk_scalar": 0.2}
+    },
+    "counterfactual_policy": "pre-trade decision snapshots are frozen before a pilot entry and compare the pilot candidate with ranked core alternatives, cash, and same-theme candidates when available",
+    "news_policy": "daily production news sources and trade-news watchlist include trade-enabled pilot tickers",
+    "locked_variables": [
+      "core universe membership",
+      "core signal generation",
+      "core ranking",
+      "core sizing",
+      "core backtest acceptance windows",
+      "existing entry filters",
+      "existing exits",
+      "LLM responsibilities"
+    ]
+  },
+  "standard_backtest_windows": {
+    "late_strong": {
+      "range": "2025-10-23 -> 2026-04-21",
+      "expected_value_score": 2.9907,
+      "sharpe_daily": 4.31,
+      "total_pnl": 69387.88,
+      "max_drawdown_pct": 4.57,
+      "win_rate": 79.0,
+      "trade_count": 19,
+      "survival_rate": 80.4,
+      "convergence": "8/8"
+    },
+    "mid_weak": {
+      "range": "2025-04-23 -> 2025-10-22",
+      "expected_value_score": 1.2170,
+      "sharpe_daily": 2.58,
+      "total_pnl": 47170.67,
+      "max_drawdown_pct": 7.99,
+      "win_rate": 52.4,
+      "trade_count": 21,
+      "survival_rate": 79.2,
+      "convergence": "8/8"
+    },
+    "old_thin": {
+      "range": "2024-10-02 -> 2025-04-22",
+      "expected_value_score": 0.2742,
+      "sharpe_daily": 1.25,
+      "total_pnl": 21938.62,
+      "max_drawdown_pct": 7.96,
+      "win_rate": 40.9,
+      "trade_count": 22,
+      "survival_rate": 91.7,
+      "convergence": "8/8"
+    }
+  },
+  "daily_production_validation": {
+    "date": "2026-05-01",
+    "command": ".\\.venv\\Scripts\\python.exe quant\\run.py",
+    "clean_rerun_command": "$env:OPENAI_API_KEY=''; .\\.venv\\Scripts\\python.exe quant\\run.py",
+    "result": "completed",
+    "universe_governance_mode": "production_pilot_sleeve",
+    "pilot_trade_universe": ["BE", "INTC", "LITE"],
+    "feature_coverage": "48/48",
+    "pilot_signal_count": 0,
+    "pilot_news_sources_fetched": true,
+    "pilot_tickers_present_in_trade_news_watchlist": true,
+    "quant_signal_output_fields": [
+      "pilot_quant_signals",
+      "pilot_signals",
+      "pilot_entry_filter_audit",
+      "pilot_entry_execution_plan",
+      "pilot_decision_snapshots",
+      "pilot_decision_hashes"
+    ],
+    "llm_note": "The first run hit an OpenAI quota 429, then the prompt-only rerun completed cleanly. This did not block pilot signal generation or the standard backtests."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "parity_note": "Historical canonical windows remain core-only because the pilot first_trade_allowed_as_of is 2026-05-01, after all three windows. This is intentional point-in-time behavior rather than a missing production hook."
+  },
+  "decision_reason": "Accepted as a bounded real-money pilot sleeve activation, not as a core universe promotion. The standard backtests remain stable under point-in-time rules, production now generates pilot signals when the shared signal chain finds them, and pilot trades will be separately sized, logged, and attributed against frozen counterfactuals.",
+  "known_risks": [
+    "No pilot entry signal fired on 2026-05-01, so the live order path is wired but not yet exercised by a real pilot trade.",
+    "Pilot attribution needs forward samples before promotion decisions can be made.",
+    "Dedicated post-2026-05-01 pilot replay is still future work once enough forward data exists.",
+    "OpenAI quota errors can still affect LLM advice generation when an exhausted API key is configured."
+  ],
+  "next_steps": [
+    "Let the daily run collect pilot decision snapshots and replacement-value outcomes.",
+    "Promote only after positive risk-adjusted replacement value, controlled drawdown, and non-concentrated forward contribution.",
+    "Do not add the wider AI infrastructure basket to core without separate point-in-time evidence."
+  ],
+  "related_files": [
+    "quant/pilot_sleeve.py",
+    "quant/run.py",
+    "quant/sources.py",
+    "quant/test_pilot_sleeve.py",
+    "quant/test_sources.py",
+    "data/universe_registry.json",
+    "data/universe_events.jsonl",
+    "docs/universe_governance_rollout_plan.md",
+    "docs/universe_promotion_protocol.md",
+    "docs/production_backtest_parity.md"
+  ]
+}

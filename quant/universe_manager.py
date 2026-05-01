@@ -1,8 +1,8 @@
 """Point-in-time universe registry and event-ledger helpers.
 
-This module is intentionally not wired into production trading yet. It provides
-the governance layer needed before dynamic universe membership can be tested
-without look-ahead bias.
+This module is the point-in-time governance source for universe expansion. Core
+membership still follows the legacy watchlist, while approved pilot records can
+be consumed by the real-money pilot sleeve without becoming core candidates.
 """
 
 from __future__ import annotations

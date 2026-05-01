@@ -56,6 +56,7 @@ universe on any historical day.
 | `data/universe_events.jsonl` | Append-only universe event ledger. |
 | `quant/universe_manager.py` | Point-in-time replay, validation, and hashing helpers. |
 | `quant/candidate_competition_logger.py` | Pre-trade counterfactual snapshot and outcome logging. |
+| `quant/pilot_sleeve.py` | Shared real-money pilot sleeve policy, risk scalar application, slot limits, and snapshot construction. |
 
 The registry is convenient for current operations. The ledger is what prevents
 future information leakage.
@@ -70,6 +71,10 @@ future information leakage.
 
 Production promotion requires either walk-forward evidence or live pilot
 evidence. Static pool results alone are not enough.
+
+As of 2026-05-01, `INTC`, `LITE`, and `BE` are trade-enabled only through
+`AI_INFRA_PILOT`. They are not core universe members and must not be evaluated
+as if static-pool historical evidence alone promoted them.
 
 ## Pilot Risk Limits
 
@@ -150,4 +155,3 @@ must not be edited after the result is known.
 
 Manual overrides are allowed, but must be ledgered with `expires_at`. No
 open-ended override should become a permanent hidden rule.
-

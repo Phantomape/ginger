@@ -1,0 +1,26 @@
+{
+  "experiment_id": "exp-20260501-029",
+  "title": "Activate AI infrastructure real-money pilot sleeve",
+  "status": "accepted",
+  "decision": "accepted",
+  "priority": "high",
+  "lane": "alpha_search",
+  "created_at": "2026-05-01T23:35:00-07:00",
+  "summary": "Trade-enable INTC, LITE, and BE only inside the bounded AI_INFRA_PILOT sleeve. Keep the core universe unchanged, use point-in-time eligibility, apply reduced risk scalars, and freeze counterfactual snapshots before any pilot entry.",
+  "acceptance_checks": [
+    "INTC, LITE, and BE are returned by pilot_tickers_as_of('2026-05-01').",
+    "Daily run downloads pilot OHLCV/features and emits pilot-specific output fields.",
+    "Daily news collection includes pilot tickers in sources and trade-news watchlist.",
+    "Core historical backtests remain point-in-time clean because pilot eligibility starts after the three canonical windows.",
+    "Pilot sizing and max-concurrent controls are covered by tests."
+  ],
+  "standard_backtest_summary": {
+    "late_strong": {"ev": 2.9907, "sharpe_daily": 4.31, "pnl": 69387.88, "win_rate": 79.0, "trades": 19},
+    "mid_weak": {"ev": 1.2170, "sharpe_daily": 2.58, "pnl": 47170.67, "win_rate": 52.4, "trades": 21},
+    "old_thin": {"ev": 0.2742, "sharpe_daily": 1.25, "pnl": 21938.62, "win_rate": 40.9, "trades": 22}
+  },
+  "tests": [
+    "python -m pytest quant\\test_pilot_sleeve.py quant\\test_universe_manager.py quant\\test_universe_adapter.py quant\\test_sources.py"
+  ],
+  "follow_up": "Collect live pilot trades and evaluate direct PnL, replacement-relative PnL, and risk-adjusted replacement value before any core promotion."
+}
