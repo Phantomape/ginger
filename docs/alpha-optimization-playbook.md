@@ -59,15 +59,15 @@ sector-relative feature or event/news context.
 - `earnings_event_long`：PEAD 大类仍有金融逻辑，但当前仓库实现尚未证明可稳定增厚 A+B。
 - LLM / news：最适合事件理解、灾难 veto、结构化 grading / ranking；不适合接管仓位、止损、目标位和硬风控。
 
-当前固定三窗口 baseline（最新 accepted stack，数据点来自 `data/backtest_results_20260429.json` 与同批固定窗口实验）：
+当前固定三窗口 baseline（最新 accepted stack，数据点来自 `data/backtest_results_20260430.json` 与 `exp-20260501-006` 同批固定窗口实验）：
 
 | Window | Range | EV | Return | Sharpe daily | Max DD | Win rate | Trades | Main interpretation |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| `late_strong` | 2025-10-23 -> 2026-04-21 | 2.4787 | +59.30% | 4.18 | 4.39% | 78.9% | 19 | accepted allocation stack 很强，risk-on sizing 已显著抬升 EV |
-| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.0034 | +39.35% | 2.55 | 6.16% | 52.4% | 21 | 已明显改善，但仍是最需要解释的 meta-allocation / regime-routing 窗口 |
-| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.2267 | +18.58% | 1.22 | 6.91% | 40.9% | 22 | 仍是最脆弱窗口；弱带下 drawdown 与 win rate 约束最值得盯 |
+| `late_strong` | 2025-10-23 -> 2026-04-21 | 2.7000 | +62.79% | 4.30 | 4.39% | 78.95% | 19 | accepted allocation stack 仍很强；GLD/IAU target extension + Financials leader sizing 继续抬升 EV |
+| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.2036 | +46.65% | 2.58 | 7.99% | 52.38% | 21 | 已被明显修复，但仍是最需要解释的 meta-allocation / regime-routing 窗口 |
+| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.2563 | +20.18% | 1.27 | 6.88% | 40.91% | 22 | 仍是最脆弱窗口；当前 accepted stack 赚钱但 win rate 仍接近下限 |
 
-最新 accepted-stack 测量盲区也要一并记住：news archive coverage 已升至 15/123 交易日（12.2%），但 production-aligned LLM ranking-eligible replay 仍只有 3 天 / 8 个信号，exit advisory replay 也仍处于 shadow-only 披露阶段。
+最新 accepted-stack 测量盲区也要一并记住：news archive coverage 已升至 15/123 交易日（12.2%），prompt/response archive_context 成熟度已到 7/10，但 production-aligned LLM ranking-eligible replay 仍只有 3 天 / 8 个信号，exit advisory replay 也仍处于 shadow-only 披露阶段。
 
 北极星仍是 `expected_value_score = total_return_pct * sharpe_daily`，但任何策略逻辑改动必须做多窗口检查，不能只优化一个窗口。
 
@@ -609,13 +609,22 @@ Next valid retry requires: a specific event or state discriminator that explains
 
 ### 2026-04-27 mechanism update: Second follow-through add-on
 
-Status: promising but rejected for production materiality.
+Status: rejected for production materiality.
 
 Core conclusion: exp-20260427-035 tested a day-5 second follow-through add-on after the accepted day-2 add-on. The idea is directionally positive and did not regress any fixed window, but the effect size is too small for production promotion under Gate 4.
 
 Evidence: the best tested variant (`day5`, unrealized `>= +5%`, `RS vs SPY > 0`, `35%` original shares, `60%` add-on cap) improved EV in `late_strong` and `mid_weak`, was inert in `old_thin`, and executed 7 second add-ons. Aggregate EV delta was `+0.0655`, aggregate PnL delta was `+$1,658.82`, and max drawdown increased only `+0.01 pp`.
 
-Do not repeat: nearby second-add-on size/cap tuning alone. The next retry needs forward/paper confirmation or a new independent evidence source that increases materiality without broadening concentration risk.
+Update 2026-05-01: exp-20260501-022 retested the production-shaped second
+add-on path with the existing shared constants (`day5`, unrealized `>= +5%`,
+`RS vs SPY > 0`, `15%` original shares, `45%` position cap). It executed only
+one second add-on across the three fixed windows, reduced `late_strong` PnL by
+`$10.74`, and left `mid_weak` / `old_thin` unchanged.
+
+Do not repeat: nearby second-add-on timing, size, cap, RS, or unrealized
+threshold tuning. The next retry needs forward/paper confirmation or a new
+independent event/news quality source that increases materiality without
+broadening concentration risk.
 
 ### 2026-04-27 mechanism update: Same-day sleeve ordering
 
@@ -2723,3 +2732,341 @@ Next valid step: test a production-parity watchlist/sector-map promotion only
 after choosing a non-overfit discriminator, such as theme-level replacement
 quality or event/news confirmation. Do not promote the full list solely from
 this shadow result.
+
+### 2026-05-01 mechanism update: Minimal AI infra watchlist promotion
+
+Status: rejected despite strong aggregate dollars.
+
+Core conclusion: `exp-20260501-009` tested a minimal production-promotable
+subset from the prior AI power / infrastructure universe screen: `BE + INTC`,
+plus single-name controls. This was an alpha_search candidate-universe test,
+not a signal, sizing, ranking, or exit change. It should not be promoted yet.
+
+Evidence: best variant `add_be_intc` improved aggregate PnL by `+$18,948.85`
+/ `+14.62%`, improved EV in `late_strong` and `mid_weak`, and improved PnL in
+all three fixed windows. It still failed the multi-window EV gate because
+`old_thin` EV regressed `0.2563 -> 0.2466`, driven by a losing BE trade, while
+`late_strong` max drawdown rose `+1.65 pp`. `INTC` alone was clean but active
+only in `late_strong`; `BE` added real `mid_weak` edge but introduced the
+`old_thin` fragility.
+
+Mechanism insight: AI infrastructure individual names remain a real candidate
+pool lead, but the current evidence is still too close to single-name path
+selection. `INTC` looks like a late-window storage/semi continuation add, while
+`BE` is regime-sensitive and needs an old-tape discriminator before production
+promotion. Aggregate PnL alone is not enough when EV stability weakens.
+
+Do not repeat: promoting `BE + INTC`, `BE` alone, or `INTC` alone as a raw
+watchlist addition without new forward evidence or a production-shared
+discriminator that explains when BE should be inactive in old/weak tapes.
+
+Next valid retry requires: a non-overfit theme-level discriminator, event/news
+confirmation, or forward sample showing that the BE old_thin failure is not a
+repeatable fragility while preserving the mid_weak edge.
+
+
+### 2026-05-01 mechanism update: AI infra pool robustness audit
+
+Status: rejected for production promotion; retained as research pool.
+
+Core conclusion: `exp-20260501-010` audited the user-supplied AI infrastructure
+candidate expansion with leave-one-out, leave-theme-out, and refined-pool
+variants. The prior all-name result is real enough to keep researching, but it
+does not justify a raw production watchlist addition.
+
+Evidence: best ranked variant `focused_top3_intc_lite_be` produced aggregate PnL delta
+`$28,260.55` and aggregate EV delta
+`+1.3558`, but the evidence remains
+concentrated and sparse. The original all-name bundle's aggregate PnL delta
+was `$21,384.10`, split into direct candidate
+PnL `$14,178.30` and interaction PnL
+`$7,205.80`. That confirms the expansion
+changed incumbent ranking/capital competition, not only added clean standalone
+new-name alpha.
+
+Mechanism insight: AI infrastructure individual names are a valuable research
+source, especially optical/semi/power winners, but current evidence is still
+too close to theme beta plus a few winner paths. Bitcoin miners remain inert
+under the current A/B rules, and short-history names such as CRWV/SNDK need a
+separate scout rather than being mixed into the fixed-window acceptance test.
+
+Do not repeat: promoting the full AI infra list, promoting `BE + INTC`, or
+using aggregate PnL alone to override old-window EV fragility, low trade count,
+or concentration.
+
+Next valid retry requires: forward evidence, an event/news discriminator, or a
+theme-level production rule that explains when the fragile power/infra names
+should be inactive while preserving optical/semi upside.
+
+### 2026-05-01 mechanism update: Hold-quality loss taxonomy
+
+Status: observed-only.
+
+Core conclusion: `exp-20260501-011` organized the recent accepted-stack losses
+into a reusable hold-quality taxonomy, but the sample is too small to justify a
+new rule, filter, or LLM responsibility change.
+
+Evidence: in the latest accepted `late_strong` window, all 4 losses were stop
+exits without add-ons, and 3 of the 4 clustered on `2026-01-06`. Metrics were
+unchanged because this produced only an audit artifact.
+
+Mechanism insight: the recent losses do not yet show a broad repeated failure
+family. The dominant pattern is a single clustered bad day with no winner
+collateral, which is useful as a shadow-test seed but not enough for a new
+production filter.
+
+Do not repeat: turning this 4-loss sample directly into a new hold-quality
+gate, stop rule, or add-on prohibition. A valid retry needs a larger
+multi-window failure family or a replayable event/news discriminator.
+
+### 2026-05-01 mechanism update: Post-news continuation shadow audit
+
+Status: observed-only, directionally negative.
+
+Core conclusion: `exp-20260501-012` tested whether post-news continuation is a
+clean non-overlapping entry source under the current archived-news coverage. It
+is not ready: the visible sample is sparse and economically weak.
+
+Evidence: the `late_strong` audit found 57 candidates, only `10.5%` same-day
+overlap with current A/B entries, `fwd10 avg -0.9682%`, and `36.84%` forward
+win rate. `mid_weak` and `old_thin` had zero coverage candidates. No strategy
+metrics changed because this remained a shadow audit.
+
+Mechanism insight: with current point-in-time news coverage, post-news
+continuation is not a credible standalone entry family. The bottleneck is not
+just rule design; it is coverage depth plus the lack of a stronger event
+discriminator.
+
+Do not repeat: promoting post-news continuation as a raw entry pattern from the
+current archive, or retesting nearby price-only continuation templates on the
+same sparse sample. A valid retry needs broader coverage or materially better
+event typing.
+
+### 2026-05-01 mechanism update: Event-sensitive liquidity universe scout
+
+Status: observed-only, non-promotable.
+
+Core conclusion: `exp-20260501-013` audited a liquidity-filtered
+event-sensitive universe, but the current archive and replay setup do not yet
+produce promotable out-of-universe candidates.
+
+Evidence: the scout produced zero outside-production candidates, only one fixed
+window with archived event coverage, and no slot-aware replay. This was
+therefore a research artifact rather than a candidate-universe result.
+
+Mechanism insight: universe scouting without real out-of-universe discoveries
+or slot-aware replay does not advance the alpha search. Event-sensitive
+expansion is still a valid theme, but only when it creates real replacement
+pressure against the accepted stack.
+
+Do not repeat: another event-sensitive universe audit with the same archive
+coverage and no slot-aware replay. A valid retry needs either new event
+coverage or actual candidate replacement evidence.
+
+### 2026-05-01 mechanism update: LLM replay coverage readiness audit
+
+Status: observed-only, still blocked.
+
+Core conclusion: `exp-20260501-014` confirmed that LLM/event ranking remains a
+high-upside direction, but it is still blocked by audit coverage rather than by
+alpha falsification.
+
+Evidence: effective attribution remains only 3 days / 8 signals, while
+prompt/response archives now contain usable `archive_context` on 7 of the 10
+sampled files. Metrics were unchanged because this was a read-only readiness
+audit.
+
+Mechanism insight: the system is no longer completely blind on LLM artifacts,
+but it is still far from the sample depth needed for ranking-alpha acceptance
+or rejection. The next bottleneck is durable replay coverage, not prompt
+micro-tuning.
+
+Do not repeat: changing LLM ranking logic, weakening LLM scope, or rerunning
+another readiness audit without new archived days. A valid retry needs more
+production-aligned replay samples, not another static status check.
+
+
+### 2026-05-01 mechanism update: AI optical/storage watchlist
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-015` tested whether the cleaner AI infrastructure
+optical/storage-semi subset (`INTC + LITE`) could avoid the BE old-tape
+fragility seen in the broader pool. It should not be promoted.
+
+Evidence: best variant `add_intc_only_control` produced aggregate PnL delta
+`$10,643.51` / `8.21%` and
+aggregate EV delta `+0.4869`. It did not
+clear the multi-window production gate: EV improved in
+`1` windows, regressed in
+`0`, and minimum win-rate delta was
+`-0.0276`.
+
+Mechanism insight: removing the fragile power names cleans up the old-tape loss
+source, but the remaining optical/storage-semi effect is still too
+late-window-concentrated for a raw production watchlist addition.
+
+Do not repeat: promoting `INTC + LITE`, `LITE` alone, or `INTC` alone as a raw
+watchlist addition without forward evidence or event/news confirmation.
+
+Next valid retry requires: forward evidence, a point-in-time event/news
+discriminator, or a broader theme rule that improves at least two fixed windows
+without win-rate degradation.
+
+
+### 2026-05-01 mechanism update: Regime-gated AI infra watchlist
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-016` tested whether the positive-but-fragile AI
+infrastructure watchlist lead could be rescued by enabling added `BE` / `INTC`
+candidates only in supportive broad-market states. It should not be promoted.
+
+Evidence: best variant `be_intc_bull_positive` produced aggregate PnL delta
+`$18,948.85` / `14.62%` and
+aggregate EV delta `+0.8562`. Fixed-window
+gate status: EV improved in `2` windows, regressed
+in `1`, and minimum win-rate delta was
+`-0.0276`.
+
+Mechanism insight: a simple broad-tape activation gate is not enough to turn AI
+infra names into a production-ready universe addition. The pool still needs
+forward evidence or point-in-time event/news confirmation, not another raw
+subset or broad BULL-only switch.
+
+Do not repeat: raw `BE + INTC`, raw `INTC`, raw `INTC + LITE`, or simple
+BULL/positive-SPY activation gates for these AI infra candidates without new
+forward or event/news evidence.
+
+### 2026-05-01 mechanism update: Technology A/B cofire trend preference
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-017` tested whether same-ticker Technology
+signals that co-fire `trend_long` and `breakout_long` should prefer the
+`trend_long` sleeve, so the accepted Technology wider target can operate. It
+should not be promoted.
+
+Evidence: the variant was unchanged in `late_strong` and `old_thin`, but
+damaged `mid_weak`: EV `1.2036 -> 0.9078`, PnL `-$8,021.42`, daily Sharpe
+`2.58 -> 2.35`, and win rate `52.38% -> 47.62%`. Across the three fixed
+windows, aggregate EV fell `-0.2958` and aggregate PnL fell `-6.19%`.
+
+Mechanism insight: the accepted Technology trend wider target does not imply
+that every Technology A/B cofire should route to trend. In the active
+`mid_weak` sample, suppressing the breakout side changed slot/position paths in
+a harmful way, even though the rule looked lifecycle-consistent.
+
+Do not repeat: Technology cofire trend preference, global same-day trend-first,
+or using the accepted Technology target extension as a generic reason to
+override native A/B dedup. A valid retry needs forward evidence or an
+orthogonal event/news discriminator showing which cofires specifically deserve
+the trend lifecycle.
+### 2026-05-01 mechanism update: TRIP sector metadata allocation path
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-018` tested whether classifying the existing
+production-universe ticker `TRIP` as Consumer Discretionary would improve
+capital allocation by routing it through sector-aware sizing and event-distance
+rules instead of the Unknown/plain risk-on path. It should not be promoted.
+
+Evidence: the three canonical windows were unchanged: `late_strong` EV
+`2.7000 -> 2.7000`, `mid_weak` EV `1.2036 -> 1.2036`, and `old_thin` EV
+`0.2563 -> 0.2563`; PnL, Sharpe, drawdown, win rate, trade count, and survival
+were also unchanged. The code change was rolled back.
+
+Mechanism insight: single-ticker sector metadata cleanup is not automatically
+alpha. In this case, the existing accepted rules did not turn the corrected
+sector into a different tradable path, so the fixed-window result was
+economically inert.
+
+Do not repeat: re-adding `TRIP` to `SECTOR_MAP` as an alpha change without a
+broader Unknown-sector distortion audit or a production-shared rule that
+actually depends on the corrected sector metadata.
+
+### 2026-05-01 mechanism update: Precious breakout target width
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-019` tested whether the accepted gold/commodity
+trend continuation target should extend to `GLD` / `IAU` / `SLV`
+`breakout_long` signals. It should not be promoted.
+
+Evidence: the best variant, `precious_breakout_5_5atr`, improved only
+`late_strong`: EV `2.7000 -> 2.7990`, PnL `+$1,261.80`, daily Sharpe
+`4.30 -> 4.37`. `mid_weak` and `old_thin` were strict nulls, leaving aggregate
+EV delta at only `+2.38%` and aggregate PnL delta at `+0.97%`. Wider 6/7 ATR
+variants damaged `late_strong` EV and drawdown.
+
+Mechanism insight: accepted trend convexity in gold/commodities does not
+automatically transfer to breakout exits. The breakout sleeve either lacks
+enough cross-window sample or has a different lifecycle shape from trend.
+
+Do not repeat: nearby precious-metals breakout ATR target sweeps without
+forward evidence or event/news context. A valid retry needs a materially
+different breakout lifecycle discriminator, not another 5.5/6/7 ATR target.
+
+### 2026-05-01 mechanism update: Financials leader target width
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-020` tested whether the accepted Financials
+sector-relative leader discriminator could extend from risk sizing into a
+wider trend target. It should not be promoted.
+
+Evidence: best variant `financials_leader_6_0atr` left `late_strong` unchanged
+because no Financials leader trades fired there, but damaged both active
+windows: `mid_weak` EV `1.2036 -> 0.8260`, PnL `-$7,139.01`, daily Sharpe
+`-0.49`; `old_thin` EV `0.2563 -> 0.0750`, PnL `-$10,569.00`, daily Sharpe
+`-0.49`, max drawdown `+4.94 pp`. Aggregate EV fell `-0.5589` and aggregate
+PnL fell `-13.66%`.
+
+Mechanism insight: Financials sector leadership is useful for entry sizing,
+but not for delaying exits. The wider target enlarged or converted losses in
+the rotation-heavy and older tapes, so "leader can carry more risk" does not
+mean "leader should be held for more ATR."
+
+Do not repeat: Financials leader target-width sweeps around 5-6 ATR, broad
+Financials target widening, or using the accepted Financials leader risk budget
+as evidence for exit convexity without event/news or forward confirmation.
+
+Next valid retry requires: an orthogonal event/news or lifecycle discriminator
+that explains why a specific Financials leader should avoid the delayed-exit
+damage seen in `mid_weak` and `old_thin`.
+
+### 2026-05-01 mechanism update: Consumer near-high DTE risk window
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-021` tested whether the accepted Consumer Discretionary near-high trend event-risk haircut should cover a wider DTE window. It should not be promoted.
+
+Evidence: best variant `consumer_near_high_dte_15_90` produced aggregate EV delta `+0.0000` and aggregate PnL delta `$+0.00`, with EV improving in `0` windows and regressing in `0`.
+
+Mechanism insight: Consumer near-high event-distance widening is only useful if it changes realized allocations across multiple windows; otherwise the existing narrow 30-65 DTE pocket remains the cleaner shared sizing rule.
+
+Do not repeat: nearby Consumer near-high DTE window sweeps without event/news confirmation or a broader Consumer loss-family audit.
+
+### 2026-05-01 mechanism update: Healthcare relative laggard risk cap
+
+Status: rejected.
+
+Core conclusion: `exp-20260501-023` tested whether Healthcare signals whose
+20-day return lagged the equal-weight Healthcare sector 20-day return should
+receive a lower total risk cap. It should not be promoted.
+
+Evidence: best variant `healthcare_laggard_0x` produced aggregate EV delta
+`+0.0000` and aggregate PnL delta `$+0.00`, with EV improving in `0` windows
+and regressing in `0`. The partial `0.25x` variant damaged `late_strong`
+because it reduced a Healthcare winner while still missing the mid/old
+Healthcare losers.
+
+Mechanism insight: sector-relative Healthcare laggard status did not identify
+the residual Healthcare loss family. This is not evidence for a broader
+Healthcare ban; it is evidence that the remaining Healthcare losses require a
+different context source, likely event/news or a larger multi-window failure
+family.
+
+Do not repeat: Healthcare sector-relative laggard 0x/0.25x caps, or nearby
+Healthcare relative-strength scalar variants, without forward evidence or an
+orthogonal event/news discriminator.
