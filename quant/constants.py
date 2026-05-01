@@ -18,6 +18,7 @@ LOW_TQS_HAIRCUT_EXEMPT_SECTORS = ("Commodities",)
 LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER = 0.0
 TREND_INDUSTRIALS_RISK_MULTIPLIER = 0.0
 TREND_FINANCIALS_RISK_MULTIPLIER = 1.5
+TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER = 2.5
 TREND_TECH_GAP_VULN_MIN = 0.04
 TREND_TECH_GAP_VULN_MAX = 0.06
 TREND_TECH_GAP_RISK_MULTIPLIER = 0.25
@@ -129,6 +130,8 @@ RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER = 1.6
 # Candidate allocation sleeve: accepted-stack cohort audit shows trend
 # Financials were positive in mid_weak and old_thin while absent in late_strong.
 # Keep this as sizing only; do not turn it into sector priority or new entry.
+# exp-20260501-006: within that sleeve, 20-day sector-relative leaders justify
+# a total 2.5x risk budget. Non-leaders stay on the accepted 1.5x budget.
 # Broad allocation sleeve: after the accepted de-risk/boost stack, plain
 # risk-on signals with no other sizing modifier remained positive across all
 # fixed windows. Give only that unmodified risk-on inventory a small lift; do
@@ -181,6 +184,8 @@ ATR_STOP_MULT           = 1.5        # Stop = entry - 1.5 * ATR
 ATR_TARGET_MULT         = 3.5        # Target = entry + 3.5 * ATR
 TREND_TECH_TARGET_ATR_MULT = 6.0     # Let Technology trend winners run; exp-20260425-027
 TREND_COMMODITIES_TARGET_ATR_MULT = 7.0  # Preserve commodity trend convexity; exp-20260425-031
+TREND_GOLD_TARGET_TICKERS = ("GLD", "IAU")
+TREND_GOLD_TARGET_ATR_MULT = 8.0     # exp-20260430-032: gold trend continuation without SLV drag
 ATR_PERIOD              = 14         # Standard ATR lookback
 REGIME_AWARE_EXIT       = True       # Adopt entry-day regime-aware target width by default
 

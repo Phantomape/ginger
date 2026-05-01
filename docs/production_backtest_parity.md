@@ -28,6 +28,7 @@ in shared modules such as:
 | Universe and features | `data_layer.py`, `feature_layer.py` | historical/snapshot OHLCV | latest OHLCV | data date only |
 | Entry signal generation | `signal_engine.py` | required | required | none |
 | Risk enrichment / targets | `risk_engine.py`, `regime_exit.py` | required | required | none |
+| Sector-relative sizing features | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Position sizing | `portfolio_engine.py` | required | required | fill price may differ |
 | Portfolio heat | `portfolio_engine.py` | required | required | simulated vs latest prices |
 | Already-held handling | shared adapter policy | required | required | none |

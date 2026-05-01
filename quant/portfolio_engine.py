@@ -20,6 +20,7 @@ from constants import (
     LOW_TQS_BREAKOUT_NON_EXEMPT_RISK_MULTIPLIER,
     TREND_INDUSTRIALS_RISK_MULTIPLIER,
     TREND_FINANCIALS_RISK_MULTIPLIER,
+    TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER,
     TREND_TECH_GAP_VULN_MIN,
     TREND_TECH_GAP_VULN_MAX,
     TREND_TECH_GAP_RISK_MULTIPLIER,
@@ -336,6 +337,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 trend_industrials_risk_multiplier = TREND_INDUSTRIALS_RISK_MULTIPLIER
                 signal_risk_pct *= trend_industrials_risk_multiplier
             trend_financials_risk_multiplier = 1.0
+            financials_sector_leader_risk_multiplier = 1.0
             risk_on_unmodified_risk_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
@@ -366,6 +368,12 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             if strategy == "trend_long" and sector == "Financials":
                 trend_financials_risk_multiplier = TREND_FINANCIALS_RISK_MULTIPLIER
                 signal_risk_pct *= trend_financials_risk_multiplier
+                if sig.get("financials_sector_leader") is True:
+                    financials_sector_leader_risk_multiplier = (
+                        TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER
+                        / TREND_FINANCIALS_RISK_MULTIPLIER
+                    )
+                    signal_risk_pct *= financials_sector_leader_risk_multiplier
             if (
                 strategy == "trend_long"
                 and sector == "Technology"
@@ -518,6 +526,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 tqs_risk_multiplier,
                 trend_industrials_risk_multiplier,
                 trend_financials_risk_multiplier,
+                financials_sector_leader_risk_multiplier,
                 trend_tech_tight_gap_risk_multiplier,
                 trend_tech_gap_risk_multiplier,
                 trend_tech_near_high_risk_multiplier,
@@ -590,6 +599,9 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["trend_financials_risk_multiplier_applied"] = (
                     trend_financials_risk_multiplier
+                )
+                sizing["financials_sector_leader_risk_multiplier_applied"] = (
+                    financials_sector_leader_risk_multiplier
                 )
                 sizing["risk_on_unmodified_risk_multiplier_applied"] = (
                     risk_on_unmodified_risk_multiplier

@@ -1,0 +1,360 @@
+{
+  "experiment_id": "exp-20260501-006",
+  "timestamp": "2026-05-01T04:09:26.388345+00:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_financials_sector_leader_risk",
+  "hypothesis": "The accepted trend_long Financials 1.5x sleeve may have a stronger sub-pocket when the ticker is outperforming its own sector over 20 trading days; that stricter discriminator may justify more risk without repeating a broad Financials scalar sweep.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking data remains too thin, so this tests a deterministic sector-relative allocation signal that can be computed in production and replay.",
+  "parameters": {
+    "single_causal_variable": "trend_long Financials sector-leader risk multiplier",
+    "baseline_multiplier": 1.5,
+    "tested_multipliers": {
+      "leader_2_0x": 2.0,
+      "leader_2_5x": 2.5
+    },
+    "sector_leader_definition": "ticker 20-day close return > equal-weight Financials sector 20-day close return on the signal day",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "accepted trend_long Financials baseline 1.5x for non-leaders",
+      "all other sizing multipliers",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "add-ons",
+      "all exits including gold 8ATR target",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.7,
+      "sharpe_daily": 4.3,
+      "total_pnl": 62788.03,
+      "total_return_pct": 0.6279,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5045,
+      "leader_signals_seen": 0,
+      "leader_signals_resized": 0,
+      "leader_trade_count": 0,
+      "leader_trade_pnl": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.0221,
+      "sharpe_daily": 2.57,
+      "total_pnl": 39773.93,
+      "total_return_pct": 0.3977,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4834,
+      "leader_signals_seen": 0,
+      "leader_signals_resized": 0,
+      "leader_trade_count": 0,
+      "leader_trade_pnl": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.2404,
+      "sharpe_daily": 1.25,
+      "total_pnl": 19227.62,
+      "total_return_pct": 0.1923,
+      "max_drawdown_pct": 0.0691,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4238,
+      "leader_signals_seen": 0,
+      "leader_signals_resized": 0,
+      "leader_trade_count": 0,
+      "leader_trade_pnl": 0.0
+    }
+  },
+  "after_metrics": {
+    "leader_2_0x": {
+      "late_strong": {
+        "expected_value_score": 2.7,
+        "sharpe_daily": 4.3,
+        "total_pnl": 62788.03,
+        "total_return_pct": 0.6279,
+        "max_drawdown_pct": 0.0439,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5045,
+        "leader_signals_seen": 0,
+        "leader_signals_resized": 0,
+        "leader_trade_count": 0,
+        "leader_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.1245,
+        "sharpe_daily": 2.55,
+        "total_pnl": 44101.95,
+        "total_return_pct": 0.441,
+        "max_drawdown_pct": 0.0752,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4841,
+        "leader_signals_seen": 4,
+        "leader_signals_resized": 4,
+        "leader_trade_count": 0,
+        "leader_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.2458,
+        "sharpe_daily": 1.26,
+        "total_pnl": 19506.76,
+        "total_return_pct": 0.1951,
+        "max_drawdown_pct": 0.0692,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4236,
+        "leader_signals_seen": 3,
+        "leader_signals_resized": 3,
+        "leader_trade_count": 0,
+        "leader_trade_pnl": 0.0
+      }
+    },
+    "leader_2_5x": {
+      "late_strong": {
+        "expected_value_score": 2.7,
+        "sharpe_daily": 4.3,
+        "total_pnl": 62788.03,
+        "total_return_pct": 0.6279,
+        "max_drawdown_pct": 0.0439,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5045,
+        "leader_signals_seen": 0,
+        "leader_signals_resized": 0,
+        "leader_trade_count": 0,
+        "leader_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.2036,
+        "sharpe_daily": 2.58,
+        "total_pnl": 46654.1,
+        "total_return_pct": 0.4665,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4839,
+        "leader_signals_seen": 4,
+        "leader_signals_resized": 4,
+        "leader_trade_count": 0,
+        "leader_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.2458,
+        "sharpe_daily": 1.26,
+        "total_pnl": 19506.76,
+        "total_return_pct": 0.1951,
+        "max_drawdown_pct": 0.0692,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4236,
+        "leader_signals_seen": 3,
+        "leader_signals_resized": 3,
+        "leader_trade_count": 0,
+        "leader_trade_pnl": 0.0
+      }
+    }
+  },
+  "delta_metrics": {
+    "leader_2_0x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0,
+          "leader_signals_seen": 0,
+          "leader_signals_resized": 0,
+          "leader_trade_count": 0,
+          "leader_trade_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.1024,
+          "sharpe_daily": -0.02,
+          "total_pnl": 4328.02,
+          "total_return_pct": 0.0433,
+          "max_drawdown_pct": 0.0136,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0007,
+          "leader_signals_seen": 4,
+          "leader_signals_resized": 4,
+          "leader_trade_count": 0,
+          "leader_trade_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0054,
+          "sharpe_daily": 0.01,
+          "total_pnl": 279.14,
+          "total_return_pct": 0.0028,
+          "max_drawdown_pct": 0.0001,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0002,
+          "leader_signals_seen": 3,
+          "leader_signals_resized": 3,
+          "leader_trade_count": 0,
+          "leader_trade_pnl": 0.0
+        }
+      },
+      "expected_value_score_delta_sum": 0.1078,
+      "expected_value_score_delta_pct": 0.027205,
+      "baseline_expected_value_score_sum": 3.9625,
+      "total_pnl_delta_sum": 4607.16,
+      "baseline_total_pnl_sum": 121789.58,
+      "total_pnl_delta_pct": 0.037829,
+      "ev_windows_improved": 2,
+      "ev_windows_regressed": 0,
+      "pnl_windows_improved": 2,
+      "pnl_windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0136,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.01,
+      "leader_signals_resized_delta_sum": 7
+    },
+    "leader_2_5x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0,
+          "leader_signals_seen": 0,
+          "leader_signals_resized": 0,
+          "leader_trade_count": 0,
+          "leader_trade_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.1815,
+          "sharpe_daily": 0.01,
+          "total_pnl": 6880.17,
+          "total_return_pct": 0.0688,
+          "max_drawdown_pct": 0.0183,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0005,
+          "leader_signals_seen": 4,
+          "leader_signals_resized": 4,
+          "leader_trade_count": 0,
+          "leader_trade_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0054,
+          "sharpe_daily": 0.01,
+          "total_pnl": 279.14,
+          "total_return_pct": 0.0028,
+          "max_drawdown_pct": 0.0001,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0002,
+          "leader_signals_seen": 3,
+          "leader_signals_resized": 3,
+          "leader_trade_count": 0,
+          "leader_trade_pnl": 0.0
+        }
+      },
+      "expected_value_score_delta_sum": 0.1869,
+      "expected_value_score_delta_pct": 0.047167,
+      "baseline_expected_value_score_sum": 3.9625,
+      "total_pnl_delta_sum": 7159.31,
+      "baseline_total_pnl_sum": 121789.58,
+      "total_pnl_delta_pct": 0.058784,
+      "ev_windows_improved": 2,
+      "ev_windows_regressed": 0,
+      "pnl_windows_improved": 2,
+      "pnl_windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0183,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.01,
+      "leader_signals_resized_delta_sum": 7
+    }
+  },
+  "best_variant": "leader_2_5x",
+  "best_variant_gate4": true,
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "shared_modules": [
+      "quant/feature_layer.py",
+      "quant/risk_engine.py",
+      "quant/portfolio_engine.py"
+    ],
+    "promotion_note": "Promoted after canonical three-window replay matched the accepted direction through shared production/backtest modules."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking is still sample-limited; this is an alternate deterministic alpha search."
+  },
+  "history_guardrails": {
+    "not_broad_financials_multiplier_retry": true,
+    "builds_on_exp_20260429_015": true,
+    "builds_on_exp_20260429_030_sector_relative_audit": true,
+    "not_sector_priority_ordering": true,
+    "why_not_simple_repeat": "The broad Financials 1.5x boost is already accepted and the playbook blocks nearby scalar increases. This test adds a sector-relative leader discriminator and keeps non-leaders at the accepted baseline."
+  },
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not retry nearby Financials sector-leader multipliers without forward evidence.",
+    "A valid retry needs event/news context or a materially different sector-relative feature.",
+    "If a future variant is accepted, implement it in shared production/backtest policy before promotion."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260501_006_financials_sector_leader_risk.py",
+    "data/experiments/exp-20260501-006/financials_sector_leader_risk.json",
+    "docs/experiments/logs/exp-20260501-006.json",
+    "docs/experiments/tickets/exp-20260501-006.json"
+  ]
+}

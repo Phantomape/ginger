@@ -1,0 +1,416 @@
+{
+  "experiment_id": "exp-20260430-030",
+  "timestamp": "2026-04-30T21:08:39.797979+00:00",
+  "status": "rejected_audit",
+  "decision": "rejected_audit",
+  "lane": "alpha_search",
+  "change_type": "lifecycle_addon_quality_audit",
+  "hypothesis": "The day-2 follow-through add-on may leak capital when it adds to positions that the shared sizing layer had already de-risked.",
+  "parameters": {
+    "single_causal_variable": "screen first add-ons by whether initial sizing was haircut",
+    "screen_only": true,
+    "approximation": "Remove only the estimated add-on share PnL from closed trades; does not replay changed equity, heat, exits, or freed slots.",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "initial sizing",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "first add-on trigger/fraction/cap",
+      "second add-ons",
+      "all exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "total_return_pct": 0.593,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "addon_scheduled": null,
+      "addon_executed": null
+    },
+    "mid_weak": {
+      "expected_value_score": 1.0034,
+      "sharpe_daily": 2.55,
+      "total_pnl": 39346.43,
+      "total_return_pct": 0.3935,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "addon_scheduled": null,
+      "addon_executed": null
+    },
+    "old_thin": {
+      "expected_value_score": 0.2267,
+      "sharpe_daily": 1.22,
+      "total_pnl": 18584.08,
+      "total_return_pct": 0.1858,
+      "max_drawdown_pct": 0.0691,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "addon_scheduled": null,
+      "addon_executed": null
+    }
+  },
+  "after_metrics": {
+    "screened_approximation_only": {
+      "baseline_total_pnl_sum": 117234.7,
+      "addon_trade_count": 4,
+      "haircut_addon_trade_count": 1,
+      "approx_remove_all_addon_delta": -1813.5,
+      "approx_remove_all_addon_delta_pct": -0.015469,
+      "approx_remove_haircut_addon_delta": 228.3,
+      "approx_remove_haircut_addon_delta_pct": 0.001947,
+      "by_window": {
+        "late_strong": {
+          "addon_trade_count": 2,
+          "haircut_addon_trade_count": 0,
+          "approx_remove_all_addon_delta": -127.24,
+          "approx_remove_haircut_addon_delta": 0
+        },
+        "mid_weak": {
+          "addon_trade_count": 2,
+          "haircut_addon_trade_count": 1,
+          "approx_remove_all_addon_delta": -1686.26,
+          "approx_remove_haircut_addon_delta": 228.3
+        },
+        "old_thin": {
+          "addon_trade_count": 0,
+          "haircut_addon_trade_count": 0,
+          "approx_remove_all_addon_delta": 0,
+          "approx_remove_haircut_addon_delta": 0
+        }
+      }
+    }
+  },
+  "delta_metrics": {
+    "aggregate": {
+      "baseline_total_pnl_sum": 117234.7,
+      "addon_trade_count": 4,
+      "haircut_addon_trade_count": 1,
+      "approx_remove_all_addon_delta": -1813.5,
+      "approx_remove_all_addon_delta_pct": -0.015469,
+      "approx_remove_haircut_addon_delta": 228.3,
+      "approx_remove_haircut_addon_delta_pct": 0.001947,
+      "by_window": {
+        "late_strong": {
+          "addon_trade_count": 2,
+          "haircut_addon_trade_count": 0,
+          "approx_remove_all_addon_delta": -127.24,
+          "approx_remove_haircut_addon_delta": 0
+        },
+        "mid_weak": {
+          "addon_trade_count": 2,
+          "haircut_addon_trade_count": 1,
+          "approx_remove_all_addon_delta": -1686.26,
+          "approx_remove_haircut_addon_delta": 228.3
+        },
+        "old_thin": {
+          "addon_trade_count": 0,
+          "haircut_addon_trade_count": 0,
+          "approx_remove_all_addon_delta": 0,
+          "approx_remove_haircut_addon_delta": 0
+        }
+      }
+    },
+    "gate4_basis": "Promote to full shared-policy replay only if the haircut-add-on screen is positive in at least two windows and approximates >5% aggregate PnL improvement."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "A positive full replay would need shared production_parity eligibility plus persisted initial sizing metadata."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data remains thin, so this tests deterministic lifecycle allocation using existing backtest fields."
+  },
+  "history_guardrails": {
+    "not_addon_cap_tuning": true,
+    "not_addon_fraction_tuning": true,
+    "not_second_addon_retry": true,
+    "why_not_simple_repeat": "This asks whether already-de-risked positions should receive any first add-on; it does not change add-on size or timing."
+  },
+  "addon_rows": [
+    {
+      "window": "late_strong",
+      "ticker": "CAT",
+      "strategy": "breakout_long",
+      "sector": "Industrials",
+      "entry_date": "2026-01-30",
+      "exit_date": "2026-02-10",
+      "exit_reason": "target",
+      "trade_pnl": 5731.12,
+      "addon_shares": 3,
+      "addon_cost": 2118.03,
+      "approx_addon_pnl": 117.51,
+      "approx_pnl_delta_if_removed": -117.51,
+      "base_risk_pct": 0.01,
+      "actual_risk_pct": 0.016,
+      "risk_was_haircut": false,
+      "sizing_multipliers": {
+        "risk_on_unmodified_risk_multiplier_applied": 1.6
+      },
+      "regime_exit_bucket": "risk_on",
+      "regime_exit_score": 0.1002
+    },
+    {
+      "window": "late_strong",
+      "ticker": "AMZN",
+      "strategy": "breakout_long",
+      "sector": "Consumer Discretionary",
+      "entry_date": "2026-04-10",
+      "exit_date": "2026-04-21",
+      "exit_reason": "end_of_backtest",
+      "trade_pnl": 2619.4,
+      "addon_shares": 24,
+      "addon_cost": 5984.99,
+      "approx_addon_pnl": 9.73,
+      "approx_pnl_delta_if_removed": -9.73,
+      "base_risk_pct": 0.01,
+      "actual_risk_pct": 0.015,
+      "risk_was_haircut": false,
+      "sizing_multipliers": {
+        "risk_on_unmodified_risk_multiplier_applied": 1.5
+      },
+      "regime_exit_bucket": "risk_on",
+      "regime_exit_score": 0.0458
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "COIN",
+      "strategy": "trend_long",
+      "sector": "Financials",
+      "entry_date": "2025-05-14",
+      "exit_date": "2025-06-24",
+      "exit_reason": "target",
+      "trade_pnl": 5820.24,
+      "addon_shares": 31,
+      "addon_cost": 8057.21,
+      "approx_addon_pnl": 1914.56,
+      "approx_pnl_delta_if_removed": -1914.56,
+      "base_risk_pct": 0.01,
+      "actual_risk_pct": 0.015,
+      "risk_was_haircut": false,
+      "sizing_multipliers": {
+        "trend_financials_risk_multiplier_applied": 1.5
+      },
+      "regime_exit_bucket": "risk_on",
+      "regime_exit_score": 0.0752
+    },
+    {
+      "window": "mid_weak",
+      "ticker": "LLY",
+      "strategy": "breakout_long",
+      "sector": "Healthcare",
+      "entry_date": "2025-10-02",
+      "exit_date": "2025-10-17",
+      "exit_reason": "stop",
+      "trade_pnl": -473.47,
+      "addon_shares": 4,
+      "addon_cost": 3371.1,
+      "approx_addon_pnl": -228.3,
+      "approx_pnl_delta_if_removed": 228.3,
+      "base_risk_pct": 0.01,
+      "actual_risk_pct": 0.0025,
+      "risk_was_haircut": true,
+      "sizing_multipliers": {
+        "breakout_healthcare_dte_risk_multiplier_applied": 0.25
+      },
+      "regime_exit_bucket": "risk_on",
+      "regime_exit_score": 0.1433
+    }
+  ],
+  "rows": [
+    {
+      "window": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "metrics": {
+        "expected_value_score": 2.4787,
+        "sharpe_daily": 4.18,
+        "total_pnl": 59304.19,
+        "total_return_pct": 0.593,
+        "max_drawdown_pct": 0.0439,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8431,
+        "addon_scheduled": null,
+        "addon_executed": null
+      },
+      "addon_rows": [
+        {
+          "window": "late_strong",
+          "ticker": "CAT",
+          "strategy": "breakout_long",
+          "sector": "Industrials",
+          "entry_date": "2026-01-30",
+          "exit_date": "2026-02-10",
+          "exit_reason": "target",
+          "trade_pnl": 5731.12,
+          "addon_shares": 3,
+          "addon_cost": 2118.03,
+          "approx_addon_pnl": 117.51,
+          "approx_pnl_delta_if_removed": -117.51,
+          "base_risk_pct": 0.01,
+          "actual_risk_pct": 0.016,
+          "risk_was_haircut": false,
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 1.6
+          },
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.1002
+        },
+        {
+          "window": "late_strong",
+          "ticker": "AMZN",
+          "strategy": "breakout_long",
+          "sector": "Consumer Discretionary",
+          "entry_date": "2026-04-10",
+          "exit_date": "2026-04-21",
+          "exit_reason": "end_of_backtest",
+          "trade_pnl": 2619.4,
+          "addon_shares": 24,
+          "addon_cost": 5984.99,
+          "approx_addon_pnl": 9.73,
+          "approx_pnl_delta_if_removed": -9.73,
+          "base_risk_pct": 0.01,
+          "actual_risk_pct": 0.015,
+          "risk_was_haircut": false,
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 1.5
+          },
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.0458
+        }
+      ]
+    },
+    {
+      "window": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes",
+      "metrics": {
+        "expected_value_score": 1.0034,
+        "sharpe_daily": 2.55,
+        "total_pnl": 39346.43,
+        "total_return_pct": 0.3935,
+        "max_drawdown_pct": 0.0616,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "addon_scheduled": null,
+        "addon_executed": null
+      },
+      "addon_rows": [
+        {
+          "window": "mid_weak",
+          "ticker": "COIN",
+          "strategy": "trend_long",
+          "sector": "Financials",
+          "entry_date": "2025-05-14",
+          "exit_date": "2025-06-24",
+          "exit_reason": "target",
+          "trade_pnl": 5820.24,
+          "addon_shares": 31,
+          "addon_cost": 8057.21,
+          "approx_addon_pnl": 1914.56,
+          "approx_pnl_delta_if_removed": -1914.56,
+          "base_risk_pct": 0.01,
+          "actual_risk_pct": 0.015,
+          "risk_was_haircut": false,
+          "sizing_multipliers": {
+            "trend_financials_risk_multiplier_applied": 1.5
+          },
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.0752
+        },
+        {
+          "window": "mid_weak",
+          "ticker": "LLY",
+          "strategy": "breakout_long",
+          "sector": "Healthcare",
+          "entry_date": "2025-10-02",
+          "exit_date": "2025-10-17",
+          "exit_reason": "stop",
+          "trade_pnl": -473.47,
+          "addon_shares": 4,
+          "addon_cost": 3371.1,
+          "approx_addon_pnl": -228.3,
+          "approx_pnl_delta_if_removed": 228.3,
+          "base_risk_pct": 0.01,
+          "actual_risk_pct": 0.0025,
+          "risk_was_haircut": true,
+          "sizing_multipliers": {
+            "breakout_healthcare_dte_risk_multiplier_applied": 0.25
+          },
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.1433
+        }
+      ]
+    },
+    {
+      "window": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "metrics": {
+        "expected_value_score": 0.2267,
+        "sharpe_daily": 1.22,
+        "total_pnl": 18584.08,
+        "total_return_pct": 0.1858,
+        "max_drawdown_pct": 0.0691,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "addon_scheduled": null,
+        "addon_executed": null
+      },
+      "addon_rows": []
+    }
+  ],
+  "rejection_reason": "The haircut-add-on leak is too small/sparse for a full shared-policy replay.",
+  "next_retry_requires": [
+    "Do not implement a first-add-on haircut gate from this audit alone.",
+    "A valid retry needs full backtester replay plus production metadata for initial sizing multipliers.",
+    "If event/news context becomes available, use it as a stronger add-on quality discriminator."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260430_030_addon_quality_gate_audit.py",
+    "data/experiments/exp-20260430-030/first_addon_quality_gate_audit.json",
+    "docs/experiments/logs/exp-20260430-030.json",
+    "docs/experiments/tickets/exp-20260430-030.json"
+  ]
+}

@@ -18,6 +18,8 @@ from constants import (
     ATR_TARGET_MULT,
     TREND_TECH_TARGET_ATR_MULT,
     TREND_COMMODITIES_TARGET_ATR_MULT,
+    TREND_GOLD_TARGET_ATR_MULT,
+    TREND_GOLD_TARGET_TICKERS,
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
 )
@@ -230,6 +232,18 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
     enriched = []
     dropped  = []
 
+    financials_ret20 = [
+        features.get("momentum_20d_pct")
+        for ticker, features in (features_dict or {}).items()
+        if SECTOR_MAP.get(ticker) == "Financials"
+        and features
+        and isinstance(features.get("momentum_20d_pct"), (int, float))
+    ]
+    financials_avg_ret20 = (
+        sum(financials_ret20) / len(financials_ret20)
+        if financials_ret20 else None
+    )
+
     for sig in signals:
         ticker   = sig["ticker"]
         features = features_dict.get(ticker) or {}
@@ -293,6 +307,16 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Inject sector so LLM can enforce the 40% sector concentration rule.
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
+        if enriched_sig["sector"] == "Financials":
+            ticker_ret20 = features.get("momentum_20d_pct")
+            if (
+                isinstance(ticker_ret20, (int, float))
+                and isinstance(financials_avg_ret20, (int, float))
+            ):
+                rel_ret20 = ticker_ret20 - financials_avg_ret20
+                enriched_sig["sector_avg_ret20_pct"] = round(financials_avg_ret20, 4)
+                enriched_sig["ticker_ret20_minus_sector_avg_pct"] = round(rel_ret20, 4)
+                enriched_sig["financials_sector_leader"] = rel_ret20 > 0
         if (
             enriched_sig.get("strategy") == "trend_long"
             and enriched_sig["sector"] == "Technology"
@@ -314,14 +338,26 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         ):
             # exp-20260425-031: commodity trend exposure carried useful
             # convexity; the alpha leak was clipping winners, not oversizing.
+            # exp-20260430-032 keeps the extra extension only for gold ETFs;
+            # SLV kept the 7 ATR target because prior wider commodity tests
+            # were hurt by the silver path.
+            commodity_target_mult = (
+                TREND_GOLD_TARGET_ATR_MULT
+                if ticker in TREND_GOLD_TARGET_TICKERS
+                else TREND_COMMODITIES_TARGET_ATR_MULT
+            )
             enriched_sig = _retarget_signal_with_atr_mult(
                 enriched_sig,
                 atr,
-                TREND_COMMODITIES_TARGET_ATR_MULT,
+                commodity_target_mult,
             )
             enriched_sig["commodity_trend_target_width_applied"] = (
-                TREND_COMMODITIES_TARGET_ATR_MULT
+                commodity_target_mult
             )
+            if ticker in TREND_GOLD_TARGET_TICKERS:
+                enriched_sig["gold_trend_target_width_applied"] = (
+                    TREND_GOLD_TARGET_ATR_MULT
+                )
         # Inject days_to_earnings for ALL signal types (not just earnings_event_long).
         # The LLM prompt blocks ANY new trade when dte ≤ 4 — including trend_long and
         # breakout_long — but the LLM has no way to enforce this rule without the data.

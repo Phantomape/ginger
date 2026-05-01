@@ -1,0 +1,186 @@
+{
+  "experiment_id": "exp-20260430-026",
+  "timestamp": "2026-04-30T19:10:00+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_addon_capacity",
+  "hypothesis": "After the accepted stack moved initial entries to a 40% cap and 50% day-2 add-ons, confirmed follow-through winners may be under-allocated when the add-on-only cap remains at 35%. Matching add-on capacity to the current initial cap should release winner-add-on alpha without changing entry, exit, ranking, LLM, or initial sizing.",
+  "parameters": {
+    "single_causal_variable": "ADDON_MAX_POSITION_PCT",
+    "old_value": 0.35,
+    "new_value": 0.40,
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "initial position sizing",
+      "risk multipliers",
+      "gap cancels",
+      "addon trigger",
+      "addon fraction",
+      "all exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.4787,
+      "sharpe_daily": 4.18,
+      "total_pnl": 59304.19,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "addon_executed": 4
+    },
+    "mid_weak": {
+      "expected_value_score": 1.0034,
+      "sharpe_daily": 2.55,
+      "total_pnl": 39346.43,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "addon_executed": 4
+    },
+    "old_thin": {
+      "expected_value_score": 0.2267,
+      "sharpe_daily": 1.22,
+      "total_pnl": 18584.08,
+      "max_drawdown_pct": 0.0691,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "addon_executed": 1
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.5322,
+      "sharpe_daily": 4.20,
+      "total_pnl": 60289.70,
+      "max_drawdown_pct": 0.0438,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8431,
+      "addon_executed": 4
+    },
+    "mid_weak": {
+      "expected_value_score": 1.0152,
+      "sharpe_daily": 2.55,
+      "total_pnl": 39814.54,
+      "max_drawdown_pct": 0.0616,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "addon_executed": 4
+    },
+    "old_thin": {
+      "expected_value_score": 0.2298,
+      "sharpe_daily": 1.22,
+      "total_pnl": 18842.21,
+      "max_drawdown_pct": 0.0691,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "addon_executed": 1
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0535,
+      "sharpe_daily": 0.02,
+      "total_pnl": 985.51,
+      "max_drawdown_pct": -0.0001,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0118,
+      "sharpe_daily": 0.0,
+      "total_pnl": 468.11,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0031,
+      "sharpe_daily": 0.0,
+      "total_pnl": 258.13,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0684,
+      "total_pnl_delta_sum": 1711.75,
+      "total_pnl_delta_pct": 0.0146,
+      "windows_ev_improved": 3,
+      "windows_pnl_improved": 3,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    }
+  },
+  "gate4_basis": "Rejected despite EV and PnL improving in all three fixed windows because the improvement was too small for Gate 4: aggregate PnL improved only +1.46%, EV did not improve by >10%, Sharpe did not improve by >0.1, max drawdown did not improve by >1 pp, and trade count did not increase.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "shared_policy_location": "quant/constants.py -> quant/production_parity.py and quant/backtester.py"
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains production-sample limited, so this run tested deterministic add-on capacity using fields already present in production and backtest."
+  },
+  "history_guardrails": {
+    "not_addon_trigger_tuning": true,
+    "not_second_addon_retry": true,
+    "not_intraday_undercut_gate": true,
+    "why_not_simple_repeat": "The previous 35% cap experiment was run before the accepted 40% initial cap and 50% add-on stack; the current state creates a new cap mismatch where confirmed winners can be under-allocated relative to initial entries."
+  },
+  "risk_assessment": {
+    "may_hurt": "Higher add-on capacity can add concentration to already winning names and may underperform if day-2 follow-through reverses.",
+    "mitigation": "Kept addon trigger, fraction, portfolio heat, and initial cap unchanged; fixed-window max drawdown did not expand."
+  },
+  "rejection_reason": "Positive but immaterial: the small all-window add-on capacity lift does not clear the explicit Gate 4 materiality thresholds, so the code change was rolled back.",
+  "related_files": [
+    "quant/constants.py",
+    "quant/test_quant.py",
+    "data/experiments/exp-20260430-026/late_strong_variant.json",
+    "data/experiments/exp-20260430-026/mid_weak_variant.json",
+    "data/experiments/exp-20260430-026/old_thin_variant.json",
+    "docs/experiments/logs/exp-20260430-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md",
+    "docs/backtesting.md"
+  ],
+  "next_retry_requires": [
+    "Do not retry nearby add-on cap tuning at or above 40% without forward concentration evidence or a stronger add-on quality discriminator.",
+    "Future add-on work needs a new discriminator such as event/news context or richer lifecycle quality, not another cap/fraction sweep."
+  ]
+}

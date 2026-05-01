@@ -21,6 +21,31 @@
 
 若本文档与 `AGENTS.md` 冲突，以 `AGENTS.md` 为准。若需要复现实验，先查本文档的实验索引，再查结构化日志。
 
+## 2026-05-01 accepted state
+
+Latest accepted mechanism: `exp-20260501-006` promoted a sector-relative
+Financials allocation sleeve. `trend_long` Financials whose 20-day return is
+above the equal-weight Financials sector 20-day return now receive a total 2.5x
+risk budget; non-leader Financials stay on the accepted 1.5x budget. This is a
+capital-allocation alpha, not a new entry filter or sector priority rule.
+
+Accepted fixed-window metrics after promotion:
+
+| Window | EV | Return | Sharpe daily | Max DD | Win rate | Trades |
+|---|---:|---:|---:|---:|---:|---:|
+| `late_strong` | 2.7000 | +62.79% | 4.30 | 4.39% | 78.95% | 19 |
+| `mid_weak` | 1.2036 | +46.65% | 2.58 | 7.99% | 52.38% | 21 |
+| `old_thin` | 0.2563 | +20.18% | 1.27 | 6.88% | 40.91% | 22 |
+
+Evidence: aggregate PnL improved `+$7,834.20` / `+6.43%` versus the
+post-exp-20260430-032 baseline, aggregate EV improved `+0.1974`, and PnL
+improved in 2/3 windows with the third unchanged. The cost is a `mid_weak`
+drawdown increase from 6.16% to 7.99%, still below the cap.
+
+Do not repeat: nearby Financials leader multipliers or broad Financials risk
+boosts without forward evidence. A valid retry needs a materially different
+sector-relative feature or event/news context.
+
 ## 1. 当前系统画像
 
 当前系统不是高频、不是纯统计套利，也不是让 LLM 全权交易的黑箱。它更像：
@@ -143,6 +168,7 @@ PEAD / post-earnings drift 作为大类 alpha 仍有研究依据，但当前仓�
 | Commodity trend wider target | accepted narrow | 部分 commodity trend winner 需要更宽 target，但不可泛化到 breakout | exp-20260425 target-width family |
 | Single-position cap 25% | accepted | 改善 winner capture / risk allocation，保留 | exp-20260425 cap family |
 | Trend Financials risk boost | accepted narrow | 已入选 Financials trend sleeve 在 mid/old 窗口重复贡献，适合 sizing boost；不要泛化成 sector priority | exp-20260429-015 |
+| Financials sector-leader risk budget | accepted narrow | Within accepted trend Financials, only 20-day sector-relative leaders justify lifting total risk from 1.5x to 2.5x; do not retry nearby multipliers without forward/event evidence | exp-20260501-006 |
 | Entry follow-through add-on | promising, default-off | day2 `>= +2%` 且 RS vs SPY `> 0` 的 25% add-on 三窗口方向性为正，但 materiality modest | exp-20260426-009/010/011/012/035, exp-20260427-010/011 |
 | LLM soft ranking | blocked / high-upside | 方向仍重要，但必须先有足够 production-aligned replay sample | exp-20260426-015/022/023 |
 | News-confirmed weak-hold exit | blocked, not falsified | 概念比 price-only exit 干净，但 archive coverage 不足 | exp-20260425-037 |
@@ -2393,3 +2419,307 @@ Do not repeat: nearby breakout subsequence sort keys based only on
 Next valid retry requires: event/news context or a candidate replacement audit
 showing that the new rank key changes executed trades in at least two fixed
 windows after slot, heat, gap-cancel, and add-on effects.
+
+### 2026-04-30 mechanism update: Add-on cap matches initial cap
+
+Status: rejected as positive but immaterial.
+
+Core conclusion: exp-20260430-026 tested `ADDON_MAX_POSITION_PCT` from 35% to
+40%, matching the current initial position cap after the accepted stack moved to
+40% initial entries and 50% day-2 add-ons. The code change was rolled back
+because the improvement did not clear Gate 4 materiality. This was not an
+add-on trigger change: checkpoint day, +2% unrealized threshold, RS > 0,
+fraction, heat, slots, exits, and ranking stayed fixed.
+
+Evidence: EV and PnL improved in all three fixed windows: late_strong EV
+`2.4787 -> 2.5322`, mid_weak `1.0034 -> 1.0152`, old_thin `0.2267 -> 0.2298`.
+Aggregate PnL improved by `$1,711.75`; trade count, win rate, survival, and max
+drawdown were unchanged. This was only `+1.46%` aggregate PnL, below the +5%
+Gate 4 threshold; Sharpe, drawdown, and trade count also failed their materiality
+thresholds.
+
+Mechanism insight: after initial entries were allowed to reach 40%, leaving
+confirmed winner add-ons capped at 35% may create a small allocation mismatch,
+but the measured edge is too small to pay for more concentration. Capacity
+alignment alone is not a sufficient alpha lever.
+
+Do not repeat: nearby add-on cap tuning at or above 40%, add-on fraction sweeps,
+or second-add-on retries without forward concentration evidence or an orthogonal
+event/news/lifecycle discriminator.
+
+### 2026-04-30 mechanism update: Snapshot universe ETF expansion
+
+Status: rejected.
+
+Core conclusion: exp-20260430-027 through exp-20260430-029 tested whether the
+next alpha should come from improving the candidate pool rather than tuning
+thresholds. The available snapshot extras did not justify production watchlist
+expansion. Broad sector ETF expansion regressed all three fixed windows, and
+the best energy/oil variants improved only one window while regressing two.
+
+Evidence: the unmapped `add_energy_oil` screen produced aggregate EV delta
+`+0.2562` and PnL `+$2,982.31`, but only one EV-positive window and a max
+drawdown increase of `+1.13 pp`. With production-like sector mapping, the best
+`XLE + USO` variant still improved only one window, regressed two, lost
+`$2,040.65`, added seven trades, and lowered win rate by up to `8.9 pp`.
+Mapped sector ETFs (`XLE`, `XLV`, `XLP`, `XLU`) regressed all three windows and
+lost `$15,440.79`.
+
+Mechanism insight: adding broad ETF candidates is not a clean candidate-pool
+upgrade for the current A+B stack. It dilutes scarce slots and changes capital
+paths without a stable alpha discriminator. If universe expansion is revisited,
+prefer individual names with candidate replacement evidence, not ETF baskets.
+
+Do not repeat: adding XLE/USO, broad sector ETFs, rates/fx ETFs, or snapshot
+extras as trading candidates without a new event/news or regime-routing
+discriminator.
+
+### 2026-04-30 mechanism update: Market reference ETF pruning
+
+Status: rejected.
+
+Core conclusion: exp-20260430-028 tested whether SPY/QQQ/IWM should remain
+context-only instead of tradable. SPY/QQQ pruning was inert, but removing IWM
+regressed the accepted stack.
+
+Evidence: removing `IWM` (or `SPY`, `QQQ`, and `IWM` together) moved aggregate
+EV by `-0.2809`, PnL by `-$5,582.82` (`-4.76%`), did not improve any EV window,
+and lowered win rate by up to `6.55 pp`. Removing only SPY/QQQ moved no fixed
+window metrics.
+
+Mechanism insight: IWM is not merely a reference ticker under the current rules;
+it occasionally contributes useful tradable exposure. SPY/QQQ are effectively
+inert as trade candidates, so removing them does not release alpha.
+
+Do not repeat: pruning IWM from the trading universe without fresh evidence of
+IWM trade degradation, or spending another cycle on SPY/QQQ pruning while they
+remain metric-inert.
+
+### 2026-04-30 mechanism update: First add-on haircut gate
+
+Status: rejected at audit stage.
+
+Core conclusion: exp-20260430-030 tested whether the accepted day-2
+follow-through add-on is leaking capital into positions that the sizing layer
+had already de-risked. This was a lifecycle alpha audit, not a bug repair and
+not another add-on cap/fraction sweep. No production strategy behavior changed.
+
+Evidence: across the three fixed windows, only 4 trades had executed first
+add-ons and only 1 of them had an initial risk haircut. Removing all add-on
+share contribution would have reduced approximate PnL by `$1,813.50`
+(`-1.55%`). Removing only the haircut-position add-on would have improved
+approximate PnL by just `$228.30` (`+0.19%`), with the effect appearing only in
+`mid_weak`.
+
+Mechanism insight: the current first add-on leak into de-risked positions is
+too sparse to justify a shared production policy. The add-on alpha is mostly
+coming from full-risk or boosted winners, so a broad "no add-ons after haircut"
+rule would add metadata and policy complexity for de minimis benefit.
+
+Do not repeat: implementing a first-add-on haircut gate, or adding persistence
+for initial sizing multipliers solely to support this gate, without full replay
+evidence or an orthogonal event/news lifecycle discriminator.
+
+### 2026-04-30 mechanism update: Low-score plain risk-on sizing
+
+Status: rejected as positive but immaterial.
+
+Core conclusion: exp-20260430-031 tested whether otherwise unmodified
+`risk_on` signals with `regime_exit_score < 0.10` should receive more than the
+current 1.5x risk budget. The best 2.0x variant was directionally positive but
+should not be promoted.
+
+Evidence: 2.0x improved `late_strong` EV `2.4787 -> 2.5651` and `old_thin`
+EV `0.2267 -> 0.2414`, while `mid_weak` was unchanged. Aggregate EV delta was
+`+0.1011`, but this is only `+2.73%` of baseline aggregate EV; aggregate PnL
+rose only `$2,223.70` / `+1.90%`, Sharpe improved at most `+0.05`, and no
+drawdown/trade-count criterion moved. Gate 4 materiality was not met.
+
+Mechanism insight: low-score plain risk-on exposure is a real positive pocket,
+but increasing the scalar is mostly a small amplification of already-captured
+winners, not a new robust allocation unlock. The opportunity is too cap-limited
+and sparse to justify more concentration.
+
+Do not repeat: nearby low-score plain `risk_on` multiplier tuning such as 1.8x
+or 2.0x without forward evidence or an orthogonal candidate-level discriminator.
+
+Next valid retry requires: event/news/lifecycle context that expands or
+separates the pocket, rather than another scalar increase.
+
+### 2026-04-30 mechanism update: Gold trend target extension
+
+Status: accepted as shared production/backtest exit policy.
+
+Core conclusion: exp-20260430-032 tested whether the rejected unconditional
+Commodity trend 8ATR target could be salvaged by separating GLD/IAU from SLV.
+It can. GLD/IAU `trend_long` targets now use 8 ATR, while SLV and all other
+Commodity trend targets remain on the accepted 7 ATR path.
+
+Evidence: versus the accepted stack, the rule improved EV in all three fixed
+windows: `late_strong 2.4787 -> 2.7000`, `mid_weak 1.0034 -> 1.0221`, and
+`old_thin 0.2267 -> 0.2404`. Aggregate PnL improved `+$4,554.88` / `+3.89%`,
+drawdown, trade count, and win rate were unchanged, and `late_strong` daily
+Sharpe improved by `+0.12`, clearing Gate 4.
+
+Mechanism insight: the Commodity trend continuation edge is not homogeneous.
+Gold ETFs continued to benefit from a wider target, while prior wider Commodity
+tests were hurt by the SLV path. This is a lifecycle/exit alpha, not a new
+entry source and not a risk-budget increase.
+
+Do not repeat: nearby gold target sweeps such as 8.5/9 ATR, extending SLV above
+7 ATR, or treating this as evidence for all Commodity breakouts.
+
+Next valid retry requires: forward evidence, event/news confirmation, or a
+broader precious-metals state map that explains when non-gold Commodity
+continuation should share the wider target.
+
+### 2026-05-01 mechanism update: Broad breakout target extension
+
+Status: rejected.
+
+Core conclusion: exp-20260501-001 tested whether all `breakout_long` winners
+should receive wider 5.0ATR or 5.5ATR targets instead of the current
+regime-aware target path. This should not be promoted.
+
+Evidence: the best variant, 5.0ATR, raised aggregate PnL by `$2,742.48` but
+failed the North Star: EV regressed in two of three fixed windows
+(`late_strong 2.7000 -> 2.5483`, `mid_weak 1.0221 -> 0.9634`) and improved only
+`old_thin` (`0.2404 -> 0.2497`). 5.5ATR was worse, with aggregate EV delta
+`-0.5268` and aggregate PnL delta `-$3,297.83`.
+
+Mechanism insight: breakout winners are not uniformly target-clipped. Giving
+the whole breakout sleeve more room increases some dollars but lowers
+risk-adjusted quality and damages the mid window, so the current problem is not
+a broad breakout target-width shortage.
+
+Do not repeat: broad `breakout_long` target widening to nearby 5.0ATR/5.5ATR,
+or using aggregate PnL improvement to override multi-window EV regression.
+
+Next valid retry requires: event/news or lifecycle context that identifies
+which specific breakout winners deserve more room without weakening the full
+breakout sleeve.
+
+### 2026-05-01 mechanism update: Energy trend target extension
+
+Status: rejected.
+
+Core conclusion: exp-20260501-002 tested whether `trend_long` Energy winners
+should receive a wider 5.0ATR or 6.0ATR target instead of the current
+regime-aware path. This should not be promoted.
+
+Evidence: both tested variants were identical and damaged the only active
+window. `late_strong` EV fell `2.7000 -> 2.3535`, PnL fell by `$4,383.21`,
+daily Sharpe fell `4.30 -> 4.03`, and win rate fell by `5.27 pp`. `mid_weak`
+and `old_thin` had no Energy trend trades, so the variants were inert there.
+
+Mechanism insight: the current Energy trend sample is not target-clipped in the
+same way as GLD/IAU. Widening the target delayed or worsened the late-window
+Energy path without providing any cross-window evidence. This is a sparse
+sector-specific lifecycle tweak, not a robust alpha unlock.
+
+Do not repeat: Energy trend target-width tuning around 5.0ATR or 6.0ATR, or
+treating the gold target extension as evidence that every commodity-adjacent
+trend sleeve needs more room.
+
+Next valid retry requires: new event/news or lifecycle evidence showing which
+Energy trend positions deserve more room, plus realized exposure in at least
+two fixed windows.
+
+### 2026-05-01 mechanism update: Gold trend risk budget
+
+Status: rejected as inert.
+
+Core conclusion: exp-20260501-003 tested whether GLD/IAU `trend_long` signals
+should receive a higher non-stacking risk budget after the accepted 8ATR gold
+target. This should not be promoted.
+
+Evidence: both 1.8x and 2.0x variants were metric-identical to the 1.5x
+baseline in all three fixed windows. EV stayed `late_strong 2.7000`,
+`mid_weak 1.0221`, and `old_thin 0.2404`; aggregate PnL delta was `$0.00`.
+
+Mechanism insight: the tested gold trend trades were already constrained by
+the position cap, so raising the risk multiplier did not change realized
+shares or portfolio outcomes. The next question, if any, is cap/headroom, not
+another risk-budget scalar.
+
+Do not repeat: GLD/IAU trend risk multipliers around 1.8x or 2.0x, or broad
+Commodity risk-budget increases, without evidence that the change alters
+realized shares in at least two fixed windows.
+
+### 2026-05-01 mechanism update: Gold trend position cap
+
+Status: rejected as positive but immaterial.
+
+Core conclusion: exp-20260501-004 tested whether GLD/IAU `trend_long`
+positions should use a higher position cap than the global 40% cap. The 50%
+variant was directionally positive but should not be promoted.
+
+Evidence: the best 50% cap improved EV and PnL in all three fixed windows:
+`late_strong 2.7000 -> 2.7524`, `mid_weak 1.0221 -> 1.0434`, and `old_thin
+0.2404 -> 0.2574`. Aggregate PnL improved `+$3,530.21` / `+2.90%`, below the
+Gate 4 +5% PnL threshold; aggregate EV rose only `+2.29%`, Sharpe improved at
+most `+0.03`, and max drawdown worsened by `+0.14 pp`.
+
+Mechanism insight: GLD/IAU trend concentration has a real positive edge after
+the 8ATR target, but the measured lift is not large enough to justify a
+gold-specific concentration exception. This is a small amplification of an
+already-captured winner path, not a material allocation unlock.
+
+Do not repeat: nearby GLD/IAU trend position-cap tuning such as 45%, 50%, or
+higher caps without forward concentration evidence or an orthogonal
+event/news/lifecycle discriminator.
+
+### 2026-05-01 mechanism update: Synchronous sector risk-on allocation
+
+Status: rejected as positive but immaterial.
+
+Core conclusion: exp-20260501-007 tested whether otherwise-unmodified `risk_on`
+signals should receive a larger total risk budget when their sector is moving
+synchronously, defined as 50-day sector breadth >= 75% and 20-day sector return
+dispersion <= 5%. This should not be promoted.
+
+Evidence: the best 2.0x variant improved EV in two windows and regressed none,
+but the effect was too small: aggregate EV rose only `+0.0373` / `+0.90%` and
+aggregate PnL rose only `+$1,205.36` / `+0.93%`. The `mid_weak` window was
+unchanged, max drawdown, trade count, and win rate did not improve, and only 11
+signals were resized across all three fixed windows.
+
+Mechanism insight: sector synchronization is directionally useful, but mostly
+acts as a small amplifier of already-selected plain `risk_on` positions. It
+does not release enough capital or improve enough realized trades to justify
+adding shared sector breadth/dispersion state to production policy.
+
+Do not repeat: nearby synchronous-sector thresholds such as breadth 70-80%,
+dispersion 4-6%, or 1.8x/2.0x total risk multipliers without forward evidence
+or an orthogonal event/news/lifecycle discriminator.
+
+### 2026-05-01 mechanism update: AI power / infra individual-name universe expansion
+
+Status: observed positive, deferred.
+
+Core conclusion: `exp-20260501-008` tested the user-supplied AI power,
+data-center infra, optical, Bitcoin miner, and storage/semi names as a
+candidate-pool expansion. This is different from the rejected ETF expansion
+family: it uses individual names tied to AI power/infrastructure beta. The
+all-tradeable bundle was economically positive but should not be promoted
+blindly because universe expansion remains shadow-only and the win-rate/drawdown
+costs need a cleaner discriminator.
+
+Evidence: best variant `add_all_user_tradeable` added
+`APLD, BE, CIFR, COHR, CORZ, DBRG, INTC, IREN, LITE, MARA, RIOT, TLN, VST, WULF`
+while `CRDO` was already in the universe and CoreWeave had no listed ticker.
+Aggregate PnL improved `+$21,384.10` / `+16.50%`; aggregate EV improved
+`+0.9398`; EV improved in `late_strong` and `mid_weak` but regressed
+`old_thin` by `-0.0500`. Candidate trades contributed `+$14,178.30` across
+10 trades. Costs: win rate fell by up to `-5.04 pp` and `late_strong` max
+drawdown rose `+1.70 pp`.
+
+Mechanism detail: optical and INTC/storage-semi exposure drove most of the
+benefit; data-center infra was negative; Bitcoin miners were inert under the
+current A/B rules. Do not conclude the miner theme has no alpha, only that the
+current trend/breakout rules did not select those names in the fixed windows.
+
+Next valid step: test a production-parity watchlist/sector-map promotion only
+after choosing a non-overfit discriminator, such as theme-level replacement
+quality or event/news confirmation. Do not promote the full list solely from
+this shadow result.

@@ -465,6 +465,7 @@ SIZING_MULTIPLIER_KEYS = (
     "risk_on_unmodified_risk_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
     "trend_financials_risk_multiplier_applied",
+    "financials_sector_leader_risk_multiplier_applied",
     "trend_tech_tight_gap_risk_multiplier_applied",
     "trend_tech_gap_risk_multiplier_applied",
     "trend_tech_near_high_risk_multiplier_applied",

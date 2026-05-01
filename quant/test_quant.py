@@ -80,12 +80,22 @@ def test_enrich_signals_widens_only_technology_trend_target():
 
 
 def test_enrich_signals_widens_only_commodities_trend_target():
-    from constants import TREND_COMMODITIES_TARGET_ATR_MULT
+    from constants import (
+        TREND_COMMODITIES_TARGET_ATR_MULT,
+        TREND_GOLD_TARGET_ATR_MULT,
+    )
     from risk_engine import enrich_signals
 
     signals = [
         {
             "ticker": "IAU",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "SLV",
             "strategy": "trend_long",
             "entry_price": 100.0,
             "stop_price": 97.0,
@@ -105,21 +115,86 @@ def test_enrich_signals_widens_only_commodities_trend_target():
             "trend_score": 1.0,
             "volume_spike_ratio": 2.0,
             "momentum_10d_pct": 0.1,
-        }
+        },
+        "SLV": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.1,
+        },
     }
 
-    trend, breakout = enrich_signals(signals, features, atr_target_mult=4.5)
+    gold_trend, silver_trend, breakout = enrich_signals(
+        signals,
+        features,
+        atr_target_mult=4.5,
+    )
 
-    assert trend["target_price"] == round(
+    assert gold_trend["target_price"] == round(
+        100.0 + TREND_GOLD_TARGET_ATR_MULT * 2.0,
+        2,
+    )
+    assert gold_trend["target_mult_used"] == TREND_GOLD_TARGET_ATR_MULT
+    assert gold_trend["target_width_applied"] == TREND_GOLD_TARGET_ATR_MULT
+    assert gold_trend["commodity_trend_target_width_applied"] == TREND_GOLD_TARGET_ATR_MULT
+    assert gold_trend["gold_trend_target_width_applied"] == TREND_GOLD_TARGET_ATR_MULT
+    assert silver_trend["target_price"] == round(
         100.0 + TREND_COMMODITIES_TARGET_ATR_MULT * 2.0,
         2,
     )
-    assert trend["target_mult_used"] == TREND_COMMODITIES_TARGET_ATR_MULT
-    assert trend["target_width_applied"] == TREND_COMMODITIES_TARGET_ATR_MULT
-    assert trend["commodity_trend_target_width_applied"] == TREND_COMMODITIES_TARGET_ATR_MULT
+    assert silver_trend["target_mult_used"] == TREND_COMMODITIES_TARGET_ATR_MULT
+    assert silver_trend["commodity_trend_target_width_applied"] == TREND_COMMODITIES_TARGET_ATR_MULT
+    assert silver_trend.get("gold_trend_target_width_applied") is None
     assert breakout["target_price"] == round(100.0 + 4.5 * 2.0, 2)
     assert breakout.get("target_width_applied") is None
     assert breakout.get("commodity_trend_target_width_applied") is None
+    assert breakout.get("gold_trend_target_width_applied") is None
+
+
+def test_enrich_signals_marks_financials_sector_leader():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "COIN",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "JPM",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "confidence_score": 0.9,
+        },
+    ]
+    features = {
+        "COIN": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.08,
+            "momentum_20d_pct": 0.12,
+        },
+        "JPM": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.02,
+            "momentum_20d_pct": 0.02,
+        },
+    }
+
+    coin, jpm = enrich_signals(signals, features, atr_target_mult=4.5)
+
+    assert coin["sector_avg_ret20_pct"] == 0.07
+    assert coin["ticker_ret20_minus_sector_avg_pct"] == 0.05
+    assert coin["financials_sector_leader"] is True
+    assert jpm["sector_avg_ret20_pct"] == 0.07
+    assert jpm["ticker_ret20_minus_sector_avg_pct"] == -0.05
+    assert jpm["financials_sector_leader"] is False
 
 
 def test_trade_quality_score_range():
@@ -562,6 +637,54 @@ def test_compute_position_size_max_cap_position_manager():
     result = pm_compute(70_000, entry_price=100.0, stop_price=99.0)
     assert result is not None
     assert result["position_pct_of_portfolio"] <= MAX_POSITION_PCT
+
+
+def test_size_signals_financials_sector_leader_total_risk():
+    from constants import (
+        RISK_PER_TRADE_PCT,
+        TREND_FINANCIALS_RISK_MULTIPLIER,
+        TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER,
+    )
+    from portfolio_engine import size_signals
+
+    leader = {
+        "ticker": "COIN",
+        "strategy": "trend_long",
+        "sector": "Financials",
+        "financials_sector_leader": True,
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "trade_quality_score": 0.9,
+    }
+    non_leader = {
+        **leader,
+        "ticker": "JPM",
+        "financials_sector_leader": False,
+    }
+
+    sized_leader, sized_non_leader = size_signals(
+        [leader, non_leader],
+        portfolio_value=100_000,
+    )
+
+    leader_sizing = sized_leader["sizing"]
+    assert leader_sizing["risk_pct"] == pytest.approx(
+        RISK_PER_TRADE_PCT * TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER
+    )
+    assert leader_sizing["trend_financials_risk_multiplier_applied"] == (
+        TREND_FINANCIALS_RISK_MULTIPLIER
+    )
+    assert leader_sizing["financials_sector_leader_risk_multiplier_applied"] == pytest.approx(
+        TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER
+        / TREND_FINANCIALS_RISK_MULTIPLIER
+    )
+    assert leader_sizing["risk_on_unmodified_risk_multiplier_applied"] == 1.0
+
+    non_leader_sizing = sized_non_leader["sizing"]
+    assert non_leader_sizing["risk_pct"] == pytest.approx(
+        RISK_PER_TRADE_PCT * TREND_FINANCIALS_RISK_MULTIPLIER
+    )
+    assert non_leader_sizing["financials_sector_leader_risk_multiplier_applied"] == 1.0
 
 
 def test_backtester_addon_cap_defaults_to_production_cap():

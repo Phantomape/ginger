@@ -29,13 +29,30 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after exp-20260429-031:
+Current accepted fixed-window metrics after exp-20260501-006:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 2.4787 | 4.18 | $59,304.19 | 59.30% | 4.39% | 78.95% | 19 | 84.31% |
-| `mid_weak` | 1.0034 | 2.55 | $39,346.43 | 39.35% | 6.16% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.2267 | 1.22 | $18,584.08 | 18.58% | 6.91% | 40.91% | 22 | 91.67% |
+| `late_strong` | 2.7000 | 4.30 | $62,788.03 | 62.79% | 4.39% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.2036 | 2.58 | $46,654.10 | 46.65% | 7.99% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.2563 | 1.27 | $20,181.65 | 20.18% | 6.88% | 40.91% | 22 | 91.67% |
+
+Latest accepted result: `trend_long` Financials signals whose 20-day return is
+above the equal-weight Financials sector 20-day return now size at a total
+2.5x risk budget. Non-leader Financials remain at the accepted 1.5x budget.
+This improved PnL in 2/3 fixed windows with no trade-count or win-rate
+regression: aggregate PnL `+$7,834.20` / `+6.43%`, aggregate EV `+0.1974`.
+The main cost is `mid_weak` max drawdown rising from 6.16% to 7.99%, still
+inside the drawdown cap. Do not retry nearby Financials leader multipliers
+without forward evidence or a materially different sector-relative feature.
+
+Previous accepted result: GLD/IAU `trend_long` targets now use 8 ATR while SLV
+and other Commodity trend targets remain on the accepted 7 ATR path. This
+improved EV in all three fixed windows, with aggregate `EV delta +0.2537`,
+aggregate PnL `+$4,554.88` / `+3.89%`, and no drawdown, trade-count, or win-rate
+regression. It clears Gate 4 via `late_strong` daily Sharpe `+0.12`. Do not
+continue nearby 8.5/9 ATR gold-target sweeps without forward or event/news
+evidence.
 
 Latest comparison result: lifting otherwise-unmodified `risk_on` signals with
 `0.10 <= regime_exit_score < 0.20` to a 1.6x non-stacking risk budget improved
@@ -43,6 +60,15 @@ aggregate PnL by `$6,531.45` / `+5.90%` and aggregate EV by `+0.1814`.
 EV improved in `late_strong` and `mid_weak`; `old_thin` regressed by `-0.0018`
 EV and max drawdown rose by `+0.96 pp`, so nearby multiplier tuning should not
 be repeated without forward or tail-risk evidence.
+
+Latest add-on capacity result: matching `ADDON_MAX_POSITION_PCT` to the current
+40% initial position cap was rejected as positive but immaterial. EV and PnL
+improved in all three fixed windows, but the three-window PnL deltas
+(`+$985.51`, `+$468.11`, `+$258.13`) added only `+1.46%`, below Gate 4's +5%
+PnL threshold; Sharpe, drawdown, trade count, win rate, and survival did not
+move enough to pass another acceptance criterion. Do not continue nearby add-on
+cap tuning above 35% without forward concentration evidence or a stronger
+add-on quality discriminator.
 
 Previous comparison result: disabling pure `TRAILING_STOP` partial reduces
 improved EV in 2/3 windows and PnL in 2/3 windows, with aggregate

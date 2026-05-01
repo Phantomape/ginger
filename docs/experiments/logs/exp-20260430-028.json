@@ -1,0 +1,84 @@
+{
+  "experiment_id": "exp-20260430-028",
+  "timestamp": "2026-04-30T21:05:00+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "universe_pruning_screen",
+  "hypothesis": "Market reference ETFs may be useful as context but weak as tradable candidates; removing SPY/QQQ/IWM from the trading universe could reduce slot competition and improve individual-stock alpha capture.",
+  "parameters": {
+    "single_causal_variable": "market reference ETF tradability",
+    "tested_values": {
+      "remove_market_reference_etfs": ["SPY", "QQQ", "IWM"],
+      "remove_spy_qqq_only": ["SPY", "QQQ"],
+      "remove_iwm_only": ["IWM"]
+    },
+    "locked_variables": [
+      "SPY/QQQ context availability",
+      "signal rules",
+      "entry filters",
+      "candidate ranking",
+      "sizing rules",
+      "exits",
+      "LLM/news replay"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": ["2025-04-23 -> 2025-10-22", "2024-10-02 -> 2025-04-22"]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "results": {
+    "remove_market_reference_etfs": {
+      "expected_value_score_delta_sum": -0.2809,
+      "total_pnl_delta_sum": -5582.82,
+      "total_pnl_delta_pct": -0.0476,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 1,
+      "trade_count_delta_sum": 3,
+      "win_rate_delta_min": -0.0655
+    },
+    "remove_spy_qqq_only": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0
+    },
+    "remove_iwm_only": {
+      "expected_value_score_delta_sum": -0.2809,
+      "total_pnl_delta_sum": -5582.82,
+      "total_pnl_delta_pct": -0.0476,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 1,
+      "trade_count_delta_sum": 3,
+      "win_rate_delta_min": -0.0655
+    }
+  },
+  "gate4_basis": "Rejected because removing IWM regressed aggregate PnL by 4.76% and did not improve any EV window; removing SPY/QQQ alone was inert.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tested deterministic universe pruning instead."
+  },
+  "rejection_reason": "IWM currently contributes useful tradable exposure in the accepted stack; SPY/QQQ are inert as candidates, so pruning market reference ETFs does not unlock alpha.",
+  "next_retry_requires": [
+    "Do not remove IWM from the trading universe without new evidence that its candidate trades have degraded.",
+    "Do not spend another alpha cycle on SPY/QQQ candidate pruning unless they begin generating executed trades."
+  ],
+  "related_files": [
+    "data/experiments/exp-20260430-028/market_reference_etf_universe_screen.json",
+    "docs/experiments/logs/exp-20260430-028.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

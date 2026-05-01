@@ -1,0 +1,81 @@
+{
+  "experiment_id": "exp-20260430-027",
+  "timestamp": "2026-04-30T20:55:00+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "universe_expansion_screen",
+  "hypothesis": "Existing OHLCV snapshots include non-watchlist ETF and single-name candidates; adding a small curated set could improve entry quality without changing signal rules, exits, LLM, or sizing.",
+  "parameters": {
+    "single_causal_variable": "candidate universe membership",
+    "baseline_universe_source": "data_layer.get_universe()",
+    "tested_values": {
+      "single_additions": ["XLE", "XLV", "XLP", "XLU", "TLT", "IEF", "UUP", "USO", "TRIP"],
+      "groups": {
+        "add_sector_etfs": ["XLE", "XLV", "XLP", "XLU"],
+        "add_rates_fx": ["TLT", "IEF", "UUP"],
+        "add_energy_oil": ["XLE", "USO"],
+        "add_all_snapshot_extras": ["XLE", "XLV", "XLP", "XLU", "TLT", "IEF", "UUP", "USO", "TRIP"]
+      }
+    },
+    "locked_variables": [
+      "signal rules",
+      "entry filters",
+      "candidate ranking",
+      "sizing rules",
+      "exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": ["2025-04-23 -> 2025-10-22", "2024-10-02 -> 2025-04-22"]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "best_variant": {
+    "name": "add_energy_oil",
+    "added": ["XLE", "USO"],
+    "expected_value_score_delta_sum": 0.2562,
+    "total_pnl_delta_sum": 2982.31,
+    "windows_ev_improved": 1,
+    "windows_ev_regressed": 2,
+    "max_drawdown_worse": 0.0113
+  },
+  "worst_variant": {
+    "name": "add_sector_etfs",
+    "added": ["XLE", "XLV", "XLP", "XLU"],
+    "expected_value_score_delta_sum": -0.5289,
+    "total_pnl_delta_sum": -12165.48,
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 3
+  },
+  "gate4_basis": "Rejected because no tested universe expansion improved EV in a majority of fixed windows. The best aggregate EV variant improved only one window, regressed two windows, and worsened max drawdown by 1.13 pp.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tested deterministic universe quality instead."
+  },
+  "rejection_reason": "Curated snapshot extras mostly add ETF/commodity noise or one-window exposure rather than stable entry alpha.",
+  "next_retry_requires": [
+    "Do not add broad sector ETF groups to the trading universe without new forward evidence.",
+    "Do not treat XLE/USO one-window aggregate EV as promotable alpha without majority-window improvement.",
+    "Future universe expansion needs a point-in-time candidate-quality audit and production sector mapping before promotion."
+  ],
+  "related_files": [
+    "data/experiments/exp-20260430-027/universe_expansion_screen.json",
+    "docs/experiments/logs/exp-20260430-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}
