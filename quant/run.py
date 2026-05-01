@@ -126,12 +126,33 @@ def main():
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
+    from universe_adapter   import save_universe_state_report, universe_segments_as_of
 
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
     portfolio_value   = _stored_pv          # updated below after OHLCV is available
     universe          = get_universe()
     log.info(f"Universe ({len(universe)} tickers): {universe}")
+    universe_governance_state = None
+    try:
+        universe_governance_state = universe_segments_as_of(
+            datetime.now().date().isoformat(),
+            core_universe=universe,
+        )
+        save_universe_state_report(
+            universe_governance_state,
+            f"data/universe_state_{today}.json",
+        )
+        log.info(
+            "Universe governance read-only: core=%s pilot=%s research=%s specialist=%s quarantine=%s",
+            len(universe_governance_state["core_trade_universe"]),
+            len(universe_governance_state["segments"]["pilot"]),
+            len(universe_governance_state["segments"]["research"]),
+            len(universe_governance_state["segments"]["specialist"]),
+            len(universe_governance_state["segments"]["quarantine"]),
+        )
+    except Exception as e:
+        log.warning(f"Universe governance read-only adapter unavailable: {e}")
 
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
@@ -473,6 +494,7 @@ def main():
         "entry_filter_audit": entry_filter_audit,
         "entry_execution_plan": entry_execution_plan,
         "heat_blocked_signals": heat_blocked_signals,
+        "universe_governance": universe_governance_state,
         "features":       features_dict,
     }, f"data/quant_signals_{today}.json")
 

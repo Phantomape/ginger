@@ -125,7 +125,9 @@ candidate ranking, sizing, or order advice.
 
 Acceptance:
 
-- Daily run can print or save universe state. Pending production report wiring.
+- Daily run can print or save universe state. Completed via
+  `data/universe_state_YYYYMMDD.json` and `quant_signals_YYYYMMDD.json`
+  `universe_governance`.
 - Backtester can disclose universe governance state. Pending read-only metadata wiring.
 - Existing canonical backtest metrics remain unchanged because adapter is not
   consumed by signal generation.
