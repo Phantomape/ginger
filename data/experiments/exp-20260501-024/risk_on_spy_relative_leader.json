@@ -1,0 +1,358 @@
+{
+  "experiment_id": "exp-20260501-024",
+  "timestamp": "2026-05-01T16:10:11.752160+00:00",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_risk_on_spy_relative_leader",
+  "hypothesis": "Otherwise-unmodified risk_on signals with 20-day return above SPY's 20-day return deserve more risk because they represent selected idiosyncratic leaders rather than broad beta followers.",
+  "alpha_hypothesis_category": "capital_allocation_meta_routing",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking samples remain too thin, so this tests a deterministic relative-strength allocation signal instead.",
+  "parameters": {
+    "single_causal_variable": "risk_on SPY-relative leader total risk multiplier",
+    "baseline": "current accepted risk_on_unmodified low/mid/default multipliers",
+    "tested_multipliers": {
+      "spy_relative_leader_1_8x": 1.8,
+      "spy_relative_leader_2_0x": 2.0
+    },
+    "selector": {
+      "regime_exit_bucket": "risk_on",
+      "other_sizing_rules": "none except risk_on_unmodified",
+      "ticker_ret20_minus_spy_ret20": "> 0"
+    },
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "all sector-specific haircuts/boosts",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "add-ons",
+      "all exits including gold 8ATR target",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.7,
+      "sharpe_daily": 4.3,
+      "total_pnl": 62788.03,
+      "total_return_pct": 0.6279,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5045,
+      "spy_relative_leader_signals_seen": 0,
+      "spy_relative_leader_signals_resized": 0,
+      "spy_relative_leader_trade_count": 0,
+      "spy_relative_leader_trade_pnl": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.2036,
+      "sharpe_daily": 2.58,
+      "total_pnl": 46654.1,
+      "total_return_pct": 0.4665,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4839,
+      "spy_relative_leader_signals_seen": 0,
+      "spy_relative_leader_signals_resized": 0,
+      "spy_relative_leader_trade_count": 0,
+      "spy_relative_leader_trade_pnl": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.2563,
+      "sharpe_daily": 1.27,
+      "total_pnl": 20181.65,
+      "total_return_pct": 0.2018,
+      "max_drawdown_pct": 0.0688,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4234,
+      "spy_relative_leader_signals_seen": 0,
+      "spy_relative_leader_signals_resized": 0,
+      "spy_relative_leader_trade_count": 0,
+      "spy_relative_leader_trade_pnl": 0.0
+    }
+  },
+  "after_metrics": {
+    "spy_relative_leader_1_8x": {
+      "late_strong": {
+        "expected_value_score": 2.884,
+        "sharpe_daily": 4.32,
+        "total_pnl": 66756.6,
+        "total_return_pct": 0.6676,
+        "max_drawdown_pct": 0.0448,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5054,
+        "spy_relative_leader_signals_seen": 19,
+        "spy_relative_leader_signals_resized": 19,
+        "spy_relative_leader_trade_count": 0,
+        "spy_relative_leader_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.2172,
+        "sharpe_daily": 2.58,
+        "total_pnl": 47177.75,
+        "total_return_pct": 0.4718,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4817,
+        "spy_relative_leader_signals_seen": 11,
+        "spy_relative_leader_signals_resized": 11,
+        "spy_relative_leader_trade_count": 0,
+        "spy_relative_leader_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.2728,
+        "sharpe_daily": 1.27,
+        "total_pnl": 21475.11,
+        "total_return_pct": 0.2148,
+        "max_drawdown_pct": 0.0742,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4495,
+        "spy_relative_leader_signals_seen": 19,
+        "spy_relative_leader_signals_resized": 19,
+        "spy_relative_leader_trade_count": 0,
+        "spy_relative_leader_trade_pnl": 0.0
+      }
+    },
+    "spy_relative_leader_2_0x": {
+      "late_strong": {
+        "expected_value_score": 2.9907,
+        "sharpe_daily": 4.31,
+        "total_pnl": 69387.88,
+        "total_return_pct": 0.6939,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5061,
+        "spy_relative_leader_signals_seen": 19,
+        "spy_relative_leader_signals_resized": 19,
+        "spy_relative_leader_trade_count": 0,
+        "spy_relative_leader_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.217,
+        "sharpe_daily": 2.58,
+        "total_pnl": 47170.67,
+        "total_return_pct": 0.4717,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4796,
+        "spy_relative_leader_signals_seen": 11,
+        "spy_relative_leader_signals_resized": 11,
+        "spy_relative_leader_trade_count": 0,
+        "spy_relative_leader_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.2742,
+        "sharpe_daily": 1.25,
+        "total_pnl": 21938.62,
+        "total_return_pct": 0.2194,
+        "max_drawdown_pct": 0.0796,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4709,
+        "spy_relative_leader_signals_seen": 19,
+        "spy_relative_leader_signals_resized": 19,
+        "spy_relative_leader_trade_count": 0,
+        "spy_relative_leader_trade_pnl": 0.0
+      }
+    }
+  },
+  "delta_metrics": {
+    "spy_relative_leader_1_8x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.184,
+          "sharpe_daily": 0.02,
+          "total_pnl": 3968.57,
+          "total_return_pct": 0.0397,
+          "max_drawdown_pct": 0.0009,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0009,
+          "spy_relative_leader_signals_seen": 19,
+          "spy_relative_leader_signals_resized": 19,
+          "spy_relative_leader_trade_count": 0,
+          "spy_relative_leader_trade_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0136,
+          "sharpe_daily": 0.0,
+          "total_pnl": 523.65,
+          "total_return_pct": 0.0053,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0022,
+          "spy_relative_leader_signals_seen": 11,
+          "spy_relative_leader_signals_resized": 11,
+          "spy_relative_leader_trade_count": 0,
+          "spy_relative_leader_trade_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0165,
+          "sharpe_daily": 0.0,
+          "total_pnl": 1293.46,
+          "total_return_pct": 0.013,
+          "max_drawdown_pct": 0.0054,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0261,
+          "spy_relative_leader_signals_seen": 19,
+          "spy_relative_leader_signals_resized": 19,
+          "spy_relative_leader_trade_count": 0,
+          "spy_relative_leader_trade_pnl": 0.0
+        }
+      },
+      "expected_value_score_delta_sum": 0.2141,
+      "expected_value_score_delta_pct": 0.051468,
+      "baseline_expected_value_score_sum": 4.1599,
+      "total_pnl_delta_sum": 5785.68,
+      "baseline_total_pnl_sum": 129623.78,
+      "total_pnl_delta_pct": 0.044634,
+      "ev_windows_improved": 3,
+      "ev_windows_regressed": 0,
+      "pnl_windows_improved": 3,
+      "pnl_windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0054,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.02,
+      "spy_relative_leader_signals_resized_delta_sum": 49
+    },
+    "spy_relative_leader_2_0x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.2907,
+          "sharpe_daily": 0.01,
+          "total_pnl": 6599.85,
+          "total_return_pct": 0.066,
+          "max_drawdown_pct": 0.0018,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0016,
+          "spy_relative_leader_signals_seen": 19,
+          "spy_relative_leader_signals_resized": 19,
+          "spy_relative_leader_trade_count": 0,
+          "spy_relative_leader_trade_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0134,
+          "sharpe_daily": 0.0,
+          "total_pnl": 516.57,
+          "total_return_pct": 0.0052,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0043,
+          "spy_relative_leader_signals_seen": 11,
+          "spy_relative_leader_signals_resized": 11,
+          "spy_relative_leader_trade_count": 0,
+          "spy_relative_leader_trade_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0179,
+          "sharpe_daily": -0.02,
+          "total_pnl": 1756.97,
+          "total_return_pct": 0.0176,
+          "max_drawdown_pct": 0.0108,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0475,
+          "spy_relative_leader_signals_seen": 19,
+          "spy_relative_leader_signals_resized": 19,
+          "spy_relative_leader_trade_count": 0,
+          "spy_relative_leader_trade_pnl": 0.0
+        }
+      },
+      "expected_value_score_delta_sum": 0.322,
+      "expected_value_score_delta_pct": 0.077406,
+      "baseline_expected_value_score_sum": 4.1599,
+      "total_pnl_delta_sum": 8873.39,
+      "baseline_total_pnl_sum": 129623.78,
+      "total_pnl_delta_pct": 0.068455,
+      "ev_windows_improved": 3,
+      "ev_windows_regressed": 0,
+      "pnl_windows_improved": 3,
+      "pnl_windows_regressed": 0,
+      "max_drawdown_delta_max": 0.0108,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.01,
+      "spy_relative_leader_signals_resized_delta_sum": 49
+    }
+  },
+  "best_variant": "spy_relative_leader_2_0x",
+  "best_variant_gate4": true,
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "promotion_requirement": "Promoted: ticker-vs-SPY 20-day relative strength is computed in shared risk_engine enrichment and consumed by shared portfolio_engine sizing."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this avoids that data constraint rather than weakening LLM."
+  },
+  "history_guardrails": {
+    "not_ai_infra_watchlist_retry": true,
+    "not_synchronous_sector_retry": true,
+    "not_plain_risk_on_nearby_scalar": true,
+    "not_financials_leader_retry": true,
+    "why_not_simple_repeat": "This tests broad ticker-vs-index relative strength only within already-selected plain risk_on inventory, rather than another sector synchronization threshold, raw scalar, or universe add."
+  },
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "Do not retry nearby SPY-relative multipliers without forward evidence.",
+    "A valid retry needs event/news or lifecycle context, not another scalar.",
+    "If promoted, compute the relative-strength field in shared production/backtest code."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260501_024_risk_on_spy_relative_leader.py",
+    "data/experiments/exp-20260501-024/risk_on_spy_relative_leader.json",
+    "docs/experiments/logs/exp-20260501-024.json",
+    "docs/experiments/tickets/exp-20260501-024.json"
+  ]
+}

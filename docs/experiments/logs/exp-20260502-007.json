@@ -1,0 +1,188 @@
+{
+  "experiment_id": "exp-20260502-007",
+  "timestamp": "2026-05-02T19:45:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation",
+  "hypothesis": "Otherwise-unmodified risk_on SPY-relative leaders with regime_exit_score < 0.08 may deserve a 2.5x risk budget because the current trade audit showed that low-score leader cohort was positive in the active late and old fixed windows.",
+  "component": "quant/constants.py, quant/portfolio_engine.py, quant/test_production_parity.py (temporary patch reverted after rejection)",
+  "change_summary": "Temporarily tested a shared sizing branch that lifted otherwise-unmodified SPY-relative leaders from 2.0x to 2.5x when regime_exit_score < 0.08. Entry, filters, ranking, exits, slots, add-ons, LLM/news replay, earnings, universe, and non-leader risk_on sizing were unchanged. The code was rolled back after Gate 4 failed.",
+  "parameters": {
+    "single_causal_variable": "otherwise-unmodified risk_on + spy_relative_leader + regime_exit_score < 0.08 risk multiplier",
+    "old_value": 2.0,
+    "tested_value": 2.5,
+    "threshold": 0.08,
+    "rolled_back_to": 2.0,
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "all exits",
+      "gap cancels",
+      "add-ons",
+      "LLM/news replay",
+      "earnings strategy",
+      "tradeable universe"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but historically lagged indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.9907,
+      "sharpe_daily": 4.31,
+      "total_pnl": 69387.88,
+      "total_return_pct": 0.6939,
+      "max_drawdown_pct": 0.0457,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.217,
+      "sharpe_daily": 2.58,
+      "total_pnl": 47170.67,
+      "total_return_pct": 0.4717,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2742,
+      "sharpe_daily": 1.25,
+      "total_pnl": 21938.62,
+      "total_return_pct": 0.2194,
+      "max_drawdown_pct": 0.0796,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.0015,
+      "sharpe_daily": 4.32,
+      "total_pnl": 69482.31,
+      "total_return_pct": 0.6948,
+      "max_drawdown_pct": 0.0457,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.217,
+      "sharpe_daily": 2.58,
+      "total_pnl": 47170.67,
+      "total_return_pct": 0.4717,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2742,
+      "sharpe_daily": 1.25,
+      "total_pnl": 21938.62,
+      "total_return_pct": 0.2194,
+      "max_drawdown_pct": 0.0796,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0108,
+      "sharpe_daily": 0.01,
+      "total_pnl": 94.43,
+      "total_return_pct": 0.0009,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0108,
+      "total_pnl_delta_sum": 94.43,
+      "baseline_total_pnl_sum": 138497.17,
+      "total_pnl_delta_pct": 0.000682,
+      "windows_improved": 1,
+      "windows_regressed": 0,
+      "windows_unchanged": 2,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0
+    },
+    "gate4_basis": "Rejected: aggregate EV delta +0.0108 and PnL delta +0.07% were far below Gate 4 materiality; Sharpe improved only +0.01 in one window, with two windows unchanged."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking data remains insufficient; this tested deterministic shared sizing alpha instead."
+  },
+  "history_guardrails": {
+    "not_repeating_breadth_confirmed_leader": "This did not use IWM/SPY breadth confirmation.",
+    "not_repeating_sector_confirmed_leader": "This did not require same-sector confirmation.",
+    "not_repeating_lifecycle_split": "This did not split by trend/breakout lifecycle; it used only regime_exit_score within existing SPY-relative leaders."
+  },
+  "rejection_reason": "The low-score SPY-relative leader pocket was already mostly constrained by position sizing/capacity and only added $94.43 in the late window, with no effect in mid_weak or old_thin.",
+  "next_retry_requires": [
+    "Do not retry regime_exit_score < 0.08 SPY-relative leader multipliers around 2.5x without forward evidence.",
+    "Do not use this result to justify broader SPY-relative leader multiplier increases.",
+    "A valid retry needs an orthogonal event/news or capacity-aware discriminator that changes at least two fixed windows materially."
+  ],
+  "related_files": [
+    "docs/experiments/logs/exp-20260502-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

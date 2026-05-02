@@ -1,0 +1,864 @@
+{
+  "source_backtest": "D:\\Github\\ginger\\data\\experiments\\oracle_standard_3window_20260501_220042\\old_thin_backtest.json",
+  "source_snapshot": "D:\\Github\\ginger\\data\\ohlcv_snapshot_20241002_20250422.json",
+  "period": "2024-10-02 → 2025-04-22",
+  "entry_skip_oracle": {
+    "oracle_type": "entry_skip_forward_upper_bound",
+    "is_tradable": false,
+    "lookahead_warning": "Uses future highs for skipped entry samples. This is a research triage diagnostic, not a strategy acceptance metric.",
+    "horizon_days": 20,
+    "source_skip_events": "entry_execution_attribution.sample_skips",
+    "source_skip_event_count": 25,
+    "evaluated_skip_event_count": 25,
+    "missing_skip_event_count": 0,
+    "full_skip_count_reported_by_backtest": 33,
+    "coverage_note": "If sample_skips is smaller than skipped_count, this diagnostic covers only the persisted sample. Persist full skip events before drawing final conclusions.",
+    "by_decision": {
+      "adverse_gap_down_cancel": {
+        "sample_count": 1,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.026698,
+        "median_max_forward_return_pct": 0.026698,
+        "best_max_forward_return_pct": 0.026698,
+        "worst_max_forward_return_pct": 0.026698
+      },
+      "gap_cancel": {
+        "sample_count": 5,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.071752,
+        "median_max_forward_return_pct": 0.08287,
+        "best_max_forward_return_pct": 0.102381,
+        "worst_max_forward_return_pct": 0.017947
+      },
+      "no_shares": {
+        "sample_count": 9,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.030894,
+        "median_max_forward_return_pct": 0.023669,
+        "best_max_forward_return_pct": 0.072987,
+        "worst_max_forward_return_pct": 0.005098
+      },
+      "scarce_slot_breakout_deferred": {
+        "sample_count": 4,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.312022,
+        "median_max_forward_return_pct": 0.16452,
+        "best_max_forward_return_pct": 0.86948,
+        "worst_max_forward_return_pct": 0.04957
+      },
+      "slot_sliced": {
+        "sample_count": 6,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.180176,
+        "median_max_forward_return_pct": 0.166819,
+        "best_max_forward_return_pct": 0.377562,
+        "worst_max_forward_return_pct": 0.030531
+      }
+    },
+    "gap_cancel_audit": {
+      "sample_count": 5,
+      "avg_gap_pct": 0.029797,
+      "median_gap_pct": 0.021301,
+      "max_gap_pct": 0.060526,
+      "avg_max_forward_return_pct": 0.071752,
+      "context_summary": {
+        "strong_forward": {
+          "count": 1,
+          "avg_gap_pct": 0.060526,
+          "avg_prior_5d_return_pct": 0.034992,
+          "avg_prior_10d_return_pct": 0.029203,
+          "avg_pct_from_20d_high": -0.003115,
+          "avg_pct_from_252d_high": -0.003115,
+          "avg_volume_vs_20d_avg": 1.967545,
+          "avg_max_forward_return_pct": 0.102381
+        },
+        "weak_forward": {
+          "count": 4,
+          "avg_gap_pct": 0.022115,
+          "avg_prior_5d_return_pct": 0.285843,
+          "avg_prior_10d_return_pct": 0.389675,
+          "avg_pct_from_20d_high": -0.015202,
+          "avg_pct_from_252d_high": -0.08028,
+          "avg_volume_vs_20d_avg": 4.411473,
+          "avg_max_forward_return_pct": 0.064094
+        }
+      },
+      "threshold_sweep": {
+        "0.015": {
+          "threshold_pct": 0.015,
+          "would_admit_count": 0,
+          "would_still_cancel_count": 5,
+          "avg_max_forward_return_pct": null,
+          "median_max_forward_return_pct": null,
+          "best_max_forward_return_pct": null,
+          "worst_max_forward_return_pct": null
+        },
+        "0.020": {
+          "threshold_pct": 0.02,
+          "would_admit_count": 1,
+          "would_still_cancel_count": 4,
+          "avg_max_forward_return_pct": 0.017947,
+          "median_max_forward_return_pct": 0.017947,
+          "best_max_forward_return_pct": 0.017947,
+          "worst_max_forward_return_pct": 0.017947
+        },
+        "0.030": {
+          "threshold_pct": 0.03,
+          "would_admit_count": 3,
+          "would_still_cancel_count": 2,
+          "avg_max_forward_return_pct": 0.057836,
+          "median_max_forward_return_pct": 0.064262,
+          "best_max_forward_return_pct": 0.091299,
+          "worst_max_forward_return_pct": 0.017947
+        },
+        "0.050": {
+          "threshold_pct": 0.05,
+          "would_admit_count": 4,
+          "would_still_cancel_count": 1,
+          "avg_max_forward_return_pct": 0.064094,
+          "median_max_forward_return_pct": 0.073566,
+          "best_max_forward_return_pct": 0.091299,
+          "worst_max_forward_return_pct": 0.017947
+        },
+        "0.100": {
+          "threshold_pct": 0.1,
+          "would_admit_count": 5,
+          "would_still_cancel_count": 0,
+          "avg_max_forward_return_pct": 0.071752,
+          "median_max_forward_return_pct": 0.08287,
+          "best_max_forward_return_pct": 0.102381,
+          "worst_max_forward_return_pct": 0.017947
+        }
+      },
+      "rows": [
+        {
+          "date": "2024-10-30",
+          "ticker": "BKNG",
+          "strategy": "trend_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 1,
+          "entry_date": "2024-10-31",
+          "entry_open": 187.2252,
+          "oracle_exit_date": "2024-11-25",
+          "oracle_exit_price": 206.3935,
+          "max_forward_return_pct": 0.102381,
+          "details": {
+            "fill_date": "2024-10-31",
+            "fill_price": 187.2252,
+            "signal_entry": 176.54,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          },
+          "prior_5d_return_pct": 0.034992,
+          "prior_10d_return_pct": 0.029203,
+          "pct_from_20d_high": -0.003115,
+          "pct_from_252d_high": -0.003115,
+          "volume_vs_20d_avg": 1.967545,
+          "gap_pct": 0.060526
+        },
+        {
+          "date": "2024-12-03",
+          "ticker": "CRDO",
+          "strategy": "trend_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 1,
+          "entry_date": "2024-12-04",
+          "entry_open": 72.11,
+          "oracle_exit_date": "2024-12-16",
+          "oracle_exit_price": 78.6936,
+          "max_forward_return_pct": 0.091299,
+          "details": {
+            "fill_date": "2024-12-04",
+            "fill_price": 72.11,
+            "signal_entry": 70.69,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          },
+          "prior_5d_return_pct": 0.501806,
+          "prior_10d_return_pct": 0.741133,
+          "pct_from_20d_high": -0.022268,
+          "pct_from_252d_high": -0.022268,
+          "volume_vs_20d_avg": 4.653133,
+          "gap_pct": 0.020088
+        },
+        {
+          "date": "2024-12-13",
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 2,
+          "entry_date": "2024-12-16",
+          "entry_open": 228.6208,
+          "oracle_exit_date": "2024-12-16",
+          "oracle_exit_price": 247.5666,
+          "max_forward_return_pct": 0.08287,
+          "details": {
+            "fill_date": "2024-12-16",
+            "fill_price": 228.6208,
+            "signal_entry": 221.73,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          },
+          "prior_5d_return_pct": 0.252158,
+          "prior_10d_return_pct": 0.386969,
+          "pct_from_20d_high": -0.017053,
+          "pct_from_252d_high": -0.017053,
+          "volume_vs_20d_avg": 4.289173,
+          "gap_pct": 0.031077
+        },
+        {
+          "date": "2024-11-21",
+          "ticker": "SNOW",
+          "strategy": "trend_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 3,
+          "available_slots_at_entry_loop": 3,
+          "entry_date": "2024-11-22",
+          "entry_open": 175.0,
+          "oracle_exit_date": "2024-12-06",
+          "oracle_exit_price": 186.2458,
+          "max_forward_return_pct": 0.064262,
+          "details": {
+            "fill_date": "2024-11-22",
+            "fill_price": 175.0,
+            "signal_entry": 171.35,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          },
+          "prior_5d_return_pct": 0.32552,
+          "prior_10d_return_pct": 0.387,
+          "pct_from_20d_high": -0.018884,
+          "pct_from_252d_high": -0.279194,
+          "volume_vs_20d_avg": 6.851302,
+          "gap_pct": 0.021301
+        },
+        {
+          "date": "2024-10-18",
+          "ticker": "SLV",
+          "strategy": "breakout_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 3,
+          "available_slots_at_entry_loop": 3,
+          "entry_date": "2024-10-21",
+          "entry_open": 31.13,
+          "oracle_exit_date": "2024-10-22",
+          "oracle_exit_price": 31.6887,
+          "max_forward_return_pct": 0.017947,
+          "details": {
+            "fill_date": "2024-10-21",
+            "fill_price": 31.13,
+            "signal_entry": 30.64,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          },
+          "prior_5d_return_pct": 0.063889,
+          "prior_10d_return_pct": 0.043597,
+          "pct_from_20d_high": -0.002604,
+          "pct_from_252d_high": -0.002604,
+          "volume_vs_20d_avg": 1.852284,
+          "gap_pct": 0.015992
+        }
+      ]
+    },
+    "no_shares_multiplier_audit": {
+      "breakout_tech_dte_risk_multiplier_applied=0.0": {
+        "sample_count": 1,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.034748,
+        "median_max_forward_return_pct": 0.034748,
+        "best_max_forward_return_pct": 0.034748,
+        "worst_max_forward_return_pct": 0.034748,
+        "rows": [
+          {
+            "date": "2024-12-04",
+            "ticker": "NOW",
+            "strategy": "breakout_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 3,
+            "entry_date": "2024-12-05",
+            "entry_open": 223.02,
+            "oracle_exit_date": "2024-12-11",
+            "oracle_exit_price": 230.7695,
+            "max_forward_return_pct": 0.034748,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "breakout_tech_dte_risk_multiplier_applied": 0.0
+              }
+            }
+          }
+        ]
+      },
+      "tqs_risk_multiplier_applied=0.25": {
+        "sample_count": 1,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.005323,
+        "median_max_forward_return_pct": 0.005323,
+        "best_max_forward_return_pct": 0.005323,
+        "worst_max_forward_return_pct": 0.005323,
+        "rows": [
+          {
+            "date": "2024-10-29",
+            "ticker": "GOOG",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 1,
+            "entry_date": "2024-10-30",
+            "entry_open": 181.369,
+            "oracle_exit_date": "2024-11-12",
+            "oracle_exit_price": 182.3343,
+            "max_forward_return_pct": 0.005323,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "tqs_risk_multiplier_applied": 0.25,
+                "trend_tech_tight_gap_risk_multiplier_applied": 0.0
+              }
+            }
+          }
+        ]
+      },
+      "trend_healthcare_dte_risk_multiplier_applied=0.0": {
+        "sample_count": 1,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.053629,
+        "median_max_forward_return_pct": 0.053629,
+        "best_max_forward_return_pct": 0.053629,
+        "worst_max_forward_return_pct": 0.053629,
+        "rows": [
+          {
+            "date": "2025-01-15",
+            "ticker": "ISRG",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 2,
+            "available_slots_at_entry_loop": 5,
+            "entry_date": "2025-01-16",
+            "entry_open": 582.6,
+            "oracle_exit_date": "2025-01-23",
+            "oracle_exit_price": 613.844,
+            "max_forward_return_pct": 0.053629,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_healthcare_dte_risk_multiplier_applied": 0.0
+              }
+            }
+          }
+        ]
+      },
+      "trend_industrials_risk_multiplier_applied=0.0": {
+        "sample_count": 5,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.0334,
+        "median_max_forward_return_pct": 0.023669,
+        "best_max_forward_return_pct": 0.072987,
+        "worst_max_forward_return_pct": 0.005098,
+        "rows": [
+          {
+            "date": "2024-11-21",
+            "ticker": "DE",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 3,
+            "entry_date": "2024-11-22",
+            "entry_open": 427.1567,
+            "oracle_exit_date": "2024-11-25",
+            "oracle_exit_price": 458.3335,
+            "max_forward_return_pct": 0.072987,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0
+              }
+            }
+          },
+          {
+            "date": "2025-01-23",
+            "ticker": "GE",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 2,
+            "entry_date": "2025-01-24",
+            "entry_open": 201.0597,
+            "oracle_exit_date": "2025-02-18",
+            "oracle_exit_price": 209.9434,
+            "max_forward_return_pct": 0.044184,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0
+              }
+            }
+          },
+          {
+            "date": "2024-11-25",
+            "ticker": "DE",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 2,
+            "entry_date": "2024-11-26",
+            "entry_open": 447.4499,
+            "oracle_exit_date": "2024-11-29",
+            "oracle_exit_price": 458.0406,
+            "max_forward_return_pct": 0.023669,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0
+              }
+            }
+          },
+          {
+            "date": "2025-01-28",
+            "ticker": "RTX",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 1,
+            "entry_date": "2025-01-29",
+            "entry_open": 124.6542,
+            "oracle_exit_date": "2025-02-03",
+            "oracle_exit_price": 127.2795,
+            "max_forward_return_pct": 0.02106,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0
+              }
+            }
+          },
+          {
+            "date": "2024-11-06",
+            "ticker": "CAT",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 1,
+            "entry_date": "2024-11-07",
+            "entry_open": 407.0185,
+            "oracle_exit_date": "2024-11-07",
+            "oracle_exit_price": 409.0934,
+            "max_forward_return_pct": 0.005098,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0
+              }
+            }
+          }
+        ]
+      },
+      "trend_tech_near_high_risk_multiplier_applied=0.25": {
+        "sample_count": 1,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.017348,
+        "median_max_forward_return_pct": 0.017348,
+        "best_max_forward_return_pct": 0.017348,
+        "worst_max_forward_return_pct": 0.017348,
+        "rows": [
+          {
+            "date": "2024-12-20",
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 4,
+            "entry_date": "2024-12-23",
+            "entry_open": 253.3858,
+            "oracle_exit_date": "2024-12-26",
+            "oracle_exit_price": 257.7814,
+            "max_forward_return_pct": 0.017348,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_tech_tight_gap_risk_multiplier_applied": 0.0,
+                "trend_tech_near_high_risk_multiplier_applied": 0.25
+              }
+            }
+          }
+        ]
+      },
+      "trend_tech_tight_gap_risk_multiplier_applied=0.0": {
+        "sample_count": 2,
+        "positive_fraction": 1.0,
+        "avg_max_forward_return_pct": 0.011335,
+        "median_max_forward_return_pct": 0.011335,
+        "best_max_forward_return_pct": 0.017348,
+        "worst_max_forward_return_pct": 0.005323,
+        "rows": [
+          {
+            "date": "2024-12-20",
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 4,
+            "entry_date": "2024-12-23",
+            "entry_open": 253.3858,
+            "oracle_exit_date": "2024-12-26",
+            "oracle_exit_price": 257.7814,
+            "max_forward_return_pct": 0.017348,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "trend_tech_tight_gap_risk_multiplier_applied": 0.0,
+                "trend_tech_near_high_risk_multiplier_applied": 0.25
+              }
+            }
+          },
+          {
+            "date": "2024-10-29",
+            "ticker": "GOOG",
+            "strategy": "trend_long",
+            "decision": "no_shares",
+            "candidate_rank": 1,
+            "available_slots_at_entry_loop": 1,
+            "entry_date": "2024-10-30",
+            "entry_open": 181.369,
+            "oracle_exit_date": "2024-11-12",
+            "oracle_exit_price": 182.3343,
+            "max_forward_return_pct": 0.005323,
+            "details": {
+              "has_sizing": true,
+              "shares_to_buy": 0,
+              "risk_pct_before": null,
+              "risk_pct_after": null,
+              "risk_multipliers": {
+                "tqs_risk_multiplier_applied": 0.25,
+                "trend_tech_tight_gap_risk_multiplier_applied": 0.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "top_skipped_opportunities": [
+      {
+        "date": "2024-10-21",
+        "ticker": "APP",
+        "strategy": "breakout_long",
+        "decision": "scarce_slot_breakout_deferred",
+        "candidate_rank": null,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-10-22",
+        "entry_open": 161.27,
+        "oracle_exit_date": "2024-11-14",
+        "oracle_exit_price": 301.4911,
+        "max_forward_return_pct": 0.86948,
+        "details": {
+          "active_positions": 4,
+          "defer_breakout_slots_lte": 1,
+          "defer_breakout_max_min_index_pct_from_ma": null,
+          "min_index_pct_from_ma": null
+        }
+      },
+      {
+        "date": "2024-11-07",
+        "ticker": "PLTR",
+        "strategy": "trend_long",
+        "decision": "slot_sliced",
+        "candidate_rank": 2,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-11-08",
+        "entry_open": 55.57,
+        "oracle_exit_date": "2024-12-06",
+        "oracle_exit_price": 76.5511,
+        "max_forward_return_pct": 0.377562,
+        "details": {
+          "signal_count": 2
+        }
+      },
+      {
+        "date": "2024-11-06",
+        "ticker": "PLTR",
+        "strategy": "trend_long",
+        "decision": "slot_sliced",
+        "candidate_rank": 5,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-11-07",
+        "entry_open": 55.82,
+        "oracle_exit_date": "2024-12-05",
+        "oracle_exit_price": 72.7246,
+        "max_forward_return_pct": 0.302841,
+        "details": {
+          "signal_count": 6
+        }
+      },
+      {
+        "date": "2024-11-06",
+        "ticker": "TSLA",
+        "strategy": "trend_long",
+        "decision": "slot_sliced",
+        "candidate_rank": 6,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-11-07",
+        "entry_open": 288.89,
+        "oracle_exit_date": "2024-12-05",
+        "oracle_exit_price": 374.116,
+        "max_forward_return_pct": 0.295012,
+        "details": {
+          "signal_count": 6
+        }
+      },
+      {
+        "date": "2025-01-27",
+        "ticker": "SPOT",
+        "strategy": "breakout_long",
+        "decision": "scarce_slot_breakout_deferred",
+        "candidate_rank": null,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2025-01-28",
+        "entry_open": 518.0,
+        "oracle_exit_date": "2025-02-13",
+        "oracle_exit_price": 650.3438,
+        "max_forward_return_pct": 0.25549,
+        "details": {
+          "active_positions": 4,
+          "defer_breakout_slots_lte": 1,
+          "defer_breakout_max_min_index_pct_from_ma": null,
+          "min_index_pct_from_ma": null
+        }
+      },
+      {
+        "date": "2024-10-30",
+        "ticker": "BKNG",
+        "strategy": "trend_long",
+        "decision": "gap_cancel",
+        "candidate_rank": 1,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-10-31",
+        "entry_open": 187.2252,
+        "oracle_exit_date": "2024-11-25",
+        "oracle_exit_price": 206.3935,
+        "max_forward_return_pct": 0.102381,
+        "details": {
+          "fill_date": "2024-10-31",
+          "fill_price": 187.2252,
+          "signal_entry": 176.54,
+          "cancel_gap_pct": 0.015,
+          "adverse_gap_cancel_pct": 0.02
+        }
+      },
+      {
+        "date": "2024-12-03",
+        "ticker": "CRDO",
+        "strategy": "trend_long",
+        "decision": "gap_cancel",
+        "candidate_rank": 1,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-12-04",
+        "entry_open": 72.11,
+        "oracle_exit_date": "2024-12-16",
+        "oracle_exit_price": 78.6936,
+        "max_forward_return_pct": 0.091299,
+        "details": {
+          "fill_date": "2024-12-04",
+          "fill_price": 72.11,
+          "signal_entry": 70.69,
+          "cancel_gap_pct": 0.015,
+          "adverse_gap_cancel_pct": 0.02
+        }
+      },
+      {
+        "date": "2024-12-13",
+        "ticker": "AVGO",
+        "strategy": "trend_long",
+        "decision": "gap_cancel",
+        "candidate_rank": 1,
+        "available_slots_at_entry_loop": 2,
+        "entry_date": "2024-12-16",
+        "entry_open": 228.6208,
+        "oracle_exit_date": "2024-12-16",
+        "oracle_exit_price": 247.5666,
+        "max_forward_return_pct": 0.08287,
+        "details": {
+          "fill_date": "2024-12-16",
+          "fill_price": 228.6208,
+          "signal_entry": 221.73,
+          "cancel_gap_pct": 0.015,
+          "adverse_gap_cancel_pct": 0.02
+        }
+      },
+      {
+        "date": "2024-11-01",
+        "ticker": "CVX",
+        "strategy": "breakout_long",
+        "decision": "scarce_slot_breakout_deferred",
+        "candidate_rank": null,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-11-04",
+        "entry_open": 144.6732,
+        "oracle_exit_date": "2024-11-27",
+        "oracle_exit_price": 155.314,
+        "max_forward_return_pct": 0.07355,
+        "details": {
+          "active_positions": 4,
+          "defer_breakout_slots_lte": 1,
+          "defer_breakout_max_min_index_pct_from_ma": null,
+          "min_index_pct_from_ma": null
+        }
+      },
+      {
+        "date": "2024-11-21",
+        "ticker": "DE",
+        "strategy": "trend_long",
+        "decision": "no_shares",
+        "candidate_rank": 1,
+        "available_slots_at_entry_loop": 3,
+        "entry_date": "2024-11-22",
+        "entry_open": 427.1567,
+        "oracle_exit_date": "2024-11-25",
+        "oracle_exit_price": 458.3335,
+        "max_forward_return_pct": 0.072987,
+        "details": {
+          "has_sizing": true,
+          "shares_to_buy": 0,
+          "risk_pct_before": null,
+          "risk_pct_after": null,
+          "risk_multipliers": {
+            "trend_industrials_risk_multiplier_applied": 0.0
+          }
+        }
+      },
+      {
+        "date": "2024-11-21",
+        "ticker": "SNOW",
+        "strategy": "trend_long",
+        "decision": "gap_cancel",
+        "candidate_rank": 3,
+        "available_slots_at_entry_loop": 3,
+        "entry_date": "2024-11-22",
+        "entry_open": 175.0,
+        "oracle_exit_date": "2024-12-06",
+        "oracle_exit_price": 186.2458,
+        "max_forward_return_pct": 0.064262,
+        "details": {
+          "fill_date": "2024-11-22",
+          "fill_price": 175.0,
+          "signal_entry": 171.35,
+          "cancel_gap_pct": 0.015,
+          "adverse_gap_cancel_pct": 0.02
+        }
+      },
+      {
+        "date": "2025-01-15",
+        "ticker": "ISRG",
+        "strategy": "trend_long",
+        "decision": "no_shares",
+        "candidate_rank": 2,
+        "available_slots_at_entry_loop": 5,
+        "entry_date": "2025-01-16",
+        "entry_open": 582.6,
+        "oracle_exit_date": "2025-01-23",
+        "oracle_exit_price": 613.844,
+        "max_forward_return_pct": 0.053629,
+        "details": {
+          "has_sizing": true,
+          "shares_to_buy": 0,
+          "risk_pct_before": null,
+          "risk_pct_after": null,
+          "risk_multipliers": {
+            "trend_healthcare_dte_risk_multiplier_applied": 0.0
+          }
+        }
+      },
+      {
+        "date": "2024-10-30",
+        "ticker": "GOOG",
+        "strategy": "breakout_long",
+        "decision": "scarce_slot_breakout_deferred",
+        "candidate_rank": null,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-10-31",
+        "entry_open": 173.7228,
+        "oracle_exit_date": "2024-11-12",
+        "oracle_exit_price": 182.3343,
+        "max_forward_return_pct": 0.04957,
+        "details": {
+          "active_positions": 4,
+          "defer_breakout_slots_lte": 1,
+          "defer_breakout_max_min_index_pct_from_ma": null,
+          "min_index_pct_from_ma": null
+        }
+      },
+      {
+        "date": "2025-01-23",
+        "ticker": "GE",
+        "strategy": "trend_long",
+        "decision": "no_shares",
+        "candidate_rank": 1,
+        "available_slots_at_entry_loop": 2,
+        "entry_date": "2025-01-24",
+        "entry_open": 201.0597,
+        "oracle_exit_date": "2025-02-18",
+        "oracle_exit_price": 209.9434,
+        "max_forward_return_pct": 0.044184,
+        "details": {
+          "has_sizing": true,
+          "shares_to_buy": 0,
+          "risk_pct_before": null,
+          "risk_pct_after": null,
+          "risk_multipliers": {
+            "trend_industrials_risk_multiplier_applied": 0.0
+          }
+        }
+      },
+      {
+        "date": "2024-11-06",
+        "ticker": "GS",
+        "strategy": "trend_long",
+        "decision": "slot_sliced",
+        "candidate_rank": 2,
+        "available_slots_at_entry_loop": 1,
+        "entry_date": "2024-11-07",
+        "entry_open": 572.3376,
+        "oracle_exit_date": "2024-12-02",
+        "oracle_exit_price": 594.4445,
+        "max_forward_return_pct": 0.038626,
+        "details": {
+          "signal_count": 6
+        }
+      }
+    ],
+    "missing": []
+  }
+}

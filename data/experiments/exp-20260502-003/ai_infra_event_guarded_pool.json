@@ -1,0 +1,568 @@
+{
+  "experiment_id": "exp-20260502-003",
+  "timestamp": "2026-05-02T02:17:22.851290+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "candidate_pool_ai_infra_event_guarded",
+  "hypothesis": "AI infrastructure candidates may have theme alpha, but raw promotion is fragile because event/earnings risk is unmanaged; requiring added AI infra tickers to be more than 20 trading days from earnings may preserve theme upside while avoiding event-risk drag.",
+  "alpha_hypothesis_category": "candidate_pool_entry_qualification",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking samples remain too thin; this tests an alternate deterministic candidate-pool policy using existing earnings-distance fields.",
+  "parameters": {
+    "single_causal_variable": "event-guarded AI infrastructure candidate-pool policy",
+    "source_experiment": "exp-20260501-008",
+    "baseline_universe_source": "filter._BASE_WATCHLIST only, excluding current open_positions",
+    "tested_variants": {
+      "pilot_tradeable_event_guarded": {
+        "added": [
+          "BE",
+          "INTC",
+          "LITE"
+        ],
+        "min_days_to_earnings": 20,
+        "unknown_dte_allowed": false
+      },
+      "optical_storage_event_guarded": {
+        "added": [
+          "INTC",
+          "LITE",
+          "COHR"
+        ],
+        "min_days_to_earnings": 20,
+        "unknown_dte_allowed": false
+      },
+      "all_full_history_ai_event_guarded": {
+        "added": [
+          "BE",
+          "INTC",
+          "LITE",
+          "COHR",
+          "APLD"
+        ],
+        "min_days_to_earnings": 20,
+        "unknown_dte_allowed": false
+      }
+    },
+    "sector_map_patch": {
+      "APLD": "Technology",
+      "BE": "Energy",
+      "COHR": "Technology",
+      "INTC": "Technology",
+      "LITE": "Technology"
+    },
+    "locked_variables": [
+      "core production universe",
+      "existing signal rules",
+      "candidate ranking",
+      "all sizing rules",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "add-ons",
+      "all exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.9907,
+      "sharpe_daily": 4.31,
+      "total_pnl": 69387.88,
+      "total_return_pct": 0.6939,
+      "max_drawdown_pct": 0.0457,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5061,
+      "added_trade_count": 0,
+      "added_trade_pnl": 0.0,
+      "added_tickers_traded": [],
+      "guard_seen": 0,
+      "guard_dropped": 0,
+      "guard_passed": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.217,
+      "sharpe_daily": 2.58,
+      "total_pnl": 47170.67,
+      "total_return_pct": 0.4717,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7885,
+      "tail_loss_share": 0.4796,
+      "added_trade_count": 0,
+      "added_trade_pnl": 0.0,
+      "added_tickers_traded": [],
+      "guard_seen": 0,
+      "guard_dropped": 0,
+      "guard_passed": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.3213,
+      "sharpe_daily": 1.31,
+      "total_pnl": 24533.15,
+      "total_return_pct": 0.2453,
+      "max_drawdown_pct": 0.0686,
+      "win_rate": 0.4348,
+      "trade_count": 23,
+      "survival_rate": 0.9032,
+      "tail_loss_share": 0.5019,
+      "added_trade_count": 0,
+      "added_trade_pnl": 0.0,
+      "added_tickers_traded": [],
+      "guard_seen": 0,
+      "guard_dropped": 0,
+      "guard_passed": 0
+    }
+  },
+  "after_metrics": {
+    "pilot_tradeable_event_guarded": {
+      "late_strong": {
+        "expected_value_score": 2.9631,
+        "sharpe_daily": 4.29,
+        "total_pnl": 69068.31,
+        "total_return_pct": 0.6907,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.75,
+        "trade_count": 20,
+        "survival_rate": 0.8113,
+        "tail_loss_share": 0.4705,
+        "added_trade_count": 1,
+        "added_trade_pnl": -254.99,
+        "added_tickers_traded": [
+          "INTC"
+        ],
+        "guard_seen": 7,
+        "guard_dropped": 5,
+        "guard_passed": 2
+      },
+      "mid_weak": {
+        "expected_value_score": 1.1968,
+        "sharpe_daily": 2.56,
+        "total_pnl": 46745.44,
+        "total_return_pct": 0.4675,
+        "max_drawdown_pct": 0.08,
+        "win_rate": 0.4783,
+        "trade_count": 23,
+        "survival_rate": 0.8136,
+        "tail_loss_share": 0.5698,
+        "added_trade_count": 2,
+        "added_trade_pnl": -267.75,
+        "added_tickers_traded": [
+          "LITE"
+        ],
+        "guard_seen": 11,
+        "guard_dropped": 4,
+        "guard_passed": 7
+      },
+      "old_thin": {
+        "expected_value_score": 0.2623,
+        "sharpe_daily": 1.19,
+        "total_pnl": 22035.83,
+        "total_return_pct": 0.2204,
+        "max_drawdown_pct": 0.0714,
+        "win_rate": 0.4167,
+        "trade_count": 24,
+        "survival_rate": 0.8923,
+        "tail_loss_share": 0.4901,
+        "added_trade_count": 1,
+        "added_trade_pnl": -2446.57,
+        "added_tickers_traded": [
+          "BE"
+        ],
+        "guard_seen": 3,
+        "guard_dropped": 0,
+        "guard_passed": 3
+      }
+    },
+    "optical_storage_event_guarded": {
+      "late_strong": {
+        "expected_value_score": 2.9631,
+        "sharpe_daily": 4.29,
+        "total_pnl": 69068.31,
+        "total_return_pct": 0.6907,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.75,
+        "trade_count": 20,
+        "survival_rate": 0.8148,
+        "tail_loss_share": 0.4705,
+        "added_trade_count": 1,
+        "added_trade_pnl": -254.99,
+        "added_tickers_traded": [
+          "INTC"
+        ],
+        "guard_seen": 8,
+        "guard_dropped": 5,
+        "guard_passed": 3
+      },
+      "mid_weak": {
+        "expected_value_score": 1.1968,
+        "sharpe_daily": 2.56,
+        "total_pnl": 46745.44,
+        "total_return_pct": 0.4675,
+        "max_drawdown_pct": 0.08,
+        "win_rate": 0.4783,
+        "trade_count": 23,
+        "survival_rate": 0.8103,
+        "tail_loss_share": 0.5698,
+        "added_trade_count": 2,
+        "added_trade_pnl": -267.75,
+        "added_tickers_traded": [
+          "LITE"
+        ],
+        "guard_seen": 8,
+        "guard_dropped": 2,
+        "guard_passed": 6
+      },
+      "old_thin": {
+        "expected_value_score": 0.3213,
+        "sharpe_daily": 1.31,
+        "total_pnl": 24533.15,
+        "total_return_pct": 0.2453,
+        "max_drawdown_pct": 0.0686,
+        "win_rate": 0.4348,
+        "trade_count": 23,
+        "survival_rate": 0.8906,
+        "tail_loss_share": 0.5019,
+        "added_trade_count": 0,
+        "added_trade_pnl": 0.0,
+        "added_tickers_traded": [],
+        "guard_seen": 2,
+        "guard_dropped": 0,
+        "guard_passed": 2
+      }
+    },
+    "all_full_history_ai_event_guarded": {
+      "late_strong": {
+        "expected_value_score": 2.9631,
+        "sharpe_daily": 4.29,
+        "total_pnl": 69068.31,
+        "total_return_pct": 0.6907,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.75,
+        "trade_count": 20,
+        "survival_rate": 0.8148,
+        "tail_loss_share": 0.4705,
+        "added_trade_count": 1,
+        "added_trade_pnl": -254.99,
+        "added_tickers_traded": [
+          "INTC"
+        ],
+        "guard_seen": 8,
+        "guard_dropped": 5,
+        "guard_passed": 3
+      },
+      "mid_weak": {
+        "expected_value_score": 1.1968,
+        "sharpe_daily": 2.56,
+        "total_pnl": 46745.44,
+        "total_return_pct": 0.4675,
+        "max_drawdown_pct": 0.08,
+        "win_rate": 0.4783,
+        "trade_count": 23,
+        "survival_rate": 0.8136,
+        "tail_loss_share": 0.5698,
+        "added_trade_count": 2,
+        "added_trade_pnl": -267.75,
+        "added_tickers_traded": [
+          "LITE"
+        ],
+        "guard_seen": 12,
+        "guard_dropped": 5,
+        "guard_passed": 7
+      },
+      "old_thin": {
+        "expected_value_score": 0.2623,
+        "sharpe_daily": 1.19,
+        "total_pnl": 22035.83,
+        "total_return_pct": 0.2204,
+        "max_drawdown_pct": 0.0714,
+        "win_rate": 0.4167,
+        "trade_count": 24,
+        "survival_rate": 0.8788,
+        "tail_loss_share": 0.4901,
+        "added_trade_count": 1,
+        "added_trade_pnl": -2446.57,
+        "added_tickers_traded": [
+          "BE"
+        ],
+        "guard_seen": 4,
+        "guard_dropped": 0,
+        "guard_passed": 4
+      }
+    }
+  },
+  "delta_metrics": {
+    "pilot_tradeable_event_guarded": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0276,
+          "sharpe_daily": -0.02,
+          "total_pnl": -319.57,
+          "total_return_pct": -0.0032,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0395,
+          "trade_count": 1,
+          "survival_rate": 0.0074,
+          "tail_loss_share": -0.0356,
+          "added_trade_count": 1,
+          "added_trade_pnl": -254.99,
+          "added_tickers_traded": null,
+          "guard_seen": 7,
+          "guard_dropped": 5,
+          "guard_passed": 2
+        },
+        "mid_weak": {
+          "expected_value_score": -0.0202,
+          "sharpe_daily": -0.02,
+          "total_pnl": -425.23,
+          "total_return_pct": -0.0042,
+          "max_drawdown_pct": 0.0001,
+          "win_rate": -0.0455,
+          "trade_count": 2,
+          "survival_rate": 0.0251,
+          "tail_loss_share": 0.0902,
+          "added_trade_count": 2,
+          "added_trade_pnl": -267.75,
+          "added_tickers_traded": null,
+          "guard_seen": 11,
+          "guard_dropped": 4,
+          "guard_passed": 7
+        },
+        "old_thin": {
+          "expected_value_score": -0.059,
+          "sharpe_daily": -0.12,
+          "total_pnl": -2497.32,
+          "total_return_pct": -0.0249,
+          "max_drawdown_pct": 0.0028,
+          "win_rate": -0.0181,
+          "trade_count": 1,
+          "survival_rate": -0.0109,
+          "tail_loss_share": -0.0118,
+          "added_trade_count": 1,
+          "added_trade_pnl": -2446.57,
+          "added_tickers_traded": null,
+          "guard_seen": 3,
+          "guard_dropped": 0,
+          "guard_passed": 3
+        }
+      },
+      "expected_value_score_delta_sum": -0.1068,
+      "expected_value_score_delta_pct": -0.023581,
+      "baseline_expected_value_score_sum": 4.529,
+      "total_pnl_delta_sum": -3242.12,
+      "baseline_total_pnl_sum": 141091.7,
+      "total_pnl_delta_pct": -0.022979,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 3,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 3,
+      "max_drawdown_delta_max": 0.0028,
+      "trade_count_delta_sum": 4,
+      "win_rate_delta_min": -0.0455,
+      "sharpe_daily_delta_max": -0.02,
+      "added_trade_count_delta_sum": 4,
+      "added_trade_pnl_delta_sum": -2969.31,
+      "guard_seen_delta_sum": 21,
+      "guard_dropped_delta_sum": 9,
+      "guard_passed_delta_sum": 12
+    },
+    "optical_storage_event_guarded": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0276,
+          "sharpe_daily": -0.02,
+          "total_pnl": -319.57,
+          "total_return_pct": -0.0032,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0395,
+          "trade_count": 1,
+          "survival_rate": 0.0109,
+          "tail_loss_share": -0.0356,
+          "added_trade_count": 1,
+          "added_trade_pnl": -254.99,
+          "added_tickers_traded": null,
+          "guard_seen": 8,
+          "guard_dropped": 5,
+          "guard_passed": 3
+        },
+        "mid_weak": {
+          "expected_value_score": -0.0202,
+          "sharpe_daily": -0.02,
+          "total_pnl": -425.23,
+          "total_return_pct": -0.0042,
+          "max_drawdown_pct": 0.0001,
+          "win_rate": -0.0455,
+          "trade_count": 2,
+          "survival_rate": 0.0218,
+          "tail_loss_share": 0.0902,
+          "added_trade_count": 2,
+          "added_trade_pnl": -267.75,
+          "added_tickers_traded": null,
+          "guard_seen": 8,
+          "guard_dropped": 2,
+          "guard_passed": 6
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": -0.0126,
+          "tail_loss_share": 0.0,
+          "added_trade_count": 0,
+          "added_trade_pnl": 0.0,
+          "added_tickers_traded": null,
+          "guard_seen": 2,
+          "guard_dropped": 0,
+          "guard_passed": 2
+        }
+      },
+      "expected_value_score_delta_sum": -0.0478,
+      "expected_value_score_delta_pct": -0.010554,
+      "baseline_expected_value_score_sum": 4.529,
+      "total_pnl_delta_sum": -744.8,
+      "baseline_total_pnl_sum": 141091.7,
+      "total_pnl_delta_pct": -0.005279,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 2,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0001,
+      "trade_count_delta_sum": 3,
+      "win_rate_delta_min": -0.0455,
+      "sharpe_daily_delta_max": 0.0,
+      "added_trade_count_delta_sum": 3,
+      "added_trade_pnl_delta_sum": -522.74,
+      "guard_seen_delta_sum": 18,
+      "guard_dropped_delta_sum": 7,
+      "guard_passed_delta_sum": 11
+    },
+    "all_full_history_ai_event_guarded": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0276,
+          "sharpe_daily": -0.02,
+          "total_pnl": -319.57,
+          "total_return_pct": -0.0032,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0395,
+          "trade_count": 1,
+          "survival_rate": 0.0109,
+          "tail_loss_share": -0.0356,
+          "added_trade_count": 1,
+          "added_trade_pnl": -254.99,
+          "added_tickers_traded": null,
+          "guard_seen": 8,
+          "guard_dropped": 5,
+          "guard_passed": 3
+        },
+        "mid_weak": {
+          "expected_value_score": -0.0202,
+          "sharpe_daily": -0.02,
+          "total_pnl": -425.23,
+          "total_return_pct": -0.0042,
+          "max_drawdown_pct": 0.0001,
+          "win_rate": -0.0455,
+          "trade_count": 2,
+          "survival_rate": 0.0251,
+          "tail_loss_share": 0.0902,
+          "added_trade_count": 2,
+          "added_trade_pnl": -267.75,
+          "added_tickers_traded": null,
+          "guard_seen": 12,
+          "guard_dropped": 5,
+          "guard_passed": 7
+        },
+        "old_thin": {
+          "expected_value_score": -0.059,
+          "sharpe_daily": -0.12,
+          "total_pnl": -2497.32,
+          "total_return_pct": -0.0249,
+          "max_drawdown_pct": 0.0028,
+          "win_rate": -0.0181,
+          "trade_count": 1,
+          "survival_rate": -0.0244,
+          "tail_loss_share": -0.0118,
+          "added_trade_count": 1,
+          "added_trade_pnl": -2446.57,
+          "added_tickers_traded": null,
+          "guard_seen": 4,
+          "guard_dropped": 0,
+          "guard_passed": 4
+        }
+      },
+      "expected_value_score_delta_sum": -0.1068,
+      "expected_value_score_delta_pct": -0.023581,
+      "baseline_expected_value_score_sum": 4.529,
+      "total_pnl_delta_sum": -3242.12,
+      "baseline_total_pnl_sum": 141091.7,
+      "total_pnl_delta_pct": -0.022979,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 3,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 3,
+      "max_drawdown_delta_max": 0.0028,
+      "trade_count_delta_sum": 4,
+      "win_rate_delta_min": -0.0455,
+      "sharpe_daily_delta_max": -0.02,
+      "added_trade_count_delta_sum": 4,
+      "added_trade_pnl_delta_sum": -2969.31,
+      "guard_seen_delta_sum": 24,
+      "guard_dropped_delta_sum": 10,
+      "guard_passed_delta_sum": 14
+    }
+  },
+  "best_variant": "optical_storage_event_guarded",
+  "best_variant_gate4": false,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, implement the AI infra event guard in shared universe/pilot eligibility code and expose the same guard in run.py."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_role_changed": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this avoids that data constraint rather than weakening LLM."
+  },
+  "history_guardrails": {
+    "not_raw_ai_infra_watchlist_retry": true,
+    "not_simple_bull_gate_retry": true,
+    "not_proxy_etf_retry": true,
+    "why_not_simple_repeat": "Prior AI infra raw subsets and broad regime gates failed. This tests a point-in-time event-risk qualification policy tied to the existing registry requirement that these candidates need an event guard."
+  },
+  "rejection_reason": "No event-guarded AI infra candidate-pool variant passed fixed-window Gate 4.",
+  "next_retry_requires": [
+    "Do not retry raw AI infra core-pool promotion without forward evidence.",
+    "A valid retry needs production-aligned event/news confirmation or pilot outcome evidence.",
+    "If promoted, keep the policy shared between universe eligibility and backtest replay."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260502_003_ai_infra_event_guarded_pool.py",
+    "data/experiments/exp-20260502-003/ai_infra_event_guarded_pool.json",
+    "docs/experiments/logs/exp-20260502-003.json",
+    "docs/experiments/tickets/exp-20260502-003.json"
+  ]
+}

@@ -1,4 +1,4 @@
-"""exp-20260427-005 event-sensitive liquidity-filtered universe scout.
+"""exp-20260501-013 event-sensitive liquidity-filtered universe scout.
 
 Observed-only shadow evaluation. This does not change the production universe,
 signal engine, risk engine, or portfolio engine.
@@ -26,11 +26,11 @@ from filter import EVENT_KEYWORDS, WATCHLIST  # noqa: E402
 from risk_engine import SECTOR_MAP  # noqa: E402
 
 
-EXPERIMENT_ID = "exp-20260427-005"
+EXPERIMENT_ID = "exp-20260501-013"
 OUT_JSON = os.path.join(
     REPO_ROOT,
     "data",
-    "exp_20260427_003_universe_scout_results.json",
+    "exp_universe_scout_event_sensitive_liquidity.json",
 )
 
 WINDOWS = OrderedDict([
@@ -536,7 +536,7 @@ def main() -> int:
             "No production universe write was attempted.",
             "Outside-production evidence is limited by archived OHLCV coverage.",
             "Scarce-slot value is measured with forward returns and overlap only; no slot-aware replay was run.",
-            "Ticket claim required force because stale exp-20260426-014 still owns broad data/ scope in registry.",
+            "Recent universe expansion logs show repeated ETF/noisy expansion failures; this run is audit-only.",
         ],
         "windows": windows,
     }

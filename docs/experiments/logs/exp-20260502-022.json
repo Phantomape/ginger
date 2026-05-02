@@ -1,0 +1,101 @@
+{
+  "experiment_id": "exp-20260502-022",
+  "timestamp": "2026-05-02T19:23:00Z",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_followthrough_addon_cap",
+  "hypothesis": "SPY-relative leaders that already qualified for the accepted risk-on leader sleeve remain cap-constrained after a clean day-2 follow-through; lifting only the first follow-through add-on cap to 60% should improve winner capture without changing entries, exits, ranking, or global add-on triggers.",
+  "alpha_hypothesis_category": "lifecycle_capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains blocked by sparse production-aligned outcome joins, so this run uses a deterministic, replayable field already available in production and backtest paths.",
+  "mechanism_insight_check": {
+    "near_repeat": "partial",
+    "notes": "This builds on accepted SPY-relative leader allocation but changes a different lifecycle variable: first follow-through add-on capacity, not initial-entry risk budget or initial position cap."
+  },
+  "parameters": {
+    "single_causal_variable": "ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT",
+    "old_value": 0.35,
+    "tested_variants": {
+      "addon_spy_leader_cap_0_50": 0.5,
+      "addon_spy_leader_cap_0_60": 0.6
+    },
+    "accepted_value": 0.6,
+    "locked_variables": [
+      "universe",
+      "entry rules",
+      "exit rules",
+      "candidate ranking",
+      "initial position cap",
+      "risk multipliers",
+      "follow-through trigger",
+      "second add-on behavior",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 3.2228, "sharpe_daily": 4.28, "total_pnl": 75299.33, "total_return_pct": 0.753, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8039},
+    "mid_weak": {"expected_value_score": 1.3042, "sharpe_daily": 2.61, "total_pnl": 49972.09, "total_return_pct": 0.4997, "max_drawdown_pct": 0.0799, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.2979, "sharpe_daily": 1.26, "total_pnl": 23639.57, "total_return_pct": 0.2364, "max_drawdown_pct": 0.0818, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 3.4191, "sharpe_daily": 4.35, "total_pnl": 78600.33, "total_return_pct": 0.786, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8039, "converged": true},
+    "mid_weak": {"expected_value_score": 1.4415, "sharpe_daily": 2.62, "total_pnl": 55015.08, "total_return_pct": 0.5502, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "converged": true},
+    "old_thin": {"expected_value_score": 0.3179, "sharpe_daily": 1.29, "total_pnl": 24642.07, "total_return_pct": 0.2464, "max_drawdown_pct": 0.0805, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "converged": true}
+  },
+  "delta_metrics": {
+    "baseline_ev_sum": 4.8249,
+    "variant_ev_sum": 5.1785,
+    "aggregate_ev_delta": 0.3536,
+    "aggregate_ev_delta_pct": 0.073286,
+    "baseline_pnl_sum": 148910.99,
+    "variant_pnl_sum": 158257.48,
+    "aggregate_pnl_delta": 9346.49,
+    "aggregate_pnl_delta_pct": 0.062765,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0,
+    "max_drawdown_delta_max": 0.008,
+    "trade_count_delta_sum": 0,
+    "win_rate_delta_min": 0.0,
+    "survival_rate_delta_min": 0.0,
+    "sharpe_daily_delta_max": 0.07
+  },
+  "gate4_passed": true,
+  "gate4_basis": "Aggregate total PnL improved more than 5% and EV improved in all three fixed windows.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "notes": "The production follow-through builder and backtester both use the shared SPY-relative leader helper and constant."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "main_risk": "Higher concentration in follow-through winners can amplify drawdown; mid_weak max drawdown increased by 0.80pp.",
+  "next_retry_requires": [
+    "Do not retry nearby add-on caps above 60% without forward/tail evidence.",
+    "A valid next lifecycle retry needs event/news context or a different add-on quality discriminator."
+  ]
+}

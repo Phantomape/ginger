@@ -1,0 +1,799 @@
+{
+  "experiment_id": "exp-20260502-010",
+  "generated_at": "2026-05-02T06:40:20.844721+00:00",
+  "hypothesis": "A fresh multi-headline positive clean-news intensity shadow mechanism can provide non-overlapping high-quality candidates without degrading expected value.",
+  "change_type": "new_strategy_shadow",
+  "single_causal_variable": "fresh multi-headline positive clean-news intensity",
+  "parameters": {
+    "min_positive_items_same_clean_news_archive_day": 2,
+    "max_negative_items_in_fresh_archive_window": 0,
+    "news_lookback_archive_days": 3,
+    "ticker_cooldown_trading_days": 10,
+    "min_dollar_volume": 25000000,
+    "forward_days": [
+      5,
+      10,
+      20
+    ],
+    "excluded_tickers": [
+      "GLD",
+      "IAU",
+      "IEF",
+      "IWM",
+      "QQQ",
+      "SLV",
+      "SPY",
+      "TLT",
+      "USO",
+      "UUP",
+      "XLE",
+      "XLP",
+      "XLU",
+      "XLV"
+    ],
+    "baseline_config": {
+      "REGIME_AWARE_EXIT": true
+    }
+  },
+  "history_guardrails": {
+    "not_raw_ai_infra_pool": true,
+    "not_spy_or_sector_leader_gate": true,
+    "not_ohlcv_only_entry": true,
+    "not_earnings_single_field_repair": true,
+    "relation_to_prior_post_news": "This is a stricter news-intensity audit requiring multiple positive clean-news items on the archive date and measuring it as a ranking/source-quality feature, not a raw post-news continuation entry."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "windows": {
+    "late_strong": {
+      "window": "late_strong",
+      "range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "baseline": {
+        "expected_value_score": 2.9907,
+        "sharpe_daily": 4.31,
+        "total_pnl": 69387.88,
+        "total_return_pct": 0.6939,
+        "max_drawdown_pct": 0.0457,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "survival_rate": 0.8039
+      },
+      "candidate_count": 23,
+      "candidate_days": 14,
+      "unique_tickers": 12,
+      "overlap_with_existing_ab_entry_count": 0,
+      "overlap_with_existing_ab_entry_rate": 0.0,
+      "forward_return_distribution": {
+        "fwd_5d": {
+          "count": 18,
+          "avg": 0.012093,
+          "median": 0.001795,
+          "win_rate": 0.5556,
+          "p25": -0.039381,
+          "p75": 0.01372
+        },
+        "fwd_10d": {
+          "count": 13,
+          "avg": -0.004949,
+          "median": -0.017211,
+          "win_rate": 0.3077,
+          "p25": -0.062979,
+          "p75": 0.016734
+        },
+        "fwd_20d": {
+          "count": 11,
+          "avg": -0.018917,
+          "median": -0.025179,
+          "win_rate": 0.2727,
+          "p25": -0.067236,
+          "p75": -0.000958
+        }
+      },
+      "scarce_slot_proxy": {
+        "comparison_count": 1,
+        "candidate_minus_worst_trade_pct": {
+          "count": 1,
+          "avg": -0.141498,
+          "median": -0.141498,
+          "win_rate": 0.0,
+          "p25": -0.141498,
+          "p75": -0.141498
+        },
+        "positive_replacement_rate": 0.0,
+        "examples": [
+          {
+            "date": "2026-03-13",
+            "candidate": "MCD",
+            "candidate_fwd_10d": -0.06297861329639487,
+            "overlap_trade_same_ticker": false,
+            "worst_same_day_trade": {
+              "ticker": "CVX",
+              "strategy": "trend_long",
+              "pnl_pct_net": 0.078519,
+              "pnl": 3190.98
+            },
+            "candidate_minus_worst_trade_pct": -0.14149761329639488
+          }
+        ]
+      },
+      "top_candidates": [
+        {
+          "ticker": "META",
+          "date": "2026-02-17",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 6,
+          "negative_hits": 2,
+          "archive_dates": [
+            "2026-02-14",
+            "2026-02-17"
+          ],
+          "dollar_volume": 8095877207.94,
+          "close": 638.7431030273438,
+          "forward_returns": {
+            "fwd_5d": 1.5671035158870694e-05,
+            "fwd_10d": 0.024699366957068092,
+            "fwd_20d": -0.025179340186353483
+          },
+          "sample_titles": [
+            "Dodge & Cox Boosts Meta Platforms Stake by 1.06M Shares - TipRanks",
+            "Coatue expands positions in NFLX, AMZN and cuts in GOOGL, META, among other Q4 moves (NFLX:NASDAQ) - Seeking Alpha",
+            "How High Can Alphabet (GOOG) and Meta Platforms (META) Go? Street-High Price Targets Tell a Bullish Tale - TipRanks"
+          ]
+        },
+        {
+          "ticker": "CRDO",
+          "date": "2026-02-19",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-14",
+            "2026-02-19"
+          ],
+          "dollar_volume": 438782424.3,
+          "close": 130.66000366210938,
+          "forward_returns": {
+            "fwd_5d": -0.12383284747961387,
+            "fwd_10d": -0.12184299213330385,
+            "fwd_20d": -0.18039190772695435
+          },
+          "sample_titles": [
+            "Strong Outlook and PCIe Certification Keep Credo Technology Group Holding Ltd (CRDO) in Focus - Yahoo Finance",
+            "CRDO Stock Skyrockets 2,870% \u2014 Inside Credo Technology Group\u2019s Explosive Rally - FXLeaders"
+          ]
+        },
+        {
+          "ticker": "GOOG",
+          "date": "2026-02-19",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-17",
+            "2026-02-19"
+          ],
+          "dollar_volume": 4079582821.0,
+          "close": 303.3462829589844,
+          "forward_returns": {
+            "fwd_5d": 0.011826398073812694,
+            "fwd_10d": -0.008729733881647106,
+            "fwd_20d": 0.007858108575096834
+          },
+          "sample_titles": [
+            "How High Can Alphabet (GOOG) and Meta Platforms (META) Go? Street-High Price Targets Tell a Bullish Tale - TipRanks",
+            "GOOG stock slips after-hours as New York shelves Waymo robotaxi expansion plan - Bez Kabli"
+          ]
+        },
+        {
+          "ticker": "AVGO",
+          "date": "2026-02-20",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-19",
+            "2026-02-20"
+          ],
+          "dollar_volume": 5861936200.48,
+          "close": 331.9536437988281,
+          "forward_returns": {
+            "fwd_5d": -0.039380711870430796,
+            "fwd_10d": -0.006523307791517774,
+            "fwd_20d": -0.06655636515042074
+          },
+          "sample_titles": [
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks",
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks"
+          ]
+        },
+        {
+          "ticker": "NVDA",
+          "date": "2026-02-20",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-19",
+            "2026-02-20"
+          ],
+          "dollar_volume": 33866290044.76,
+          "close": 189.8097381591797,
+          "forward_returns": {
+            "fwd_5d": -0.0665367244051166,
+            "fwd_10d": -0.06321782668914688,
+            "fwd_20d": -0.09014153529145486
+          },
+          "sample_titles": [
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks",
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks"
+          ]
+        },
+        {
+          "ticker": "GOOG",
+          "date": "2026-03-05",
+          "positive_items": 3,
+          "negative_items": 0,
+          "positive_hits": 6,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-17",
+            "2026-02-19",
+            "2026-02-20"
+          ],
+          "dollar_volume": 6808978853.16,
+          "close": 300.6981506347656,
+          "forward_returns": {
+            "fwd_5d": 0.008353363048658746,
+            "fwd_10d": 0.016733925170275832,
+            "fwd_20d": -0.020745585453448623
+          },
+          "sample_titles": [
+            "How High Can Alphabet (GOOG) and Meta Platforms (META) Go? Street-High Price Targets Tell a Bullish Tale - TipRanks",
+            "GOOG stock slips after-hours as New York shelves Waymo robotaxi expansion plan - Bez Kabli",
+            "Google stock (GOOG) jumps after Supreme Court tariff ruling as traders brace for Nvidia earnings - TechStock\u00b2"
+          ]
+        },
+        {
+          "ticker": "AVGO",
+          "date": "2026-03-06",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-19",
+            "2026-02-20"
+          ],
+          "dollar_volume": 12911933877.56,
+          "close": 329.7882080078125,
+          "forward_returns": {
+            "fwd_5d": -0.025175496229121408,
+            "fwd_10d": -0.060427242863091646,
+            "fwd_20d": -0.04656993476148619
+          },
+          "sample_titles": [
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks",
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks"
+          ]
+        },
+        {
+          "ticker": "NVDA",
+          "date": "2026-03-06",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-19",
+            "2026-02-20"
+          ],
+          "dollar_volume": 33610055683.65,
+          "close": 177.8103790283203,
+          "forward_returns": {
+            "fwd_5d": 0.013720351899655592,
+            "fwd_10d": -0.028740628685483993,
+            "fwd_20d": -0.0009582097490762331
+          },
+          "sample_titles": [
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks",
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks"
+          ]
+        },
+        {
+          "ticker": "MCD",
+          "date": "2026-03-13",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 6,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-20",
+            "2026-03-13"
+          ],
+          "dollar_volume": 799761687.07,
+          "close": 326.4599914550781,
+          "forward_returns": {
+            "fwd_5d": -0.053942246561584195,
+            "fwd_10d": -0.06297861329639487,
+            "fwd_20d": -0.0672363605464148
+          },
+          "sample_titles": [
+            "McDonald's (MCD) Upgraded to Buy by Argus on Strong Competitive Positioning - Finviz",
+            "Is It Too Late To Reassess McDonald\u2019s (MCD) Valuation After Strong Multi Year Share Gains - simplywall.st"
+          ]
+        },
+        {
+          "ticker": "NVDA",
+          "date": "2026-03-20",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-02-20",
+            "2026-03-13"
+          ],
+          "dollar_volume": 41676567713.54,
+          "close": 172.6999969482422,
+          "forward_returns": {
+            "fwd_5d": -0.02999416773199881,
+            "fwd_10d": 0.028604531144761802,
+            "fwd_20d": 0.17000579692627715
+          },
+          "sample_titles": [
+            "NVDA vs. AVGO: Wall Street Picks an AI Semiconductor Winner Ahead of Earnings - TipRanks",
+            "Top Cantor Analyst Is Bullish on Nvidia Stock (NVDA) Ahead of GTC 2026, Says \u2018We Are on the Cusp of Regaining Confidence\u2019 - TipRanks"
+          ]
+        },
+        {
+          "ticker": "MU",
+          "date": "2026-03-23",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-03-12",
+            "2026-03-22"
+          ],
+          "dollar_volume": 22152025820.68,
+          "close": 404.1802062988281,
+          "forward_returns": {
+            "fwd_5d": -0.2038205167448306,
+            "fwd_10d": -0.06581277190723134,
+            "fwd_20d": 0.11183080685194713
+          },
+          "sample_titles": [
+            "\u201cBuy Before the Breakout\u201d: Here\u2019s Why Top Mizuho Analyst Is Bullish on Micron Stock (MU) ahead of Q2 Earnings - TipRanks",
+            "Micron Technology Hikes Its Dividend 30% Due to Surging FCF - MU Is Worth 34% More - What's the Best Play? - Yahoo Finance"
+          ]
+        },
+        {
+          "ticker": "AMD",
+          "date": "2026-03-30",
+          "positive_items": 3,
+          "negative_items": 0,
+          "positive_hits": 8,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-03-22",
+            "2026-03-28"
+          ],
+          "dollar_volume": 8048088656.37,
+          "close": 196.0399932861328,
+          "forward_returns": {
+            "fwd_5d": 0.13002451727265552,
+            "fwd_10d": 0.3011120998761099,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Occidental Asset Management LLC Boosts Stock Position in Advanced Micro Devices, Inc. $AMD - MarketBeat",
+            "How Investors May Respond To AMD (AMD) CPU Price Hikes Amid AI-Driven Supply Constraints - simplywall.st",
+            "INTC, AMD Stocks Rally: CPU Price Hikes Signal AI Demand Shift Beyond GPUs - Stocktwits"
+          ]
+        },
+        {
+          "ticker": "MCD",
+          "date": "2026-03-30",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-03-28",
+            "2026-03-29"
+          ],
+          "dollar_volume": 1101328683.64,
+          "close": 308.5299987792969,
+          "forward_returns": {
+            "fwd_5d": -0.011927503615016932,
+            "fwd_10d": -0.01721063617671803,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Analysts Remain Constructive on McDonald\u2019s (MCD) Following Strong Q4 and Full-Year 2025 Performance - Yahoo Finance Singapore",
+            "Analysts Remain Constructive on McDonald\u2019s (MCD) Following Strong Q4 and Full-Year 2025 Performance - Yahoo Finance Singapore"
+          ]
+        },
+        {
+          "ticker": "APP",
+          "date": "2026-04-13",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-11",
+            "2026-04-12"
+          ],
+          "dollar_volume": 2295891577.14,
+          "close": 417.45001220703125,
+          "forward_returns": {
+            "fwd_5d": 0.17609289040238463,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "AppLovin (APP) Valuation Check As Analyst Upgrades Follow Stronger AI Ad Performance - simplywall.st",
+            "Here\u2019s Why Wall Street Is Bullish on \u200bAppLovin Corporation (APP) - Yahoo Finance"
+          ]
+        },
+        {
+          "ticker": "CRDO",
+          "date": "2026-04-13",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-12",
+            "2026-04-13"
+          ],
+          "dollar_volume": 1397653034.35,
+          "close": 134.36000061035156,
+          "forward_returns": {
+            "fwd_5d": 0.2989728936176448,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Credo (CRDO) Is Up 17.9% After Raised Guidance And ZeroFlap Optics Push Into AI Datacenters - simplywall.st",
+            "CRDO stock soars post-market on DustPhotonics acquisition: Retail eyes surge to over $200 - MSN"
+          ]
+        },
+        {
+          "ticker": "GOOG",
+          "date": "2026-04-13",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-12",
+            "2026-04-13"
+          ],
+          "dollar_volume": 3898447783.64,
+          "close": 319.2099914550781,
+          "forward_returns": {
+            "fwd_5d": 0.05071897144449067,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Leo Wealth LLC Boosts Stock Holdings in Alphabet Inc. $GOOG - MarketBeat",
+            "Oracle Stock Surges 12%, Why Is It Outperforming Peers MSFT, AMZN, GOOG? - TradingKey"
+          ]
+        },
+        {
+          "ticker": "AMZN",
+          "date": "2026-04-14",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 8,
+          "negative_hits": 4,
+          "archive_dates": [
+            "2026-04-12",
+            "2026-04-13",
+            "2026-04-14"
+          ],
+          "dollar_volume": 18100019010.54,
+          "close": 249.02000427246094,
+          "forward_returns": {
+            "fwd_5d": 0.0035740076073351723,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "SA analyst upgrades/downgrades: NFLX, LUV, XOM, AMZN - Seeking Alpha",
+            "Oracle Stock Surges 12%, Why Is It Outperforming Peers MSFT, AMZN, GOOG? - TradingKey",
+            "SA analyst upgrades/downgrades: TSLA, AMD, SNDK, AMZN - Seeking Alpha"
+          ]
+        },
+        {
+          "ticker": "MSFT",
+          "date": "2026-04-14",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-13",
+            "2026-04-14"
+          ],
+          "dollar_volume": 14743393445.62,
+          "close": 393.1099853515625,
+          "forward_returns": {
+            "fwd_5d": 0.07898557520175564,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Oracle Stock Surges 12%, Why Is It Outperforming Peers MSFT, AMZN, GOOG? - TradingKey",
+            "Oracle Stock Surges 12%, Why Is It Outperforming Peers MSFT, AMZN, GOOG? - TradingKey"
+          ]
+        },
+        {
+          "ticker": "MU",
+          "date": "2026-04-15",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 7,
+          "negative_hits": 2,
+          "archive_dates": [
+            "2026-04-14",
+            "2026-04-15"
+          ],
+          "dollar_volume": 18418051166.52,
+          "close": 456.2300109863281,
+          "forward_returns": {
+            "fwd_5d": null,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Is It Too Late To Consider Micron Technology (MU) After Its Sharp AI-Fueled Rally? - Yahoo Finance",
+            "Why Micron Stock Is Falling Today - The Motley Fool"
+          ]
+        },
+        {
+          "ticker": "AMD",
+          "date": "2026-04-16",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 12,
+          "negative_hits": 4,
+          "archive_dates": [
+            "2026-04-14",
+            "2026-04-16"
+          ],
+          "dollar_volume": 18045384241.31,
+          "close": 278.260009765625,
+          "forward_returns": {
+            "fwd_5d": null,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Chip stocks rally! NVIDIA achieves a strong 10-day consecutive rise, AMD surges 30%, and the Philadelphia Semiconductor Index continues to hit new highs. - \u5bcc\u9014\u725b\u725b",
+            "SA analyst upgrades/downgrades: TSLA, AMD, SNDK, AMZN - Seeking Alpha",
+            "INTC, AMD, MSFT, DELL stocks rally: Is old guard of big tech back in vogue? - MSN"
+          ]
+        },
+        {
+          "ticker": "AVGO",
+          "date": "2026-04-17",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-15",
+            "2026-04-17"
+          ],
+          "dollar_volume": 8367284493.87,
+          "close": 406.5400085449219,
+          "forward_returns": {
+            "fwd_5d": null,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Broadcom Stock (AVGO) Nears Record High \u2014 Can Meta and Google Deals Push It Higher? - TipRanks",
+            "Meta Platforms Taps AVGO for AI Expansion: Buy or Hold META Stock? - Zacks Investment Research"
+          ]
+        },
+        {
+          "ticker": "COIN",
+          "date": "2026-04-17",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-16",
+            "2026-04-17"
+          ],
+          "dollar_volume": 3233273660.69,
+          "close": 206.3300018310547,
+          "forward_returns": {
+            "fwd_5d": null,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Is It Too Late To Consider Coinbase Global (COIN) After Recent Volatility Surge? - simplywall.st",
+            "ASST, HOOD, COIN, BMNR Stocks Rally After BTC Nears $78K On Strait Of Hormuz Reopening - Stocktwits"
+          ]
+        },
+        {
+          "ticker": "META",
+          "date": "2026-04-17",
+          "positive_items": 2,
+          "negative_items": 0,
+          "positive_hits": 4,
+          "negative_hits": 0,
+          "archive_dates": [
+            "2026-04-15",
+            "2026-04-17"
+          ],
+          "dollar_volume": 11212003726.23,
+          "close": 688.5499877929688,
+          "forward_returns": {
+            "fwd_5d": null,
+            "fwd_10d": null,
+            "fwd_20d": null
+          },
+          "sample_titles": [
+            "Broadcom Stock (AVGO) Nears Record High \u2014 Can Meta and Google Deals Push It Higher? - TipRanks",
+            "Meta Platforms Taps AVGO for AI Expansion: Buy or Hold META Stock? - Zacks Investment Research"
+          ]
+        }
+      ]
+    },
+    "mid_weak": {
+      "window": "mid_weak",
+      "range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "baseline": {
+        "expected_value_score": 1.217,
+        "sharpe_daily": 2.58,
+        "total_pnl": 47170.67,
+        "total_return_pct": 0.4717,
+        "max_drawdown_pct": 0.0799,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "survival_rate": 0.7925
+      },
+      "candidate_count": 0,
+      "candidate_days": 0,
+      "unique_tickers": 0,
+      "overlap_with_existing_ab_entry_count": 0,
+      "overlap_with_existing_ab_entry_rate": null,
+      "forward_return_distribution": {
+        "fwd_5d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        },
+        "fwd_10d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        },
+        "fwd_20d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        }
+      },
+      "scarce_slot_proxy": {
+        "comparison_count": 0,
+        "candidate_minus_worst_trade_pct": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        },
+        "positive_replacement_rate": null,
+        "examples": []
+      },
+      "top_candidates": []
+    },
+    "old_thin": {
+      "window": "old_thin",
+      "range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "baseline": {
+        "expected_value_score": 0.2742,
+        "sharpe_daily": 1.25,
+        "total_pnl": 21938.62,
+        "total_return_pct": 0.2194,
+        "max_drawdown_pct": 0.0796,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "survival_rate": 0.9167
+      },
+      "candidate_count": 0,
+      "candidate_days": 0,
+      "unique_tickers": 0,
+      "overlap_with_existing_ab_entry_count": 0,
+      "overlap_with_existing_ab_entry_rate": null,
+      "forward_return_distribution": {
+        "fwd_5d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        },
+        "fwd_10d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        },
+        "fwd_20d": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        }
+      },
+      "scarce_slot_proxy": {
+        "comparison_count": 0,
+        "candidate_minus_worst_trade_pct": {
+          "count": 0,
+          "avg": null,
+          "median": null,
+          "win_rate": null,
+          "p25": null,
+          "p75": null
+        },
+        "positive_replacement_rate": null,
+        "examples": []
+      },
+      "top_candidates": []
+    }
+  },
+  "aggregate": {
+    "candidate_count": 23,
+    "overlap_with_existing_ab_entry_count": 0,
+    "overlap_with_existing_ab_entry_rate": 0.0,
+    "decision": "observed_only",
+    "production_ready": false,
+    "production_readiness_reason": "Shadow/default-off audit only. It does not run a strategy-changing BacktestEngine replay or pass Gate 4, and historical clean-news coverage is sparse outside the late window."
+  }
+}

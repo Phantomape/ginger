@@ -1,0 +1,86 @@
+{
+  "after_metrics": {
+    "expected_value_score": 2.9194,
+    "max_drawdown_pct": 0.0457,
+    "sharpe": 6.0,
+    "sharpe_daily": 4.28,
+    "survival_rate": 0.8039,
+    "total_pnl": 68210.56,
+    "total_return_pct": 0.6821,
+    "trade_count": 20,
+    "win_rate": 0.75
+  },
+  "before_metrics": {
+    "expected_value_score": 2.9194,
+    "max_drawdown_pct": 0.0457,
+    "sharpe": 6.0,
+    "sharpe_daily": 4.28,
+    "survival_rate": 0.8039,
+    "total_pnl": 68210.56,
+    "total_return_pct": 0.6821,
+    "trade_count": 20,
+    "win_rate": 0.75
+  },
+  "change_summary": "Shadow-audited liquid post-2019 platform/new-listing source cohort with existing shared trend/breakout engine only; no production universe change.",
+  "change_type": "universe_expansion",
+  "component": "quant/experiments/exp_20260502_008_liquid_recent_ipo_new_listing_momentum_shadow_universe.py, data/experiments/exp-20260502-008/exp_20260502_008_liquid_recent_ipo_new_listing_momentum_shadow_universe.json, docs/experiments/tickets/exp-20260502-008.json, docs/experiments/logs/exp-20260502-008.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": 0.0
+  },
+  "experiment_id": "exp-20260502-008",
+  "hypothesis": "one narrow shadow universe can produce non-overlapping high-quality candidates after liquidity/data checks",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [
+    "A true outside-production, point-in-time constituent source with OHLCV coverage.",
+    "Slot-aware replacement replay before any production promotion.",
+    "Do not repeat this cohort as a raw production universe addition; current sample has negative forward returns and zero external coverage."
+  ],
+  "notes": "Artifact: data/experiments/exp-20260502-008/exp_20260502_008_liquid_recent_ipo_new_listing_momentum_shadow_universe.json. Source APP/COIN/CRDO/DDOG/PLTR/SNOW had full snapshot coverage and passed liquidity in all windows, but outside-production source count was 0. Candidate count 0/9/6; same-day A/B overlap 0/6/3, weighted 60%. Forward returns across 15 candidates were negative: 5d avg -2.31%, 10d avg -2.23%, 20d avg -4.12%; scarce-slot proxy found zero candidate days with 3+ baseline entries. Decision observed_only, not production-ready.",
+  "parameters": {
+    "single_causal_variable": "liquid post-2019 platform/new-listing cohort in fixed OHLCV snapshots: APP, COIN, CRDO, DDOG, PLTR, SNOW; excludes ETFs, AI infra names BE/INTC/LITE, gap-recovery/event-sensitive pools, and production universe changes",
+    "locked_variables": [
+      "liquid post-2019 platform/new-listing cohort in fixed OHLCV snapshots: APP, COIN, CRDO, DDOG, PLTR, SNOW; excludes ETFs, AI infra names BE/INTC/LITE, gap-recovery/event-sensitive pools, and production universe changes"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260501.json",
+    "data/backtest_results_20260501.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-05-02T06:36:10.940783+00:00",
+  "lane": "universe_scout",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  }
+}

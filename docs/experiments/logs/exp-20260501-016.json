@@ -1,0 +1,708 @@
+{
+  "experiment_id": "exp-20260501-016",
+  "timestamp": "2026-05-01T08:08:13.501875+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "candidate_universe_regime_gated_ai_infra",
+  "hypothesis": "AI infrastructure individual names may be profitable replacement candidates only when the broad tape is supportive; a market-regime activation gate may preserve the BE/INTC mid/late upside while avoiding the old_thin fragility that blocked raw promotion.",
+  "alpha_hypothesis_category": "candidate_universe_entry_gating",
+  "parameters": {
+    "single_causal_variable": "AI infra added-candidate activation gate",
+    "source_experiment": "exp-20260501-008",
+    "tested_variants": {
+      "be_intc_bull_positive": {
+        "added": [
+          "BE",
+          "INTC"
+        ],
+        "gate": "market_regime == BULL and spy_10d_return > 0"
+      },
+      "be_intc_bull_indices_positive": {
+        "added": [
+          "BE",
+          "INTC"
+        ],
+        "gate": "market_regime == BULL and spy_10d_return > 0 and qqq_pct_from_ma > 0"
+      },
+      "be_only_bull_positive": {
+        "added": [
+          "BE"
+        ],
+        "gate": "market_regime == BULL and spy_10d_return > 0"
+      }
+    },
+    "sector_map_patch": {
+      "BE": "Energy",
+      "INTC": "Technology"
+    },
+    "locked_variables": [
+      "existing production universe",
+      "signal generation rules for all tickers",
+      "candidate ranking",
+      "position sizing",
+      "position caps",
+      "portfolio heat",
+      "add-ons",
+      "exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.7,
+      "sharpe_daily": 4.3,
+      "total_pnl": 62788.03,
+      "total_return_pct": 0.6279,
+      "max_drawdown_pct": 0.0439,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5045
+    },
+    "mid_weak": {
+      "expected_value_score": 1.2036,
+      "sharpe_daily": 2.58,
+      "total_pnl": 46654.1,
+      "total_return_pct": 0.4665,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4839
+    },
+    "old_thin": {
+      "expected_value_score": 0.2563,
+      "sharpe_daily": 1.27,
+      "total_pnl": 20181.65,
+      "total_return_pct": 0.2018,
+      "max_drawdown_pct": 0.0688,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4234
+    }
+  },
+  "after_metrics": {
+    "be_intc_bull_positive": {
+      "added": [
+        "BE",
+        "INTC"
+      ],
+      "gate": "market_regime == BULL and spy_10d_return > 0",
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 2.7,
+            "sharpe_daily": 4.3,
+            "total_pnl": 62788.03,
+            "total_return_pct": 0.6279,
+            "max_drawdown_pct": 0.0439,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5045
+          },
+          "after": {
+            "expected_value_score": 3.1869,
+            "sharpe_daily": 4.34,
+            "total_pnl": 73431.54,
+            "total_return_pct": 0.7343,
+            "max_drawdown_pct": 0.0604,
+            "win_rate": 0.7619,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4698,
+            "ai_infra_allowed_signals": 3,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": 0.4869,
+            "sharpe_daily": 0.04,
+            "total_pnl": 10643.51,
+            "total_return_pct": 0.1064,
+            "max_drawdown_pct": 0.0165,
+            "win_rate": -0.0276,
+            "trade_count": 2,
+            "survival_rate": -0.0114,
+            "tail_loss_share": -0.0347
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 2,
+            "candidate_pnl": 8191.37,
+            "by_ticker": {
+              "INTC": {
+                "trades": 2,
+                "pnl": 8191.37,
+                "wins": 1,
+                "win_rate": 0.5
+              }
+            }
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 1.2036,
+            "sharpe_daily": 2.58,
+            "total_pnl": 46654.1,
+            "total_return_pct": 0.4665,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4839
+          },
+          "after": {
+            "expected_value_score": 1.5826,
+            "sharpe_daily": 2.89,
+            "total_pnl": 54759.99,
+            "total_return_pct": 0.5476,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5455,
+            "trade_count": 22,
+            "survival_rate": 0.8167,
+            "tail_loss_share": 0.4842,
+            "ai_infra_allowed_signals": 7,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": 0.379,
+            "sharpe_daily": 0.31,
+            "total_pnl": 8105.89,
+            "total_return_pct": 0.0811,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0217,
+            "trade_count": 1,
+            "survival_rate": 0.0242,
+            "tail_loss_share": 0.0003
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 1,
+            "candidate_pnl": 7084.79,
+            "by_ticker": {
+              "BE": {
+                "trades": 1,
+                "pnl": 7084.79,
+                "wins": 1,
+                "win_rate": 1.0
+              }
+            }
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.2563,
+            "sharpe_daily": 1.27,
+            "total_pnl": 20181.65,
+            "total_return_pct": 0.2018,
+            "max_drawdown_pct": 0.0688,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4234
+          },
+          "after": {
+            "expected_value_score": 0.2466,
+            "sharpe_daily": 1.21,
+            "total_pnl": 20381.1,
+            "total_return_pct": 0.2038,
+            "max_drawdown_pct": 0.064,
+            "win_rate": 0.4167,
+            "trade_count": 24,
+            "survival_rate": 0.8939,
+            "tail_loss_share": 0.4407,
+            "ai_infra_allowed_signals": 3,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": -0.0097,
+            "sharpe_daily": -0.06,
+            "total_pnl": 199.45,
+            "total_return_pct": 0.002,
+            "max_drawdown_pct": -0.0048,
+            "win_rate": 0.0076,
+            "trade_count": 2,
+            "survival_rate": -0.0228,
+            "tail_loss_share": 0.0173
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 1,
+            "candidate_pnl": -1913.59,
+            "by_ticker": {
+              "BE": {
+                "trades": 1,
+                "pnl": -1913.59,
+                "wins": 0,
+                "win_rate": 0.0
+              }
+            }
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.8562,
+        "total_pnl_delta_sum": 18948.85,
+        "baseline_total_pnl_sum": 129623.78,
+        "total_pnl_delta_pct": 0.146183,
+        "ev_windows_improved": 2,
+        "ev_windows_regressed": 1,
+        "pnl_windows_improved": 3,
+        "pnl_windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0165,
+        "trade_count_delta_sum": 5,
+        "win_rate_delta_min": -0.0276,
+        "candidate_trade_count_sum": 4,
+        "candidate_pnl_sum": 13362.57,
+        "interaction_pnl_sum": 5586.28,
+        "allowed_signals_sum": 13,
+        "filtered_signals_sum": 0
+      }
+    },
+    "be_intc_bull_indices_positive": {
+      "added": [
+        "BE",
+        "INTC"
+      ],
+      "gate": "market_regime == BULL and spy_10d_return > 0 and qqq_pct_from_ma > 0",
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 2.7,
+            "sharpe_daily": 4.3,
+            "total_pnl": 62788.03,
+            "total_return_pct": 0.6279,
+            "max_drawdown_pct": 0.0439,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5045
+          },
+          "after": {
+            "expected_value_score": 3.1869,
+            "sharpe_daily": 4.34,
+            "total_pnl": 73431.54,
+            "total_return_pct": 0.7343,
+            "max_drawdown_pct": 0.0604,
+            "win_rate": 0.7619,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4698,
+            "ai_infra_allowed_signals": 3,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": 0.4869,
+            "sharpe_daily": 0.04,
+            "total_pnl": 10643.51,
+            "total_return_pct": 0.1064,
+            "max_drawdown_pct": 0.0165,
+            "win_rate": -0.0276,
+            "trade_count": 2,
+            "survival_rate": -0.0114,
+            "tail_loss_share": -0.0347
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 2,
+            "candidate_pnl": 8191.37,
+            "by_ticker": {
+              "INTC": {
+                "trades": 2,
+                "pnl": 8191.37,
+                "wins": 1,
+                "win_rate": 0.5
+              }
+            }
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 1.2036,
+            "sharpe_daily": 2.58,
+            "total_pnl": 46654.1,
+            "total_return_pct": 0.4665,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4839
+          },
+          "after": {
+            "expected_value_score": 1.5826,
+            "sharpe_daily": 2.89,
+            "total_pnl": 54759.99,
+            "total_return_pct": 0.5476,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5455,
+            "trade_count": 22,
+            "survival_rate": 0.8167,
+            "tail_loss_share": 0.4842,
+            "ai_infra_allowed_signals": 7,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": 0.379,
+            "sharpe_daily": 0.31,
+            "total_pnl": 8105.89,
+            "total_return_pct": 0.0811,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0217,
+            "trade_count": 1,
+            "survival_rate": 0.0242,
+            "tail_loss_share": 0.0003
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 1,
+            "candidate_pnl": 7084.79,
+            "by_ticker": {
+              "BE": {
+                "trades": 1,
+                "pnl": 7084.79,
+                "wins": 1,
+                "win_rate": 1.0
+              }
+            }
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.2563,
+            "sharpe_daily": 1.27,
+            "total_pnl": 20181.65,
+            "total_return_pct": 0.2018,
+            "max_drawdown_pct": 0.0688,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4234
+          },
+          "after": {
+            "expected_value_score": 0.2466,
+            "sharpe_daily": 1.21,
+            "total_pnl": 20381.1,
+            "total_return_pct": 0.2038,
+            "max_drawdown_pct": 0.064,
+            "win_rate": 0.4167,
+            "trade_count": 24,
+            "survival_rate": 0.8939,
+            "tail_loss_share": 0.4407,
+            "ai_infra_allowed_signals": 3,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": -0.0097,
+            "sharpe_daily": -0.06,
+            "total_pnl": 199.45,
+            "total_return_pct": 0.002,
+            "max_drawdown_pct": -0.0048,
+            "win_rate": 0.0076,
+            "trade_count": 2,
+            "survival_rate": -0.0228,
+            "tail_loss_share": 0.0173
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 1,
+            "candidate_pnl": -1913.59,
+            "by_ticker": {
+              "BE": {
+                "trades": 1,
+                "pnl": -1913.59,
+                "wins": 0,
+                "win_rate": 0.0
+              }
+            }
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.8562,
+        "total_pnl_delta_sum": 18948.85,
+        "baseline_total_pnl_sum": 129623.78,
+        "total_pnl_delta_pct": 0.146183,
+        "ev_windows_improved": 2,
+        "ev_windows_regressed": 1,
+        "pnl_windows_improved": 3,
+        "pnl_windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0165,
+        "trade_count_delta_sum": 5,
+        "win_rate_delta_min": -0.0276,
+        "candidate_trade_count_sum": 4,
+        "candidate_pnl_sum": 13362.57,
+        "interaction_pnl_sum": 5586.28,
+        "allowed_signals_sum": 13,
+        "filtered_signals_sum": 0
+      }
+    },
+    "be_only_bull_positive": {
+      "added": [
+        "BE"
+      ],
+      "gate": "market_regime == BULL and spy_10d_return > 0",
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 2.7,
+            "sharpe_daily": 4.3,
+            "total_pnl": 62788.03,
+            "total_return_pct": 0.6279,
+            "max_drawdown_pct": 0.0439,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5045
+          },
+          "after": {
+            "expected_value_score": 2.7,
+            "sharpe_daily": 4.3,
+            "total_pnl": 62788.03,
+            "total_return_pct": 0.6279,
+            "max_drawdown_pct": 0.0439,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5045,
+            "ai_infra_allowed_signals": 0,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 0,
+            "candidate_pnl": 0,
+            "by_ticker": {}
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 1.2036,
+            "sharpe_daily": 2.58,
+            "total_pnl": 46654.1,
+            "total_return_pct": 0.4665,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4839
+          },
+          "after": {
+            "expected_value_score": 1.5826,
+            "sharpe_daily": 2.89,
+            "total_pnl": 54759.99,
+            "total_return_pct": 0.5476,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5455,
+            "trade_count": 22,
+            "survival_rate": 0.8036,
+            "tail_loss_share": 0.4842,
+            "ai_infra_allowed_signals": 3,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": 0.379,
+            "sharpe_daily": 0.31,
+            "total_pnl": 8105.89,
+            "total_return_pct": 0.0811,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0217,
+            "trade_count": 1,
+            "survival_rate": 0.0111,
+            "tail_loss_share": 0.0003
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 1,
+            "candidate_pnl": 7084.79,
+            "by_ticker": {
+              "BE": {
+                "trades": 1,
+                "pnl": 7084.79,
+                "wins": 1,
+                "win_rate": 1.0
+              }
+            }
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.2563,
+            "sharpe_daily": 1.27,
+            "total_pnl": 20181.65,
+            "total_return_pct": 0.2018,
+            "max_drawdown_pct": 0.0688,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4234
+          },
+          "after": {
+            "expected_value_score": 0.2466,
+            "sharpe_daily": 1.21,
+            "total_pnl": 20381.1,
+            "total_return_pct": 0.2038,
+            "max_drawdown_pct": 0.064,
+            "win_rate": 0.4167,
+            "trade_count": 24,
+            "survival_rate": 0.8923,
+            "tail_loss_share": 0.4407,
+            "ai_infra_allowed_signals": 2,
+            "ai_infra_filtered_signals": 0
+          },
+          "delta": {
+            "expected_value_score": -0.0097,
+            "sharpe_daily": -0.06,
+            "total_pnl": 199.45,
+            "total_return_pct": 0.002,
+            "max_drawdown_pct": -0.0048,
+            "win_rate": 0.0076,
+            "trade_count": 2,
+            "survival_rate": -0.0244,
+            "tail_loss_share": 0.0173
+          },
+          "candidate_trades": {
+            "candidate_trade_count": 1,
+            "candidate_pnl": -1913.59,
+            "by_ticker": {
+              "BE": {
+                "trades": 1,
+                "pnl": -1913.59,
+                "wins": 0,
+                "win_rate": 0.0
+              }
+            }
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": 0.3693,
+        "total_pnl_delta_sum": 8305.34,
+        "baseline_total_pnl_sum": 129623.78,
+        "total_pnl_delta_pct": 0.064073,
+        "ev_windows_improved": 1,
+        "ev_windows_regressed": 1,
+        "pnl_windows_improved": 2,
+        "pnl_windows_regressed": 0,
+        "max_drawdown_delta_max": 0.0,
+        "trade_count_delta_sum": 3,
+        "win_rate_delta_min": 0.0,
+        "candidate_trade_count_sum": 2,
+        "candidate_pnl_sum": 5171.2,
+        "interaction_pnl_sum": 3134.14,
+        "allowed_signals_sum": 5,
+        "filtered_signals_sum": 0
+      }
+    }
+  },
+  "ranking": [
+    {
+      "variant": "be_intc_bull_positive",
+      "added": [
+        "BE",
+        "INTC"
+      ],
+      "gate": "market_regime == BULL and spy_10d_return > 0",
+      "ev_delta_sum": 0.8562,
+      "pnl_delta_sum": 18948.85,
+      "pnl_delta_pct": 0.146183,
+      "ev_windows_improved": 2,
+      "ev_windows_regressed": 1,
+      "win_rate_delta_min": -0.0276,
+      "max_drawdown_delta_max": 0.0165,
+      "candidate_trade_count_sum": 4,
+      "candidate_pnl_sum": 13362.57,
+      "allowed_signals_sum": 13,
+      "filtered_signals_sum": 0
+    },
+    {
+      "variant": "be_intc_bull_indices_positive",
+      "added": [
+        "BE",
+        "INTC"
+      ],
+      "gate": "market_regime == BULL and spy_10d_return > 0 and qqq_pct_from_ma > 0",
+      "ev_delta_sum": 0.8562,
+      "pnl_delta_sum": 18948.85,
+      "pnl_delta_pct": 0.146183,
+      "ev_windows_improved": 2,
+      "ev_windows_regressed": 1,
+      "win_rate_delta_min": -0.0276,
+      "max_drawdown_delta_max": 0.0165,
+      "candidate_trade_count_sum": 4,
+      "candidate_pnl_sum": 13362.57,
+      "allowed_signals_sum": 13,
+      "filtered_signals_sum": 0
+    },
+    {
+      "variant": "be_only_bull_positive",
+      "added": [
+        "BE"
+      ],
+      "gate": "market_regime == BULL and spy_10d_return > 0",
+      "ev_delta_sum": 0.3693,
+      "pnl_delta_sum": 8305.34,
+      "pnl_delta_pct": 0.064073,
+      "ev_windows_improved": 1,
+      "ev_windows_regressed": 1,
+      "win_rate_delta_min": 0.0,
+      "max_drawdown_delta_max": 0.0,
+      "candidate_trade_count_sum": 2,
+      "candidate_pnl_sum": 5171.2,
+      "allowed_signals_sum": 5,
+      "filtered_signals_sum": 0
+    }
+  ],
+  "best_variant": "be_intc_bull_positive",
+  "best_variant_gate4_passed": false,
+  "gate4_basis": "Acceptance requires aggregate PnL > +5%, EV improvement in at least two windows without any EV regression, and no win-rate decline because this would add production watchlist exposure.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, add selected tickers and the activation gate to a shared production/backtest policy before promotion."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this tests an alternate deterministic candidate-pool alpha."
+  },
+  "history_guardrails": {
+    "builds_on_exp_20260501_008": true,
+    "builds_on_exp_20260501_009": true,
+    "builds_on_exp_20260501_010": true,
+    "builds_on_exp_20260501_015": true,
+    "not_raw_be_intc_promotion": true,
+    "not_raw_intc_lite_promotion": true,
+    "why_not_simple_repeat": "This does not add another raw watchlist subset. It tests a specific market-state activation rule for the previously positive-but-fragile AI infra pool."
+  },
+  "rejection_reason": "No regime-gated AI infra variant satisfied the fixed-window production promotion gate.",
+  "next_retry_requires": [
+    "Forward evidence for the AI infra pool, or a point-in-time event/news discriminator.",
+    "A gate that improves at least two fixed windows without EV or win-rate regression."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260501-016\\ai_infra_regime_gated_watchlist.json",
+    "docs\\experiments\\logs\\exp-20260501-016.json",
+    "docs\\experiments\\tickets\\exp-20260501-016.json",
+    "quant/experiments/exp_20260501_016_ai_infra_regime_gated_watchlist.py"
+  ]
+}

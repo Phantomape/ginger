@@ -1,0 +1,876 @@
+{
+  "aggregate": {
+    "net_family_normalization_after_winner_collateral": -53219.86,
+    "risk_amplified_stopout_loss_abs": 3133.15,
+    "risk_normalization_oracle_saved_on_family_losses": 1566.58,
+    "window_count": 2,
+    "winner_collateral_if_all_amplified_winners_normalized": 54786.44
+  },
+  "change_type": "failure_taxonomy",
+  "created_at": "2026-05-02T06:32:34.792391+00:00",
+  "experiment_id": "exp-20260502-009",
+  "future_test_candidates": [
+    {
+      "candidate": "event_or_news_confirmed_risk_amplification_guard",
+      "must_quantify_before_rule": [
+        "candidate count",
+        "loss dollars saved",
+        "winner collateral",
+        "multi-window stability",
+        "production/backtest shared policy path"
+      ],
+      "reason": "Only test a risk-down rule if archived event/news context separates the amplified Energy/Financials stopouts from the much larger amplified winner set."
+    }
+  ],
+  "history_guardrails": {
+    "checks_winner_collateral": true,
+    "distinct_from_prior_price_path_taxonomies": "uses realized risk amplification from sizing attribution, not MFE, overnight gap, wide stop, weak hold, same-day cluster, sector-relative breakdown, or extension follow-through.",
+    "does_not_add_filter": true,
+    "does_not_modify_production_strategy": true,
+    "does_not_treat_loss_trades_as_rule": true
+  },
+  "interpretation": {
+    "decision": "observed_only",
+    "primary_counts": {
+      "loss_count": 5,
+      "risk_amplified_loser_count": 3,
+      "risk_amplified_stopout_loss_count": 2,
+      "risk_amplified_trade_count": 17,
+      "risk_amplified_winner_count": 14,
+      "trade_count": 20,
+      "win_count": 15
+    },
+    "primary_loss_dollars": {
+      "risk_amplified_loss_abs": 4310.47,
+      "risk_amplified_stopout_loss_abs": 3133.15,
+      "risk_amplified_stopout_share_of_all_loss_abs": 0.6822,
+      "risk_amplified_stopout_share_of_amplified_loss_abs": 0.7269,
+      "total_loss_abs": 4592.85
+    },
+    "primary_oracle_comparison": {
+      "full_amplified_trade_veto_net_after_winners": -65301.96,
+      "net_family_normalization_after_winner_collateral": -29884.48,
+      "risk_normalization_oracle_saved_on_family_losses": 1566.58,
+      "risk_normalization_saved_on_all_amplified_losers": 2155.24,
+      "unrealizable_family_avoidance_oracle_saved": 3133.15,
+      "winner_collateral_if_all_amplified_winners_normalized": 31451.06
+    },
+    "primary_takeaway": "Risk-amplified stopouts exist, but the comparable amplified winner collateral is far larger than the loss dollars saved by base-risk normalization. Do not convert this into a hard risk haircut without an orthogonal adverse-information discriminator.",
+    "secondary_check": {
+      "loss_count": 10,
+      "risk_amplified_loser_count": 1,
+      "risk_amplified_stopout_loss_count": 0,
+      "risk_amplified_trade_count": 10,
+      "risk_amplified_winner_count": 9,
+      "trade_count": 21,
+      "win_count": 11
+    }
+  },
+  "lane": "loss_attribution",
+  "single_causal_variable": "risk-amplified stopout bad-trade taxonomy",
+  "source_result": "data\\backtest_results_20260501.json",
+  "strategy_behavior_changed": false,
+  "taxonomy_definition": {
+    "criteria": {
+      "actual_risk_pct": "> base_risk_pct",
+      "exit_reason": "stop",
+      "pnl": "< 0"
+    },
+    "name": "risk_amplified_stopout_loss",
+    "oracle_method": "Compare unrealizable family avoidance with a linear base-risk normalization estimate. Winner collateral is the PnL given up if the same normalization is applied to all risk-amplified winners."
+  },
+  "windows": {
+    "primary": {
+      "baseline_metrics": {
+        "expected_value_score": 2.9194,
+        "max_drawdown_pct": 0.0457,
+        "sharpe_daily": 4.28,
+        "survival_rate": 0.8039,
+        "total_pnl": 68210.56,
+        "trade_count": 20,
+        "win_rate": 0.75
+      },
+      "counts": {
+        "loss_count": 5,
+        "risk_amplified_loser_count": 3,
+        "risk_amplified_stopout_loss_count": 2,
+        "risk_amplified_trade_count": 17,
+        "risk_amplified_winner_count": 14,
+        "trade_count": 20,
+        "win_count": 15
+      },
+      "family_loss_rows": [
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "exit_reason": "stop",
+          "initial_risk_pct": 0.03226,
+          "normalization_delta": -864.24,
+          "pnl": -1728.47,
+          "pnl_pct_net": -0.036728,
+          "risk_amp": 2.0,
+          "sector": "Energy",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "trend_long",
+          "ticker": "CVX",
+          "trade_key": "CVX:2026-01-06:163.3600"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-06",
+          "exit_date": "2026-01-06",
+          "exit_reason": "stop",
+          "initial_risk_pct": 0.025606,
+          "normalization_delta": -702.34,
+          "pnl": -1404.68,
+          "pnl_pct_net": -0.030081,
+          "risk_amp": 2.0,
+          "sector": "Energy",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "XOM",
+          "trade_key": "XOM:2026-01-06:124.5800"
+        }
+      ],
+      "loss_dollars": {
+        "risk_amplified_loss_abs": 4310.47,
+        "risk_amplified_stopout_loss_abs": 3133.15,
+        "risk_amplified_stopout_share_of_all_loss_abs": 0.6822,
+        "risk_amplified_stopout_share_of_amplified_loss_abs": 0.7269,
+        "total_loss_abs": 4592.85
+      },
+      "oracle_comparison": {
+        "full_amplified_trade_veto_net_after_winners": -65301.96,
+        "net_family_normalization_after_winner_collateral": -29884.48,
+        "risk_normalization_oracle_saved_on_family_losses": 1566.58,
+        "risk_normalization_saved_on_all_amplified_losers": 2155.24,
+        "unrealizable_family_avoidance_oracle_saved": 3133.15,
+        "winner_collateral_if_all_amplified_winners_normalized": 31451.06
+      },
+      "period": "2025-10-23 → 2026-04-21",
+      "risk_amplified_winner_collateral_rows": [
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-11-04",
+          "exit_date": "2025-11-12",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.034621,
+          "normalization_delta": 2353.82,
+          "pnl": 4707.63,
+          "pnl_pct_net": 0.120777,
+          "risk_amp": 2.0,
+          "sector": "Healthcare",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "LLY",
+          "trade_key": "LLY:2025-11-04:889.0600"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-10-31",
+          "exit_date": "2025-11-25",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.043222,
+          "normalization_delta": 2988.54,
+          "pnl": 5977.08,
+          "pnl_pct_net": 0.149291,
+          "risk_amp": 2.0,
+          "sector": "Technology",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "trend_long",
+          "ticker": "GOOG",
+          "trade_key": "GOOG:2025-10-31:282.9600"
+        },
+        {
+          "actual_risk_pct": 0.015,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-12-02",
+          "exit_date": "2025-12-23",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.048619,
+          "normalization_delta": 2183.52,
+          "pnl": 6550.57,
+          "pnl_pct_net": 0.20059,
+          "risk_amp": 1.5,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "trend_commodities_near_high_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "SLV",
+          "trade_key": "SLV:2025-12-02:52.8600"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-12-15",
+          "exit_date": "2026-01-12",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.027117,
+          "normalization_delta": 1232.51,
+          "pnl": 2465.02,
+          "pnl_pct_net": 0.055602,
+          "risk_amp": 2.0,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "IAU",
+          "trade_key": "IAU:2025-12-15:81.5000"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-12-15",
+          "exit_date": "2026-01-12",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.027415,
+          "normalization_delta": 1214.04,
+          "pnl": 2428.08,
+          "pnl_pct_net": 0.055172,
+          "risk_amp": 2.0,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "GLD",
+          "trade_key": "GLD:2025-12-15:397.9600"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-07",
+          "exit_date": "2026-01-27",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.063685,
+          "normalization_delta": 3055.92,
+          "pnl": 6111.84,
+          "pnl_pct_net": 0.216879,
+          "risk_amp": 2.0,
+          "sector": "Technology",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "MU",
+          "trade_key": "MU:2026-01-07:340.7400"
+        },
+        {
+          "actual_risk_pct": 0.015,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-29",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.0261,
+          "normalization_delta": 2261.73,
+          "pnl": 6785.18,
+          "pnl_pct_net": 0.143316,
+          "risk_amp": 1.5,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "trend_commodities_near_high_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "GLD",
+          "trade_key": "GLD:2026-01-22:444.0600"
+        },
+        {
+          "actual_risk_pct": 0.015,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-22",
+          "exit_date": "2026-01-29",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.026055,
+          "normalization_delta": 2265.06,
+          "pnl": 6795.18,
+          "pnl_pct_net": 0.143354,
+          "risk_amp": 1.5,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "trend_commodities_near_high_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "IAU",
+          "trade_key": "IAU:2026-01-22:90.9600"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-15",
+          "exit_date": "2026-02-03",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.023531,
+          "normalization_delta": 2299.01,
+          "pnl": 4598.03,
+          "pnl_pct_net": 0.09771,
+          "risk_amp": 2.0,
+          "sector": "Energy",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "XOM",
+          "trade_key": "XOM:2026-01-15:128.3400"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-01-30",
+          "exit_date": "2026-02-10",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.027401,
+          "normalization_delta": 3645.32,
+          "pnl": 7290.64,
+          "pnl_pct_net": 0.134644,
+          "risk_amp": 2.0,
+          "sector": "Industrials",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "CAT",
+          "trade_key": "CAT:2026-01-30:654.7300"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-02-02",
+          "exit_date": "2026-03-02",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.008729,
+          "normalization_delta": 2799.6,
+          "pnl": 5599.2,
+          "pnl_pct_net": 0.103482,
+          "risk_amp": 2.0,
+          "sector": "Energy",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "CVX",
+          "trade_key": "CVX:2026-02-02:171.8500"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-02-04",
+          "exit_date": "2026-03-02",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.034976,
+          "normalization_delta": 3094.57,
+          "pnl": 6189.14,
+          "pnl_pct_net": 0.108412,
+          "risk_amp": 2.0,
+          "sector": "Energy",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "XOM",
+          "trade_key": "XOM:2026-02-04:143.2400"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-04-10",
+          "exit_date": "2026-04-21",
+          "exit_reason": "end_of_backtest",
+          "initial_risk_pct": 0.050081,
+          "normalization_delta": 1854.98,
+          "pnl": 3709.96,
+          "pnl_pct_net": 0.057519,
+          "risk_amp": 2.0,
+          "sector": "Consumer Discretionary",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "AMZN",
+          "trade_key": "AMZN:2026-04-10:235.4200"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2026-04-17",
+          "exit_date": "2026-04-21",
+          "exit_reason": "end_of_backtest",
+          "initial_risk_pct": 0.065946,
+          "normalization_delta": 202.44,
+          "pnl": 404.88,
+          "pnl_pct_net": 0.00791,
+          "risk_amp": 2.0,
+          "sector": "Technology",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "AMD",
+          "trade_key": "AMD:2026-04-17:281.1400"
+        }
+      ],
+      "summaries": {
+        "family_losses": {
+          "avg_pnl": -1566.58,
+          "count": 2,
+          "entry_date_counts": {
+            "2026-01-06": 2
+          },
+          "median_pnl": -1566.58,
+          "pnl_sum": -3133.15,
+          "risk_amp_counts": {
+            "2.00x": 2
+          },
+          "sector_counts": {
+            "Energy": 2
+          },
+          "strategy_counts": {
+            "breakout_long": 1,
+            "trend_long": 1
+          },
+          "tickers": [
+            "CVX",
+            "XOM"
+          ]
+        },
+        "family_losses_by_sector": {
+          "Energy": {
+            "loss_abs": 3133.15,
+            "loss_count": 2
+          }
+        },
+        "family_losses_by_strategy": {
+          "breakout_long": {
+            "loss_abs": 1404.68,
+            "loss_count": 1
+          },
+          "trend_long": {
+            "loss_abs": 1728.47,
+            "loss_count": 1
+          }
+        },
+        "risk_amplified_losers": {
+          "avg_pnl": -1436.82,
+          "count": 3,
+          "entry_date_counts": {
+            "2026-01-06": 2,
+            "2026-04-22": 1
+          },
+          "median_pnl": -1404.68,
+          "pnl_sum": -4310.47,
+          "risk_amp_counts": {
+            "2.00x": 3
+          },
+          "sector_counts": {
+            "Energy": 2,
+            "Healthcare": 1
+          },
+          "strategy_counts": {
+            "breakout_long": 1,
+            "trend_long": 2
+          },
+          "tickers": [
+            "CVX",
+            "UNH",
+            "XOM"
+          ]
+        },
+        "risk_amplified_winners": {
+          "avg_pnl": 4972.32,
+          "count": 14,
+          "entry_date_counts": {
+            "2025-10-31": 1,
+            "2025-11-04": 1,
+            "2025-12-02": 1,
+            "2025-12-15": 2,
+            "2026-01-07": 1,
+            "2026-01-15": 1,
+            "2026-01-22": 2,
+            "2026-01-30": 1,
+            "2026-02-02": 1,
+            "2026-02-04": 1,
+            "2026-04-10": 1,
+            "2026-04-17": 1
+          },
+          "median_pnl": 5788.14,
+          "pnl_sum": 69612.43,
+          "risk_amp_counts": {
+            "1.50x": 3,
+            "2.00x": 11
+          },
+          "sector_counts": {
+            "Commodities": 5,
+            "Consumer Discretionary": 1,
+            "Energy": 3,
+            "Healthcare": 1,
+            "Industrials": 1,
+            "Technology": 3
+          },
+          "strategy_counts": {
+            "breakout_long": 10,
+            "trend_long": 4
+          },
+          "tickers": [
+            "AMD",
+            "AMZN",
+            "CAT",
+            "CVX",
+            "GLD",
+            "GOOG",
+            "IAU",
+            "LLY",
+            "MU",
+            "SLV",
+            "XOM"
+          ]
+        }
+      },
+      "window": "primary"
+    },
+    "secondary": {
+      "baseline_metrics": {
+        "expected_value_score": 1.217,
+        "max_drawdown_pct": 0.0799,
+        "sharpe_daily": 2.58,
+        "survival_rate": 0.7925,
+        "total_pnl": 47170.67,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "counts": {
+        "loss_count": 10,
+        "risk_amplified_loser_count": 1,
+        "risk_amplified_stopout_loss_count": 0,
+        "risk_amplified_trade_count": 10,
+        "risk_amplified_winner_count": 9,
+        "trade_count": 21,
+        "win_count": 11
+      },
+      "family_loss_rows": [],
+      "loss_dollars": {
+        "risk_amplified_loss_abs": 71.43,
+        "risk_amplified_stopout_loss_abs": 0.0,
+        "risk_amplified_stopout_share_of_all_loss_abs": 0.0,
+        "risk_amplified_stopout_share_of_amplified_loss_abs": 0.0,
+        "total_loss_abs": 1687.89
+      },
+      "oracle_comparison": {
+        "full_amplified_trade_veto_net_after_winners": -47046.05,
+        "net_family_normalization_after_winner_collateral": -23335.38,
+        "risk_normalization_oracle_saved_on_family_losses": 0.0,
+        "risk_normalization_saved_on_all_amplified_losers": 35.72,
+        "unrealizable_family_avoidance_oracle_saved": 0.0,
+        "winner_collateral_if_all_amplified_winners_normalized": 23335.38
+      },
+      "period": "2025-04-23 → 2025-10-22",
+      "risk_amplified_winner_collateral_rows": [
+        {
+          "actual_risk_pct": 0.025,
+          "addon_count": 1,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-05-14",
+          "exit_date": "2025-06-24",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.086904,
+          "normalization_delta": 5057.42,
+          "pnl": 8429.04,
+          "pnl_pct_net": 0.245022,
+          "risk_amp": 2.5,
+          "sector": "Financials",
+          "sizing_multipliers": {
+            "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+            "trend_financials_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "COIN",
+          "trade_key": "COIN:2025-05-14:257.6400"
+        },
+        {
+          "actual_risk_pct": 0.025,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-06-23",
+          "exit_date": "2025-06-30",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.029442,
+          "normalization_delta": 2673.56,
+          "pnl": 4455.93,
+          "pnl_pct_net": 0.112725,
+          "risk_amp": 2.5,
+          "sector": "Financials",
+          "sizing_multipliers": {
+            "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+            "trend_financials_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "GS",
+          "trade_key": "GS:2025-06-23:629.7200"
+        },
+        {
+          "actual_risk_pct": 0.025,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-06-26",
+          "exit_date": "2025-07-18",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.074427,
+          "normalization_delta": 4325.11,
+          "pnl": 7208.51,
+          "pnl_pct_net": 0.226608,
+          "risk_amp": 2.5,
+          "sector": "Financials",
+          "sizing_multipliers": {
+            "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+            "trend_financials_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "COIN",
+          "trade_key": "COIN:2025-06-26:354.7100"
+        },
+        {
+          "actual_risk_pct": 0.015,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-06-03",
+          "exit_date": "2025-07-23",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.019495,
+          "normalization_delta": 1847.02,
+          "pnl": 5541.06,
+          "pnl_pct_net": 0.140383,
+          "risk_amp": 1.5,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "trend_commodities_near_high_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "SLV",
+          "trade_key": "SLV:2025-06-03:31.2900"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-08-11",
+          "exit_date": "2025-09-22",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.031151,
+          "normalization_delta": 2689.3,
+          "pnl": 5378.61,
+          "pnl_pct_net": 0.107807,
+          "risk_amp": 2.0,
+          "sector": "Technology",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "AAPL",
+          "trade_key": "AAPL:2025-08-11:227.6000"
+        },
+        {
+          "actual_risk_pct": 0.015,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-09-02",
+          "exit_date": "2025-09-22",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.034652,
+          "normalization_delta": 1465.27,
+          "pnl": 4395.8,
+          "pnl_pct_net": 0.086541,
+          "risk_amp": 1.5,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "trend_commodities_near_high_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "SLV",
+          "trade_key": "SLV:2025-09-02:36.6500"
+        },
+        {
+          "actual_risk_pct": 0.015,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-09-03",
+          "exit_date": "2025-09-29",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.02153,
+          "normalization_delta": 1153.12,
+          "pnl": 3459.37,
+          "pnl_pct_net": 0.068756,
+          "risk_amp": 1.5,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "trend_commodities_near_high_risk_multiplier_applied": 1.5
+          },
+          "strategy": "trend_long",
+          "ticker": "GLD",
+          "trade_key": "GLD:2025-09-03:327.9200"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-09-29",
+          "exit_date": "2025-10-09",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.040725,
+          "normalization_delta": 2330.66,
+          "pnl": 4661.31,
+          "pnl_pct_net": 0.085175,
+          "risk_amp": 2.0,
+          "sector": "Commodities",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "SLV",
+          "trade_key": "SLV:2025-09-29:42.4800"
+        },
+        {
+          "actual_risk_pct": 0.02,
+          "addon_count": 0,
+          "base_risk_pct": 0.01,
+          "entry_date": "2025-08-25",
+          "exit_date": "2025-10-15",
+          "exit_reason": "target",
+          "initial_risk_pct": 0.021988,
+          "normalization_delta": 1793.92,
+          "pnl": 3587.85,
+          "pnl_pct_net": 0.071737,
+          "risk_amp": 2.0,
+          "sector": "ETF",
+          "sizing_multipliers": {
+            "risk_on_unmodified_risk_multiplier_applied": 2.0,
+            "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          },
+          "strategy": "breakout_long",
+          "ticker": "IWM",
+          "trade_key": "IWM:2025-08-25:232.4000"
+        }
+      ],
+      "summaries": {
+        "family_losses": {
+          "avg_pnl": null,
+          "count": 0,
+          "entry_date_counts": {},
+          "median_pnl": null,
+          "pnl_sum": 0.0,
+          "risk_amp_counts": {},
+          "sector_counts": {},
+          "strategy_counts": {},
+          "tickers": []
+        },
+        "family_losses_by_sector": {},
+        "family_losses_by_strategy": {},
+        "risk_amplified_losers": {
+          "avg_pnl": -71.43,
+          "count": 1,
+          "entry_date_counts": {
+            "2025-10-23": 1
+          },
+          "median_pnl": -71.43,
+          "pnl_sum": -71.43,
+          "risk_amp_counts": {
+            "2.00x": 1
+          },
+          "sector_counts": {
+            "Healthcare": 1
+          },
+          "strategy_counts": {
+            "breakout_long": 1
+          },
+          "tickers": [
+            "ISRG"
+          ]
+        },
+        "risk_amplified_winners": {
+          "avg_pnl": 5235.28,
+          "count": 9,
+          "entry_date_counts": {
+            "2025-05-14": 1,
+            "2025-06-03": 1,
+            "2025-06-23": 1,
+            "2025-06-26": 1,
+            "2025-08-11": 1,
+            "2025-08-25": 1,
+            "2025-09-02": 1,
+            "2025-09-03": 1,
+            "2025-09-29": 1
+          },
+          "median_pnl": 4661.31,
+          "pnl_sum": 47117.48,
+          "risk_amp_counts": {
+            "1.50x": 3,
+            "2.00x": 3,
+            "2.50x": 3
+          },
+          "sector_counts": {
+            "Commodities": 4,
+            "ETF": 1,
+            "Financials": 3,
+            "Technology": 1
+          },
+          "strategy_counts": {
+            "breakout_long": 3,
+            "trend_long": 6
+          },
+          "tickers": [
+            "AAPL",
+            "COIN",
+            "GLD",
+            "GS",
+            "IWM",
+            "SLV"
+          ]
+        }
+      },
+      "window": "secondary"
+    }
+  }
+}

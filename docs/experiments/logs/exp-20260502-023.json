@@ -1,0 +1,338 @@
+{
+  "experiment_id": "exp-20260502-023",
+  "timestamp": "2026-05-02T20:09:30.131594+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "exit_lifecycle_spy_relative_leader_target_floor",
+  "hypothesis": "SPY-relative leaders may still be lifecycle-clipped by the current regime-aware target width; applying a target floor only to 20-day ticker-vs-SPY leaders may improve winner capture without changing entry selection or capital allocation.",
+  "alpha_hypothesis_category": "exit_lifecycle",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains blocked by sparse production-aligned outcome joins, so this run tests a deterministic replayable lifecycle variable instead.",
+  "mechanism_insight_check": {
+    "near_repeat": "partial",
+    "notes": "This uses the accepted SPY-relative leader discriminator but does not retest risk multipliers, initial cap, add-on cap, sector confirmation, absolute momentum floors, or second add-ons."
+  },
+  "parameters": {
+    "single_causal_variable": "SPY-relative leader ATR target floor",
+    "baseline": "accepted_stack",
+    "tested_target_floors": {
+      "spy_leader_target_floor_5_0atr": 5.0,
+      "spy_leader_target_floor_6_0atr": 6.0
+    },
+    "best_variant": "spy_leader_target_floor_5_0atr",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "all sizing constants",
+      "SPY-relative leader risk budget",
+      "SPY-relative leader initial position cap",
+      "follow-through add-on trigger and caps",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "leader_trade_count": 13,
+      "leader_target_exit_count": 9,
+      "adjusted_trade_count": 0,
+      "adjusted_pnl": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "leader_trade_count": 4,
+      "leader_target_exit_count": 3,
+      "adjusted_trade_count": 0,
+      "adjusted_pnl": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "leader_trade_count": 10,
+      "leader_target_exit_count": 5,
+      "adjusted_trade_count": 0,
+      "adjusted_pnl": 0
+    }
+  },
+  "after_metrics": {
+    "spy_leader_target_floor_5_0atr": {
+      "late_strong": {
+        "expected_value_score": 2.9948,
+        "sharpe_daily": 3.8,
+        "total_pnl": 78805.88,
+        "total_return_pct": 0.7881,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7368,
+        "trade_count": 19,
+        "survival_rate": 0.8367,
+        "leader_trade_count": 13,
+        "leader_target_exit_count": 9,
+        "adjusted_trade_count": 0,
+        "adjusted_pnl": 0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.9204,
+        "sharpe_daily": 2.11,
+        "total_pnl": 43621.23,
+        "total_return_pct": 0.4362,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5,
+        "trade_count": 20,
+        "survival_rate": 0.7736,
+        "leader_trade_count": 4,
+        "leader_target_exit_count": 2,
+        "adjusted_trade_count": 0,
+        "adjusted_pnl": 0
+      },
+      "old_thin": {
+        "expected_value_score": 0.1761,
+        "sharpe_daily": 0.98,
+        "total_pnl": 17974.8,
+        "total_return_pct": 0.1797,
+        "max_drawdown_pct": 0.1464,
+        "win_rate": 0.3636,
+        "trade_count": 22,
+        "survival_rate": 0.9153,
+        "leader_trade_count": 10,
+        "leader_target_exit_count": 5,
+        "adjusted_trade_count": 0,
+        "adjusted_pnl": 0
+      }
+    },
+    "spy_leader_target_floor_6_0atr": {
+      "late_strong": {
+        "expected_value_score": 2.965,
+        "sharpe_daily": 3.63,
+        "total_pnl": 81680.25,
+        "total_return_pct": 0.8168,
+        "max_drawdown_pct": 0.0748,
+        "win_rate": 0.65,
+        "trade_count": 20,
+        "survival_rate": 0.8696,
+        "leader_trade_count": 13,
+        "leader_target_exit_count": 8,
+        "adjusted_trade_count": 0,
+        "adjusted_pnl": 0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.8451,
+        "sharpe_daily": 1.97,
+        "total_pnl": 42898.82,
+        "total_return_pct": 0.429,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.4737,
+        "trade_count": 19,
+        "survival_rate": 0.7547,
+        "leader_trade_count": 3,
+        "leader_target_exit_count": 1,
+        "adjusted_trade_count": 0,
+        "adjusted_pnl": 0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0881,
+        "sharpe_daily": 0.81,
+        "total_pnl": 10875.17,
+        "total_return_pct": 0.1088,
+        "max_drawdown_pct": 0.1513,
+        "win_rate": 0.3333,
+        "trade_count": 18,
+        "survival_rate": 0.9348,
+        "leader_trade_count": 8,
+        "leader_target_exit_count": 3,
+        "adjusted_trade_count": 0,
+        "adjusted_pnl": 0
+      }
+    }
+  },
+  "delta_metrics": {
+    "spy_leader_target_floor_5_0atr": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.4243,
+          "sharpe_daily": -0.55,
+          "total_pnl": 205.55,
+          "total_return_pct": 0.0021,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0527,
+          "trade_count": 0,
+          "survival_rate": 0.0328,
+          "leader_trade_count": 0,
+          "leader_target_exit_count": 0,
+          "adjusted_trade_count": 0,
+          "adjusted_pnl": 0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.5211,
+          "sharpe_daily": -0.51,
+          "total_pnl": -11393.85,
+          "total_return_pct": -0.114,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0238,
+          "trade_count": -1,
+          "survival_rate": -0.0189,
+          "leader_trade_count": 0,
+          "leader_target_exit_count": -1,
+          "adjusted_trade_count": 0,
+          "adjusted_pnl": 0
+        },
+        "old_thin": {
+          "expected_value_score": -0.1418,
+          "sharpe_daily": -0.31,
+          "total_pnl": -6667.27,
+          "total_return_pct": -0.0667,
+          "max_drawdown_pct": 0.0659,
+          "win_rate": -0.0455,
+          "trade_count": 0,
+          "survival_rate": -0.0014,
+          "leader_trade_count": 0,
+          "leader_target_exit_count": 0,
+          "adjusted_trade_count": 0,
+          "adjusted_pnl": 0
+        }
+      },
+      "baseline_expected_value_score_sum": 5.1785,
+      "expected_value_score_delta_sum": -1.0872,
+      "expected_value_score_delta_pct": -0.209945,
+      "baseline_total_pnl_sum": 158257.48,
+      "total_pnl_delta_sum": -17855.57,
+      "total_pnl_delta_pct": -0.112826,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 3,
+      "pnl_windows_improved": 1,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0659,
+      "trade_count_delta_sum": -1,
+      "win_rate_delta_min": -0.0527,
+      "sharpe_daily_delta_max": -0.31
+    },
+    "spy_leader_target_floor_6_0atr": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.4541,
+          "sharpe_daily": -0.72,
+          "total_pnl": 3079.92,
+          "total_return_pct": 0.0308,
+          "max_drawdown_pct": 0.0207,
+          "win_rate": -0.1395,
+          "trade_count": 1,
+          "survival_rate": 0.0657,
+          "leader_trade_count": 0,
+          "leader_target_exit_count": -1,
+          "adjusted_trade_count": 0,
+          "adjusted_pnl": 0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.5964,
+          "sharpe_daily": -0.65,
+          "total_pnl": -12116.26,
+          "total_return_pct": -0.1212,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0501,
+          "trade_count": -2,
+          "survival_rate": -0.0378,
+          "leader_trade_count": -1,
+          "leader_target_exit_count": -2,
+          "adjusted_trade_count": 0,
+          "adjusted_pnl": 0
+        },
+        "old_thin": {
+          "expected_value_score": -0.2298,
+          "sharpe_daily": -0.48,
+          "total_pnl": -13766.9,
+          "total_return_pct": -0.1376,
+          "max_drawdown_pct": 0.0708,
+          "win_rate": -0.0758,
+          "trade_count": -4,
+          "survival_rate": 0.0181,
+          "leader_trade_count": -2,
+          "leader_target_exit_count": -2,
+          "adjusted_trade_count": 0,
+          "adjusted_pnl": 0
+        }
+      },
+      "baseline_expected_value_score_sum": 5.1785,
+      "expected_value_score_delta_sum": -1.2803,
+      "expected_value_score_delta_pct": -0.247234,
+      "baseline_total_pnl_sum": 158257.48,
+      "total_pnl_delta_sum": -22803.24,
+      "total_pnl_delta_pct": -0.144089,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 3,
+      "pnl_windows_improved": 1,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0708,
+      "trade_count_delta_sum": -5,
+      "win_rate_delta_min": -0.1395,
+      "sharpe_daily_delta_max": -0.48
+    }
+  },
+  "best_variant": "spy_leader_target_floor_5_0atr",
+  "best_variant_gate4": false,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If promoted, implement as constants.py + risk_engine.py shared target policy so run.py and backtester.py consume the same logic."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "gate4_passed": false,
+  "gate4_basis": "Accepted only if the best variant improves EV in at least two windows without EV regression and passes one standard Gate 4 materiality criterion.",
+  "rejection_reason": "No tested SPY-relative leader target floor passed Gate 4 across the three canonical fixed windows.",
+  "next_retry_requires": [
+    "Do not retry nearby SPY-relative leader target floors without event/news or lifecycle evidence.",
+    "A valid retry needs a discriminator for which leaders deserve extra target room.",
+    "Any promoted target policy must stay in shared risk policy for production/backtest parity."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260502_023_spy_leader_target_floor.py",
+    "data/experiments/exp-20260502-023/spy_leader_target_floor.json",
+    "docs/experiments/logs/exp-20260502-023.json",
+    "docs/experiments/tickets/exp-20260502-023.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

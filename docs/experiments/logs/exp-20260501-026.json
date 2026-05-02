@@ -1,0 +1,358 @@
+{
+  "experiment_id": "exp-20260501-026",
+  "timestamp": "2026-05-01T20:19:02.627950+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_trend_tech_leader_risk_recovery",
+  "hypothesis": "Trend Technology signals already reduced by accepted Technology risk pockets may deserve partial risk recovery when their 20-day return exceeds the equal-weight Technology sector 20-day return.",
+  "alpha_hypothesis_category": "capital_allocation_lifecycle",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking samples remain too thin, so this tests deterministic lifecycle allocation using already replayable OHLCV fields.",
+  "parameters": {
+    "single_causal_variable": "Technology reduced-risk sector-relative leader recovery multiplier",
+    "baseline": "current accepted Technology reduced-risk sizing remains unchanged",
+    "tested_multipliers": {
+      "tech_leader_recovery_0_50x": 0.5,
+      "tech_leader_recovery_0_75x": 0.75
+    },
+    "selector": {
+      "strategy": "trend_long",
+      "sector": "Technology",
+      "existing_tech_risk_multiplier": "any accepted trend_tech*_multiplier_applied != 1",
+      "ticker_ret20_minus_equal_weight_tech_ret20": "> 0"
+    },
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "all non-Technology sizing rules",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "add-ons",
+      "all exits including Technology 6ATR and gold 8ATR targets",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.9907,
+      "sharpe_daily": 4.31,
+      "total_pnl": 69387.88,
+      "total_return_pct": 0.6939,
+      "max_drawdown_pct": 0.0457,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5061,
+      "tech_leader_recovery_signals_seen": 0,
+      "tech_leader_recovery_signals_resized": 0,
+      "tech_leader_recovery_trade_count": 0,
+      "tech_leader_recovery_trade_pnl": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.217,
+      "sharpe_daily": 2.58,
+      "total_pnl": 47170.67,
+      "total_return_pct": 0.4717,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4796,
+      "tech_leader_recovery_signals_seen": 0,
+      "tech_leader_recovery_signals_resized": 0,
+      "tech_leader_recovery_trade_count": 0,
+      "tech_leader_recovery_trade_pnl": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.2742,
+      "sharpe_daily": 1.25,
+      "total_pnl": 21938.62,
+      "total_return_pct": 0.2194,
+      "max_drawdown_pct": 0.0796,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4709,
+      "tech_leader_recovery_signals_seen": 0,
+      "tech_leader_recovery_signals_resized": 0,
+      "tech_leader_recovery_trade_count": 0,
+      "tech_leader_recovery_trade_pnl": 0.0
+    }
+  },
+  "after_metrics": {
+    "tech_leader_recovery_0_50x": {
+      "late_strong": {
+        "expected_value_score": 2.9172,
+        "sharpe_daily": 4.26,
+        "total_pnl": 68483.99,
+        "total_return_pct": 0.6848,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.4209,
+        "tech_leader_recovery_signals_seen": 4,
+        "tech_leader_recovery_signals_resized": 4,
+        "tech_leader_recovery_trade_count": 0,
+        "tech_leader_recovery_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.0691,
+        "sharpe_daily": 2.41,
+        "total_pnl": 44357.98,
+        "total_return_pct": 0.4436,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.5,
+        "trade_count": 22,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4612,
+        "tech_leader_recovery_signals_seen": 9,
+        "tech_leader_recovery_signals_resized": 9,
+        "tech_leader_recovery_trade_count": 0,
+        "tech_leader_recovery_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.2459,
+        "sharpe_daily": 1.18,
+        "total_pnl": 20842.26,
+        "total_return_pct": 0.2084,
+        "max_drawdown_pct": 0.0796,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.409,
+        "tech_leader_recovery_signals_seen": 11,
+        "tech_leader_recovery_signals_resized": 11,
+        "tech_leader_recovery_trade_count": 0,
+        "tech_leader_recovery_trade_pnl": 0.0
+      }
+    },
+    "tech_leader_recovery_0_75x": {
+      "late_strong": {
+        "expected_value_score": 2.8756,
+        "sharpe_daily": 4.23,
+        "total_pnl": 67976.64,
+        "total_return_pct": 0.6798,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.3874,
+        "tech_leader_recovery_signals_seen": 4,
+        "tech_leader_recovery_signals_resized": 4,
+        "tech_leader_recovery_trade_count": 0,
+        "tech_leader_recovery_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.9938,
+        "sharpe_daily": 2.31,
+        "total_pnl": 43018.2,
+        "total_return_pct": 0.4302,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.5,
+        "trade_count": 22,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.491,
+        "tech_leader_recovery_signals_seen": 9,
+        "tech_leader_recovery_signals_resized": 9,
+        "tech_leader_recovery_trade_count": 0,
+        "tech_leader_recovery_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.2322,
+        "sharpe_daily": 1.14,
+        "total_pnl": 20374.6,
+        "total_return_pct": 0.2037,
+        "max_drawdown_pct": 0.0797,
+        "win_rate": 0.3913,
+        "trade_count": 23,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.3793,
+        "tech_leader_recovery_signals_seen": 11,
+        "tech_leader_recovery_signals_resized": 11,
+        "tech_leader_recovery_trade_count": 0,
+        "tech_leader_recovery_trade_pnl": 0.0
+      }
+    }
+  },
+  "delta_metrics": {
+    "tech_leader_recovery_0_50x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0735,
+          "sharpe_daily": -0.05,
+          "total_pnl": -903.89,
+          "total_return_pct": -0.0091,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0852,
+          "tech_leader_recovery_signals_seen": 4,
+          "tech_leader_recovery_signals_resized": 4,
+          "tech_leader_recovery_trade_count": 0,
+          "tech_leader_recovery_trade_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.1479,
+          "sharpe_daily": -0.17,
+          "total_pnl": -2812.69,
+          "total_return_pct": -0.0281,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0238,
+          "trade_count": 1,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0184,
+          "tech_leader_recovery_signals_seen": 9,
+          "tech_leader_recovery_signals_resized": 9,
+          "tech_leader_recovery_trade_count": 0,
+          "tech_leader_recovery_trade_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": -0.0283,
+          "sharpe_daily": -0.07,
+          "total_pnl": -1096.36,
+          "total_return_pct": -0.011,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0178,
+          "trade_count": 1,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0619,
+          "tech_leader_recovery_signals_seen": 11,
+          "tech_leader_recovery_signals_resized": 11,
+          "tech_leader_recovery_trade_count": 0,
+          "tech_leader_recovery_trade_pnl": 0.0
+        }
+      },
+      "expected_value_score_delta_sum": -0.2497,
+      "expected_value_score_delta_pct": -0.055713,
+      "baseline_expected_value_score_sum": 4.4819,
+      "total_pnl_delta_sum": -4812.94,
+      "baseline_total_pnl_sum": 138497.17,
+      "total_pnl_delta_pct": -0.034751,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 3,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 3,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 2,
+      "win_rate_delta_min": -0.0238,
+      "sharpe_daily_delta_max": -0.05,
+      "tech_leader_recovery_signals_resized_delta_sum": 24
+    },
+    "tech_leader_recovery_0_75x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.1151,
+          "sharpe_daily": -0.08,
+          "total_pnl": -1411.24,
+          "total_return_pct": -0.0141,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.1187,
+          "tech_leader_recovery_signals_seen": 4,
+          "tech_leader_recovery_signals_resized": 4,
+          "tech_leader_recovery_trade_count": 0,
+          "tech_leader_recovery_trade_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.2232,
+          "sharpe_daily": -0.27,
+          "total_pnl": -4152.47,
+          "total_return_pct": -0.0415,
+          "max_drawdown_pct": 0.0,
+          "win_rate": -0.0238,
+          "trade_count": 1,
+          "survival_rate": 0.0,
+          "tail_loss_share": 0.0114,
+          "tech_leader_recovery_signals_seen": 9,
+          "tech_leader_recovery_signals_resized": 9,
+          "tech_leader_recovery_trade_count": 0,
+          "tech_leader_recovery_trade_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": -0.042,
+          "sharpe_daily": -0.11,
+          "total_pnl": -1564.02,
+          "total_return_pct": -0.0157,
+          "max_drawdown_pct": 0.0001,
+          "win_rate": -0.0178,
+          "trade_count": 1,
+          "survival_rate": 0.0,
+          "tail_loss_share": -0.0916,
+          "tech_leader_recovery_signals_seen": 11,
+          "tech_leader_recovery_signals_resized": 11,
+          "tech_leader_recovery_trade_count": 0,
+          "tech_leader_recovery_trade_pnl": 0.0
+        }
+      },
+      "expected_value_score_delta_sum": -0.3803,
+      "expected_value_score_delta_pct": -0.084852,
+      "baseline_expected_value_score_sum": 4.4819,
+      "total_pnl_delta_sum": -7127.73,
+      "baseline_total_pnl_sum": 138497.17,
+      "total_pnl_delta_pct": -0.051465,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 3,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 3,
+      "max_drawdown_delta_max": 0.0001,
+      "trade_count_delta_sum": 2,
+      "win_rate_delta_min": -0.0238,
+      "sharpe_daily_delta_max": -0.08,
+      "tech_leader_recovery_signals_resized_delta_sum": 24
+    }
+  },
+  "best_variant": "tech_leader_recovery_0_50x",
+  "best_variant_gate4": false,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, compute Technology sector-relative 20-day return in shared enrichment before using it in portfolio_engine."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this avoids that data constraint rather than weakening LLM."
+  },
+  "history_guardrails": {
+    "not_ai_infra_watchlist_retry": true,
+    "not_etf_universe_retry": true,
+    "not_simple_broad_tech_de_risking": true,
+    "why_not_simple_repeat": "This is the inverse of the rejected Technology sector-leader haircut: it tests restoring risk only after accepted Technology lifecycle reductions, not adding another broad Technology cut."
+  },
+  "rejection_reason": "Technology sector-relative leader risk recovery regressed EV and PnL in every fixed window.",
+  "next_retry_requires": [
+    "Do not retry Technology sector-relative leader risk recovery at nearby 0.5x/0.75x/1.0x levels.",
+    "A valid retry needs event/news or richer lifecycle evidence, not another relative-return scalar.",
+    "Preserve the accepted Technology reduced-risk pockets until forward evidence says otherwise."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260501_026_trend_tech_leader_risk_recovery.py",
+    "data/experiments/exp-20260501-026/trend_tech_leader_risk_recovery.json",
+    "docs/experiments/logs/exp-20260501-026.json",
+    "docs/experiments/tickets/exp-20260501-026.json"
+  ]
+}

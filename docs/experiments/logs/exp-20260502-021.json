@@ -1,0 +1,192 @@
+{
+  "experiment_id": "exp-20260502-021",
+  "timestamp": "2026-05-02T18:08:00Z",
+  "status": "accepted",
+  "decision": "accepted",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_position_cap",
+  "hypothesis": "Otherwise-unmodified risk_on SPY-relative leaders are still position-cap constrained after the accepted 2.0x risk budget; lifting only this accepted leader sleeve from the global 40% cap to a 50% cap should improve capital allocation without changing entries, exits, ranking, or broad risk_on sizing.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains blocked by sparse production-aligned outcome joins; this test uses replayable deterministic fields already present in both production and backtest signals.",
+  "mechanism_insight_check": {
+    "near_repeat": "partial",
+    "notes": "This is not another nearby SPY leader multiplier, sector whitelist, breadth confirmation, or commodity-only cap retry. The independent causal variable is the position cap for the already-accepted otherwise-unmodified SPY-relative leader sleeve."
+  },
+  "parameters": {
+    "single_causal_variable": "risk_on_spy_relative_leader_max_position_pct",
+    "old_value": 0.4,
+    "new_value": 0.5,
+    "rejected_more_aggressive_probe": {
+      "value": 0.6,
+      "reason": "Higher raw EV/PnL, but late_strong drawdown rose by about 1.58 percentage points versus 0.84 percentage points for 0.5."
+    },
+    "locked_variables": [
+      "universe",
+      "entry rules",
+      "exit rules",
+      "candidate ranking",
+      "risk_on SPY-relative leader risk multiplier",
+      "non-leader risk_on sizing",
+      "all non-leader position caps",
+      "MAX_POSITIONS",
+      "MAX_PORTFOLIO_HEAT",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.9907,
+      "sharpe_daily": 4.31,
+      "total_pnl": 69387.88,
+      "total_return_pct": 0.6939,
+      "max_drawdown_pct": 0.0457,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.217,
+      "sharpe_daily": 2.58,
+      "total_pnl": 47170.67,
+      "total_return_pct": 0.4717,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2742,
+      "sharpe_daily": 1.25,
+      "total_pnl": 21938.62,
+      "total_return_pct": 0.2194,
+      "max_drawdown_pct": 0.0796,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.2228,
+      "sharpe_daily": 4.28,
+      "total_pnl": 75299.33,
+      "total_return_pct": 0.753,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.3042,
+      "sharpe_daily": 2.61,
+      "total_pnl": 49972.09,
+      "total_return_pct": 0.4997,
+      "max_drawdown_pct": 0.0799,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.2979,
+      "sharpe_daily": 1.26,
+      "total_pnl": 23639.57,
+      "total_return_pct": 0.2364,
+      "max_drawdown_pct": 0.0818,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "converged": true
+    }
+  },
+  "delta_metrics": {
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.2321,
+        "sharpe_daily": -0.03,
+        "total_pnl": 5911.45,
+        "total_return_pct": 0.0591,
+        "max_drawdown_pct": 0.0084,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0872,
+        "sharpe_daily": 0.03,
+        "total_pnl": 2801.42,
+        "total_return_pct": 0.028,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0237,
+        "sharpe_daily": 0.01,
+        "total_pnl": 1700.95,
+        "total_return_pct": 0.017,
+        "max_drawdown_pct": 0.0022,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0
+      }
+    },
+    "baseline_ev_sum": 4.4819,
+    "variant_ev_sum": 4.8249,
+    "aggregate_ev_delta": 0.343,
+    "aggregate_ev_delta_pct": 0.07653,
+    "baseline_pnl_sum": 138497.17,
+    "variant_pnl_sum": 148910.99,
+    "aggregate_pnl_delta": 10413.82,
+    "aggregate_pnl_delta_pct": 0.07519,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0,
+    "max_drawdown_delta_max": 0.0084,
+    "trade_count_delta_sum": 0,
+    "win_rate_delta_min": 0.0,
+    "sharpe_daily_delta_max": 0.03
+  },
+  "gate4_result": {
+    "passed": true,
+    "basis": "Aggregate total PnL improved by 7.52%, above the >5% Gate 4 threshold, with EV improving in all three non-overlapping windows."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "accepted_rationale": "The accepted SPY-relative leader sizing sleeve was cap-constrained; lifting only its cap to 50% increased capital allocated to the same validated opportunities without changing candidate generation or broad portfolio rules.",
+  "main_risk": "The change increases concentration in SPY-relative leaders and can raise drawdown in strong tapes; the 60% probe was rejected for this reason.",
+  "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/test_quant.py",
+    "docs/experiments/logs/exp-20260502-021.json",
+    "docs/experiments/tickets/exp-20260502-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}

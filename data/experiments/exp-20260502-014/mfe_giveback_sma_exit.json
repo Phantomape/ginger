@@ -1,0 +1,803 @@
+{
+  "experiment_id": "exp-20260502-014",
+  "generated_at": "2026-05-02T11:05:44.289310+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "alpha_hypothesis": "A path-aware MFE-giveback trigger can protect trades that first prove they can move, then lose momentum, without repeating the rejected simple breakeven stop.",
+  "change_type": "exit_lifecycle_replay",
+  "single_causal_variable": "MFE-giveback plus SMA breakdown protective exit trigger",
+  "parameters": {
+    "tested_variants": {
+      "mfe_05_giveback_60_sma5": {
+        "min_mfe_pct": 0.05,
+        "min_giveback_fraction": 0.6,
+        "sma_days": 5
+      },
+      "mfe_07_giveback_50_sma5": {
+        "min_mfe_pct": 0.07,
+        "min_giveback_fraction": 0.5,
+        "sma_days": 5
+      }
+    },
+    "execution": "next available open after trigger close, target-side sell slippage",
+    "default_off": true,
+    "best_variant": "mfe_07_giveback_50_sma5"
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "variants": {
+    "mfe_05_giveback_60_sma5": {
+      "parameters": {
+        "min_mfe_pct": 0.05,
+        "min_giveback_fraction": 0.6,
+        "sma_days": 5
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "market_regime_summary": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 2.9907,
+            "sharpe": 6.67,
+            "sharpe_daily": 4.31,
+            "total_pnl": 69387.88,
+            "total_return_pct": 0.6939,
+            "max_drawdown_pct": 0.0457,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039
+          },
+          "after": {
+            "expected_value_score": 2.4326,
+            "sharpe": 6.67,
+            "sharpe_daily": 4.31,
+            "total_pnl": 56438.54,
+            "total_return_pct": 0.5644,
+            "max_drawdown_pct": 0.0457,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039
+          },
+          "delta": {
+            "expected_value_score": -0.5581,
+            "sharpe": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": -12949.34,
+            "total_return_pct": -0.1295,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "trigger_count": 4,
+          "winner_truncation_count": 4,
+          "winner_truncation_pnl_delta": -12949.34,
+          "loser_improvement_pnl_delta": 0,
+          "events": [
+            {
+              "ticker": "IAU",
+              "strategy": "breakout_long",
+              "sector": "Commodities",
+              "entry_date": "2025-12-15",
+              "original_exit_date": "2026-01-12",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-12-29",
+              "replay_exit_date": "2025-12-30",
+              "running_mfe_pct": 0.051411,
+              "close_return_pct": 0.00135,
+              "giveback_fraction": 0.973747,
+              "old_pnl": 2465.02,
+              "new_pnl": 447.48,
+              "pnl_delta": -2017.54,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "GLD",
+              "strategy": "breakout_long",
+              "sector": "Commodities",
+              "entry_date": "2025-12-15",
+              "original_exit_date": "2026-01-12",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-12-29",
+              "replay_exit_date": "2025-12-30",
+              "running_mfe_pct": 0.051488,
+              "close_return_pct": 0.001608,
+              "giveback_fraction": 0.968765,
+              "old_pnl": 2428.08,
+              "new_pnl": 446.92,
+              "pnl_delta": -1981.16,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "CAT",
+              "strategy": "breakout_long",
+              "sector": "Industrials",
+              "entry_date": "2026-01-30",
+              "original_exit_date": "2026-02-10",
+              "original_exit_reason": "target",
+              "trigger_date": "2026-02-05",
+              "replay_exit_date": "2026-02-06",
+              "running_mfe_pct": 0.102418,
+              "close_return_pct": 0.034046,
+              "giveback_fraction": 0.667575,
+              "old_pnl": 7290.64,
+              "new_pnl": 2802.09,
+              "pnl_delta": -4488.55,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "sector": "Energy",
+              "entry_date": "2026-02-04",
+              "original_exit_date": "2026-03-02",
+              "original_exit_reason": "target",
+              "trigger_date": "2026-02-17",
+              "replay_exit_date": "2026-02-18",
+              "running_mfe_pct": 0.08832,
+              "close_return_pct": 0.020595,
+              "giveback_fraction": 0.766815,
+              "old_pnl": 6189.14,
+              "new_pnl": 1727.05,
+              "pnl_delta": -4462.09,
+              "winner_truncated": true
+            }
+          ]
+        },
+        "mid_weak": {
+          "window": {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "market_regime_summary": "rotation-heavy bull where strategy makes money but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.217,
+            "sharpe": 4.29,
+            "sharpe_daily": 2.58,
+            "total_pnl": 47170.67,
+            "total_return_pct": 0.4717,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 0.8212,
+            "sharpe": 4.29,
+            "sharpe_daily": 2.58,
+            "total_pnl": 31828.96,
+            "total_return_pct": 0.3183,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5714,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": -0.3958,
+            "sharpe": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": -15341.71,
+            "total_return_pct": -0.1534,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0476,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "trigger_count": 6,
+          "winner_truncation_count": 4,
+          "winner_truncation_pnl_delta": -15432.84,
+          "loser_improvement_pnl_delta": 91.13,
+          "events": [
+            {
+              "ticker": "COIN",
+              "strategy": "trend_long",
+              "sector": "Financials",
+              "entry_date": "2025-05-14",
+              "original_exit_date": "2025-06-24",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-05-23",
+              "replay_exit_date": "2025-05-27",
+              "running_mfe_pct": 0.075182,
+              "close_return_pct": 0.021425,
+              "giveback_fraction": 0.715023,
+              "old_pnl": 8429.04,
+              "new_pnl": 1380.79,
+              "pnl_delta": -7048.25,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "AMD",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2025-06-17",
+              "original_exit_date": "2025-07-15",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-07-07",
+              "replay_exit_date": "2025-07-08",
+              "running_mfe_pct": 0.154387,
+              "close_return_pct": 0.053207,
+              "giveback_fraction": 0.655364,
+              "old_pnl": 791.11,
+              "new_pnl": 263.43,
+              "pnl_delta": -527.68,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "DIS",
+              "strategy": "breakout_long",
+              "sector": "Communication Services",
+              "entry_date": "2025-06-11",
+              "original_exit_date": "2025-08-06",
+              "original_exit_reason": "stop",
+              "trigger_date": "2025-07-09",
+              "replay_exit_date": "2025-07-10",
+              "running_mfe_pct": 0.057299,
+              "close_return_pct": 0.022703,
+              "giveback_fraction": 0.603778,
+              "old_pnl": -51.24,
+              "new_pnl": 28.47,
+              "pnl_delta": 79.71,
+              "winner_truncated": false
+            },
+            {
+              "ticker": "PLTR",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2025-08-06",
+              "original_exit_date": "2025-08-19",
+              "original_exit_reason": "stop",
+              "trigger_date": "2025-08-15",
+              "replay_exit_date": "2025-08-18",
+              "running_mfe_pct": 0.109424,
+              "close_return_pct": 0.034509,
+              "giveback_fraction": 0.684632,
+              "old_pnl": -8.11,
+              "new_pnl": 3.31,
+              "pnl_delta": 11.42,
+              "winner_truncated": false
+            },
+            {
+              "ticker": "AAPL",
+              "strategy": "breakout_long",
+              "sector": "Technology",
+              "entry_date": "2025-08-11",
+              "original_exit_date": "2025-09-22",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-09-10",
+              "replay_exit_date": "2025-09-11",
+              "running_mfe_pct": 0.058264,
+              "close_return_pct": -0.005455,
+              "giveback_fraction": 1.093617,
+              "old_pnl": 5378.61,
+              "new_pnl": -452.53,
+              "pnl_delta": -5831.14,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "IWM",
+              "strategy": "breakout_long",
+              "sector": "ETF",
+              "entry_date": "2025-08-25",
+              "original_exit_date": "2025-10-15",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-10-10",
+              "replay_exit_date": "2025-10-13",
+              "running_mfe_pct": 0.063725,
+              "close_return_pct": 0.017962,
+              "giveback_fraction": 0.71813,
+              "old_pnl": 3587.85,
+              "new_pnl": 1562.08,
+              "pnl_delta": -2025.77,
+              "winner_truncated": true
+            }
+          ]
+        },
+        "old_thin": {
+          "window": {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "market_regime_summary": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.2742,
+            "sharpe": 2.04,
+            "sharpe_daily": 1.25,
+            "total_pnl": 21938.62,
+            "total_return_pct": 0.2194,
+            "max_drawdown_pct": 0.0796,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.2467,
+            "sharpe": 2.04,
+            "sharpe_daily": 1.25,
+            "total_pnl": 19737.53,
+            "total_return_pct": 0.1974,
+            "max_drawdown_pct": 0.0796,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": -0.0275,
+            "sharpe": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": -2201.09,
+            "total_return_pct": -0.022,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0909,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "trigger_count": 4,
+          "winner_truncation_count": 2,
+          "winner_truncation_pnl_delta": -5723.91,
+          "loser_improvement_pnl_delta": 3522.82,
+          "events": [
+            {
+              "ticker": "AMZN",
+              "strategy": "trend_long",
+              "sector": "Consumer Discretionary",
+              "entry_date": "2024-11-04",
+              "original_exit_date": "2024-12-04",
+              "original_exit_reason": "target",
+              "trigger_date": "2024-11-15",
+              "replay_exit_date": "2024-11-18",
+              "running_mfe_pct": 0.098448,
+              "close_return_pct": 0.030832,
+              "giveback_fraction": 0.686822,
+              "old_pnl": 4358.49,
+              "new_pnl": 1322.83,
+              "pnl_delta": -3035.66,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2024-11-25",
+              "original_exit_date": "2024-12-19",
+              "original_exit_reason": "stop",
+              "trigger_date": "2024-12-09",
+              "replay_exit_date": "2024-12-10",
+              "running_mfe_pct": 0.091796,
+              "close_return_pct": 0.034728,
+              "giveback_fraction": 0.621678,
+              "old_pnl": -9.86,
+              "new_pnl": 5.22,
+              "pnl_delta": 15.08,
+              "winner_truncated": false
+            },
+            {
+              "ticker": "NFLX",
+              "strategy": "trend_long",
+              "sector": "Communication Services",
+              "entry_date": "2025-01-23",
+              "original_exit_date": "2025-03-06",
+              "original_exit_reason": "stop",
+              "trigger_date": "2025-02-24",
+              "replay_exit_date": "2025-02-25",
+              "running_mfe_pct": 0.110821,
+              "close_return_pct": 0.031483,
+              "giveback_fraction": 0.715913,
+              "old_pnl": -2367.7,
+              "new_pnl": 1140.04,
+              "pnl_delta": 3507.74,
+              "winner_truncated": false
+            },
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "sector": "Commodities",
+              "entry_date": "2025-01-31",
+              "original_exit_date": "2025-03-18",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-02-28",
+              "replay_exit_date": "2025-03-03",
+              "running_mfe_pct": 0.050577,
+              "close_return_pct": 0.015663,
+              "giveback_fraction": 0.690314,
+              "old_pnl": 3561.89,
+              "new_pnl": 873.64,
+              "pnl_delta": -2688.25,
+              "winner_truncated": true
+            }
+          ]
+        }
+      },
+      "aggregate": {
+        "baseline_ev_sum": 4.4819,
+        "variant_ev_sum": 3.5005,
+        "aggregate_ev_delta": -0.9814,
+        "aggregate_ev_delta_pct": -0.21897,
+        "baseline_pnl_sum": 138497.17,
+        "variant_pnl_sum": 108005.03,
+        "aggregate_pnl_delta": -30492.14,
+        "aggregate_pnl_delta_pct": -0.220164,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 3,
+        "windows_pnl_improved": 0,
+        "max_drawdown_delta_max": 0.0,
+        "trigger_count": 14,
+        "winner_truncation_count": 10,
+        "winner_truncation_pnl_delta": -34106.09,
+        "loser_improvement_pnl_delta": 3613.95,
+        "gate4_pass": false
+      }
+    },
+    "mfe_07_giveback_50_sma5": {
+      "parameters": {
+        "min_mfe_pct": 0.07,
+        "min_giveback_fraction": 0.5,
+        "sma_days": 5
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "label": "late_strong",
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "market_regime_summary": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 2.9907,
+            "sharpe": 6.67,
+            "sharpe_daily": 4.31,
+            "total_pnl": 69387.88,
+            "total_return_pct": 0.6939,
+            "max_drawdown_pct": 0.0457,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039
+          },
+          "after": {
+            "expected_value_score": 2.6058,
+            "sharpe": 6.67,
+            "sharpe_daily": 4.31,
+            "total_pnl": 60457.17,
+            "total_return_pct": 0.6046,
+            "max_drawdown_pct": 0.0457,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039
+          },
+          "delta": {
+            "expected_value_score": -0.3849,
+            "sharpe": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": -8930.71,
+            "total_return_pct": -0.0893,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "trigger_count": 2,
+          "winner_truncation_count": 2,
+          "winner_truncation_pnl_delta": -8930.71,
+          "loser_improvement_pnl_delta": 0,
+          "events": [
+            {
+              "ticker": "CAT",
+              "strategy": "breakout_long",
+              "sector": "Industrials",
+              "entry_date": "2026-01-30",
+              "original_exit_date": "2026-02-10",
+              "original_exit_reason": "target",
+              "trigger_date": "2026-02-05",
+              "replay_exit_date": "2026-02-06",
+              "running_mfe_pct": 0.102418,
+              "close_return_pct": 0.034046,
+              "giveback_fraction": 0.667575,
+              "old_pnl": 7290.64,
+              "new_pnl": 2802.09,
+              "pnl_delta": -4488.55,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "sector": "Energy",
+              "entry_date": "2026-02-04",
+              "original_exit_date": "2026-03-02",
+              "original_exit_reason": "target",
+              "trigger_date": "2026-02-13",
+              "replay_exit_date": "2026-02-17",
+              "running_mfe_pct": 0.08832,
+              "close_return_pct": 0.036373,
+              "giveback_fraction": 0.588173,
+              "old_pnl": 6189.14,
+              "new_pnl": 1746.98,
+              "pnl_delta": -4442.16,
+              "winner_truncated": true
+            }
+          ]
+        },
+        "mid_weak": {
+          "window": {
+            "label": "mid_weak",
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "market_regime_summary": "rotation-heavy bull where strategy makes money but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.217,
+            "sharpe": 4.29,
+            "sharpe_daily": 2.58,
+            "total_pnl": 47170.67,
+            "total_return_pct": 0.4717,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "after": {
+            "expected_value_score": 1.0204,
+            "sharpe": 4.29,
+            "sharpe_daily": 2.58,
+            "total_pnl": 39552.67,
+            "total_return_pct": 0.3955,
+            "max_drawdown_pct": 0.0799,
+            "win_rate": 0.5714,
+            "trade_count": 21,
+            "survival_rate": 0.7925
+          },
+          "delta": {
+            "expected_value_score": -0.1966,
+            "sharpe": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": -7618.0,
+            "total_return_pct": -0.0762,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0476,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "trigger_count": 3,
+          "winner_truncation_count": 2,
+          "winner_truncation_pnl_delta": -7629.42,
+          "loser_improvement_pnl_delta": 11.42,
+          "events": [
+            {
+              "ticker": "COIN",
+              "strategy": "trend_long",
+              "sector": "Financials",
+              "entry_date": "2025-05-14",
+              "original_exit_date": "2025-06-24",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-05-23",
+              "replay_exit_date": "2025-05-27",
+              "running_mfe_pct": 0.075182,
+              "close_return_pct": 0.021425,
+              "giveback_fraction": 0.715023,
+              "old_pnl": 8429.04,
+              "new_pnl": 1380.79,
+              "pnl_delta": -7048.25,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "AMD",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2025-06-17",
+              "original_exit_date": "2025-07-15",
+              "original_exit_reason": "target",
+              "trigger_date": "2025-07-01",
+              "replay_exit_date": "2025-07-02",
+              "running_mfe_pct": 0.154387,
+              "close_return_pct": 0.063442,
+              "giveback_fraction": 0.589069,
+              "old_pnl": 791.11,
+              "new_pnl": 209.94,
+              "pnl_delta": -581.17,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "PLTR",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2025-08-06",
+              "original_exit_date": "2025-08-19",
+              "original_exit_reason": "stop",
+              "trigger_date": "2025-08-15",
+              "replay_exit_date": "2025-08-18",
+              "running_mfe_pct": 0.109424,
+              "close_return_pct": 0.034509,
+              "giveback_fraction": 0.684632,
+              "old_pnl": -8.11,
+              "new_pnl": 3.31,
+              "pnl_delta": 11.42,
+              "winner_truncated": false
+            }
+          ]
+        },
+        "old_thin": {
+          "window": {
+            "label": "old_thin",
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "market_regime_summary": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.2742,
+            "sharpe": 2.04,
+            "sharpe_daily": 1.25,
+            "total_pnl": 21938.62,
+            "total_return_pct": 0.2194,
+            "max_drawdown_pct": 0.0796,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "after": {
+            "expected_value_score": 0.2831,
+            "sharpe": 2.04,
+            "sharpe_daily": 1.25,
+            "total_pnl": 22652.35,
+            "total_return_pct": 0.2265,
+            "max_drawdown_pct": 0.0796,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.9167
+          },
+          "delta": {
+            "expected_value_score": 0.0089,
+            "sharpe": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 713.73,
+            "total_return_pct": 0.0071,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0909,
+            "trade_count": 0,
+            "survival_rate": 0.0
+          },
+          "trigger_count": 4,
+          "winner_truncation_count": 2,
+          "winner_truncation_pnl_delta": -3587.18,
+          "loser_improvement_pnl_delta": 4300.91,
+          "events": [
+            {
+              "ticker": "NOW",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2024-10-25",
+              "original_exit_date": "2024-12-04",
+              "original_exit_reason": "target",
+              "trigger_date": "2024-11-18",
+              "replay_exit_date": "2024-11-19",
+              "running_mfe_pct": 0.108494,
+              "close_return_pct": 0.049689,
+              "giveback_fraction": 0.542008,
+              "old_pnl": 752.73,
+              "new_pnl": 201.21,
+              "pnl_delta": -551.52,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "AMZN",
+              "strategy": "trend_long",
+              "sector": "Consumer Discretionary",
+              "entry_date": "2024-11-04",
+              "original_exit_date": "2024-12-04",
+              "original_exit_reason": "target",
+              "trigger_date": "2024-11-15",
+              "replay_exit_date": "2024-11-18",
+              "running_mfe_pct": 0.098448,
+              "close_return_pct": 0.030832,
+              "giveback_fraction": 0.686822,
+              "old_pnl": 4358.49,
+              "new_pnl": 1322.83,
+              "pnl_delta": -3035.66,
+              "winner_truncated": true
+            },
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "sector": "Technology",
+              "entry_date": "2024-11-25",
+              "original_exit_date": "2024-12-19",
+              "original_exit_reason": "stop",
+              "trigger_date": "2024-12-09",
+              "replay_exit_date": "2024-12-10",
+              "running_mfe_pct": 0.091796,
+              "close_return_pct": 0.034728,
+              "giveback_fraction": 0.621678,
+              "old_pnl": -9.86,
+              "new_pnl": 5.22,
+              "pnl_delta": 15.08,
+              "winner_truncated": false
+            },
+            {
+              "ticker": "NFLX",
+              "strategy": "trend_long",
+              "sector": "Communication Services",
+              "entry_date": "2025-01-23",
+              "original_exit_date": "2025-03-06",
+              "original_exit_reason": "stop",
+              "trigger_date": "2025-02-21",
+              "replay_exit_date": "2025-02-24",
+              "running_mfe_pct": 0.110821,
+              "close_return_pct": 0.046802,
+              "giveback_fraction": 0.577683,
+              "old_pnl": -2367.7,
+              "new_pnl": 1918.13,
+              "pnl_delta": 4285.83,
+              "winner_truncated": false
+            }
+          ]
+        }
+      },
+      "aggregate": {
+        "baseline_ev_sum": 4.4819,
+        "variant_ev_sum": 3.9093,
+        "aggregate_ev_delta": -0.5726,
+        "aggregate_ev_delta_pct": -0.127758,
+        "baseline_pnl_sum": 138497.17,
+        "variant_pnl_sum": 122662.19,
+        "aggregate_pnl_delta": -15834.98,
+        "aggregate_pnl_delta_pct": -0.114334,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "max_drawdown_delta_max": 0.0,
+        "trigger_count": 9,
+        "winner_truncation_count": 6,
+        "winner_truncation_pnl_delta": -20147.31,
+        "loser_improvement_pnl_delta": 4312.33,
+        "gate4_pass": false
+      }
+    }
+  },
+  "best_variant": "mfe_07_giveback_50_sma5",
+  "best_variant_gate4": false,
+  "gate4_basis": "Promotion requires EV improvement in at least 2/3 windows, no EV-regressed window, and >10% aggregate EV or >5% aggregate PnL improvement.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "default_behavior_changed": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "why_not_llm_soft_ranking": "Production-aligned LLM outcome joins remain too sparse; this tests deterministic lifecycle context instead."
+  },
+  "history_guardrails": {
+    "not_simple_breakeven_retry": "Trigger requires meaningful MFE, giveback, and close below SMA, unlike exp-20260502-011 simple breakeven stop.",
+    "not_price_only_early_exit": "Trigger requires prior MFE before weakness, unlike rejected day-5/day-10 weak-hold exits."
+  },
+  "rejection_reason": "No tested MFE-giveback SMA protective exit passed the multi-window Gate 4 robustness bar.",
+  "next_retry_requires": [
+    "Do not retry nearby MFE/giveback/SMA thresholds without event/news or stronger lifecycle evidence.",
+    "A valid retry should explain winner collateral before promoting an executable shared exit."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260502-014\\mfe_giveback_sma_exit.json",
+    "docs\\experiments\\logs\\exp-20260502-014.json",
+    "docs\\experiments\\tickets\\exp-20260502-014.json"
+  ]
+}
