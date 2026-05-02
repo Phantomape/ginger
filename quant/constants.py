@@ -61,6 +61,8 @@ RISK_ON_UNMODIFIED_LOW_SCORE_MAX = 0.10
 RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER = 1.5
 RISK_ON_UNMODIFIED_MID_SCORE_MAX = 0.20
 RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER = 1.6
+RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER = 2.0
+RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT = 0.50
 # Low-TQS breakouts were net-negative in Consumer Discretionary/Financials/Technology
 # but net-positive in Commodities across the validated windows. Keep the accepted
 # haircut everywhere else and exempt only the defensive commodity breakout pocket.
@@ -142,6 +144,13 @@ RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER = 1.6
 # exp-20260429-031 accepted the adjacent mid-score plain risk-on sleeve at 1.6x.
 # The old_thin drawdown expansion was close to the 1 pp guardrail, so do not
 # continue nearby multiplier tuning without forward or tail-risk evidence.
+# exp-20260501-024: within otherwise-unmodified risk_on inventory, 20-day
+# ticker-vs-SPY leaders justify a total 2.0x risk budget. This is a relative
+# strength meta-allocation rule, not a broad risk_on scalar or sector priority.
+# exp-20260502-021: the same otherwise-unmodified SPY-relative leader sleeve was
+# position-cap constrained. Allowing only this accepted leader sleeve to size up
+# to 50% of equity improved EV in all fixed windows while keeping drawdown within
+# the policy cap; broader cap changes remain rejected.
 MAX_POSITION_PCT        = 0.40       # Initial position cap; exp-20260428-025
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap
@@ -164,6 +173,7 @@ ADDON_MIN_UNREALIZED_PCT = 0.02
 ADDON_MIN_RS_VS_SPY = 0.0
 ADDON_FRACTION_OF_ORIGINAL_SHARES = 0.50
 ADDON_MAX_POSITION_PCT = 0.35
+ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT = 0.60
 ADDON_REQUIRE_CHECKPOINT_CAP_ROOM = False
 ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH = False
 SECOND_ADDON_ENABLED = False

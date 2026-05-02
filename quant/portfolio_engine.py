@@ -63,6 +63,8 @@ from constants import (
     RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER,
     RISK_ON_UNMODIFIED_MID_SCORE_MAX,
     RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER,
+    RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER,
+    RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
     ATR_STOP_MULT,
@@ -84,8 +86,12 @@ logger = logging.getLogger(__name__)
 EARNINGS_GAP_RISK_PCT   = 0.08     # 8% conservative floor for earnings-gap adverse scenario
 
 
-def compute_position_size(portfolio_value, entry_price, stop_price,
-                           risk_pct=RISK_PER_TRADE_PCT):
+def compute_position_size(
+        portfolio_value,
+        entry_price,
+        stop_price,
+        risk_pct=RISK_PER_TRADE_PCT,
+        max_position_pct=MAX_POSITION_PCT):
     """
     Compute shares to buy using the 1% fixed-fraction risk rule.
 
@@ -94,7 +100,7 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
         risk_per_share = entry_price − stop_price
         shares         = floor(risk_amount / risk_per_share)   (min 1)
 
-    Position is further capped at MAX_POSITION_PCT of portfolio to prevent
+    Position is further capped at max_position_pct of portfolio to prevent
     oversized positions when stop is very tight (e.g. Strategy B breakout_stop).
 
     Returns:
@@ -127,11 +133,11 @@ def compute_position_size(portfolio_value, entry_price, stop_price,
 
     # Cap at MAX_POSITION_PCT — tight stops (e.g. breakout_stop 1% below entry)
     # can produce shares that represent 50-100% of portfolio; enforce hard limit.
-    max_shares     = max(1, math.floor(portfolio_value * MAX_POSITION_PCT / entry_price))
+    max_shares     = max(1, math.floor(portfolio_value * max_position_pct / entry_price))
     if shares > max_shares:
         logger.warning(
             f"Position capped: {shares} → {max_shares} shares "
-            f"({MAX_POSITION_PCT*100:.0f}% portfolio cap, tight stop)"
+            f"({max_position_pct*100:.0f}% portfolio cap, tight stop)"
         )
         shares = max_shares
 
@@ -339,6 +345,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             trend_financials_risk_multiplier = 1.0
             financials_sector_leader_risk_multiplier = 1.0
             risk_on_unmodified_risk_multiplier = 1.0
+            spy_relative_leader_risk_on_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
                 strategy == "trend_long"
@@ -548,26 +555,41 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sig.get("regime_exit_bucket") == "risk_on"
                 and not has_other_sizing_rule
             ):
-                regime_exit_score = sig.get("regime_exit_score")
-                if (
-                    regime_exit_score is not None
-                    and regime_exit_score < RISK_ON_UNMODIFIED_LOW_SCORE_MAX
-                ):
+                if sig.get("spy_relative_leader") is True:
                     risk_on_unmodified_risk_multiplier = (
-                        RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER
+                        RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
                     )
-                elif (
-                    regime_exit_score is not None
-                    and regime_exit_score < RISK_ON_UNMODIFIED_MID_SCORE_MAX
-                ):
-                    risk_on_unmodified_risk_multiplier = (
-                        RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER
+                    spy_relative_leader_risk_on_multiplier = (
+                        RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
                     )
                 else:
-                    risk_on_unmodified_risk_multiplier = (
-                        RISK_ON_UNMODIFIED_RISK_MULTIPLIER
-                    )
+                    regime_exit_score = sig.get("regime_exit_score")
+                    if (
+                        regime_exit_score is not None
+                        and regime_exit_score < RISK_ON_UNMODIFIED_LOW_SCORE_MAX
+                    ):
+                        risk_on_unmodified_risk_multiplier = (
+                            RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER
+                        )
+                    elif (
+                        regime_exit_score is not None
+                        and regime_exit_score < RISK_ON_UNMODIFIED_MID_SCORE_MAX
+                    ):
+                        risk_on_unmodified_risk_multiplier = (
+                            RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER
+                        )
+                    else:
+                        risk_on_unmodified_risk_multiplier = (
+                            RISK_ON_UNMODIFIED_RISK_MULTIPLIER
+                        )
                 signal_risk_pct *= risk_on_unmodified_risk_multiplier
+            max_position_pct = MAX_POSITION_PCT
+            if (
+                spy_relative_leader_risk_on_multiplier
+                == RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
+            ):
+                max_position_pct = RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
+
             if signal_risk_pct <= 0:
                 sizing = _zero_risk_sizing(effective_risk_pct, entry, stop)
             elif strategy == "earnings_event_long":
@@ -578,17 +600,28 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 atr_risk  = entry - stop
                 gap_risk  = entry * EARNINGS_GAP_RISK_PCT
                 effective_stop = round(entry - max(atr_risk, gap_risk), 2)
-                sizing = compute_position_size(portfolio_value, entry, effective_stop,
-                                               risk_pct=signal_risk_pct)
+                sizing = compute_position_size(
+                    portfolio_value,
+                    entry,
+                    effective_stop,
+                    risk_pct=signal_risk_pct,
+                    max_position_pct=max_position_pct,
+                )
                 if sizing:
                     sizing["earnings_gap_risk_applied"]  = True
                     sizing["gap_risk_pct"]               = EARNINGS_GAP_RISK_PCT
                     sizing["effective_stop_for_sizing"]  = effective_stop
             else:
-                sizing = compute_position_size(portfolio_value, entry, stop,
-                                               risk_pct=signal_risk_pct)
+                sizing = compute_position_size(
+                    portfolio_value,
+                    entry,
+                    stop,
+                    risk_pct=signal_risk_pct,
+                    max_position_pct=max_position_pct,
+                )
             if sizing:
                 sizing["base_risk_pct"] = effective_risk_pct
+                sizing["max_position_pct_applied"] = max_position_pct
                 sizing["trade_quality_score"] = trade_quality_score
                 sizing["low_tqs_haircut_exempt_sector"] = (
                     sector if sector in LOW_TQS_HAIRCUT_EXEMPT_SECTORS else None
@@ -605,6 +638,9 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["risk_on_unmodified_risk_multiplier_applied"] = (
                     risk_on_unmodified_risk_multiplier
+                )
+                sizing["spy_relative_leader_risk_on_multiplier_applied"] = (
+                    spy_relative_leader_risk_on_multiplier
                 )
                 sizing["trend_tech_tight_gap_risk_multiplier_applied"] = (
                     trend_tech_tight_gap_risk_multiplier

@@ -79,6 +79,7 @@ from constants import (
     ADDON_MIN_RS_VS_SPY,
     ADDON_FRACTION_OF_ORIGINAL_SHARES,
     ADDON_MAX_POSITION_PCT,
+    ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     ADDON_REQUIRE_CHECKPOINT_CAP_ROOM,
     ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH,
     SECOND_ADDON_ENABLED,
@@ -101,6 +102,7 @@ from production_parity import (
     production_trailing_stop_price,
     risk_pct_for_market_state,
     suggested_reduce_pct_for_rules,
+    position_was_spy_relative_leader,
 )
 from position_manager import compute_exit_levels, evaluate_exit_signals
 from yfinance_bootstrap import configure_yfinance_runtime
@@ -138,6 +140,7 @@ DEFAULT_CONFIG = {
     "ADDON_MIN_RS_VS_SPY": ADDON_MIN_RS_VS_SPY,
     "ADDON_FRACTION_OF_ORIGINAL_SHARES": ADDON_FRACTION_OF_ORIGINAL_SHARES,
     "ADDON_MAX_POSITION_PCT": ADDON_MAX_POSITION_PCT,
+    "ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT": ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM": ADDON_REQUIRE_CHECKPOINT_CAP_ROOM,
     "ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH": ADDON_REQUIRE_IMPROVING_FOLLOWTHROUGH,
     "SECOND_ADDON_ENABLED": SECOND_ADDON_ENABLED,
@@ -473,6 +476,7 @@ def should_cancel_gap(fill_price, signal_entry, sig=None, today=None, ohlcv_all=
 SIZING_MULTIPLIER_KEYS = (
     "tqs_risk_multiplier_applied",
     "risk_on_unmodified_risk_multiplier_applied",
+    "spy_relative_leader_risk_on_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
     "trend_financials_risk_multiplier_applied",
     "financials_sector_leader_risk_multiplier_applied",
@@ -2077,6 +2081,21 @@ class BacktestEngine:
                     spy_today_idx = spy_df.index.get_loc(today)
                 except KeyError:
                     continue
+                spy_relative_leader_addon_cap = False
+                if addon_number == 1:
+                    spy_relative_leader_addon_cap = position_was_spy_relative_leader(
+                        {
+                            "ticker": pos.ticker,
+                            "spy_relative_leader": False,
+                            "sizing_multipliers": pos.sizing_multipliers,
+                        },
+                        ticker_df=df,
+                        spy_df=spy_df,
+                        entry_idx=entry_idx,
+                        spy_entry_idx=spy_entry_idx,
+                    )
+                    if spy_relative_leader_addon_cap:
+                        active_position_cap = ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
                 if today_idx - entry_idx != active_checkpoint_days:
                     continue
 
@@ -2142,6 +2161,7 @@ class BacktestEngine:
                     "unrealized_pct": round(unrealized, 6),
                     "rs_vs_spy": round(rs_vs_spy, 6),
                     "original_shares": pos.original_shares,
+                    "spy_relative_leader_addon_cap": spy_relative_leader_addon_cap,
                     **followthrough_state,
                 }
                 if require_checkpoint_cap_room:

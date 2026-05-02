@@ -243,6 +243,7 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         sum(financials_ret20) / len(financials_ret20)
         if financials_ret20 else None
     )
+    spy_ret20 = (features_dict.get("SPY") or {}).get("momentum_20d_pct")
 
     for sig in signals:
         ticker   = sig["ticker"]
@@ -307,8 +308,13 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Inject sector so LLM can enforce the 40% sector concentration rule.
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
+        ticker_ret20 = features.get("momentum_20d_pct")
+        if isinstance(ticker_ret20, (int, float)) and isinstance(spy_ret20, (int, float)):
+            rel_spy_ret20 = ticker_ret20 - spy_ret20
+            enriched_sig["spy_ret20_pct"] = round(spy_ret20, 4)
+            enriched_sig["ticker_ret20_minus_spy_pct"] = round(rel_spy_ret20, 4)
+            enriched_sig["spy_relative_leader"] = rel_spy_ret20 > 0
         if enriched_sig["sector"] == "Financials":
-            ticker_ret20 = features.get("momentum_20d_pct")
             if (
                 isinstance(ticker_ret20, (int, float))
                 and isinstance(financials_avg_ret20, (int, float))

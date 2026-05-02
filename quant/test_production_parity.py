@@ -22,7 +22,7 @@ from portfolio_engine import size_signals  # noqa: E402
 
 
 def _ohlcv(closes):
-    idx = pd.to_datetime(["2026-01-02", "2026-01-05", "2026-01-06"][:len(closes)])
+    idx = pd.bdate_range("2026-01-02", periods=len(closes))
     return pd.DataFrame(
         {
             "Open": closes,
@@ -136,6 +136,38 @@ def test_build_followthrough_addon_actions_emits_day_two_add():
     assert actions[0]["shares_to_buy"] == 5
     assert actions[0]["fill_timing"] == "next_session_open"
     assert any(row["status"] == "eligible" for row in audit)
+
+
+def test_build_followthrough_addon_actions_uses_spy_leader_addon_cap():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 35,
+                "original_shares": 35,
+                "avg_cost": 120.0,
+                "entry_date": "2026-01-30",
+            }
+        ]
+    }
+    nvda_prices = [100.0] * 20 + [120.0, 123.0, 126.0]
+    spy_prices = [100.0] * 20 + [105.0, 105.0, 106.0]
+    ohlcv = {
+        "NVDA": _ohlcv(nvda_prices),
+        "SPY": _ohlcv(spy_prices),
+    }
+
+    actions, _audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        portfolio_value=10_000,
+        current_prices={"NVDA": 126.0},
+    )
+
+    assert len(actions) == 1
+    assert actions[0]["spy_relative_leader_addon_cap"] is True
+    assert actions[0]["addon_position_cap_pct"] == 0.60
+    assert actions[0]["shares_to_buy"] == 12
 
 
 def test_classify_entry_open_cancel_uses_shared_gap_rules():
@@ -260,6 +292,7 @@ def test_backtester_addon_and_slot_defaults_share_constants():
         "ADDON_MIN_RS_VS_SPY",
         "ADDON_FRACTION_OF_ORIGINAL_SHARES",
         "ADDON_MAX_POSITION_PCT",
+        "ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT",
         "SECOND_ADDON_ENABLED",
         "SECOND_ADDON_CHECKPOINT_DAYS",
         "SECOND_ADDON_MIN_UNREALIZED_PCT",

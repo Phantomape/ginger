@@ -70,3 +70,43 @@ def test_low_score_plain_risk_on_uses_dedicated_non_stacking_lift():
     assert higher_score_plain["risk_pct"] == 0.0125
     assert already_boosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.5
     assert already_boosted["risk_on_unmodified_risk_multiplier_applied"] == 1.0
+
+
+def test_spy_relative_leader_overrides_plain_risk_on_score_lift_only():
+    signals = [
+        {
+            "ticker": "CVX",
+            "strategy": "breakout_long",
+            "sector": "Energy",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "regime_exit_score": 0.08,
+            "spy_relative_leader": True,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "GLD",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "regime_exit_score": 0.08,
+            "spy_relative_leader": True,
+            "conditions_met": {"pct_from_52w_high": -0.02},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    plain_leader = sized[0]["sizing"]
+    already_boosted = sized[1]["sizing"]
+    assert plain_leader["risk_on_unmodified_risk_multiplier_applied"] == 2.0
+    assert plain_leader["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
+    assert plain_leader["risk_pct"] == 0.02
+    assert already_boosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.5
+    assert already_boosted["risk_on_unmodified_risk_multiplier_applied"] == 1.0
+    assert already_boosted["spy_relative_leader_risk_on_multiplier_applied"] == 1.0

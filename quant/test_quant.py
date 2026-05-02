@@ -224,6 +224,39 @@ def test_trade_quality_score_weak_signal():
     assert tqs < 0.60, f"Weak signal TQS={tqs} unexpectedly high"
 
 
+def test_spy_relative_leader_uses_leader_position_cap():
+    from constants import (
+        MAX_POSITION_PCT,
+        RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
+        RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER,
+    )
+    from portfolio_engine import size_signals
+
+    signal = {
+        "ticker": "MSFT",
+        "strategy": "breakout_long",
+        "sector": "Technology",
+        "entry_price": 100.0,
+        "stop_price": 99.0,
+        "regime_exit_bucket": "risk_on",
+        "spy_relative_leader": True,
+        "trade_quality_score": 0.95,
+    }
+
+    sized = size_signals([signal], portfolio_value=100000.0)[0]["sizing"]
+
+    assert sized["risk_on_unmodified_risk_multiplier_applied"] == (
+        RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
+    )
+    assert sized["max_position_pct_applied"] == (
+        RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
+    )
+    assert sized["shares_to_buy"] == int(
+        100000.0 * RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT / 100.0
+    )
+    assert sized["shares_to_buy"] > int(100000.0 * MAX_POSITION_PCT / 100.0)
+
+
 def test_trade_quality_score_negative_momentum_not_boosted():
     """Negative momentum must not boost TQS — long-only system should not reward falling stocks."""
     from risk_engine import _trade_quality_score
@@ -685,6 +718,52 @@ def test_size_signals_financials_sector_leader_total_risk():
         RISK_PER_TRADE_PCT * TREND_FINANCIALS_RISK_MULTIPLIER
     )
     assert non_leader_sizing["financials_sector_leader_risk_multiplier_applied"] == 1.0
+
+
+def test_enrich_signals_marks_spy_relative_leader():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "CVX",
+            "strategy": "breakout_long",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "confidence_score": 1.0,
+        },
+        {
+            "ticker": "XOM",
+            "strategy": "breakout_long",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "confidence_score": 1.0,
+        },
+    ]
+    features = {
+        "SPY": {"atr": 4.0, "momentum_20d_pct": 0.03},
+        "CVX": {
+            "atr": 4.0,
+            "momentum_20d_pct": 0.08,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.05,
+        },
+        "XOM": {
+            "atr": 4.0,
+            "momentum_20d_pct": 0.01,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.05,
+        },
+    }
+
+    cvx, xom = enrich_signals(signals, features)
+
+    assert cvx["spy_ret20_pct"] == 0.03
+    assert cvx["ticker_ret20_minus_spy_pct"] == 0.05
+    assert cvx["spy_relative_leader"] is True
+    assert xom["ticker_ret20_minus_spy_pct"] == -0.02
+    assert xom["spy_relative_leader"] is False
 
 
 def test_backtester_addon_cap_defaults_to_production_cap():

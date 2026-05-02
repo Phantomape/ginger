@@ -31,6 +31,7 @@ in shared modules such as:
 | Risk enrichment / targets | `risk_engine.py`, `regime_exit.py` | required | required | none |
 | Sector-relative sizing features | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Position sizing | `portfolio_engine.py` | required | required | fill price may differ |
+| SPY-relative leader position cap | `portfolio_engine.py` | required | required | none |
 | Pilot sleeve sizing | `pilot_sleeve.py` after `portfolio_engine.size_signals` | default off; `--include-pilot-sleeve` applies the shared pilot scalar and slot policy in PIT replay | required for `pilot_signals` | canonical core backtest stays core-only unless the flag is explicit |
 | Pilot outcome attribution | `candidate_competition_logger.py`, `performance_engine.py`, `report_generator.py` | `--include-pilot-sleeve` computes in-memory direct PnL, cash-relative PnL, replacement value, and risk-adjusted replacement value | daily run reports direct PnL, cash-relative PnL, replacement value, and pending counterfactual coverage | backtester replay must not write `data/pilot_competition_decisions.jsonl`; production appends real decisions only |
 | Portfolio heat | `portfolio_engine.py` | required | required | simulated vs latest prices |

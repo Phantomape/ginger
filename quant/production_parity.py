@@ -17,6 +17,7 @@ from constants import (
     ADDON_MAX_POSITION_PCT,
     ADDON_MIN_RS_VS_SPY,
     ADDON_MIN_UNREALIZED_PCT,
+    ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
     DEFER_BREAKOUT_WHEN_SLOTS_LTE,
     MAX_PER_SECTOR,
@@ -32,6 +33,31 @@ from constants import (
 )
 
 TRAILING_PARTIAL_REDUCE_ENABLED = False
+
+
+def position_was_spy_relative_leader(pos, ticker_df=None, spy_df=None, entry_idx=None, spy_entry_idx=None):
+    """Return whether the position qualified as a 20-day ticker-vs-SPY leader at entry."""
+    multipliers = pos.get("sizing_multipliers") or {}
+    if not multipliers and isinstance(pos.get("sizing"), dict):
+        multipliers = pos["sizing"].get("sizing_multipliers") or {}
+    if multipliers.get("spy_relative_leader_risk_on_multiplier_applied", 1.0) > 1.0:
+        return True
+    if pos.get("spy_relative_leader") is True:
+        return True
+    if ticker_df is None or spy_df is None or entry_idx is None or spy_entry_idx is None:
+        return False
+    if entry_idx < 20 or spy_entry_idx < 20:
+        return False
+    try:
+        ticker_entry = float(ticker_df["Close"].iloc[entry_idx])
+        ticker_base = float(ticker_df["Close"].iloc[entry_idx - 20])
+        spy_entry = float(spy_df["Close"].iloc[spy_entry_idx])
+        spy_base = float(spy_df["Close"].iloc[spy_entry_idx - 20])
+    except (KeyError, TypeError, ValueError, IndexError):
+        return False
+    if ticker_base <= 0 or spy_base <= 0:
+        return False
+    return ((ticker_entry - ticker_base) / ticker_base) > ((spy_entry - spy_base) / spy_base)
 
 
 def _positive_positions(open_positions):
@@ -383,12 +409,22 @@ def build_followthrough_addon_actions(
             min_rs = ADDON_MIN_RS_VS_SPY
             fraction = ADDON_FRACTION_OF_ORIGINAL_SHARES
             addon_position_cap = ADDON_MAX_POSITION_PCT
+            spy_relative_leader_addon_cap = position_was_spy_relative_leader(
+                pos,
+                ticker_df=df,
+                spy_df=spy_df,
+                entry_idx=entry_idx,
+                spy_entry_idx=spy_entry_idx,
+            )
+            if spy_relative_leader_addon_cap:
+                addon_position_cap = ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
         else:
             checkpoint_days = SECOND_ADDON_CHECKPOINT_DAYS
             min_unrealized = SECOND_ADDON_MIN_UNREALIZED_PCT
             min_rs = SECOND_ADDON_MIN_RS_VS_SPY
             fraction = SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES
             addon_position_cap = SECOND_ADDON_MAX_POSITION_PCT
+            spy_relative_leader_addon_cap = False
 
         days_since_entry = today_idx - entry_idx
         if days_since_entry != checkpoint_days:
@@ -471,6 +507,7 @@ def build_followthrough_addon_actions(
             "min_rs_vs_spy": min_rs,
             "addon_fraction_of_original_shares": fraction,
             "addon_position_cap_pct": addon_position_cap,
+            "spy_relative_leader_addon_cap": spy_relative_leader_addon_cap,
             "cap_detail": cap_detail,
             "reason": (
                 f"day-{checkpoint_days} follow-through: "
