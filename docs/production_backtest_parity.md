@@ -26,13 +26,13 @@ in shared modules such as:
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |
 | --- | --- | --- | --- | --- |
 | Universe and features | `data_layer.py`, `feature_layer.py` | historical/snapshot OHLCV | latest OHLCV | data date only |
-| Universe governance / pilot eligibility | `universe_manager.py`, `universe_adapter.py`, `pilot_sleeve.py` | point-in-time disclosure; canonical historical windows remain core-only unless a dedicated pilot replay is implemented | daily run can emit separate `pilot_signals` for trade-enabled pilot records | pilot started on `2026-05-01`, so pre-activation historical windows cannot treat it as then-known production universe |
+| Universe governance / pilot eligibility | `universe_manager.py`, `universe_adapter.py`, `pilot_sleeve.py` | point-in-time disclosure by default; `--include-pilot-sleeve` replays trade-enabled pilot eligibility day by day | daily run can emit separate `pilot_signals` for trade-enabled pilot records | pilot started on `2026-05-01`, so pre-activation historical windows cannot treat it as then-known production universe |
 | Entry signal generation | `signal_engine.py` | required | required | none |
 | Risk enrichment / targets | `risk_engine.py`, `regime_exit.py` | required | required | none |
 | Sector-relative sizing features | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Position sizing | `portfolio_engine.py` | required | required | fill price may differ |
-| Pilot sleeve sizing | `pilot_sleeve.py` after `portfolio_engine.size_signals` | dedicated pilot replay required for historical pilot attribution | required for `pilot_signals` | canonical core backtest does not execute post-2026-05-01 pilot sleeve in earlier windows |
-| Pilot outcome attribution | `candidate_competition_logger.py`, `performance_engine.py`, `report_generator.py` | forward-only unless a dedicated pilot replay log is supplied | daily run reports direct PnL, cash-relative PnL, replacement value, and pending counterfactual coverage | replacement value is incomplete until frozen counterfactual outcomes are known |
+| Pilot sleeve sizing | `pilot_sleeve.py` after `portfolio_engine.size_signals` | default off; `--include-pilot-sleeve` applies the shared pilot scalar and slot policy in PIT replay | required for `pilot_signals` | canonical core backtest stays core-only unless the flag is explicit |
+| Pilot outcome attribution | `candidate_competition_logger.py`, `performance_engine.py`, `report_generator.py` | `--include-pilot-sleeve` computes in-memory direct PnL, cash-relative PnL, replacement value, and risk-adjusted replacement value | daily run reports direct PnL, cash-relative PnL, replacement value, and pending counterfactual coverage | backtester replay must not write `data/pilot_competition_decisions.jsonl`; production appends real decisions only |
 | Portfolio heat | `portfolio_engine.py` | required | required | simulated vs latest prices |
 | Already-held handling | shared adapter policy | required | required | none |
 | Entry candidate gates | `production_parity.py` | required | required | none |

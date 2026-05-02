@@ -1,0 +1,103 @@
+{
+  "experiment_id": "exp-20260501-032",
+  "date": "2026-05-01",
+  "title": "Add PIT pilot sleeve replay to backtester",
+  "change_type": "measurement_repair",
+  "alpha_hypothesis_supported": {
+    "hypothesis": "AI infrastructure pilot candidates can produce forward evidence without polluting core universe backtests.",
+    "category": "universe_expansion / capital_allocation",
+    "why_not_direct_alpha_test": "The fixed windows all end before the 2026-05-01 pilot eligibility date, so the correct PIT result is zero pilot trades."
+  },
+  "implementation": {
+    "cli": "quant/backtester.py --include-pilot-sleeve",
+    "api": "BacktestEngine(..., include_pilot_sleeve=False)",
+    "default_behavior": "core-only",
+    "enabled_behavior": "AI_INFRA_PILOT point-in-time replay with in-memory counterfactual attribution",
+    "production_log_written_by_backtest": false,
+    "core_logic_changed": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "windows": {
+    "late_strong": {
+      "date_range": "2025-10-23 -> 2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "core_only": {
+        "expected_value_score": 2.9907,
+        "sharpe_daily": 4.31,
+        "total_pnl": 69387.88,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.79,
+        "trades": 19,
+        "survival_rate": 0.804
+      },
+      "include_pilot_sleeve": {
+        "expected_value_score": 2.9907,
+        "sharpe_daily": 4.31,
+        "total_pnl": 69387.88,
+        "max_drawdown_pct": 0.0457,
+        "win_rate": 0.79,
+        "trades": 19,
+        "survival_rate": 0.804,
+        "pilot_entries": 0,
+        "pilot_eligible_days": 0
+      }
+    },
+    "mid_weak": {
+      "date_range": "2025-04-23 -> 2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "core_only": {
+        "expected_value_score": 1.217,
+        "sharpe_daily": 2.58,
+        "total_pnl": 47170.67,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.524,
+        "trades": 21,
+        "survival_rate": 0.792
+      },
+      "include_pilot_sleeve": {
+        "expected_value_score": 1.217,
+        "sharpe_daily": 2.58,
+        "total_pnl": 47170.67,
+        "max_drawdown_pct": 0.0799,
+        "win_rate": 0.524,
+        "trades": 21,
+        "survival_rate": 0.792,
+        "pilot_entries": 0,
+        "pilot_eligible_days": 0
+      }
+    },
+    "old_thin": {
+      "date_range": "2024-10-02 -> 2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "core_only": {
+        "expected_value_score": 0.2742,
+        "sharpe_daily": 1.25,
+        "total_pnl": 21938.62,
+        "max_drawdown_pct": 0.0796,
+        "win_rate": 0.409,
+        "trades": 22,
+        "survival_rate": 0.917
+      },
+      "include_pilot_sleeve": {
+        "expected_value_score": 0.2742,
+        "sharpe_daily": 1.25,
+        "total_pnl": 21938.62,
+        "max_drawdown_pct": 0.0796,
+        "win_rate": 0.409,
+        "trades": 22,
+        "survival_rate": 0.917,
+        "pilot_entries": 0,
+        "pilot_eligible_days": 0
+      }
+    }
+  },
+  "decision": "accepted",
+  "reason": "Adds explicit PIT pilot sleeve replay while preserving default core-only metrics and proving no pre-2026-05-01 pilot leakage across all three canonical windows.",
+  "risk": "Future post-2026-05-01 pilot replay can change whole-portfolio equity risk when pilot positions exist; review pilot attribution separately from core metrics."
+}

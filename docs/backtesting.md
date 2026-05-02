@@ -21,6 +21,28 @@ cd D:\Github\ginger
 .\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT>
 ```
 
+## 试点子组合回测
+
+试点子组合回测（pilot sleeve replay）是显式开启的 point-in-time
+模式。默认标准回测仍然是 core-only，不会把 `INTC` / `LITE` / `BE`
+等试点 ticker 混入主候选池，也不会占用 core `MAX_POSITIONS` slot。
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT> --include-pilot-sleeve
+```
+
+开启后，`AI_INFRA_PILOT`（AI 基建试点子组合）会使用
+`data\universe_registry.json` 和 `data\universe_events.jsonl` 做每日
+PIT 资格判断。backtester 会预加载截至回测结束日已经允许交易的 pilot
+OHLCV，但每天是否能交易仍取决于当日 `first_trade_allowed_as_of` 和状态
+回放结果。这个模式不会写入生产 append-only 日志
+`data\pilot_competition_decisions.jsonl`；counterfactual snapshot 与 outcome
+attribution 只保存在本次回测的 `result["pilot_sleeve_replay"]` 里。
+
+历史三窗口均早于 `2026-05-01`，因此加上 `--include-pilot-sleeve` 后
+`pilot_sleeve_replay.entries` 应为 `0`，core metrics 也不应变化。这是
+PIT 无泄漏的正确结果，不是 pilot sleeve 没有接入。
+
 Window labels used in experiment logs:
 
 | Label | Date range | Snapshot |

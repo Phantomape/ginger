@@ -104,6 +104,16 @@ from production_parity import (
 )
 from position_manager import compute_exit_levels, evaluate_exit_signals
 from yfinance_bootstrap import configure_yfinance_runtime
+from pilot_sleeve import (
+    PILOT_SLEEVE_NAME,
+    apply_pilot_sizing_policy,
+    build_counterfactual_snapshots,
+    mark_pilot_signals,
+    pilot_governance_metadata,
+    pilot_records_as_of,
+    select_pilot_entry_candidates,
+)
+from candidate_competition_logger import compute_decision_outcome_attribution
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
@@ -857,14 +867,16 @@ class Position:
                  "sizing_multipliers", "base_risk_pct", "actual_risk_pct",
                  "original_shares", "addon_done", "addon_count",
                  "addon_shares", "addon_cost", "exit_advisory_rules_seen",
-                 "exit_advisory_first_seen")
+                 "exit_advisory_first_seen", "sleeve", "pilot_decision_id",
+                 "pilot_snapshot", "pilot_signal_date")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
                  entry_open_price=None, atr=None, target_mult_used=None,
                  regime_exit_bucket=None, regime_exit_score=None,
                  sizing_multipliers=None, base_risk_pct=None,
-                 actual_risk_pct=None):
+                 actual_risk_pct=None, sleeve="core", pilot_decision_id=None,
+                 pilot_snapshot=None, pilot_signal_date=None):
         self.ticker           = ticker
         self.entry_price      = entry_price               # post-slippage fill
         self.entry_open_price = entry_open_price or entry_price
@@ -891,6 +903,10 @@ class Position:
         self.addon_cost = 0.0
         self.exit_advisory_rules_seen = set()
         self.exit_advisory_first_seen = {}
+        self.sleeve = sleeve or "core"
+        self.pilot_decision_id = pilot_decision_id
+        self.pilot_snapshot = pilot_snapshot
+        self.pilot_signal_date = pilot_signal_date
 
 
 class BacktestEngine:
@@ -906,13 +922,15 @@ class BacktestEngine:
 
     def __init__(self, universe, start=None, end=None, config=None,
                  replay_llm=False, replay_news=False, data_dir=None,
-                 ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None):
+                 ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None,
+                 include_pilot_sleeve=False):
         self.universe    = universe
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
         self.end         = pd.Timestamp(end)   if end   else None
         self.replay_llm  = bool(replay_llm)
         self.replay_news = bool(replay_news)
+        self.include_pilot_sleeve = bool(include_pilot_sleeve)
         # Default data_dir = repo-root/data (one up from quant/).
         if data_dir is None:
             here = os.path.dirname(os.path.abspath(__file__))
@@ -925,6 +943,24 @@ class BacktestEngine:
         # P-ERN: load all earnings snapshots once at init so _earnings_dict_for
         # can supplement eps_estimate / avg_historical_surprise_pct for C strategy.
         self._earnings_snapshots = self._load_earnings_snapshots()
+
+    def _pilot_lookup_as_of(self, as_of):
+        if not self.include_pilot_sleeve:
+            return {}
+        try:
+            return pilot_records_as_of(str(pd.Timestamp(as_of).date()))
+        except Exception as exc:
+            logger.warning("Pilot sleeve registry replay unavailable for %s: %s", as_of, exc)
+            return {}
+
+    def _pilot_tickers_for_download(self):
+        if not self.include_pilot_sleeve:
+            return []
+        as_of = self.end.date() if self.end is not None else datetime.now().date()
+        return sorted(self._pilot_lookup_as_of(as_of))
+
+    def _backtest_data_universe(self):
+        return sorted(set(self.universe) | set(self._pilot_tickers_for_download()))
 
     def _sanitize_proxy_env(self):
         """Backward-compatible wrapper around the shared yfinance bootstrap."""
@@ -1040,7 +1076,7 @@ class BacktestEngine:
         """
         import numpy as np
         cal = {}
-        for ticker in self.universe:
+        for ticker in self._backtest_data_universe():
             try:
                 t = yf.Ticker(ticker)
                 df = t.get_earnings_dates(limit=20)
@@ -1105,7 +1141,7 @@ class BacktestEngine:
 
     def _download_data(self):
         """Download OHLCV for universe + SPY + QQQ."""
-        all_tickers = list(set(self.universe + ["SPY", "QQQ"]))
+        all_tickers = list(set(self._backtest_data_universe() + ["SPY", "QQQ"]))
         lookback = self.config["LOOKBACK_CALENDAR_DAYS"]
 
         # Determine download range: we need lookback days BEFORE start
@@ -1213,6 +1249,30 @@ class BacktestEngine:
         total_signals_survived  = 0
         sizing_rule_signal_attribution = {}
         entry_decision_events = []
+        pilot_replay_state = {
+            "enabled": self.include_pilot_sleeve,
+            "sleeve": PILOT_SLEEVE_NAME,
+            "eligible_tickers": [],
+            "eligible_days": 0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "entries": 0,
+            "closed_trades": 0,
+            "direct_pilot_pnl": 0.0,
+            "cash_relative_pnl": 0.0,
+            "replacement_value": None,
+            "risk_adjusted_replacement_value_avg": None,
+            "pending_counterfactual_outcomes": 0,
+            "by_ticker": {},
+            "decisions": [],
+            "notes": [
+                "PIT pilot replay is enabled only with --include-pilot-sleeve.",
+                "Replay is in-memory and does not write data/pilot_competition_decisions.jsonl.",
+            ],
+        }
+        pilot_eligible_tickers_seen = set()
+        pilot_decision_snapshots_by_id = {}
+        pilot_outcome_attributions = []
 
         # LLM replay bookkeeping (§4.2 attribution requirement).
         llm_dates_covered  = []
@@ -1352,6 +1412,309 @@ class BacktestEngine:
                 "available_slots_at_entry_loop": slots,
                 "details": details,
             })
+
+        def _core_position_count():
+            return sum(1 for p in positions if getattr(p, "sleeve", "core") == "core")
+
+        def _open_positions_payload():
+            return {
+                "positions": [
+                    {
+                        "ticker": p.ticker,
+                        "shares": p.shares,
+                        "avg_cost": p.entry_price,
+                        "entry_date": (
+                            str(p.entry_date.date())
+                            if hasattr(p.entry_date, "date")
+                            else str(p.entry_date)
+                        ),
+                        "target_price": p.target_price,
+                    }
+                    for p in positions
+                ]
+            }
+
+        def _simulate_counterfactual_trade(cf, signal_day, horizon_day):
+            ticker = cf.get("ticker")
+            if ticker == "CASH":
+                return {
+                    "type": cf.get("type"),
+                    "ticker": "CASH",
+                    "profit_loss": 0.0,
+                    "planned_risk": 0.0,
+                    "status": "cash_baseline",
+                }
+
+            df = ohlcv_all.get(ticker)
+            shares = int(cf.get("shares_to_buy") or cf.get("shares") or 0)
+            stop = cf.get("stop_price")
+            target = cf.get("target_price")
+            signal_entry = cf.get("entry_price")
+            if df is None or shares <= 0 or not stop or not target or not signal_entry:
+                return {
+                    "type": cf.get("type"),
+                    "ticker": ticker,
+                    "profit_loss": None,
+                    "planned_risk": cf.get("planned_risk"),
+                    "status": "missing_counterfactual_inputs",
+                }
+
+            fill_date = None
+            fill_price = None
+            for nd in [d for d in all_dates if d > signal_day][:3]:
+                if nd in df.index:
+                    fill_row = df.loc[nd]
+                    fill_price = _scalar_price(fill_row, "Open")
+                    fill_date = nd
+                    break
+            if fill_price is None:
+                return {
+                    "type": cf.get("type"),
+                    "ticker": ticker,
+                    "profit_loss": None,
+                    "planned_risk": cf.get("planned_risk"),
+                    "status": "no_future_fill",
+                }
+
+            cancel_reason = classify_entry_open_cancel(
+                fill_price,
+                signal_entry,
+                stop_price=stop,
+                upside_gap_cancel_pct=CANCEL_GAP_PCT,
+                adverse_gap_cancel_pct=self.config.get(
+                    "ADVERSE_GAP_CANCEL_PCT",
+                    ADVERSE_GAP_CANCEL_PCT,
+                ),
+            )
+            if cancel_reason in {
+                "gap_cancel",
+                "adverse_gap_down_cancel",
+                "stop_breach_cancel",
+            }:
+                return {
+                    "type": cf.get("type"),
+                    "ticker": ticker,
+                    "profit_loss": 0.0,
+                    "planned_risk": cf.get("planned_risk"),
+                    "status": cancel_reason,
+                    "fill_date": str(fill_date.date()),
+                    "fill_price": round(fill_price, 4),
+                }
+
+            entry_fill = apply_entry_fill(fill_price)
+            planned_risk = cf.get("planned_risk")
+            if planned_risk is None and entry_fill > stop:
+                planned_risk = round((entry_fill - stop) * shares, 6)
+
+            exit_price = None
+            exit_raw_price = None
+            exit_reason = None
+            exit_date = None
+            for day in [d for d in all_dates if fill_date <= d <= horizon_day]:
+                if day not in df.index:
+                    continue
+                row = df.loc[day]
+                opn = _scalar_price(row, "Open")
+                low = _scalar_price(row, "Low")
+                high = _scalar_price(row, "High")
+                if low <= stop:
+                    exit_raw_price = opn if opn < stop else stop
+                    exit_price = apply_stop_fill(opn, stop)
+                    exit_reason = "stop"
+                    exit_date = day
+                    break
+                if high >= target:
+                    exit_raw_price = opn if opn >= target else target
+                    exit_price = apply_target_fill(opn, target)
+                    exit_reason = "target"
+                    exit_date = day
+                    break
+
+            if exit_price is None:
+                if horizon_day not in df.index:
+                    return {
+                        "type": cf.get("type"),
+                        "ticker": ticker,
+                        "profit_loss": None,
+                        "planned_risk": planned_risk,
+                        "status": "missing_horizon_price",
+                    }
+                row = df.loc[horizon_day]
+                exit_raw_price = _scalar_price(row, "Close")
+                exit_price = apply_slippage(
+                    exit_raw_price,
+                    SLIPPAGE_BPS_TARGET,
+                    "sell",
+                )
+                exit_reason = "horizon_mark"
+                exit_date = horizon_day
+
+            cost = exit_price * ROUND_TRIP_COST_PCT * shares
+            pnl = (exit_price - entry_fill) * shares - cost
+            return {
+                "type": cf.get("type"),
+                "ticker": ticker,
+                "profit_loss": round(pnl, 2),
+                "planned_risk": planned_risk,
+                "status": "closed",
+                "entry_date": str(fill_date.date()),
+                "exit_date": str(exit_date.date()),
+                "entry_price": round(entry_fill, 2),
+                "exit_price": round(exit_price, 2),
+                "exit_reason": exit_reason,
+                "shares": shares,
+            }
+
+        def _attach_pilot_attribution(pos, trade_record, pnl, exit_day):
+            if getattr(pos, "sleeve", "core") != PILOT_SLEEVE_NAME:
+                return
+            snapshot = pos.pilot_snapshot
+            if not snapshot:
+                return
+            counterfactual_outcomes = [
+                _simulate_counterfactual_trade(
+                    cf,
+                    pos.pilot_signal_date or pos.entry_date,
+                    exit_day,
+                )
+                for cf in snapshot.get("counterfactuals", [])
+                if cf.get("ticker") != "CASH"
+            ]
+            pilot_risk = None
+            if pos.entry_price and pos.stop_price and pos.entry_price > pos.stop_price:
+                pilot_risk = round((pos.entry_price - pos.stop_price) * pos.original_shares, 6)
+            outcome = {
+                "decision_id": pos.pilot_decision_id,
+                "sleeve": PILOT_SLEEVE_NAME,
+                "pilot_ticker": pos.ticker,
+                "pilot_pnl": round(pnl, 2),
+                "pilot_risk": pilot_risk,
+                "pilot_trade": {
+                    "ticker": pos.ticker,
+                    "strategy": pos.strategy,
+                    "entry_date": str(pos.entry_date.date()),
+                    "exit_date": str(exit_day.date()),
+                    "entry_price": pos.entry_price,
+                    "exit_price": trade_record.get("exit_price"),
+                    "stop_price": pos.stop_price,
+                    "shares": pos.shares,
+                    "profit_loss": round(pnl, 2),
+                    "planned_risk": pilot_risk,
+                },
+                "counterfactual_outcomes": counterfactual_outcomes,
+            }
+            attribution = compute_decision_outcome_attribution(snapshot, outcome)
+            trade_record["pilot_attribution"] = attribution
+            pilot_outcome_attributions.append(attribution)
+            pilot_replay_state["decisions"].append({
+                "decision_id": pos.pilot_decision_id,
+                "date": str(exit_day.date()) if hasattr(exit_day, "date") else str(exit_day),
+                "ticker": pos.ticker,
+                "status": "closed",
+                "pilot_pnl": round(pnl, 2),
+                "replacement_value": attribution.get("replacement_value"),
+                "replacement_value_status": attribution.get("replacement_value_status"),
+            })
+
+        def _finalize_pilot_replay_state():
+            pilot_replay_state["eligible_tickers"] = sorted(pilot_eligible_tickers_seen)
+            pilot_replay_state["closed_trades"] = len(pilot_outcome_attributions)
+
+            direct_pnl = round(
+                sum(item.get("pilot_pnl") or 0.0 for item in pilot_outcome_attributions),
+                2,
+            )
+            pilot_replay_state["direct_pilot_pnl"] = direct_pnl
+            pilot_replay_state["cash_relative_pnl"] = direct_pnl
+
+            complete = [
+                item for item in pilot_outcome_attributions
+                if item.get("replacement_value_status") == "complete"
+            ]
+            pilot_replay_state["pending_counterfactual_outcomes"] = (
+                len(pilot_outcome_attributions) - len(complete)
+            )
+            pilot_replay_state["replacement_value"] = (
+                round(sum(item.get("replacement_value") or 0.0 for item in complete), 2)
+                if complete
+                else None
+            )
+            risk_adjusted_values = [
+                item.get("risk_adjusted_replacement_value")
+                for item in complete
+                if item.get("risk_adjusted_replacement_value") is not None
+            ]
+            pilot_replay_state["risk_adjusted_replacement_value_avg"] = (
+                round(sum(risk_adjusted_values) / len(risk_adjusted_values), 6)
+                if risk_adjusted_values
+                else None
+            )
+
+            by_ticker = {}
+            for item in pilot_outcome_attributions:
+                ticker = item.get("pilot_ticker") or "UNKNOWN"
+                bucket = by_ticker.setdefault(
+                    ticker,
+                    {
+                        "entries": 0,
+                        "closed_trades": 0,
+                        "direct_pilot_pnl": 0.0,
+                        "cash_relative_pnl": 0.0,
+                        "complete_replacement_outcomes": 0,
+                        "pending_counterfactual_outcomes": 0,
+                        "replacement_value": 0.0,
+                        "risk_adjusted_replacement_value_sum": 0.0,
+                        "risk_adjusted_replacement_value_count": 0,
+                    },
+                )
+                bucket["closed_trades"] += 1
+                bucket["direct_pilot_pnl"] += item.get("pilot_pnl") or 0.0
+                bucket["cash_relative_pnl"] += item.get("cash_relative_pnl") or 0.0
+                if item.get("replacement_value_status") == "complete":
+                    bucket["complete_replacement_outcomes"] += 1
+                    bucket["replacement_value"] += item.get("replacement_value") or 0.0
+                else:
+                    bucket["pending_counterfactual_outcomes"] += 1
+                if item.get("risk_adjusted_replacement_value") is not None:
+                    bucket["risk_adjusted_replacement_value_sum"] += item[
+                        "risk_adjusted_replacement_value"
+                    ]
+                    bucket["risk_adjusted_replacement_value_count"] += 1
+
+            for decision in pilot_replay_state["decisions"]:
+                if decision.get("status") != "entered":
+                    continue
+                ticker = decision.get("ticker") or "UNKNOWN"
+                bucket = by_ticker.setdefault(
+                    ticker,
+                    {
+                        "entries": 0,
+                        "closed_trades": 0,
+                        "direct_pilot_pnl": 0.0,
+                        "cash_relative_pnl": 0.0,
+                        "complete_replacement_outcomes": 0,
+                        "pending_counterfactual_outcomes": 0,
+                        "replacement_value": 0.0,
+                        "risk_adjusted_replacement_value_sum": 0.0,
+                        "risk_adjusted_replacement_value_count": 0,
+                    },
+                )
+                bucket["entries"] += 1
+
+            for bucket in by_ticker.values():
+                bucket["direct_pilot_pnl"] = round(bucket["direct_pilot_pnl"], 2)
+                bucket["cash_relative_pnl"] = round(bucket["cash_relative_pnl"], 2)
+                bucket["replacement_value"] = round(bucket["replacement_value"], 2)
+                count = bucket["risk_adjusted_replacement_value_count"]
+                bucket["risk_adjusted_replacement_value_avg"] = (
+                    round(bucket["risk_adjusted_replacement_value_sum"] / count, 6)
+                    if count
+                    else None
+                )
+                bucket.pop("risk_adjusted_replacement_value_sum", None)
+
+            pilot_replay_state["by_ticker"] = by_ticker
+            return pilot_replay_state
 
         def _current_prices_for_positions(today, column):
             prices = {}
@@ -1542,6 +1905,8 @@ class BacktestEngine:
                 TRAILING_STOP_PCT,
             )
             for pos in positions:
+                if getattr(pos, "sleeve", "core") != "core":
+                    continue
                 if pos.shares <= 0:
                     continue
                 df = ohlcv_all.get(pos.ticker)
@@ -1668,6 +2033,8 @@ class BacktestEngine:
                 return
 
             for pos in positions:
+                if getattr(pos, "sleeve", "core") != "core":
+                    continue
                 if pos.addon_done:
                     continue
                 addon_number = pos.addon_count + 1
@@ -1884,7 +2251,7 @@ class BacktestEngine:
                                    - ROUND_TRIP_COST_PCT)
                     initial_risk_pct = (((pos.entry_price - pos.stop_price) / pos.entry_price)
                                         if pos.stop_price and pos.entry_price else None)
-                    closed.append({
+                    trade_record = {
                         "trade_key": (
                             f"{pos.ticker}:"
                             f"{pd.Timestamp(pos.entry_date).date()}:"
@@ -1917,7 +2284,12 @@ class BacktestEngine:
                         "exit_advisory_first_seen": dict(pos.exit_advisory_first_seen),
                         "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                         "exit_date":   str(today.date()) if hasattr(today, "date") else str(today),
-                    })
+                    }
+                    if getattr(pos, "sleeve", "core") != "core":
+                        trade_record["sleeve"] = pos.sleeve
+                        trade_record["pilot_decision_id"] = pos.pilot_decision_id
+                        _attach_pilot_attribution(pos, trade_record, pnl, today)
+                    closed.append(trade_record)
                 else:
                     still_open.append(pos)
 
@@ -1926,8 +2298,14 @@ class BacktestEngine:
             _schedule_followthrough_addons(today)
 
             # ── 2. Generate signals using the REAL pipeline ─────────────────
-            # Skip if at max positions
-            if len(positions) >= self.config["MAX_POSITIONS"]:
+            # Core slots are counted separately from pilot sleeve positions.
+            pilot_records_today = (
+                self._pilot_lookup_as_of(today)
+                if self.include_pilot_sleeve
+                else {}
+            )
+            core_slots_full = _core_position_count() >= self.config["MAX_POSITIONS"]
+            if core_slots_full and not pilot_records_today:
                 equity_curve.append((str(today.date()), round(equity, 2)))
                 continue
 
@@ -1944,6 +2322,32 @@ class BacktestEngine:
                 earn = self._earnings_dict_for(
                     today, earnings_calendar.get(ticker, []), ticker=ticker)
                 features_dict[ticker] = compute_features(ticker, data_slice, earn)
+            pilot_features_dict = {}
+            if self.include_pilot_sleeve:
+                if pilot_records_today:
+                    pilot_replay_state["eligible_days"] += 1
+                    pilot_eligible_tickers_seen.update(pilot_records_today)
+                for ticker in sorted(pilot_records_today):
+                    if ticker in features_dict:
+                        pilot_features_dict[ticker] = features_dict[ticker]
+                        continue
+                    df = ohlcv_all.get(ticker)
+                    if df is None:
+                        continue
+                    data_slice = df.loc[:today]
+                    if len(data_slice) < 21:
+                        continue
+                    earn = self._earnings_dict_for(
+                        today,
+                        earnings_calendar.get(ticker, []),
+                        ticker=ticker,
+                    )
+                    pilot_features_dict[ticker] = compute_features(
+                        ticker,
+                        data_slice,
+                        earn,
+                    )
+            all_features_dict = {**features_dict, **pilot_features_dict}
 
             market_context = _market_context_for_day(today)
             regime_str = market_context.get("market_regime", "UNKNOWN")
@@ -1962,20 +2366,22 @@ class BacktestEngine:
 
             # Generate signals with explicit strategy selection so alpha experiments
             # can isolate a single sub-strategy without changing signal rules.
-            signals = generate_signals(
-                features_dict,
-                market_context=market_context,
-                enabled_strategies=self.config.get("ENABLED_STRATEGIES"),
-                breakout_max_pullback_from_52w_high=(
-                    self.config.get("BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH")
-                ),
-            )
+            signals = []
+            if not core_slots_full:
+                signals = generate_signals(
+                    features_dict,
+                    market_context=market_context,
+                    enabled_strategies=self.config.get("ENABLED_STRATEGIES"),
+                    breakout_max_pullback_from_52w_high=(
+                        self.config.get("BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH")
+                    ),
+                )
             if self.config.get("BREAKOUT_RANK_BY_52W_HIGH"):
                 signals = rank_signals_for_allocation(signals)
             total_signals_generated += len(signals)
 
             # Enrich with risk parameters
-            signals = enrich_signals(signals, features_dict,
+            signals = enrich_signals(signals, all_features_dict,
                                     atr_target_mult=atr_target_mult)
             if self.config.get("REGIME_AWARE_EXIT"):
                 for s in signals:
@@ -2002,30 +2408,15 @@ class BacktestEngine:
 
             current_prices = {
                 ticker: feat["close"]
-                for ticker, feat in features_dict.items()
+                for ticker, feat in all_features_dict.items()
                 if feat and feat.get("close") is not None
             }
-            open_positions = {
-                "positions": [
-                    {
-                        "ticker": p.ticker,
-                        "shares": p.shares,
-                        "avg_cost": p.entry_price,
-                        "entry_date": (
-                            str(p.entry_date.date())
-                            if hasattr(p.entry_date, "date")
-                            else str(p.entry_date)
-                        ),
-                        "target_price": p.target_price,
-                    }
-                    for p in positions
-                ]
-            }
+            open_positions = _open_positions_payload()
             portfolio_heat = compute_portfolio_heat(
                 open_positions,
                 current_prices,
                 equity,
-                features_dict=features_dict,
+                features_dict=all_features_dict,
             )
             if portfolio_heat and not portfolio_heat.get("can_add_new_positions", False):
                 signals = []
@@ -2111,6 +2502,64 @@ class BacktestEngine:
                     news_signals_vetoed    += vetoed_n
                     news_signals_passed    += len(signals)
 
+            pilot_signals = []
+            if self.include_pilot_sleeve and pilot_records_today and pilot_features_dict:
+                pilot_signals = generate_signals(
+                    pilot_features_dict,
+                    market_context=market_context,
+                    enabled_strategies=self.config.get("ENABLED_STRATEGIES"),
+                    breakout_max_pullback_from_52w_high=(
+                        self.config.get("BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH")
+                    ),
+                )
+                pilot_replay_state["signals_generated"] += len(pilot_signals)
+                if self.config.get("BREAKOUT_RANK_BY_52W_HIGH"):
+                    pilot_signals = rank_signals_for_allocation(pilot_signals)
+                pilot_signals = enrich_signals(
+                    pilot_signals,
+                    all_features_dict,
+                    atr_target_mult=atr_target_mult,
+                )
+                if self.config.get("REGIME_AWARE_EXIT"):
+                    for s in pilot_signals:
+                        s["target_mult_used"] = s.get(
+                            "target_mult_used",
+                            exit_profile["target_mult"],
+                        )
+                        s["regime_exit_bucket"] = exit_profile["bucket"]
+                        s["regime_exit_score"] = exit_profile["score"]
+                pilot_signals = mark_pilot_signals(
+                    pilot_signals,
+                    pilot_records_today,
+                    metadata=pilot_governance_metadata(),
+                )
+                pilot_signals, _pilot_entry_filter_audit = filter_entry_signal_candidates(
+                    pilot_signals,
+                    active_tickers={p.ticker for p in positions if p.ticker},
+                    market_regime=regime_str,
+                    spy_pct_from_ma=spy_pct,
+                    qqq_pct_from_ma=qqq_pct,
+                    max_per_sector=self.config.get("MAX_PER_SECTOR", MAX_PER_SECTOR),
+                )
+                if portfolio_heat and not portfolio_heat.get("can_add_new_positions", False):
+                    pilot_signals = []
+                else:
+                    pilot_signals = size_signals(
+                        pilot_signals,
+                        equity,
+                        risk_pct=risk_pct,
+                    )
+                pilot_signals = apply_pilot_sizing_policy(
+                    pilot_signals,
+                    pilot_records_today,
+                )
+                pilot_replay_state["signals_survived"] += len(
+                    [
+                        sig for sig in pilot_signals
+                        if (sig.get("sizing") or {}).get("shares_to_buy", 0) > 0
+                    ]
+                )
+
             # ── 3. Enter positions at next-day open ─────────────────────────
             signals, entry_plan = plan_entry_candidates(
                 signals,
@@ -2126,8 +2575,36 @@ class BacktestEngine:
                 defer_breakout_max_min_index_pct_from_ma=self.config.get(
                     "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA"
                 ),
-                active_positions_count=len(positions),
+                active_positions_count=_core_position_count(),
             )
+            pilot_entry_plan = None
+            pilot_decision_snapshots = []
+            if self.include_pilot_sleeve and pilot_signals:
+                pilot_signals, pilot_entry_plan = select_pilot_entry_candidates(
+                    pilot_signals,
+                    pilot_records_today,
+                    open_positions=_open_positions_payload(),
+                )
+                pilot_decision_snapshots = build_counterfactual_snapshots(
+                    pilot_signals,
+                    core_signals=signals,
+                    as_of=str(today.date()),
+                    market_context=market_context,
+                    portfolio_heat=portfolio_heat,
+                    metadata=pilot_governance_metadata(),
+                )
+                for sig, snapshot in zip(pilot_signals, pilot_decision_snapshots):
+                    pilot_decision_snapshots_by_id[snapshot["decision_id"]] = snapshot
+                    sig.setdefault("pilot_sleeve", {})["decision_id"] = snapshot["decision_id"]
+                    pilot_replay_state["decisions"].append(
+                        {
+                            "decision_id": snapshot["decision_id"],
+                            "date": str(today.date()),
+                            "ticker": snapshot.get("pilot_ticker"),
+                            "status": "candidate_snapshot",
+                            "counterfactuals": snapshot.get("counterfactuals", []),
+                        }
+                    )
             slots = entry_plan["available_slots"]
             for deferred in entry_plan["deferred_breakout_signals"]:
                 scarce_slot_breakout_deferred_count += 1
@@ -2314,6 +2791,133 @@ class BacktestEngine:
                     },
                 )
 
+            for rank, sig in enumerate(pilot_signals, start=1):
+                ticker = sig["ticker"]
+                snapshot = (
+                    pilot_decision_snapshots[rank - 1]
+                    if rank - 1 < len(pilot_decision_snapshots)
+                    else None
+                )
+                decision_id = (snapshot or {}).get("decision_id")
+                sizing = sig.get("sizing")
+                if any(
+                    p.ticker == ticker and getattr(p, "sleeve", "core") == PILOT_SLEEVE_NAME
+                    for p in positions
+                ):
+                    pilot_replay_state["decisions"].append({
+                        "decision_id": decision_id,
+                        "date": str(today.date()),
+                        "ticker": ticker,
+                        "status": "already_holding_pilot",
+                    })
+                    continue
+                if not sizing or not sizing.get("shares_to_buy"):
+                    pilot_replay_state["decisions"].append({
+                        "decision_id": decision_id,
+                        "date": str(today.date()),
+                        "ticker": ticker,
+                        "status": "no_shares",
+                    })
+                    continue
+
+                shares = sizing["shares_to_buy"]
+                stop = sig.get("stop_price")
+                target = sig.get("target_price")
+                if not stop or not target:
+                    pilot_replay_state["decisions"].append({
+                        "decision_id": decision_id,
+                        "date": str(today.date()),
+                        "ticker": ticker,
+                        "status": "missing_stop_or_target",
+                    })
+                    continue
+
+                df = ohlcv_all.get(ticker)
+                if df is None:
+                    pilot_replay_state["decisions"].append({
+                        "decision_id": decision_id,
+                        "date": str(today.date()),
+                        "ticker": ticker,
+                        "status": "missing_ohlcv",
+                    })
+                    continue
+
+                fill_price = None
+                fill_date = None
+                for nd in [d for d in all_dates if d > today][:3]:
+                    if nd in df.index:
+                        fill_row = df.loc[nd]
+                        fill_price = _scalar_price(fill_row, "Open")
+                        fill_date = nd
+                        break
+                if fill_price is None:
+                    pilot_replay_state["decisions"].append({
+                        "decision_id": decision_id,
+                        "date": str(today.date()),
+                        "ticker": ticker,
+                        "status": "no_future_fill",
+                    })
+                    continue
+
+                signal_entry = sig.get("entry_price", fill_price)
+                cancel_reason = classify_entry_open_cancel(
+                    fill_price,
+                    signal_entry,
+                    stop_price=stop,
+                    upside_gap_cancel_pct=CANCEL_GAP_PCT,
+                    adverse_gap_cancel_pct=self.config.get(
+                        "ADVERSE_GAP_CANCEL_PCT",
+                        ADVERSE_GAP_CANCEL_PCT,
+                    ),
+                )
+                if cancel_reason in {
+                    "gap_cancel",
+                    "adverse_gap_down_cancel",
+                    "stop_breach_cancel",
+                }:
+                    pilot_replay_state["decisions"].append({
+                        "decision_id": decision_id,
+                        "date": str(today.date()),
+                        "ticker": ticker,
+                        "status": cancel_reason,
+                        "fill_date": str(fill_date.date()),
+                        "fill_price": round(fill_price, 4),
+                    })
+                    continue
+
+                entry_fill = apply_entry_fill(fill_price)
+                positions.append(Position(
+                    ticker=ticker,
+                    entry_price=round(entry_fill, 2),
+                    entry_open_price=round(fill_price, 4),
+                    stop_price=stop,
+                    target_price=target,
+                    shares=shares,
+                    entry_date=fill_date,
+                    strategy=sig.get("strategy", "unknown"),
+                    sector=sig.get("sector", "Unknown"),
+                    target_mult_used=sig.get("target_mult_used"),
+                    regime_exit_bucket=sig.get("regime_exit_bucket"),
+                    regime_exit_score=sig.get("regime_exit_score"),
+                    sizing_multipliers=_extract_sizing_multipliers(sizing),
+                    base_risk_pct=sizing.get("base_risk_pct"),
+                    actual_risk_pct=sizing.get("risk_pct"),
+                    sleeve=PILOT_SLEEVE_NAME,
+                    pilot_decision_id=decision_id,
+                    pilot_snapshot=snapshot,
+                    pilot_signal_date=today,
+                ))
+                pilot_replay_state["entries"] += 1
+                pilot_replay_state["decisions"].append({
+                    "decision_id": decision_id,
+                    "date": str(today.date()),
+                    "ticker": ticker,
+                    "status": "entered",
+                    "fill_date": str(fill_date.date()),
+                    "fill_price": round(fill_price, 4),
+                    "shares": shares,
+                })
+
             # Mark-to-market equity
             mtm = capital
             for t in closed:
@@ -2353,7 +2957,7 @@ class BacktestEngine:
                            - ROUND_TRIP_COST_PCT)
             initial_risk_pct = (((pos.entry_price - pos.stop_price) / pos.entry_price)
                                 if pos.stop_price and pos.entry_price else None)
-            closed.append({
+            trade_record = {
                 "trade_key": (
                     f"{pos.ticker}:"
                     f"{pd.Timestamp(pos.entry_date).date()}:"
@@ -2386,7 +2990,12 @@ class BacktestEngine:
                 "exit_advisory_first_seen": dict(pos.exit_advisory_first_seen),
                 "entry_date":  str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
                 "exit_date":   str(last_day.date()),
-            })
+            }
+            if getattr(pos, "sleeve", "core") != "core":
+                trade_record["sleeve"] = pos.sleeve
+                trade_record["pilot_decision_id"] = pos.pilot_decision_id
+                _attach_pilot_attribution(pos, trade_record, pnl, last_day)
+            closed.append(trade_record)
 
         # ── Compute metrics ─────────────────────────────────────────────────
         wins   = [t for t in closed if t["pnl"] > 0]
@@ -2553,6 +3162,7 @@ class BacktestEngine:
             round(news_candidate_signals_covered / news_candidate_signals_total, 4)
             if news_candidate_signals_total else 0.0
         )
+        pilot_sleeve_replay = _finalize_pilot_replay_state()
 
         known_biases = {
             "ohlcv_source": {
@@ -2605,6 +3215,19 @@ class BacktestEngine:
             "pending_action_replay_unreplayed": build_pending_action_replay_bias(
                 self.data_dir
             ),
+            "pilot_sleeve_replay": {
+                "enabled": self.include_pilot_sleeve,
+                "mode": "point_in_time_in_memory",
+                "default_core_only": not self.include_pilot_sleeve,
+                "decision_log_written": False,
+                "sleeve": PILOT_SLEEVE_NAME,
+                "note": (
+                    "Pilot sleeve replay uses universe_registry plus "
+                    "universe_events for daily PIT eligibility and keeps "
+                    "counterfactual decisions in memory so historical "
+                    "backtests do not pollute the production append-only log."
+                ),
+            },
             "survivorship_bias_universe":  True,
             # Legacy placeholder overwritten below by live snapshot coverage.
             # Earnings strategy data quality: only days_to_earnings is historically
@@ -2645,9 +3268,14 @@ class BacktestEngine:
             if not note.startswith("earnings_event_long: runs with partial data")
         ]
         known_biases["notes"].append(
-            "Pending actions: production can preserve unexecuted REDUCE/EXIT "
-            "through pending_actions.json; canonical backtests disclose but "
-            "do not replay the current ledger"
+                "Pending actions: production can preserve unexecuted REDUCE/EXIT "
+                "through pending_actions.json; canonical backtests disclose but "
+                "do not replay the current ledger"
+            )
+        known_biases["notes"].append(
+            "Pilot sleeve replay: default backtests are core-only; "
+            "--include-pilot-sleeve enables PIT AI_INFRA_PILOT replay with "
+            "in-memory counterfactual attribution and no production log writes"
         )
         known_biases["notes"].append(
             "earnings_event_long: uses earnings snapshots when present; "
@@ -2979,6 +3607,7 @@ class BacktestEngine:
             "exit_advisory_shadow_attribution": exit_advisory_shadow_attribution,
             "scarce_slot_attribution": scarce_slot_attribution,
             "entry_execution_attribution": entry_execution_attribution,
+            "pilot_sleeve_replay": pilot_sleeve_replay,
             "equity_curve_integrity": equity_curve_integrity,
             "caveats": (
                 [
@@ -3000,7 +3629,16 @@ class BacktestEngine:
                 "REDUCE/EXIT actions are disclosed but not executed by "
                 "default backtests; target_price is a full-position simulated "
                 "target exit in backtest."
-            ],
+            ]
+            + (
+                [
+                    "pilot_sleeve_replay_enabled: PIT AI_INFRA_PILOT replay "
+                    "ran in memory; it did not write "
+                    "data/pilot_competition_decisions.jsonl."
+                ]
+                if self.include_pilot_sleeve
+                else []
+            ),
             "equity_curve":        equity_curve,
             "trades":              closed,
         }
@@ -3048,6 +3686,7 @@ class BacktestEngine:
                 data_dir=self.data_dir,
                 ohlcv_snapshot_path=self.ohlcv_snapshot_path,
                 save_ohlcv_snapshot_path=self.save_ohlcv_snapshot_path,
+                include_pilot_sleeve=self.include_pilot_sleeve,
             )
             result = engine.run()
             result["param_name"]  = param_name
@@ -3129,6 +3768,21 @@ def _print_results(results):
         print(f"    Strategy return: {_fmt(b.get('strategy_total_return_pct'))}")
         print(f"    vs SPY:          {_fmt(b.get('strategy_vs_spy_pct'))}")
         print(f"    vs QQQ:          {_fmt(b.get('strategy_vs_qqq_pct'))}")
+
+    pilot_replay = results.get("pilot_sleeve_replay") or {}
+    if pilot_replay.get("enabled"):
+        print("\n  PILOT SLEEVE REPLAY:")
+        print(f"    sleeve:                  {pilot_replay.get('sleeve')}")
+        print(f"    eligible tickers:        {pilot_replay.get('eligible_tickers')}")
+        print(f"    eligible days:           {pilot_replay.get('eligible_days')}")
+        print(f"    signals generated:       {pilot_replay.get('signals_generated')}")
+        print(f"    signals survived:        {pilot_replay.get('signals_survived')}")
+        print(f"    entries / closed:        "
+              f"{pilot_replay.get('entries')} / {pilot_replay.get('closed_trades')}")
+        print(f"    direct pilot pnl:        ${pilot_replay.get('direct_pilot_pnl'):,.2f}")
+        print(f"    replacement value:       {pilot_replay.get('replacement_value')}")
+        print(f"    risk-adjusted repl avg:  "
+              f"{pilot_replay.get('risk_adjusted_replacement_value_avg')}")
 
     if results.get("convergence"):
         from convergence import format_convergence_report
@@ -3373,6 +4027,9 @@ def main():
                         help="Load OHLCV from a saved snapshot JSON instead of live yfinance.")
     parser.add_argument("--save-ohlcv-snapshot", type=str, default=None,
                         help="Save downloaded OHLCV to a snapshot JSON for deterministic reruns.")
+    parser.add_argument("--include-pilot-sleeve", action="store_true",
+                        help="Enable point-in-time AI_INFRA_PILOT sleeve replay. "
+                             "Default backtests remain core-only.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -3398,7 +4055,8 @@ def main():
                             replay_llm=args.replay_llm,
                             replay_news=args.replay_news,
                             ohlcv_snapshot_path=args.ohlcv_snapshot,
-                            save_ohlcv_snapshot_path=args.save_ohlcv_snapshot)
+                            save_ohlcv_snapshot_path=args.save_ohlcv_snapshot,
+                            include_pilot_sleeve=args.include_pilot_sleeve)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
@@ -3433,7 +4091,8 @@ def main():
                     config=cfg,
                     replay_llm=args.replay_llm,
                     replay_news=args.replay_news,
-                    ohlcv_snapshot_path=args.ohlcv_snapshot)
+                    ohlcv_snapshot_path=args.ohlcv_snapshot,
+                    include_pilot_sleeve=args.include_pilot_sleeve)
                 secondary = secondary_engine.run()
                 if "error" in secondary:
                     print(f"  (secondary run failed: {secondary['error']})")

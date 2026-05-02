@@ -1,0 +1,21 @@
+{
+  "experiment_id": "exp-20260501-032",
+  "status": "accepted",
+  "title": "PIT pilot sleeve replay",
+  "created_at": "2026-05-01",
+  "category": "measurement_repair",
+  "summary": "Add --include-pilot-sleeve to quant/backtester.py so AI_INFRA_PILOT can be replayed point-in-time without changing default core-only backtests.",
+  "acceptance": [
+    "Default BacktestEngine include_pilot_sleeve is false.",
+    "Pilot data universe is preloaded only from point-in-time trade-enabled records as of the backtest end date.",
+    "Daily pilot eligibility uses pilot_records_as_of(today).",
+    "Backtester stores counterfactual snapshots/outcomes in memory and does not write data/pilot_competition_decisions.jsonl.",
+    "Canonical pre-2026-05-01 windows show zero pilot entries and unchanged core metrics with the flag enabled."
+  ],
+  "verification": {
+    "tests": "python -m pytest -p no:cacheprovider quant/test_backtester_pilot_sleeve.py quant/test_pilot_sleeve.py quant/test_candidate_competition_logger.py quant/test_universe_manager.py quant/test_universe_adapter.py",
+    "tests_result": "19 passed",
+    "three_window_result": "core-only metrics matched include-pilot-sleeve metrics; pilot entries were 0 in late_strong, mid_weak, and old_thin"
+  },
+  "next_step": "Run post-2026-05-01 replay or forward daily runs to accumulate direct pilot PnL, replacement value, and risk-adjusted replacement value."
+}

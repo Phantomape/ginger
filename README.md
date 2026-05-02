@@ -126,6 +126,22 @@ data\quant_signals_YYYYMMDD.json -> pilot_signals
 - `docs\experiments\logs\exp-20260501-029.json`
 - `docs\experiments\tickets\exp-20260501-029.json`
 
+## Pilot sleeve replay backtest
+
+Default backtests remain core-only. To replay the AI infrastructure pilot
+sleeve (`AI_INFRA_PILOT`) with point-in-time universe eligibility, add
+`--include-pilot-sleeve`:
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\ohlcv_snapshot_20251023_20260421.json --include-pilot-sleeve
+```
+
+This is called `试点子组合回测` in the docs. It preloads eligible pilot OHLCV
+as of the backtest end date, but daily trading eligibility is still decided
+from `data\universe_events.jsonl` point-in-time. Historical windows before
+`2026-05-01` should show `pilot_sleeve_replay.entries == 0`; that is the
+expected no-leakage result.
+
 ## 持仓配置
 
 编辑 `data\open_positions.json`：

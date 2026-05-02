@@ -258,6 +258,35 @@ Initial eligible names:
 These names are not special truths. They are simply the first candidates with
 enough evidence to justify bounded forward exploration.
 
+### Phase 5B: PIT Pilot Sleeve Replay
+
+Purpose: make backtests replay the live pilot sleeve without turning static
+AI-infra what-if research into production evidence.
+
+Status: implemented for `quant/backtester.py` behind
+`--include-pilot-sleeve`.
+
+Rules:
+
+- Default canonical backtests remain core-only.
+- `--include-pilot-sleeve` enables `AI_INFRA_PILOT` replay only.
+- Pilot OHLCV is preloaded from `pilot_records_as_of(backtest_end)`.
+- Daily trade eligibility is still replayed from `pilot_records_as_of(today)`.
+- Pilot positions do not consume core `MAX_POSITIONS` slots.
+- Pilot positions do count toward portfolio heat and true equity risk.
+- Counterfactual snapshots and outcomes are in-memory during backtests; the
+  replay must not write `data/pilot_competition_decisions.jsonl`.
+
+Result evidence lives under:
+
+```text
+result["pilot_sleeve_replay"]
+```
+
+Historical fixed windows that end before `2026-05-01` should show zero pilot
+entries even when this flag is enabled. That is the expected PIT no-leakage
+behavior.
+
 ### Phase 6: Promotion Engine
 
 Purpose: automate weekly status review while preserving manual override audit.
@@ -347,10 +376,13 @@ Completed:
 6. Added closed-outcome attribution and daily replacement-value rollups through
    `candidate_competition_logger`, `performance_engine`, `run.py`, and
    `report_generator`.
+7. Added `quant/backtester.py --include-pilot-sleeve` for PIT AI-infra pilot
+   sleeve replay with in-memory replacement-value attribution.
 
 Next implementation slice should add Phase 6 weekly promotion review output once
 forward pilot decisions exist. Until then, the system should accumulate
-decision snapshots, closed outcomes, and replacement-value coverage.
+decision snapshots, closed outcomes, replacement-value coverage, and
+`pilot_sleeve_replay` evidence from post-`2026-05-01` replay windows.
 
 ## Gate Before Real Pilot Trading
 
