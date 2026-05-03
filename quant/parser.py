@@ -6,14 +6,39 @@ import feedparser
 import logging
 from datetime import datetime
 from dateutil import parser as date_parser
+from sec_ticker_map import enrich_sec_item
 from tickers import extract_tickers_with_hints
 
 logger = logging.getLogger(__name__)
 
 
+def _request_headers(source_type, metadata):
+    if source_type != "sec":
+        return {}
+    user_agent = (
+        (metadata or {}).get("user_agent")
+        or "ginger-research/1.0 contact: research@example.com"
+    )
+    return {
+        "User-Agent": user_agent,
+        "Accept-Encoding": "gzip, deflate",
+        "Host": "www.sec.gov",
+    }
+
+
+def _public_metadata(metadata):
+    hidden = {"company_tickers_path", "sec_company_tickers_path"}
+    return {key: value for key, value in dict(metadata or {}).items() if key not in hidden}
+
+
 def parse_feed(url, source_type, metadata=None):
+    items, _ = parse_feed_with_diagnostics(url, source_type, metadata)
+    return items
+
+
+def parse_feed_with_diagnostics(url, source_type, metadata=None):
     """
-    Parse an RSS feed and return normalized news items.
+    Parse an RSS feed and return normalized news items plus fetch diagnostics.
 
     Args:
         url (str): RSS feed URL
@@ -21,19 +46,40 @@ def parse_feed(url, source_type, metadata=None):
         metadata (dict): Optional metadata (keywords, filing_type, etc.)
 
     Returns:
-        list: List of normalized news items (dicts)
+        tuple[list, dict]: Normalized items and source diagnostics
     """
     if metadata is None:
         metadata = {}
 
+    diagnostics = {
+        "url": url,
+        "source_type": source_type,
+        "metadata": dict(metadata or {}),
+        "request_headers_used": _request_headers(source_type, metadata),
+        "status": None,
+        "bozo": False,
+        "bozo_exception": None,
+        "entry_count": 0,
+        "parsed_item_count": 0,
+        "sec_items_with_cik": 0,
+        "sec_items_with_ticker": 0,
+        "sec_items_without_ticker": 0,
+        "error": None,
+    }
+
     try:
         logger.info(f"Fetching {source_type} feed: {url}")
-        feed = feedparser.parse(url)
+        request_headers = diagnostics["request_headers_used"] or None
+        feed = feedparser.parse(url, request_headers=request_headers)
+        diagnostics["status"] = getattr(feed, "status", None)
 
         if feed.bozo:
             logger.warning(f"Feed has malformed XML: {url} - {feed.bozo_exception}")
+            diagnostics["bozo"] = True
+            diagnostics["bozo_exception"] = str(feed.bozo_exception)
 
         items = []
+        diagnostics["entry_count"] = len(feed.entries)
         for entry in feed.entries:
             try:
                 item = normalize_entry(entry, url, source_type, metadata)
@@ -43,12 +89,18 @@ def parse_feed(url, source_type, metadata=None):
                 logger.warning(f"Failed to parse entry from {url}: {e}")
                 continue
 
+        diagnostics["parsed_item_count"] = len(items)
+        if source_type == "sec":
+            diagnostics["sec_items_with_cik"] = sum(1 for item in items if item.get("sec_cik"))
+            diagnostics["sec_items_with_ticker"] = sum(1 for item in items if item.get("tickers"))
+            diagnostics["sec_items_without_ticker"] = sum(1 for item in items if not item.get("tickers"))
         logger.info(f"Parsed {len(items)} items from {source_type} feed")
-        return items
+        return items, diagnostics
 
     except Exception as e:
         logger.error(f"Failed to fetch feed {url}: {e}")
-        return []
+        diagnostics["error"] = str(e)
+        return [], diagnostics
 
 
 def normalize_entry(entry, feed_url, source_type, metadata):
@@ -84,10 +136,14 @@ def normalize_entry(entry, feed_url, source_type, metadata):
     # Extract published date
     published_at = extract_published_date(entry)
 
-    # Extract tickers
-    search_text = f"{title} {summary}"
-    hint_tickers = metadata.get("keywords", [])
-    tickers = extract_tickers_with_hints(search_text, hint_tickers)
+    # SEC issuer symbols come from CIK mapping. Generic text matching creates
+    # false positives such as "/MA/" or "Corp. V" being read as tickers.
+    if source_type == "sec":
+        tickers = []
+    else:
+        search_text = f"{title} {summary}"
+        hint_tickers = metadata.get("keywords", [])
+        tickers = extract_tickers_with_hints(search_text, hint_tickers)
 
     # Build normalized item
     item = {
@@ -97,8 +153,17 @@ def normalize_entry(entry, feed_url, source_type, metadata):
         "url": url,
         "published_at": published_at,
         "tickers": tickers,
-        "raw_source": feed_url
+        "raw_source": feed_url,
+        "source_metadata": _public_metadata(metadata),
     }
+
+    filing_type = metadata.get("filing_type")
+    if filing_type:
+        item["filing_type"] = filing_type
+
+    if source_type == "sec":
+        cache_path = metadata.get("sec_company_tickers_path") or metadata.get("company_tickers_path")
+        item = enrich_sec_item(item, cache_path=cache_path)
 
     return item
 

@@ -1,0 +1,57 @@
+{
+  "experiment_id": "exp-20260502-026",
+  "timestamp": "2026-05-02T21:45:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "entry_gap_cancel_context_exception",
+  "hypothesis": "Candidates already recognized by shared sizing as SPY-relative leaders may treat a next-open upside gap as momentum confirmation instead of overextension, so exempting only those candidates from the existing 1.5% upside gap cancel could recover entry alpha without changing global gap cancel behavior.",
+  "alpha_hypothesis_category": "entry_quality",
+  "parameters": {
+    "single_causal_variable": "SPY-relative leader upside-gap cancel exception predicate",
+    "baseline_cancel_gap_pct": 0.015,
+    "variant": "allow only gap_cancel candidates whose signal sizing has spy_relative_leader_risk_on_multiplier_applied > 1.0"
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": ["2025-04-23 -> 2025-10-22", "2024-10-02 -> 2025-04-22"]
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 3.4191, "sharpe_daily": 4.35, "total_pnl": 78600.33, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19},
+    "mid_weak": {"expected_value_score": 1.4415, "sharpe_daily": 2.62, "total_pnl": 55015.08, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "trade_count": 21},
+    "old_thin": {"expected_value_score": 0.3179, "sharpe_daily": 1.29, "total_pnl": 24642.07, "max_drawdown_pct": 0.0805, "win_rate": 0.4091, "trade_count": 22}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 3.4191, "sharpe_daily": 4.35, "total_pnl": 78600.33, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19, "exception_count": 0},
+    "mid_weak": {"expected_value_score": 1.4415, "sharpe_daily": 2.62, "total_pnl": 55015.08, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "trade_count": 21, "exception_count": 0},
+    "old_thin": {"expected_value_score": 0.3179, "sharpe_daily": 1.29, "total_pnl": 24642.07, "max_drawdown_pct": 0.0805, "win_rate": 0.4091, "trade_count": 22, "exception_count": 0}
+  },
+  "delta_metrics": {
+    "expected_value_score_delta_sum": 0.0,
+    "expected_value_score_delta_pct": 0.0,
+    "total_pnl_delta_sum": 0.0,
+    "total_pnl_delta_pct": 0.0,
+    "exception_count_sum": 0,
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 0
+  },
+  "gate4_passed": false,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {"used_llm": false, "llm_change_scope": "none"},
+  "rejection_reason": "Zero eligible SPY-relative leader gap-cancel candidates appeared across the fixed three-window replay.",
+  "next_retry_requires": [
+    "Forward evidence of nonzero SPY-relative leader gap-cancel exposure",
+    "Or event/news confirmation with replayable coverage"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260502-026/spy_leader_gap_exception.json",
+    "docs/experiments/logs/exp-20260502-026.json",
+    "docs/experiments/tickets/exp-20260502-026.json"
+  ]
+}

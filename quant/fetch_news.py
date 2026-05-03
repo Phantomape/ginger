@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 from sources import get_all_sources
-from parser import parse_feed, deduplicate_items, sort_items_by_date
+from parser import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
 
 
 # Configure logging
@@ -28,9 +28,10 @@ def fetch_all_news():
     Fetch news from all sources and return normalized items.
 
     Returns:
-        list: List of all news items from all sources
+        tuple[list, list]: All news items and per-source diagnostics
     """
     all_items = []
+    source_stats = []
     sources = get_all_sources()
 
     logger.info(f"Starting news collection from {len(sources)} sources")
@@ -41,15 +42,28 @@ def fetch_all_news():
         metadata = source.get("metadata", {})
 
         try:
-            items = parse_feed(url, source_type, metadata)
+            items, diagnostics = parse_feed_with_diagnostics(url, source_type, metadata)
             all_items.extend(items)
+            source_stats.append(diagnostics)
         except Exception as e:
             logger.error(f"Failed to process source {url}: {e}")
+            source_stats.append({
+                "url": url,
+                "source_type": source_type,
+                "metadata": dict(metadata or {}),
+                "request_headers_used": {},
+                "status": None,
+                "bozo": False,
+                "bozo_exception": None,
+                "entry_count": 0,
+                "parsed_item_count": 0,
+                "error": str(e),
+            })
             # Continue with other sources
             continue
 
     logger.info(f"Collected {len(all_items)} total items before deduplication")
-    return all_items
+    return all_items, source_stats
 
 
 def save_to_file(items, output_dir="data"):
@@ -79,6 +93,17 @@ def save_to_file(items, output_dir="data"):
     return filepath
 
 
+def save_source_stats(source_stats, output_dir="data"):
+    os.makedirs(output_dir, exist_ok=True)
+    today = datetime.now().strftime("%Y%m%d")
+    filename = f"news_source_stats_{today}.json"
+    filepath = os.path.join(output_dir, filename)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(source_stats, f, indent=2, ensure_ascii=False)
+    logger.info(f"Saved {len(source_stats)} source stats to {filepath}")
+    return filepath
+
+
 def main():
     """
     Main function to orchestrate news collection.
@@ -89,7 +114,7 @@ def main():
 
     try:
         # Step 1: Fetch all news
-        all_items = fetch_all_news()
+        all_items, source_stats = fetch_all_news()
 
         if not all_items:
             logger.warning("No news items collected")
@@ -103,6 +128,7 @@ def main():
 
         # Step 4: Save to file
         filepath = save_to_file(sorted_items)
+        save_source_stats(source_stats)
 
         logger.info("=" * 50)
         logger.info(f"News collection complete!")

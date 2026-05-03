@@ -29,7 +29,7 @@ from constants import (
 )
 from regime_exit import compute_regime_exit_profile
 from sources import get_all_sources
-from parser import parse_feed, deduplicate_items, sort_items_by_date
+from parser import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
 from filter import apply_hygiene_filters, apply_trade_filters
 from llm_advisor import get_investment_advice, save_advice
 from trend_signals import generate_trend_signals, save_trend_signals
@@ -49,9 +49,10 @@ def fetch_all_news():
     Fetch news from all sources and return normalized items.
 
     Returns:
-        list: List of all news items from all sources
+        tuple[list, list]: All news items and per-source diagnostics
     """
     all_items = []
+    source_stats = []
     sources = get_all_sources()
 
     logger.info(f"Starting news collection from {len(sources)} sources")
@@ -62,15 +63,28 @@ def fetch_all_news():
         metadata = source.get("metadata", {})
 
         try:
-            items = parse_feed(url, source_type, metadata)
+            items, diagnostics = parse_feed_with_diagnostics(url, source_type, metadata)
             all_items.extend(items)
+            source_stats.append(diagnostics)
         except Exception as e:
             logger.error(f"Failed to process source {url}: {e}")
+            source_stats.append({
+                "url": url,
+                "source_type": source_type,
+                "metadata": dict(metadata or {}),
+                "request_headers_used": {},
+                "status": None,
+                "bozo": False,
+                "bozo_exception": None,
+                "entry_count": 0,
+                "parsed_item_count": 0,
+                "error": str(e),
+            })
             # Continue with other sources
             continue
 
     logger.info(f"Collected {len(all_items)} total items before deduplication")
-    return all_items
+    return all_items, source_stats
 
 
 def save_to_file(items, filepath):
@@ -213,7 +227,7 @@ def main():
         logger.info("STEP 1: Fetching News from RSS Sources")
         logger.info("=" * 60)
 
-        all_items = fetch_all_news()
+        all_items, source_stats = fetch_all_news()
 
         if not all_items:
             logger.warning("No news items collected")
@@ -228,6 +242,9 @@ def main():
         # Save raw news
         if not save_to_file(sorted_items, raw_output):
             logger.error("Failed to save raw news")
+            return 1
+        if not save_to_file(source_stats, f"data/news_source_stats_{today}.json"):
+            logger.error("Failed to save source stats")
             return 1
 
         logger.info("=" * 60)

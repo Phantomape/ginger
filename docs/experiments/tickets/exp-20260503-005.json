@@ -1,0 +1,160 @@
+{
+  "experiment_id": "exp-20260503-005",
+  "status": "observed_only",
+  "title": "SEC CIK-to-ticker mapping audit",
+  "summary": "A local SEC company_tickers cache plus SEC title CIK parsing can turn live SEC Atom filings into ticker-tagged event rows, releasing the filing-context shadow alpha branch from the prior zero-join blocker.",
+  "best_variant": "observed_only",
+  "best_variant_gate4": false,
+  "delta_metrics": {
+    "total_items": 300,
+    "total_with_cik": 300,
+    "total_with_ticker": 284,
+    "total_without_ticker": 16,
+    "total_in_current_universe": 1,
+    "mapping_rate": 0.9467,
+    "feed_results": [
+      {
+        "filing_type": "8-K",
+        "status": 200,
+        "entry_count": 100,
+        "parsed_item_count": 100,
+        "sec_items_with_cik": 100,
+        "sec_items_with_ticker": 95,
+        "sec_items_without_ticker": 5,
+        "mapped_to_current_universe": 0,
+        "sample_mapped": [
+          {
+            "title": "8-K - authID Inc. (0001534154) (Filer)",
+            "tickers": [
+              "AUID"
+            ],
+            "cik": "0001534154"
+          },
+          {
+            "title": "8-K - NexMetals Mining Corp. (0000795800) (Filer)",
+            "tickers": [
+              "NEXM"
+            ],
+            "cik": "0000795800"
+          },
+          {
+            "title": "8-K - BIOTRICITY INC. (0001630113) (Filer)",
+            "tickers": [
+              "BTCY"
+            ],
+            "cik": "0001630113"
+          },
+          {
+            "title": "8-K - Olema Pharmaceuticals, Inc. (0001750284) (Filer)",
+            "tickers": [
+              "OLMA"
+            ],
+            "cik": "0001750284"
+          },
+          {
+            "title": "8-K - HNO International, Inc. (0001342916) (Filer)",
+            "tickers": [
+              "HNOI"
+            ],
+            "cik": "0001342916"
+          }
+        ]
+      },
+      {
+        "filing_type": "10-Q",
+        "status": 200,
+        "entry_count": 100,
+        "parsed_item_count": 100,
+        "sec_items_with_cik": 100,
+        "sec_items_with_ticker": 91,
+        "sec_items_without_ticker": 9,
+        "mapped_to_current_universe": 0,
+        "sample_mapped": [
+          {
+            "title": "10-Q - DIGITAL REALTY TRUST, INC. (0001297996) (Filer)",
+            "tickers": [
+              "DLR-PL"
+            ],
+            "cik": "0001297996"
+          },
+          {
+            "title": "10-Q - ROPER TECHNOLOGIES INC (0000882835) (Filer)",
+            "tickers": [
+              "ROP"
+            ],
+            "cik": "0000882835"
+          },
+          {
+            "title": "10-Q - ZIMMER BIOMET HOLDINGS, INC. (0001136869) (Filer)",
+            "tickers": [
+              "ZBH"
+            ],
+            "cik": "0001136869"
+          },
+          {
+            "title": "10-Q - ADAMAS TRUST, INC. (0001273685) (Filer)",
+            "tickers": [
+              "ADAMO"
+            ],
+            "cik": "0001273685"
+          },
+          {
+            "title": "10-Q - ALTEX INDUSTRIES INC (0000775057) (Filer)",
+            "tickers": [
+              "ALTX"
+            ],
+            "cik": "0000775057"
+          }
+        ]
+      },
+      {
+        "filing_type": "10-K",
+        "status": 200,
+        "entry_count": 100,
+        "parsed_item_count": 100,
+        "sec_items_with_cik": 100,
+        "sec_items_with_ticker": 98,
+        "sec_items_without_ticker": 2,
+        "mapped_to_current_universe": 1,
+        "sample_mapped": [
+          {
+            "title": "10-K - Cambium Networks Corp (0001738177) (Filer)",
+            "tickers": [
+              "CMBMF"
+            ],
+            "cik": "0001738177"
+          },
+          {
+            "title": "10-K/A - Grown Rogue International Inc. (0001463000) (Filer)",
+            "tickers": [
+              "GRUSF"
+            ],
+            "cik": "0001463000"
+          },
+          {
+            "title": "10-K/A - MASIMO CORP (0000937556) (Filer)",
+            "tickers": [
+              "MASI"
+            ],
+            "cik": "0000937556"
+          },
+          {
+            "title": "10-K - GridAI Technologies Corp. (0001604191) (Filer)",
+            "tickers": [
+              "GRDX"
+            ],
+            "cik": "0001604191"
+          },
+          {
+            "title": "10-K - BMP AI Technologies, Inc. (0001130781) (Filer)",
+            "tickers": [
+              "BMPA"
+            ],
+            "cik": "0001130781"
+          }
+        ]
+      }
+    ]
+  },
+  "next_action": "Rerun the earnings/SEC round-1 shadow join after at least one forward news archive contains ticker-tagged SEC rows. If current-universe overlap remains too small, test a filing-driven shadow universe scout rather than changing production entries."
+}

@@ -652,19 +652,34 @@ def main():
     trade_items = []
     try:
         from sources import get_all_sources
-        from parser  import parse_feed, deduplicate_items, sort_items_by_date
+        from parser  import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
         from filter  import apply_hygiene_filters, apply_trade_filters
 
         all_items  = []
+        source_stats = []
         sources    = get_all_sources(extra_tickers=pilot_universe)
         log.info(f"Fetching from {len(sources)} RSS sources...")
         for source in sources:
             try:
-                items = parse_feed(source["url"], source["source_type"],
-                                   source.get("metadata", {}))
+                items, diagnostics = parse_feed_with_diagnostics(
+                    source["url"], source["source_type"], source.get("metadata", {})
+                )
                 all_items.extend(items)
+                source_stats.append(diagnostics)
             except Exception as e:
                 log.warning(f"Source {source['url']}: {e}")
+                source_stats.append({
+                    "url": source["url"],
+                    "source_type": source["source_type"],
+                    "metadata": dict(source.get("metadata", {})),
+                    "request_headers_used": {},
+                    "status": None,
+                    "bozo": False,
+                    "bozo_exception": None,
+                    "entry_count": 0,
+                    "parsed_item_count": 0,
+                    "error": str(e),
+                })
 
         sorted_items  = sort_items_by_date(deduplicate_items(all_items))
         hygiene_items = apply_hygiene_filters(sorted_items)["items"]
@@ -675,6 +690,7 @@ def main():
         )["items"]
 
         _save_json(sorted_items,  f"data/news_{today}.json")
+        _save_json(source_stats,  f"data/news_source_stats_{today}.json")
         _save_json(hygiene_items, f"data/clean_news_{today}.json")
         _save_json(trade_items,   f"data/clean_trade_news_{today}.json")
 

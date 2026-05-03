@@ -1,0 +1,848 @@
+{
+  "experiment_id": "exp-20260502-027",
+  "timestamp": "2026-05-02T23:10:46.526682+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_initial_risk_width",
+  "hypothesis": "Signals whose initial stop distance is 5-6% are a repeat fragile risk-width pocket, so applying only a sizing haircut there may improve EV without changing entries, ranking, exits, or LLM/news.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking samples remain outcome-join sparse; this tests a deterministic production-visible sizing feature instead.",
+  "mechanism_insight_check": {
+    "near_repeat": "partial",
+    "notes": "This touches stop-width, a previously dangerous family. It is not a trend-only 5-7% retry or SPY-leader wide-stop retry; it tests the current accepted stack's cross-sleeve 5-6% bucket once."
+  },
+  "parameters": {
+    "single_causal_variable": "initial_risk_5_6pct_sizing_multiplier",
+    "risk_bucket": {
+      "min_inclusive": 0.05,
+      "max_exclusive": 0.06
+    },
+    "baseline": 1.0,
+    "tested_values": {
+      "risk_5_6pct_0x": 0.0,
+      "risk_5_6pct_0_25x": 0.25,
+      "risk_5_6pct_0_50x": 0.5
+    },
+    "best_variant": "risk_5_6pct_0x",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "all other sizing rules",
+      "SPY-relative leader risk budget and caps",
+      "follow-through add-on trigger and caps",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "all target/stop exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 4,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      },
+      "by_strategy": {
+        "breakout_long": {
+          "trade_count": 12,
+          "wins": 10,
+          "losses": 2,
+          "win_rate": 0.8333,
+          "avg_pnl_pct_net": 0.07,
+          "profit_factor": 13.054,
+          "avg_R": 2.122,
+          "total_pnl_usd": 50594.26
+        },
+        "trend_long": {
+          "trade_count": 7,
+          "wins": 5,
+          "losses": 2,
+          "win_rate": 0.7143,
+          "avg_pnl_pct_net": 0.0882,
+          "profit_factor": 7.337,
+          "avg_R": 2.756,
+          "total_pnl_usd": 28006.07
+        }
+      },
+      "initial_risk_5_6pct": {
+        "trade_count": 1,
+        "wins": 0,
+        "total_pnl": -20.93,
+        "tickers": [
+          "TSM"
+        ]
+      }
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      },
+      "by_strategy": {
+        "trend_long": {
+          "trade_count": 14,
+          "wins": 8,
+          "losses": 6,
+          "win_rate": 0.5714,
+          "avg_pnl_pct_net": 0.0754,
+          "profit_factor": 4.499,
+          "avg_R": 1.335,
+          "total_pnl_usd": 37710.57
+        },
+        "breakout_long": {
+          "trade_count": 7,
+          "wins": 3,
+          "losses": 4,
+          "win_rate": 0.4286,
+          "avg_pnl_pct_net": 0.0122,
+          "profit_factor": 1.492,
+          "avg_R": 0.667,
+          "total_pnl_usd": 17304.51
+        }
+      },
+      "initial_risk_5_6pct": {
+        "trade_count": 0,
+        "wins": 0,
+        "total_pnl": 0.0,
+        "tickers": []
+      }
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      },
+      "by_strategy": {
+        "breakout_long": {
+          "trade_count": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_rate": 0.3333,
+          "avg_pnl_pct_net": -0.001,
+          "profit_factor": 0.962,
+          "avg_R": -0.055,
+          "total_pnl_usd": 2685.79
+        },
+        "trend_long": {
+          "trade_count": 19,
+          "wins": 8,
+          "losses": 11,
+          "win_rate": 0.4211,
+          "avg_pnl_pct_net": 0.0259,
+          "profit_factor": 2.012,
+          "avg_R": 0.628,
+          "total_pnl_usd": 21956.28
+        }
+      },
+      "initial_risk_5_6pct": {
+        "trade_count": 6,
+        "wins": 1,
+        "total_pnl": 872.05,
+        "tickers": [
+          "DDOG",
+          "GS",
+          "NFLX",
+          "TRIP",
+          "TSM"
+        ]
+      }
+    }
+  },
+  "after_metrics": {
+    "risk_5_6pct_0x": {
+      "late_strong": {
+        "expected_value_score": 3.3852,
+        "sharpe_daily": 4.33,
+        "total_pnl": 78175.53,
+        "total_return_pct": 0.7818,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 4,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        },
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50169.46
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 1,
+          "wins": 0,
+          "total_pnl": -20.93,
+          "tickers": [
+            "TSM"
+          ]
+        }
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4318,
+        "sharpe_daily": 2.63,
+        "total_pnl": 54435.75,
+        "total_return_pct": 0.5444,
+        "max_drawdown_pct": 0.0878,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        },
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37174.41
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0122,
+            "profit_factor": 1.492,
+            "avg_R": 0.667,
+            "total_pnl_usd": 17261.34
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 0,
+          "wins": 0,
+          "total_pnl": 0.0,
+          "tickers": []
+        }
+      },
+      "old_thin": {
+        "expected_value_score": 0.4516,
+        "sharpe_daily": 1.56,
+        "total_pnl": 28948.65,
+        "total_return_pct": 0.2895,
+        "max_drawdown_pct": 0.0668,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        },
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 26262.86
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 6,
+          "wins": 1,
+          "total_pnl": 5221.33,
+          "tickers": [
+            "DDOG",
+            "GS",
+            "NFLX",
+            "TRIP",
+            "TSM"
+          ]
+        }
+      }
+    },
+    "risk_5_6pct_0_25x": {
+      "late_strong": {
+        "expected_value_score": 3.3974,
+        "sharpe_daily": 4.34,
+        "total_pnl": 78279.52,
+        "total_return_pct": 0.7828,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 4,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        },
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50273.45
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 1,
+          "wins": 0,
+          "total_pnl": -20.93,
+          "tickers": [
+            "TSM"
+          ]
+        }
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4355,
+        "sharpe_daily": 2.63,
+        "total_pnl": 54578.06,
+        "total_return_pct": 0.5458,
+        "max_drawdown_pct": 0.0878,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        },
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37292.89
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0122,
+            "profit_factor": 1.492,
+            "avg_R": 0.667,
+            "total_pnl_usd": 17285.17
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 0,
+          "wins": 0,
+          "total_pnl": 0.0,
+          "tickers": []
+        }
+      },
+      "old_thin": {
+        "expected_value_score": 0.4181,
+        "sharpe_daily": 1.5,
+        "total_pnl": 27871.49,
+        "total_return_pct": 0.2787,
+        "max_drawdown_pct": 0.0668,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        },
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 25185.7
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 6,
+          "wins": 1,
+          "total_pnl": 4139.47,
+          "tickers": [
+            "DDOG",
+            "GS",
+            "NFLX",
+            "TRIP",
+            "TSM"
+          ]
+        }
+      }
+    },
+    "risk_5_6pct_0_50x": {
+      "late_strong": {
+        "expected_value_score": 3.4021,
+        "sharpe_daily": 4.34,
+        "total_pnl": 78385.72,
+        "total_return_pct": 0.7839,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 4,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        },
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50379.65
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 1,
+          "wins": 0,
+          "total_pnl": -20.93,
+          "tickers": [
+            "TSM"
+          ]
+        }
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4399,
+        "sharpe_daily": 2.63,
+        "total_pnl": 54745.56,
+        "total_return_pct": 0.5475,
+        "max_drawdown_pct": 0.0878,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        },
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37433.43
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0121,
+            "profit_factor": 1.492,
+            "avg_R": 0.666,
+            "total_pnl_usd": 17312.13
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 0,
+          "wins": 0,
+          "total_pnl": 0.0,
+          "tickers": []
+        }
+      },
+      "old_thin": {
+        "expected_value_score": 0.3806,
+        "sharpe_daily": 1.42,
+        "total_pnl": 26798.08,
+        "total_return_pct": 0.268,
+        "max_drawdown_pct": 0.0668,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        },
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 24112.29
+          }
+        },
+        "initial_risk_5_6pct": {
+          "trade_count": 6,
+          "wins": 1,
+          "total_pnl": 3050.0,
+          "tickers": [
+            "DDOG",
+            "GS",
+            "NFLX",
+            "TRIP",
+            "TSM"
+          ]
+        }
+      }
+    }
+  },
+  "delta_metrics": {
+    "risk_5_6pct_0x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0339,
+          "sharpe_daily": -0.02,
+          "total_pnl": -424.8,
+          "total_return_pct": -0.0042,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 0.0,
+          "risk_bucket_trade_count": 0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.0097,
+          "sharpe_daily": 0.01,
+          "total_pnl": -579.33,
+          "total_return_pct": -0.0058,
+          "max_drawdown_pct": -0.0001,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 0.0,
+          "risk_bucket_trade_count": 0
+        },
+        "old_thin": {
+          "expected_value_score": 0.1337,
+          "sharpe_daily": 0.27,
+          "total_pnl": 4306.58,
+          "total_return_pct": 0.0431,
+          "max_drawdown_pct": -0.0137,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 4349.28,
+          "risk_bucket_trade_count": 0
+        }
+      },
+      "baseline_expected_value_score_sum": 5.1785,
+      "variant_expected_value_score_sum": 5.2686,
+      "expected_value_score_delta_sum": 0.0901,
+      "expected_value_score_delta_pct": 0.017399,
+      "baseline_total_pnl_sum": 158257.48,
+      "variant_total_pnl_sum": 161559.93,
+      "total_pnl_delta_sum": 3302.45,
+      "total_pnl_delta_pct": 0.020868,
+      "ev_windows_improved": 1,
+      "ev_windows_regressed": 2,
+      "pnl_windows_improved": 1,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.27
+    },
+    "risk_5_6pct_0_25x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0217,
+          "sharpe_daily": -0.01,
+          "total_pnl": -320.81,
+          "total_return_pct": -0.0032,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 0.0,
+          "risk_bucket_trade_count": 0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.006,
+          "sharpe_daily": 0.01,
+          "total_pnl": -437.02,
+          "total_return_pct": -0.0044,
+          "max_drawdown_pct": -0.0001,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 0.0,
+          "risk_bucket_trade_count": 0
+        },
+        "old_thin": {
+          "expected_value_score": 0.1002,
+          "sharpe_daily": 0.21,
+          "total_pnl": 3229.42,
+          "total_return_pct": 0.0323,
+          "max_drawdown_pct": -0.0137,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 3267.42,
+          "risk_bucket_trade_count": 0
+        }
+      },
+      "baseline_expected_value_score_sum": 5.1785,
+      "variant_expected_value_score_sum": 5.251,
+      "expected_value_score_delta_sum": 0.0725,
+      "expected_value_score_delta_pct": 0.014,
+      "baseline_total_pnl_sum": 158257.48,
+      "variant_total_pnl_sum": 160729.07,
+      "total_pnl_delta_sum": 2471.59,
+      "total_pnl_delta_pct": 0.015618,
+      "ev_windows_improved": 1,
+      "ev_windows_regressed": 2,
+      "pnl_windows_improved": 1,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.21
+    },
+    "risk_5_6pct_0_50x": {
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.017,
+          "sharpe_daily": -0.01,
+          "total_pnl": -214.61,
+          "total_return_pct": -0.0021,
+          "max_drawdown_pct": 0.0,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 0.0,
+          "risk_bucket_trade_count": 0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.0016,
+          "sharpe_daily": 0.01,
+          "total_pnl": -269.52,
+          "total_return_pct": -0.0027,
+          "max_drawdown_pct": -0.0001,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 0.0,
+          "risk_bucket_trade_count": 0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0627,
+          "sharpe_daily": 0.13,
+          "total_pnl": 2156.01,
+          "total_return_pct": 0.0216,
+          "max_drawdown_pct": -0.0137,
+          "win_rate": 0.0,
+          "trade_count": 0,
+          "survival_rate": 0.0,
+          "risk_bucket_pnl": 2177.95,
+          "risk_bucket_trade_count": 0
+        }
+      },
+      "baseline_expected_value_score_sum": 5.1785,
+      "variant_expected_value_score_sum": 5.2226,
+      "expected_value_score_delta_sum": 0.0441,
+      "expected_value_score_delta_pct": 0.008516,
+      "baseline_total_pnl_sum": 158257.48,
+      "variant_total_pnl_sum": 159929.36,
+      "total_pnl_delta_sum": 1671.88,
+      "total_pnl_delta_pct": 0.010564,
+      "ev_windows_improved": 1,
+      "ev_windows_regressed": 2,
+      "pnl_windows_improved": 1,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": 0.0,
+      "sharpe_daily_delta_max": 0.13
+    }
+  },
+  "best_variant": "risk_5_6pct_0x",
+  "best_variant_gate4": false,
+  "gate4_passed": false,
+  "gate4_basis": "Accepted only if the best initial-risk haircut improves EV in at least two windows without EV regression and passes one standard Gate 4 materiality criterion.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, implement the multiplier in shared portfolio_engine.py/constants.py so run.py and backtester.py consume the same sizing logic."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "rejection_reason": "No tested 5-6% initial-risk sizing multiplier passed Gate 4.",
+  "next_retry_requires": [
+    "Do not retry nearby stop-width-only buckets without event/news or lifecycle evidence.",
+    "A valid retry needs an orthogonal discriminator explaining which 5-6% risk trades deserve less capital."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260502-027\\initial_risk_5_6_haircut.json",
+    "docs\\experiments\\logs\\exp-20260502-027.json",
+    "docs\\experiments\\tickets\\exp-20260502-027.json"
+  ]
+}

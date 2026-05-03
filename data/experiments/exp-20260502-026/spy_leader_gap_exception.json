@@ -1,0 +1,107 @@
+{
+  "experiment_id": "exp-20260502-026",
+  "timestamp": "2026-05-02T21:45:00Z",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "entry_gap_cancel_context_exception",
+  "hypothesis": "Candidates already recognized by shared sizing as SPY-relative leaders may treat a next-open upside gap as momentum confirmation instead of overextension, so exempting only those candidates from the existing 1.5% upside gap cancel could recover entry alpha without changing global gap cancel behavior.",
+  "alpha_hypothesis_category": "entry_quality",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking remains outcome-join sparse, so this run tested a deterministic shared sizing context instead of LLM ranking.",
+  "mechanism_insight_check": {
+    "near_repeat": "partial",
+    "notes": "Global upside-gap cancel sweeps and sector/strategy-only gap exceptions were already rejected. This retry used the accepted SPY-relative leader sizing state as the orthogonal discriminator required by the prior rejection notes."
+  },
+  "parameters": {
+    "single_causal_variable": "SPY-relative leader upside-gap cancel exception predicate",
+    "baseline_cancel_gap_pct": 0.015,
+    "variant": "if classify_entry_open_cancel returns gap_cancel and signal sizing has spy_relative_leader_risk_on_multiplier_applied > 1.0, allow the entry",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "candidate ranking",
+      "all risk multipliers",
+      "position caps",
+      "portfolio heat",
+      "sector caps",
+      "add-on trigger/fraction/caps",
+      "adverse gap cancel",
+      "all exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 3.4191, "sharpe_daily": 4.35, "total_pnl": 78600.33, "total_return_pct": 0.786, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8039, "gap_cancel_count": 4},
+    "mid_weak": {"expected_value_score": 1.4415, "sharpe_daily": 2.62, "total_pnl": 55015.08, "total_return_pct": 0.5502, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "gap_cancel_count": 4},
+    "old_thin": {"expected_value_score": 0.3179, "sharpe_daily": 1.29, "total_pnl": 24642.07, "total_return_pct": 0.2464, "max_drawdown_pct": 0.0805, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "gap_cancel_count": 5}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 3.4191, "sharpe_daily": 4.35, "total_pnl": 78600.33, "total_return_pct": 0.786, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8039, "gap_cancel_count": 4, "exception_count": 0},
+    "mid_weak": {"expected_value_score": 1.4415, "sharpe_daily": 2.62, "total_pnl": 55015.08, "total_return_pct": 0.5502, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925, "gap_cancel_count": 4, "exception_count": 0},
+    "old_thin": {"expected_value_score": 0.3179, "sharpe_daily": 1.29, "total_pnl": 24642.07, "total_return_pct": 0.2464, "max_drawdown_pct": 0.0805, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167, "gap_cancel_count": 5, "exception_count": 0}
+  },
+  "delta_metrics": {
+    "baseline_expected_value_score_sum": 5.1785,
+    "variant_expected_value_score_sum": 5.1785,
+    "expected_value_score_delta_sum": 0.0,
+    "expected_value_score_delta_pct": 0.0,
+    "baseline_total_pnl_sum": 158257.48,
+    "variant_total_pnl_sum": 158257.48,
+    "total_pnl_delta_sum": 0.0,
+    "total_pnl_delta_pct": 0.0,
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 0,
+    "exception_count_sum": 0,
+    "trade_count_delta_sum": 0,
+    "win_rate_delta_min": 0.0,
+    "max_drawdown_delta_max": 0.0,
+    "sharpe_daily_delta_max": 0.0
+  },
+  "gate4_passed": false,
+  "gate4_basis": "No variant exposure appeared in any canonical fixed window, so no Gate 4 materiality criterion could pass.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If a future variant has exposure and passes Gate 4, implement signal-aware gap classification in production_parity.py and expose the same decision in run.py/backtester.py."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "rejection_reason": "The SPY-relative leader upside-gap exception had zero eligible gap-cancel candidates across the fixed three-window replay.",
+  "next_retry_requires": [
+    "Do not retry SPY-relative leader upside-gap exceptions without forward evidence that such candidates actually appear.",
+    "Do not rerun global CANCEL_GAP_PCT sweeps around 1-5%.",
+    "A valid retry needs event/news confirmation or a different state discriminator with nonzero historical or forward exposure."
+  ],
+  "related_files": [
+    "data/experiments/exp-20260502-026/spy_leader_gap_exception.json",
+    "docs/experiments/logs/exp-20260502-026.json",
+    "docs/experiments/tickets/exp-20260502-026.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ]
+}
