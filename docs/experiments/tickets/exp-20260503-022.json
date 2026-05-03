@@ -1,0 +1,64 @@
+{
+  "experiment_id": "exp-20260503-022",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "codex",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but this run only checks whether new PIT-safe SEC evidence exists after exp-20260503-019.",
+  "change_type": "non_ohlcv_sec_earnings_duplicate_guardrail_data_audit",
+  "single_causal_variable": "new PIT-safe SEC / earnings filing-shock evidence since exp-20260503-019",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "C:/Users/Administrator/.codex/automations/alpha-discovery/memory.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "data/universe_registry.json",
+    "data/universe_events.jsonl"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "risk sizing",
+    "portfolio slots",
+    "core universe",
+    "pilot universe",
+    "OHLCV thresholds",
+    "SEC filing shock scoring",
+    "C-strategy grading",
+    "slot tie-breaker"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Duplicate guardrail/data audit only: record whether new PIT-safe SEC filing-shock evidence exists; no production promotion allowed.",
+  "created_at": "2026-05-03T09:04:13+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T09:07:35+00:00",
+  "result": {
+    "decision": "data_gap",
+    "log_file": "docs/experiments/logs/exp-20260503-022.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_duplicate_guardrail_20260503.md",
+    "expected_value_score_delta": 0.0,
+    "production_impact": "data_audit_only",
+    "next_action": "Wait for at least 5-10 new forward SEC archive days with ticker tags, or add a PIT XBRL/companyfacts field-fill adapter, before rerunning filing-shock grading, breakout confirmation, or scarce-slot value tests."
+  }
+}

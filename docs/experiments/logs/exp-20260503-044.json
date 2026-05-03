@@ -1,0 +1,377 @@
+{
+  "experiment_id": "exp-20260503-044",
+  "timestamp": "2026-05-03T17:12:00+00:00",
+  "status": "observed_only",
+  "decision": "data_gap",
+  "lane": "alpha_discovery",
+  "run_mode": "data_audit_only",
+  "experiment_mode": "shadow/audit; no production change",
+  "hypothesis": "EOD options structure may confirm existing breakout/event candidates as a shadow overlay, but only if point-in-time option chain, IV/skew/term-structure/OI, option-liquidity, earnings-aligned, and short-interest-linked data exists.",
+  "alpha_hypothesis": {
+    "category": "candidate_overlay_ranking_and_risk",
+    "text": "IV, skew, term structure, OI concentration, and put/call structure may help distinguish squeeze-supportive breakout/event candidates, downside-risk candidates, and earnings IV-crush risk candidates.",
+    "why_not_now": "The repository has no local PIT-safe EOD options chain or summary data, no options adapter, and no ticker-level option-liquidity field to tag existing candidates."
+  },
+  "non_ohlcv_data_source": "EOD listed-options chain or daily options summary with implied volatility, skew, term structure, open interest, volume, bid/ask, and option-liquidity metadata.",
+  "mechanism_family": "eod_options_structure_overlay",
+  "single_causal_variable": "PIT-safe EOD options structure data availability for existing-candidate overlays",
+  "production_change_allowed": false,
+  "historical_experiment_check": {
+    "prior_options_experiments_found": false,
+    "prior_options_records": [],
+    "playbook_status": "docs/alpha-optimization-playbook.md ranks EOD options data as a mid/late external-alpha source, best used as overlay/confirmation rather than standalone entry because PIT cleaning and liquidity filtering are hard.",
+    "related_prior_experiments": {
+      "exp-20260503-015": "short-interest / borrow-pressure initial audit found no PIT-safe structured rows",
+      "exp-20260503-039": "latest short/borrow recheck again found no PIT-safe rows or taggable candidates",
+      "exp-20260503-041": "SEC/earnings filing-shock recheck found earnings snapshots exist but no new SEC/earnings evidence after the latest archive"
+    },
+    "mechanism_insight_check": [
+      "This does not repeat OHLCV threshold or entry experiments.",
+      "This does not treat put/call ratios as mechanical bearish signals.",
+      "This does not connect an external data source to production on first audit.",
+      "This does not retry short-interest scoring; it only records that the short-interest leg needed for squeeze interpretation is still blocked."
+    ],
+    "searched_terms": [
+      "option",
+      "options",
+      "option chain",
+      "implied_vol",
+      "iv_rank",
+      "iv_percentile",
+      "open_interest",
+      "put_call",
+      "skew",
+      "term_structure",
+      "option_liquidity",
+      "short_interest",
+      "borrow"
+    ],
+    "why_not_simple_rerun": "There is no prior options replay to rerun. A shadow overlay now would fabricate tags from missing data."
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {
+    "late_strong": "accepted-stack dominant bull tape",
+    "mid_weak": "rotation-heavy tape where strategy profits but lags indexes",
+    "old_thin": "mixed older tape with lower win rate"
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "after_metrics": {
+    "expected_value_score_delta": 0.0,
+    "production_metrics_changed": false,
+    "reason": "Data audit only; no strategy, replay, ranking, universe, sizing, signal path, OHLCV threshold, or LLM prompt changed."
+  },
+  "expected_value_score_delta": {
+    "production": 0.0,
+    "shadow": null,
+    "reason": "No replay or production path changed; no PIT-safe options rows exist to tag candidates."
+  },
+  "data_availability": {
+    "coverage": 0.0,
+    "pit_status": "unavailable",
+    "options_named_files": 0,
+    "options_chain_files": 0,
+    "eod_options_summary_files": 0,
+    "options_adapter_files": 0,
+    "options_schema_files": 0,
+    "option_chain_rows": 0,
+    "option_summary_rows": 0,
+    "implied_vol_rows": 0,
+    "open_interest_rows": 0,
+    "put_call_rows": 0,
+    "skew_rows": 0,
+    "term_structure_rows": 0,
+    "option_liquidity_rows": 0,
+    "usable_trade_date_rows": 0,
+    "pit_safe_rows": 0,
+    "data_non_ohlcv_files_present": [
+      "data/non_ohlcv/sec_filing_schema.md",
+      "data/non_ohlcv/sec_filing_shadow_events_20260503.json"
+    ],
+    "earnings_alignment": {
+      "status": "partial_input_available_but_no_options_to_align",
+      "earnings_snapshot_files": 137,
+      "latest_earnings_snapshot": "data/earnings_snapshot_20260501.json",
+      "usable_fields": [
+        "days_to_earnings",
+        "next_earnings_date",
+        "eps_estimate",
+        "historical_surprise_pct",
+        "avg_historical_surprise_pct",
+        "positive_surprise_history",
+        "earnings_event_window"
+      ]
+    },
+    "short_interest_linkage": {
+      "status": "blocked",
+      "latest_related_audit": "exp-20260503-039",
+      "structured_short_interest_rows": 0,
+      "borrow_fee_rows": 0,
+      "shares_available_rows": 0,
+      "hard_to_borrow_rows": 0,
+      "pit_safe_rows": 0,
+      "note": "Short-interest headlines exist in news archives, but prior audits correctly did not treat them as structured borrow-pressure evidence."
+    },
+    "option_liquidity_filter": {
+      "status": "absent",
+      "existing_stock_liquidity_filters": "Several universe-scout scripts use OHLCV dollar-volume gates, but there is no option-liquidity score or option spread/OI filter."
+    },
+    "field_missingness": {
+      "ticker": "no structured options rows",
+      "date": "no structured options rows",
+      "expiry": "no structured options rows",
+      "strike": "no structured options rows",
+      "call_put": "no structured options rows",
+      "volume": "no structured options rows",
+      "open_interest": "no structured options rows",
+      "bid": "no structured options rows",
+      "ask": "no structured options rows",
+      "mid": "no structured options rows",
+      "implied_vol": "no structured options rows",
+      "delta": "no structured options rows",
+      "option_liquidity_score": "no structured options rows",
+      "usable_trade_date": "no structured options rows",
+      "pit_safe": "no structured options rows"
+    },
+    "pit_risk_notes": [
+      "Option open interest is usually known with exchange/vendor lag; usable_trade_date must be after publication availability, not the same as quote date by default.",
+      "End-of-day bid/ask, IV, delta, and OI must carry vendor timestamp/as-of metadata to prevent lookahead.",
+      "Illiquid options can fabricate skew/OI signals; no overlay should tag names before option_liquidity_score is computed.",
+      "Short-squeeze interpretation needs structured short-interest or borrow-pressure data; headlines alone are biased and insufficient.",
+      "Earnings IV features require option dates aligned to earnings snapshot usable_trade_date."
+    ]
+  },
+  "required_schema": {
+    "raw_chain_fields": [
+      "ticker",
+      "date",
+      "expiry",
+      "strike",
+      "call_put",
+      "volume",
+      "open_interest",
+      "bid",
+      "ask",
+      "mid",
+      "implied_vol",
+      "delta",
+      "option_liquidity_score",
+      "usable_trade_date",
+      "pit_safe"
+    ],
+    "feature_fields": [
+      "iv_rank",
+      "iv_percentile",
+      "iv_minus_realized_vol",
+      "put_call_volume_ratio",
+      "put_call_oi_ratio",
+      "skew_25delta_or_nearest",
+      "term_structure_slope",
+      "call_oi_concentration",
+      "put_oi_concentration",
+      "earnings_iv_flag",
+      "option_liquidity_filter"
+    ],
+    "shadow_overlays_blocked": [
+      "squeeze_overlay",
+      "downside_risk_overlay",
+      "earnings_vol_overlay"
+    ]
+  },
+  "candidate_count": 0,
+  "shadow_metrics": {
+    "candidate_count": {
+      "existing_survived_candidates": 138,
+      "existing_executed_trades": 62,
+      "taggable_options_candidates": 0
+    },
+    "overlap_with_existing_signals": {
+      "existing_survived_candidate_count": 138,
+      "tagged_existing_signal_count": 0,
+      "overlap_ratio": 0.0
+    },
+    "forward_return_of_tagged_candidates": {
+      "forward_5d_return": null,
+      "forward_10d_return": null,
+      "forward_20d_return": null,
+      "forward_60d_return": null,
+      "future_drawdown": null,
+      "future_realized_vol": null,
+      "reason": "No PIT-safe options rows exist to tag candidates."
+    },
+    "scarce_slot_opportunity_cost": {
+      "measurable": false,
+      "slot_conflict_value": null,
+      "reason": "No tagged candidates; cannot compare option-overlay tags against same-day A/B/C slot alternatives."
+    },
+    "overlay_shadow_performance": {
+      "squeeze_overlay": null,
+      "downside_risk_overlay": null,
+      "earnings_vol_overlay": null,
+      "reason": "Data gap: no IV, skew, OI, put/call, term-structure, or option-liquidity fields."
+    }
+  },
+  "overlap_with_existing_signals": {
+    "overlap_count": 0,
+    "overlap_rate": 0.0
+  },
+  "scarce_slot_opportunity_cost": {
+    "measurable": false,
+    "slot_conflict_value": null
+  },
+  "forward_return_of_tagged_candidates": {
+    "5d": {
+      "count": 0,
+      "avg": null,
+      "median": null,
+      "win_rate": null
+    },
+    "10d": {
+      "count": 0,
+      "avg": null,
+      "median": null,
+      "win_rate": null
+    },
+    "20d": {
+      "count": 0,
+      "avg": null,
+      "median": null,
+      "win_rate": null
+    },
+    "60d": {
+      "count": 0,
+      "avg": null,
+      "median": null,
+      "win_rate": null
+    }
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "production_impact": {
+    "production_impact": "data_audit_only",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "basis": "No strategy behavior changed and no shadow replay was possible."
+  },
+  "decision_rationale": "The mechanism is plausible as a future overlay, especially with short-interest and earnings context, but this workspace has zero PIT-safe options data and no option-liquidity filter. Running a shadow overlay now would create synthetic evidence.",
+  "decision": "data_gap",
+  "next_action": "Add a default-off append-only EOD options data contract and source adapter for existing Ginger candidates only, with vendor/as-of timestamps, usable_trade_date, PIT flags, option-liquidity score, and earnings-date joins; rerun shadow tagging only after nonzero PIT-safe rows exist.",
+  "related_files": [
+    "docs/experiments/tickets/exp-20260503-044.json",
+    "docs/experiments/logs/exp-20260503-044.json",
+    "docs/non_ohlcv_data_audit/eod_options_20260503.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/experiments/logs/exp-20260503-039.json",
+    "docs/experiments/logs/exp-20260503-041.json"
+  ]
+}

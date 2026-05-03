@@ -1,0 +1,66 @@
+{
+  "acceptance_rule": "Data audit/shadow only: report coverage, PIT risk, usable fields, missingness, signal overlap, and next experiment; no production promotion allowed.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260503_017_form4_insider_overlay_audit.py",
+    "data/experiments/exp-20260503-017/exp_20260503_017_form4_insider_overlay_audit.json",
+    "docs/non_ohlcv_data_audit/form4_20260503.md",
+    "docs/experiments/tickets/exp-20260503-017.json",
+    "docs/experiments/logs/exp-20260503-017.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "change_type": "form4_insider_data_audit_shadow_overlay",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T07:09:35+00:00",
+  "created_at": "2026-05-03T07:06:12+00:00",
+  "decision": "data_gap",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260503-017",
+  "hypothesis": "Open-market insider Form 4 buying may confirm existing trend_long/breakout_long candidates, but this run only audits point-in-time data availability and shadow overlay feasibility.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "production signal path",
+    "risk sizing",
+    "portfolio slots",
+    "core universe",
+    "pilot universe",
+    "OHLCV thresholds"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "data/universe_registry.json",
+    "data/universe_events.jsonl"
+  ],
+  "owner": "codex",
+  "result": {
+    "artifact": "data/experiments/exp-20260503-017/exp_20260503_017_form4_insider_overlay_audit.json",
+    "audit_report": "docs/non_ohlcv_data_audit/form4_20260503.md",
+    "decision": "data_gap",
+    "form4_metadata_rows": 34738,
+    "log": "docs/experiments/logs/exp-20260503-017.json",
+    "next_action": "Build a default-off Form 4 adapter that archives daily owner=include type=4 filings plus transaction XML fields, then rerun this audit after at least 30 daily archives exist.",
+    "pit_safe": false,
+    "production_impact": "data_audit_only",
+    "usable_meaningful_insider_buy_candidates": 0
+  },
+  "single_causal_variable": "Insider Form 4 data availability and shadow overlay audit",
+  "status": "observed_only"
+}

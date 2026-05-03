@@ -1,0 +1,286 @@
+{
+  "experiment_id": "exp-20260503-016",
+  "timestamp": "2026-05-03T07:08:00+00:00",
+  "status": "observed_only",
+  "decision": "data_gap",
+  "lane": "alpha_discovery",
+  "mechanism_family": "earnings_sec_filing_shock_event_confirmation_overlay",
+  "change_type": "non_ohlcv_data_audit",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but current work must first establish PIT coverage and field availability.",
+  "alpha_hypothesis_category": "event_confirmation_overlay",
+  "single_causal_variable": "SEC / earnings filing-shock data availability and PIT status only",
+  "run_type": "data_audit_shadow_event_table",
+  "allowed_production_change": false,
+  "history_check": {
+    "similar_experiments": {
+      "exp-20260503-002": "earnings + SEC surprise schema, coverage-blocked",
+      "exp-20260503-004": "SEC feed coverage audit, zero persisted SEC rows before diagnostics",
+      "exp-20260503-005": "SEC CIK-to-ticker mapping works on live feed",
+      "exp-20260503-006": "broad filing scout; broad filings not alpha; 10-K/ADV branch identified",
+      "exp-20260503-011": "liquidity-gated 10-K scout, shadow-only and non-PIT",
+      "exp-20260503-013": "rejected duplicate static scout without new PIT evidence"
+    },
+    "mechanism_insight_conflict": false,
+    "why_not_duplicate": "This run does not rerun static forward returns or rank variants; it writes a normalized shadow table and formal data gap report from the current forward archive.",
+    "new_evidence": "Local archive now contains one SEC-forward archive with 300 SEC rows, 284 ticker-mapped rows, and one current trade-universe overlap row; earnings snapshots cover 137 files with EPS/surprise fields in about 86% of snapshot ticker rows."
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "after_metrics": {
+    "expected_value_score_delta": 0.0,
+    "production_metrics_changed": false,
+    "reason": "Data audit and shadow table only; no production or backtest decision path changed."
+  },
+  "expected_value_score_delta": 0.0,
+  "coverage": {
+    "earnings_snapshots": {
+      "snapshot_files": 137,
+      "first_snapshot": "earnings_snapshot_20251023.json",
+      "last_snapshot": "earnings_snapshot_20260501.json",
+      "total_ticker_rows": 6033,
+      "rows_with_days_to_earnings": 5199,
+      "rows_with_eps_estimate": 5198,
+      "rows_with_surprise_history": 5198,
+      "days_to_earnings_coverage": 0.8618,
+      "eps_estimate_coverage": 0.8616,
+      "surprise_history_coverage": 0.8616
+    },
+    "sec_forward_archive": {
+      "archive": "data/news_20260502.json",
+      "sec_item_count": 300,
+      "shadow_row_count": 300,
+      "ticker_mapped_rows": 284,
+      "unique_tickers": 279,
+      "form_counts": {
+        "10-K": 100,
+        "8-K": 100,
+        "10-Q": 100
+      },
+      "shock_tag_counts": {
+        "unclear / missing data": 296,
+        "negative filing shock": 4
+      },
+      "production_or_pilot_universe_overlap_rows": 1,
+      "production_or_pilot_universe_overlap_sample": [
+        {
+          "ticker": "TSLA",
+          "event_date": "2026-04-30",
+          "usable_trade_date": "2026-05-01",
+          "form_type": "10-K",
+          "accepted_datetime": "2026-04-30T17:13:17-04:00",
+          "fiscal_period_end": null,
+          "eps_surprise": null,
+          "revenue_surprise": null,
+          "gross_margin_delta": null,
+          "fcf_to_net_income_gap": null,
+          "inventory_growth": null,
+          "receivables_growth": null,
+          "guidance_raise_cut": null,
+          "eight_k_item_type": [],
+          "data_source": "data/news_20260502.json",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/0001104659-26-053166-index.htm",
+          "sec_cik": "0001318605",
+          "sec_company_name": "Tesla, Inc.",
+          "mapping_status": "ticker_mapped",
+          "production_universe_overlap": true,
+          "pilot_universe_overlap": false,
+          "filing_shock_tag": "unclear / missing data",
+          "filing_shock_reason": "statement_without_xbrl_metric_parse",
+          "pit_safe": true,
+          "pit_caveat": "PIT timestamp is available for this forward archive row; historical replay depth is insufficient and XBRL/body metrics are not parsed."
+        }
+      ]
+    },
+    "news_source_diagnostics": {
+      "news_source_stats_file": "data/news_source_stats_20260502.json",
+      "sec_feed_count": 3,
+      "sec_feed_statuses": [
+        200,
+        200,
+        200
+      ],
+      "sec_feed_parsed_item_count": 300,
+      "sec_items_with_cik": 300,
+      "sec_items_with_ticker": 284,
+      "sec_items_without_ticker": 16
+    },
+    "missing_fields": [
+      "revenue_surprise",
+      "gross_margin_delta",
+      "fcf_to_net_income_gap",
+      "inventory_growth",
+      "receivables_growth",
+      "filing body / XBRL facts for 10-K and 10-Q quality shock",
+      "stable PIT historical CIK-to-ticker mapping ledger"
+    ],
+    "pit_status": {
+      "accepted_datetime_available": true,
+      "forward_archive_pit_safe_for_observation": true,
+      "historical_replay_pit_safe": false,
+      "reason": "Only one forward SEC archive is normalized; old static SEC backfills were seeded from latest archive CIKs and are not PIT universe evidence."
+    }
+  },
+  "shadow_metrics": {
+    "candidate_count": 300,
+    "tagged_candidate_forward_returns": {
+      "5d": null,
+      "10d": null,
+      "20d": null,
+      "60d": null,
+      "status": "pending_forward_outcomes_for_current_archive"
+    },
+    "overlap_with_existing_signals": {
+      "current_production_or_pilot_universe_overlap_rows": 1,
+      "current_overlap_sample": [
+        {
+          "ticker": "TSLA",
+          "event_date": "2026-04-30",
+          "usable_trade_date": "2026-05-01",
+          "form_type": "10-K",
+          "accepted_datetime": "2026-04-30T17:13:17-04:00",
+          "fiscal_period_end": null,
+          "eps_surprise": null,
+          "revenue_surprise": null,
+          "gross_margin_delta": null,
+          "fcf_to_net_income_gap": null,
+          "inventory_growth": null,
+          "receivables_growth": null,
+          "guidance_raise_cut": null,
+          "eight_k_item_type": [],
+          "data_source": "data/news_20260502.json",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/0001104659-26-053166-index.htm",
+          "sec_cik": "0001318605",
+          "sec_company_name": "Tesla, Inc.",
+          "mapping_status": "ticker_mapped",
+          "production_universe_overlap": true,
+          "pilot_universe_overlap": false,
+          "filing_shock_tag": "unclear / missing data",
+          "filing_shock_reason": "statement_without_xbrl_metric_parse",
+          "pit_safe": true,
+          "pit_caveat": "PIT timestamp is available for this forward archive row; historical replay depth is insufficient and XBRL/body metrics are not parsed."
+        }
+      ],
+      "historical_ab_signal_overlap": null,
+      "status": "historical overlap blocked by missing PIT SEC archives across canonical windows"
+    },
+    "scarce_slot_opportunity_cost": {
+      "measurable": false,
+      "reason": "One current-universe SEC overlap row and no closed forward outcomes cannot value a slot tie-breaker."
+    },
+    "prior_shadow_reference_not_promotion_evidence": {
+      "experiment_id": "exp-20260503-011",
+      "candidate_count": 354,
+      "canonical_window_candidate_count": 103,
+      "forward_10d_excess_avg": 0.003765,
+      "forward_10d_excess_win_rate": 0.5339,
+      "same_day_core_conflict_count": 7,
+      "replacement_value_10d_excess_proxy_avg": 0.02484,
+      "pit_qualified": false
+    }
+  },
+  "data_availability_pit_status": "data exists for forward SEC observation and earnings snapshots, but not enough PIT depth or XBRL/companyfacts fields for replay/promotion.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_impact": "shadow_only"
+  },
+  "decision_rationale": "Data gap, not alpha rejection. Filing-shock evidence remains shadow-only until forward archives accumulate and SEC/XBRL quality fields are PIT-filled.",
+  "next_action": "Accumulate at least 5-10 forward SEC archive days with ticker tags, then add a default-off shadow replay that freezes same-day A/B alternatives before entry; add XBRL/companyfacts adapter only as field fill, not as production signal.",
+  "related_files": [
+    "data/non_ohlcv/sec_filing_shadow_events_20260503.json",
+    "data/non_ohlcv/sec_filing_schema.md",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_20260503.md",
+    "docs/experiments/tickets/exp-20260503-016.json",
+    "docs/experiments/logs/exp-20260503-016.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

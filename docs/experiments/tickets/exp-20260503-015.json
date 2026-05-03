@@ -1,0 +1,57 @@
+{
+  "experiment_id": "exp-20260503-015",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "measurement-repair",
+  "hypothesis": "High short interest plus price/event strength may identify squeeze-ready existing Ginger candidates, but only if point-in-time short-interest/borrow-pressure data is available with publication lag; this round audits availability and creates a shadow-only data-gap record.",
+  "change_type": "non_ohlcv_data_audit",
+  "single_causal_variable": "point-in-time short-interest and borrow-pressure data availability for existing candidates",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets/exp-20260503-015.json",
+    "docs/experiments/logs/exp-20260503-015.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_20260503.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "short_interest_borrow_pressure_overlay",
+    "production_signal_path"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report local coverage, PIT risk, missingness, usable fields, overlap feasibility, and next shadow experiment; no production change allowed.",
+  "created_at": "2026-05-03T07:04:53+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T07:06:03+00:00",
+  "result": {
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "candidate_count": {
+      "existing_survived_candidates": 138,
+      "taggable_short_borrow_candidates": 0
+    },
+    "reason": "No local point-in-time short-interest, FINRA short-volume, or paid borrow data exists, so squeeze/fragile-short tagging cannot be run without fabricating evidence.",
+    "log_file": "docs/experiments/logs/exp-20260503-015.json",
+    "audit_file": "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_20260503.md"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "experiment_id": "exp-20260503-045",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock and earnings surprise may become an event confirmation overlay, but this run only checks whether new PIT-safe SEC/earnings evidence exists after exp-20260503-041 before any replay.",
+  "change_type": "non_ohlcv_data_audit_duplicate_guardrail",
+  "single_causal_variable": "new PIT-safe SEC / earnings filing-shock evidence since exp-20260503-041",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "OHLCV thresholds",
+    "entry rules",
+    "exit rules",
+    "sizing rules",
+    "portfolio heat",
+    "candidate ranking",
+    "LLM prompt"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: accept only as data_gap/duplicate_guardrail unless new PIT-safe SEC archive days or normalized XBRL/companyfacts rows exist.",
+  "created_at": "2026-05-03T17:06:35+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T17:07:55+00:00",
+  "result": {
+    "decision": "data_gap",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtest_results_20260502.json",
+    "after_result_file": "data/backtest_results_20260502.json",
+    "log_file": "docs/experiments/logs/exp-20260503-045.json",
+    "reason": "No new PIT-safe SEC/earnings filing-shock evidence exists after exp-20260503-041; latest SEC archive remains data/news_20260502.json with no closed forward sample.",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  }
+}

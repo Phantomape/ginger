@@ -1,0 +1,198 @@
+{
+  "experiment_id": "exp-20260503-024",
+  "timestamp": "2026-05-03T10:06:30+00:00",
+  "status": "observed_only",
+  "decision": "data_gap",
+  "lane": "alpha_discovery",
+  "run_type": "duplicate_guardrail_data_audit_recheck",
+  "mechanism_family": "earnings_sec_filing_shock_event_confirmation_overlay",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but this run only checks whether new PIT-safe SEC evidence exists after exp-20260503-022.",
+  "alpha_hypothesis": {
+    "category": "event_confirmation_overlay / C-strategy event grading",
+    "text": "Filing shock tags may eventually improve breakout_long candidate quality or earnings_event_long grading when PIT SEC/XBRL and surprise fields are dense enough.",
+    "why_not_now": "The exact same-day audits already found one forward SEC archive day, no closed forward returns, and no PIT XBRL/companyfacts fields. This invocation found no new local evidence after exp-20260503-022."
+  },
+  "non_ohlcv_data_source": "SEC Atom 8-K / 10-Q / 10-K filings plus existing earnings snapshots; XBRL/companyfacts fields are not locally normalized.",
+  "change_type": "non_ohlcv_sec_earnings_duplicate_guardrail_data_audit",
+  "single_causal_variable": "new PIT-safe SEC / earnings filing-shock evidence since exp-20260503-022",
+  "production_change_allowed": false,
+  "historical_experiment_check": {
+    "exact_prior_experiment": "exp-20260503-022",
+    "new_evidence_since_exp_20260503_022": false,
+    "mechanism_insight_check": "docs/alpha-optimization-playbook.md ranks earnings + SEC + financial surprise first among external alpha sources, but also states C strategy single-field/checklist repair is downgraded. This run honors that by checking data availability only, not another static score or filter.",
+    "same_family_experiments": {
+      "exp-20260503-002": "earnings + SEC surprise schema; coverage-blocked",
+      "exp-20260503-004": "SEC archive audit; zero persisted SEC rows before diagnostics",
+      "exp-20260503-005": "SEC CIK-to-ticker mapping works on live feed",
+      "exp-20260503-006": "broad filing scout; broad filings not alpha; 10-K/ADV branch identified",
+      "exp-20260503-011": "liquidity-gated 10-K scout; positive but static/shadow and not PIT-qualified",
+      "exp-20260503-013": "blocked duplicate static universe scout without new PIT evidence",
+      "exp-20260503-016": "exact SEC / earnings / filing shock data audit; data_gap",
+      "exp-20260503-019": "duplicate guardrail recheck; data_gap and no new archive since exp-016",
+      "exp-20260503-022": "duplicate guardrail recheck; data_gap and no new archive since exp-019"
+    },
+    "why_not_simple_rerun": "Rerunning filing severity, 8-K item-type, C-grading, or slot tie-breaker variants on the unchanged single archive would repeat exp-20260503-016/019/022."
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "data_availability": {
+    "latest_news_archive": "data/news_20260502.json",
+    "latest_news_source_stats": "data/news_source_stats_20260502.json",
+    "news_archive_file_count": 31,
+    "news_source_stats_file_count": 1,
+    "new_source_archives_since_exp_20260503_022": false,
+    "earnings_snapshots": {
+      "snapshot_files": 137,
+      "first_snapshot": "earnings_snapshot_20251023.json",
+      "last_snapshot": "earnings_snapshot_20260501.json",
+      "total_ticker_rows": 6033,
+      "rows_with_eps_estimate": 5198,
+      "eps_estimate_coverage": 0.8616,
+      "rows_with_surprise_history": 5198,
+      "surprise_history_coverage": 0.8616,
+      "missing_financial_shock_fields": [
+        "revenue_surprise",
+        "gross_margin_delta",
+        "fcf_to_net_income_gap",
+        "inventory_growth",
+        "receivables_growth"
+      ]
+    },
+    "existing_shadow_event_table": {
+      "path": "data/non_ohlcv/sec_filing_shadow_events_20260503.json",
+      "row_count": 300,
+      "ticker_mapped_rows": 284,
+      "unique_tickers": 279,
+      "production_or_pilot_universe_overlap_rows": 1,
+      "form_counts": {
+        "10-K": 100,
+        "10-Q": 100,
+        "8-K": 100
+      },
+      "shock_tag_counts": {
+        "negative filing shock": 4,
+        "unclear / missing data": 296
+      }
+    },
+    "sec_submissions_cache_file_count": 100,
+    "sec_submissions_cache_pit_status": "static local cache; useful for adapter diagnostics, not historical replay evidence without as-of archive ledger",
+    "companyfacts_or_xbrl_rows": 0,
+    "pit_status": {
+      "forward_archive_pit_safe_for_observation": true,
+      "historical_replay_pit_safe": false,
+      "reason": "Only one normalized forward SEC archive exists for this family; canonical historical windows do not have PIT SEC rows with accepted datetime, ticker mapping, form, and XBRL fields."
+    },
+    "blocking_gaps": [
+      "No new SEC source archive after data/news_20260502.json",
+      "No new news_source_stats file after data/news_source_stats_20260502.json",
+      "No local normalized XBRL/companyfacts field table",
+      "No stable historical as-of CIK-to-ticker ledger",
+      "No closed forward 5/10/20/60d returns for SEC-tagged rows"
+    ]
+  },
+  "shadow_metrics": {
+    "candidate_count": {
+      "existing_shadow_rows": 300,
+      "new_rows_since_exp_20260503_022": 0
+    },
+    "tagged_candidate_forward_returns": {
+      "5d": null,
+      "10d": null,
+      "20d": null,
+      "60d": null,
+      "status": "pending; no closed forward outcome window for the 2026-05-02 SEC archive, and no new archive since exp-20260503-022"
+    },
+    "overlap_with_existing_signals": {
+      "current_production_or_pilot_universe_overlap_rows": 1,
+      "historical_ab_signal_overlap": null,
+      "status": "blocked by missing PIT SEC archive depth across canonical windows",
+      "overlap_sample": [
+        {
+          "ticker": "TSLA",
+          "event_date": "2026-04-30",
+          "usable_trade_date": "2026-05-01",
+          "form_type": "10-K",
+          "filing_shock_tag": "unclear / missing data",
+          "filing_shock_reason": "statement_without_xbrl_metric_parse"
+        }
+      ]
+    },
+    "scarce_slot_opportunity_cost": {
+      "measurable": false,
+      "slot_conflict_value": null,
+      "reason": "One current-universe overlap row and no closed forward return sample cannot value a slot tie-breaker."
+    }
+  },
+  "after_metrics": {
+    "expected_value_score_delta": 0.0,
+    "production_metrics_changed": false,
+    "reason": "Data audit recheck only; no strategy, replay, ranking, universe, sizing, or signal path changed."
+  },
+  "expected_value_score_delta": 0.0,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_impact": "data_audit_only"
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "decision_rationale": "Data gap persists. The SEC/earnings filing-shock family remains conceptually valid, but another same-archive shadow replay would only repeat exp-20260503-016, exp-20260503-019, and exp-20260503-022.",
+  "next_action": "Wait for at least 5-10 new forward SEC archive days with ticker tags, or add a PIT XBRL/companyfacts field-fill adapter, before rerunning filing-shock grading, breakout confirmation, or scarce-slot value tests.",
+  "related_files": [
+    "docs/experiments/tickets/exp-20260503-024.json",
+    "docs/experiments/logs/exp-20260503-024.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_no_new_evidence_20260503.md",
+    "data/non_ohlcv/sec_filing_shadow_events_20260503.json",
+    "data/non_ohlcv/sec_filing_schema.md",
+    "docs/experiments/logs/exp-20260503-022.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_duplicate_guardrail_20260503.md",
+    "docs/experiment_log.jsonl"
+  ]
+}

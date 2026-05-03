@@ -1,0 +1,63 @@
+{
+  "experiment_id": "exp-20260503-025",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "loss-attribution",
+  "hypothesis": "Open-market insider Form 4 buying may confirm existing trend_long/breakout_long candidates, but prior Form 4 audits already found no PIT-safe transaction-level data; this run only rechecks whether new local Form 4 evidence exists before any shadow rerun.",
+  "change_type": "form4_insider_duplicate_guardrail_data_audit",
+  "single_causal_variable": "new PIT-safe Form 4 transaction-level evidence since exp-20260503-020",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets/exp-20260503-025.json",
+    "docs/experiments/logs/exp-20260503-025.json",
+    "docs/non_ohlcv_data_audit/form4_no_new_data_20260503.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "data/universe_registry.json",
+    "data/universe_events.jsonl"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "risk sizing",
+    "portfolio slots",
+    "core universe",
+    "pilot universe",
+    "OHLCV thresholds",
+    "LLM/news gates"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Duplicate guardrail/data audit only: report whether new PIT-safe Form 4 transaction data exists; no production promotion allowed.",
+  "created_at": "2026-05-03T10:05:43+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T10:07:57+00:00",
+  "result": {
+    "log": "docs/experiments/logs/exp-20260503-025.json",
+    "audit_report": "docs/non_ohlcv_data_audit/form4_no_new_data_20260503.md",
+    "decision": "data_gap",
+    "new_pit_safe_form4_rows": 0,
+    "usable_meaningful_insider_buy_candidates": 0,
+    "production_impact": "data_audit_only",
+    "next_action": "Build a default-off append-only Form 4 adapter for SEC owner=include type=4 feeds and transaction XML parsing; rerun shadow tagging only after nonzero PIT-safe open-market purchase rows accumulate."
+  },
+  "decision": "data_gap"
+}

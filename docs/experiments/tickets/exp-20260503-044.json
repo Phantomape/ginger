@@ -1,0 +1,57 @@
+{
+  "experiment_id": "exp-20260503-044",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "universe-scout",
+  "hypothesis": "EOD options structure may confirm existing breakout/event candidates as a shadow overlay, but this run first checks whether PIT-safe option chain, IV/skew/term-structure/OI, option-liquidity, earnings-aligned, and short-interest-linked data exists before any scoring.",
+  "change_type": "data_audit",
+  "single_causal_variable": "PIT-safe EOD options structure data availability for existing-candidate overlays",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets/exp-20260503-044.json",
+    "docs/experiments/logs/exp-20260503-044.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/eod_options_20260503.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "signal generation",
+    "entry filters",
+    "position sizing",
+    "portfolio heat",
+    "candidate ranking",
+    "production signal path",
+    "OHLCV thresholds"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, available fields, and next shadow experiment; no production change.",
+  "created_at": "2026-05-03T17:05:14+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T17:12:00+00:00",
+  "result": {
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "log_file": "docs/experiments/logs/exp-20260503-044.json",
+    "reason": "No PIT-safe EOD options chain, IV/skew/term-structure/OI, or option-liquidity data exists; shadow overlay tagging is blocked."
+  }
+}
