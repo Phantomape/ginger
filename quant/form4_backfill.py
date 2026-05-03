@@ -294,11 +294,18 @@ def _base_xml_fields(root: ET.Element, filing: dict[str, Any]) -> dict[str, Any]
     issuer = _child(root, "issuer")
     document_type = _text(root, "documentType")
     accepted_at = _parse_acceptance_datetime(filing.get("accepted_at"))
+    issuer_symbol = _text(issuer, "issuerTradingSymbol")
+    issuer_cik = normalize_cik(_text(issuer, "issuerCik"))
+    submission_ticker = str(filing.get("ticker") or "").upper() or None
+    submission_cik = normalize_cik(filing.get("cik"))
     return {
-        "ticker": str(filing.get("ticker") or _text(issuer, "issuerTradingSymbol") or "").upper() or None,
-        "cik": normalize_cik(filing.get("cik") or _text(issuer, "issuerCik")),
+        "ticker": str(issuer_symbol or submission_ticker or "").upper() or None,
+        "cik": issuer_cik or submission_cik,
+        "submission_ticker": submission_ticker,
+        "submission_cik": submission_cik,
         "issuer_name": _text(issuer, "issuerName"),
-        "issuer_trading_symbol": _text(issuer, "issuerTradingSymbol"),
+        "issuer_cik": issuer_cik,
+        "issuer_trading_symbol": issuer_symbol,
         "document_type": document_type,
         "filing_type": filing.get("filing_type") or document_type,
         "period_of_report": _text(root, "periodOfReport") or filing.get("report_date"),
@@ -555,9 +562,12 @@ def backfill_form4_transactions(args: argparse.Namespace) -> dict[str, Any]:
     tickers = _resolve_tickers(args)
     if args.max_ciks:
         tickers = tickers[: args.max_ciks]
+    requested_ticker_set = set(tickers)
 
     rows: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
+    external_issuer_examples: list[dict[str, Any]] = []
+    excluded_external_issuer_rows = 0
     filings_seen = 0
     documents_fetched_or_read = 0
     mapped = []
@@ -609,7 +619,21 @@ def backfill_form4_transactions(args: argparse.Namespace) -> dict[str, Any]:
                 parsed_rows = parse_form4_xml(xml_text, {**filing, "xml_cache_path": str(cache_path) if cache_path else None})
                 for row in parsed_rows:
                     row["xml_cache_path"] = _repo_rel(cache_path) if cache_path else None
-                rows.extend(parsed_rows)
+                    if (
+                        not args.include_external_issuers
+                        and row.get("ticker")
+                        and str(row["ticker"]).upper() not in requested_ticker_set
+                    ):
+                        excluded_external_issuer_rows += 1
+                        if len(external_issuer_examples) < 20:
+                            external_issuer_examples.append({
+                                "submission_ticker": row.get("submission_ticker"),
+                                "issuer_ticker": row.get("ticker"),
+                                "issuer_name": row.get("issuer_name"),
+                                "accession_number": row.get("accession_number"),
+                            })
+                        continue
+                    rows.append(row)
             except Exception as exc:
                 errors.append({
                     "ticker": ticker,
@@ -645,6 +669,8 @@ def backfill_form4_transactions(args: argparse.Namespace) -> dict[str, Any]:
         "filings_seen": filings_seen,
         "documents_fetched_or_read": documents_fetched_or_read,
         "rows_written": len(rows),
+        "excluded_external_issuer_rows": excluded_external_issuer_rows,
+        "external_issuer_examples": external_issuer_examples,
         "output_path": _repo_rel(output_path),
         "xml_cache_dir": _repo_rel(xml_cache_dir),
         "errors": errors[:50],
@@ -675,6 +701,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--segments", nargs="+", choices=("core", "pilot", "observation"), default=["core", "pilot", "observation"])
     parser.add_argument("--tickers", action="append", help="Comma-separated ticker list. Defaults to universe_state_20260501 segments.")
     parser.add_argument("--include-etfs", action="store_true")
+    parser.add_argument("--include-external-issuers", action="store_true", help="Keep rows where the Form 4 XML issuer ticker is outside the requested ticker universe.")
     parser.add_argument("--max-ciks", type=int)
     parser.add_argument("--max-filings-per-cik", type=int)
     parser.add_argument("--no-fetch-xml", action="store_true", help="Write Form 4 filing metadata only; do not fetch primary documents.")
