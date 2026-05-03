@@ -1,0 +1,76 @@
+{
+  "experiment_id": "exp-20260503-009",
+  "status": "rejected",
+  "title": "ATR trailing exit profile sweep",
+  "summary": "Positions that first move far enough in our favor but fail to hit fixed targets leak alpha through giveback; a full-position ATR trailing exit may improve old_thin without changing entries, sizing, candidate universe, or LLM/news behavior.",
+  "best_variant": "trail_3_0atr_2_0atr",
+  "gate4_pass": false,
+  "best_variant_delta": {
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": -1.0969,
+        "sharpe_daily": -0.47,
+        "total_pnl": -18753.23,
+        "total_return_pct": -0.1875,
+        "max_drawdown_pct": 0.0199,
+        "win_rate": -0.0836,
+        "trade_count": -2,
+        "trailing_stop_trades": 11,
+        "loss_after_positive_mfe_count": 1,
+        "loss_after_positive_mfe_giveback": 2451.6
+      },
+      "mid_weak": {
+        "expected_value_score": -0.8005,
+        "sharpe_daily": -0.51,
+        "total_pnl": -24634.58,
+        "total_return_pct": -0.2464,
+        "max_drawdown_pct": -0.0372,
+        "win_rate": -0.0021,
+        "trade_count": 2,
+        "trailing_stop_trades": 12,
+        "loss_after_positive_mfe_count": 1,
+        "loss_after_positive_mfe_giveback": 9607.35
+      },
+      "old_thin": {
+        "expected_value_score": -0.2669,
+        "sharpe_daily": -0.63,
+        "total_pnl": -16908.48,
+        "total_return_pct": -0.1691,
+        "max_drawdown_pct": 0.0173,
+        "win_rate": -0.0341,
+        "trade_count": 2,
+        "trailing_stop_trades": 10,
+        "loss_after_positive_mfe_count": 1,
+        "loss_after_positive_mfe_giveback": -675.59
+      }
+    },
+    "baseline": {
+      "expected_value_score_sum": 5.1785,
+      "total_pnl_sum": 158257.48,
+      "trade_count_sum": 62
+    },
+    "variant": {
+      "expected_value_score_sum": 3.0142,
+      "total_pnl_sum": 97961.19,
+      "trade_count_sum": 64
+    },
+    "expected_value_score_delta_sum": -2.1643,
+    "expected_value_score_delta_pct": -0.41794,
+    "total_pnl_delta_sum": -60296.29,
+    "total_pnl_delta_pct": -0.381001,
+    "ev_windows_improved": 0,
+    "ev_windows_regressed": 3,
+    "pnl_windows_improved": 0,
+    "pnl_windows_regressed": 3,
+    "drawdown_windows_improved": 1,
+    "max_sharpe_daily_delta": -0.47,
+    "min_win_rate_delta": -0.0836,
+    "trade_count_delta_sum": 2,
+    "trailing_stop_trades_delta_sum": 33
+  },
+  "next_retry_requires": [
+    "Do not repeat nearby ATR trigger/offset sweeps without a richer discriminator.",
+    "A valid retry needs event/news context or a position-state feature that separates real trend exhaustion from normal volatility.",
+    "If promoted later, implement through shared production parity rather than backtester-only config."
+  ]
+}

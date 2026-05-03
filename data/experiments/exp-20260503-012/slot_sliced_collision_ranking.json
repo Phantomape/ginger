@@ -1,0 +1,618 @@
+{
+  "experiment_id": "exp-20260503-012",
+  "timestamp": "2026-05-03T04:18:07+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "slot_sliced_collision_ranking",
+  "hypothesis": "Only on days where survived candidates are slot-sliced, ranking the collision set by TQS and/or medium-term relative strength may improve scarce-slot capital allocation without changing non-collision entries.",
+  "parameters": {
+    "single_causal_variable": "candidate ranking only inside slot-sliced collision sets",
+    "baseline_order": "accepted production_parity.plan_entry_candidates order",
+    "tested_orders": [
+      "collision_tqs_then_rs20",
+      "collision_rs20_then_tqs",
+      "collision_conf_then_tqs_rs20"
+    ],
+    "fields_used": [
+      "ticker_ret20_minus_spy_pct",
+      "trade_quality_score",
+      "confidence_score"
+    ],
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "position sizing",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "scarce-slot breakout deferral thresholds",
+      "add-ons",
+      "all exits",
+      "LLM/news replay",
+      "earnings strategy",
+      "non-slot-sliced entry days"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "slot_sliced_count": 3,
+      "scarce_slot_breakout_deferred": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "slot_sliced_count": 1,
+      "scarce_slot_breakout_deferred": 4
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "slot_sliced_count": 9,
+      "scarce_slot_breakout_deferred": 8
+    }
+  },
+  "after_metrics": {
+    "best_variant": "collision_conf_then_tqs_rs20",
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "slot_sliced_count": 3,
+      "scarce_slot_breakout_deferred": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.3762,
+      "sharpe_daily": 2.57,
+      "total_pnl": 53553.46,
+      "total_return_pct": 0.5355,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5,
+      "trade_count": 22,
+      "survival_rate": 0.7925,
+      "slot_sliced_count": 1,
+      "scarce_slot_breakout_deferred": 4
+    },
+    "old_thin": {
+      "expected_value_score": 0.1623,
+      "sharpe_daily": 1.04,
+      "total_pnl": 15613.29,
+      "total_return_pct": 0.1561,
+      "max_drawdown_pct": 0.0807,
+      "win_rate": 0.381,
+      "trade_count": 21,
+      "survival_rate": 0.9138,
+      "slot_sliced_count": 10,
+      "scarce_slot_breakout_deferred": 8
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "collision_conf_then_tqs_rs20",
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0,
+        "slot_sliced_count": 0,
+        "scarce_slot_breakout_deferred": 0
+      },
+      "mid_weak": {
+        "expected_value_score": -0.0653,
+        "sharpe_daily": -0.05,
+        "total_pnl": -1461.62,
+        "total_return_pct": -0.0147,
+        "max_drawdown_pct": 0.0,
+        "win_rate": -0.0238,
+        "trade_count": 1,
+        "survival_rate": 0.0,
+        "slot_sliced_count": 0,
+        "scarce_slot_breakout_deferred": 0
+      },
+      "old_thin": {
+        "expected_value_score": -0.1556,
+        "sharpe_daily": -0.25,
+        "total_pnl": -9028.78,
+        "total_return_pct": -0.0903,
+        "max_drawdown_pct": 0.0002,
+        "win_rate": -0.0281,
+        "trade_count": -1,
+        "survival_rate": -0.0029,
+        "slot_sliced_count": 1,
+        "scarce_slot_breakout_deferred": 0
+      }
+    },
+    "aggregate": {
+      "expected_value_score_delta_sum": -0.2209,
+      "expected_value_score_delta_pct": -0.042657,
+      "total_pnl_delta_sum": -10490.4,
+      "baseline_total_pnl_sum": 158257.48,
+      "total_pnl_delta_pct": -0.066287,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 2,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 2,
+      "max_drawdown_delta_max": 0.0002,
+      "trade_count_delta_sum": 0,
+      "win_rate_delta_min": -0.0281,
+      "slot_sliced_delta_sum": 1
+    }
+  },
+  "all_variant_summaries": {
+    "collision_tqs_then_rs20": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred": 0
+          },
+          "after": {
+            "expected_value_score": 3.2712,
+            "sharpe_daily": 4.24,
+            "total_pnl": 77150.87,
+            "total_return_pct": 0.7715,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.75,
+            "trade_count": 20,
+            "survival_rate": 0.8235,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred": 0
+          },
+          "delta": {
+            "expected_value_score": -0.1479,
+            "sharpe_daily": -0.11,
+            "total_pnl": -1449.46,
+            "total_return_pct": -0.0145,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0395,
+            "trade_count": 1,
+            "survival_rate": 0.0196,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred": 0
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 4
+          },
+          "after": {
+            "expected_value_score": 1.3762,
+            "sharpe_daily": 2.57,
+            "total_pnl": 53553.46,
+            "total_return_pct": 0.5355,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.7925,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 4
+          },
+          "delta": {
+            "expected_value_score": -0.0653,
+            "sharpe_daily": -0.05,
+            "total_pnl": -1461.62,
+            "total_return_pct": -0.0147,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1,
+            "survival_rate": 0.0,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred": 0
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred": 8
+          },
+          "after": {
+            "expected_value_score": 0.163,
+            "sharpe_daily": 1.04,
+            "total_pnl": 15670.0,
+            "total_return_pct": 0.1567,
+            "max_drawdown_pct": 0.0807,
+            "win_rate": 0.4,
+            "trade_count": 20,
+            "survival_rate": 0.9138,
+            "slot_sliced_count": 10,
+            "scarce_slot_breakout_deferred": 8
+          },
+          "delta": {
+            "expected_value_score": -0.1549,
+            "sharpe_daily": -0.25,
+            "total_pnl": -8972.07,
+            "total_return_pct": -0.0897,
+            "max_drawdown_pct": 0.0002,
+            "win_rate": -0.0091,
+            "trade_count": -2,
+            "survival_rate": -0.0029,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 0
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.3681,
+        "expected_value_score_delta_pct": -0.071082,
+        "total_pnl_delta_sum": -11883.15,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_pct": -0.075087,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 3,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 3,
+        "max_drawdown_delta_max": 0.0002,
+        "trade_count_delta_sum": 0,
+        "win_rate_delta_min": -0.0395,
+        "slot_sliced_delta_sum": 1
+      }
+    },
+    "collision_rs20_then_tqs": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred": 0
+          },
+          "after": {
+            "expected_value_score": 2.5688,
+            "sharpe_daily": 4.06,
+            "total_pnl": 63267.15,
+            "total_return_pct": 0.6327,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7368,
+            "trade_count": 19,
+            "survival_rate": 0.8627,
+            "slot_sliced_count": 4,
+            "scarce_slot_breakout_deferred": 1
+          },
+          "delta": {
+            "expected_value_score": -0.8503,
+            "sharpe_daily": -0.29,
+            "total_pnl": -15333.18,
+            "total_return_pct": -0.1533,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0527,
+            "trade_count": 0,
+            "survival_rate": 0.0588,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 1
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 4
+          },
+          "after": {
+            "expected_value_score": 1.3762,
+            "sharpe_daily": 2.57,
+            "total_pnl": 53553.46,
+            "total_return_pct": 0.5355,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.7925,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 4
+          },
+          "delta": {
+            "expected_value_score": -0.0653,
+            "sharpe_daily": -0.05,
+            "total_pnl": -1461.62,
+            "total_return_pct": -0.0147,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1,
+            "survival_rate": 0.0,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred": 0
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred": 8
+          },
+          "after": {
+            "expected_value_score": 0.1623,
+            "sharpe_daily": 1.04,
+            "total_pnl": 15613.29,
+            "total_return_pct": 0.1561,
+            "max_drawdown_pct": 0.0807,
+            "win_rate": 0.381,
+            "trade_count": 21,
+            "survival_rate": 0.9138,
+            "slot_sliced_count": 10,
+            "scarce_slot_breakout_deferred": 8
+          },
+          "delta": {
+            "expected_value_score": -0.1556,
+            "sharpe_daily": -0.25,
+            "total_pnl": -9028.78,
+            "total_return_pct": -0.0903,
+            "max_drawdown_pct": 0.0002,
+            "win_rate": -0.0281,
+            "trade_count": -1,
+            "survival_rate": -0.0029,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 0
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -1.0712,
+        "expected_value_score_delta_pct": -0.206855,
+        "total_pnl_delta_sum": -25823.58,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_pct": -0.163174,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 3,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 3,
+        "max_drawdown_delta_max": 0.0002,
+        "trade_count_delta_sum": 0,
+        "win_rate_delta_min": -0.0527,
+        "slot_sliced_delta_sum": 2
+      }
+    },
+    "collision_conf_then_tqs_rs20": {
+      "by_window": {
+        "late_strong": {
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred": 0
+          },
+          "after": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0,
+            "survival_rate": 0.0,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred": 0
+          }
+        },
+        "mid_weak": {
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 4
+          },
+          "after": {
+            "expected_value_score": 1.3762,
+            "sharpe_daily": 2.57,
+            "total_pnl": 53553.46,
+            "total_return_pct": 0.5355,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.7925,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 4
+          },
+          "delta": {
+            "expected_value_score": -0.0653,
+            "sharpe_daily": -0.05,
+            "total_pnl": -1461.62,
+            "total_return_pct": -0.0147,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1,
+            "survival_rate": 0.0,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred": 0
+          }
+        },
+        "old_thin": {
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred": 8
+          },
+          "after": {
+            "expected_value_score": 0.1623,
+            "sharpe_daily": 1.04,
+            "total_pnl": 15613.29,
+            "total_return_pct": 0.1561,
+            "max_drawdown_pct": 0.0807,
+            "win_rate": 0.381,
+            "trade_count": 21,
+            "survival_rate": 0.9138,
+            "slot_sliced_count": 10,
+            "scarce_slot_breakout_deferred": 8
+          },
+          "delta": {
+            "expected_value_score": -0.1556,
+            "sharpe_daily": -0.25,
+            "total_pnl": -9028.78,
+            "total_return_pct": -0.0903,
+            "max_drawdown_pct": 0.0002,
+            "win_rate": -0.0281,
+            "trade_count": -1,
+            "survival_rate": -0.0029,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred": 0
+          }
+        }
+      },
+      "aggregate": {
+        "expected_value_score_delta_sum": -0.2209,
+        "expected_value_score_delta_pct": -0.042657,
+        "total_pnl_delta_sum": -10490.4,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_pct": -0.066287,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 2,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 2,
+        "max_drawdown_delta_max": 0.0002,
+        "trade_count_delta_sum": 0,
+        "win_rate_delta_min": -0.0281,
+        "slot_sliced_delta_sum": 1
+      }
+    }
+  },
+  "gate4_basis": "Rejected because no collision-only ranking variant cleared the fixed-window Gate 4 materiality and stability bar.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "A positive result must be implemented as a shared production_parity collision-ranking helper before it can affect live entries."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this uses production-available deterministic fields."
+  },
+  "history_guardrails": {
+    "not_global_rs_slot_ranking_repeat": true,
+    "only_changes_days_with_slot_sliced_candidates": true,
+    "not_universe_expansion": true,
+    "not_sizing_multiplier_retry": true,
+    "not_exit_lifecycle_retry": true
+  },
+  "rejection_reason": "The narrower slot-sliced collision ranking did not improve a majority of windows with material aggregate EV/PnL evidence.",
+  "next_retry_requires": [
+    "Do not retry global pre-slot RS/TQS sorting.",
+    "Do not retry collision ranking unless a new discriminator is limited to the exact losing collision cases.",
+    "Any positive ranking retry must be production/backtest shared before promotion."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260503-012\\slot_sliced_collision_ranking.json",
+    "docs\\experiments\\logs\\exp-20260503-012.json",
+    "docs\\experiments\\tickets\\exp-20260503-012.json",
+    "quant/experiments/exp_20260503_012_slot_sliced_collision_ranking.py"
+  ]
+}

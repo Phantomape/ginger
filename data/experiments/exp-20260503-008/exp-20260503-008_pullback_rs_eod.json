@@ -1,0 +1,203 @@
+{
+  "change_type": "cross_sectional_ranking_research",
+  "coverage": {
+    "late_strong": {
+      "liquid_count": 41,
+      "sectors": {
+        "Communication Services": 3,
+        "Consumer Discretionary": 4,
+        "Energy": 2,
+        "Financials": 5,
+        "Healthcare": 4,
+        "Industrials": 4,
+        "Technology": 16,
+        "Unknown": 4
+      },
+      "ticker_count": 42
+    },
+    "mid_weak": {
+      "liquid_count": 38,
+      "sectors": {
+        "Communication Services": 3,
+        "Consumer Discretionary": 4,
+        "Energy": 2,
+        "Financials": 5,
+        "Healthcare": 4,
+        "Industrials": 4,
+        "Technology": 15,
+        "Unknown": 1
+      },
+      "ticker_count": 38
+    },
+    "old_thin": {
+      "liquid_count": 38,
+      "sectors": {
+        "Communication Services": 3,
+        "Consumer Discretionary": 4,
+        "Energy": 2,
+        "Financials": 5,
+        "Healthcare": 4,
+        "Industrials": 4,
+        "Technology": 15,
+        "Unknown": 1
+      },
+      "ticker_count": 38
+    }
+  },
+  "date_range": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  },
+  "decision": "observed_promising_not_promoted",
+  "experiment_id": "exp-20260503-008",
+  "hypothesis": "60-day relative strength with a 5-day pullback may improve EOD cross-sectional forward returns versus pure momentum or pure reversal.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "next_retry_requires": [
+    "Use a point-in-time historical constituent universe before promotion.",
+    "If promising rows persist, test a slot-aware overlay against accepted A/B candidates rather than changing production entries directly.",
+    "Do not promote pure OHLCV ranks without sector and liquidity neutrality checks remaining acceptable."
+  ],
+  "parameters": {
+    "excluded_sectors": [
+      "Commodities",
+      "ETF"
+    ],
+    "horizons": [
+      5,
+      10,
+      20,
+      60
+    ],
+    "locked_variables": [
+      "production signal generation",
+      "production filters",
+      "risk engine",
+      "backtester trading logic",
+      "LLM/news replay",
+      "production universe"
+    ],
+    "min_adv20": 20000000,
+    "min_close": 5.0,
+    "single_causal_variable": "ranking formula",
+    "transaction_cost_bps": [
+      0,
+      35,
+      70
+    ],
+    "variants": {
+      "momentum_60": "z_ret_60d",
+      "pullback_rs_60_5": "z_ret_60d_minus_z_ret_5d",
+      "reversal_5": "negative_z_ret_5d"
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Primary variant is directionally promising, but this is a standalone cross-sectional study with survivorship-biased current snapshots and no production slot-aware integration yet.",
+  "result_files": {
+    "config": "D:\\Github\\ginger\\experiments\\pullback_rs_eod\\config.yaml",
+    "notes": "D:\\Github\\ginger\\experiments\\pullback_rs_eod\\notes.md",
+    "rank_ic_by_date": "D:\\Github\\ginger\\experiments\\pullback_rs_eod\\rank_ic_by_date.csv",
+    "research_log": "D:\\Github\\ginger\\research_log\\20260503_0307_pullback_rs_eod.md",
+    "results": "D:\\Github\\ginger\\experiments\\pullback_rs_eod\\results.csv"
+  },
+  "status": "observed_promising_not_promoted",
+  "summary_35bps": [
+    {
+      "horizon": 60,
+      "rank_ic_mean": 0.14544866666666667,
+      "top_bottom_hit_rate": 0.7593486666666666,
+      "top_bottom_spread_mean": 0.24810866666666667,
+      "top_bucket_return_mean": 0.26109166666666667,
+      "turnover_mean": 0.10637866666666666,
+      "variant": "momentum_60"
+    },
+    {
+      "horizon": 60,
+      "rank_ic_mean": 0.04373733333333333,
+      "top_bottom_hit_rate": 0.698873,
+      "top_bottom_spread_mean": 0.15201233333333333,
+      "top_bucket_return_mean": 0.202028,
+      "turnover_mean": 0.29617133333333334,
+      "variant": "pullback_rs_60_5"
+    },
+    {
+      "horizon": 20,
+      "rank_ic_mean": 0.07739466666666667,
+      "top_bottom_hit_rate": 0.6498796666666666,
+      "top_bottom_spread_mean": 0.05381233333333333,
+      "top_bucket_return_mean": 0.06047733333333333,
+      "turnover_mean": 0.11961700000000001,
+      "variant": "momentum_60"
+    },
+    {
+      "horizon": 20,
+      "rank_ic_mean": 0.04073766666666667,
+      "top_bottom_hit_rate": 0.618561,
+      "top_bottom_spread_mean": 0.048922,
+      "top_bucket_return_mean": 0.059488000000000006,
+      "turnover_mean": 0.30051300000000003,
+      "variant": "pullback_rs_60_5"
+    },
+    {
+      "horizon": 10,
+      "rank_ic_mean": 0.03665633333333334,
+      "top_bottom_hit_rate": 0.544357,
+      "top_bottom_spread_mean": 0.021791333333333333,
+      "top_bucket_return_mean": 0.027226666666666666,
+      "turnover_mean": 0.29384733333333335,
+      "variant": "pullback_rs_60_5"
+    },
+    {
+      "horizon": 10,
+      "rank_ic_mean": 0.054901666666666675,
+      "top_bottom_hit_rate": 0.5599843333333333,
+      "top_bottom_spread_mean": 0.017610666666666667,
+      "top_bucket_return_mean": 0.025366333333333334,
+      "turnover_mean": 0.12022433333333334,
+      "variant": "momentum_60"
+    },
+    {
+      "horizon": 5,
+      "rank_ic_mean": 0.03893900000000001,
+      "top_bottom_hit_rate": 0.5776353333333333,
+      "top_bottom_spread_mean": 0.008417666666666667,
+      "top_bucket_return_mean": 0.011192,
+      "turnover_mean": 0.12023600000000001,
+      "variant": "momentum_60"
+    },
+    {
+      "horizon": 5,
+      "rank_ic_mean": 0.027338333333333336,
+      "top_bottom_hit_rate": 0.5303256666666667,
+      "top_bottom_spread_mean": 0.007840333333333333,
+      "top_bucket_return_mean": 0.011359666666666665,
+      "turnover_mean": 0.29687066666666667,
+      "variant": "pullback_rs_60_5"
+    }
+  ],
+  "timestamp": "2026-05-03T03:07:03.771530+00:00"
+}

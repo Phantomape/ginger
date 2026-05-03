@@ -74,13 +74,13 @@ discriminator.
 - `earnings_event_long`：PEAD 大类仍有金融逻辑，但当前仓库实现尚未证明可稳定增厚 A+B。
 - LLM / news：最适合事件理解、灾难 veto、结构化 grading / ranking；不适合接管仓位、止损、目标位和硬风控。
 
-当前固定三窗口 baseline（最新 accepted stack，数据点来自 `data/backtest_results_20260430.json` 与 `exp-20260501-006` 同批固定窗口实验）：
+当前固定三窗口 baseline（最新 accepted stack，数据点来自 `data/backtest_results_20260502.json` 与 `exp-20260502-022` 的当前核心配置）：
 
 | Window | Range | EV | Return | Sharpe daily | Max DD | Win rate | Trades | Main interpretation |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| `late_strong` | 2025-10-23 -> 2026-04-21 | 3.2228 | +75.30% | 4.28 | 5.41% | 78.95% | 19 | accepted allocation stack 更强；SPY-relative leader risk budget/cap 继续抬升 EV |
-| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.3042 | +49.97% | 2.61 | 7.99% | 52.38% | 21 | 仍然是 meta-allocation / regime-routing 最需要解释的窗口，但 accepted stack 继续抬升 |
-| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.2979 | +23.64% | 1.26 | 8.18% | 40.91% | 22 | 仍是最脆弱窗口，但当前 accepted stack 已再多拿到一些资本效率 |
+| `late_strong` | 2025-10-23 -> 2026-04-21 | 3.4191 | +78.60% | 4.35 | 5.41% | 78.95% | 19 | accepted lifecycle allocation stack 继续提升 winner capture；最新增益来自 SPY-relative leader first add-on cap 抬升到 60% |
+| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.4415 | +55.02% | 2.62 | 8.79% | 52.38% | 21 | 仍然是 meta-allocation / regime-routing 最需要解释的窗口，但 accepted stack 目前仍在继续抬升 EV 与 PnL |
+| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.3179 | +24.64% | 1.29 | 8.05% | 40.91% | 22 | 仍是最脆弱窗口，但 accepted stack 已继续改善资本效率且未破坏 drawdown guardrail |
 
 最新 accepted-stack 测量盲区也要一并记住：news archive coverage 已升至 15/123 交易日（12.2%），prompt/response archive_context 成熟度已到 7/10，但 production-aligned LLM ranking-eligible replay 仍只有 3 天 / 8 个信号；`exp-20260502-007` 进一步证明当前只剩 1/8 个 effective candidate row 能和回放 trade outcome 对齐，因此 LLM soft-ranking 依旧属于 measurement-blocked。exit advisory replay 也仍处于 shadow-only 披露阶段；pilot sleeve 则已开始积累 forward replacement-value attribution，但还没有足够已平仓样本。
 
@@ -3939,3 +3939,281 @@ patch, or SEC title text ticker extraction that treats company suffixes such as
 `sec_company_name`, and ticker tags; if production-universe overlap remains
 thin, route the idea through a filing-driven shadow universe scout rather than
 production entry changes.
+
+### 2026-05-03 mechanism update: Filing-driven shadow universe scout
+
+Status: replay-candidate for a discriminated second-round replay; not
+production-ready.
+
+Core conclusion: `exp-20260503-006` tested whether the newly working SEC CIK
+mapping could seed a filing-driven shadow universe outside the current
+production watchlist. Broad SEC filing continuation is not strong enough, but
+the scout found enough non-current-universe, price-covered history to justify a
+second-round replay focused on filing/liquidity discrimination.
+
+Evidence: the latest archive produced `284` mapped SEC filing rows across `279`
+unique tickers, but only `1` row overlapped the current production universe.
+The historical submission expansion built `992` filing events across `100`
+tickers; `876` had price coverage and `787` had valid 10-day forward excess
+returns. Overall 10-day excess return was negative (`-1.22%`, win rate
+`46.5%`), so `SEC filing => buy` is not the mechanism. The useful branches were
+more selective: `10-K` had positive 10-day excess (`+0.88%` on `92` samples),
+`ADV $5m-$20m` had `+2.94%` on `114` samples, and `ADV >= $20m` had `+0.14%`
+on `310` samples. Low-liquidity filings were clearly bad (`-3.81%` on `347`
+samples).
+
+Mechanism insight: the current production universe is too narrow for SEC filing
+research, but broad outside-universe filings are not automatically alpha. The
+next replay should test a liquidity-gated 10-K / high-ADV filing scout and
+explicitly exclude or down-rank low-liquidity filings before any watchlist
+expansion proposal.
+
+Do not repeat: broad filing-type promotion, low-liquidity filing inclusion, or
+production universe expansion directly from this scout. A valid retry is a
+second-round replay that locks the discovered discriminators (`10-K`, `ADV >=
+$5m`, current-universe overlap accounting) and measures whether those candidates
+can beat same-day A/B scarce-slot alternatives.
+
+### 2026-05-03 mechanism update: Semicap equipment watchlist scout
+
+Status: rejected.
+
+Core conclusion: `exp-20260503-007` tested a bounded candidate-universe
+expansion using liquid semiconductor equipment / compute supplier names
+(`QCOM`, `AMAT`, `ASML`). It should not be promoted.
+
+Evidence: the corrected comparison used canonical base snapshots for baseline
+and augmented snapshots only for variants. Baseline matched the accepted stack:
+EV `3.4191 / 1.4415 / 0.3179` across `late_strong`, `mid_weak`, and
+`old_thin`. The full basket added raw aggregate PnL `+$2,585.79`, but EV fell
+`-0.4881`, win rate dropped as much as `-9.38 pp`, max drawdown worsened by
+`+2.01 pp`, and EV improved in `0/3` windows. The best non-inert control
+(`QCOM`) also regressed EV (`-0.1810`) and PnL (`-$2,228.91`).
+
+Mechanism insight: adding large liquid semiconductor-adjacent names is still
+not automatically a candidate-pool upgrade. The current A/B engine can create
+extra trades from the theme, but the added exposure lowers risk-adjusted quality
+and does not solve a repeat replacement bottleneck.
+
+Do not repeat: raw `QCOM` / `AMAT` / `ASML` watchlist promotion or nearby
+semiconductor-equipment large-cap universe additions without event/news
+confirmation, forward pilot evidence, or slot-aware replacement proof.
+
+### 2026-05-03 mechanism update: Pullback relative-strength EOD rank
+
+Status: observed-only, not promoted.
+
+Core conclusion: `exp-20260503-008` tested an EOD cross-sectional rank where
+strong 60-day relative strength is boosted when the last 5 days have pulled
+back. The pullback composite is directionally positive, but it does not dominate
+the simpler 60-day momentum control and has materially higher turnover.
+
+Evidence: after 35 bps cost across the three canonical non-overlapping windows,
+`pullback_rs_60_5` averaged positive 5/10/20/60-day top-minus-bottom spreads,
+but the 60-day momentum control had stronger average rank IC and spread at the
+20/60-day horizons with lower turnover. The pullback rank also concentrates the
+top bucket heavily in Technology and uses the repo's current snapshot universe,
+so it remains survivorship-biased.
+
+Mechanism insight: the current data supports a broad medium-term relative
+strength rank more than a short-term pullback overlay. A pullback term may still
+be useful as a tie-breaker or slot-aware entry timing feature, but it should not
+replace pure relative strength without a point-in-time historical universe and
+sector/liquidity-neutral validation.
+
+Do not repeat: promoting `z_ret_60d - z_ret_5d` directly into production from
+current snapshots, or treating the positive long-horizon spread as sufficient
+without addressing Technology concentration, survivorship bias, and slot-aware
+A/B integration.
+
+### 2026-05-03 mechanism update: Repeated ATR trailing full-exit profile
+
+Status: rejected; also flagged as a near-repeat.
+
+Core conclusion: `exp-20260503-009` retested a full-position ATR trailing exit
+after a profit trigger. This was a mistake to prioritize because the
+2026-04-29 ATR trailing full-exit mechanism update had already rejected the
+same family. The new data confirms the old guardrail rather than opening a new
+branch.
+
+Evidence: the best variant was `TRAIL_TRIGGER_ATR_MULT=3.0` with
+`TRAIL_OFFSET_ATR_MULT=2.0`. It regressed EV in all three canonical windows:
+`late_strong -1.0969`, `mid_weak -0.8005`, and `old_thin -0.2669`. Aggregate
+EV fell `-2.1643` (`-41.79%`) and aggregate PnL fell `-$60,296.29`
+(`-38.10%`). The only partial benefit was mid-window drawdown improvement, but
+the main objective and PnL both collapsed.
+
+Mechanism insight: full-position ATR trailing still cuts the accepted fixed
+target winners more than it saves giveback. The failure is not a narrow
+parameter miss; the entire simple trigger/offset family lacks a discriminator
+that can separate trend exhaustion from normal volatility.
+
+Do not repeat: nearby full-position ATR trailing trigger/offset sweeps. A valid
+retry requires an orthogonal event/news or position-state discriminator and, if
+positive, a shared production/backtest lifecycle policy.
+
+### 2026-05-03 mechanism update: Medium-term RS slot ranking
+
+Status: rejected.
+
+Core conclusion: `exp-20260503-010` tested whether already survived, already
+sized candidates should be sorted before slot slicing by medium-term
+ticker-vs-SPY relative strength and trade quality. It should not be promoted.
+
+Evidence: the best tested variant was `tqs_then_rs20`, but it regressed EV in
+all three canonical windows: `late_strong -0.1479`, `mid_weak -0.0653`, and
+`old_thin -0.1549`. Aggregate EV fell `-0.3681`; aggregate PnL fell
+`-$11,883.15` (`-7.51%`). Pure `rs20_then_tqs` and
+`spy_leader_rs20_then_tqs` were worse, cutting `late_strong` EV from `3.4191`
+to `2.5688`.
+
+Mechanism insight: broad medium-term relative strength can rank future returns
+in an observed-only cross-sectional study, but using it as a global slot-order
+overlay damages the accepted A/B engine. The accepted confidence/breakout order
+is already carrying information that a simple RS overlay overwrites.
+
+Do not repeat: global pre-slot sorting by `ticker_ret20_minus_spy_pct`,
+`spy_relative_leader`, or `trade_quality_score` alone. A valid retry must be
+scope-limited to a narrower collision class, such as same-day slot-sliced pairs
+or sector-neutral replacements, and must remain production/backtest shared if
+accepted.
+
+### 2026-05-03 mechanism update: Liquidity-gated 10-K filing scout
+
+Status: replay-candidate, shadow-only.
+
+Core conclusion: `exp-20260503-011` locked the second-round SEC filing
+discriminators from `exp-20260503-006`: outside-current-universe `10-K`
+filings with 20-day ADV >= `$5M`. This is a real research lead, but not a
+production universe promotion.
+
+Evidence: the locked cohort produced `354` candidates, `103` of which landed
+inside the three canonical windows. The 10-day excess-return distribution was
+positive (`+0.38%` average, `+0.43%` median, `53.39%` win rate), and the
+same-day core-trade conflict proxy was positive in `6/7` matched cases with
+average replacement edge `+2.48%`. The evidence is still static/shadow:
+historical CIKs were seeded from the latest SEC archive, not from a
+point-in-time universe ledger.
+
+Mechanism insight: liquidity gating removed the worst low-ADV filing noise and
+made 10-K filings worth forward observation. The next valid step is a PIT or
+forward replay that freezes eligibility and same-day alternatives before entry.
+Static SEC shadow evidence can nominate research/pilot candidates, but it
+cannot insert tickers into core or trade-enabled status.
+
+Do not repeat: broad filing promotion, low-liquidity filing inclusion, or
+direct watchlist expansion from static SEC backfills. A valid retry needs
+forward `news_YYYYMMDD.json` SEC archives with ticker tags and an append-only
+universe eligibility path, then replacement-value measurement versus same-day
+A/B alternatives.
+
+### 2026-05-03 mechanism update: Slot-sliced collision ranking
+
+Status: rejected.
+
+Core conclusion: `exp-20260503-012` tested the valid narrow retry requested by
+`exp-20260503-010`: apply TQS / 20-day relative-strength ranking only on days
+where survived candidates were actually `slot_sliced`. It should not be
+promoted.
+
+Evidence: the best variant, `collision_conf_then_tqs_rs20`, was unchanged in
+`late_strong` but regressed `mid_weak` and `old_thin`. Aggregate EV fell
+`-0.2209` (`-4.27%`) and aggregate PnL fell `-$10,490.40` (`-6.63%`), with EV
+improving in `0/3` windows. The more aggressive `collision_rs20_then_tqs`
+variant was worse (`EV -1.0712`, PnL `-$25,823.58`).
+
+Mechanism insight: the accepted signal order is not just a crude global sort;
+even inside scarce-slot collision days, simple TQS / RS replacements damage
+the current A/B engine. The failure is no longer only "global ranking was too
+broad"; this narrower collision surface also lacks a useful discriminator.
+
+Do not repeat: TQS / RS slot-collision ranking without a new, case-specific
+reason tied to the exact losing collision set. Any future positive ranking
+variant must be implemented as shared production/backtest policy before it can
+affect live entries.
+
+### 2026-05-03 mechanism update: Duplicate static universe scout guardrail
+
+Status: rejected in planning; guardrail strengthened.
+
+Core conclusion: `exp-20260503-013` correctly stopped a same-family universe /
+D-strategy shadow scout before it became another low-information static rerun.
+With no new point-in-time eligibility ledger, no fresh forward SEC/news
+archives, and no closed pilot replacement-value evidence after
+`exp-20260503-011`, rerunning another static outside-production cohort would
+only repeat the same measurement defect.
+
+Evidence: this run intentionally produced no strategy or backtester delta.
+Baseline remained the accepted stack at `EV 3.4191 / 1.4415 / 0.3179` across
+`late_strong`, `mid_weak`, and `old_thin`, and `after_metrics` were explicitly
+`0.0` because the experiment was rejected before execution. The blocked retry
+was already covered by nearby evidence from `exp-20260502-008`,
+`exp-20260503-006`, `exp-20260503-007`, and especially the positive-but-still-
+shadow `exp-20260503-011` liquidity-gated `10-K` scout.
+
+Mechanism insight: the correct next step for new-universe SEC/filer ideas is
+not another static pool. It is forward/PIT evidence capture: append-only
+eligibility state, forward SEC ticker-tagged archives, and frozen same-day
+replacement-value logging. Until those exist, "one more static scout" is not
+alpha search; it is duplicate measurement noise.
+
+Do not repeat: new static universe / D-strategy cohort scouts without new PIT
+eligibility evidence, forward archives, or replacement-value logs created after
+the prior same-family scout. A valid retry first needs the forward observability
+path that `exp-20260503-011` and `exp-20260503-013` now jointly require.
+
+### 2026-05-03 mechanism update: Non-leader follow-through add-ons
+
+Status: rejected / zero-impact.
+
+Core conclusion: `exp-20260503-014` tested whether the accepted day-2
+follow-through add-on was only worth keeping for SPY-relative leaders by
+setting the normal non-leader `ADDON_MAX_POSITION_PCT` to `0.0` while leaving
+the accepted SPY-relative leader add-on cap at `60%`. It should not be
+promoted.
+
+Evidence: the variant was bit-identical across all three canonical windows:
+EV delta `+0.0000`, aggregate PnL delta `$+0.00`, no Sharpe, drawdown,
+win-rate, trade-count, or survival change. The reason was exposure, not a
+hidden tradeoff: baseline executed first add-ons were all SPY-relative leaders
+(`late_strong 4`, `mid_weak 4`, `old_thin 2`) and there were `0` executed
+non-leader first add-ons to remove.
+
+Mechanism insight: the current accepted stack has already concentrated
+effective add-on exposure inside the SPY-relative leader sleeve. Generic
+non-leader add-on disablement is now a vacuous surface in the fixed windows.
+
+Do not repeat: `ADDON_MAX_POSITION_PCT=0` or generic non-leader first-add-on
+disablement without new lifecycle attribution showing actual non-leader add-on
+exposure. A valid retry needs event/news context or a narrower non-leader
+quality discriminator with nonzero executions, and any positive result must
+remain shared between production and backtest paths.
+
+### 2026-05-03 mechanism update: Vol-adjusted SPY leader gate
+
+Status: rejected.
+
+Core conclusion: `exp-20260503-047` tested an ATR-normalized quality gate for
+the accepted SPY-relative leader sleeve: require 20-day ticker-vs-SPY excess
+return divided by ticker ATR% to clear a minimum threshold before granting
+leader risk/cap/add-on treatment. It should not be promoted.
+
+Evidence: the best variant, `vol_adj_ge_1_00atr`, reduced aggregate EV from
+`5.1785` to `5.1073` and aggregate PnL from `$158,257.48` to `$156,916.19`
+across the three canonical windows. `late_strong` was unchanged, `mid_weak`
+regressed by `EV -0.0849` and `PnL -$1,818.12`, while `old_thin` improved only
+modestly by `EV +0.0137`, `PnL +$476.83`, and `drawdown -0.82pp`. Higher
+thresholds worsened `late_strong`, so the apparent old-window risk benefit did
+not generalize.
+
+Mechanism insight: the accepted SPY-relative leader sleeve is not simply too
+permissive on volatility-adjusted excess return. Demoting marginal
+vol-adjusted leaders can remove some older-window risk, but it also cuts useful
+mid-window add-on / leader exposure. Together with `exp-20260503-046`, this
+shows that nearby leader qualification thresholds are no longer the strongest
+alpha surface.
+
+Do not repeat: raw percentage margin or ATR-normalized SPY-relative leader
+qualification gates without event/news confirmation, forward tail-risk
+evidence, or another orthogonal discriminator. Any positive retry must be
+implemented as shared production/backtest policy before promotion.

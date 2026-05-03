@@ -1,0 +1,25 @@
+experiment_id: exp-20260503-008
+strategy_name: pullback_rs_eod
+hypothesis: >
+  Stocks with strong 60-day cross-sectional momentum but weak recent 5-day
+  returns may show better 5/10/20/60-day relative forward returns than
+  pure momentum or pure reversal in an EOD rebalance setting.
+data:
+  source: existing repo OHLCV snapshots
+  fields: [Date, Close, Volume]
+  point_in_time: features use only rows at or before signal date; forward returns use later closes only as labels
+universe:
+  scope: current snapshot equities with ETF and commodity proxies excluded
+  min_close: 5.0
+  min_adv20: 20000000
+  survivorship_bias_note: current repo snapshots are not a historical all-US membership archive
+variants:
+  pullback_rs_60_5: z_ret_60d_minus_z_ret_5d
+  momentum_60: z_ret_60d
+  reversal_5: negative_z_ret_5d
+horizons: [5, 10, 20, 60]
+transaction_cost_bps: [0, 35, 70]
+split:
+  old_thin: 2024-10-02 -> 2025-04-22
+  mid_weak: 2025-04-23 -> 2025-10-22
+  late_strong: 2025-10-23 -> 2026-04-21
