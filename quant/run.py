@@ -127,6 +127,7 @@ def main():
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
     from universe_adapter   import save_universe_state_report, universe_segments_as_of
+    from portfolio_accounting import resolve_portfolio_accounting
     from candidate_competition_logger import summarize_pilot_competition
     from pilot_sleeve       import (
         append_pilot_decision_snapshots,
@@ -227,40 +228,31 @@ def main():
     log.info(f"Features ready: {ok}/{len(data_universe)} tickers")
 
     # ── Live portfolio value ─────────────────────────────────────────────────
-    # open_positions.json portfolio_value_usd is user-maintained and can be stale.
-    # Compute live PV from current_prices × shares to keep sizing accurate.
+    # If cash_usd is omitted, derive it from portfolio_value_usd - live equity.
+    # This avoids daily manual cash maintenance while keeping sizing accurate.
     if open_positions and open_positions.get("positions"):
         _current_px = {
             t: f["close"] for t, f in features_dict.items()
             if f and f.get("close") is not None
         }
-        _equity = sum(
-            pos.get("shares", 0) * _current_px.get(
-                pos.get("ticker", ""), pos.get("avg_cost", 0)
-            )
-            for pos in open_positions["positions"]
-            if pos.get("ticker") and pos.get("shares", 0) > 0
+        _accounting = resolve_portfolio_accounting(
+            open_positions,
+            _current_px,
+            stored_portfolio_value=_stored_pv,
+            logger=log,
         )
-        _cash_raw = open_positions.get("cash_usd")
-        if _cash_raw is None:
-            if _stored_pv:
-                log.warning(
-                    f"cash_usd missing — using stored portfolio_value_usd="
-                    f"{_stored_pv:,.0f} for sizing"
-                )
-            log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored)")
-        else:
-            _live_pv = _equity + _cash_raw
-            if _live_pv > 0:
-                if _stored_pv and abs(_live_pv - _stored_pv) / max(_stored_pv, 1) > 0.15:
-                    log.warning(
-                        f"Portfolio value drift: stored={_stored_pv:,.0f}  "
-                        f"live={_live_pv:,.0f} USD — using live for sizing"
-                    )
-                portfolio_value = _live_pv
-                log.info(f"Portfolio value: ${portfolio_value:,.0f} (live)")
-            else:
-                log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored)")
+        if _accounting.get("portfolio_value_usd"):
+            portfolio_value = _accounting["portfolio_value_usd"]
+            log.info(
+                "Portfolio value: $%s (%s; equity=$%s cash=$%s)",
+                f"{portfolio_value:,.0f}",
+                _accounting["cash_source"],
+                f"{_accounting['equity_market_value_usd']:,.0f}",
+                (
+                    f"{_accounting['cash_usd']:,.0f}"
+                    if _accounting.get("cash_usd") is not None else "n/a"
+                ),
+            )
     else:
         if portfolio_value:
             log.info(f"Portfolio value: ${portfolio_value:,.0f} (stored, no positions)")

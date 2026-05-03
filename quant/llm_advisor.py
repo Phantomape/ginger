@@ -196,34 +196,35 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     system_message = '\n'.join(system_lines).strip()
 
-    # Build user message with dynamic data
-    # Replace date — template uses Chinese prefix "今天是"
-    import re
+    # Build user message with dynamic data. The template text is mojibake in
+    # this repository, so use stable section boundaries instead of brittle
+    # regexes over corrupted labels.
     today = datetime.now().strftime("%b. %d, %Y, %I:%M %p EST")
     user_message = '\n'.join(user_lines)
-    user_message = re.sub(r'今天是.*', f'今天是 {today}', user_message)
+    user_message = user_message.replace("Jan. 15th, 2026, 4:30 PM EST", today, 1)
 
-    # Replace positions JSON (remove 'as_of' field since date is in "今天是..." line)
+    # Replace positions JSON (remove 'as_of' field since the prompt has its own date line).
     if open_positions:
         positions_copy = open_positions.copy()
-        positions_copy.pop('as_of', None)  # Remove as_of field if present
+        positions_copy.pop('as_of', None)
         positions_json = json.dumps(positions_copy, indent=4)
     else:
         positions_json = "{}"
 
-    # Find and replace the positions section — template uses Chinese header "1) 当前持仓"
-    positions_pattern = r'1\) 当前持仓.*?\n\{[\s\S]*?\n\}'
-    user_message = re.sub(
-        positions_pattern,
-        lambda _: f'1) 当前持仓（手动录入，可能为近似值）：\n{positions_json}',
-        user_message,
-        count=1
-    )
+    pos_start = user_message.find("1)")
+    news_start = user_message.find("\n2)", pos_start)
+    if pos_start != -1 and news_start != -1:
+        pos_header_end = user_message.find("\n", pos_start)
+        pos_header = user_message[pos_start:pos_header_end]
+        if "{" in pos_header:
+            pos_header = pos_header.split("{", 1)[0].rstrip()
+        positions_section = f"{pos_header}\n{positions_json}\n"
+        user_message = user_message[:pos_start] + positions_section + user_message[news_start:]
 
-    # Replace news JSON — template uses Chinese header "2) 近期精选股票新闻"
+    # Replace news JSON using section boundaries instead of mojibake regex text.
     news_json = json.dumps(trade_news, indent=2)
-    # Compute news quality summary so LLM doesn't need to scan all items to know if
-    # actionable news exists.  T3-only days are extremely common; the summary prevents
+    # Compute news quality summary so LLM does not need to scan all items to know if
+    # actionable news exists. T3-only days are extremely common; the summary prevents
     # T3 content from subtly influencing decisions even when rules say "ignore T3".
     _tier_counts = {"T1": 0, "T2": 0, "T3": 0}
     for _item in trade_news:
@@ -234,18 +235,18 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "T2": _tier_counts["T2"],
         "T3": _tier_counts["T3"],
         "has_actionable_news": _has_actionable,
-        "note": "T3新闻为噪音，不得影响任何交易决策" if not _has_actionable else "",
+        "note": "T3-only news is context noise; ignore it unless paired with T1/T2 actionable news." if not _has_actionable else "",
     })
-    news_pattern = r'2\) 近期精选股票新闻.*?\n\[[\s\S]*?\n\]'
-    user_message = re.sub(
-        news_pattern,
-        lambda _: (
-            f'2) 近期精选股票新闻（过去 72 小时，仅自选股）：\n{news_json}\n\n'
-            f'news_quality_summary: {news_quality_summary}'
-        ),
-        user_message,
-        count=1
-    )
+    news_start = user_message.find("2)")
+    separator_start = user_message.find("\n--------------------------------------------------------------------------------", news_start)
+    if news_start != -1 and separator_start != -1:
+        news_header_end = user_message.find("\n", news_start)
+        news_header = user_message[news_start:news_header_end]
+        news_section = (
+            f"{news_header}\n{news_json}\n\n"
+            f"news_quality_summary: {news_quality_summary}\n"
+        )
+        user_message = user_message[:news_start] + news_section + user_message[separator_start:]
 
     # Build sections 3a (quant signals) + 3b (technical context for held positions).
     # Only include tickers relevant to the decision — not the full 30-ticker universe.
@@ -266,13 +267,12 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     if addon_actions:
         sections_3 += (
-            f"\n\n3a-add) 加仓动作 ADD-ON ACTIONS（代码已决定，非新开仓候选）：\n"
-            f"这些动作来自回测同源的 day-N follow-through 规则，若无 T1 灾难新闻，"
-            f"原样输出到 add_on_trades。\n"
+            f"\n\n3a-add) ADD-ON ACTIONS (code-decided, not new-entry candidates):\n"
+            f"These actions come from the shared day-N follow-through rule; if no T1 disaster news exists, pass them through to add_on_trades.\n"
             f"{json.dumps(addon_actions, indent=2)}\n"
         )
 
-    # --- 3b: Technical context — only tickers with open positions that have triggered exits ---
+    # --- 3b: Technical context - only tickers with open positions that have triggered exits ---
     raw_signals = trend_signals.get('signals', {}) if trend_signals else {}
     attention_tickers = set()
     for t, s in raw_signals.items():
@@ -306,6 +306,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # Use portfolio_engine: it applies effective stops (ATR/trailing) not just hard stops,
     # giving a more accurate heat reading for positions with large unrealised gains.
     from portfolio_engine import compute_portfolio_heat
+    from portfolio_accounting import resolve_portfolio_accounting
 
     stored_pv = open_positions.get('portfolio_value_usd') if open_positions else None
 
@@ -323,36 +324,22 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "high_20d": s.get("20d_high"),
             }
 
-    # Auto-compute live portfolio value from current prices × shares.
-    # stored portfolio_value_usd can be stale, causing 2× heat inflation.
+    # Resolve account value once so heat, sector weights, and prompt context use
+    # the same cash policy as the production runner.
     portfolio_value = stored_pv
+    account_summary = None
+    accounting_warnings = []
     if open_positions and open_positions.get("positions") and current_prices:
-        equity_pv = sum(
-            pos.get("shares", 0) * current_prices.get(pos.get("ticker", ""), pos.get("avg_cost", 0))
-            for pos in open_positions["positions"]
-            if pos.get("ticker") and pos.get("shares", 0) > 0
+        account_summary = resolve_portfolio_accounting(
+            open_positions,
+            current_prices,
+            stored_portfolio_value=stored_pv,
+            logger=logger,
         )
-        # Build live_pv only when cash_usd is populated. Collapsing missing cash
-        # to 0 silently under-reports PV and inflates heat/sector ratios; better
-        # to keep stored_pv and warn so the operator knows the field is stale.
-        cash_raw = open_positions.get("cash_usd")
-        if cash_raw is None:
-            if stored_pv:
-                logger.warning(
-                    f"cash_usd missing in open_positions.json — using stored "
-                    f"portfolio_value_usd={stored_pv:,.0f} for heat/sector. "
-                    f"Fill cash_usd to enable live PV."
-                )
-        else:
-            live_pv = equity_pv + cash_raw
-            if live_pv > 0:
-                portfolio_value = live_pv
-                if stored_pv and abs(live_pv - stored_pv) / stored_pv > 0.15:
-                    logger.warning(
-                        f"Portfolio value drift: stored={stored_pv:,.0f}  "
-                        f"live={live_pv:,.0f} USD (equity={equity_pv:,.0f} + cash={cash_raw:,.0f}) — "
-                        f"using live value for heat/sector calculations."
-                    )
+        accounting_warnings = account_summary.get("warnings") or []
+        if account_summary.get("portfolio_value_usd"):
+            portfolio_value = account_summary["portfolio_value_usd"]
+
 
     # Portfolio heat (using effective stops — ATR/trailing — not just avg_cost stop)
     heat = None
@@ -441,8 +428,12 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         # Persist the machine-state summary alongside the day payload so later
         # decision logs / replay archives can recover prompt-time gating state.
         trend_signals["preflight"] = preflight
-    # Merge preflight data_warnings with the existing field-missing warnings
-    combined_warnings = (preflight.get("data_warnings") or []) + (_data_warnings or [])
+    # Merge preflight data_warnings with account and field-missing warnings
+    combined_warnings = (
+        (preflight.get("data_warnings") or [])
+        + (accounting_warnings or [])
+        + (_data_warnings or [])
+    )
     pending_actions = get_open_pending_actions(open_positions, data_dir="data")
 
     pos_mgmt_data = {
@@ -464,6 +455,11 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                                      pos.get("ticker") == t
                                      for pos in open_positions.get("positions", [])
                                  )},
+        "accounting": account_summary if account_summary else {
+            "portfolio_value_usd": portfolio_value,
+            "cash_source": "stored_or_unavailable",
+            "cash_is_inferred": False,
+        },
         # ── Market context ─────────────────────────────────────────────────
         "market_regime": {
             "regime":  regime.get("regime", "UNKNOWN"),

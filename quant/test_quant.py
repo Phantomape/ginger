@@ -3490,6 +3490,8 @@ def test_build_prompt_cash_usd_missing_falls_back_to_stored_pv():
         f"Technology weight={tech_weight}, expected ~0.30. "
         f"cash_usd=None must fall back to stored_pv=$200k, not collapse to equity-only $60k."
     )
+    assert '"cash_source": "derived_from_portfolio_value_usd"' in user_msg
+    assert '"cash_is_inferred": true' in user_msg
 
 
 def test_build_prompt_warns_missing_entry_date():
