@@ -1,0 +1,60 @@
+{
+  "experiment_id": "exp-20260503-050",
+  "timestamp": "2026-05-03T20:25:08+00:00",
+  "status": "completed",
+  "decision": "accepted_as_measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "sec_public_pit_filing_backfill",
+  "hypothesis": "SEC public filing availability can be backfilled by accession-level EDGAR submissions metadata and accepted timestamps, enabling future filing shock and earnings-price reaction alpha tests without relying on incomplete news archives.",
+  "change_type": "data_backfill",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "production_impact": "sec_public_pit_backfill_only"
+  },
+  "date_range": {
+    "start": "2024-10-02",
+    "end": "2026-04-21"
+  },
+  "parameters": {
+    "segments": ["core", "pilot", "observation"],
+    "excluded_etfs": ["SPY", "QQQ", "IWM", "GLD", "IAU", "SLV"],
+    "forms": ["8-K", "8-K/A", "10-Q", "10-Q/A", "10-K", "10-K/A"],
+    "usable_trade_date_policy": "first weekday after EDGAR accepted_at or filing_date",
+    "pit_definition": "SEC public availability proxy, not production observed replay"
+  },
+  "artifacts": [
+    "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+    "data/non_ohlcv/sec_filing_backfill_summary_20241002_20260421.json",
+    "docs/non_ohlcv_data_audit/sec_filing_backfill_20260503.md",
+    "quant/sec_filing_backfill.py",
+    "quant/test_sec_filing_backfill.py"
+  ],
+  "summary": {
+    "tickers_requested": 52,
+    "tickers_mapped": 51,
+    "missing_cik_tickers": ["SNXX"],
+    "rows_written": 1286,
+    "pit_safe_rows": 1286,
+    "error_count": 0,
+    "submission_chunks_listed": 155,
+    "submission_chunks_overlap_window": 9,
+    "submission_chunks_read": 9,
+    "row_counts_by_form": {
+      "8-K": 969,
+      "8-K/A": 20,
+      "10-Q": 199,
+      "10-Q/A": 5,
+      "10-K": 88,
+      "10-K/A": 5
+    },
+    "row_counts_by_source": {
+      "sec_submissions_recent": 1250,
+      "sec_submissions_file": 36
+    }
+  },
+  "decision_rationale": "The SEC public PIT filing backbone is now available for the canonical historical window and current/pilot/observation universe with zero backfill errors. This resolves the prior SEC metadata coverage blocker for filing-event shadow analysis, while preserving the caveat that production-observed news/LLM replay remains incomplete.",
+  "next_action": "Join SEC filing events with earnings snapshots and OHLCV price reaction to test filing shock and post-event drift cohorts before proposing any strategy change."
+}

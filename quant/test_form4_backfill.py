@@ -120,6 +120,41 @@ def test_parse_form4_xml_extracts_open_market_purchase_fields():
     assert row["usable_trade_date"] == "2025-05-05"
 
 
+def test_parse_form4_xml_prefers_xml_issuer_over_submission_filer():
+    xml = """<?xml version="1.0"?>
+<ownershipDocument>
+  <documentType>4</documentType>
+  <issuer>
+    <issuerCik>0002222222</issuerCik>
+    <issuerName>Issuer Corp</issuerName>
+    <issuerTradingSymbol>ISSR</issuerTradingSymbol>
+  </issuer>
+  <reportingOwner>
+    <reportingOwnerId>
+      <rptOwnerCik>0001111111</rptOwnerCik>
+      <rptOwnerName>Owner Corp</rptOwnerName>
+    </reportingOwnerId>
+  </reportingOwner>
+  <nonDerivativeTable>
+    <nonDerivativeTransaction>
+      <transactionCoding><transactionCode>P</transactionCode></transactionCoding>
+      <transactionAmounts>
+        <transactionShares><value>1</value></transactionShares>
+        <transactionPricePerShare><value>2</value></transactionPricePerShare>
+        <transactionAcquiredDisposedCode><value>A</value></transactionAcquiredDisposedCode>
+      </transactionAmounts>
+    </nonDerivativeTransaction>
+  </nonDerivativeTable>
+</ownershipDocument>
+"""
+    rows = parse_form4_xml(xml, {"ticker": "OWNR", "cik": "0001111111"})
+
+    assert rows[0]["ticker"] == "ISSR"
+    assert rows[0]["cik"] == "0002222222"
+    assert rows[0]["submission_ticker"] == "OWNR"
+    assert rows[0]["submission_cik"] == "0001111111"
+
+
 def test_conservative_usable_trade_date_uses_next_weekday_after_filing():
     assert conservative_usable_trade_date(None, "2025-05-02") == "2025-05-05"
 

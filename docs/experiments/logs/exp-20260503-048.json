@@ -1,0 +1,56 @@
+{
+  "experiment_id": "exp-20260503-048",
+  "timestamp": "2026-05-03T20:05:10+00:00",
+  "status": "completed",
+  "decision": "shadow_overlap_too_sparse_for_promotion",
+  "lane": "alpha_search",
+  "mechanism_family": "non_ohlcv_event_confirmation_insider_form4",
+  "hypothesis": "Meaningful Form 4 open-market purchase event-days may improve current accepted A/B trade confirmation or ranking if they appear shortly before accepted entries.",
+  "change_type": "shadow_overlap_analysis",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "production_impact": "shadow_overlap_analysis_only"
+  },
+  "date_range": {
+    "start": "2024-10-02",
+    "end": "2026-04-21"
+  },
+  "parameters": {
+    "event_flag": "meaningful_purchase_v1",
+    "trade_source": "current accepted three-window trades",
+    "lookback_days": [5, 10, 20, 60, 90]
+  },
+  "artifacts": [
+    "data/non_ohlcv/form4_accepted_trade_overlap_20241002_20260421.json",
+    "docs/non_ohlcv_data_audit/form4_accepted_trade_overlap_20260503.md",
+    "quant/form4_trade_overlap.py",
+    "quant/test_form4_trade_overlap.py"
+  ],
+  "summary": {
+    "trade_count": 62,
+    "matched_trades_by_lookback": {
+      "5": 0,
+      "10": 0,
+      "20": 0,
+      "60": 2,
+      "90": 5
+    },
+    "lookback_60": {
+      "matched_avg_pnl_pct_net": 7.9319,
+      "matched_win_rate": 0.5,
+      "unmatched_avg_pnl_pct_net": 4.881903,
+      "unmatched_win_rate": 0.5667
+    },
+    "lookback_90": {
+      "matched_avg_pnl_pct_net": 6.95812,
+      "matched_win_rate": 0.6,
+      "unmatched_avg_pnl_pct_net": 4.806796,
+      "unmatched_win_rate": 0.5614
+    }
+  },
+  "decision_rationale": "Prior meaningful Form 4 events are too sparse near accepted A/B entries: no accepted trades have a 5/10/20-day prior match, and only two trades match within 60 calendar days. Form 4 still has positive standalone shadow outcomes, but current evidence does not justify promoting it as an accepted-trade ranking or confirmation overlay.",
+  "next_action": "If continuing Form 4 work, evaluate it as a scarce external event source against skipped candidates or event-driven watchlist days, not as a near-entry overlay on the current accepted A/B trade set."
+}

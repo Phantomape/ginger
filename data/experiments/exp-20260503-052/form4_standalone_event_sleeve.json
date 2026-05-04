@@ -1,0 +1,1883 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "alpha_hypothesis_category": "entry_external_event_source",
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "best_variant": "meaningful_ge_500k",
+  "best_variant_gate4": false,
+  "change_type": "shadow_event_sleeve_replay",
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "decision": "shadow_promising_not_promoted",
+  "decision_rationale": "The >=$500k meaningful-purchase variant is the first stable Form 4 branch in this run: it has positive 10-day excess return in all three fixed windows. It is still not promoted because the old_thin sample has only one valid event and no shared production/backtest event-sleeve policy exists.",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260503-052",
+  "gate4_basis": "No production strategy was promoted. Core before/after metrics are unchanged by design; this shadow replay only decides whether the Form 4 standalone branch deserves forward/pilot work.",
+  "history_check": {
+    "mechanism_insight_guardrail": "Does not retry SEC raw reaction thresholds, simple RS/TQS ranking, broad universe promotion, or nearby SPY-relative leader qualification gates.",
+    "nearby_failed_or_blocked": {
+      "exp-20260503-017": "Form 4 was data-blocked before transaction XML backfill existed.",
+      "exp-20260503-046": "Form 4 purchase outcomes were shadow-positive and requested joins to candidate sets.",
+      "exp-20260503-048": "Near-entry accepted-trade overlap was too sparse.",
+      "exp-20260503-049": "Entry-skip oracle overlap was zero and rejected as replacement overlay."
+    },
+    "why_not_simple_repeat": "This is not near-entry confirmation or skipped-candidate replacement. It tests the remaining branch named by exp-20260503-049: standalone external-event source."
+  },
+  "hypothesis": "Large PIT-safe Form 4 open-market purchase event-days can seed a standalone external-event watchlist sleeve with positive short-term excess return, instead of only serving as a sparse overlay on current A/B entries.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "form4_standalone_external_event_source",
+  "next_action": "Do not add core entries yet. Put >=$500k meaningful Form 4 purchases into a default-off forward/pilot event queue with frozen same-day alternatives, then require closed outcome and replacement-value evidence before any shared production/backtest policy promotion.",
+  "parameters": {
+    "cohort_flag": "meaningful_purchase_v1",
+    "event_notional_for_shadow_pnl": 10000.0,
+    "locked_variables": [
+      "production universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "position sizing",
+      "add-ons",
+      "exits",
+      "LLM/news replay",
+      "core backtester behavior"
+    ],
+    "portfolio_base_for_shadow_return": 100000.0,
+    "primary_horizon_trading_days": 10,
+    "round_trip_cost_pct": 0.0035,
+    "single_causal_variable": "minimum total purchase value for meaningful Form 4 purchase event-days",
+    "tested_min_total_purchase_values": {
+      "meaningful_ge_0": 0.0,
+      "meaningful_ge_100k": 100000.0,
+      "meaningful_ge_1m": 1000000.0,
+      "meaningful_ge_250k": 250000.0,
+      "meaningful_ge_500k": 500000.0
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_impact": "shadow_only_no_strategy_logic_changed",
+    "promotion_requirement": "A positive future promotion must add a shared Form 4 event feature and a production adapter/reporting path before it can rank, size, or introduce candidates.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/non_ohlcv/form4_purchase_shadow_outcomes_20241002_20260421.json",
+    "quant/experiments/exp_20260503_052_form4_standalone_event_sleeve.py",
+    "data/experiments/exp-20260503-052/form4_standalone_event_sleeve.json",
+    "docs/non_ohlcv_data_audit/form4_standalone_event_sleeve_20260503.md",
+    "docs/experiments/logs/exp-20260503-052.json",
+    "docs/experiments/tickets/exp-20260503-052.json"
+  ],
+  "shadow_variants": {
+    "meaningful_ge_0": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 2.828296,
+        "avg_gross_return_pct": 4.709422,
+        "avg_net_return_pct": 4.359422,
+        "event_count": 40,
+        "event_level_sharpe_proxy": 3.1006,
+        "excess_win_rate": 0.7037,
+        "median_excess_vs_spy_pct": 2.8632,
+        "median_gross_return_pct": 5.4476,
+        "median_net_return_pct": 5.0976,
+        "pnl_per_10k_event_notional": 11770.44,
+        "positive_excess_windows": 2,
+        "return_on_100k_base": 0.117704,
+        "ticker_count": 16,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CAT",
+          "COHR",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "INTC",
+          "LLY",
+          "MSFT",
+          "MU",
+          "RIOT",
+          "TSLA",
+          "TSM",
+          "UNH",
+          "WULF"
+        ],
+        "valid_event_count": 27,
+        "win_rate_net": 0.7407,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 2.126577,
+          "avg_gross_return_pct": 4.767062,
+          "avg_net_return_pct": 4.417062,
+          "event_count": 18,
+          "event_level_sharpe_proxy": 2.4703,
+          "excess_win_rate": 0.6923,
+          "median_excess_vs_spy_pct": 1.6001,
+          "median_gross_return_pct": 3.5089,
+          "median_net_return_pct": 3.1589,
+          "pnl_per_10k_event_notional": 5742.18,
+          "return_on_100k_base": 0.057422,
+          "ticker_count": 9,
+          "tickers": [
+            "AVGO",
+            "CAT",
+            "CORZ",
+            "DIS",
+            "INTC",
+            "MSFT",
+            "MU",
+            "TSM",
+            "WULF"
+          ],
+          "valid_event_count": 13,
+          "win_rate_net": 0.7692
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.592818,
+          "avg_gross_return_pct": 7.227618,
+          "avg_net_return_pct": 6.877618,
+          "event_count": 13,
+          "event_level_sharpe_proxy": 3.2757,
+          "excess_win_rate": 0.8182,
+          "median_excess_vs_spy_pct": 6.2994,
+          "median_gross_return_pct": 7.2907,
+          "median_net_return_pct": 6.9407,
+          "pnl_per_10k_event_notional": 7565.38,
+          "return_on_100k_base": 0.075654,
+          "ticker_count": 8,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CAT",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 11,
+          "win_rate_net": 0.8182
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": -4.2675,
+          "avg_gross_return_pct": -4.773733,
+          "avg_net_return_pct": -5.123733,
+          "event_count": 9,
+          "event_level_sharpe_proxy": -1.5633,
+          "excess_win_rate": 0.3333,
+          "median_excess_vs_spy_pct": -3.9925,
+          "median_gross_return_pct": -3.893,
+          "median_net_return_pct": -4.243,
+          "pnl_per_10k_event_notional": -1537.12,
+          "return_on_100k_base": -0.015371,
+          "ticker_count": 7,
+          "tickers": [
+            "AMD",
+            "COHR",
+            "CORZ",
+            "CRWV",
+            "INTC",
+            "RIOT",
+            "UNH"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 0.3333
+        }
+      },
+      "examples": [
+        {
+          "excess_vs_spy_pct": 13.8361,
+          "owner_count": 1,
+          "return_pct": 15.0159,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Liu Teyin M"
+          ],
+          "ticker": "MU",
+          "total_purchase_value": 7821723.4,
+          "usable_trade_date": "2026-01-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 12.861,
+          "owner_count": 4,
+          "return_pct": 13.1277,
+          "sample_officer_titles": [
+            "EVP, CSO & Pres. LRL & LLY Imm",
+            "President, Chair, and CEO"
+          ],
+          "sample_owner_names": [
+            "Fyrwald J Erik",
+            "Sulzberger Gabrielle",
+            "Skovronsky Daniel",
+            "Ricks David A"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 2766928.65,
+          "usable_trade_date": "2025-08-13",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 10.1022,
+          "owner_count": 1,
+          "return_pct": 17.0123,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Gebbia Joseph"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 1025232.0,
+          "usable_trade_date": "2025-04-29",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 9.9283,
+          "owner_count": 1,
+          "return_pct": 10.7142,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "JACKSON JAMERE"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 127912.6,
+          "usable_trade_date": "2025-08-11",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 9.8572,
+          "owner_count": 1,
+          "return_pct": 10.8108,
+          "sample_officer_titles": [
+            "EVP & Pres., Lilly Oncology"
+          ],
+          "sample_owner_names": [
+            "Van Naarden Jacob"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 647360.0,
+          "usable_trade_date": "2025-08-14",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 8.5044,
+          "owner_count": 1,
+          "return_pct": 12.6191,
+          "sample_officer_titles": [
+            "EVP & Chief Commercial Officer"
+          ],
+          "sample_owner_names": [
+            "GUIDO PHILIP"
+          ],
+          "ticker": "AMD",
+          "total_purchase_value": 999328.0,
+          "usable_trade_date": "2025-05-23",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.8316,
+          "owner_count": 1,
+          "return_pct": 16.3786,
+          "sample_officer_titles": [
+            "VP"
+          ],
+          "sample_owner_names": [
+            "Lin Shyue-Shyh"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 111260.0,
+          "usable_trade_date": "2026-03-31",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 6.2994,
+          "owner_count": 1,
+          "return_pct": 7.2907,
+          "sample_officer_titles": [
+            "CEO"
+          ],
+          "sample_owner_names": [
+            "Musk Elon"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 999959042.36,
+          "usable_trade_date": "2025-09-16",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.1826,
+          "owner_count": 1,
+          "return_pct": 5.7797,
+          "sample_officer_titles": [
+            "EVP & CFO"
+          ],
+          "sample_owner_names": [
+            "Montarce Lucas"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 494626.99,
+          "usable_trade_date": "2025-08-18",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 5.6742,
+          "owner_count": 1,
+          "return_pct": 5.5287,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Alvarez Ralph"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 500472.53,
+          "usable_trade_date": "2025-08-15",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 4.3568,
+          "owner_count": 1,
+          "return_pct": 3.6266,
+          "sample_officer_titles": [
+            "EVP, CFO"
+          ],
+          "sample_owner_names": [
+            "Zinsner David"
+          ],
+          "ticker": "INTC",
+          "total_purchase_value": 249985.0,
+          "usable_trade_date": "2026-01-28",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 3.5008,
+          "owner_count": 1,
+          "return_pct": 13.3582,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "BURNS URSULA M"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 322050.0,
+          "usable_trade_date": "2026-04-02",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 3.218,
+          "owner_count": 1,
+          "return_pct": 5.4476,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "MacLennan David"
+          ],
+          "ticker": "CAT",
+          "total_purchase_value": 120262.5,
+          "usable_trade_date": "2025-05-09",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 2.8632,
+          "owner_count": 1,
+          "return_pct": 2.4932,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "STANTON JOHN W"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1986750.0,
+          "usable_trade_date": "2026-02-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 2.4083,
+          "owner_count": 1,
+          "return_pct": 5.6329,
+          "sample_officer_titles": [
+            "VP"
+          ],
+          "sample_owner_names": [
+            "Tien Bor-Zen"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 55930.0,
+          "usable_trade_date": "2026-03-25",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.6001,
+          "owner_count": 1,
+          "return_pct": 2.2927,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "GORMAN JAMES P"
+          ],
+          "ticker": "DIS",
+          "total_purchase_value": 2013942.6,
+          "usable_trade_date": "2025-12-16",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.0559,
+          "owner_count": 1,
+          "return_pct": 1.5372,
+          "sample_officer_titles": [
+            "Vice Chair and President"
+          ],
+          "sample_owner_names": [
+            "SMITH BRADFORD L"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1450220.53,
+          "usable_trade_date": "2025-12-15",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 0.3253,
+          "owner_count": 1,
+          "return_pct": 0.4111,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "FLYNN TIMOTHY PATRICK"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 511575.0,
+          "usable_trade_date": "2025-01-23",
+          "window": "old_thin"
+        },
+        {
+          "excess_vs_spy_pct": 0.0189,
+          "owner_count": 28,
+          "return_pct": 3.5089,
+          "sample_officer_titles": [
+            "VP",
+            "SVP",
+            "Controller",
+            "EVP and Co-COO"
+          ],
+          "sample_owner_names": [
+            "Cao Min",
+            "Chang Tzonz-Sheng",
+            "Chen Chih-Ho",
+            "Chen Pei-Hung"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 110415.96,
+          "usable_trade_date": "2026-04-14",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": -0.9986,
+          "owner_count": 1,
+          "return_pct": -2.3281,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "MacLennan David"
+          ],
+          "ticker": "CAT",
+          "total_purchase_value": 170658.0,
+          "usable_trade_date": "2025-11-07",
+          "window": "late_strong"
+        }
+      ],
+      "min_total_purchase_value": 0.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "meaningful_ge_100k": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 3.074948,
+        "avg_gross_return_pct": 4.971092,
+        "avg_net_return_pct": 4.621092,
+        "event_count": 32,
+        "event_level_sharpe_proxy": 3.1045,
+        "excess_win_rate": 0.72,
+        "median_excess_vs_spy_pct": 3.218,
+        "median_gross_return_pct": 5.4476,
+        "median_net_return_pct": 5.0976,
+        "pnl_per_10k_event_notional": 11552.73,
+        "positive_excess_windows": 2,
+        "return_on_100k_base": 0.115527,
+        "ticker_count": 14,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CAT",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "INTC",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "TSM",
+          "UNH",
+          "WULF"
+        ],
+        "valid_event_count": 25,
+        "win_rate_net": 0.76,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 2.559564,
+          "avg_gross_return_pct": 5.372245,
+          "avg_net_return_pct": 5.022245,
+          "event_count": 14,
+          "event_level_sharpe_proxy": 2.5186,
+          "excess_win_rate": 0.7273,
+          "median_excess_vs_spy_pct": 1.6001,
+          "median_gross_return_pct": 3.5089,
+          "median_net_return_pct": 3.1589,
+          "pnl_per_10k_event_notional": 5524.47,
+          "return_on_100k_base": 0.055245,
+          "ticker_count": 9,
+          "tickers": [
+            "AVGO",
+            "CAT",
+            "CORZ",
+            "DIS",
+            "INTC",
+            "MSFT",
+            "MU",
+            "TSM",
+            "WULF"
+          ],
+          "valid_event_count": 11,
+          "win_rate_net": 0.8182
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.592818,
+          "avg_gross_return_pct": 7.227618,
+          "avg_net_return_pct": 6.877618,
+          "event_count": 13,
+          "event_level_sharpe_proxy": 3.2757,
+          "excess_win_rate": 0.8182,
+          "median_excess_vs_spy_pct": 6.2994,
+          "median_gross_return_pct": 7.2907,
+          "median_net_return_pct": 6.9407,
+          "pnl_per_10k_event_notional": 7565.38,
+          "return_on_100k_base": 0.075654,
+          "ticker_count": 8,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CAT",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 11,
+          "win_rate_net": 0.8182
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": -4.2675,
+          "avg_gross_return_pct": -4.773733,
+          "avg_net_return_pct": -5.123733,
+          "event_count": 5,
+          "event_level_sharpe_proxy": -1.5633,
+          "excess_win_rate": 0.3333,
+          "median_excess_vs_spy_pct": -3.9925,
+          "median_gross_return_pct": -3.893,
+          "median_net_return_pct": -4.243,
+          "pnl_per_10k_event_notional": -1537.12,
+          "return_on_100k_base": -0.015371,
+          "ticker_count": 5,
+          "tickers": [
+            "AMD",
+            "CORZ",
+            "CRWV",
+            "INTC",
+            "UNH"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 0.3333
+        }
+      },
+      "examples": [
+        {
+          "excess_vs_spy_pct": 13.8361,
+          "owner_count": 1,
+          "return_pct": 15.0159,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Liu Teyin M"
+          ],
+          "ticker": "MU",
+          "total_purchase_value": 7821723.4,
+          "usable_trade_date": "2026-01-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 12.861,
+          "owner_count": 4,
+          "return_pct": 13.1277,
+          "sample_officer_titles": [
+            "EVP, CSO & Pres. LRL & LLY Imm",
+            "President, Chair, and CEO"
+          ],
+          "sample_owner_names": [
+            "Fyrwald J Erik",
+            "Sulzberger Gabrielle",
+            "Skovronsky Daniel",
+            "Ricks David A"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 2766928.65,
+          "usable_trade_date": "2025-08-13",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 10.1022,
+          "owner_count": 1,
+          "return_pct": 17.0123,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Gebbia Joseph"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 1025232.0,
+          "usable_trade_date": "2025-04-29",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 9.9283,
+          "owner_count": 1,
+          "return_pct": 10.7142,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "JACKSON JAMERE"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 127912.6,
+          "usable_trade_date": "2025-08-11",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 9.8572,
+          "owner_count": 1,
+          "return_pct": 10.8108,
+          "sample_officer_titles": [
+            "EVP & Pres., Lilly Oncology"
+          ],
+          "sample_owner_names": [
+            "Van Naarden Jacob"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 647360.0,
+          "usable_trade_date": "2025-08-14",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 8.5044,
+          "owner_count": 1,
+          "return_pct": 12.6191,
+          "sample_officer_titles": [
+            "EVP & Chief Commercial Officer"
+          ],
+          "sample_owner_names": [
+            "GUIDO PHILIP"
+          ],
+          "ticker": "AMD",
+          "total_purchase_value": 999328.0,
+          "usable_trade_date": "2025-05-23",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.8316,
+          "owner_count": 1,
+          "return_pct": 16.3786,
+          "sample_officer_titles": [
+            "VP"
+          ],
+          "sample_owner_names": [
+            "Lin Shyue-Shyh"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 111260.0,
+          "usable_trade_date": "2026-03-31",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 6.2994,
+          "owner_count": 1,
+          "return_pct": 7.2907,
+          "sample_officer_titles": [
+            "CEO"
+          ],
+          "sample_owner_names": [
+            "Musk Elon"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 999959042.36,
+          "usable_trade_date": "2025-09-16",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.1826,
+          "owner_count": 1,
+          "return_pct": 5.7797,
+          "sample_officer_titles": [
+            "EVP & CFO"
+          ],
+          "sample_owner_names": [
+            "Montarce Lucas"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 494626.99,
+          "usable_trade_date": "2025-08-18",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 5.6742,
+          "owner_count": 1,
+          "return_pct": 5.5287,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Alvarez Ralph"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 500472.53,
+          "usable_trade_date": "2025-08-15",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 4.3568,
+          "owner_count": 1,
+          "return_pct": 3.6266,
+          "sample_officer_titles": [
+            "EVP, CFO"
+          ],
+          "sample_owner_names": [
+            "Zinsner David"
+          ],
+          "ticker": "INTC",
+          "total_purchase_value": 249985.0,
+          "usable_trade_date": "2026-01-28",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 3.5008,
+          "owner_count": 1,
+          "return_pct": 13.3582,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "BURNS URSULA M"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 322050.0,
+          "usable_trade_date": "2026-04-02",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 3.218,
+          "owner_count": 1,
+          "return_pct": 5.4476,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "MacLennan David"
+          ],
+          "ticker": "CAT",
+          "total_purchase_value": 120262.5,
+          "usable_trade_date": "2025-05-09",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 2.8632,
+          "owner_count": 1,
+          "return_pct": 2.4932,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "STANTON JOHN W"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1986750.0,
+          "usable_trade_date": "2026-02-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.6001,
+          "owner_count": 1,
+          "return_pct": 2.2927,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "GORMAN JAMES P"
+          ],
+          "ticker": "DIS",
+          "total_purchase_value": 2013942.6,
+          "usable_trade_date": "2025-12-16",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.0559,
+          "owner_count": 1,
+          "return_pct": 1.5372,
+          "sample_officer_titles": [
+            "Vice Chair and President"
+          ],
+          "sample_owner_names": [
+            "SMITH BRADFORD L"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1450220.53,
+          "usable_trade_date": "2025-12-15",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 0.3253,
+          "owner_count": 1,
+          "return_pct": 0.4111,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "FLYNN TIMOTHY PATRICK"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 511575.0,
+          "usable_trade_date": "2025-01-23",
+          "window": "old_thin"
+        },
+        {
+          "excess_vs_spy_pct": 0.0189,
+          "owner_count": 28,
+          "return_pct": 3.5089,
+          "sample_officer_titles": [
+            "VP",
+            "SVP",
+            "Controller",
+            "EVP and Co-COO"
+          ],
+          "sample_owner_names": [
+            "Cao Min",
+            "Chang Tzonz-Sheng",
+            "Chen Chih-Ho",
+            "Chen Pei-Hung"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 110415.96,
+          "usable_trade_date": "2026-04-14",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": -0.9986,
+          "owner_count": 1,
+          "return_pct": -2.3281,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "MacLennan David"
+          ],
+          "ticker": "CAT",
+          "total_purchase_value": 170658.0,
+          "usable_trade_date": "2025-11-07",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": -1.6481,
+          "owner_count": 2,
+          "return_pct": 5.6557,
+          "sample_officer_titles": [
+            "SVP",
+            "VP"
+          ],
+          "sample_owner_names": [
+            "Yeap Choh Fei",
+            "Lin Shyue-Shyh"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 219940.0,
+          "usable_trade_date": "2026-04-01",
+          "window": "late_strong"
+        }
+      ],
+      "min_total_purchase_value": 100000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "meaningful_ge_1m": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 4.167956,
+        "avg_gross_return_pct": 5.549189,
+        "avg_net_return_pct": 5.199189,
+        "event_count": 11,
+        "event_level_sharpe_proxy": 1.9035,
+        "excess_win_rate": 0.7778,
+        "median_excess_vs_spy_pct": 2.8632,
+        "median_gross_return_pct": 2.4932,
+        "median_net_return_pct": 2.1432,
+        "pnl_per_10k_event_notional": 4679.27,
+        "positive_excess_windows": 2,
+        "return_on_100k_base": 0.046793,
+        "ticker_count": 9,
+        "tickers": [
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 9,
+        "win_rate_net": 0.7778,
+        "windows_with_valid_events": 2
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 4.838825,
+          "avg_gross_return_pct": 5.33475,
+          "avg_net_return_pct": 4.98475,
+          "event_count": 4,
+          "event_level_sharpe_proxy": 1.5415,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.23165,
+          "median_gross_return_pct": 2.39295,
+          "median_net_return_pct": 2.04295,
+          "pnl_per_10k_event_notional": 1993.9,
+          "return_on_100k_base": 0.019939,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 4,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 3.63126,
+          "avg_gross_return_pct": 5.72074,
+          "avg_net_return_pct": 5.37074,
+          "event_count": 7,
+          "event_level_sharpe_proxy": 1.1843,
+          "excess_win_rate": 0.6,
+          "median_excess_vs_spy_pct": 6.2994,
+          "median_gross_return_pct": 7.2907,
+          "median_net_return_pct": 6.9407,
+          "pnl_per_10k_event_notional": 2685.37,
+          "return_on_100k_base": 0.026854,
+          "ticker_count": 6,
+          "tickers": [
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 5,
+          "win_rate_net": 0.6
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": null,
+          "avg_gross_return_pct": null,
+          "avg_net_return_pct": null,
+          "event_count": 0,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": null,
+          "median_excess_vs_spy_pct": null,
+          "median_gross_return_pct": null,
+          "median_net_return_pct": null,
+          "pnl_per_10k_event_notional": 0,
+          "return_on_100k_base": 0.0,
+          "ticker_count": 0,
+          "tickers": [],
+          "valid_event_count": 0,
+          "win_rate_net": null
+        }
+      },
+      "examples": [
+        {
+          "excess_vs_spy_pct": 13.8361,
+          "owner_count": 1,
+          "return_pct": 15.0159,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Liu Teyin M"
+          ],
+          "ticker": "MU",
+          "total_purchase_value": 7821723.4,
+          "usable_trade_date": "2026-01-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 12.861,
+          "owner_count": 4,
+          "return_pct": 13.1277,
+          "sample_officer_titles": [
+            "EVP, CSO & Pres. LRL & LLY Imm",
+            "President, Chair, and CEO"
+          ],
+          "sample_owner_names": [
+            "Fyrwald J Erik",
+            "Sulzberger Gabrielle",
+            "Skovronsky Daniel",
+            "Ricks David A"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 2766928.65,
+          "usable_trade_date": "2025-08-13",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 10.1022,
+          "owner_count": 1,
+          "return_pct": 17.0123,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Gebbia Joseph"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 1025232.0,
+          "usable_trade_date": "2025-04-29",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.2994,
+          "owner_count": 1,
+          "return_pct": 7.2907,
+          "sample_officer_titles": [
+            "CEO"
+          ],
+          "sample_owner_names": [
+            "Musk Elon"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 999959042.36,
+          "usable_trade_date": "2025-09-16",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 2.8632,
+          "owner_count": 1,
+          "return_pct": 2.4932,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "STANTON JOHN W"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1986750.0,
+          "usable_trade_date": "2026-02-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.6001,
+          "owner_count": 1,
+          "return_pct": 2.2927,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "GORMAN JAMES P"
+          ],
+          "ticker": "DIS",
+          "total_purchase_value": 2013942.6,
+          "usable_trade_date": "2025-12-16",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.0559,
+          "owner_count": 1,
+          "return_pct": 1.5372,
+          "sample_officer_titles": [
+            "Vice Chair and President"
+          ],
+          "sample_owner_names": [
+            "SMITH BRADFORD L"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1450220.53,
+          "usable_trade_date": "2025-12-15",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": -2.5234,
+          "owner_count": 5,
+          "return_pct": -1.1648,
+          "sample_officer_titles": [
+            "CEO, UHG",
+            "President & CFO"
+          ],
+          "sample_owner_names": [
+            "Noseworthy John H",
+            "Gil Kristen",
+            "FLYNN TIMOTHY PATRICK",
+            "HEMSLEY STEPHEN J"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 31607700.31,
+          "usable_trade_date": "2025-05-19",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": -8.5829,
+          "owner_count": 1,
+          "return_pct": -7.6622,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "You Harry L."
+          ],
+          "ticker": "AVGO",
+          "total_purchase_value": 1227870.27,
+          "usable_trade_date": "2025-09-12",
+          "window": "mid_weak"
+        }
+      ],
+      "min_total_purchase_value": 1000000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "meaningful_ge_250k": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 3.064822,
+        "avg_gross_return_pct": 4.515211,
+        "avg_net_return_pct": 4.165211,
+        "event_count": 22,
+        "event_level_sharpe_proxy": 2.1922,
+        "excess_win_rate": 0.7222,
+        "median_excess_vs_spy_pct": 3.182,
+        "median_gross_return_pct": 4.01095,
+        "median_net_return_pct": 3.66095,
+        "pnl_per_10k_event_notional": 7497.38,
+        "positive_excess_windows": 2,
+        "return_on_100k_base": 0.074974,
+        "ticker_count": 12,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "INTC",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "TSM",
+          "UNH"
+        ],
+        "valid_event_count": 18,
+        "win_rate_net": 0.7222,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 3.265767,
+          "avg_gross_return_pct": 5.3755,
+          "avg_net_return_pct": 5.0255,
+          "event_count": 6,
+          "event_level_sharpe_proxy": 1.7397,
+          "excess_win_rate": 0.8333,
+          "median_excess_vs_spy_pct": 2.23165,
+          "median_gross_return_pct": 2.39295,
+          "median_net_return_pct": 2.04295,
+          "pnl_per_10k_event_notional": 3015.3,
+          "return_on_100k_base": 0.030153,
+          "ticker_count": 5,
+          "tickers": [
+            "AVGO",
+            "DIS",
+            "MSFT",
+            "MU",
+            "TSM"
+          ],
+          "valid_event_count": 6,
+          "win_rate_net": 0.8333
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.374967,
+          "avg_gross_return_pct": 7.038,
+          "avg_net_return_pct": 6.688,
+          "event_count": 11,
+          "event_level_sharpe_proxy": 2.6197,
+          "excess_win_rate": 0.7778,
+          "median_excess_vs_spy_pct": 6.2994,
+          "median_gross_return_pct": 7.2907,
+          "median_net_return_pct": 6.9407,
+          "pnl_per_10k_event_notional": 6019.2,
+          "return_on_100k_base": 0.060192,
+          "ticker_count": 7,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 9,
+          "win_rate_net": 0.7778
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": -4.2675,
+          "avg_gross_return_pct": -4.773733,
+          "avg_net_return_pct": -5.123733,
+          "event_count": 5,
+          "event_level_sharpe_proxy": -1.5633,
+          "excess_win_rate": 0.3333,
+          "median_excess_vs_spy_pct": -3.9925,
+          "median_gross_return_pct": -3.893,
+          "median_net_return_pct": -4.243,
+          "pnl_per_10k_event_notional": -1537.12,
+          "return_on_100k_base": -0.015371,
+          "ticker_count": 5,
+          "tickers": [
+            "AMD",
+            "CORZ",
+            "CRWV",
+            "INTC",
+            "UNH"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 0.3333
+        }
+      },
+      "examples": [
+        {
+          "excess_vs_spy_pct": 13.8361,
+          "owner_count": 1,
+          "return_pct": 15.0159,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Liu Teyin M"
+          ],
+          "ticker": "MU",
+          "total_purchase_value": 7821723.4,
+          "usable_trade_date": "2026-01-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 12.861,
+          "owner_count": 4,
+          "return_pct": 13.1277,
+          "sample_officer_titles": [
+            "EVP, CSO & Pres. LRL & LLY Imm",
+            "President, Chair, and CEO"
+          ],
+          "sample_owner_names": [
+            "Fyrwald J Erik",
+            "Sulzberger Gabrielle",
+            "Skovronsky Daniel",
+            "Ricks David A"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 2766928.65,
+          "usable_trade_date": "2025-08-13",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 10.1022,
+          "owner_count": 1,
+          "return_pct": 17.0123,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Gebbia Joseph"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 1025232.0,
+          "usable_trade_date": "2025-04-29",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 9.8572,
+          "owner_count": 1,
+          "return_pct": 10.8108,
+          "sample_officer_titles": [
+            "EVP & Pres., Lilly Oncology"
+          ],
+          "sample_owner_names": [
+            "Van Naarden Jacob"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 647360.0,
+          "usable_trade_date": "2025-08-14",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 8.5044,
+          "owner_count": 1,
+          "return_pct": 12.6191,
+          "sample_officer_titles": [
+            "EVP & Chief Commercial Officer"
+          ],
+          "sample_owner_names": [
+            "GUIDO PHILIP"
+          ],
+          "ticker": "AMD",
+          "total_purchase_value": 999328.0,
+          "usable_trade_date": "2025-05-23",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.2994,
+          "owner_count": 1,
+          "return_pct": 7.2907,
+          "sample_officer_titles": [
+            "CEO"
+          ],
+          "sample_owner_names": [
+            "Musk Elon"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 999959042.36,
+          "usable_trade_date": "2025-09-16",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.1826,
+          "owner_count": 1,
+          "return_pct": 5.7797,
+          "sample_officer_titles": [
+            "EVP & CFO"
+          ],
+          "sample_owner_names": [
+            "Montarce Lucas"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 494626.99,
+          "usable_trade_date": "2025-08-18",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 5.6742,
+          "owner_count": 1,
+          "return_pct": 5.5287,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Alvarez Ralph"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 500472.53,
+          "usable_trade_date": "2025-08-15",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 3.5008,
+          "owner_count": 1,
+          "return_pct": 13.3582,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "BURNS URSULA M"
+          ],
+          "ticker": "TSM",
+          "total_purchase_value": 322050.0,
+          "usable_trade_date": "2026-04-02",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 2.8632,
+          "owner_count": 1,
+          "return_pct": 2.4932,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "STANTON JOHN W"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1986750.0,
+          "usable_trade_date": "2026-02-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.6001,
+          "owner_count": 1,
+          "return_pct": 2.2927,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "GORMAN JAMES P"
+          ],
+          "ticker": "DIS",
+          "total_purchase_value": 2013942.6,
+          "usable_trade_date": "2025-12-16",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.0559,
+          "owner_count": 1,
+          "return_pct": 1.5372,
+          "sample_officer_titles": [
+            "Vice Chair and President"
+          ],
+          "sample_owner_names": [
+            "SMITH BRADFORD L"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1450220.53,
+          "usable_trade_date": "2025-12-15",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 0.3253,
+          "owner_count": 1,
+          "return_pct": 0.4111,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "FLYNN TIMOTHY PATRICK"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 511575.0,
+          "usable_trade_date": "2025-01-23",
+          "window": "old_thin"
+        },
+        {
+          "excess_vs_spy_pct": -2.5234,
+          "owner_count": 5,
+          "return_pct": -1.1648,
+          "sample_officer_titles": [
+            "CEO, UHG",
+            "President & CFO"
+          ],
+          "sample_owner_names": [
+            "Noseworthy John H",
+            "Gil Kristen",
+            "FLYNN TIMOTHY PATRICK",
+            "HEMSLEY STEPHEN J"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 31607700.31,
+          "usable_trade_date": "2025-05-19",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": -3.2615,
+          "owner_count": 1,
+          "return_pct": -2.4442,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "You Harry L."
+          ],
+          "ticker": "AVGO",
+          "total_purchase_value": 325129.0,
+          "usable_trade_date": "2025-12-23",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": -3.9925,
+          "owner_count": 1,
+          "return_pct": -3.893,
+          "sample_officer_titles": [
+            "CEO"
+          ],
+          "sample_owner_names": [
+            "GELSINGER PATRICK P"
+          ],
+          "ticker": "INTC",
+          "total_purchase_value": 251198.35,
+          "usable_trade_date": "2024-11-07",
+          "window": "old_thin"
+        },
+        {
+          "excess_vs_spy_pct": -8.5829,
+          "owner_count": 1,
+          "return_pct": -7.6622,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "You Harry L."
+          ],
+          "ticker": "AVGO",
+          "total_purchase_value": 1227870.27,
+          "usable_trade_date": "2025-09-12",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": -9.1353,
+          "owner_count": 1,
+          "return_pct": -10.8393,
+          "sample_officer_titles": [
+            "EVP & Chief Commercial Officer"
+          ],
+          "sample_owner_names": [
+            "GUIDO PHILIP"
+          ],
+          "ticker": "AMD",
+          "total_purchase_value": 499616.2,
+          "usable_trade_date": "2025-02-13",
+          "window": "old_thin"
+        }
+      ],
+      "min_total_purchase_value": 250000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "meaningful_ge_500k": {
+      "aggregate": {
+        "all_valid_windows_positive": true,
+        "avg_excess_vs_spy_pct": 4.759438,
+        "avg_gross_return_pct": 6.100954,
+        "avg_net_return_pct": 5.750954,
+        "event_count": 17,
+        "event_level_sharpe_proxy": 2.8454,
+        "excess_win_rate": 0.8462,
+        "median_excess_vs_spy_pct": 5.6742,
+        "median_gross_return_pct": 5.5287,
+        "median_net_return_pct": 5.1787,
+        "pnl_per_10k_event_notional": 7476.24,
+        "positive_excess_windows": 3,
+        "return_on_100k_base": 0.074762,
+        "ticker_count": 10,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 13,
+        "win_rate_net": 0.8462,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 4.838825,
+          "avg_gross_return_pct": 5.33475,
+          "avg_net_return_pct": 4.98475,
+          "event_count": 4,
+          "event_level_sharpe_proxy": 1.5415,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.23165,
+          "median_gross_return_pct": 2.39295,
+          "median_net_return_pct": 2.04295,
+          "pnl_per_10k_event_notional": 1993.9,
+          "return_on_100k_base": 0.019939,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 4,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.274012,
+          "avg_gross_return_pct": 7.195288,
+          "avg_net_return_pct": 6.845287,
+          "event_count": 10,
+          "event_level_sharpe_proxy": 2.3692,
+          "excess_win_rate": 0.75,
+          "median_excess_vs_spy_pct": 7.4019,
+          "median_gross_return_pct": 9.05075,
+          "median_net_return_pct": 8.70075,
+          "pnl_per_10k_event_notional": 5476.23,
+          "return_on_100k_base": 0.054762,
+          "ticker_count": 7,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 8,
+          "win_rate_net": 0.75
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": 0.3253,
+          "avg_gross_return_pct": 0.4111,
+          "avg_net_return_pct": 0.0611,
+          "event_count": 3,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 0.3253,
+          "median_gross_return_pct": 0.4111,
+          "median_net_return_pct": 0.0611,
+          "pnl_per_10k_event_notional": 6.11,
+          "return_on_100k_base": 6.1e-05,
+          "ticker_count": 3,
+          "tickers": [
+            "CORZ",
+            "CRWV",
+            "UNH"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        }
+      },
+      "examples": [
+        {
+          "excess_vs_spy_pct": 13.8361,
+          "owner_count": 1,
+          "return_pct": 15.0159,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Liu Teyin M"
+          ],
+          "ticker": "MU",
+          "total_purchase_value": 7821723.4,
+          "usable_trade_date": "2026-01-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 12.861,
+          "owner_count": 4,
+          "return_pct": 13.1277,
+          "sample_officer_titles": [
+            "EVP, CSO & Pres. LRL & LLY Imm",
+            "President, Chair, and CEO"
+          ],
+          "sample_owner_names": [
+            "Fyrwald J Erik",
+            "Sulzberger Gabrielle",
+            "Skovronsky Daniel",
+            "Ricks David A"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 2766928.65,
+          "usable_trade_date": "2025-08-13",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 10.1022,
+          "owner_count": 1,
+          "return_pct": 17.0123,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Gebbia Joseph"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 1025232.0,
+          "usable_trade_date": "2025-04-29",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 9.8572,
+          "owner_count": 1,
+          "return_pct": 10.8108,
+          "sample_officer_titles": [
+            "EVP & Pres., Lilly Oncology"
+          ],
+          "sample_owner_names": [
+            "Van Naarden Jacob"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 647360.0,
+          "usable_trade_date": "2025-08-14",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 8.5044,
+          "owner_count": 1,
+          "return_pct": 12.6191,
+          "sample_officer_titles": [
+            "EVP & Chief Commercial Officer"
+          ],
+          "sample_owner_names": [
+            "GUIDO PHILIP"
+          ],
+          "ticker": "AMD",
+          "total_purchase_value": 999328.0,
+          "usable_trade_date": "2025-05-23",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 6.2994,
+          "owner_count": 1,
+          "return_pct": 7.2907,
+          "sample_officer_titles": [
+            "CEO"
+          ],
+          "sample_owner_names": [
+            "Musk Elon"
+          ],
+          "ticker": "TSLA",
+          "total_purchase_value": 999959042.36,
+          "usable_trade_date": "2025-09-16",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 5.6742,
+          "owner_count": 1,
+          "return_pct": 5.5287,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "Alvarez Ralph"
+          ],
+          "ticker": "LLY",
+          "total_purchase_value": 500472.53,
+          "usable_trade_date": "2025-08-15",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": 2.8632,
+          "owner_count": 1,
+          "return_pct": 2.4932,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "STANTON JOHN W"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1986750.0,
+          "usable_trade_date": "2026-02-19",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.6001,
+          "owner_count": 1,
+          "return_pct": 2.2927,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "GORMAN JAMES P"
+          ],
+          "ticker": "DIS",
+          "total_purchase_value": 2013942.6,
+          "usable_trade_date": "2025-12-16",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 1.0559,
+          "owner_count": 1,
+          "return_pct": 1.5372,
+          "sample_officer_titles": [
+            "Vice Chair and President"
+          ],
+          "sample_owner_names": [
+            "SMITH BRADFORD L"
+          ],
+          "ticker": "MSFT",
+          "total_purchase_value": 1450220.53,
+          "usable_trade_date": "2025-12-15",
+          "window": "late_strong"
+        },
+        {
+          "excess_vs_spy_pct": 0.3253,
+          "owner_count": 1,
+          "return_pct": 0.4111,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "FLYNN TIMOTHY PATRICK"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 511575.0,
+          "usable_trade_date": "2025-01-23",
+          "window": "old_thin"
+        },
+        {
+          "excess_vs_spy_pct": -2.5234,
+          "owner_count": 5,
+          "return_pct": -1.1648,
+          "sample_officer_titles": [
+            "CEO, UHG",
+            "President & CFO"
+          ],
+          "sample_owner_names": [
+            "Noseworthy John H",
+            "Gil Kristen",
+            "FLYNN TIMOTHY PATRICK",
+            "HEMSLEY STEPHEN J"
+          ],
+          "ticker": "UNH",
+          "total_purchase_value": 31607700.31,
+          "usable_trade_date": "2025-05-19",
+          "window": "mid_weak"
+        },
+        {
+          "excess_vs_spy_pct": -8.5829,
+          "owner_count": 1,
+          "return_pct": -7.6622,
+          "sample_officer_titles": [],
+          "sample_owner_names": [
+            "You Harry L."
+          ],
+          "ticker": "AVGO",
+          "total_purchase_value": 1227870.27,
+          "usable_trade_date": "2025-09-12",
+          "window": "mid_weak"
+        }
+      ],
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    }
+  },
+  "status": "completed",
+  "timestamp": "2026-05-03T22:11:47+00:00",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking samples are too thin. This tests a structured non-OHLCV event source that already has transaction-level backfill."
+}

@@ -19,18 +19,25 @@
 - missing CIK tickers: `SNXX`
 - Form 4 filings seen: 6,558
 - primary documents fetched/read: 6,558
-- transaction rows written: 29,050
-- PIT-safe rows: 29,050
+- transaction rows written: 27,879
+- PIT-safe rows: 27,879
 - parser errors: 0
-- code `P` open-market purchase rows: 187
-- option exercise rows: 7,631
-- rows with 10b5-1 text evidence: 12,800
+- external issuer rows excluded: 1,171
+- code `P` open-market purchase rows: 131
+- option exercise rows: 7,516
+- rows with 10b5-1 text evidence: 12,332
 
 ## Notes
 
 The SEC submissions `primaryDocument` path commonly points to `xslF345X05/...xml`,
 which returns an HTML rendering page. The backfill parser therefore resolves the raw
 XML by dropping the `xslF345X05/` rendering prefix and caches the raw document.
+
+The parser uses the XML `issuerTradingSymbol` and `issuerCik` as the traded
+issuer, not the SEC submission CIK. This matters because company submission
+history can include cases where the requested CIK is a reporting owner rather
+than the issuer being traded. By default, rows where the XML issuer ticker is
+outside the requested universe are excluded.
 
 `open_market_purchase_flag` is a mechanical Form 4 transaction tag:
 `transaction_code == P` and `acquired_disposed_code == A`. It is not yet a

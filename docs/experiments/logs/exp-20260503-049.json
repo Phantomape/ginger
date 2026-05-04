@@ -1,0 +1,53 @@
+{
+  "experiment_id": "exp-20260503-049",
+  "timestamp": "2026-05-03T20:09:56+00:00",
+  "status": "completed",
+  "decision": "rejected_for_skip_replacement_value",
+  "lane": "alpha_search",
+  "mechanism_family": "non_ohlcv_event_confirmation_insider_form4",
+  "hypothesis": "Meaningful Form 4 open-market purchase event-days may explain or identify high-value skipped A/B candidates from the entry-skip oracle.",
+  "change_type": "shadow_oracle_overlap_analysis",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "production_impact": "shadow_oracle_overlap_analysis_only"
+  },
+  "date_range": {
+    "start": "2024-10-02",
+    "end": "2026-04-21"
+  },
+  "parameters": {
+    "event_flag": "meaningful_purchase_v1",
+    "candidate_scope": "top_skipped_opportunities from entry_skip_oracle, 15 per canonical window",
+    "lookback_days": [20, 60, 90, 120],
+    "oracle_horizon_days": 20
+  },
+  "artifacts": [
+    "data/non_ohlcv/form4_entry_skip_oracle_overlap_20241002_20260421.json",
+    "docs/non_ohlcv_data_audit/form4_entry_skip_oracle_overlap_20260503.md",
+    "quant/form4_skip_oracle_overlap.py",
+    "quant/test_form4_skip_oracle_overlap.py"
+  ],
+  "summary": {
+    "top_skipped_candidate_count": 45,
+    "avg_top_skipped_max_forward_return_pct": 14.207978,
+    "median_top_skipped_max_forward_return_pct": 7.7045,
+    "matched_candidates_by_lookback": {
+      "20": 0,
+      "60": 0,
+      "90": 0,
+      "120": 0
+    },
+    "top_skipped_by_decision": {
+      "adverse_gap_down_cancel": 6,
+      "gap_cancel": 10,
+      "no_shares": 16,
+      "scarce_slot_breakout_deferred": 7,
+      "slot_sliced": 6
+    }
+  },
+  "decision_rationale": "No saved top skipped opportunity across the three canonical windows had a prior same-ticker meaningful Form 4 event even with a 120-calendar-day lookback. Form 4 therefore does not explain the known high-value skipped-candidate oracle set and should not be promoted as a scarce-slot replacement signal from this evidence.",
+  "next_action": "Stop trying to use Form 4 as a near-term A/B slot-replacement overlay unless a materially broader Form 4 sample or different universe supplies new overlap evidence. If continuing the Form 4 line, treat it as a standalone external-event watchlist source and require separate multi-window forward evidence."
+}
