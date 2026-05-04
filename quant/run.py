@@ -107,6 +107,7 @@ def _print_section(title):
 
 def main():
     today = datetime.now().strftime("%Y%m%d")
+    today_iso = datetime.now().date().isoformat()
 
     # ── Step 1: Config ────────────────────────────────────────────────────────
     _print_section("STEP 1 — Loading config")
@@ -129,6 +130,10 @@ def main():
     from universe_adapter   import save_universe_state_report, universe_segments_as_of
     from portfolio_accounting import resolve_portfolio_accounting
     from candidate_competition_logger import summarize_pilot_competition
+    from form4_event_queue import (
+        build_forward_queue_from_transactions,
+        empty_form4_event_queue,
+    )
     from pilot_sleeve       import (
         append_pilot_decision_snapshots,
         apply_pilot_sizing_policy,
@@ -149,7 +154,6 @@ def main():
     pilot_universe = []
     pilot_metadata = {}
     try:
-        today_iso = datetime.now().date().isoformat()
         universe_governance_state = universe_segments_as_of(
             today_iso,
             core_universe=universe,
@@ -597,6 +601,24 @@ def main():
             pilot_attribution.get("pending_replacement_outcomes"),
         )
 
+    try:
+        form4_event_queue = build_forward_queue_from_transactions(
+            data_dir="data/non_ohlcv",
+            as_of=today_iso,
+            core_signals=signals,
+        )
+        if form4_event_queue.get("candidate_count", 0) > 0:
+            log.info(
+                "Form 4 forward event queue candidates: %d",
+                form4_event_queue["candidate_count"],
+            )
+    except Exception as e:
+        log.warning(f"Form 4 forward event queue unavailable: {e}")
+        form4_event_queue = empty_form4_event_queue(
+            today_iso,
+            "form4_event_queue_build_failed",
+        )
+
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
     trend_signals_dict["quant_signals"] = signals
@@ -608,6 +630,7 @@ def main():
     trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
     trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
     trend_signals_dict["pilot_attribution"] = pilot_attribution
+    trend_signals_dict["form4_event_queue"] = form4_event_queue
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
@@ -622,6 +645,7 @@ def main():
         addon_actions    = addon_actions,
         entry_execution_plan = entry_execution_plan,
         pilot_attribution = pilot_attribution,
+        form4_event_queue = form4_event_queue,
     )
     print("\n" + report)
     save_report(report)
@@ -641,6 +665,7 @@ def main():
         "pilot_decision_snapshots": pilot_decision_snapshots,
         "pilot_decision_hashes": pilot_decision_hashes,
         "pilot_attribution": pilot_attribution,
+        "form4_event_queue": form4_event_queue,
         "heat_blocked_signals": heat_blocked_signals,
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,

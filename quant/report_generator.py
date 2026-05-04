@@ -38,7 +38,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            metrics=None, market_regime=None, open_positions=None,
                            dropped_signals=None, addon_actions=None,
                            entry_execution_plan=None,
-                           pilot_attribution=None):
+                           pilot_attribution=None,
+                           form4_event_queue=None):
     """
     Build a human-readable daily trade report string.
 
@@ -52,6 +53,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
         pilot_attribution (dict):       Pilot direct/replacement-value summary
+        form4_event_queue (dict):       Default-off Form 4 observation queue
 
     Returns:
         str: Formatted report
@@ -154,6 +156,29 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 lines.append(f"  Avg risk-adjusted replacement value: {rav}")
         else:
             lines.append("  No closed pilot outcomes logged yet.")
+
+    if form4_event_queue and (
+        form4_event_queue.get("candidate_count", 0) > 0
+        or form4_event_queue.get("data_source", {}).get("status") != "loaded"
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("FORM 4 FORWARD EVENT QUEUE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Enabled: {form4_event_queue.get('enabled', False)}  |  "
+            f"Candidates: {form4_event_queue.get('candidate_count', 0)}"
+        )
+        source = form4_event_queue.get("data_source") or {}
+        if source.get("status") != "loaded":
+            lines.append(f"  Source status: {source.get('status')}")
+        for candidate in (form4_event_queue.get("candidates") or [])[:5]:
+            total_purchase = candidate.get("total_purchase_value") or 0
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"${total_purchase:,.0f} insider buy "
+                f"on {candidate.get('usable_trade_date', '?')} "
+                "(observe only)"
+            )
 
     # ── Trade candidates ────────────────────────────────────────────────────
     lines.append("\n" + "-" * 60)

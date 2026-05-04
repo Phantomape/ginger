@@ -269,6 +269,7 @@ mean reversion、`0DTE` flow 都不符合当前系统的 EOD / 事件 / 结构�
 | Single-position cap 25% | accepted | 改善 winner capture / risk allocation，保留 | exp-20260425 cap family |
 | Trend Financials risk boost | accepted narrow | 已入选 Financials trend sleeve 在 mid/old 窗口重复贡献，适合 sizing boost；不要泛化成 sector priority | exp-20260429-015 |
 | Financials sector-leader risk budget | accepted narrow | Within accepted trend Financials, only 20-day sector-relative leaders justify lifting total risk from 1.5x to 2.5x; do not retry nearby multipliers without forward/event evidence | exp-20260501-006 |
+| Financials sector-leader position cap | rejected / too small | 45-50% caps improved mid_weak and old_thin but only +1.10% aggregate EV and +1.52% PnL, with no late_strong exposure; do not retry nearby cap scalars without forward concentration evidence or a new lifecycle/event discriminator | exp-20260503-050 |
 | Risk-on SPY-relative leader risk budget | accepted | Otherwise-unmodified `risk_on` leaders versus SPY deserve 2.0x risk; this is the current accepted broad allocation overlay and already subsumes nearby plain-risk-on scalar ideas | exp-20260501-024 |
 | Risk-on SPY-relative leader position cap | accepted | The accepted otherwise-unmodified SPY-relative leader sleeve was cap-constrained; only this sleeve may use a 50% initial position cap. Do not retry broader initial-cap unlocks without forward/event evidence. | exp-20260502-021 |
 | SPY-relative leader follow-through add-on cap | accepted | The first day-2 follow-through add-on for already-accepted SPY-relative leaders may use a 60% position cap. Do not retry nearby higher caps without forward/tail evidence. | exp-20260502-022 |
@@ -3139,6 +3140,33 @@ Next valid retry requires: an orthogonal event/news or lifecycle discriminator
 that explains why a specific Financials leader should avoid the delayed-exit
 damage seen in `mid_weak` and `old_thin`.
 
+### 2026-05-03 mechanism update: Financials leader position cap
+
+Status: rejected / too small.
+
+Core conclusion: `exp-20260503-050` tested whether the already accepted
+Financials sector-leader trend sleeve was constrained by the global 40% initial
+position cap. The direction was positive where the sleeve traded, but the effect
+size was too small for promotion.
+
+Evidence: best variant `financials_leader_cap_50pct` left `late_strong`
+unchanged because no Financials leader trades fired, improved `mid_weak` EV
+`+0.0405` / PnL `+$1,332.28`, and improved `old_thin` EV `+0.0163` / PnL
+`+$1,069.11`. Aggregate EV improved only `+1.10%` and aggregate PnL only
+`+1.52%`, below Gate 4; max drawdown worsened slightly by up to `+0.24 pp`.
+
+Mechanism insight: the accepted Financials leader risk-budget edge is real but
+not materially cap-bound after the current accepted stack. More cap scalar
+tuning around 45-50% is low-value without new forward concentration evidence.
+
+Do not repeat: nearby Financials sector-leader initial-position cap scalars,
+broad Financials cap unlocks, or treating the 2.5x leader risk budget as proof
+that this sleeve deserves more concentration.
+
+Next valid retry requires: a materially different lifecycle or event/news
+discriminator that explains why the few cap-bound Financials leaders should
+carry more concentration than the existing 40% cap allows.
+
 ### 2026-05-01 mechanism update: Consumer near-high DTE risk window
 
 Status: rejected.
@@ -4217,3 +4245,123 @@ Do not repeat: raw percentage margin or ATR-normalized SPY-relative leader
 qualification gates without event/news confirmation, forward tail-risk
 evidence, or another orthogonal discriminator. Any positive retry must be
 implemented as shared production/backtest policy before promotion.
+
+### 2026-05-03 mechanism update: SEC filing reaction drift
+
+Status: rejected.
+
+Core conclusion: `exp-20260503-051` tested whether PIT-safe SEC filing event
+days with a first EOD excess reaction of at least `+2%` versus SPY identify
+post-reaction drift. They do not. This was a real alpha-search attempt using
+the new SEC public-PIT filing backbone from `exp-20260503-050`, not another
+coverage audit.
+
+Evidence: the positive reaction cohort had enough sample (`138` valid `10d`
+observations), but aggregate `10d` excess return was negative (`-0.81%`
+average, `-0.48%` median, `46.38%` win rate). The window profile was unstable:
+`late_strong` was materially negative (`-3.18%` average `10d` excess), while
+`mid_weak` and `old_thin` were only modestly positive. Same-day core
+replacement proxy was worse: `122` valid comparisons averaged `-4.24%`
+replacement value with only `33.61%` positive.
+
+Mechanism insight: SEC public filing coverage is no longer the immediate
+blocker for this narrow test. The blocker is mechanism quality: raw post-filing
+price reaction is too noisy and often worse than the accepted A/B stack's
+same-day opportunities. SEC may still be useful, but it needs richer filing
+semantics such as 8-K item text, XBRL surprise fields, or forward production
+SEC archives rather than nearby reaction thresholds.
+
+Do not repeat: fixed raw SEC filing reaction gates around `+2%` or nearby
+threshold sweeps. A valid retry needs a different discriminator and, if it can
+affect ranking or entries, a shared production/backtest event feature before
+promotion.
+
+### 2026-05-03 mechanism update: Large Form 4 standalone event sleeve
+
+Status: shadow-promising; not production-promoted.
+
+Core conclusion: `exp-20260503-052` tested the remaining Form 4 branch after
+near-entry accepted-trade overlap (`exp-20260503-048`) and entry-skip oracle
+replacement overlap (`exp-20260503-049`) were too sparse. Form 4 still looks
+interesting, but not as a current A/B overlay. The promising discriminator is a
+standalone external-event source: `meaningful_purchase_v1` with total insider
+purchase value at least `$500k`.
+
+Evidence: the fixed 10-trading-day shadow replay kept core before/after
+metrics unchanged (`EV 3.4191 / 1.4415 / 0.3179`) and measured event outcomes
+separately. The `$500k` meaningful-purchase cohort had `13` valid events,
+average net return `+5.75%`, average excess versus SPY `+4.76%`, and positive
+10-day excess in all three canonical windows. Window details were:
+`late_strong` `4/4` valid with `+4.84%` average excess, `mid_weak` `8/10`
+valid with `+5.27%`, and `old_thin` `1/3` valid with `+0.33%`.
+
+Mechanism insight: Form 4 buying is too sparse to explain the accepted A/B
+trade set or the known top skipped opportunities, but large real-money insider
+buys may be a useful candidate-source scout. The old-window sample is only one
+valid event, so this is not enough to add core entries or a production ranking
+rule. The next valid step is a default-off forward/pilot event queue with
+frozen same-day alternatives and closed outcome attribution.
+
+Do not repeat: Form 4 near-entry overlay joins or entry-skip oracle overlap
+joins without a materially broader sample. Do not directly promote `$500k`
+Form 4 purchases into core entries from this shadow result. A valid promotion
+must first add a shared production/backtest event feature or pilot queue, then
+show forward replacement value and closed trade outcomes.
+
+### 2026-05-03 mechanism update: Form 4 owner-role discriminator
+
+Status: rejected.
+
+Core conclusion: `exp-20260503-053` tested whether simple owner-role filters improve the
+shadow-promising `meaningful_purchase_v1 >= $500k` Form 4 standalone event
+source. They should not be promoted or repeatedly swept.
+
+Evidence: the best role-only variant was `ge500k_not_ceo_cfo_or_president`. It
+improved average 10-day excess by only
+`+0.15 pp` versus
+the plain >=$500k branch while cutting valid events by
+`-4`. The old_thin
+window still had only one valid event, so the apparent role lift does not solve
+the main sample-stability problem.
+
+Mechanism insight: Form 4 remains more promising as a forward standalone event
+queue than as another static role-threshold sweep. The simple distinction
+between director, officer, CEO/CFO/president, single-owner, and cluster buying
+does not add enough information on top of purchase value.
+
+Do not repeat: simple Form 4 owner-role filters around the `$500k` meaningful
+purchase branch without materially broader transaction history or live forward
+pilot evidence. A valid next step remains a default-off forward/pilot event
+queue with frozen same-day alternatives and shared production/backtest event
+policy before promotion.
+
+### 2026-05-04 mechanism update: Form 4 forward event queue
+
+Status: accepted as default-off observation, not promoted to strategy entries.
+
+Core conclusion: `exp-20260504-001` implemented the valid next step after the
+shadow-promising `$500k` Form 4 branch. Large `meaningful_purchase_v1` insider
+purchase event-days are now surfaced through a production-visible forward queue
+that is explicitly disabled for trading and freezes same-day alternatives for
+future replacement-value attribution.
+
+Evidence: the three canonical fixed-window backtests were rerun with no core
+metric movement because the queue does not alter entries, ranking, sizing,
+exits, or orders: `late_strong` EV `3.4191`, `mid_weak` EV `1.4415`, and
+`old_thin` EV `0.3179`. The production smoke check returned `enabled=false`,
+`candidate_count=0` for `2026-05-04`, source status `loaded`, and
+`alters_orders=false`.
+
+Mechanism insight: this avoids the two failed Form 4 patterns: it is not a
+near-entry overlap join, and it is not another owner-role threshold sweep. It
+turns the sparse but positive branch into a measurable candidate-source scout.
+The alpha claim is still pending forward samples; this only fixes the
+production observability path needed to gather them without changing strategy
+behavior.
+
+Do not repeat: do not directly promote `$500k` Form 4 events into core entries
+from historical shadow evidence alone, and do not run more simple role/value
+threshold sweeps until the default-off queue has forward replacement-value
+outcomes. A valid promotion needs enough closed queue samples plus a shared
+backtest/production event-sleeve policy.
+

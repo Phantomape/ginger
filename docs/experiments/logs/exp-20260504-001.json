@@ -1,0 +1,224 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "alpha_type": "external_event_candidate_source",
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "change_type": "default_off_forward_event_queue",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "accepted_forward_observation_queue",
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "experiment_id": "exp-20260504-001",
+  "gate4": {
+    "core_strategy_changed": false,
+    "reason": "queue is default-off and does not alter backtest entries, ranking, sizing, exits, or orders",
+    "result": "not_applicable_to_strategy_promotion"
+  },
+  "hypothesis": "Large PIT-safe meaningful Form 4 open-market purchase event-days can be a candidate-source alpha scout, but require forward replacement-value samples before trade promotion.",
+  "lane": "alpha_search",
+  "llm_change_scope": "none",
+  "mechanism_family": "form4_standalone_external_event_source",
+  "next_action": "Accumulate closed forward queue outcomes and replacement-value snapshots; do not promote to entries until sample stability improves beyond the old_thin one-event limitation.",
+  "parameters": {
+    "default_enabled": false,
+    "min_total_purchase_value": 500000.0,
+    "primary_horizon_trading_days": 10,
+    "queue_name": "FORM4_MEANINGFUL_PURCHASE_FORWARD_QUEUE",
+    "rule_version": "form4_meaningful_purchase_ge_500k_v1",
+    "single_causal_variable": "production-visible Form 4 forward observation queue"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": true,
+    "production_impact": "observe_only_forward_queue_no_core_strategy_change",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "production_smoke": {
+    "alters_orders": false,
+    "as_of": "2026-05-04",
+    "candidate_count": 0,
+    "data_source_path": "D:\\Github\\ginger\\data\\non_ohlcv\\form4_transactions_20241002_20260502.jsonl",
+    "data_source_status": "loaded",
+    "enabled": false
+  },
+  "risk": "If later promoted too early, sparse Form 4 events could displace strong A/B trend or breakout trades. This run deliberately keeps them observe-only.",
+  "shadow_alpha_evidence": {
+    "aggregate": {
+      "all_valid_windows_positive": true,
+      "avg_excess_vs_spy_pct": 4.759438,
+      "avg_gross_return_pct": 6.100954,
+      "avg_net_return_pct": 5.750954,
+      "event_count": 17,
+      "event_level_sharpe_proxy": 2.8454,
+      "excess_win_rate": 0.8462,
+      "median_excess_vs_spy_pct": 5.6742,
+      "median_gross_return_pct": 5.5287,
+      "median_net_return_pct": 5.1787,
+      "pnl_per_10k_event_notional": 7476.24,
+      "positive_excess_windows": 3,
+      "return_on_100k_base": 0.074762,
+      "ticker_count": 10,
+      "tickers": [
+        "AMD",
+        "AVGO",
+        "CORZ",
+        "CRWV",
+        "DIS",
+        "LLY",
+        "MSFT",
+        "MU",
+        "TSLA",
+        "UNH"
+      ],
+      "valid_event_count": 13,
+      "win_rate_net": 0.8462,
+      "windows_with_valid_events": 3
+    },
+    "by_window": {
+      "late_strong": {
+        "avg_excess_vs_spy_pct": 4.838825,
+        "avg_gross_return_pct": 5.33475,
+        "avg_net_return_pct": 4.98475,
+        "event_count": 4,
+        "event_level_sharpe_proxy": 1.5415,
+        "excess_win_rate": 1.0,
+        "median_excess_vs_spy_pct": 2.23165,
+        "median_gross_return_pct": 2.39295,
+        "median_net_return_pct": 2.04295,
+        "pnl_per_10k_event_notional": 1993.9,
+        "return_on_100k_base": 0.019939,
+        "ticker_count": 3,
+        "tickers": [
+          "DIS",
+          "MSFT",
+          "MU"
+        ],
+        "valid_event_count": 4,
+        "win_rate_net": 1.0
+      },
+      "mid_weak": {
+        "avg_excess_vs_spy_pct": 5.274012,
+        "avg_gross_return_pct": 7.195288,
+        "avg_net_return_pct": 6.845287,
+        "event_count": 10,
+        "event_level_sharpe_proxy": 2.3692,
+        "excess_win_rate": 0.75,
+        "median_excess_vs_spy_pct": 7.4019,
+        "median_gross_return_pct": 9.05075,
+        "median_net_return_pct": 8.70075,
+        "pnl_per_10k_event_notional": 5476.23,
+        "return_on_100k_base": 0.054762,
+        "ticker_count": 7,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "LLY",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 8,
+        "win_rate_net": 0.75
+      },
+      "old_thin": {
+        "avg_excess_vs_spy_pct": 0.3253,
+        "avg_gross_return_pct": 0.4111,
+        "avg_net_return_pct": 0.0611,
+        "event_count": 3,
+        "event_level_sharpe_proxy": null,
+        "excess_win_rate": 1.0,
+        "median_excess_vs_spy_pct": 0.3253,
+        "median_gross_return_pct": 0.4111,
+        "median_net_return_pct": 0.0611,
+        "pnl_per_10k_event_notional": 6.11,
+        "return_on_100k_base": 6.1e-05,
+        "ticker_count": 3,
+        "tickers": [
+          "CORZ",
+          "CRWV",
+          "UNH"
+        ],
+        "valid_event_count": 1,
+        "win_rate_net": 1.0
+      }
+    },
+    "source_best_variant": "meaningful_ge_500k",
+    "source_decision": "shadow_promising_not_promoted",
+    "source_experiment": "exp-20260503-052",
+    "variant": "meaningful_ge_500k"
+  },
+  "status": "completed",
+  "timestamp": "2026-05-04T00:17:43+00:00",
+  "why_this_not_prior_rejected_paths": "This is not a nearby role, SEC reaction, SPY-leader, or capacity threshold sweep. It implements the next step requested by the shadow-positive Form 4 result: observe default-off forward events with frozen alternatives."
+}
