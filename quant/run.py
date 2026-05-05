@@ -127,12 +127,40 @@ def main():
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
+    from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
+    from crypto_sleeve      import (
+        build_crypto_sleeve_advice,
+        empty_crypto_sleeve_advice,
+        load_crypto_config,
+    )
     from universe_adapter   import save_universe_state_report, universe_segments_as_of
     from portfolio_accounting import resolve_portfolio_accounting
     from candidate_competition_logger import summarize_pilot_competition
     from form4_event_queue import (
         build_forward_queue_from_transactions,
         empty_form4_event_queue,
+    )
+    from form4_event_sleeve import (
+        build_form4_event_sleeve_snapshot,
+        empty_form4_event_sleeve_snapshot,
+    )
+    from sec_event_queue import (
+        build_forward_queue_from_sec_filing_text,
+        build_forward_governance_queue_from_sec_filing_text,
+        empty_sec_event_queue,
+        empty_sec_governance_queue,
+    )
+    from sec_event_sleeve import (
+        build_sec_event_sleeve_snapshot,
+        empty_sec_event_sleeve_snapshot,
+    )
+    from sec_negative_event_sleeve import (
+        build_sec_negative_event_sleeve_snapshot,
+        empty_sec_negative_event_sleeve_snapshot,
+    )
+    from event_sleeve_bundle import (
+        build_event_sleeve_bundle_snapshot,
+        empty_event_sleeve_bundle_snapshot,
     )
     from pilot_sleeve       import (
         append_pilot_decision_snapshots,
@@ -220,6 +248,29 @@ def main():
     # Without this snapshot, the backtester uses None for both fields, capping
     # C-strategy confidence at 0.83 and preventing quality filtering.
     persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
+
+    try:
+        non_ohlcv_snapshot = persist_daily_non_ohlcv_snapshots(
+            as_of=today_iso,
+            logger=log,
+        )
+    except Exception as e:
+        log.warning(f"Daily non-OHLCV snapshot unavailable: {e}")
+        non_ohlcv_snapshot = {
+            "status": "failed",
+            "asof_date": today_iso,
+            "error": str(e),
+            "paths": {
+                "form4_transactions": f"data/non_ohlcv/form4_transactions_{today}.jsonl",
+                "sec_filing_text": f"data/non_ohlcv/sec_filing_text_{today}.jsonl",
+            },
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
@@ -492,6 +543,15 @@ def main():
     current_prices = {
         t: f["close"] for t, f in features_dict.items() if f and f.get("close")
     }
+    current_open_prices = {}
+    for ticker, ohlcv in ohlcv_dict.items():
+        try:
+            raw_open = ohlcv["Open"].iloc[-1]
+            current_open_prices[ticker] = float(
+                raw_open.item() if hasattr(raw_open, "item") else raw_open
+            )
+        except Exception:
+            pass
 
     portfolio_heat = None
     heat_blocked_signals = []
@@ -601,11 +661,14 @@ def main():
             pilot_attribution.get("pending_replacement_outcomes"),
         )
 
+    non_ohlcv_paths = non_ohlcv_snapshot.get("paths") or {}
+
     try:
         form4_event_queue = build_forward_queue_from_transactions(
             data_dir="data/non_ohlcv",
             as_of=today_iso,
             core_signals=signals,
+            source_path=non_ohlcv_paths.get("form4_transactions"),
         )
         if form4_event_queue.get("candidate_count", 0) > 0:
             log.info(
@@ -619,6 +682,172 @@ def main():
             "form4_event_queue_build_failed",
         )
 
+    try:
+        form4_event_sleeve = build_form4_event_sleeve_snapshot(
+            form4_event_queue=form4_event_queue,
+            as_of=today_iso,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            form4_event_sleeve.get("new_pending_count", 0) > 0
+            or form4_event_sleeve.get("open_position_count", 0) > 0
+            or form4_event_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Form 4 paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
+                form4_event_sleeve.get("pending_count", 0),
+                form4_event_sleeve.get("open_position_count", 0),
+                form4_event_sleeve.get("closed_count_today", 0),
+                form4_event_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Form 4 paper event sleeve unavailable: {e}")
+        form4_event_sleeve = empty_form4_event_sleeve_snapshot(
+            today_iso,
+            "form4_event_sleeve_build_failed",
+        )
+
+    try:
+        sec_event_queue = build_forward_queue_from_sec_filing_text(
+            data_dir="data/non_ohlcv",
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            core_signals=signals,
+            source_path=non_ohlcv_paths.get("sec_filing_text"),
+        )
+        if sec_event_queue.get("candidate_count", 0) > 0:
+            log.info(
+                "SEC negative-reaction forward event queue candidates: %d",
+                sec_event_queue["candidate_count"],
+            )
+    except Exception as e:
+        log.warning(f"SEC negative-reaction forward event queue unavailable: {e}")
+        sec_event_queue = empty_sec_event_queue(
+            today_iso,
+            "sec_event_queue_build_failed",
+        )
+
+    try:
+        sec_negative_event_sleeve = build_sec_negative_event_sleeve_snapshot(
+            sec_event_queue=sec_event_queue,
+            as_of=today_iso,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            sec_negative_event_sleeve.get("new_pending_count", 0) > 0
+            or sec_negative_event_sleeve.get("open_position_count", 0) > 0
+            or sec_negative_event_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "SEC negative-reaction paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
+                sec_negative_event_sleeve.get("pending_count", 0),
+                sec_negative_event_sleeve.get("open_position_count", 0),
+                sec_negative_event_sleeve.get("closed_count_today", 0),
+                sec_negative_event_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"SEC negative-reaction paper event sleeve unavailable: {e}")
+        sec_negative_event_sleeve = empty_sec_negative_event_sleeve_snapshot(
+            today_iso,
+            "sec_negative_event_sleeve_build_failed",
+        )
+
+    try:
+        sec_governance_event_queue = build_forward_governance_queue_from_sec_filing_text(
+            data_dir="data/non_ohlcv",
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            core_signals=signals,
+            source_path=non_ohlcv_paths.get("sec_filing_text"),
+        )
+        if sec_governance_event_queue.get("candidate_count", 0) > 0:
+            log.info(
+                "SEC governance/procedural forward event queue candidates: %d",
+                sec_governance_event_queue["candidate_count"],
+            )
+    except Exception as e:
+        log.warning(f"SEC governance/procedural forward event queue unavailable: {e}")
+        sec_governance_event_queue = empty_sec_governance_queue(
+            today_iso,
+            "sec_governance_event_queue_build_failed",
+        )
+
+    try:
+        sec_governance_event_sleeve = build_sec_event_sleeve_snapshot(
+            sec_event_queue=sec_governance_event_queue,
+            as_of=today_iso,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            sec_governance_event_sleeve.get("new_pending_count", 0) > 0
+            or sec_governance_event_sleeve.get("open_position_count", 0) > 0
+            or sec_governance_event_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "SEC governance paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
+                sec_governance_event_sleeve.get("pending_count", 0),
+                sec_governance_event_sleeve.get("open_position_count", 0),
+                sec_governance_event_sleeve.get("closed_count_today", 0),
+                sec_governance_event_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"SEC governance paper event sleeve unavailable: {e}")
+        sec_governance_event_sleeve = empty_sec_event_sleeve_snapshot(
+            today_iso,
+            "sec_governance_event_sleeve_build_failed",
+        )
+
+    try:
+        event_sleeve_bundle = build_event_sleeve_bundle_snapshot(
+            as_of=today_iso,
+            form4_event_sleeve=form4_event_sleeve,
+            sec_negative_event_sleeve=sec_negative_event_sleeve,
+            sec_governance_event_sleeve=sec_governance_event_sleeve,
+        )
+        if (
+            event_sleeve_bundle.get("pending_count", 0) > 0
+            or event_sleeve_bundle.get("open_position_count", 0) > 0
+            or event_sleeve_bundle.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Event overlay bundle paper attribution: pending=%d open=%d closed_today=%d pnl=$%s",
+                event_sleeve_bundle.get("pending_count", 0),
+                event_sleeve_bundle.get("open_position_count", 0),
+                event_sleeve_bundle.get("closed_count_today", 0),
+                event_sleeve_bundle.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Event overlay bundle attribution unavailable: {e}")
+        event_sleeve_bundle = empty_event_sleeve_bundle_snapshot(
+            today_iso,
+            "event_sleeve_bundle_build_failed",
+        )
+
+    try:
+        crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
+        if crypto_sleeve.get("enabled"):
+            crypto_action = crypto_sleeve.get("action", {}).get("action")
+            crypto_state = crypto_sleeve.get("state")
+            crypto_target = crypto_sleeve.get("action", {}).get("target_position_pct")
+            log.info(
+                "BTC/USD crypto sleeve: state=%s action=%s target=%s",
+                crypto_state,
+                crypto_action,
+                (
+                    f"{crypto_target * 100:.0f}%"
+                    if isinstance(crypto_target, (int, float))
+                    else "n/a"
+                ),
+            )
+    except Exception as e:
+        log.warning(f"BTC/USD crypto sleeve unavailable: {e}")
+        crypto_sleeve = empty_crypto_sleeve_advice(e)
+
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
     trend_signals_dict["quant_signals"] = signals
@@ -631,6 +860,14 @@ def main():
     trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
     trend_signals_dict["pilot_attribution"] = pilot_attribution
     trend_signals_dict["form4_event_queue"] = form4_event_queue
+    trend_signals_dict["form4_event_sleeve"] = form4_event_sleeve
+    trend_signals_dict["sec_event_queue"] = sec_event_queue
+    trend_signals_dict["sec_negative_event_sleeve"] = sec_negative_event_sleeve
+    trend_signals_dict["sec_governance_event_queue"] = sec_governance_event_queue
+    trend_signals_dict["sec_governance_event_sleeve"] = sec_governance_event_sleeve
+    trend_signals_dict["event_sleeve_bundle"] = event_sleeve_bundle
+    trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
+    trend_signals_dict["crypto_sleeve"] = crypto_sleeve
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
@@ -646,6 +883,13 @@ def main():
         entry_execution_plan = entry_execution_plan,
         pilot_attribution = pilot_attribution,
         form4_event_queue = form4_event_queue,
+        form4_event_sleeve = form4_event_sleeve,
+        sec_event_queue = sec_event_queue,
+        sec_negative_event_sleeve = sec_negative_event_sleeve,
+        sec_governance_event_queue = sec_governance_event_queue,
+        sec_governance_event_sleeve = sec_governance_event_sleeve,
+        event_sleeve_bundle = event_sleeve_bundle,
+        crypto_sleeve = crypto_sleeve,
     )
     print("\n" + report)
     save_report(report)
@@ -666,6 +910,14 @@ def main():
         "pilot_decision_hashes": pilot_decision_hashes,
         "pilot_attribution": pilot_attribution,
         "form4_event_queue": form4_event_queue,
+        "form4_event_sleeve": form4_event_sleeve,
+        "sec_event_queue": sec_event_queue,
+        "sec_negative_event_sleeve": sec_negative_event_sleeve,
+        "sec_governance_event_queue": sec_governance_event_queue,
+        "sec_governance_event_sleeve": sec_governance_event_sleeve,
+        "event_sleeve_bundle": event_sleeve_bundle,
+        "non_ohlcv_snapshot": non_ohlcv_snapshot,
+        "crypto_sleeve": crypto_sleeve,
         "heat_blocked_signals": heat_blocked_signals,
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,
@@ -769,6 +1021,33 @@ def main():
     log.info(f"  Regime:             {market_regime['regime']}")
     if portfolio_heat:
         log.info(f"  Portfolio heat:     {portfolio_heat['portfolio_heat_pct']*100:.1f}%")
+    if crypto_sleeve:
+        if crypto_sleeve.get("enabled"):
+            _crypto_action = crypto_sleeve.get("action", {})
+            _crypto_trade_value = _crypto_action.get("trade_value_usd")
+            _crypto_trade_text = (
+                f"${abs(_crypto_trade_value):,.0f}"
+                if isinstance(_crypto_trade_value, (int, float))
+                else "manual sizing"
+            )
+            _crypto_target = _crypto_action.get("target_position_pct")
+            _crypto_target_text = (
+                f"{_crypto_target * 100:.0f}%"
+                if isinstance(_crypto_target, (int, float))
+                else "n/a"
+            )
+            log.info(
+                "  BTC/USD sleeve:     %s %s -> target %s (%s)",
+                _crypto_action.get("action"),
+                _crypto_trade_text,
+                _crypto_target_text,
+                crypto_sleeve.get("state"),
+            )
+        else:
+            log.info(
+                "  BTC/USD sleeve:     unavailable (%s)",
+                crypto_sleeve.get("error") or crypto_sleeve.get("reason"),
+            )
     if metrics.get("total_trades", 0) > 0:
         log.info(f"  P&L (realized):     ${metrics['total_pnl_usd']:,.2f}  "
                  f"WR={metrics['win_rate']*100:.0f}%")

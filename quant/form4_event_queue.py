@@ -223,14 +223,16 @@ def build_forward_queue_from_transactions(
     data_dir: str | Path,
     as_of: str,
     core_signals: list[dict[str, Any]] | None = None,
+    source_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    path = latest_form4_transactions_path(data_dir)
-    if path is None:
+    path = Path(source_path) if source_path else latest_form4_transactions_path(data_dir)
+    if path is None or not path.exists():
         return build_form4_event_queue(
             [],
             as_of=as_of,
             core_signals=core_signals,
             source_status="missing_form4_transactions_jsonl",
+            source_path=path,
         )
     rows = load_form4_transaction_rows(path)
     events = aggregate_purchase_events(rows, start=as_of, end=as_of)

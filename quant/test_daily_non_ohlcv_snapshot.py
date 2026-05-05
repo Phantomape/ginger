@@ -1,0 +1,79 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import daily_non_ohlcv_snapshot as daily_snapshot
+
+
+def test_daily_snapshot_writes_dated_artifacts_and_all_sec_text_items(tmp_path, monkeypatch):
+    calls = {}
+
+    def fake_sec_events(args):
+        calls["sec_events"] = args
+        Path(args.output).write_text('{"ticker":"CRDO"}\n', encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 1, "pit_safe_rows": 1}
+
+    def fake_sec_text(args):
+        calls["sec_text"] = args
+        return (
+            [{"ticker": "CRDO", "eight_k_item_codes": ["5.07"], "status": "ok"}],
+            {"rows_written": 1, "item_codes": args.item_codes},
+        )
+
+    def fake_form4(args):
+        calls["form4"] = args
+        Path(args.output).write_text('{"ticker":"CRDO"}\n', encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 1, "pit_safe_count": 1}
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+        lookback_days=3,
+    )
+
+    assert snapshot["status"] == "ok"
+    assert calls["sec_events"].start == "2026-05-01"
+    assert calls["sec_events"].end == "2026-05-04"
+    assert calls["sec_events"].refresh_submissions is True
+    assert calls["sec_text"].item_codes == ["all"]
+    assert calls["sec_text"].events.endswith("sec_filing_events_20260504.jsonl")
+    assert calls["form4"].output.endswith("form4_transactions_20260504.jsonl")
+    assert calls["form4"].refresh_submissions is True
+    assert calls["form4"].refresh_xml is False
+    assert (tmp_path / "sec_filing_text_20260504.jsonl").exists()
+    assert (tmp_path / "form4_transactions_20260504.jsonl").exists()
+    assert (tmp_path / "daily_non_ohlcv_snapshot_20260504.json").exists()
+
+
+def test_daily_snapshot_keeps_form4_when_sec_source_fails(tmp_path, monkeypatch):
+    def failing_sec_events(args):
+        raise RuntimeError("sec unavailable")
+
+    def should_not_fetch_text(args):
+        raise AssertionError("SEC text fetch should be skipped when SEC events fail")
+
+    def fake_form4(args):
+        Path(args.output).write_text('{"ticker":"CRDO"}\n', encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 1, "pit_safe_count": 1}
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", failing_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", should_not_fetch_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+    )
+
+    assert snapshot["status"] == "partial"
+    assert snapshot["sec_filing_events"]["status"] == "failed"
+    assert snapshot["sec_filing_text"]["status"] == "skipped"
+    assert snapshot["form4_transactions"]["status"] == "ok"
+    assert (tmp_path / "form4_transactions_20260504.jsonl").exists()

@@ -88,3 +88,21 @@ def test_build_forward_queue_from_transactions_handles_missing_source(tmp_path: 
     assert queue["enabled"] is False
     assert queue["candidate_count"] == 0
     assert queue["data_source"]["status"] == "missing_form4_transactions_jsonl"
+
+
+def test_build_forward_queue_from_transactions_honors_explicit_daily_source(tmp_path: Path):
+    stale = tmp_path / "form4_transactions_20241002_20260421.jsonl"
+    stale.write_text(
+        '{"ticker":"OLD","usable_trade_date":"2026-05-04","open_market_purchase_flag":true}\n',
+        encoding="utf-8",
+    )
+    daily = tmp_path / "form4_transactions_20260504.jsonl"
+
+    queue = build_forward_queue_from_transactions(
+        data_dir=tmp_path,
+        as_of="2026-05-04",
+        source_path=daily,
+    )
+
+    assert queue["candidate_count"] == 0
+    assert queue["data_source"]["status"] == "missing_form4_transactions_jsonl"

@@ -39,7 +39,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            dropped_signals=None, addon_actions=None,
                            entry_execution_plan=None,
                            pilot_attribution=None,
-                           form4_event_queue=None):
+                           form4_event_queue=None,
+                           form4_event_sleeve=None,
+                           sec_event_queue=None,
+                           sec_negative_event_sleeve=None,
+                           sec_governance_event_queue=None,
+                           sec_governance_event_sleeve=None,
+                           event_sleeve_bundle=None,
+                           crypto_sleeve=None):
     """
     Build a human-readable daily trade report string.
 
@@ -54,6 +61,13 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
         pilot_attribution (dict):       Pilot direct/replacement-value summary
         form4_event_queue (dict):       Default-off Form 4 observation queue
+        form4_event_sleeve (dict):      Default-off Form 4 paper event sleeve
+        sec_event_queue (dict):         Default-off SEC negative-reaction queue
+        sec_negative_event_sleeve (dict): Default-off SEC negative-reaction paper sleeve
+        sec_governance_event_queue (dict): Default-off SEC governance/procedural queue
+        sec_governance_event_sleeve (dict): Default-off SEC governance paper sleeve
+        event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
+        crypto_sleeve (dict):           Isolated BTC/USD sleeve advice
 
     Returns:
         str: Formatted report
@@ -93,6 +107,59 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         can_add  = portfolio_heat.get("can_add_new_positions", True)
         status   = "OK to add" if can_add else "CAPPED — no new trades"
         lines.append(f"\nPORTFOLIO HEAT: {heat_pct*100:.1f}%  ({status})")
+
+    if crypto_sleeve:
+        lines.append("\n" + "-" * 60)
+        lines.append("BTC/USD CRYPTO SLEEVE")
+        lines.append("-" * 60)
+        if not crypto_sleeve.get("enabled", False):
+            lines.append(
+                "  Disabled/unavailable: "
+                f"{crypto_sleeve.get('error') or crypto_sleeve.get('reason')}"
+            )
+        else:
+            snapshot = crypto_sleeve.get("snapshot") or {}
+            action = crypto_sleeve.get("action") or {}
+            execution = crypto_sleeve.get("execution_notes") or {}
+            target_pct = action.get("target_position_pct")
+            current_pct = action.get("current_position_pct")
+            target_text = (
+                f"{target_pct * 100:.0f}%"
+                if isinstance(target_pct, (int, float))
+                else "n/a"
+            )
+            current_text = (
+                f"{current_pct * 100:.0f}%"
+                if isinstance(current_pct, (int, float))
+                else "not configured"
+            )
+            trade_value = action.get("trade_value_usd")
+            trade_text = (
+                f"${abs(trade_value):,.0f}"
+                if isinstance(trade_value, (int, float))
+                else "manual sizing"
+            )
+            lines.append(
+                f"  State:   {crypto_sleeve.get('state')}  |  "
+                f"Action: {action.get('action')}  |  Target: {target_text}"
+            )
+            lines.append(
+                f"  Current: {current_text}  |  Trade value: {trade_text}"
+            )
+            lines.append(
+                f"  Price:   ${snapshot.get('close')}  |  "
+                f"EMA20: ${snapshot.get('ema20')}  |  "
+                f"EMA100: ${snapshot.get('ema100')}  |  "
+                f"SMA200: ${snapshot.get('sma200')}"
+            )
+            lines.append(f"  Reason:  {crypto_sleeve.get('reason')}")
+            if execution.get("preferred_signal_time"):
+                lines.append(f"  Timing:  {execution['preferred_signal_time']}")
+            if execution.get("reference_buy_limit") and execution.get("reference_sell_limit"):
+                lines.append(
+                    f"  Limit band: buy <= ${execution['reference_buy_limit']}, "
+                    f"sell >= ${execution['reference_sell_limit']}"
+                )
 
     if entry_execution_plan:
         slots = entry_execution_plan.get("available_slots")
@@ -181,6 +248,198 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             )
 
     # ── Trade candidates ────────────────────────────────────────────────────
+    if form4_event_sleeve and (
+        form4_event_sleeve.get("pending_count", 0) > 0
+        or form4_event_sleeve.get("open_position_count", 0) > 0
+        or form4_event_sleeve.get("closed_count_today", 0) > 0
+        or form4_event_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("FORM 4 PAPER EVENT SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {form4_event_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {form4_event_sleeve.get('trade_enabled', False)}"
+        )
+        if form4_event_sleeve.get("error"):
+            lines.append(f"  Source status: {form4_event_sleeve.get('error')}")
+        lines.append(
+            f"  Pending: {form4_event_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {form4_event_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {form4_event_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${form4_event_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${form4_event_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        for position in (form4_event_sleeve.get("open_positions") or [])[:5]:
+            lines.append(
+                f"  {position.get('ticker', '?')}: paper open "
+                f"since {position.get('entry_date', '?')} "
+                f"({position.get('observed_trading_days', 0)}/"
+                f"{position.get('hold_days', '?')} days)"
+            )
+
+    if sec_event_queue and (
+        sec_event_queue.get("candidate_count", 0) > 0
+        or sec_event_queue.get("data_source", {}).get("status") != "loaded"
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC NEGATIVE-REACTION EVENT QUEUE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Enabled: {sec_event_queue.get('enabled', False)}  |  "
+            f"Candidates: {sec_event_queue.get('candidate_count', 0)}"
+        )
+        source = sec_event_queue.get("data_source") or {}
+        if source.get("status") != "loaded":
+            lines.append(f"  Source status: {source.get('status')}")
+        for candidate in (sec_event_queue.get("candidates") or [])[:5]:
+            excess = candidate.get("reaction_excess_return")
+            excess_text = f"{excess * 100:.2f}%" if isinstance(excess, (int, float)) else "n/a"
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('language_bucket', 'negative_language')} / "
+                f"reaction excess {excess_text} "
+                f"on {candidate.get('reaction_date', candidate.get('usable_trade_date', '?'))} "
+                "(observe only)"
+            )
+
+    if sec_negative_event_sleeve and (
+        sec_negative_event_sleeve.get("pending_count", 0) > 0
+        or sec_negative_event_sleeve.get("open_position_count", 0) > 0
+        or sec_negative_event_sleeve.get("closed_count_today", 0) > 0
+        or sec_negative_event_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC NEGATIVE-REACTION PAPER EVENT SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {sec_negative_event_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {sec_negative_event_sleeve.get('trade_enabled', False)}"
+        )
+        if sec_negative_event_sleeve.get("error"):
+            lines.append(f"  Source status: {sec_negative_event_sleeve.get('error')}")
+        lines.append(
+            f"  Pending: {sec_negative_event_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {sec_negative_event_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {sec_negative_event_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${sec_negative_event_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${sec_negative_event_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        for position in (sec_negative_event_sleeve.get("open_positions") or [])[:5]:
+            lines.append(
+                f"  {position.get('ticker', '?')}: paper open "
+                f"since {position.get('entry_date', '?')} "
+                f"({position.get('observed_trading_days', 0)}/"
+                f"{position.get('hold_days', '?')} days)"
+            )
+
+    if sec_governance_event_queue and (
+        sec_governance_event_queue.get("candidate_count", 0) > 0
+        or sec_governance_event_queue.get("data_source", {}).get("status") != "loaded"
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC GOVERNANCE/PROCEDURAL EVENT QUEUE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Enabled: {sec_governance_event_queue.get('enabled', False)}  |  "
+            f"Candidates: {sec_governance_event_queue.get('candidate_count', 0)}"
+        )
+        source = sec_governance_event_queue.get("data_source") or {}
+        if source.get("status") != "loaded":
+            lines.append(f"  Source status: {source.get('status')}")
+        for candidate in (sec_governance_event_queue.get("candidates") or [])[:5]:
+            excess = candidate.get("reaction_excess_return")
+            excess_text = f"{excess * 100:.2f}%" if isinstance(excess, (int, float)) else "n/a"
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('target_cell', 'governance/procedural')} / "
+                f"reaction excess {excess_text} "
+                f"on {candidate.get('reaction_date', candidate.get('usable_trade_date', '?'))} "
+                "(paper only)"
+            )
+
+    if sec_governance_event_sleeve and (
+        sec_governance_event_sleeve.get("pending_count", 0) > 0
+        or sec_governance_event_sleeve.get("open_position_count", 0) > 0
+        or sec_governance_event_sleeve.get("closed_count_today", 0) > 0
+        or sec_governance_event_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC GOVERNANCE PAPER EVENT SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {sec_governance_event_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {sec_governance_event_sleeve.get('trade_enabled', False)}"
+        )
+        if sec_governance_event_sleeve.get("error"):
+            lines.append(f"  Source status: {sec_governance_event_sleeve.get('error')}")
+        lines.append(
+            f"  Pending: {sec_governance_event_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {sec_governance_event_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {sec_governance_event_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${sec_governance_event_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${sec_governance_event_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        for position in (sec_governance_event_sleeve.get("open_positions") or [])[:5]:
+            lines.append(
+                f"  {position.get('ticker', '?')}: paper open "
+                f"since {position.get('entry_date', '?')} "
+                f"({position.get('observed_trading_days', 0)}/"
+                f"{position.get('hold_days', '?')} days)"
+            )
+
+    if event_sleeve_bundle and (
+        event_sleeve_bundle.get("pending_count", 0) > 0
+        or event_sleeve_bundle.get("open_position_count", 0) > 0
+        or event_sleeve_bundle.get("closed_count_today", 0) > 0
+        or event_sleeve_bundle.get("error")
+        or event_sleeve_bundle.get("source_summaries")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("DEFAULT-OFF EVENT OVERLAY BUNDLE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {event_sleeve_bundle.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {event_sleeve_bundle.get('trade_enabled', False)}"
+        )
+        if event_sleeve_bundle.get("error"):
+            lines.append(f"  Source status: {event_sleeve_bundle.get('error')}")
+        lines.append(
+            f"  Pending: {event_sleeve_bundle.get('pending_count', 0)}  |  "
+            f"Open: {event_sleeve_bundle.get('open_position_count', 0)}  |  "
+            f"Closed today: {event_sleeve_bundle.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${event_sleeve_bundle.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${event_sleeve_bundle.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        summaries = event_sleeve_bundle.get("source_summaries") or {}
+        for source in (
+            "form4_meaningful_purchase",
+            "sec_negative_reaction",
+            "sec_governance_procedural",
+        ):
+            summary = summaries.get(source)
+            if not summary:
+                continue
+            lines.append(
+                f"  {summary.get('label', source)}: "
+                f"pending={summary.get('pending_count', 0)} "
+                f"open={summary.get('open_position_count', 0)} "
+                f"closed_today={summary.get('closed_count_today', 0)} "
+                f"realized=${summary.get('realized_pnl_to_date', 0.0):,.2f}"
+            )
+
     lines.append("\n" + "-" * 60)
     lines.append("TOP TRADE CANDIDATES")
     lines.append("-" * 60)

@@ -1,0 +1,120 @@
+from __future__ import annotations
+
+from event_sleeve_bundle import build_event_sleeve_bundle_snapshot
+
+
+def _sleeve(
+    *,
+    candidate_count: int = 0,
+    new_pending_count: int = 0,
+    filled_count: int = 0,
+    closed_count_today: int = 0,
+    skipped_count_today: int = 0,
+    pending_count: int = 0,
+    open_position_count: int = 0,
+    closed_position_count: int = 0,
+    realized_pnl_to_date: float = 0.0,
+    unrealized_pnl: float = 0.0,
+    open_positions: list[dict[str, object]] | None = None,
+    closed_positions_today: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
+    return {
+        "enabled": False,
+        "paper_enabled": True,
+        "trade_enabled": False,
+        "candidate_count": candidate_count,
+        "new_pending_count": new_pending_count,
+        "filled_count": filled_count,
+        "closed_count_today": closed_count_today,
+        "skipped_count_today": skipped_count_today,
+        "pending_count": pending_count,
+        "open_position_count": open_position_count,
+        "closed_position_count": closed_position_count,
+        "realized_pnl_to_date": realized_pnl_to_date,
+        "unrealized_pnl": unrealized_pnl,
+        "open_positions": open_positions or [],
+        "closed_positions_today": closed_positions_today or [],
+    }
+
+
+def test_event_sleeve_bundle_aggregates_sources_without_trade_authority() -> None:
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_sleeve=_sleeve(
+            candidate_count=2,
+            new_pending_count=1,
+            pending_count=1,
+            open_position_count=1,
+            realized_pnl_to_date=120.25,
+            unrealized_pnl=-10.0,
+            open_positions=[{"ticker": "INTC"}],
+        ),
+        sec_negative_event_sleeve=_sleeve(
+            candidate_count=1,
+            filled_count=1,
+            closed_count_today=1,
+            closed_position_count=1,
+            realized_pnl_to_date=220.0,
+            closed_positions_today=[{"ticker": "LITE"}],
+        ),
+        sec_governance_event_sleeve=_sleeve(
+            candidate_count=3,
+            skipped_count_today=1,
+            open_position_count=1,
+            unrealized_pnl=30.5,
+            open_positions=[{"ticker": "CRDO"}],
+        ),
+    )
+
+    assert snapshot["enabled"] is False
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["candidate_count"] == 6
+    assert snapshot["new_pending_count"] == 1
+    assert snapshot["filled_count"] == 1
+    assert snapshot["closed_count_today"] == 1
+    assert snapshot["skipped_count_today"] == 1
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 2
+    assert snapshot["closed_position_count"] == 1
+    assert snapshot["realized_pnl_to_date"] == 340.25
+    assert snapshot["unrealized_pnl"] == 20.5
+    assert {row["source"] for row in snapshot["open_positions"]} == {
+        "form4_meaningful_purchase",
+        "sec_governance_procedural",
+    }
+    assert snapshot["closed_positions_today"][0]["source"] == "sec_negative_reaction"
+    assert snapshot["production_impact"]["alters_orders"] is False
+    assert snapshot["production_impact"]["alters_sizing"] is False
+
+
+def test_event_sleeve_bundle_reports_missing_source_as_zero() -> None:
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_sleeve=_sleeve(candidate_count=1),
+    )
+
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["source_summaries"]["sec_negative_reaction"]["available"] is False
+    assert snapshot["source_summaries"]["sec_negative_reaction"]["status"] == "missing_snapshot"
+
+
+def test_report_generator_renders_event_sleeve_bundle_without_orders() -> None:
+    from report_generator import generate_daily_report
+
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_sleeve=_sleeve(candidate_count=1, pending_count=1),
+        sec_negative_event_sleeve=_sleeve(candidate_count=1, open_position_count=1),
+        sec_governance_event_sleeve=_sleeve(candidate_count=1, closed_count_today=1),
+    )
+    report = generate_daily_report(
+        signals=[],
+        market_regime={"regime": "BULL"},
+        event_sleeve_bundle=snapshot,
+    )
+
+    assert "DEFAULT-OFF EVENT OVERLAY BUNDLE" in report
+    assert "Trade enabled: False" in report
+    assert "Form 4 meaningful purchase" in report
+    assert "SEC negative reaction" in report
+    assert "SEC governance/procedural" in report
