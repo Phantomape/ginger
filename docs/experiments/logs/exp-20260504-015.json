@@ -1,0 +1,1639 @@
+{
+  "experiment_id": "exp-20260504-015",
+  "generated_at": "2026-05-04T04:17:12.765862+00:00",
+  "hypothesis": "SEC 8-K leadership-change filings with a strong negative initial excess reaction may capture temporary uncertainty that mean-reverts over the next 10 trading days.",
+  "classification": "alpha_search",
+  "alpha_category": "event_source_context",
+  "why_not_blocked": "LLM soft-ranking remains sample-limited, so this uses existing SEC filing event data and canonical OHLCV snapshots across all fixed windows.",
+  "history_check": {
+    "not_repeating_exp_20260503_051": "That experiment rejected broad positive reaction gates. This tests a single 8-K leadership-change semantic category plus a fixed negative reaction bucket.",
+    "not_repeating_exp_20260504_010_or_012": "Those experiments focused on Item 2.02 negative language / negative reaction. This branch uses Item 5.02-style leadership-change context and no text keyword score.",
+    "mechanism_insight_guardrail": "No threshold sweep, no nearby SPY-relative leader tuning, no LLM replay promotion."
+  },
+  "date_windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "parameters": {
+    "filing_category": "leadership_change",
+    "primary_reaction_bucket": "negative_excess_le_minus_2pct",
+    "horizon_primary": "10d",
+    "min_valid_10d_events": 10,
+    "required_positive_windows": 2
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "branches": {
+    "leadership_change_all": {
+      "event_count": 131,
+      "unique_tickers": 37,
+      "by_window_10d": {
+        "late_strong": {
+          "count": 58,
+          "avg_pct": 2.5727,
+          "median_pct": 0.5518,
+          "positive_rate_pct": 55.17,
+          "best_pct": 55.792,
+          "worst_pct": -21.7624
+        },
+        "mid_weak": {
+          "count": 28,
+          "avg_pct": 0.3148,
+          "median_pct": 0.5349,
+          "positive_rate_pct": 53.57,
+          "best_pct": 26.6693,
+          "worst_pct": -38.6698
+        },
+        "old_thin": {
+          "count": 34,
+          "avg_pct": 0.2044,
+          "median_pct": 0.6261,
+          "positive_rate_pct": 55.88,
+          "best_pct": 9.6349,
+          "worst_pct": -10.0152
+        }
+      },
+      "by_window_20d": {
+        "late_strong": {
+          "count": 49,
+          "avg_pct": 2.9664,
+          "median_pct": 1.7292,
+          "positive_rate_pct": 57.14,
+          "best_pct": 35.5423,
+          "worst_pct": -20.4356
+        },
+        "mid_weak": {
+          "count": 24,
+          "avg_pct": 1.416,
+          "median_pct": 1.1559,
+          "positive_rate_pct": 54.17,
+          "best_pct": 28.1994,
+          "worst_pct": -31.7785
+        },
+        "old_thin": {
+          "count": 33,
+          "avg_pct": 0.4554,
+          "median_pct": 0.6563,
+          "positive_rate_pct": 57.58,
+          "best_pct": 16.2892,
+          "worst_pct": -16.9986
+        }
+      },
+      "forward_5d": {
+        "count": 128,
+        "avg_excess_pct": 0.8185,
+        "median_excess_pct": -0.005,
+        "positive_rate_pct": 50.0,
+        "best_excess_pct": 17.1663,
+        "worst_excess_pct": -12.0101
+      },
+      "forward_10d": {
+        "count": 120,
+        "avg_excess_pct": 1.3748,
+        "median_excess_pct": 0.5554,
+        "positive_rate_pct": 55.0,
+        "best_excess_pct": 55.792,
+        "worst_excess_pct": -38.6698
+      },
+      "forward_20d": {
+        "count": 106,
+        "avg_excess_pct": 1.8337,
+        "median_excess_pct": 1.1764,
+        "positive_rate_pct": 56.6,
+        "best_excess_pct": 35.5423,
+        "worst_excess_pct": -31.7785
+      },
+      "reaction_buckets": {
+        "negative_excess_0_to_minus_2pct": 46,
+        "positive_excess_0_to_2pct": 46,
+        "negative_excess_le_minus_2pct": 25,
+        "positive_excess_ge_2pct": 14
+      },
+      "slot_conflicts": {
+        "true": 15,
+        "false": 116
+      },
+      "dominance_10d": {
+        "valid_events": 120,
+        "unique_tickers": 35,
+        "top_count_ticker": "DIS",
+        "top_count_share_pct": 5.83,
+        "top_abs_contribution_share_pct": 14.6521
+      },
+      "examples": [
+        {
+          "ticker": "GOOG",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-18",
+          "reaction_date": "2024-10-18",
+          "entry_date": "2024-10-21",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.000564,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 2572496608.83,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.022846,
+              "spy_return": -0.005172,
+              "excess_return": 0.028018,
+              "end_date": "2024-10-28"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.037064,
+              "spy_return": -0.024047,
+              "excess_return": 0.061111,
+              "end_date": "2024-11-04"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.07425,
+              "spy_return": 0.007365,
+              "excess_return": 0.066884,
+              "end_date": "2024-11-18"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 2,
+          "replacement_value_10d_excess_proxy": 0.05495
+        },
+        {
+          "ticker": "JPM",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-18",
+          "reaction_date": "2024-10-18",
+          "entry_date": "2024-10-21",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.000387,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 1828438346.26,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.001243,
+              "spy_return": -0.005172,
+              "excess_return": 0.006416,
+              "end_date": "2024-10-28"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.024154,
+              "spy_return": -0.024047,
+              "excess_return": -0.000107,
+              "end_date": "2024-11-04"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.087958,
+              "spy_return": 0.007365,
+              "excess_return": 0.080593,
+              "end_date": "2024-11-18"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 2,
+          "replacement_value_10d_excess_proxy": -0.006268
+        },
+        {
+          "ticker": "XOM",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-21",
+          "reaction_date": "2024-10-21",
+          "entry_date": "2024-10-22",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.002226,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 1615424806.14,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.02478,
+              "spy_return": 0.001239,
+              "excess_return": -0.026019,
+              "end_date": "2024-10-29"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.01081,
+              "spy_return": -0.007487,
+              "excess_return": -0.003323,
+              "end_date": "2024-11-05"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.005448,
+              "spy_return": 0.015919,
+              "excess_return": -0.021367,
+              "end_date": "2024-11-19"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "DIS",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-22",
+          "reaction_date": "2024-10-22",
+          "entry_date": "2024-10-23",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.001773,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 778656459.33,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.019086,
+              "spy_return": -0.002151,
+              "excess_return": -0.016935,
+              "end_date": "2024-10-30"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.020221,
+              "spy_return": 0.016825,
+              "excess_return": 0.003395,
+              "end_date": "2024-11-06"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.178789,
+              "spy_return": 0.015896,
+              "excess_return": 0.162892,
+              "end_date": "2024-11-20"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MU",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-31",
+          "reaction_date": "2024-10-31",
+          "entry_date": "2024-11-01",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "5.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.02296,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 1916517966.66,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.119,
+              "spy_return": 0.047031,
+              "excess_return": 0.071969,
+              "end_date": "2024-11-08"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.0366,
+              "spy_return": 0.025257,
+              "excess_return": -0.061857,
+              "end_date": "2024-11-15"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.0145,
+              "spy_return": 0.056553,
+              "excess_return": -0.071053,
+              "end_date": "2024-12-02"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": -0.102179
+        },
+        {
+          "ticker": "DE",
+          "window": "old_thin",
+          "usable_trade_date": "2024-11-04",
+          "reaction_date": "2024-11-04",
+          "entry_date": "2024-11-05",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.005301,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 343748606.34,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.011448,
+              "spy_return": 0.045835,
+              "excess_return": -0.057284,
+              "end_date": "2024-11-12"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.004469,
+              "spy_return": 0.034271,
+              "excess_return": -0.029802,
+              "end_date": "2024-11-19"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.14549,
+              "spy_return": 0.064688,
+              "excess_return": 0.080802,
+              "end_date": "2024-12-04"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NVDA",
+          "window": "old_thin",
+          "usable_trade_date": "2024-11-08",
+          "reaction_date": "2024-11-08",
+          "entry_date": "2024-11-11",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.012728,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 30999839492.42,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.057372,
+              "spy_return": -0.019439,
+              "excess_return": -0.037932,
+              "end_date": "2024-11-18"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.085149,
+              "spy_return": -0.003801,
+              "excess_return": -0.081348,
+              "end_date": "2024-11-25"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.091476,
+              "spy_return": 0.004985,
+              "excess_return": -0.096461,
+              "end_date": "2024-12-10"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AMD",
+          "window": "old_thin",
+          "usable_trade_date": "2024-11-19",
+          "reaction_date": "2024-11-19",
+          "entry_date": "2024-11-20",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.000344,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 5570188142.35,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.019574,
+              "spy_return": 0.014313,
+              "excess_return": -0.033887,
+              "end_date": "2024-11-27"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.017271,
+              "spy_return": 0.027576,
+              "excess_return": -0.010305,
+              "end_date": "2024-12-05"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.144502,
+              "spy_return": -0.00725,
+              "excess_return": -0.137252,
+              "end_date": "2024-12-19"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        }
+      ]
+    },
+    "leadership_change_negative_reaction": {
+      "event_count": 25,
+      "unique_tickers": 19,
+      "by_window_10d": {
+        "late_strong": {
+          "count": 10,
+          "avg_pct": 5.0878,
+          "median_pct": 5.4236,
+          "positive_rate_pct": 60.0,
+          "best_pct": 26.7102,
+          "worst_pct": -8.1068
+        },
+        "mid_weak": {
+          "count": 7,
+          "avg_pct": 4.1842,
+          "median_pct": 0.7714,
+          "positive_rate_pct": 57.14,
+          "best_pct": 26.6693,
+          "worst_pct": -5.0265
+        },
+        "old_thin": {
+          "count": 6,
+          "avg_pct": 1.2573,
+          "median_pct": 2.2462,
+          "positive_rate_pct": 66.67,
+          "best_pct": 9.6349,
+          "worst_pct": -6.2193
+        }
+      },
+      "by_window_20d": {
+        "late_strong": {
+          "count": 9,
+          "avg_pct": 7.5173,
+          "median_pct": 4.7727,
+          "positive_rate_pct": 77.78,
+          "best_pct": 32.6876,
+          "worst_pct": -6.0743
+        },
+        "mid_weak": {
+          "count": 7,
+          "avg_pct": 3.9084,
+          "median_pct": 1.9821,
+          "positive_rate_pct": 57.14,
+          "best_pct": 27.2837,
+          "worst_pct": -8.1558
+        },
+        "old_thin": {
+          "count": 6,
+          "avg_pct": -2.2679,
+          "median_pct": -3.0539,
+          "positive_rate_pct": 50.0,
+          "best_pct": 9.2936,
+          "worst_pct": -16.9986
+        }
+      },
+      "forward_5d": {
+        "count": 25,
+        "avg_excess_pct": 3.2874,
+        "median_excess_pct": 1.8907,
+        "positive_rate_pct": 60.0,
+        "best_excess_pct": 15.3243,
+        "worst_excess_pct": -9.4576
+      },
+      "forward_10d": {
+        "count": 23,
+        "avg_excess_pct": 3.8135,
+        "median_excess_pct": 2.2373,
+        "positive_rate_pct": 60.87,
+        "best_excess_pct": 26.7102,
+        "worst_excess_pct": -8.1068
+      },
+      "forward_20d": {
+        "count": 22,
+        "avg_excess_pct": 3.7003,
+        "median_excess_pct": 2.8946,
+        "positive_rate_pct": 63.64,
+        "best_excess_pct": 32.6876,
+        "worst_excess_pct": -16.9986
+      },
+      "reaction_buckets": {
+        "negative_excess_le_minus_2pct": 25
+      },
+      "slot_conflicts": {
+        "true": 3,
+        "false": 22
+      },
+      "dominance_10d": {
+        "valid_events": 23,
+        "unique_tickers": 17,
+        "top_count_ticker": "UNH",
+        "top_count_share_pct": 13.04,
+        "top_abs_contribution_share_pct": 26.0371
+      },
+      "examples": [
+        {
+          "ticker": "MU",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-31",
+          "reaction_date": "2024-10-31",
+          "entry_date": "2024-11-01",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "5.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.02296,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 1916517966.66,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.119,
+              "spy_return": 0.047031,
+              "excess_return": 0.071969,
+              "end_date": "2024-11-08"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.0366,
+              "spy_return": 0.025257,
+              "excess_return": -0.061857,
+              "end_date": "2024-11-15"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.0145,
+              "spy_return": 0.056553,
+              "excess_return": -0.071053,
+              "end_date": "2024-12-02"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": -0.102179
+        },
+        {
+          "ticker": "AMD",
+          "window": "old_thin",
+          "usable_trade_date": "2025-02-25",
+          "reaction_date": "2025-02-25",
+          "entry_date": "2025-02-26",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.033414,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 4815708596.33,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.031253,
+              "spy_return": -0.021596,
+              "excess_return": -0.009657,
+              "end_date": "2025-03-05"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.039638,
+              "spy_return": -0.062188,
+              "excess_return": 0.022551,
+              "end_date": "2025-03-12"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.049929,
+              "spy_return": -0.043008,
+              "excess_return": 0.092936,
+              "end_date": "2025-03-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MU",
+          "window": "old_thin",
+          "usable_trade_date": "2025-03-06",
+          "reaction_date": "2025-03-06",
+          "entry_date": "2025-03-07",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.035991,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 1797971505.65,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.116292,
+              "spy_return": -0.014171,
+              "excess_return": 0.130462,
+              "end_date": "2025-03-14"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.049064,
+              "spy_return": -0.00915,
+              "excess_return": 0.058214,
+              "end_date": "2025-03-21"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.282265,
+              "spy_return": -0.112279,
+              "excess_return": -0.169986,
+              "end_date": "2025-04-04"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NVDA",
+          "window": "old_thin",
+          "usable_trade_date": "2025-03-10",
+          "reaction_date": "2025-03-10",
+          "entry_date": "2025-03-11",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.024035,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 33677152860.59,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.078985,
+              "spy_return": 0.002896,
+              "excess_return": 0.076089,
+              "end_date": "2025-03-18"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.128153,
+              "spy_return": 0.031804,
+              "excess_return": 0.096349,
+              "end_date": "2025-03-25"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.099833,
+              "spy_return": -0.109808,
+              "excess_return": 0.009975,
+              "end_date": "2025-04-08"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MCD",
+          "window": "old_thin",
+          "usable_trade_date": "2025-03-12",
+          "reaction_date": "2025-03-12",
+          "entry_date": "2025-03-13",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.029299,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 1139123579.75,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.021869,
+              "spy_return": 0.012534,
+              "excess_return": 0.009335,
+              "end_date": "2025-03-20"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.040808,
+              "spy_return": 0.018435,
+              "excess_return": 0.022373,
+              "end_date": "2025-03-27"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.021136,
+              "spy_return": -0.057892,
+              "excess_return": 0.079028,
+              "end_date": "2025-04-10"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "CRDO",
+          "window": "old_thin",
+          "usable_trade_date": "2025-03-25",
+          "reaction_date": "2025-03-25",
+          "entry_date": "2025-03-26",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.029121,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 344235613.05,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.113126,
+              "spy_return": -0.01855,
+              "excess_return": -0.094576,
+              "end_date": "2025-04-02"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.108387,
+              "spy_return": -0.046193,
+              "excess_return": -0.062193,
+              "end_date": "2025-04-09"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.12652,
+              "spy_return": -0.049549,
+              "excess_return": -0.076971,
+              "end_date": "2025-04-24"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "META",
+          "window": "old_thin",
+          "usable_trade_date": "2025-04-14",
+          "reaction_date": "2025-04-14",
+          "entry_date": "2025-04-15",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.031944,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 12586741067.14,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.022251,
+              "spy_return": -0.007875,
+              "excess_return": -0.014376,
+              "end_date": "2025-04-23"
+            },
+            "10d": {
+              "status": "pending"
+            },
+            "20d": {
+              "status": "pending"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "UNH",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-15",
+          "reaction_date": "2025-05-15",
+          "entry_date": "2025-05-16",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.114167,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 5148452596.89,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.058291,
+              "spy_return": -0.020533,
+              "excess_return": 0.078823,
+              "end_date": "2025-05-23"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.091052,
+              "spy_return": 0.002469,
+              "excess_return": 0.088583,
+              "end_date": "2025-06-02"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.109399,
+              "spy_return": 0.019332,
+              "excess_return": 0.090067,
+              "end_date": "2025-06-16"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        }
+      ]
+    },
+    "leadership_change_nonnegative_reaction": {
+      "event_count": 14,
+      "unique_tickers": 14,
+      "by_window_10d": {
+        "late_strong": {
+          "count": 10,
+          "avg_pct": -3.6768,
+          "median_pct": -3.2233,
+          "positive_rate_pct": 30.0,
+          "best_pct": 12.3907,
+          "worst_pct": -21.7624
+        },
+        "mid_weak": {
+          "count": 1,
+          "avg_pct": -10.1663,
+          "median_pct": -10.1663,
+          "positive_rate_pct": 0.0,
+          "best_pct": -10.1663,
+          "worst_pct": -10.1663
+        },
+        "old_thin": {
+          "count": 2,
+          "avg_pct": 2.6335,
+          "median_pct": 2.6335,
+          "positive_rate_pct": 50.0,
+          "best_pct": 8.3728,
+          "worst_pct": -3.1058
+        }
+      },
+      "by_window_20d": {
+        "late_strong": {
+          "count": 9,
+          "avg_pct": 5.3698,
+          "median_pct": 5.613,
+          "positive_rate_pct": 66.67,
+          "best_pct": 35.5423,
+          "worst_pct": -20.4356
+        },
+        "mid_weak": {
+          "count": 1,
+          "avg_pct": -9.7686,
+          "median_pct": -9.7686,
+          "positive_rate_pct": 0.0,
+          "best_pct": -9.7686,
+          "worst_pct": -9.7686
+        },
+        "old_thin": {
+          "count": 2,
+          "avg_pct": 1.5301,
+          "median_pct": 1.5301,
+          "positive_rate_pct": 100.0,
+          "best_pct": 2.9442,
+          "worst_pct": 0.116
+        }
+      },
+      "forward_5d": {
+        "count": 14,
+        "avg_excess_pct": -1.2777,
+        "median_excess_pct": -1.9446,
+        "positive_rate_pct": 28.57,
+        "best_excess_pct": 12.762,
+        "worst_excess_pct": -12.0101
+      },
+      "forward_10d": {
+        "count": 13,
+        "avg_excess_pct": -3.2052,
+        "median_excess_pct": -3.1058,
+        "positive_rate_pct": 30.77,
+        "best_excess_pct": 12.3907,
+        "worst_excess_pct": -21.7624
+      },
+      "forward_20d": {
+        "count": 12,
+        "avg_excess_pct": 3.4683,
+        "median_excess_pct": 2.283,
+        "positive_rate_pct": 66.67,
+        "best_excess_pct": 35.5423,
+        "worst_excess_pct": -20.4356
+      },
+      "reaction_buckets": {
+        "positive_excess_ge_2pct": 14
+      },
+      "slot_conflicts": {
+        "false": 12,
+        "true": 2
+      },
+      "dominance_10d": {
+        "valid_events": 13,
+        "unique_tickers": 13,
+        "top_count_ticker": "LLY",
+        "top_count_share_pct": 7.69,
+        "top_abs_contribution_share_pct": 23.0668
+      },
+      "examples": [
+        {
+          "ticker": "LLY",
+          "window": "old_thin",
+          "usable_trade_date": "2024-11-20",
+          "reaction_date": "2024-11-20",
+          "entry_date": "2024-11-21",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.032112,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 4242170756.1,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.065981,
+              "spy_return": 0.01542,
+              "excess_return": 0.050562,
+              "end_date": "2024-11-29"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.108012,
+              "spy_return": 0.024284,
+              "excess_return": 0.083728,
+              "end_date": "2024-12-06"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.029003,
+              "spy_return": -0.000439,
+              "excess_return": 0.029442,
+              "end_date": "2024-12-20"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MA",
+          "window": "old_thin",
+          "usable_trade_date": "2025-02-27",
+          "reaction_date": "2025-02-27",
+          "entry_date": "2025-02-28",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.022287,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 1423000366.39,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.036189,
+              "spy_return": -0.016463,
+              "excess_return": -0.019726,
+              "end_date": "2025-03-07"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.06991,
+              "spy_return": -0.038852,
+              "excess_return": -0.031058,
+              "end_date": "2025-03-14"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.047047,
+              "spy_return": -0.048208,
+              "excess_return": 0.00116,
+              "end_date": "2025-03-28"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AVGO",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-09-10",
+          "reaction_date": "2025-09-10",
+          "entry_date": "2025-09-11",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.094831,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 7414099428.91,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.069589,
+              "spy_return": 0.012351,
+              "excess_return": -0.08194,
+              "end_date": "2025-09-18"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.092958,
+              "spy_return": 0.008705,
+              "excess_return": -0.101663,
+              "end_date": "2025-09-25"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.068885,
+              "spy_return": 0.0288,
+              "excess_return": -0.097686,
+              "end_date": "2025-10-09"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "CRDO",
+          "window": "late_strong",
+          "usable_trade_date": "2025-10-29",
+          "reaction_date": "2025-10-29",
+          "entry_date": "2025-10-30",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.05711,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 892063551.81,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.032921,
+              "spy_return": -0.019871,
+              "excess_return": -0.01305,
+              "end_date": "2025-11-06"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.150523,
+              "spy_return": -0.017342,
+              "excess_return": -0.133181,
+              "end_date": "2025-11-13"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.055384,
+              "spy_return": -0.000746,
+              "excess_return": 0.05613,
+              "end_date": "2025-11-28"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "TSLA",
+          "window": "late_strong",
+          "usable_trade_date": "2025-11-10",
+          "reaction_date": "2025-11-10",
+          "entry_date": "2025-11-11",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "5.07",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.020971,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 37715795450.79,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.086823,
+              "spy_return": -0.029223,
+              "excess_return": -0.0576,
+              "end_date": "2025-11-18"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.045517,
+              "spy_return": -0.007251,
+              "excess_return": -0.038266,
+              "end_date": "2025-11-25"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.027424,
+              "spy_return": 0.011207,
+              "excess_return": 0.016217,
+              "end_date": "2025-12-10"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "LITE",
+          "window": "late_strong",
+          "usable_trade_date": "2026-01-06",
+          "reaction_date": "2026-01-06",
+          "entry_date": "2026-01-07",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.107118,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 1265682839.79,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.122745,
+              "spy_return": -0.002644,
+              "excess_return": -0.120101,
+              "end_date": "2026-01-14"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.062245,
+              "spy_return": -0.004637,
+              "excess_return": -0.057608,
+              "end_date": "2026-01-22"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.334374,
+              "spy_return": -0.021049,
+              "excess_return": 0.355423,
+              "end_date": "2026-02-05"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": -0.229162
+        },
+        {
+          "ticker": "AMD",
+          "window": "late_strong",
+          "usable_trade_date": "2026-01-21",
+          "reaction_date": "2026-01-21",
+          "entry_date": "2026-01-22",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.065554,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 6979524594.16,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.001708,
+              "spy_return": 0.006074,
+              "excess_return": -0.004366,
+              "end_date": "2026-01-29"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.235353,
+              "spy_return": -0.017728,
+              "excess_return": -0.217624,
+              "end_date": "2026-02-05"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.204965,
+              "spy_return": -0.000609,
+              "excess_return": -0.204356,
+              "end_date": "2026-02-20"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 2,
+          "replacement_value_10d_excess_proxy": -0.231054
+        },
+        {
+          "ticker": "DIS",
+          "window": "late_strong",
+          "usable_trade_date": "2026-02-04",
+          "reaction_date": "2026-02-04",
+          "entry_date": "2026-02-05",
+          "filing_category": "leadership_change",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.02",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.031998,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 1350420173.1,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.043625,
+              "spy_return": 0.000485,
+              "excess_return": -0.044109,
+              "end_date": "2026-02-12"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.013732,
+              "spy_return": 0.012468,
+              "excess_return": -0.0262,
+              "end_date": "2026-02-20"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.051471,
+              "spy_return": -0.012571,
+              "excess_return": -0.0389,
+              "end_date": "2026-03-06"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        }
+      ]
+    }
+  },
+  "slot_conflict_summary": {
+    "same_day_core_conflict_count": 132,
+    "same_day_core_conflict_rate": 0.1786,
+    "valid_replacement_proxy_count": 122,
+    "positive_replacement_proxy_count": 41,
+    "positive_replacement_proxy_rate": 0.3361,
+    "replacement_value_10d_excess_proxy": {
+      "count": 122,
+      "avg": -0.042395,
+      "median": -0.035971,
+      "p25": -0.107317,
+      "p75": 0.004501,
+      "win_rate": 0.3361
+    }
+  },
+  "ticker_rank_10d_primary": [
+    {
+      "ticker": "LITE",
+      "count": 2,
+      "avg_excess_pct": 20.0975,
+      "sum_excess_pct": 40.195
+    },
+    {
+      "ticker": "UNH",
+      "count": 3,
+      "avg_excess_pct": 11.2691,
+      "sum_excess_pct": 33.8073
+    },
+    {
+      "ticker": "INTC",
+      "count": 1,
+      "avg_excess_pct": 11.9786,
+      "sum_excess_pct": 11.9786
+    },
+    {
+      "ticker": "NVDA",
+      "count": 1,
+      "avg_excess_pct": 9.6349,
+      "sum_excess_pct": 9.6349
+    },
+    {
+      "ticker": "JPM",
+      "count": 1,
+      "avg_excess_pct": 8.0962,
+      "sum_excess_pct": 8.0962
+    },
+    {
+      "ticker": "SNOW",
+      "count": 2,
+      "avg_excess_pct": 3.1932,
+      "sum_excess_pct": 6.3864
+    },
+    {
+      "ticker": "CAT",
+      "count": 1,
+      "avg_excess_pct": 5.2322,
+      "sum_excess_pct": 5.2322
+    },
+    {
+      "ticker": "AMD",
+      "count": 1,
+      "avg_excess_pct": 2.2551,
+      "sum_excess_pct": 2.2551
+    },
+    {
+      "ticker": "MCD",
+      "count": 1,
+      "avg_excess_pct": 2.2373,
+      "sum_excess_pct": 2.2373
+    },
+    {
+      "ticker": "CVX",
+      "count": 1,
+      "avg_excess_pct": 1.2204,
+      "sum_excess_pct": 1.2204
+    },
+    {
+      "ticker": "MU",
+      "count": 2,
+      "avg_excess_pct": -0.1822,
+      "sum_excess_pct": -0.3643
+    },
+    {
+      "ticker": "DE",
+      "count": 1,
+      "avg_excess_pct": -1.4835,
+      "sum_excess_pct": -1.4835
+    }
+  ],
+  "decision": {
+    "status": "shadow_promising_not_promoted",
+    "reason": "Primary branch is positive across multiple windows; keep observe-only until forward evidence exists."
+  },
+  "production_impact": {
+    "production_impact": "replay_only",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "notes": "Shadow measurement only; no production or backtest trading policy changed."
+  },
+  "gate4": {
+    "status": "not_applicable_shadow_only",
+    "reason": "No executable trading logic changed; canonical before/after metrics are unchanged."
+  }
+}

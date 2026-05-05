@@ -1,0 +1,1888 @@
+{
+  "experiment_id": "exp-20260504-022",
+  "generated_at": "2026-05-04T07:19:22+00:00",
+  "lane": "alpha_search",
+  "change_type": "shadow_event_taxonomy",
+  "status": "shadow_promising_not_promoted",
+  "decision": "shadow_promising_not_promoted",
+  "hypothesis": "SEC filings that fall outside the already-tested earnings, agreement/debt, leadership, and FD/other 8-K buckets may create a mild uncertainty selloff that mean-reverts over the next 10 trading days.",
+  "single_causal_variable": "SEC other_sec_filing plus fixed mild negative reaction bucket",
+  "history_check": {
+    "mechanism_insights_checked": [
+      "LLM soft-ranking remains sample-limited, so this run does not depend on it.",
+      "exp-20260504-019 rejected agreement_or_debt; this excludes that category.",
+      "exp-20260504-015/018 measured leadership-change; this excludes that category.",
+      "exp-20260504-008/010/012 measured Item 2.02 negative-language packets; this excludes that category.",
+      "The run does not tune nearby reaction thresholds; it uses a pre-existing reaction bucket."
+    ],
+    "why_not_simple_repeat": "This tests a previously unpromoted residual SEC filing category, not another leadership-change threshold or agreement/debt retry."
+  },
+  "parameters": {
+    "primary_filing_category": "other_sec_filing",
+    "primary_reaction_bucket": "negative_excess_0_to_minus_2pct",
+    "entry_timing": "next trading-day open after public filing/reaction day",
+    "forward_horizons": [
+      "5d",
+      "10d",
+      "20d"
+    ],
+    "minimum_valid_10d_samples": 20,
+    "required_positive_windows": 3,
+    "locked_variables": [
+      "production universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "position sizing",
+      "add-ons",
+      "exits",
+      "LLM/news replay"
+    ]
+  },
+  "date_windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "coverage": {
+    "sec_event_group_count": 1090,
+    "evaluated_window_event_count": 1083,
+    "price_covered_count": 739,
+    "price_coverage_rate": 0.6824,
+    "primary_event_count": 22,
+    "primary_valid_10d_count": 20,
+    "primary_unique_tickers": 17,
+    "by_price_status": {
+      "no_ticker_price": 342,
+      "covered": 739,
+      "no_entry_day": 2
+    }
+  },
+  "shadow_metrics": {
+    "primary_branch": {
+      "event_count": 22,
+      "unique_tickers": 17,
+      "forward_raw": {
+        "5d": {
+          "count": 21,
+          "avg_pct": -0.8784,
+          "median_pct": -0.5444,
+          "positive_rate_pct": 38.1,
+          "best_pct": 6.9364,
+          "worst_pct": -10.8543
+        },
+        "10d": {
+          "count": 20,
+          "avg_pct": 2.9523,
+          "median_pct": 2.9573,
+          "positive_rate_pct": 55.0,
+          "best_pct": 31.7871,
+          "worst_pct": -10.0569
+        },
+        "20d": {
+          "count": 20,
+          "avg_pct": 3.3116,
+          "median_pct": 1.3753,
+          "positive_rate_pct": 60.0,
+          "best_pct": 38.7072,
+          "worst_pct": -13.9077
+        }
+      },
+      "forward_excess": {
+        "5d": {
+          "count": 21,
+          "avg_pct": -0.768,
+          "median_pct": -0.5427,
+          "positive_rate_pct": 28.57,
+          "best_pct": 8.8856,
+          "worst_pct": -9.7371
+        },
+        "10d": {
+          "count": 20,
+          "avg_pct": 2.5478,
+          "median_pct": 2.4522,
+          "positive_rate_pct": 55.0,
+          "best_pct": 28.5223,
+          "worst_pct": -11.6275
+        },
+        "20d": {
+          "count": 20,
+          "avg_pct": 2.5426,
+          "median_pct": -0.4127,
+          "positive_rate_pct": 50.0,
+          "best_pct": 33.7629,
+          "worst_pct": -16.775
+        }
+      },
+      "by_window": {
+        "late_strong": {
+          "event_count": 4,
+          "unique_tickers": 3,
+          "forward_excess": {
+            "5d": {
+              "count": 4,
+              "avg_pct": -3.017,
+              "median_pct": -2.9409,
+              "positive_rate_pct": 0.0,
+              "best_pct": -0.4127,
+              "worst_pct": -5.7734
+            },
+            "10d": {
+              "count": 3,
+              "avg_pct": 0.0089,
+              "median_pct": -0.9295,
+              "positive_rate_pct": 33.33,
+              "best_pct": 4.0095,
+              "worst_pct": -3.0532
+            },
+            "20d": {
+              "count": 3,
+              "avg_pct": 0.8433,
+              "median_pct": -1.3264,
+              "positive_rate_pct": 33.33,
+              "best_pct": 7.491,
+              "worst_pct": -3.6348
+            }
+          }
+        },
+        "mid_weak": {
+          "event_count": 13,
+          "unique_tickers": 12,
+          "forward_excess": {
+            "5d": {
+              "count": 12,
+              "avg_pct": -0.3739,
+              "median_pct": -0.4811,
+              "positive_rate_pct": 33.33,
+              "best_pct": 5.3183,
+              "worst_pct": -9.7371
+            },
+            "10d": {
+              "count": 12,
+              "avg_pct": 2.3445,
+              "median_pct": 2.4522,
+              "positive_rate_pct": 58.33,
+              "best_pct": 28.5223,
+              "worst_pct": -11.6275
+            },
+            "20d": {
+              "count": 12,
+              "avg_pct": 2.3169,
+              "median_pct": -0.4127,
+              "positive_rate_pct": 50.0,
+              "best_pct": 33.7629,
+              "worst_pct": -16.775
+            }
+          }
+        },
+        "old_thin": {
+          "event_count": 5,
+          "unique_tickers": 5,
+          "forward_excess": {
+            "5d": {
+              "count": 5,
+              "avg_pct": 0.0854,
+              "median_pct": -0.3764,
+              "positive_rate_pct": 40.0,
+              "best_pct": 8.8856,
+              "worst_pct": -6.0675
+            },
+            "10d": {
+              "count": 5,
+              "avg_pct": 4.5589,
+              "median_pct": 3.1941,
+              "positive_rate_pct": 60.0,
+              "best_pct": 19.1185,
+              "worst_pct": -6.038
+            },
+            "20d": {
+              "count": 5,
+              "avg_pct": 4.1041,
+              "median_pct": 4.3587,
+              "positive_rate_pct": 60.0,
+              "best_pct": 17.5359,
+              "worst_pct": -6.8922
+            }
+          }
+        }
+      },
+      "dominance_10d": {
+        "valid_events": 20,
+        "unique_tickers": 16,
+        "top_count_ticker": "GS",
+        "top_count_share_pct": 15.0,
+        "top_abs_contribution_share_pct": 22.8976
+      },
+      "item_counts": {
+        "form_types": {
+          "8-K": 22
+        },
+        "form_bases": {
+          "8-K": 22
+        },
+        "eight_k_item_codes": {
+          "9.01": 11,
+          "5.07": 11,
+          "5.03": 7,
+          "3.02": 2,
+          "3.03": 1
+        }
+      },
+      "scarce_slot_value": {
+        "same_day_ab_overlap_count": 4,
+        "same_day_ab_overlap_rate": 0.1818,
+        "valid_replacement_proxy_count": 2,
+        "positive_replacement_proxy_count": 0,
+        "positive_replacement_proxy_rate": 0.0,
+        "replacement_value_10d_excess_proxy": {
+          "count": 2,
+          "avg_pct": -9.7802,
+          "median_pct": -9.7802,
+          "positive_rate_pct": 0.0,
+          "best_pct": -6.464,
+          "worst_pct": -13.0963
+        }
+      },
+      "examples": [
+        {
+          "ticker": "CRDO",
+          "window": "old_thin",
+          "usable_trade_date": "2024-10-23",
+          "reaction_date": "2024-10-23",
+          "entry_date": "2024-10-24",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.016933,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 77122205.03,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.023316,
+              "spy_return": -0.019552,
+              "excess_return": -0.003764,
+              "end_date": "2024-10-31"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.218135,
+              "spy_return": 0.026949,
+              "excess_return": 0.191185,
+              "end_date": "2024-11-07"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.198964,
+              "spy_return": 0.023604,
+              "excess_return": 0.175359,
+              "end_date": "2024-11-21"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "CVX",
+          "window": "old_thin",
+          "usable_trade_date": "2024-12-11",
+          "reaction_date": "2024-12-11",
+          "entry_date": "2024-12-12",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.012762,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1141120095.92,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.094438,
+              "spy_return": -0.033763,
+              "excess_return": -0.060675,
+              "end_date": "2024-12-19"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.076153,
+              "spy_return": -0.015773,
+              "excess_return": -0.06038,
+              "end_date": "2024-12-27"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.006608,
+              "spy_return": -0.036979,
+              "excess_return": 0.043587,
+              "end_date": "2025-01-14"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": -0.06464
+        },
+        {
+          "ticker": "GS",
+          "window": "old_thin",
+          "usable_trade_date": "2025-02-03",
+          "reaction_date": "2025-02-03",
+          "entry_date": "2025-02-04",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.00581,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1587744365.59,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.024114,
+              "spy_return": 0.012512,
+              "excess_return": 0.011602,
+              "end_date": "2025-02-11"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.057199,
+              "spy_return": 0.025258,
+              "excess_return": 0.031941,
+              "end_date": "2025-02-19"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.056945,
+              "spy_return": -0.024706,
+              "excess_return": -0.032239,
+              "end_date": "2025-03-05"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NOW",
+          "window": "old_thin",
+          "usable_trade_date": "2025-02-13",
+          "reaction_date": "2025-02-13",
+          "entry_date": "2025-02-14",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.003351,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1920153624.45,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.05262,
+              "spy_return": -0.020871,
+              "excess_return": -0.031749,
+              "end_date": "2025-02-24"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.070258,
+              "spy_return": -0.042906,
+              "excess_return": -0.027353,
+              "end_date": "2025-03-03"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.139077,
+              "spy_return": -0.070154,
+              "excess_return": -0.068922,
+              "end_date": "2025-03-17"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "DE",
+          "window": "old_thin",
+          "usable_trade_date": "2025-03-03",
+          "reaction_date": "2025-03-03",
+          "entry_date": "2025-03-04",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.013596,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 730880165.31,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.047818,
+              "spy_return": -0.041038,
+              "excess_return": 0.088856,
+              "end_date": "2025-03-11"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.060313,
+              "spy_return": -0.03224,
+              "excess_return": 0.092553,
+              "end_date": "2025-03-18"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.058003,
+              "spy_return": -0.029416,
+              "excess_return": 0.087418,
+              "end_date": "2025-04-01"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "GE",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-12",
+          "reaction_date": "2025-05-12",
+          "entry_date": "2025-05-13",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.014486,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1038052293.31,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.069364,
+              "spy_return": 0.016181,
+              "excess_return": 0.053183,
+              "end_date": "2025-05-20"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.107591,
+              "spy_return": 0.007405,
+              "excess_return": 0.100186,
+              "end_date": "2025-05-28"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.116,
+              "spy_return": 0.030767,
+              "excess_return": 0.085233,
+              "end_date": "2025-06-11"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AMZN",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-23",
+          "reaction_date": "2025-05-23",
+          "entry_date": "2025-05-27",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.003563,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 9061175489.18,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.012901,
+              "spy_return": 0.017097,
+              "excess_return": -0.004196,
+              "end_date": "2025-06-03"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.071495,
+              "spy_return": 0.029024,
+              "excess_return": 0.042472,
+              "end_date": "2025-06-10"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.043823,
+              "spy_return": 0.03898,
+              "excess_return": 0.004843,
+              "end_date": "2025-06-25"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MCD",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-26",
+          "reaction_date": "2025-05-27",
+          "entry_date": "2025-05-28",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.019583,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 945082754.74,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.005121,
+              "spy_return": 0.007387,
+              "excess_return": -0.012508,
+              "end_date": "2025-06-04"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.036573,
+              "spy_return": 0.016566,
+              "excess_return": -0.05314,
+              "end_date": "2025-06-11"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.087951,
+              "spy_return": 0.037391,
+              "excess_return": -0.125341,
+              "end_date": "2025-06-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NOW",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-28",
+          "reaction_date": "2025-05-28",
+          "entry_date": "2025-05-29",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.03",
+            "5.07",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.000142,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1374332018.54,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.005444,
+              "spy_return": -1.7e-05,
+              "excess_return": -0.005427,
+              "end_date": "2025-06-05"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.015442,
+              "spy_return": 0.018025,
+              "excess_return": -0.033467,
+              "end_date": "2025-06-12"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.000733,
+              "spy_return": 0.039908,
+              "excess_return": -0.040641,
+              "end_date": "2025-06-27"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "DDOG",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-06-06",
+          "reaction_date": "2025-06-06",
+          "entry_date": "2025-06-09",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "3.03",
+            "5.03",
+            "5.07",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.006901,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 509180425.14,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.003758,
+              "spy_return": 0.004936,
+              "excess_return": -0.008694,
+              "end_date": "2025-06-16"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.06896,
+              "spy_return": 0.014763,
+              "excess_return": 0.054196,
+              "end_date": "2025-06-24"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.166353,
+              "spy_return": 0.043662,
+              "excess_return": 0.122692,
+              "end_date": "2025-07-09"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NFLX",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-06-09",
+          "reaction_date": "2025-06-09",
+          "entry_date": "2025-06-10",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.014603,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 3749636187.88,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.00558,
+              "spy_return": -0.004482,
+              "excess_return": -0.001099,
+              "end_date": "2025-06-17"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.038883,
+              "spy_return": 0.014486,
+              "excess_return": 0.024397,
+              "end_date": "2025-06-25"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.018794,
+              "spy_return": 0.045733,
+              "excess_return": -0.026939,
+              "end_date": "2025-07-10"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "APP",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-06-10",
+          "reaction_date": "2025-06-10",
+          "entry_date": "2025-06-11",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.005644,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 2413627310.9,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.108543,
+              "spy_return": -0.011172,
+              "excess_return": -0.097371,
+              "end_date": "2025-06-18"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.100569,
+              "spy_return": 0.015705,
+              "excess_return": -0.116275,
+              "end_date": "2025-06-26"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.132539,
+              "spy_return": 0.03521,
+              "excess_return": -0.16775,
+              "end_date": "2025-07-11"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": -0.130963
+        },
+        {
+          "ticker": "TRIP",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-06-23",
+          "reaction_date": "2025-06-23",
+          "entry_date": "2025-06-24",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.002938,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 37098908.21,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.054753,
+              "spy_return": 0.022041,
+              "excess_return": 0.032712,
+              "end_date": "2025-07-01"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.317871,
+              "spy_return": 0.032648,
+              "excess_return": 0.285223,
+              "end_date": "2025-07-09"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.387072,
+              "spy_return": 0.049443,
+              "excess_return": 0.337629,
+              "end_date": "2025-07-23"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MSFT",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-07-02",
+          "reaction_date": "2025-07-02",
+          "entry_date": "2025-07-03",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.006484,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 9690270924.22,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.019258,
+              "spy_return": 0.00188,
+              "excess_return": 0.017379,
+              "end_date": "2025-07-11"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.032887,
+              "spy_return": 0.008242,
+              "excess_return": 0.024646,
+              "end_date": "2025-07-18"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.06136,
+              "spy_return": -0.001173,
+              "excess_return": 0.062532,
+              "end_date": "2025-08-01"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MU",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-07-21",
+          "reaction_date": "2025-07-21",
+          "entry_date": "2025-07-22",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.012037,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 3333890681.85,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.007975,
+              "spy_return": 0.009792,
+              "excess_return": -0.017766,
+              "end_date": "2025-07-29"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.03367,
+              "spy_return": -0.001796,
+              "excess_return": -0.031874,
+              "end_date": "2025-08-05"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.081428,
+              "spy_return": 0.017024,
+              "excess_return": 0.064404,
+              "end_date": "2025-08-19"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "V",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-07-24",
+          "reaction_date": "2025-07-24",
+          "entry_date": "2025-07-25",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.03"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.004046,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 2061218270.62,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.041384,
+              "spy_return": -0.021052,
+              "excess_return": -0.020332,
+              "end_date": "2025-08-01"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.048644,
+              "spy_return": 0.003291,
+              "excess_return": -0.051935,
+              "end_date": "2025-08-08"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.009446,
+              "spy_return": 0.016092,
+              "excess_return": -0.025539,
+              "end_date": "2025-08-22"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "V",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-08-11",
+          "reaction_date": "2025-08-11",
+          "entry_date": "2025-08-12",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "3.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.000635,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 2167743133.73,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.021629,
+              "spy_return": 0.002381,
+              "excess_return": 0.019247,
+              "end_date": "2025-08-19"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.047673,
+              "spy_return": 0.010763,
+              "excess_return": 0.03691,
+              "end_date": "2025-08-26"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.008711,
+              "spy_return": 0.021808,
+              "excess_return": -0.013097,
+              "end_date": "2025-09-10"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "GS",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-10-22",
+          "reaction_date": "2025-10-22",
+          "entry_date": "2025-10-23",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.013748,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1619811524.21,
+          "horizons": {
+            "5d": {
+              "status": "pending"
+            },
+            "10d": {
+              "status": "pending"
+            },
+            "20d": {
+              "status": "pending"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "GS",
+          "window": "late_strong",
+          "usable_trade_date": "2026-01-22",
+          "reaction_date": "2026-01-22",
+          "entry_date": "2026-01-23",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.003502,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1951504433.02,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.001424,
+              "spy_return": 0.005551,
+              "excess_return": -0.004127,
+              "end_date": "2026-01-30"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.005706,
+              "spy_return": 0.003589,
+              "excess_return": -0.009295,
+              "end_date": "2026-02-06"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.044718,
+              "spy_return": -0.00837,
+              "excess_return": -0.036348,
+              "end_date": "2026-02-23"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AAPL",
+          "window": "late_strong",
+          "usable_trade_date": "2026-02-25",
+          "reaction_date": "2026-02-25",
+          "entry_date": "2026-02-26",
+          "filing_category": "other_sec_filing",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "5.07",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.000758,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 14678468600.48,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.053319,
+              "spy_return": -0.017266,
+              "excess_return": -0.036053,
+              "end_date": "2026-03-05"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.069795,
+              "spy_return": -0.039263,
+              "excess_return": -0.030532,
+              "end_date": "2026-03-12"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.080233,
+              "spy_return": -0.066969,
+              "excess_return": -0.013264,
+              "end_date": "2026-03-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        }
+      ]
+    },
+    "all_other_sec_filing_by_reaction_bucket": {
+      "negative_excess_0_to_minus_2pct": {
+        "event_count": 22,
+        "unique_tickers": 17,
+        "forward_excess": {
+          "5d": {
+            "count": 21,
+            "avg_pct": -0.768,
+            "median_pct": -0.5427,
+            "positive_rate_pct": 28.57,
+            "best_pct": 8.8856,
+            "worst_pct": -9.7371
+          },
+          "10d": {
+            "count": 20,
+            "avg_pct": 2.5478,
+            "median_pct": 2.4522,
+            "positive_rate_pct": 55.0,
+            "best_pct": 28.5223,
+            "worst_pct": -11.6275
+          },
+          "20d": {
+            "count": 20,
+            "avg_pct": 2.5426,
+            "median_pct": -0.4127,
+            "positive_rate_pct": 50.0,
+            "best_pct": 33.7629,
+            "worst_pct": -16.775
+          }
+        }
+      },
+      "negative_excess_le_minus_2pct": {
+        "event_count": 6,
+        "unique_tickers": 6,
+        "forward_excess": {
+          "5d": {
+            "count": 6,
+            "avg_pct": 1.7608,
+            "median_pct": 1.5417,
+            "positive_rate_pct": 66.67,
+            "best_pct": 5.8789,
+            "worst_pct": -0.3993
+          },
+          "10d": {
+            "count": 6,
+            "avg_pct": 3.58,
+            "median_pct": 1.3414,
+            "positive_rate_pct": 50.0,
+            "best_pct": 14.0912,
+            "worst_pct": -4.8064
+          },
+          "20d": {
+            "count": 6,
+            "avg_pct": 7.9387,
+            "median_pct": 8.7769,
+            "positive_rate_pct": 83.33,
+            "best_pct": 14.4362,
+            "worst_pct": -1.7973
+          }
+        }
+      },
+      "positive_excess_0_to_2pct": {
+        "event_count": 28,
+        "unique_tickers": 18,
+        "forward_excess": {
+          "5d": {
+            "count": 27,
+            "avg_pct": -0.3579,
+            "median_pct": 0.1529,
+            "positive_rate_pct": 55.56,
+            "best_pct": 9.5749,
+            "worst_pct": -7.7583
+          },
+          "10d": {
+            "count": 27,
+            "avg_pct": 0.6848,
+            "median_pct": -0.2634,
+            "positive_rate_pct": 48.15,
+            "best_pct": 28.4557,
+            "worst_pct": -10.4796
+          },
+          "20d": {
+            "count": 27,
+            "avg_pct": 0.1706,
+            "median_pct": -0.7998,
+            "positive_rate_pct": 48.15,
+            "best_pct": 23.5484,
+            "worst_pct": -15.4984
+          }
+        }
+      },
+      "positive_excess_ge_2pct": {
+        "event_count": 8,
+        "unique_tickers": 7,
+        "forward_excess": {
+          "5d": {
+            "count": 7,
+            "avg_pct": -0.9298,
+            "median_pct": 0.3653,
+            "positive_rate_pct": 57.14,
+            "best_pct": 5.7645,
+            "worst_pct": -7.0203
+          },
+          "10d": {
+            "count": 7,
+            "avg_pct": -0.2916,
+            "median_pct": 3.0432,
+            "positive_rate_pct": 57.14,
+            "best_pct": 10.3467,
+            "worst_pct": -14.6505
+          },
+          "20d": {
+            "count": 6,
+            "avg_pct": 1.6559,
+            "median_pct": 0.0332,
+            "positive_rate_pct": 50.0,
+            "best_pct": 19.6537,
+            "worst_pct": -9.8553
+          }
+        }
+      }
+    },
+    "all_sec_category_reaction_cells": {
+      "min_valid_10d": 8,
+      "ranked_by_avg_10d": [
+        {
+          "cell": "leadership_change|negative_excess_le_minus_2pct",
+          "event_count": 25,
+          "valid_10d_count": 23,
+          "positive_windows_10d": 3,
+          "avg_10d_excess_pct": 3.8135,
+          "median_10d_excess_pct": 2.2373,
+          "positive_rate_10d_pct": 60.87,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 3,
+            "same_day_ab_overlap_rate": 0.12,
+            "valid_replacement_proxy_count": 3,
+            "positive_replacement_proxy_count": 0,
+            "positive_replacement_proxy_rate": 0.0,
+            "replacement_value_10d_excess_proxy": {
+              "count": 3,
+              "avg_pct": -6.9495,
+              "median_pct": -9.9441,
+              "positive_rate_pct": 0.0,
+              "best_pct": -0.6865,
+              "worst_pct": -10.2179
+            }
+          }
+        },
+        {
+          "cell": "other_sec_filing|negative_excess_0_to_minus_2pct",
+          "event_count": 22,
+          "valid_10d_count": 20,
+          "positive_windows_10d": 3,
+          "avg_10d_excess_pct": 2.5478,
+          "median_10d_excess_pct": 2.4522,
+          "positive_rate_10d_pct": 55.0,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 4,
+            "same_day_ab_overlap_rate": 0.1818,
+            "valid_replacement_proxy_count": 2,
+            "positive_replacement_proxy_count": 0,
+            "positive_replacement_proxy_rate": 0.0,
+            "replacement_value_10d_excess_proxy": {
+              "count": 2,
+              "avg_pct": -9.7802,
+              "median_pct": -9.7802,
+              "positive_rate_pct": 0.0,
+              "best_pct": -6.464,
+              "worst_pct": -13.0963
+            }
+          }
+        },
+        {
+          "cell": "8k_2_02_results|negative_excess_le_minus_2pct",
+          "event_count": 68,
+          "valid_10d_count": 63,
+          "positive_windows_10d": 3,
+          "avg_10d_excess_pct": 1.5183,
+          "median_10d_excess_pct": -1.0612,
+          "positive_rate_10d_pct": 42.86,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 19,
+            "same_day_ab_overlap_rate": 0.2794,
+            "valid_replacement_proxy_count": 17,
+            "positive_replacement_proxy_count": 3,
+            "positive_replacement_proxy_rate": 0.1765,
+            "replacement_value_10d_excess_proxy": {
+              "count": 17,
+              "avg_pct": -4.9594,
+              "median_pct": -6.5558,
+              "positive_rate_pct": 17.65,
+              "best_pct": 63.3587,
+              "worst_pct": -44.0376
+            }
+          }
+        },
+        {
+          "cell": "fd_or_other_event|negative_excess_le_minus_2pct",
+          "event_count": 17,
+          "valid_10d_count": 16,
+          "positive_windows_10d": 3,
+          "avg_10d_excess_pct": 1.2704,
+          "median_10d_excess_pct": 1.8304,
+          "positive_rate_10d_pct": 62.5,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 3,
+            "same_day_ab_overlap_rate": 0.1765,
+            "valid_replacement_proxy_count": 3,
+            "positive_replacement_proxy_count": 2,
+            "positive_replacement_proxy_rate": 0.6667,
+            "replacement_value_10d_excess_proxy": {
+              "count": 3,
+              "avg_pct": -1.5464,
+              "median_pct": 1.0871,
+              "positive_rate_pct": 66.67,
+              "best_pct": 8.88,
+              "worst_pct": -14.6063
+            }
+          }
+        },
+        {
+          "cell": "leadership_change|negative_excess_0_to_minus_2pct",
+          "event_count": 46,
+          "valid_10d_count": 44,
+          "positive_windows_10d": 3,
+          "avg_10d_excess_pct": 0.9328,
+          "median_10d_excess_pct": 0.6055,
+          "positive_rate_10d_pct": 59.09,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 6,
+            "same_day_ab_overlap_rate": 0.1304,
+            "valid_replacement_proxy_count": 5,
+            "positive_replacement_proxy_count": 2,
+            "positive_replacement_proxy_rate": 0.4,
+            "replacement_value_10d_excess_proxy": {
+              "count": 5,
+              "avg_pct": -2.4941,
+              "median_pct": -1.7813,
+              "positive_rate_pct": 40.0,
+              "best_pct": 6.4823,
+              "worst_pct": -11.9013
+            }
+          }
+        },
+        {
+          "cell": "agreement_or_debt|negative_excess_0_to_minus_2pct",
+          "event_count": 17,
+          "valid_10d_count": 17,
+          "positive_windows_10d": 2,
+          "avg_10d_excess_pct": 1.6562,
+          "median_10d_excess_pct": -0.6174,
+          "positive_rate_10d_pct": 47.06,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 4,
+            "same_day_ab_overlap_rate": 0.2353,
+            "valid_replacement_proxy_count": 4,
+            "positive_replacement_proxy_count": 3,
+            "positive_replacement_proxy_rate": 0.75,
+            "replacement_value_10d_excess_proxy": {
+              "count": 4,
+              "avg_pct": -2.3125,
+              "median_pct": 1.6359,
+              "positive_rate_pct": 75.0,
+              "best_pct": 3.3018,
+              "worst_pct": -15.8234
+            }
+          }
+        },
+        {
+          "cell": "periodic_10q_10k|negative_excess_0_to_minus_2pct",
+          "event_count": 43,
+          "valid_10d_count": 43,
+          "positive_windows_10d": 2,
+          "avg_10d_excess_pct": 1.1553,
+          "median_10d_excess_pct": 0.7621,
+          "positive_rate_10d_pct": 60.47,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 8,
+            "same_day_ab_overlap_rate": 0.186,
+            "valid_replacement_proxy_count": 8,
+            "positive_replacement_proxy_count": 3,
+            "positive_replacement_proxy_rate": 0.375,
+            "replacement_value_10d_excess_proxy": {
+              "count": 8,
+              "avg_pct": -6.5004,
+              "median_pct": -13.4977,
+              "positive_rate_pct": 37.5,
+              "best_pct": 13.4834,
+              "worst_pct": -18.4999
+            }
+          }
+        },
+        {
+          "cell": "periodic_10q_10k|positive_excess_0_to_2pct",
+          "event_count": 44,
+          "valid_10d_count": 44,
+          "positive_windows_10d": 2,
+          "avg_10d_excess_pct": 0.6338,
+          "median_10d_excess_pct": -0.2942,
+          "positive_rate_10d_pct": 47.73,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 8,
+            "same_day_ab_overlap_rate": 0.1818,
+            "valid_replacement_proxy_count": 8,
+            "positive_replacement_proxy_count": 3,
+            "positive_replacement_proxy_rate": 0.375,
+            "replacement_value_10d_excess_proxy": {
+              "count": 8,
+              "avg_pct": -4.3583,
+              "median_pct": -4.0654,
+              "positive_rate_pct": 37.5,
+              "best_pct": 9.9949,
+              "worst_pct": -18.8438
+            }
+          }
+        },
+        {
+          "cell": "8k_2_02_results|positive_excess_0_to_2pct",
+          "event_count": 40,
+          "valid_10d_count": 37,
+          "positive_windows_10d": 2,
+          "avg_10d_excess_pct": 0.5748,
+          "median_10d_excess_pct": 0.9073,
+          "positive_rate_10d_pct": 59.46,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 8,
+            "same_day_ab_overlap_rate": 0.2,
+            "valid_replacement_proxy_count": 8,
+            "positive_replacement_proxy_count": 2,
+            "positive_replacement_proxy_rate": 0.25,
+            "replacement_value_10d_excess_proxy": {
+              "count": 8,
+              "avg_pct": 2.2532,
+              "median_pct": -1.6665,
+              "positive_rate_pct": 25.0,
+              "best_pct": 29.9888,
+              "worst_pct": -4.9709
+            }
+          }
+        },
+        {
+          "cell": "8k_2_02_results|positive_excess_ge_2pct",
+          "event_count": 74,
+          "valid_10d_count": 71,
+          "positive_windows_10d": 2,
+          "avg_10d_excess_pct": 0.4102,
+          "median_10d_excess_pct": -0.2722,
+          "positive_rate_10d_pct": 47.89,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 22,
+            "same_day_ab_overlap_rate": 0.2973,
+            "valid_replacement_proxy_count": 20,
+            "positive_replacement_proxy_count": 3,
+            "positive_replacement_proxy_rate": 0.15,
+            "replacement_value_10d_excess_proxy": {
+              "count": 20,
+              "avg_pct": -3.2384,
+              "median_pct": 0.0,
+              "positive_rate_pct": 15.0,
+              "best_pct": 20.1628,
+              "worst_pct": -30.1404
+            }
+          }
+        },
+        {
+          "cell": "periodic_10q_10k|positive_excess_ge_2pct",
+          "event_count": 23,
+          "valid_10d_count": 22,
+          "positive_windows_10d": 2,
+          "avg_10d_excess_pct": -0.7213,
+          "median_10d_excess_pct": -0.6105,
+          "positive_rate_10d_pct": 45.45,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 2,
+            "same_day_ab_overlap_rate": 0.087,
+            "valid_replacement_proxy_count": 2,
+            "positive_replacement_proxy_count": 1,
+            "positive_replacement_proxy_rate": 0.5,
+            "replacement_value_10d_excess_proxy": {
+              "count": 2,
+              "avg_pct": -2.8685,
+              "median_pct": -2.8685,
+              "positive_rate_pct": 50.0,
+              "best_pct": 1.9111,
+              "worst_pct": -7.6481
+            }
+          }
+        },
+        {
+          "cell": "leadership_change|positive_excess_0_to_2pct",
+          "event_count": 46,
+          "valid_10d_count": 40,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": 1.9474,
+          "median_10d_excess_pct": 0.897,
+          "positive_rate_10d_pct": 55.0,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 4,
+            "same_day_ab_overlap_rate": 0.087,
+            "valid_replacement_proxy_count": 4,
+            "positive_replacement_proxy_count": 2,
+            "positive_replacement_proxy_rate": 0.5,
+            "replacement_value_10d_excess_proxy": {
+              "count": 4,
+              "avg_pct": 1.0197,
+              "median_pct": -0.2506,
+              "positive_rate_pct": 50.0,
+              "best_pct": 14.0592,
+              "worst_pct": -9.4791
+            }
+          }
+        },
+        {
+          "cell": "other_sec_filing|positive_excess_0_to_2pct",
+          "event_count": 28,
+          "valid_10d_count": 27,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": 0.6848,
+          "median_10d_excess_pct": -0.2634,
+          "positive_rate_10d_pct": 48.15,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 8,
+            "same_day_ab_overlap_rate": 0.2857,
+            "valid_replacement_proxy_count": 8,
+            "positive_replacement_proxy_count": 4,
+            "positive_replacement_proxy_rate": 0.5,
+            "replacement_value_10d_excess_proxy": {
+              "count": 8,
+              "avg_pct": -2.6494,
+              "median_pct": -0.1275,
+              "positive_rate_pct": 50.0,
+              "best_pct": 6.2828,
+              "worst_pct": -23.3466
+            }
+          }
+        },
+        {
+          "cell": "8k_2_02_results|negative_excess_0_to_minus_2pct",
+          "event_count": 50,
+          "valid_10d_count": 47,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": 0.2339,
+          "median_10d_excess_pct": 0.3236,
+          "positive_rate_10d_pct": 55.32,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 12,
+            "same_day_ab_overlap_rate": 0.24,
+            "valid_replacement_proxy_count": 12,
+            "positive_replacement_proxy_count": 5,
+            "positive_replacement_proxy_rate": 0.4167,
+            "replacement_value_10d_excess_proxy": {
+              "count": 12,
+              "avg_pct": -3.0298,
+              "median_pct": -4.0923,
+              "positive_rate_pct": 41.67,
+              "best_pct": 10.7866,
+              "worst_pct": -16.2879
+            }
+          }
+        },
+        {
+          "cell": "agreement_or_debt|negative_excess_le_minus_2pct",
+          "event_count": 8,
+          "valid_10d_count": 8,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": -0.4333,
+          "median_10d_excess_pct": -2.6484,
+          "positive_rate_10d_pct": 37.5,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 2,
+            "same_day_ab_overlap_rate": 0.25,
+            "valid_replacement_proxy_count": 2,
+            "positive_replacement_proxy_count": 1,
+            "positive_replacement_proxy_rate": 0.5,
+            "replacement_value_10d_excess_proxy": {
+              "count": 2,
+              "avg_pct": -4.2345,
+              "median_pct": -4.2345,
+              "positive_rate_pct": 50.0,
+              "best_pct": 4.3683,
+              "worst_pct": -12.8373
+            }
+          }
+        },
+        {
+          "cell": "fd_or_other_event|positive_excess_ge_2pct",
+          "event_count": 24,
+          "valid_10d_count": 19,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": -1.1448,
+          "median_10d_excess_pct": 0.9261,
+          "positive_rate_10d_pct": 57.89,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 3,
+            "same_day_ab_overlap_rate": 0.125,
+            "valid_replacement_proxy_count": 1,
+            "positive_replacement_proxy_count": 0,
+            "positive_replacement_proxy_rate": 0.0,
+            "replacement_value_10d_excess_proxy": {
+              "count": 1,
+              "avg_pct": 0.0,
+              "median_pct": -0.0,
+              "positive_rate_pct": 0.0,
+              "best_pct": -0.0,
+              "worst_pct": -0.0
+            }
+          }
+        },
+        {
+          "cell": "periodic_10q_10k|negative_excess_le_minus_2pct",
+          "event_count": 18,
+          "valid_10d_count": 17,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": -1.7282,
+          "median_10d_excess_pct": -0.7547,
+          "positive_rate_10d_pct": 41.18,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 3,
+            "same_day_ab_overlap_rate": 0.1667,
+            "valid_replacement_proxy_count": 3,
+            "positive_replacement_proxy_count": 0,
+            "positive_replacement_proxy_rate": 0.0,
+            "replacement_value_10d_excess_proxy": {
+              "count": 3,
+              "avg_pct": -18.8678,
+              "median_pct": -15.6565,
+              "positive_rate_pct": 0.0,
+              "best_pct": -6.2704,
+              "worst_pct": -34.6765
+            }
+          }
+        },
+        {
+          "cell": "leadership_change|positive_excess_ge_2pct",
+          "event_count": 14,
+          "valid_10d_count": 13,
+          "positive_windows_10d": 1,
+          "avg_10d_excess_pct": -3.2052,
+          "median_10d_excess_pct": -3.1058,
+          "positive_rate_10d_pct": 30.77,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 2,
+            "same_day_ab_overlap_rate": 0.1429,
+            "valid_replacement_proxy_count": 2,
+            "positive_replacement_proxy_count": 0,
+            "positive_replacement_proxy_rate": 0.0,
+            "replacement_value_10d_excess_proxy": {
+              "count": 2,
+              "avg_pct": -23.0108,
+              "median_pct": -23.0108,
+              "positive_rate_pct": 0.0,
+              "best_pct": -22.9162,
+              "worst_pct": -23.1054
+            }
+          }
+        },
+        {
+          "cell": "fd_or_other_event|negative_excess_0_to_minus_2pct",
+          "event_count": 41,
+          "valid_10d_count": 35,
+          "positive_windows_10d": 0,
+          "avg_10d_excess_pct": -0.6356,
+          "median_10d_excess_pct": -1.3903,
+          "positive_rate_10d_pct": 31.43,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 6,
+            "same_day_ab_overlap_rate": 0.1463,
+            "valid_replacement_proxy_count": 5,
+            "positive_replacement_proxy_count": 2,
+            "positive_replacement_proxy_rate": 0.4,
+            "replacement_value_10d_excess_proxy": {
+              "count": 5,
+              "avg_pct": -6.6595,
+              "median_pct": -8.5819,
+              "positive_rate_pct": 40.0,
+              "best_pct": 1.9971,
+              "worst_pct": -15.823
+            }
+          }
+        },
+        {
+          "cell": "fd_or_other_event|positive_excess_0_to_2pct",
+          "event_count": 63,
+          "valid_10d_count": 61,
+          "positive_windows_10d": 0,
+          "avg_10d_excess_pct": -1.3137,
+          "median_10d_excess_pct": -0.6625,
+          "positive_rate_10d_pct": 40.98,
+          "scarce_slot_value": {
+            "same_day_ab_overlap_count": 2,
+            "same_day_ab_overlap_rate": 0.0317,
+            "valid_replacement_proxy_count": 2,
+            "positive_replacement_proxy_count": 0,
+            "positive_replacement_proxy_rate": 0.0,
+            "replacement_value_10d_excess_proxy": {
+              "count": 2,
+              "avg_pct": -1.3842,
+              "median_pct": -1.3842,
+              "positive_rate_pct": 0.0,
+              "best_pct": -0.016,
+              "worst_pct": -2.7525
+            }
+          }
+        }
+      ]
+    },
+    "global_slot_conflict": {
+      "same_day_core_conflict_count": 132,
+      "same_day_core_conflict_rate": 0.1786,
+      "valid_replacement_proxy_count": 122,
+      "positive_replacement_proxy_count": 41,
+      "positive_replacement_proxy_rate": 0.3361,
+      "replacement_value_10d_excess_proxy": {
+        "count": 122,
+        "avg": -0.042395,
+        "median": -0.035971,
+        "p25": -0.107317,
+        "p75": 0.004501,
+        "win_rate": 0.3361
+      }
+    }
+  },
+  "decision_rationale": "Primary branch is positive in all three canonical windows, but remains shadow-only pending semantic and replacement-value evidence.",
+  "gate4": {
+    "applicable": false,
+    "result": "not_applicable_shadow_only",
+    "reason": "No executable strategy logic changed; canonical before/after metrics are unchanged by design."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "alters_orders": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_signal_generation": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "next_retry_requires": [
+    "Do not promote this residual filing branch into entries or ranking from shadow evidence alone.",
+    "Do not tune nearby mild/strong reaction thresholds on the same sample.",
+    "A valid next step needs semantic decomposition of the residual filing forms or forward queue evidence with frozen same-day alternatives."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260504-022\\sec_other_filing_mild_negative_shadow.json",
+    "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
+    "quant/experiments/exp_20260503_051_sec_filing_reaction_drift.py"
+  ]
+}

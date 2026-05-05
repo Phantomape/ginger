@@ -1,0 +1,172 @@
+{
+  "experiment_id": "exp-20260504-048",
+  "generated_at": "2026-05-04T20:16:00+00:00",
+  "decision": "data_gap",
+  "mechanism_family": "earnings_sec_filing_shock_event_confirmation_overlay",
+  "single_causal_variable": "fresh PIT-safe SEC earnings filing-shock evidence availability after exp-20260504-046",
+  "historical_experiment_check": {
+    "already_tried": true,
+    "most_recent_guardrails": {
+      "exp-20260504-040": "Broad SEC/earnings filing-shock family exhausted; governance/procedural branch was the only default-off candidate.",
+      "exp-20260504-044": "Default-off SEC governance/procedural queue plus paper ledger was added as observe-only forward attribution.",
+      "exp-20260504-046": "Fresh-evidence guardrail found no new PIT-safe SEC/earnings artifact or closed forward ledger outcome.",
+      "exp-20260504-047": "Unrelated A/B sleeve isolation experiment; does not add SEC/earnings evidence."
+    },
+    "new_information_since_exp_046": "No new relevant source files or closed outcomes found. The only relevant post-cutoff file is the exp-20260504-046 guardrail report itself.",
+    "why_not_simple_repeat": "This run does not rerun a same-sample SEC packet. It records that no fresh evidence has arrived since the previous guardrail, preserving the duplicate-avoidance trail."
+  },
+  "data_availability": {
+    "sec_submissions": {
+      "rows": 1286,
+      "last_modified": "2026-05-03T13:25:08.9249313-07:00",
+      "pit_status": "accepted_at / accepted_datetime is usable as public EDGAR availability proxy; backfill still does not prove live production observation.",
+      "source": "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl"
+    },
+    "sec_companyfacts": {
+      "rows": 17109,
+      "last_modified": "2026-05-03T17:36:49.1995751-07:00",
+      "pit_status": "Filed date is PIT-safe for background facts, but prior same-accession coverage was 0/16 for the negative-reaction packet.",
+      "source": "data/non_ohlcv/sec_companyfacts_selected_20241002_20260421.jsonl"
+    },
+    "sec_filing_text": {
+      "rows": 306,
+      "last_modified": "2026-05-03T18:03:32.5215891-07:00",
+      "pit_status": "Replay context after accepted_at; fixed keyword scoring already shadow-tested and not promoted.",
+      "source": "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl"
+    },
+    "earnings_snapshots": {
+      "snapshot_count": 138,
+      "first_snapshot_file": "earnings_snapshot_20251023.json",
+      "last_snapshot_file": "earnings_snapshot_20260503.json",
+      "ticker_rows": 6081,
+      "non_null_counts": {
+        "days_to_earnings": 5240,
+        "eps_estimate": 5239,
+        "eps_actual_last": 5239,
+        "historical_surprise_pct": 5239,
+        "avg_historical_surprise_pct": 5239
+      },
+      "missing_20260504_snapshot": true,
+      "pit_status": "Production snapshots exist mainly for the late window; no new 20260504 snapshot is present."
+    },
+    "current_shadow_event_table": {
+      "row_count": 300,
+      "ticker_mapped_rows": 284,
+      "unique_tickers": 279,
+      "production_or_pilot_universe_overlap_rows": 1,
+      "tags": {
+        "negative_filing_shock": 4,
+        "positive_filing_shock": 0,
+        "unclear_or_missing_data": 296,
+        "no_recent_filing_event": 0
+      },
+      "field_non_null_counts": {
+        "accepted_datetime": 300,
+        "usable_trade_date": 300,
+        "pit_safe": 300,
+        "eight_k_item_type": 100,
+        "eps_surprise": 0,
+        "revenue_surprise": 0,
+        "gross_margin_delta": 0,
+        "fcf_to_net_income_gap": 0,
+        "inventory_growth": 0,
+        "receivables_growth": 0,
+        "guidance_raise_cut": 0,
+        "fiscal_period_end": 0
+      },
+      "pit_status": "Timestamp-safe shadow table, but financial-shock fields remain all null.",
+      "source": "data/non_ohlcv/sec_filing_shadow_events_20260503.json"
+    },
+    "fresh_20260504_files": {
+      "news_20260504_json": false,
+      "news_source_stats_20260504_json": false,
+      "earnings_snapshot_20260504_json": false,
+      "sec_event_sleeve_paper_state_json": false,
+      "sec_event_sleeve_paper_snapshots_jsonl": false
+    }
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "shadow_or_replay_metrics": {
+    "candidate_count": 0,
+    "overlap_with_existing_signals": 0,
+    "scarce_slot_opportunity_cost": "not_computable_no_current_new_trade_candidates_or_closed_sec_paper_outcomes",
+    "forward_return_of_tagged_candidates": {
+      "A_no_recent_filing_event": "not measured in this fresh-evidence recheck",
+      "B_positive_filing_shock": "0 current shadow rows; prior positive text language packet was not promotion-quality",
+      "C_negative_filing_shock": "4 current shadow rows; no new closed outcome or slot replacement evidence",
+      "D_unclear_or_missing_data": "296 current shadow rows; financial-shock fields remain null"
+    },
+    "historical_context": {
+      "all_inferred_earnings_events_exp002_avg_10d_excess_pct": -0.7036,
+      "filing_text_all_events_exp007_avg_10d_excess_pct": 0.6779,
+      "leadership_change_negative_reaction_exp015_018_avg_10d_excess_pct": 3.8135,
+      "other_filing_mild_negative_exp022_avg_10d_excess_pct": 2.5478,
+      "governance_procedural_overlay_exp039_event_pnl": 7333.02
+    },
+    "forward_return_horizon_note": "No new 5/10/20/60d evidence was generated because no fresh tagged candidates or closed paper outcomes exist after exp-20260504-046."
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0,
+    "production": 0.0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "production_impact": "data_audit_recheck_only_no_production_change"
+  },
+  "decision_rationale": "No new PIT-safe evidence was found beyond exp-20260504-046. The valid next step remains forward observation of the default-off SEC governance/procedural queue and future structured filing-grade data, not another same-sample SEC/earnings replay.",
+  "next_minimum_action": "Wait for closed forward SEC governance/procedural paper outcomes or new PIT-safe same-accession XBRL / analyst revision / structured LLM filing-text grades before rerunning this family."
+}

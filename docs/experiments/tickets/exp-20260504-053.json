@@ -1,0 +1,77 @@
+{
+  "experiment_id": "exp-20260504-053",
+  "status": "accepted_observe_only",
+  "lane": "alpha_search",
+  "owner": "alpha-discovery",
+  "hypothesis": "The positive default-off event overlay bundle from exp-20260504-049 needs a production-visible aggregate paper attribution layer before any live event-sleeve allocation can be considered.",
+  "change_type": "production_parity_forward_attribution_for_positive_event_alpha",
+  "mechanism_family": "external_event_satellite_overlay",
+  "single_causal_variable": "shared default-off aggregate attribution layer for existing event paper sleeves",
+  "baseline_result_file": "data/backtest_results_20260504.json",
+  "allowed_write_scope": [
+    "quant/event_sleeve_bundle.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/test_event_sleeve_bundle.py",
+    "docs/production_backtest_parity.md",
+    "docs/experiments/tickets/exp-20260504-053.json",
+    "docs/experiments/logs/exp-20260504-053.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "LLM prompt files"
+  ],
+  "locked_variables": [
+    "core A/B universe",
+    "core signal generation",
+    "core candidate ranking",
+    "core sizing",
+    "core exits",
+    "event source thresholds",
+    "event holding periods",
+    "event notionals",
+    "event capacities",
+    "LLM prompt"
+  ],
+  "evaluation_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  ],
+  "acceptance_rule": "Accepted observe-only if focused tests pass, the bundle remains enabled=false and trade_enabled=false, and the three canonical core backtests have zero metric drift.",
+  "created_at": "2026-05-04T22:18:04+00:00",
+  "claimed_at": "2026-05-04T22:18:04+00:00",
+  "completed_at": "2026-05-04T22:18:04+00:00",
+  "result": {
+    "decision": "accepted_default_off_event_bundle_attribution",
+    "expected_value_score_delta": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "log_file": "docs/experiments/logs/exp-20260504-053.json",
+    "production_impact": "default_off_event_overlay_bundle_paper_attribution_only",
+    "reason": "Production now exposes aggregate attribution for the accepted event-bundle alpha path with zero core metric drift and no order authority."
+  }
+}

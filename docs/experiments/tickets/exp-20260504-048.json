@@ -1,0 +1,69 @@
+{
+  "experiment_id": "exp-20260504-048",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock, earnings surprise, and filing-context events may improve C-strategy grading or A/B event confirmation only if fresh PIT-safe evidence exists beyond exp-20260504-046.",
+  "change_type": "data_audit",
+  "single_causal_variable": "fresh PIT-safe SEC earnings filing-shock evidence availability after exp-20260504-046",
+  "baseline_result_file": "data/backtest_results_20260504.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets/exp-20260504-048.json",
+    "docs/experiments/logs/exp-20260504-048.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_no_new_evidence_exp-20260504-048_20260504.md",
+    "data/experiments/exp-20260504-048/sec_earnings_filing_shock_no_new_evidence.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/data_layer.py",
+    "quant/feature_layer.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "position sizing",
+    "risk engine",
+    "portfolio engine",
+    "OHLCV thresholds",
+    "LLM prompt",
+    "news veto",
+    "SEC governance queue policy"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, candidate overlap, slot value, and next experiment; no production change.",
+  "created_at": "2026-05-04T20:05:01+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-04T20:16:00+00:00",
+  "result": {
+    "decision": "data_gap",
+    "expected_value_score_delta": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0,
+      "production": 0.0
+    },
+    "artifact": "data/experiments/exp-20260504-048/sec_earnings_filing_shock_no_new_evidence.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_no_new_evidence_exp-20260504-048_20260504.md",
+    "log_file": "docs/experiments/logs/exp-20260504-048.json",
+    "production_impact": "data_audit_recheck_only_no_production_change",
+    "reason": "No new PIT-safe SEC/earnings/filing-shock artifact, 20260504 news archive, 20260504 earnings snapshot, same-accession XBRL, structured LLM filing grade, or closed SEC governance paper outcome exists beyond exp-20260504-046."
+  }
+}

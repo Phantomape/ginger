@@ -1,0 +1,210 @@
+{
+  "experiment_id": "exp-20260504-051",
+  "timestamp": "2026-05-04T21:14:00+00:00",
+  "lane": "alpha_search",
+  "status": "accepted_observe_only",
+  "decision": "accepted_default_off_sec_negative_paper_ledger",
+  "mechanism_family": "external_event_satellite_overlay",
+  "change_type": "production_parity_forward_attribution_for_positive_event_alpha",
+  "hypothesis": "The positive default-off event overlay bundle from exp-20260504-049 cannot be evaluated as a future live satellite allocation until the SEC negative-reaction source freezes daily paper entries and outcomes in the production path.",
+  "alpha_hypothesis": {
+    "category": "candidate_pool_extension_event_sleeve",
+    "entry_exit_ranking_or_allocation": "entry sleeve / forward attribution",
+    "why_this_now": "exp-20260504-049 is the strongest current alpha direction; Form 4 and SEC governance/procedural already have paper ledgers, but SEC negative-reaction only had a queue.",
+    "blocked_alpha_if_not_done": "The event bundle would remain replay-only and production could not measure replacement value for one of its highest-contributing sources."
+  },
+  "single_causal_variable": "default-off SEC negative-reaction paper outcome ledger",
+  "parameters": {
+    "queue_name": "SEC_NEGATIVE_REACTION_FORWARD_QUEUE",
+    "rule_version": "sec_negative_language_negative_reaction_v1",
+    "paper_hold_days": 10,
+    "paper_notional_usd": 10000.0,
+    "paper_max_positions": 1,
+    "round_trip_cost_pct": 0.0035,
+    "trade_enabled": false,
+    "paper_enabled": true,
+    "locked_variables": [
+      "core A/B universe",
+      "core signal generation",
+      "core candidate ranking",
+      "core sizing",
+      "core exits",
+      "LLM/news replay",
+      "SEC negative-reaction queue rule",
+      "reaction threshold",
+      "holding period",
+      "event notional",
+      "event capacity"
+    ]
+  },
+  "historical_experiment_check": {
+    "searched": [
+      "AGENTS.md",
+      "docs/backtesting.md",
+      "docs/alpha-optimization-playbook.md",
+      "docs/experiment_log.jsonl",
+      "docs/experiments/logs",
+      "docs/production_backtest_parity.md"
+    ],
+    "similar_experiments": {
+      "exp-20260504-010": "SEC negative-reaction standalone sleeve was positive but not production-promoted.",
+      "exp-20260504-012": "SEC negative-reaction default-off queue was created but lacked a persistent paper outcome sleeve.",
+      "exp-20260504-034": "Form 4 overlay was positive but immaterial and already has a forward paper sleeve.",
+      "exp-20260504-039": "SEC governance/procedural overlay passed three-window materiality.",
+      "exp-20260504-044": "SEC governance/procedural paper ledger added observe-only.",
+      "exp-20260504-049": "Default-off event overlay bundle improved EV and PnL in all three canonical windows, but remained replay-only."
+    },
+    "mechanism_insight_check": "This does not repeat threshold, keyword, item-code, notional, capacity, holding-period, or source-promotion sweeps. It removes the production observation blocker left by the positive event bundle."
+  },
+  "date_range": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0,
+    "production": 0.0
+  },
+  "gate4": {
+    "basis": "Default-off parity/forward-attribution change. Required check is zero core metric drift across the three canonical windows, plus tests showing no order/ranking/sizing path changes.",
+    "core_metric_drift": false,
+    "material_alpha_source": "exp-20260504-049 already passed the three-window materiality gate as replay-only; this run removes the SEC negative-reaction production observation blocker without promoting live capital."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "production_impact": "default_off_sec_negative_paper_ledger_only",
+    "promotion_blocker_remaining": "Live capital still requires closed forward paper outcomes and an explicit shared trade-enabled event-sleeve adapter."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none",
+    "why_not_llm": "Production-aligned LLM soft-ranking data remains too sparse; this uses the stronger non-LLM event bundle evidence instead."
+  },
+  "tests": {
+    "pytest": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_sec_negative_event_sleeve.py quant\\test_sec_event_queue.py quant\\test_sec_event_sleeve.py -> 17 passed",
+    "backtests": [
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+    ]
+  },
+  "decision_rationale": "Accepted as observe-only. The highest-value current alpha direction is the default-off external event satellite bundle, and direct live promotion would create a production/backtest attribution gap. The implementation now freezes SEC negative-reaction paper entries and outcomes in production-visible JSON/reporting while leaving core strategy behavior unchanged.",
+  "why_not_other_attractive_points": "LLM soft-ranking is still data-limited; macro ETF and BEAR_SHALLOW probes were rejected; Form 4 and SEC governance already have observe-only ledgers; core A/B thresholds/ranking/sizing surfaces are saturated by recent failures.",
+  "risk_of_change": "The new ledger can tempt premature live promotion before forward paper outcomes prove replacement value; the code therefore forces enabled=false and trade_enabled=false.",
+  "next_action": "Accumulate closed forward paper outcomes across Form 4, SEC negative-reaction, and SEC governance/procedural sources before any trade-enabled event bundle adapter is considered.",
+  "related_files": [
+    "quant/sec_negative_event_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/test_sec_negative_event_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/experiments/logs/exp-20260504-051.json",
+    "docs/experiments/tickets/exp-20260504-051.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

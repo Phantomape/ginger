@@ -1,0 +1,58 @@
+{
+  "experiment_id": "exp-20260504-052",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock and earnings surprise may improve C-strategy grading or A/B event confirmation only if there is fresh PIT-safe evidence after exp-20260504-051.",
+  "change_type": "data_audit_shadow_tagging",
+  "single_causal_variable": "fresh PIT-safe SEC earnings filing-shock evidence availability after exp-20260504-051",
+  "baseline_result_file": "data/backtest_results_20260504.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets/exp-20260504-052.json",
+    "docs/experiments/logs/exp-20260504-052.json",
+    "data/experiments/exp-20260504-052/sec_earnings_filing_shock_post_exp051_audit.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_post_exp051_exp-20260504-052_20260504.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "OHLCV thresholds",
+    "SEC queue policy",
+    "LLM prompt"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: no production change; decision is data_gap unless fresh PIT-safe source files or closed SEC paper outcomes exist.",
+  "created_at": "2026-05-04T22:06:33+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-04T22:06:33+00:00",
+  "result": {
+    "artifact": "data/experiments/exp-20260504-052/sec_earnings_filing_shock_post_exp051_audit.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_post_exp051_exp-20260504-052_20260504.md",
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "log_file": "docs/experiments/logs/exp-20260504-052.json",
+    "production_impact": "data_audit_only_no_production_change",
+    "reason": "No fresh PIT-safe SEC/earnings evidence, current SEC candidates, ledger state, or closed forward paper outcomes were found after exp-20260504-051."
+  }
+}

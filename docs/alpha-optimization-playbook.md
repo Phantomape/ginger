@@ -1,25 +1,25 @@
-# Alpha Optimization Playbook
+﻿# Alpha Optimization Playbook
 
-## 文档职责
+## 鏂囨。鑱岃矗
 
-本文件是长期 alpha 手册，不是实验流水账。
+鏈枃浠舵槸闀挎湡 alpha 鎵嬪唽锛屼笉鏄疄楠屾祦姘磋处銆?
 
-它负责回答四个问题：
+瀹冭礋璐ｅ洖绛斿洓涓棶棰橈細
 
-- 当前系统的 alpha 从哪里来？
-- 哪些机制已经被验证、暂缓、阻塞或证伪？
-- 下一轮最值得研究什么，为什么？
-- 哪些思路不要重复尝试，除非出现新证据？
+- 褰撳墠绯荤粺鐨?alpha 浠庡摢閲屾潵锛?
+- 鍝簺鏈哄埗宸茬粡琚獙璇併€佹殏缂撱€侀樆濉炴垨璇佷吉锛?
+- 涓嬩竴杞渶鍊煎緱鐮旂┒浠€涔堬紝涓轰粈涔堬紵
+- 鍝簺鎬濊矾涓嶈閲嶅灏濊瘯锛岄櫎闈炲嚭鐜版柊璇佹嵁锛?
 
-文档分工：
+鏂囨。鍒嗗伐锛?
 
-- `AGENTS.md`：门控、优先级约束、会话协议、实验纪律。
-- `docs/experiment_log.jsonl`：单次实验的结构化主日志，保留参数、窗口、指标和结论。
-- `docs/experiments/logs/*.json`：较新的单实验详细记录。
-- `docs/experiments/artifacts/*.json` 与 `data/exp_*.json`：实验产物和审计明细。
-- 本文件：把多轮实验后仍成立的结论压缩成长期 doctrine。
+- `AGENTS.md`锛氶棬鎺с€佷紭鍏堢骇绾︽潫銆佷細璇濆崗璁€佸疄楠岀邯寰嬨€?
+- `docs/experiment_log.jsonl`锛氬崟娆″疄楠岀殑缁撴瀯鍖栦富鏃ュ織锛屼繚鐣欏弬鏁般€佺獥鍙ｃ€佹寚鏍囧拰缁撹銆?
+- `docs/experiments/logs/*.json`锛氳緝鏂扮殑鍗曞疄楠岃缁嗚褰曘€?
+- `docs/experiments/artifacts/*.json` 涓?`data/exp_*.json`锛氬疄楠屼骇鐗╁拰瀹¤鏄庣粏銆?
+- 鏈枃浠讹細鎶婂杞疄楠屽悗浠嶆垚绔嬬殑缁撹鍘嬬缉鎴愰暱鏈?doctrine銆?
 
-若本文档与 `AGENTS.md` 冲突，以 `AGENTS.md` 为准。若需要复现实验，先查本文档的实验索引，再查结构化日志。
+鑻ユ湰鏂囨。涓?`AGENTS.md` 鍐茬獊锛屼互 `AGENTS.md` 涓哄噯銆傝嫢闇€瑕佸鐜板疄楠岋紝鍏堟煡鏈枃妗ｇ殑瀹為獙绱㈠紩锛屽啀鏌ョ粨鏋勫寲鏃ュ織銆?
 
 ## 2026-05-02 accepted state
 
@@ -46,6 +46,15 @@ follow-through concentration and a `+0.80pp` max-drawdown increase in
 `mid_weak`, but all three windows remain inside the drawdown cap and keep
 convergence `8/8`.
 
+Latest unchanged validation point: the 2026-05-03/2026-05-04 observed-only
+SEC/Form 4 queue, shadow-universe, and measurement experiments
+(`exp-20260504-001`, `exp-20260504-012`, `exp-20260504-015`,
+`exp-20260504-017`, `exp-20260504-018`, `exp-20260504-019`) all reused the
+same canonical three-window core metrics with zero drift. Treat
+`data/backtest_results_20260503.json` as the latest refreshed `old_thin`
+checkpoint and those experiment logs' embedded three-window before/after blocks
+as the latest no-drift verification of the accepted stack.
+
 Forward-only accepted support work on 2026-05-01 also matters:
 
 - `exp-20260501-029` activated the bounded `AI_INFRA_PILOT` real-money sleeve
@@ -61,289 +70,289 @@ leader initial-cap levels, nearby SPY-relative leader add-on cap levels above
 boosts without forward evidence, event/news context, or a materially richer
 discriminator.
 
-## 1. 当前系统画像
+## 1. 褰撳墠绯荤粺鐢诲儚
 
-当前系统不是高频、不是纯统计套利，也不是让 LLM 全权交易的黑箱。它更像：
+褰撳墠绯荤粺涓嶆槸楂橀銆佷笉鏄函缁熻濂楀埄锛屼篃涓嶆槸璁?LLM 鍏ㄦ潈浜ゆ槗鐨勯粦绠便€傚畠鏇村儚锛?
 
-> 事件增强型中短线趋势 / 突破交易系统。
+> 浜嬩欢澧炲己鍨嬩腑鐭嚎瓒嬪娍 / 绐佺牬浜ゆ槗绯荤粺銆?
 
-当前可回放主力 sleeve：
+褰撳墠鍙洖鏀句富鍔?sleeve锛?
 
-- `trend_long`：更像持仓期管理和 winner capture 问题。
-- `breakout_long`：更像标的质量、slot competition 和阶段适配问题。
-- `earnings_event_long`：PEAD 大类仍有金融逻辑，但当前仓库实现尚未证明可稳定增厚 A+B。
-- LLM / news：最适合事件理解、灾难 veto、结构化 grading / ranking；不适合接管仓位、止损、目标位和硬风控。
+- `trend_long`锛氭洿鍍忔寔浠撴湡绠＄悊鍜?winner capture 闂銆?
+- `breakout_long`锛氭洿鍍忔爣鐨勮川閲忋€乻lot competition 鍜岄樁娈甸€傞厤闂銆?
+- `earnings_event_long`锛歅EAD 澶х被浠嶆湁閲戣瀺閫昏緫锛屼絾褰撳墠浠撳簱瀹炵幇灏氭湭璇佹槑鍙ǔ瀹氬鍘?A+B銆?
+- LLM / news锛氭渶閫傚悎浜嬩欢鐞嗚В銆佺伨闅?veto銆佺粨鏋勫寲 grading / ranking锛涗笉閫傚悎鎺ョ浠撲綅銆佹鎹熴€佺洰鏍囦綅鍜岀‖椋庢帶銆?
 
-当前固定三窗口 baseline（最新 accepted stack，数据点来自 `data/backtest_results_20260502.json` 与 `exp-20260502-022` 的当前核心配置）：
+褰撳墠鍥哄畾涓夌獥鍙?baseline锛堟渶鏂?accepted stack锛屾暟鎹偣鏉ヨ嚜 `data/backtest_results_20260502.json` 涓?`exp-20260502-022` 鐨勫綋鍓嶆牳蹇冮厤缃級锛?
 
 | Window | Range | EV | Return | Sharpe daily | Max DD | Win rate | Trades | Main interpretation |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| `late_strong` | 2025-10-23 -> 2026-04-21 | 3.4191 | +78.60% | 4.35 | 5.41% | 78.95% | 19 | accepted lifecycle allocation stack 继续提升 winner capture；最新增益来自 SPY-relative leader first add-on cap 抬升到 60% |
-| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.4415 | +55.02% | 2.62 | 8.79% | 52.38% | 21 | 仍然是 meta-allocation / regime-routing 最需要解释的窗口，但 accepted stack 目前仍在继续抬升 EV 与 PnL |
-| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.3179 | +24.64% | 1.29 | 8.05% | 40.91% | 22 | 仍是最脆弱窗口，但 accepted stack 已继续改善资本效率且未破坏 drawdown guardrail |
+| `late_strong` | 2025-10-23 -> 2026-04-21 | 3.4191 | +78.60% | 4.35 | 5.41% | 78.95% | 19 | accepted lifecycle allocation stack 缁х画鎻愬崌 winner capture锛涙渶鏂板鐩婃潵鑷?SPY-relative leader first add-on cap 鎶崌鍒?60% |
+| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.4415 | +55.02% | 2.62 | 8.79% | 52.38% | 21 | 浠嶇劧鏄?meta-allocation / regime-routing 鏈€闇€瑕佽В閲婄殑绐楀彛锛屼絾 accepted stack 鐩墠浠嶅湪缁х画鎶崌 EV 涓?PnL |
+| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.3179 | +24.64% | 1.29 | 8.05% | 40.91% | 22 | 浠嶆槸鏈€鑴嗗急绐楀彛锛屼絾 accepted stack 宸茬户缁敼鍠勮祫鏈晥鐜囦笖鏈牬鍧?drawdown guardrail |
 
-最新 accepted-stack 测量盲区也要一并记住：news archive coverage 已升至 15/123 交易日（12.2%），prompt/response archive_context 成熟度已到 7/10，但 production-aligned LLM ranking-eligible replay 仍只有 3 天 / 8 个信号；`exp-20260502-007` 进一步证明当前只剩 1/8 个 effective candidate row 能和回放 trade outcome 对齐，因此 LLM soft-ranking 依旧属于 measurement-blocked。exit advisory replay 也仍处于 shadow-only 披露阶段；pilot sleeve 则已开始积累 forward replacement-value attribution，但还没有足够已平仓样本。
+鏈€鏂?accepted-stack 娴嬮噺鐩插尯涔熻涓€骞惰浣忥細news archive coverage 宸插崌鑷?15/123 浜ゆ槗鏃ワ紙12.2%锛夛紝prompt/response archive_context 鎴愮啛搴﹀凡鍒?7/10锛屼絾 production-aligned LLM ranking-eligible replay 浠嶅彧鏈?3 澶?/ 8 涓俊鍙凤紱`exp-20260502-007` 杩涗竴姝ヨ瘉鏄庡綋鍓嶅彧鍓?1/8 涓?effective candidate row 鑳藉拰鍥炴斁 trade outcome 瀵归綈锛屽洜姝?LLM soft-ranking 渚濇棫灞炰簬 measurement-blocked銆俥xit advisory replay 涔熶粛澶勪簬 shadow-only 鎶湶闃舵锛沺ilot sleeve 鍒欏凡寮€濮嬬Н绱?forward replacement-value attribution锛屼絾杩樻病鏈夎冻澶熷凡骞充粨鏍锋湰銆?
 
-北极星仍是 `expected_value_score = total_return_pct * sharpe_daily`，但任何策略逻辑改动必须做多窗口检查，不能只优化一个窗口。
+鍖楁瀬鏄熶粛鏄?`expected_value_score = total_return_pct * sharpe_daily`锛屼絾浠讳綍绛栫暐閫昏緫鏀瑰姩蹇呴』鍋氬绐楀彛妫€鏌ワ紝涓嶈兘鍙紭鍖栦竴涓獥鍙ｃ€?
 
-## 2. 长期结论
+## 2. 闀挎湡缁撹
 
-### 2.1 当前最有价值的 alpha 不是无限加新 entry
+### 2.1 褰撳墠鏈€鏈変环鍊肩殑 alpha 涓嶆槸鏃犻檺鍔犳柊 entry
 
-多轮实验后，系统的高价值方向更像：
+澶氳疆瀹為獙鍚庯紝绯荤粺鐨勯珮浠峰€兼柟鍚戞洿鍍忥細
 
-- 提纯已有 A+B 信号质量。
-- 改善 exit / hold / add-on 生命周期管理。
-- 让风险预算流向更高期望机会。
-- 用 LLM 做结构化事件 grading / ranking，而不是让 LLM 做硬风控。
+- 鎻愮函宸叉湁 A+B 淇″彿璐ㄩ噺銆?
+- 鏀瑰杽 exit / hold / add-on 鐢熷懡鍛ㄦ湡绠＄悊銆?
+- 璁╅闄╅绠楁祦鍚戞洿楂樻湡鏈涙満浼氥€?
+- 鐢?LLM 鍋氱粨鏋勫寲浜嬩欢 grading / ranking锛岃€屼笉鏄 LLM 鍋氱‖椋庢帶銆?
 
-默认不优先：
+榛樿涓嶄紭鍏堬細
 
-- 围绕少数亏损样本新增规则。
-- 继续堆 OHLCV-only entry 变体。
-- 为了单窗口 Sharpe 好看而牺牲跨窗口稳定性。
-- 把每个失败 trade 都解释成缺一个过滤器。
+- 鍥寸粫灏戞暟浜忔崯鏍锋湰鏂板瑙勫垯銆?
+- 缁х画鍫?OHLCV-only entry 鍙樹綋銆?
+- 涓轰簡鍗曠獥鍙?Sharpe 濂界湅鑰岀壓鐗茶法绐楀彛绋冲畾鎬с€?
+- 鎶婃瘡涓け璐?trade 閮借В閲婃垚缂轰竴涓繃婊ゅ櫒銆?
 
-### 2.2 breakout 和 trend 的 alpha 载体不同
+### 2.2 breakout 鍜?trend 鐨?alpha 杞戒綋涓嶅悓
 
-`breakout_long` 的 alpha 更偏：
+`breakout_long` 鐨?alpha 鏇村亸锛?
 
-- 标的质量筛选。
-- bucket 内排序。
-- 稀缺仓位槽位竞争。
-- 对 fake breakout / crowded rotation 的适配。
+- 鏍囩殑璐ㄩ噺绛涢€夈€?
+- bucket 鍐呮帓搴忋€?
+- 绋€缂轰粨浣嶆Ы浣嶇珵浜夈€?
+- 瀵?fake breakout / crowded rotation 鐨勯€傞厤銆?
 
-`trend_long` 的 alpha 更偏：
+`trend_long` 鐨?alpha 鏇村亸锛?
 
-- 持仓管理。
-- target / stop / add-on / exit 质量。
-- 在不同 market state 下是否继续让 winner run。
+- 鎸佷粨绠＄悊銆?
+- target / stop / add-on / exit 璐ㄩ噺銆?
+- 鍦ㄤ笉鍚?market state 涓嬫槸鍚︾户缁 winner run銆?
 
-因此，breakout 上有效的排序规则不能默认迁移到 trend；trend 的下一步也不应反复扫 entry ranking key。
+鍥犳锛宐reakout 涓婃湁鏁堢殑鎺掑簭瑙勫垯涓嶈兘榛樿杩佺Щ鍒?trend锛泃rend 鐨勪笅涓€姝ヤ篃涓嶅簲鍙嶅鎵?entry ranking key銆?
 
-### 2.3 C 策略不是被永久否定，但“只差补数据”已经不成立
+### 2.3 C 绛栫暐涓嶆槸琚案涔呭惁瀹氾紝浣嗏€滃彧宸ˉ鏁版嵁鈥濆凡缁忎笉鎴愮珛
 
-PEAD / post-earnings drift 作为大类 alpha 仍有研究依据，但当前仓库里的 `earnings_event_long` 已经不再能简单归因于数据缺口。
+PEAD / post-earnings drift 浣滀负澶х被 alpha 浠嶆湁鐮旂┒渚濇嵁锛屼絾褰撳墠浠撳簱閲岀殑 `earnings_event_long` 宸茬粡涓嶅啀鑳界畝鍗曞綊鍥犱簬鏁版嵁缂哄彛銆?
 
-已知结论：
+宸茬煡缁撹锛?
 
-- `lxml` / earnings snapshot 修复后，C 策略可以真实回放。
-- repaired-data 后，单字段 gate、小 checklist、共享质量分数 gate、standalone-day gate 都未能稳定让 `A+B+C` 跑赢 accepted `A+B`。
-- C 策略若重启，需要更丰富的事件分级、边际槽位价值机制，或 LLM / news 对财报语义的结构化 grading。
+- `lxml` / earnings snapshot 淇鍚庯紝C 绛栫暐鍙互鐪熷疄鍥炴斁銆?
+- repaired-data 鍚庯紝鍗曞瓧娈?gate銆佸皬 checklist銆佸叡浜川閲忓垎鏁?gate銆乻tandalone-day gate 閮芥湭鑳界ǔ瀹氳 `A+B+C` 璺戣耽 accepted `A+B`銆?
+- C 绛栫暐鑻ラ噸鍚紝闇€瑕佹洿涓板瘜鐨勪簨浠跺垎绾с€佽竟闄呮Ы浣嶄环鍊兼満鍒讹紝鎴?LLM / news 瀵硅储鎶ヨ涔夌殑缁撴瀯鍖?grading銆?
 
-不要继续把“再补一点 earnings 数据”当作默认主线，除非新增数据能直接释放一个清晰的 C 策略实验。
+涓嶈缁х画鎶娾€滃啀琛ヤ竴鐐?earnings 鏁版嵁鈥濆綋浣滈粯璁や富绾匡紝闄ら潪鏂板鏁版嵁鑳界洿鎺ラ噴鏀句竴涓竻鏅扮殑 C 绛栫暐瀹為獙銆?
 
-### 2.4 LLM 的正确方向是可审计 ranking / grading
+### 2.4 LLM 鐨勬纭柟鍚戞槸鍙璁?ranking / grading
 
-长期边界：
+闀挎湡杈圭晫锛?
 
-- 代码负责仓位、止损、目标位、portfolio heat、行业暴露、硬过滤。
-- LLM 负责新闻理解、事件分类、语义强弱、灾难 veto、结构化 ranking / grading。
+- 浠ｇ爜璐熻矗浠撲綅銆佹鎹熴€佺洰鏍囦綅銆乸ortfolio heat銆佽涓氭毚闇层€佺‖杩囨护銆?
+- LLM 璐熻矗鏂伴椈鐞嗚В銆佷簨浠跺垎绫汇€佽涔夊己寮便€佺伨闅?veto銆佺粨鏋勫寲 ranking / grading銆?
 
-当前阻塞：
+褰撳墠闃诲锛?
 
-- LLM replay 覆盖和 production-aligned effective sample 仍然很薄。
-- soft ranking 不能只靠主观觉得“LLM 应该有用”来上线。
-- 也不能因为历史回放缺口就否定 LLM；正确方向是补结构化输入输出和归因指标。
+- LLM replay 瑕嗙洊鍜?production-aligned effective sample 浠嶇劧寰堣杽銆?
+- soft ranking 涓嶈兘鍙潬涓昏瑙夊緱鈥淟LM 搴旇鏈夌敤鈥濇潵涓婄嚎銆?
+- 涔熶笉鑳藉洜涓哄巻鍙插洖鏀剧己鍙ｅ氨鍚﹀畾 LLM锛涙纭柟鍚戞槸琛ョ粨鏋勫寲杈撳叆杈撳嚭鍜屽綊鍥犳寚鏍囥€?
 
-最新机制结论：
+鏈€鏂版満鍒剁粨璁猴細
 
-- backlog classification 已区分 `snapshot_only` 与真实 `context_only` 缺口，避免继续恢复没有实际上下文的日期。
-- effective attribution subset 已加入，用于只统计生产对齐、ranking-eligible 的 LLM 样本。
-- 已持仓过滤、同日行业上限、`BEAR_SHALLOW` 入场 gate 与 `NEUTRAL` / `BEAR_SHALLOW` 风险降档都已收敛到共享 helper；后续不要再接受 run/backtester 双份实现。
-- trailing partial-reduce 现在已经可以共享回放；在有 15 次 partial reduction 的 fixed-window replay 中，它对当前 accepted stack 为负，因此“生产里看起来合理”不再是继续推广它的证据。
+- backlog classification 宸插尯鍒?`snapshot_only` 涓庣湡瀹?`context_only` 缂哄彛锛岄伩鍏嶇户缁仮澶嶆病鏈夊疄闄呬笂涓嬫枃鐨勬棩鏈熴€?
+- effective attribution subset 宸插姞鍏ワ紝鐢ㄤ簬鍙粺璁＄敓浜у榻愩€乺anking-eligible 鐨?LLM 鏍锋湰銆?
+- 宸叉寔浠撹繃婊ゃ€佸悓鏃ヨ涓氫笂闄愩€乣BEAR_SHALLOW` 鍏ュ満 gate 涓?`NEUTRAL` / `BEAR_SHALLOW` 椋庨櫓闄嶆。閮藉凡鏀舵暃鍒板叡浜?helper锛涘悗缁笉瑕佸啀鎺ュ彈 run/backtester 鍙屼唤瀹炵幇銆?
+- trailing partial-reduce 鐜板湪宸茬粡鍙互鍏变韩鍥炴斁锛涘湪鏈?15 娆?partial reduction 鐨?fixed-window replay 涓紝瀹冨褰撳墠 accepted stack 涓鸿礋锛屽洜姝も€滅敓浜ч噷鐪嬭捣鏉ュ悎鐞嗏€濅笉鍐嶆槸缁х画鎺ㄥ箍瀹冪殑璇佹嵁銆?
 
-## 3. 当前优先级
+## 3. 褰撳墠浼樺厛绾?
 
-默认下一轮从高到低：
+榛樿涓嬩竴杞粠楂樺埌浣庯細
 
-1. `alpha_search` 优先，除非存在明确测量阻断项。
-2. lifecycle alpha，尤其是已方向性为正但未 production-promoted 的 entry follow-through add-on。
-3. meta-allocation / regime routing，重点解释 `mid_weak` 为什么赚钱但跑输指数。
-4. LLM / news attribution repair，只在它能释放 soft ranking、news-confirmed exit 或 C strategy grading 时插队。
-5. production/backtest parity 只在它能释放新的 alpha 实验或消除真实漂移时插队；不要把纯 parity 整理当作默认主线。
-6. 新 universe / 新 entry 只做 shadow audit；不要直接接 production。
+1. `alpha_search` 浼樺厛锛岄櫎闈炲瓨鍦ㄦ槑纭祴閲忛樆鏂」銆?
+2. lifecycle alpha锛屽挨鍏舵槸宸叉柟鍚戞€т负姝ｄ絾鏈?production-promoted 鐨?entry follow-through add-on銆?
+3. meta-allocation / regime routing锛岄噸鐐硅В閲?`mid_weak` 涓轰粈涔堣禋閽变絾璺戣緭鎸囨暟銆?
+4. LLM / news attribution repair锛屽彧鍦ㄥ畠鑳介噴鏀?soft ranking銆乶ews-confirmed exit 鎴?C strategy grading 鏃舵彃闃熴€?
+5. production/backtest parity 鍙湪瀹冭兘閲婃斁鏂扮殑 alpha 瀹為獙鎴栨秷闄ょ湡瀹炴紓绉绘椂鎻掗槦锛涗笉瑕佹妸绾?parity 鏁寸悊褰撲綔榛樿涓荤嚎銆?
+6. 鏂?universe / 鏂?entry 鍙仛 shadow audit锛涗笉瑕佺洿鎺ユ帴 production銆?
 
-当前不建议继续消耗迭代的方向：
+褰撳墠涓嶅缓璁户缁秷鑰楄凯浠ｇ殑鏂瑰悜锛?
 
-- 弱持仓 day-5/day-10 price-only early exit。
-- 纯 OHLCV pullback reclaim / leadership / compression entry 的局部扫参。
-- broad macro defensive overlay 的简单门控。
-- C 策略的单字段或小 checklist 修修补补。
-- entry follow-through add-on 的附近阈值微调。
-- 没有 alpha 释放价值的 parity-only 重构。
-- 仅凭直觉继续强化 production trailing partial-reduce 建议。
+- 寮辨寔浠?day-5/day-10 price-only early exit銆?
+- 绾?OHLCV pullback reclaim / leadership / compression entry 鐨勫眬閮ㄦ壂鍙傘€?
+- broad macro defensive overlay 鐨勭畝鍗曢棬鎺с€?
+- C 绛栫暐鐨勫崟瀛楁鎴栧皬 checklist 淇慨琛ヨˉ銆?
+- entry follow-through add-on 鐨勯檮杩戦槇鍊煎井璋冦€?
+- 娌℃湁 alpha 閲婃斁浠峰€肩殑 parity-only 閲嶆瀯銆?
+- 浠呭嚟鐩磋缁х画寮哄寲 production trailing partial-reduce 寤鸿銆?
 
-### 3.1 下一轮外部 alpha 源扩展优先级
+### 3.1 涓嬩竴杞閮?alpha 婧愭墿灞曚紭鍏堢骇
 
-以下排序只回答一个问题：如果当前 accepted A+B stack 要向新的外部事件 /
-基本面 alpha 扩展，哪类数据源最值得优先研究。它不替代当前 playbook 的
-accepted core stack，也不授权跳过多窗口 Gate 4 或 measurement repair。
+浠ヤ笅鎺掑簭鍙洖绛斾竴涓棶棰橈細濡傛灉褰撳墠 accepted A+B stack 瑕佸悜鏂扮殑澶栭儴浜嬩欢 /
+鍩烘湰闈?alpha 鎵╁睍锛屽摢绫绘暟鎹簮鏈€鍊煎緱浼樺厛鐮旂┒銆傚畠涓嶆浛浠ｅ綋鍓?playbook 鐨?
+accepted core stack锛屼篃涓嶆巿鏉冭烦杩囧绐楀彛 Gate 4 鎴?measurement repair銆?
 
 1. `Earnings + SEC filings + financial surprise`
-   - 同意排第一。这是当前仓库最自然、最可解释、最适合 EOD 节奏的外部
-     alpha 扩展方向，也和 `earnings_event_long` 已暴露出的 P-ERN 数据盲区
-     直接相连。
-   - 首批最值得结构化的特征不是更多模糊 checklist，而是可回放、可比较的
-     earnings / filing shock：`SUE`、revenue surprise、gross margin delta、
-     FCF / NI divergence、inventory / receivables abnormal growth、8-K item
-     type、guidance raise/cut、post-earnings gap + drift。
-   - 这条线的正确落地方式是把 `earnings_event_long` 从“单字段修补”升级为
-     “结构化事件分级 + slot opportunity cost + drift follow-through”研究线。
+   - 鍚屾剰鎺掔涓€銆傝繖鏄綋鍓嶄粨搴撴渶鑷劧銆佹渶鍙В閲娿€佹渶閫傚悎 EOD 鑺傚鐨勫閮?
+     alpha 鎵╁睍鏂瑰悜锛屼篃鍜?`earnings_event_long` 宸叉毚闇插嚭鐨?P-ERN 鏁版嵁鐩插尯
+     鐩存帴鐩歌繛銆?
+   - 棣栨壒鏈€鍊煎緱缁撴瀯鍖栫殑鐗瑰緛涓嶆槸鏇村妯＄硦 checklist锛岃€屾槸鍙洖鏀俱€佸彲姣旇緝鐨?
+     earnings / filing shock锛歚SUE`銆乺evenue surprise銆乬ross margin delta銆?
+     FCF / NI divergence銆乮nventory / receivables abnormal growth銆?-K item
+     type銆乬uidance raise/cut銆乸ost-earnings gap + drift銆?
+   - 杩欐潯绾跨殑姝ｇ‘钀藉湴鏂瑰紡鏄妸 `earnings_event_long` 浠庘€滃崟瀛楁淇ˉ鈥濆崌绾т负
+     鈥滅粨鏋勫寲浜嬩欢鍒嗙骇 + slot opportunity cost + drift follow-through鈥濈爺绌剁嚎銆?
 
 2. `Analyst revisions / estimate data`
-   - 原则上同意排第二；如果未来接受付费数据，它可以与第 1 类并列最高优先级。
-   - 这类数据最适合和 earnings / guidance 联动，而不是孤立看单次 beat/miss。
-     重点是 revision drift、estimate dispersion、上修分析师数量变化、以及
-     “beat 但没人上修”这类 fake-beat 识别。
-   - 现实约束是数据成本和点时可得性；在没有可靠 PIT 版本前，不应把它写成
-     production 依赖。
+   - 鍘熷垯涓婂悓鎰忔帓绗簩锛涘鏋滄湭鏉ユ帴鍙椾粯璐规暟鎹紝瀹冨彲浠ヤ笌绗?1 绫诲苟鍒楁渶楂樹紭鍏堢骇銆?
+   - 杩欑被鏁版嵁鏈€閫傚悎鍜?earnings / guidance 鑱斿姩锛岃€屼笉鏄绔嬬湅鍗曟 beat/miss銆?
+     閲嶇偣鏄?revision drift銆乪stimate dispersion銆佷笂淇垎鏋愬笀鏁伴噺鍙樺寲銆佷互鍙?
+     鈥渂eat 浣嗘病浜轰笂淇€濊繖绫?fake-beat 璇嗗埆銆?
+   - 鐜板疄绾︽潫鏄暟鎹垚鏈拰鐐规椂鍙緱鎬э紱鍦ㄦ病鏈夊彲闈?PIT 鐗堟湰鍓嶏紝涓嶅簲鎶婂畠鍐欐垚
+     production 渚濊禆銆?
 
 3. `Insider transactions / Form 4`
-   - 同意排第三。它比纯新闻源更结构化，也比 13F/13D 更及时，和当前系统的
-     5-90 个交易日持有框架匹配。
-   - 优先看 open-market cluster buying、CEO/CFO buying、首次买入、暴跌后
-     买入、买入金额 / market cap，以及排除 option exercise 和 10b5-1
-     计划内噪音。
+   - 鍚屾剰鎺掔涓夈€傚畠姣旂函鏂伴椈婧愭洿缁撴瀯鍖栵紝涔熸瘮 13F/13D 鏇村強鏃讹紝鍜屽綋鍓嶇郴缁熺殑
+     5-90 涓氦鏄撴棩鎸佹湁妗嗘灦鍖归厤銆?
+   - 浼樺厛鐪?open-market cluster buying銆丆EO/CFO buying銆侀娆′拱鍏ャ€佹毚璺屽悗
+     涔板叆銆佷拱鍏ラ噾棰?/ market cap锛屼互鍙婃帓闄?option exercise 鍜?10b5-1
+     璁″垝鍐呭櫔闊炽€?
 
 4. `Short interest / borrow pressure`
-   - 同意它应高于 options / 13F / macro，但前提是承认免费数据只能先做
-     shadow-quality 版本。
-   - 正确对象不是把 FINRA daily short volume 误当 short interest，而是把
-     short interest / float、days to cover、borrow fee、availability、hard-
-     to-borrow 状态与 breakout / trend 强势联动，寻找 squeeze-ready 结构。
+   - 鍚屾剰瀹冨簲楂樹簬 options / 13F / macro锛屼絾鍓嶆彁鏄壙璁ゅ厤璐规暟鎹彧鑳藉厛鍋?
+     shadow-quality 鐗堟湰銆?
+   - 姝ｇ‘瀵硅薄涓嶆槸鎶?FINRA daily short volume 璇綋 short interest锛岃€屾槸鎶?
+     short interest / float銆乨ays to cover銆乥orrow fee銆乤vailability銆乭ard-
+     to-borrow 鐘舵€佷笌 breakout / trend 寮哄娍鑱斿姩锛屽鎵?squeeze-ready 缁撴瀯銆?
 
 5. `EOD options data`
-   - 同意放在中后段。不是因为弱，而是因为清洗复杂、成本高、流动性过滤难，
-     容易变成高自由度过拟合面。
-   - 它更适合作为确认层：IV-vs-realized、skew change、OI concentration、
-     earnings IV normalization、以及和 short-interest/squeeze 联合解释。
+   - 鍚屾剰鏀惧湪涓悗娈点€備笉鏄洜涓哄急锛岃€屾槸鍥犱负娓呮礂澶嶆潅銆佹垚鏈珮銆佹祦鍔ㄦ€ц繃婊ら毦锛?
+     瀹规槗鍙樻垚楂樿嚜鐢卞害杩囨嫙鍚堥潰銆?
+   - 瀹冩洿閫傚悎浣滀负纭灞傦細IV-vs-realized銆乻kew change銆丱I concentration銆?
+     earnings IV normalization銆佷互鍙婂拰 short-interest/squeeze 鑱斿悎瑙ｉ噴銆?
 
 6. `13F institutional holdings`
-   - 同意放在中后段，定位应是中期 crowding / ownership overlay，而不是短线
-     entry engine。
-   - 最有价值的是 quality-manager 新进/加仓与“低关注度 + 基本面改善”的
-     结合，而不是跟单某个基金经理。
+   - 鍚屾剰鏀惧湪涓悗娈碉紝瀹氫綅搴旀槸涓湡 crowding / ownership overlay锛岃€屼笉鏄煭绾?
+     entry engine銆?
+   - 鏈€鏈変环鍊肩殑鏄?quality-manager 鏂拌繘/鍔犱粨涓庘€滀綆鍏虫敞搴?+ 鍩烘湰闈㈡敼鍠勨€濈殑
+     缁撳悎锛岃€屼笉鏄窡鍗曟煇涓熀閲戠粡鐞嗐€?
 
 7. `13D / 13G beneficial ownership`
-   - 我同意它和 13F 相邻，但若未来要找更强事件驱动源，13D 的交易价值通常
-     高于 13F，因为它更接近 activist / control / strategic alternatives。
-   - 因此 playbook 里保留它紧随 13F 的位置，但研究时应优先看 13D 而不是 13G。
+   - 鎴戝悓鎰忓畠鍜?13F 鐩搁偦锛屼絾鑻ユ湭鏉ヨ鎵炬洿寮轰簨浠堕┍鍔ㄦ簮锛?3D 鐨勪氦鏄撲环鍊奸€氬父
+     楂樹簬 13F锛屽洜涓哄畠鏇存帴杩?activist / control / strategic alternatives銆?
+   - 鍥犳 playbook 閲屼繚鐣欏畠绱ч殢 13F 鐨勪綅缃紝浣嗙爺绌舵椂搴斾紭鍏堢湅 13D 鑰屼笉鏄?13G銆?
 
 8. `ETF / index flow / forced flow`
-   - 同意把它放在后半段。它更适合做 overlay、replacement-cost 解释、以及
-     reconstitution / inclusion / deletion 周期的事件补充，而不是先做主 alpha。
+   - 鍚屾剰鎶婂畠鏀惧湪鍚庡崐娈点€傚畠鏇撮€傚悎鍋?overlay銆乺eplacement-cost 瑙ｉ噴銆佷互鍙?
+     reconstitution / inclusion / deletion 鍛ㄦ湡鐨勪簨浠惰ˉ鍏咃紝鑰屼笉鏄厛鍋氫富 alpha銆?
 
 9. `Macro / rates / credit regime`
-   - 强烈同意它不该做个股 alpha 主引擎。它最适合作为 risk overlay、position
-     scaling、sleeve routing，而不是简单 broad gate。
-   - 这也与当前 playbook 已证伪的 broad macro defensive overlay 结论一致。
+   - 寮虹儓鍚屾剰瀹冧笉璇ュ仛涓偂 alpha 涓诲紩鎿庛€傚畠鏈€閫傚悎浣滀负 risk overlay銆乸osition
+     scaling銆乻leeve routing锛岃€屼笉鏄畝鍗?broad gate銆?
+   - 杩欎篃涓庡綋鍓?playbook 宸茶瘉浼殑 broad macro defensive overlay 缁撹涓€鑷淬€?
 
 10. `Alternative data`
-   - 同意放最后，但不是否定它的上限；而是要求它必须是“行业聚焦、可解释、
-     能落到一个具体 alpha hypothesis”。
-   - 如果未来做这一类，只应选 1-2 个真正理解的行业，避免把数据采购和清洗
-     本身误当成 alpha 进展。
+   - 鍚屾剰鏀炬渶鍚庯紝浣嗕笉鏄惁瀹氬畠鐨勪笂闄愶紱鑰屾槸瑕佹眰瀹冨繀椤绘槸鈥滆涓氳仛鐒︺€佸彲瑙ｉ噴銆?
+     鑳借惤鍒颁竴涓叿浣?alpha hypothesis鈥濄€?
+   - 濡傛灉鏈潵鍋氳繖涓€绫伙紝鍙簲閫?1-2 涓湡姝ｇ悊瑙ｇ殑琛屼笟锛岄伩鍏嶆妸鏁版嵁閲囪喘鍜屾竻娲?
+     鏈韩璇綋鎴?alpha 杩涘睍銆?
 
-降级项也同意：`Level 2`、tick、秒级 order flow、auction imbalance、纯盘中
-mean reversion、`0DTE` flow 都不符合当前系统的 EOD / 事件 / 结构性 edge。
+闄嶇骇椤逛篃鍚屾剰锛歚Level 2`銆乼ick銆佺绾?order flow銆乤uction imbalance銆佺函鐩樹腑
+mean reversion銆乣0DTE` flow 閮戒笉绗﹀悎褰撳墠绯荤粺鐨?EOD / 浜嬩欢 / 缁撴瀯鎬?edge銆?
 
-对当前仓库的直接含义：
+瀵瑰綋鍓嶄粨搴撶殑鐩存帴鍚箟锛?
 
-- 下一轮“新外部 alpha 源”默认从 `earnings + SEC + surprise` 开始，而不是再
-  扩展一个纯 OHLCV entry 变体。
-- 若未来允许付费数据，`analyst revisions` 是唯一可以和 earnings 线并列提级
-  的候选。
-- `macro`、`13F`、`ETF flow`、`options` 默认先作为 overlay / confirmation /
-  attribution 研究线，而不是抢占主 entry sleeve。
-- `insider` 与 `short-interest` 是当前最值得排在 earnings 之后的免费或半免费
-  结构化事件源。
+- 涓嬩竴杞€滄柊澶栭儴 alpha 婧愨€濋粯璁や粠 `earnings + SEC + surprise` 寮€濮嬶紝鑰屼笉鏄啀
+  鎵╁睍涓€涓函 OHLCV entry 鍙樹綋銆?
+- 鑻ユ湭鏉ュ厑璁镐粯璐规暟鎹紝`analyst revisions` 鏄敮涓€鍙互鍜?earnings 绾垮苟鍒楁彁绾?
+  鐨勫€欓€夈€?
+- `macro`銆乣13F`銆乣ETF flow`銆乣options` 榛樿鍏堜綔涓?overlay / confirmation /
+  attribution 鐮旂┒绾匡紝鑰屼笉鏄姠鍗犱富 entry sleeve銆?
+- `insider` 涓?`short-interest` 鏄綋鍓嶆渶鍊煎緱鎺掑湪 earnings 涔嬪悗鐨勫厤璐规垨鍗婂厤璐?
+  缁撴瀯鍖栦簨浠舵簮銆?
 
-## 4. 机制状态表
+## 4. 鏈哄埗鐘舵€佽〃
 
 | Mechanism family | Status | Long-term conclusion | Key experiments |
 |---|---|---|---|
-| Accepted A+B stack | accepted baseline | 三窗口均赚钱，late 强，mid 跑输指数，old win rate 不稳 | fixed-window backtests |
-| Technology trend wider target | accepted | winner-truncation repair 可在窄 cohort 上成立 | exp-20260425 target-width family |
-| Commodity trend wider target | accepted narrow | 部分 commodity trend winner 需要更宽 target，但不可泛化到 breakout | exp-20260425 target-width family |
-| Single-position cap 25% | accepted | 改善 winner capture / risk allocation，保留 | exp-20260425 cap family |
-| Trend Financials risk boost | accepted narrow | 已入选 Financials trend sleeve 在 mid/old 窗口重复贡献，适合 sizing boost；不要泛化成 sector priority | exp-20260429-015 |
+| Accepted A+B stack | accepted baseline | 涓夌獥鍙ｅ潎璧氶挶锛宭ate 寮猴紝mid 璺戣緭鎸囨暟锛宱ld win rate 涓嶇ǔ | fixed-window backtests |
+| Technology trend wider target | accepted | winner-truncation repair 鍙湪绐?cohort 涓婃垚绔?| exp-20260425 target-width family |
+| Commodity trend wider target | accepted narrow | 閮ㄥ垎 commodity trend winner 闇€瑕佹洿瀹?target锛屼絾涓嶅彲娉涘寲鍒?breakout | exp-20260425 target-width family |
+| Single-position cap 25% | accepted | 鏀瑰杽 winner capture / risk allocation锛屼繚鐣?| exp-20260425 cap family |
+| Trend Financials risk boost | accepted narrow | 宸插叆閫?Financials trend sleeve 鍦?mid/old 绐楀彛閲嶅璐＄尞锛岄€傚悎 sizing boost锛涗笉瑕佹硾鍖栨垚 sector priority | exp-20260429-015 |
 | Financials sector-leader risk budget | accepted narrow | Within accepted trend Financials, only 20-day sector-relative leaders justify lifting total risk from 1.5x to 2.5x; do not retry nearby multipliers without forward/event evidence | exp-20260501-006 |
 | Financials sector-leader position cap | rejected / too small | 45-50% caps improved mid_weak and old_thin but only +1.10% aggregate EV and +1.52% PnL, with no late_strong exposure; do not retry nearby cap scalars without forward concentration evidence or a new lifecycle/event discriminator | exp-20260503-050 |
 | Risk-on SPY-relative leader risk budget | accepted | Otherwise-unmodified `risk_on` leaders versus SPY deserve 2.0x risk; this is the current accepted broad allocation overlay and already subsumes nearby plain-risk-on scalar ideas | exp-20260501-024 |
 | Risk-on SPY-relative leader position cap | accepted | The accepted otherwise-unmodified SPY-relative leader sleeve was cap-constrained; only this sleeve may use a 50% initial position cap. Do not retry broader initial-cap unlocks without forward/event evidence. | exp-20260502-021 |
 | SPY-relative leader follow-through add-on cap | accepted | The first day-2 follow-through add-on for already-accepted SPY-relative leaders may use a 60% position cap. Do not retry nearby higher caps without forward/tail evidence. | exp-20260502-022 |
-| Entry follow-through add-on | promising, default-off | day2 `>= +2%` 且 RS vs SPY `> 0` 的 25% add-on 三窗口方向性为正，但 materiality modest | exp-20260426-009/010/011/012/035, exp-20260427-010/011 |
-| LLM soft ranking | blocked / high-upside | 方向仍重要，但必须先有足够 production-aligned replay sample | exp-20260426-015/022/023 |
-| News-confirmed weak-hold exit | blocked, not falsified | 概念比 price-only exit 干净，但 archive coverage 不足 | exp-20260425-037 |
-| Earnings C strategy revival | deferred | PEAD 大类未死，但当前实现不是简单补数据能救 | exp-20260418+, C-gate families |
-| Meta-allocation / regime routing | promising but early | `mid_weak` 问题更像什么时候用哪个 sleeve，而不是缺一个 entry | exp-20260423 meta series |
-| Shared parity helpers | accepted governance | 入场 gate、regime risk sizing、partial-reduce 语义都应由共享 helper 驱动；未来不接受 run/backtester 双份逻辑 | exp-20260429-007/008/012 |
-| AI infra pilot sleeve + attribution | accepted governance | `BE/INTC/LITE` 只能先以 bounded forward pilot 收集 replacement-value 证据，不是 core watchlist promotion | exp-20260501-029/030 |
-| Trailing partial reductions | measurable but rejected alpha | 现在可回放，但 replay-on 对当前 stack 为负；保留为共享可审计机制，不作为默认 alpha | exp-20260429-012 |
-| Residual narrow sector pockets | accepted but overfit-prone | 可作为线索，不应无限挖残差 | exp-20260423/25 residual pocket series |
-| Universe expansion scouts | observed-only | 事件/高 beta/mid-cap scouts 有线索，但受 snapshot / coverage 限制 | exp-20260426-013/021/025/031 |
+| Entry follow-through add-on | promising, default-off | day2 `>= +2%` 涓?RS vs SPY `> 0` 鐨?25% add-on 涓夌獥鍙ｆ柟鍚戞€т负姝ｏ紝浣?materiality modest | exp-20260426-009/010/011/012/035, exp-20260427-010/011 |
+| LLM soft ranking | blocked / high-upside | 鏂瑰悜浠嶉噸瑕侊紝浣嗗繀椤诲厛鏈夎冻澶?production-aligned replay sample | exp-20260426-015/022/023 |
+| News-confirmed weak-hold exit | blocked, not falsified | 姒傚康姣?price-only exit 骞插噣锛屼絾 archive coverage 涓嶈冻 | exp-20260425-037 |
+| Earnings C strategy revival | deferred | PEAD 澶х被鏈锛屼絾褰撳墠瀹炵幇涓嶆槸绠€鍗曡ˉ鏁版嵁鑳芥晳 | exp-20260418+, C-gate families |
+| Meta-allocation / regime routing | promising but early | `mid_weak` 闂鏇村儚浠€涔堟椂鍊欑敤鍝釜 sleeve锛岃€屼笉鏄己涓€涓?entry | exp-20260423 meta series |
+| Shared parity helpers | accepted governance | 鍏ュ満 gate銆乺egime risk sizing銆乸artial-reduce 璇箟閮藉簲鐢卞叡浜?helper 椹卞姩锛涙湭鏉ヤ笉鎺ュ彈 run/backtester 鍙屼唤閫昏緫 | exp-20260429-007/008/012 |
+| AI infra pilot sleeve + attribution | accepted governance | `BE/INTC/LITE` 鍙兘鍏堜互 bounded forward pilot 鏀堕泦 replacement-value 璇佹嵁锛屼笉鏄?core watchlist promotion | exp-20260501-029/030 |
+| Trailing partial reductions | measurable but rejected alpha | 鐜板湪鍙洖鏀撅紝浣?replay-on 瀵瑰綋鍓?stack 涓鸿礋锛涗繚鐣欎负鍏变韩鍙璁℃満鍒讹紝涓嶄綔涓洪粯璁?alpha | exp-20260429-012 |
+| Residual narrow sector pockets | accepted but overfit-prone | 鍙綔涓虹嚎绱紝涓嶅簲鏃犻檺鎸栨畫宸?| exp-20260423/25 residual pocket series |
+| Universe expansion scouts | observed-only | 浜嬩欢/楂?beta/mid-cap scouts 鏈夌嚎绱紝浣嗗彈 snapshot / coverage 闄愬埗 | exp-20260426-013/021/025/031 |
 
-## 5. 已证伪或降级的机制族
+## 5. 宸茶瘉浼垨闄嶇骇鐨勬満鍒舵棌
 
 ### 5.1 Weak-hold early exit
 
-结论：不要用简单 day-5/day-10 弱势、RS lag、sector lag 作为早卖规则。
+缁撹锛氫笉瑕佺敤绠€鍗?day-5/day-10 寮卞娍銆丷S lag銆乻ector lag 浣滀负鏃╁崠瑙勫垯銆?
 
-原因：
+鍘熷洜锛?
 
-- 多数触发稀疏，收益改善极小。
-- 容易截断 delayed winners，例如弱开局后恢复的大赢家。
-- sector confirmation 未能救活 price-only weak-hold 模板。
+- 澶氭暟瑙﹀彂绋€鐤忥紝鏀剁泭鏀瑰杽鏋佸皬銆?
+- 瀹规槗鎴柇 delayed winners锛屼緥濡傚急寮€灞€鍚庢仮澶嶇殑澶ц耽瀹躲€?
+- sector confirmation 鏈兘鏁戞椿 price-only weak-hold 妯℃澘銆?
 
-除非新增信号是真正正交的 adverse information，例如新负面新闻、财报恶化、连续多日无法 reclaim，否则不要重试同构模板。
+闄ら潪鏂板淇″彿鏄湡姝ｆ浜ょ殑 adverse information锛屼緥濡傛柊璐熼潰鏂伴椈銆佽储鎶ユ伓鍖栥€佽繛缁鏃ユ棤娉?reclaim锛屽惁鍒欎笉瑕侀噸璇曞悓鏋勬ā鏉裤€?
 
-Key experiments：`exp-20260425-036`, `exp-20260425-037`, `exp-20260425-038`, `exp-20260426-059`。
+Key experiments锛歚exp-20260425-036`, `exp-20260425-037`, `exp-20260425-038`, `exp-20260426-059`銆?
 
 ### 5.2 Pullback / leadership / OHLCV-only new entry
 
-结论：不要继续只靠近高、RS、pullback、inside-day、compression 等 OHLCV 形态反复造 D 策略。
+缁撹锛氫笉瑕佺户缁彧闈犺繎楂樸€丷S銆乸ullback銆乮nside-day銆乧ompression 绛?OHLCV 褰㈡€佸弽澶嶉€?D 绛栫暐銆?
 
-原因：
+鍘熷洜锛?
 
-- 严格定义样本太少。
-- 放松定义后变成 noisy continuation clutter。
-- 许多 shadow source 在一个窗口有 forward return，但跨窗口不稳。
+- 涓ユ牸瀹氫箟鏍锋湰澶皯銆?
+- 鏀炬澗瀹氫箟鍚庡彉鎴?noisy continuation clutter銆?
+- 璁稿 shadow source 鍦ㄤ竴涓獥鍙ｆ湁 forward return锛屼絾璺ㄧ獥鍙ｄ笉绋炽€?
 
-如果重启，必须加入新的上下文来源，例如事件、sector leadership persistence、regime state，或先证明它与 A+B 有低重叠且跨窗口 forward return 稳定。
+濡傛灉閲嶅惎锛屽繀椤诲姞鍏ユ柊鐨勪笂涓嬫枃鏉ユ簮锛屼緥濡備簨浠躲€乻ector leadership persistence銆乺egime state锛屾垨鍏堣瘉鏄庡畠涓?A+B 鏈変綆閲嶅彔涓旇法绐楀彛 forward return 绋冲畾銆?
 
-Key experiments：`exp-20260422-016`, `exp-20260423-001`, `exp-20260426-057`, pullback / VCP / opening-range / gap-and-hold / undercut-reclaim shadow audits。
+Key experiments锛歚exp-20260422-016`, `exp-20260423-001`, `exp-20260426-057`, pullback / VCP / opening-range / gap-and-hold / undercut-reclaim shadow audits銆?
 
 ### 5.3 Broad macro defensive overlay
 
-结论：宏观/defensive 方向不能用简单 broad gate 或 gross haircut 直接上线。
+缁撹锛氬畯瑙?defensive 鏂瑰悜涓嶈兘鐢ㄧ畝鍗?broad gate 鎴?gross haircut 鐩存帴涓婄嚎銆?
 
-原因：
+鍘熷洜锛?
 
-- OR stress trigger 过宽，会误伤健康窗口。
-- strict AND trigger 太稀疏或 vacuous。
-- defensive / commodity 行为可能存在，但需要 sleeve routing 或更细状态，不是统一降风险。
+- OR stress trigger 杩囧锛屼細璇激鍋ュ悍绐楀彛銆?
+- strict AND trigger 澶█鐤忔垨 vacuous銆?
+- defensive / commodity 琛屼负鍙兘瀛樺湪锛屼絾闇€瑕?sleeve routing 鎴栨洿缁嗙姸鎬侊紝涓嶆槸缁熶竴闄嶉闄┿€?
 
-如果重启，优先做 explainability map：什么状态下 `breakout_long`、`trend_long`、defensive exposure 各自应该拿风险。
+濡傛灉閲嶅惎锛屼紭鍏堝仛 explainability map锛氫粈涔堢姸鎬佷笅 `breakout_long`銆乣trend_long`銆乨efensive exposure 鍚勮嚜搴旇鎷块闄┿€?
 
-Key experiments：`exp-20260423-013/014/015/016`, macro defensive v1/v2/budget, cross-asset proxy expansion。
+Key experiments锛歚exp-20260423-013/014/015/016`, macro defensive v1/v2/budget, cross-asset proxy expansion銆?
 
 ### 5.4 C strategy single-field repair
 
-结论：不要再用单字段 earnings gate 或小 checklist 试图救 C 策略。
+缁撹锛氫笉瑕佸啀鐢ㄥ崟瀛楁 earnings gate 鎴栧皬 checklist 璇曞浘鏁?C 绛栫暐銆?
 
-原因：
+鍘熷洜锛?
 
-- repaired-data 后仍拖累 A+B 或无法稳定通过多窗口。
-- 问题更像事件质量分级和 slot opportunity cost，而非某个字段缺失。
+- repaired-data 鍚庝粛鎷栫疮 A+B 鎴栨棤娉曠ǔ瀹氶€氳繃澶氱獥鍙ｃ€?
+- 闂鏇村儚浜嬩欢璐ㄩ噺鍒嗙骇鍜?slot opportunity cost锛岃€岄潪鏌愪釜瀛楁缂哄け銆?
 
-如果重启，必须要么有 LLM 财报 grading，要么有更强 post-earnings continuation 机制。
+濡傛灉閲嶅惎锛屽繀椤昏涔堟湁 LLM 璐㈡姤 grading锛岃涔堟湁鏇村己 post-earnings continuation 鏈哄埗銆?
 
 ### 5.5 Entry add-on local threshold tuning
 
-结论：普通 strict add-on 仍是研究候选，但附近阈值不要再扫。
+缁撹锛氭櫘閫?strict add-on 浠嶆槸鐮旂┒鍊欓€夛紝浣嗛檮杩戦槇鍊间笉瑕佸啀鎵€?
 
-当前候选：
+褰撳墠鍊欓€夛細
 
 - checkpoint day: 2
 - unrealized return: `>= +2%`
@@ -351,93 +360,93 @@ Key experiments：`exp-20260423-013/014/015/016`, macro defensive v1/v2/budget, 
 - add-on size: `25%` original shares
 - scheduling: allow schedule, enforce cap / heat on execution day
 
-不要优先重试：
+涓嶈浼樺厛閲嶈瘯锛?
 
-- RS 阈值 `0.5% / 1% / 2%`
+- RS 闃堝€?`0.5% / 1% / 2%`
 - absolute unrealized threshold `3% / 4% / 5%`
 - day1-to-day2 improvement filter
 - checkpoint cap-room prefilter
 - positive ticker day2 return confirmation
 
-原因：这些都未稳定改善普通 `2% + RS>0 + 25%` 候选；多数只是减少有效 add-ons。
+鍘熷洜锛氳繖浜涢兘鏈ǔ瀹氭敼鍠勬櫘閫?`2% + RS>0 + 25%` 鍊欓€夛紱澶氭暟鍙槸鍑忓皯鏈夋晥 add-ons銆?
 
-Key experiments：`exp-20260426-010/011/012/017/035`, `exp-20260427-010/011`。
+Key experiments锛歚exp-20260426-010/011/012/017/035`, `exp-20260427-010/011`銆?
 
-## 6. Promising 但未生产化方向
+## 6. Promising 浣嗘湭鐢熶骇鍖栨柟鍚?
 
 ### 6.1 Entry follow-through add-on
 
-核心发现：
+鏍稿績鍙戠幇锛?
 
-- trade-level approximation 先显示 day2 follow-through 有边。
-- real BacktestEngine replay 后仍三窗口方向性为正。
-- 但执行日 cap / heat 会吃掉大量理论收益，真实 effect size 较小。
+- trade-level approximation 鍏堟樉绀?day2 follow-through 鏈夎竟銆?
+- real BacktestEngine replay 鍚庝粛涓夌獥鍙ｆ柟鍚戞€т负姝ｃ€?
+- 浣嗘墽琛屾棩 cap / heat 浼氬悆鎺夊ぇ閲忕悊璁烘敹鐩婏紝鐪熷疄 effect size 杈冨皬銆?
 
-代表结果：
+浠ｈ〃缁撴灉锛?
 
-- no-add-on -> ordinary 25% add-on：aggregate EV delta `+0.0447`，aggregate PnL `+$1,523.89`，3/3 windows improved。
-- smaller fractions 10% / 15% 不如 25%。
-- higher RS / higher unrealized threshold / improvement filter 都没有稳定胜过 ordinary candidate。
+- no-add-on -> ordinary 25% add-on锛歛ggregate EV delta `+0.0447`锛宎ggregate PnL `+$1,523.89`锛?/3 windows improved銆?
+- smaller fractions 10% / 15% 涓嶅 25%銆?
+- higher RS / higher unrealized threshold / improvement filter 閮芥病鏈夌ǔ瀹氳儨杩?ordinary candidate銆?
 
-当前决策：
+褰撳墠鍐崇瓥锛?
 
-- 保留 default-off harness。
-- 不默认上线。
-- 下一步若继续，必须寻找 materiality unlock 或新 evidence source，而不是继续本地阈值微调。
+- 淇濈暀 default-off harness銆?
+- 涓嶉粯璁や笂绾裤€?
+- 涓嬩竴姝ヨ嫢缁х画锛屽繀椤诲鎵?materiality unlock 鎴栨柊 evidence source锛岃€屼笉鏄户缁湰鍦伴槇鍊煎井璋冦€?
 
-可研究的下一步：
+鍙爺绌剁殑涓嬩竴姝ワ細
 
-- cap / heat 是否过度阻止已确认 winner 的加仓，但这属于 capital allocation 实验，不是 add-on trigger 微调。
-- forward sample 或 paper-trading 观察是否强化 materiality。
-- LLM / news 是否能给 add-on 做事件确认，但需要 replay coverage。
+- cap / heat 鏄惁杩囧害闃绘宸茬‘璁?winner 鐨勫姞浠擄紝浣嗚繖灞炰簬 capital allocation 瀹為獙锛屼笉鏄?add-on trigger 寰皟銆?
+- forward sample 鎴?paper-trading 瑙傚療鏄惁寮哄寲 materiality銆?
+- LLM / news 鏄惁鑳界粰 add-on 鍋氫簨浠剁‘璁わ紝浣嗛渶瑕?replay coverage銆?
 
 ### 6.2 LLM soft ranking / event grading
 
-核心发现：
+鏍稿績鍙戠幇锛?
 
-- LLM 仍是系统的合理优势来源，但不是硬风控执行器。
-- 目前最大问题不是“LLM 有没有价值”，而是 replay archive / effective sample 还不够支撑归因。
+- LLM 浠嶆槸绯荤粺鐨勫悎鐞嗕紭鍔挎潵婧愶紝浣嗕笉鏄‖椋庢帶鎵ц鍣ㄣ€?
+- 鐩墠鏈€澶ч棶棰樹笉鏄€淟LM 鏈夋病鏈変环鍊尖€濓紝鑰屾槸 replay archive / effective sample 杩樹笉澶熸敮鎾戝綊鍥犮€?
 
-下一步要求：
+涓嬩竴姝ヨ姹傦細
 
-- 只统计 production-aligned、ranking-eligible 样本。
-- 对 LLM 放行 / 降权 / veto 后收益做单独归因。
-- 让 LLM 输出结构化字段，例如 event_type、event_strength、risk_type、time_sensitivity、confidence、ranking_reason。
+- 鍙粺璁?production-aligned銆乺anking-eligible 鏍锋湰銆?
+- 瀵?LLM 鏀捐 / 闄嶆潈 / veto 鍚庢敹鐩婂仛鍗曠嫭褰掑洜銆?
+- 璁?LLM 杈撳嚭缁撴瀯鍖栧瓧娈碉紝渚嬪 event_type銆乪vent_strength銆乺isk_type銆乼ime_sensitivity銆乧onfidence銆乺anking_reason銆?
 
 ### 6.3 Meta-allocation / regime routing
 
-核心发现：
+鏍稿績鍙戠幇锛?
 
-- `late_strong` 说明 A+B 在趋势友好期非常强。
-- `mid_weak` 说明系统即使赚钱，也可能输给指数，问题不是单纯缺 signal，而是 allocation / sleeve routing。
-- `old_thin` 说明弱环境下 win rate 低，可能需要状态识别或风险路由，而非新增局部 entry。
+- `late_strong` 璇存槑 A+B 鍦ㄨ秼鍔垮弸濂芥湡闈炲父寮恒€?
+- `mid_weak` 璇存槑绯荤粺鍗充娇璧氶挶锛屼篃鍙兘杈撶粰鎸囨暟锛岄棶棰樹笉鏄崟绾己 signal锛岃€屾槸 allocation / sleeve routing銆?
+- `old_thin` 璇存槑寮辩幆澧冧笅 win rate 浣庯紝鍙兘闇€瑕佺姸鎬佽瘑鍒垨椋庨櫓璺敱锛岃€岄潪鏂板灞€閮?entry銆?
 
-推荐研究框架：
+鎺ㄨ崘鐮旂┒妗嗘灦锛?
 
-- Market structure：breadth、equal-weight vs cap-weight、sector dispersion。
-- Volatility / correlation：realized vol、intraday range、cross-asset pressure。
-- Flow / positioning proxy：gap-up fade、leader reversal、fake breakout density。
+- Market structure锛歜readth銆乪qual-weight vs cap-weight銆乻ector dispersion銆?
+- Volatility / correlation锛歳ealized vol銆乮ntraday range銆乧ross-asset pressure銆?
+- Flow / positioning proxy锛歡ap-up fade銆乴eader reversal銆乫ake breakout density銆?
 
-不要直接跳到黑箱 classifier。先做少量、可回放、可解释的 state variables。
+涓嶈鐩存帴璺冲埌榛戠 classifier銆傚厛鍋氬皯閲忋€佸彲鍥炴斁銆佸彲瑙ｉ噴鐨?state variables銆?
 
-## 7. 已接受但需谨慎的窄规则
+## 7. 宸叉帴鍙椾絾闇€璋ㄦ厧鐨勭獎瑙勫垯
 
-以下规则或 cohort 曾经通过多窗口或局部 Gate，但存在过拟合风险。它们可以作为当前 accepted stack 的组成或研究线索，但不要无限外推：
+浠ヤ笅瑙勫垯鎴?cohort 鏇剧粡閫氳繃澶氱獥鍙ｆ垨灞€閮?Gate锛屼絾瀛樺湪杩囨嫙鍚堥闄┿€傚畠浠彲浠ヤ綔涓哄綋鍓?accepted stack 鐨勭粍鎴愭垨鐮旂┒绾跨储锛屼絾涓嶈鏃犻檺澶栨帹锛?
 
-- `Technology trend` 更宽 target。
-- `Commodity trend` 更宽 target。
-- `single-position cap = 25%`。
-- 若干 residual sector / DTE / near-high pockets。
+- `Technology trend` 鏇村 target銆?
+- `Commodity trend` 鏇村 target銆?
+- `single-position cap = 25%`銆?
+- 鑻ュ共 residual sector / DTE / near-high pockets銆?
 
-使用原则：
+浣跨敤鍘熷垯锛?
 
-- 不把窄 pocket 扩大成全局规则。
-- 不用单窗口漂亮结果证明大类机制。
-- 若新增相似 pocket，必须证明它不是既有 residual mining 的简单重复。
+- 涓嶆妸绐?pocket 鎵╁ぇ鎴愬叏灞€瑙勫垯銆?
+- 涓嶇敤鍗曠獥鍙ｆ紓浜粨鏋滆瘉鏄庡ぇ绫绘満鍒躲€?
+- 鑻ユ柊澧炵浉浼?pocket锛屽繀椤昏瘉鏄庡畠涓嶆槸鏃㈡湁 residual mining 鐨勭畝鍗曢噸澶嶃€?
 
-## 8. 失败记忆索引
+## 8. 澶辫触璁板繂绱㈠紩
 
-下表不是完整日志，只是防止重复思路。完整参数查 `docs/experiment_log.jsonl` 或 `docs/experiments/logs/`。
+涓嬭〃涓嶆槸瀹屾暣鏃ュ織锛屽彧鏄槻姝㈤噸澶嶆€濊矾銆傚畬鏁村弬鏁版煡 `docs/experiment_log.jsonl` 鎴?`docs/experiments/logs/`銆?
 
 | Family | Do not repeat without new evidence | Why |
 |---|---|---|
@@ -454,54 +463,54 @@ Key experiments：`exp-20260426-010/011/012/017/035`, `exp-20260427-010/011`。
 | add-on improvement filter | day2 must improve vs day1 | not better than ordinary add-on |
 | C strategy checklist | small earnings quality checklist | cannot overcome slot opportunity cost |
 
-## 9. 下一轮实验队列
+## 9. 涓嬩竴杞疄楠岄槦鍒?
 
-优先级 1：确认 add-on 的 materiality ceiling。
+浼樺厛绾?1锛氱‘璁?add-on 鐨?materiality ceiling銆?
 
-- 问题：严格 day2 follow-through add-on 已稳定为正，但真实收益小。下一步不是阈值，而是问“为什么 cap/heat 留不出空间，是否值得重分配风险？”
-- 合格实验：default-off capital allocation replay，单一变量，只改变 cap / heat / add-on budget semantics。
-- 风险：放松 cap 可能增加 concentration 和 tail risk，必须三窗口对比。
+- 闂锛氫弗鏍?day2 follow-through add-on 宸茬ǔ瀹氫负姝ｏ紝浣嗙湡瀹炴敹鐩婂皬銆備笅涓€姝ヤ笉鏄槇鍊硷紝鑰屾槸闂€滀负浠€涔?cap/heat 鐣欎笉鍑虹┖闂达紝鏄惁鍊煎緱閲嶅垎閰嶉闄╋紵鈥?
+- 鍚堟牸瀹為獙锛歞efault-off capital allocation replay锛屽崟涓€鍙橀噺锛屽彧鏀瑰彉 cap / heat / add-on budget semantics銆?
+- 椋庨櫓锛氭斁鏉?cap 鍙兘澧炲姞 concentration 鍜?tail risk锛屽繀椤讳笁绐楀彛瀵规瘮銆?
 
-优先级 2：做 `mid_weak` 的 meta-allocation 解释图。
+浼樺厛绾?2锛氬仛 `mid_weak` 鐨?meta-allocation 瑙ｉ噴鍥俱€?
 
-- 问题：`mid_weak` 绝对赚钱但跑输 SPY/QQQ，说明 allocation 不够适应 rotation-heavy bull。
-- 合格实验：先做 audit / map，不直接改策略，输出 sleeve、sector、breadth、vol、fake-breakout density 的贡献分解。
-- 风险：如果直接上 classifier，容易过拟合。
+- 闂锛歚mid_weak` 缁濆璧氶挶浣嗚窇杈?SPY/QQQ锛岃鏄?allocation 涓嶅閫傚簲 rotation-heavy bull銆?
+- 鍚堟牸瀹為獙锛氬厛鍋?audit / map锛屼笉鐩存帴鏀圭瓥鐣ワ紝杈撳嚭 sleeve銆乻ector銆乥readth銆乿ol銆乫ake-breakout density 鐨勮础鐚垎瑙ｃ€?
+- 椋庨櫓锛氬鏋滅洿鎺ヤ笂 classifier锛屽鏄撹繃鎷熷悎銆?
 
-优先级 3：构造 LLM event grading replay 样本。
+浼樺厛绾?3锛氭瀯閫?LLM event grading replay 鏍锋湰銆?
 
-- 问题：LLM ranking 高 upside，但样本不够。
-- 合格实验：增加结构化落盘和 effective attribution，不改变硬风控。
-- 风险：不能让 LLM 在无归因时接管仓位或硬 veto。
+- 闂锛歀LM ranking 楂?upside锛屼絾鏍锋湰涓嶅銆?
+- 鍚堟牸瀹為獙锛氬鍔犵粨鏋勫寲钀界洏鍜?effective attribution锛屼笉鏀瑰彉纭鎺с€?
+- 椋庨櫓锛氫笉鑳借 LLM 鍦ㄦ棤褰掑洜鏃舵帴绠′粨浣嶆垨纭?veto銆?
 
-优先级 4：新 universe / new D-strategy 只做 shadow。
+浼樺厛绾?4锛氭柊 universe / new D-strategy 鍙仛 shadow銆?
 
-- 问题：当前 universe 可能限制 alpha 搜索，但 snapshots 对 outside-production ticker 支持不足。
-- 合格实验：先验证候选覆盖、重叠率、forward return、数据可用性，不接生产。
-- 风险：shadow forward return 容易被幸存者偏差和 coverage bias 污染。
+- 闂锛氬綋鍓?universe 鍙兘闄愬埗 alpha 鎼滅储锛屼絾 snapshots 瀵?outside-production ticker 鏀寔涓嶈冻銆?
+- 鍚堟牸瀹為獙锛氬厛楠岃瘉鍊欓€夎鐩栥€侀噸鍙犵巼銆乫orward return銆佹暟鎹彲鐢ㄦ€э紝涓嶆帴鐢熶骇銆?
+- 椋庨櫓锛歴hadow forward return 瀹规槗琚垢瀛樿€呭亸宸拰 coverage bias 姹℃煋銆?
 
-## 10. 证据级别
+## 10. 璇佹嵁绾у埆
 
 | Level | Meaning | Allowed use |
 |---|---|---|
-| L0 | 想法 / 金融直觉 | 只能写 hypothesis |
-| L1 | shadow audit 有方向性 | 可进入 default-off replay |
-| L2 | real backtester 三窗口方向性为正 | 可保留 harness / 继续研究 |
-| L3 | 三窗口通过 Gate 4 且 effect size 足够 | 可考虑 production promotion |
-| L4 | forward / paper / live 也确认 | 可提升为长期 accepted doctrine |
+| L0 | 鎯虫硶 / 閲戣瀺鐩磋 | 鍙兘鍐?hypothesis |
+| L1 | shadow audit 鏈夋柟鍚戞€?| 鍙繘鍏?default-off replay |
+| L2 | real backtester 涓夌獥鍙ｆ柟鍚戞€т负姝?| 鍙繚鐣?harness / 缁х画鐮旂┒ |
+| L3 | 涓夌獥鍙ｉ€氳繃 Gate 4 涓?effect size 瓒冲 | 鍙€冭檻 production promotion |
+| L4 | forward / paper / live 涔熺‘璁?| 鍙彁鍗囦负闀挎湡 accepted doctrine |
 
-当前大多数新增方向只到 L1-L2。不要把 L1 shadow 当成生产 alpha。
+褰撳墠澶у鏁版柊澧炴柟鍚戝彧鍒?L1-L2銆備笉瑕佹妸 L1 shadow 褰撴垚鐢熶骇 alpha銆?
 
-## 11. 新实验写入规则
+## 11. 鏂板疄楠屽啓鍏ヨ鍒?
 
-新增实验不要把完整流水账追加到本文档。只在以下情况下更新本文档：
+鏂板瀹為獙涓嶈鎶婂畬鏁存祦姘磋处杩藉姞鍒版湰鏂囨。銆傚彧鍦ㄤ互涓嬫儏鍐典笅鏇存柊鏈枃妗ｏ細
 
-- 一个机制族的状态改变了，例如 `promising -> accepted`、`promising -> rejected`、`blocked -> testable`。
-- 出现新的防重复规则。
-- 下一轮优先级发生变化。
-- 有足够泛化价值的机制启发。
+- 涓€涓満鍒舵棌鐨勭姸鎬佹敼鍙樹簡锛屼緥濡?`promising -> accepted`銆乣promising -> rejected`銆乣blocked -> testable`銆?
+- 鍑虹幇鏂扮殑闃查噸澶嶈鍒欍€?
+- 涓嬩竴杞紭鍏堢骇鍙戠敓鍙樺寲銆?
+- 鏈夎冻澶熸硾鍖栦环鍊肩殑鏈哄埗鍚彂銆?
 
-推荐写法：
+鎺ㄨ崘鍐欐硶锛?
 
 ```text
 ### Mechanism family name
@@ -513,24 +522,24 @@ Do not repeat: nearby variants that are now low priority.
 Next valid retry requires: concrete new evidence or changed data condition.
 ```
 
-不要写入：
+涓嶈鍐欏叆锛?
 
-- 每个窗口的完整 stdout。
-- 每个参数 sweep 的所有中间值。
-- 已经在 `experiment_log.jsonl` 里的 JSON 字段。
-- 只对单次实验有意义的过程性推理。
+- 姣忎釜绐楀彛鐨勫畬鏁?stdout銆?
+- 姣忎釜鍙傛暟 sweep 鐨勬墍鏈変腑闂村€笺€?
+- 宸茬粡鍦?`experiment_log.jsonl` 閲岀殑 JSON 瀛楁銆?
+- 鍙鍗曟瀹為獙鏈夋剰涔夌殑杩囩▼鎬ф帹鐞嗐€?
 
-## 12. 快速启动清单
+## 12. 蹇€熷惎鍔ㄦ竻鍗?
 
-每轮开始读本文档时，先回答：
+姣忚疆寮€濮嬭鏈枃妗ｆ椂锛屽厛鍥炵瓟锛?
 
-1. 本轮方向属于哪个 mechanism family？
-2. 它是否踩中了第 8 节的防重复禁区？
-3. 如果像旧方向的变体，新证据是什么？
-4. 它是 `alpha_search` 还是解除 alpha 搜索阻塞的 `measurement_repair`？
-5. 如果成功，会改变第 4 节状态表还是只是增加一条实验日志？
+1. 鏈疆鏂瑰悜灞炰簬鍝釜 mechanism family锛?
+2. 瀹冩槸鍚﹁俯涓簡绗?8 鑺傜殑闃查噸澶嶇鍖猴紵
+3. 濡傛灉鍍忔棫鏂瑰悜鐨勫彉浣擄紝鏂拌瘉鎹槸浠€涔堬紵
+4. 瀹冩槸 `alpha_search` 杩樻槸瑙ｉ櫎 alpha 鎼滅储闃诲鐨?`measurement_repair`锛?
+5. 濡傛灉鎴愬姛锛屼細鏀瑰彉绗?4 鑺傜姸鎬佽〃杩樻槸鍙槸澧炲姞涓€鏉″疄楠屾棩蹇楋紵
 
-若第 5 点答案只是“增加一条实验日志”，默认不要改本文档，只写结构化实验记录。
+鑻ョ 5 鐐圭瓟妗堝彧鏄€滃鍔犱竴鏉″疄楠屾棩蹇椻€濓紝榛樿涓嶈鏀规湰鏂囨。锛屽彧鍐欑粨鏋勫寲瀹為獙璁板綍銆?
 
 ### 2026-04-27 mechanism update: Entry follow-through add-on cap headroom
 
@@ -4364,4 +4373,603 @@ from historical shadow evidence alone, and do not run more simple role/value
 threshold sweeps until the default-off queue has forward replacement-value
 outcomes. A valid promotion needs enough closed queue samples plus a shared
 backtest/production event-sleeve policy.
+
+### 2026-05-04 mechanism update: Earnings SEC price-reaction packet
+
+Status: observed-only / not promoted.
+
+Core conclusion: `exp-20260504-002` tested the first complete free-source
+event packet for `earnings + PIT-safe SEC filing + first price reaction`.
+Adding nearby SEC results-filing context does not by itself rescue the
+earnings line, and positive reaction after a results 8-K is not a stable
+ranking signal in the currently covered window.
+
+Evidence: the covered late window produced `92` raw inferred earnings events,
+deduped to `76` event packets after collapsing same SEC shock/accession
+duplicates. Of those, `72` were price-covered, `65` were results 8-K events,
+and `21` were primary packets defined as `results_8k + positive first excess
+reaction`. The primary packet had `20` valid 10-day outcomes with average
+excess `-1.83%` and win rate `30.00%`. The stronger
+`results_8k + >=2% first excess reaction` branch had `12` valid 10-day
+outcomes with average excess `-1.69%`. When packet entries conflicted with
+same-day accepted A/B trades, the 10-day replacement-value proxy averaged
+`-9.87%`, with only `2/22` positive replacement samples.
+
+Mechanism insight: the next earnings retry should not be another nearby
+reaction-threshold sweep. The missing edge is probably richer event grading
+such as XBRL fundamentals, analyst revisions, or LLM financial-statement
+semantics, plus older PIT earnings coverage for non-overlapping windows.
+
+Do not repeat: raw `results_8k + positive reaction` gates, nearby +/- reaction
+threshold tuning, or simple SEC-context checklists as a C-strategy revival.
+A valid retry needs new information content, not another price-confirmation
+variant on the same covered sample.
+
+### 2026-05-04 mechanism update: SEC Companyfacts financial-quality grading
+
+Status: observed-only / not promoted.
+
+Core conclusion: `exp-20260504-004` filled the prior XBRL/companyfacts data
+gap with `17,109` normalized SEC Companyfacts rows and tested a simple
+financial-quality score across 10-Q/10-K financial filing events. The data gap
+is now materially repaired, but the simple score is not a promotion-quality
+ranking signal.
+
+Evidence: the replay matched `292` financial filing events to Companyfacts
+accessions and covered `218` with prices across all three canonical windows:
+`72` old_thin, `71` mid_weak, and `75` late_strong. The `high_quality` bucket
+had `135` events and `131` valid 10-day outcomes, with average 10-day excess
+`+0.45%`, median `-0.28%`, and win rate `48.09%`. It was positive in
+`late_strong` and `old_thin`, but negative in `mid_weak`. More importantly, the
+supposedly adverse `warning_quality` bucket had stronger 10-day excess
+(`+1.65%`, win rate `52.27%`) and stronger 20-day excess (`+2.42%`), so the
+simple score is not monotonic.
+
+Mechanism insight: Companyfacts is now available as a replayable PIT-ish field
+layer, but naive financial-statement point scoring should not be promoted or
+swept. The next valid retry needs new information content: LLM filing-text
+grading, analyst revisions, or a cleaner earnings-release same-quarter XBRL
+extraction, not point-weight tuning.
+
+Do not repeat: nearby score weights or simple high/positive/warning bucket
+thresholds on this same Companyfacts grade. If this direction continues, use
+Companyfacts as structured context for LLM or analyst-revision joined grading,
+not as a standalone checklist.
+
+### 2026-05-04 mechanism update: SEC filing-text language packets
+
+Status: observed-only / not promoted.
+
+Core conclusion: `exp-20260504-007` added a replayable SEC filing-text layer
+for 8-K Item 2.02 events and tested a fixed keyword language proxy. The text
+data gap is materially repaired, but simple positive-language scoring is not an
+alpha. The useful discovery is that adverse/negative language may be a
+candidate for LLM semantic grading, not a direct keyword rule.
+
+Evidence: the text backfill covered `306/306` Item 2.02 filings, fetched
+`1,224` archive documents, and produced `12,024,232` extracted text characters.
+The shadow replay evaluated `302` events and price-covered `232` across all
+three windows: `80` old_thin, `74` mid_weak, and `78` late_strong. The primary
+`earnings_release_text + positive_language` branch had `65` events and `62`
+valid 10-day outcomes, with average 10-day excess `-1.27%` and win rate
+`40.32%`. The broad `positive_language` bucket was also negative at 10 days
+(`-1.19%`, win rate `42.42%`). In contrast, the `negative_language` bucket had
+`32` events, `29` valid 10-day outcomes, average 10-day excess `+3.22%`, win
+rate `58.62%`, and average 20-day excess `+4.93%`.
+
+Mechanism insight: simple positive language is often already priced, stale, or
+too generic. The promising branch is not "buy negative words"; it is a possible
+post-shock recovery / conservative-disclosure / bad-news-already-discounted
+mechanism that needs LLM context to distinguish real deterioration from
+absorbed or overreacted bad news.
+
+Do not repeat: positive-language keyword scoring, nearby phrase-list tuning, or
+promotion of negative-language keywords as a direct entry rule. A valid retry
+should freeze the filing-text packet schema and ask an LLM to grade whether the
+filing describes recoverable pressure, guidance reset, transient headwind, or
+true fundamental deterioration, then compare LLM grades against this keyword
+baseline and raw price reaction.
+
+### 2026-05-04 mechanism update: SEC negative-language reaction absorption
+
+Status: shadow-promising / not promoted.
+
+Core conclusion: `exp-20260504-008` tested the next discriminated branch after
+the fixed SEC filing-text packet found `negative_language` was unexpectedly
+positive. The edge is not simple nonnegative-reaction "bad news absorbed."
+Within `negative_language`, events with first public-PIT reaction below SPY had
+the stronger forward profile.
+
+Evidence: across the three canonical windows, `negative_language +
+reaction_excess_return < 0` produced `16` events and `14` valid 10-day
+outcomes with average 10-day excess `+5.73%`, win rate `64.29%`, and average
+20-day excess `+6.46%`. The branch was positive in all three windows:
+`late_strong +8.99%`, `mid_weak +6.55%`, and `old_thin +0.64%` average 10-day
+excess. The nonnegative-reaction control had the same `16` events but only
+`+0.88%` average 10-day excess.
+
+Mechanism insight: the useful filing-text direction is closer to "negative
+disclosure plus measured selloff creates recoverable-pressure drift" than to
+"positive words are good" or "the market ignored bad words." This should be
+fed into an LLM/event-sleeve grader, not promoted as a keyword rule.
+
+Do not repeat: direct `negative_language` entry promotion, phrase-list tuning,
+or nearby reaction-threshold sweeps. A valid retry should freeze this packet as
+structured input and test whether LLM grading can separate recoverable
+pressure, guidance reset, transient headwind, and true deterioration, with
+shared production/backtest event policy before any live entry effect.
+
+### 2026-05-04 mechanism update: SEC negative-reaction event sleeve
+
+Status: shadow-promising / not promoted.
+
+Core conclusion: `exp-20260504-010` froze the `exp-20260504-008` packet
+(`8-K Item 2.02 + negative_language + first reaction excess < 0`) and tested
+it as a standalone deterministic event sleeve with transaction costs,
+capacity, fixed 10/20 trading-day exits, and daily equity accounting. The
+packet survived this stricter portfolio-level replay, but it is still not a
+production entry rule because it has not been tested for scarce-slot
+replacement value against A/B candidates.
+
+Evidence: the fixed packet produced `16` candidate events across the three
+canonical windows (`4` old_thin, `7` mid_weak, `5` late_strong). The primary
+`10d_max1` sleeve took `13` trades, skipped `3` for slot capacity, returned
+`+99.99%` on standalone sleeve equity, Sharpe daily `1.4757`, max drawdown
+`10.37%`, and win rate `84.62%`. The `10d_max2` variant took all `16` events
+with Sharpe daily `1.6232`, max drawdown `5.30%`, and win rate `87.50%`.
+The result is not clean enough for promotion because one `LITE` trade
+contributed `69.10%` of primary total PnL.
+
+Mechanism insight: the SEC text/reaction branch is now stronger than a pure
+shadow statistic: as a small event sleeve it appears monetizable after costs.
+The likely edge remains "recoverable pressure after adverse disclosure and
+measured first-day selloff," not positive filing text and not simple bad-news
+absorption. The next alpha step should measure whether this packet adds value
+when it competes with existing accepted/skipped A/B candidates.
+
+Do not repeat: keyword phrase tuning, nearby reaction-threshold sweeps, or
+direct core-slot promotion. A valid retry is a replacement-value replay versus
+same-day A/B candidates, then a default-off forward queue with shared
+production/backtest packet policy if replacement value remains positive.
+
+### 2026-05-04 mechanism update: SEC negative-reaction replacement value
+
+Status: replacement-inconclusive / not promoted.
+
+Core conclusion: `exp-20260504-011` froze the `exp-20260504-010` packet and
+tested whether it has enough scarce-slot replacement value versus same-day A/B
+accepted candidates and occupied-slot proxies. The packet is still
+standalone-positive, but it should not be promoted into core entries or ranking.
+
+Evidence: all `16/16` packet events had 10-trading-day outcomes. Aggregate net
+10-day return was `+5.71%`, average net excess versus SPY was `+4.74%`, and
+net win rate was `87.50%`. But direct same-day accepted A/B replacement evidence
+was only `2` samples, averaging `+1.91 pp` versus accepted alternatives with a
+`50.00%` positive rate. Active-slot proxy evidence was broader (`13` samples)
+but only mildly positive: average `+0.99 pp`, median `+0.50 pp`, and `53.85%`
+positive. Old-thin remained weak versus active slots (`-4.19 pp` average).
+
+Mechanism insight: SEC negative disclosure plus measured first-day selloff
+continues to look like a plausible standalone event source, not a proven core
+slot competitor. The strongest interpretation is still a default-off forward
+event queue / LLM-grading candidate, where replacement value can be accumulated
+with frozen same-day alternatives. It is not enough evidence for direct
+production entries or A/B rank promotion.
+
+Do not repeat: direct core-slot promotion of this packet, keyword phrase tuning,
+or nearby reaction-threshold sweeps. A valid retry needs either a shared
+default-off production/backtest SEC event queue with forward replacement-value
+attribution, or richer LLM semantic grading that separates recoverable pressure
+from true deterioration before any live entry effect.
+
+### 2026-05-04 mechanism update: SEC default-off forward queue
+
+Status: default-off observation ready / not promoted to trading.
+
+Core conclusion: `exp-20260504-012` moved the frozen SEC
+`negative_language + reaction_excess_return < 0` packet into a shared
+production-visible queue policy, but kept it default-off and observe-only. This
+is the right next step after replacement value was inconclusive: accumulate
+forward replacement-value samples without changing orders, sizing, ranking, or
+core A/B entries.
+
+Evidence: the shared queue policy replayed `16/16` exp-20260504-010 historical
+packets exactly, with `0` missing and `0` extra replayed candidates. The
+production smoke for `2026-05-04` loaded the SEC filing-text source
+successfully, found `0` same-day rows/candidates, and reported
+`alters_orders=false`, `alters_candidate_ranking=false`,
+`alters_sizing=false`, and `enabled=false`.
+
+Mechanism insight: the SEC packet has now crossed from "interesting replay" to
+"safe to observe forward," but not to "safe to trade." The queue's job is to
+freeze same-day A/B/cash alternatives so future closed outcomes can answer the
+replacement-value question with out-of-sample evidence.
+
+Do not repeat: another replacement-value replay on the same frozen historical
+sample, keyword phrase tuning, or core-slot promotion. A valid retry now needs
+new forward queue samples, or an LLM semantic grader layered on the same frozen
+queue schema and measured against later realized replacement value.
+
+### 2026-05-04 mechanism update: SEC reaction Companyfacts context
+
+Status: rejected / not promoted.
+
+Core conclusion: `exp-20260504-014` tested whether structured SEC Companyfacts
+context can separate recoverable negative SEC reactions from true fundamental
+deterioration inside the frozen `negative_language + reaction_excess_return < 0`
+packet. It does not help with the current data shape.
+
+Evidence: all `16/16` packet events joined only to latest-prior Companyfacts;
+`0/16` had same-accession Companyfacts available at the SEC 8-K event date. The
+full packet still averaged `+5.7338%` 10-day excess return over SPY across `14`
+valid outcomes, but the fixed buckets were not promotion-quality:
+`pressure_but_not_terminal` had `11` valid 10-day outcomes with only `+2.9264%`
+average excess and `54.55%` positive rate, while `fundamental_pressure` had just
+`3` valid 10-day outcomes, `+16.0275%` average excess, and was dominated by the
+same `LITE` rebound concentration already seen in the sleeve replay.
+
+Mechanism insight: latest-prior Companyfacts is too stale to grade an 8-K
+earnings-reaction packet. It can document the issuer's background condition, but
+it does not identify whether the specific sold-off disclosure is recoverable or
+terminal. The correct next information source is same-accession/same-day
+earnings XBRL, analyst revisions, or an LLM semantic grader on the frozen queue
+schema with forward replacement-value outcomes.
+
+Do not repeat: Companyfacts stale-background buckets, nearby severe-flag counts,
+or simple pressure/not-terminal labels on this same SEC reaction packet. A valid
+retry requires PIT-safe same-accession or same-day earnings XBRL at the reaction
+date, or forward LLM semantic grading measured against frozen alternatives.
+
+### 2026-05-04 mechanism update: SEC leadership-change negative reaction
+
+Status: shadow-promising / not promoted.
+
+Core conclusion: `exp-20260504-015` found a separate SEC event-context branch:
+8-K leadership-change filings with a first public excess reaction of at most
+`-2%` rebounded over the next 10 trading days across all three canonical
+windows. This is not the same as the rejected broad positive SEC reaction gate,
+and it is not the Item 2.02 negative-language queue.
+
+Evidence: the primary branch had `25` event rows, `23` valid 10-day outcomes,
+`19` unique tickers, average 10-day excess return `+3.8135%`, median
+`+2.2373%`, and `60.87%` positive rate. Window averages were positive in
+`3/3` windows: `late_strong +5.0878%`, `mid_weak +4.1842%`, and
+`old_thin +1.2573%`. Ticker concentration was acceptable for a shadow packet:
+top count ticker `UNH` represented `13.04%` of valid outcomes and the top
+absolute contribution share was `26.0371%`.
+
+Mechanism insight: leadership-change selloffs may represent temporary
+uncertainty absorption rather than fundamental deterioration. The branch is
+worth forward observation or later queue integration, but it is not yet a
+production entry/ranking/sizing rule because replacement value against same-day
+A/B alternatives has not been tested.
+
+Do not repeat: nearby negative-reaction thresholds, direct core promotion, or
+single-window tuning of the leadership-change branch. A valid next step is a
+default-off forward queue/replacement-value harness that freezes same-day A/B
+alternatives without changing orders, or an LLM semantic grader that separates
+routine governance transitions from genuine management-disruption risk.
+
+### 2026-05-04 mechanism update: Forward queue attribution readiness
+
+Status: measurement-blocked / not promoted.
+
+Core conclusion: `exp-20260504-017` clarified the next gating condition for the
+new default-off event queues. Form 4 forward attribution is structurally ready
+to accumulate paper evidence, but the SEC queue family still lacks a persistent
+paper/outcome ledger, so it is not yet ready for promotion tests.
+
+Evidence: the audit found a live `data/form4_event_sleeve_paper_state.json`
+contract for the Form 4 queue, while the SEC queues had no analogous
+persistent paper/outcome state. Core three-window metrics remained unchanged
+(`late_strong` EV `3.4191`, `mid_weak` EV `1.4415`, `old_thin` EV `0.3179`)
+because this was a read-only measurement check.
+
+Mechanism insight: default-off queue policy is not enough by itself. Before
+SEC event sleeves or LLM grading on top of them can be judged fairly, the repo
+must freeze same-day alternatives and realized outcomes in a persistent forward
+ledger, not only in ephemeral queue evaluation.
+
+Do not repeat: replay the same SEC queue promotion debate without first adding
+the missing persistent SEC paper/outcome ledger. A valid next step is to make
+SEC queue attribution as durable as the Form 4 paper state, then let forward
+samples accumulate.
+
+### 2026-05-04 mechanism update: SEC leadership-change shadow universe
+
+Status: shadow-promising / not promoted.
+
+Core conclusion: `exp-20260504-018` showed that the frozen
+leadership-change-negative-reaction branch from `exp-20260504-015` is also a
+clean candidate-source scout at the universe level. It is liquid, mostly inside
+the current tradable universe, and has low same-day A/B overlap, but it still
+needs replacement-value or forward-queue evidence before any production
+expansion.
+
+Evidence: the shadow universe had `25` candidate events across `19` tickers,
+with `23` valid 10-day outcomes, `88%` overlap with the current universe, only
+`3` same-day A/B overlaps (`12%`), and all `25` candidates above
+`$20M` 20-day average dollar volume. Core A/B metrics stayed unchanged because
+the scout was observe-only.
+
+Mechanism insight: this branch is stronger as a frozen candidate-source scout
+than as a direct core-entry proposal. The useful property is not just positive
+forward return; it is that the branch is liquid, covered, and not simply
+relabeling the current A/B inventory.
+
+Do not repeat: direct universe promotion, nearby reaction-threshold tuning, or
+single-window rescoring of this branch. A valid next step is a default-off
+forward queue or replacement-value harness with frozen same-day alternatives.
+
+### 2026-05-04 mechanism update: SEC agreement/debt event packet
+
+Status: rejected / not promoted.
+
+Core conclusion: `exp-20260504-019` tested a separate PIT-safe SEC 8-K packet
+around agreement/debt disclosures and found no stable multi-window edge. This
+branch should not take priority over the stronger leadership-change or
+negative-language reaction families.
+
+Evidence: the primary packet produced `39` events with `38` valid 10-day
+samples, average 10-day excess versus SPY `-0.8619%`, and win rate `39.47%`.
+`mid_weak` was positive, but both `late_strong` and `old_thin` were negative,
+so the branch failed the required cross-window consistency test.
+
+Mechanism insight: not every structured SEC filing family is worth turning into
+an event sleeve. Agreement/debt disclosures currently look more like noisy
+context than a portable standalone alpha source.
+
+Do not repeat: nearby agreement/debt threshold sweeps, direct queue promotion,
+or another standalone packet rerun on the same frozen sample. A valid retry
+needs materially new information content or a different event semantics family,
+not more tuning of this packet.
+
+### 2026-05-04 mechanism update: SEC other-filing mild negative reaction
+
+Status: shadow-promising / not promoted.
+
+Core conclusion: `exp-20260504-022` tested a residual SEC 8-K branch outside
+the already-tested earnings/results, agreement/debt, leadership-change, and
+FD/other-event packets. The fixed branch `other_sec_filing +
+negative_excess_0_to_minus_2pct` was positive across all three canonical
+windows, but it is still too broad and slot-thin for production promotion.
+
+Evidence: the primary branch had `22` event rows, `20` valid 10-day outcomes,
+`17` unique tickers, average 10-day excess versus SPY `+2.5478%`, median
+`+2.4522%`, and `55.00%` positive rate. Window averages were positive in
+`3/3` windows: `late_strong +0.0089%`, `mid_weak +2.3445%`, and
+`old_thin +4.5589%`. The same-day A/B replacement proxy was weak:
+`4` same-day overlaps, only `2` valid replacement samples, both negative,
+with average replacement value `-9.7802%`.
+
+Mechanism insight: the residual branch is likely a candidate-source scout,
+not a core slot competitor yet. Its forms are all 8-Ks, mostly item `5.07`
+and `5.03` with `9.01` exhibits, suggesting governance/shareholder-meeting or
+charter-change context rather than a generic SEC reaction rule.
+
+Do not repeat: nearby mild/strong reaction threshold tuning or direct
+production entry/ranking promotion from this sample. A valid next step is
+semantic decomposition of the residual 8-K item mix or a default-off forward
+queue that freezes same-day alternatives before measuring replacement value.
+
+### 2026-05-04 mechanism update: Macro ETF candidate-pool expansion
+
+Status: rejected / not promoted.
+
+Core conclusion: `exp-20260504-028` tested whether adding liquid macro / sector
+ETFs already present in the canonical OHLCV snapshots could improve the
+production candidate pool without relying on LLM soft-ranking data. The answer
+is no for a ticker-list-only expansion.
+
+Evidence: the broad `macro_all` basket (`TLT`, `IEF`, `UUP`, `USO`, `XLE`,
+`XLP`, `XLU`, `XLV`) improved `late_strong` EV from `3.4191` to `4.0952`, but
+regressed `mid_weak` EV from `1.4415` to `1.0990` and `old_thin` EV from
+`0.3179` to `0.2448`; aggregate PnL fell `$4,862.05`, and late-window drawdown
+rose by `+1.41 pp`. Narrowing to `XLE` alone still failed: `late_strong` PnL
+rose, but `mid_weak` PnL fell `$9,633.07`, aggregate EV fell `-0.1642`, and
+late-window Sharpe/drawdown worsened.
+
+Mechanism insight: macro ETF instruments can create late-window winners, but
+the current A/B signal stack does not know when ETF rotation is a high-quality
+candidate versus a weaker-tape distraction. Candidate-pool expansion by ticker
+list alone is not enough; it needs a macro-regime or event discriminator.
+
+Do not repeat: broad macro ETF watchlist additions, `XLE`-only production
+promotion, or nearby ticker-list-only ETF basket scans on the same snapshots.
+A valid retry needs forward evidence or a production-shared macro-regime
+allocator that explains when these instruments should compete for scarce slots.
+
+### 2026-05-04 mechanism update: Form 4 satellite overlay
+
+Status: positive sample / not promoted.
+
+Core conclusion: `exp-20260504-034` tested the strongest currently available
+Form 4 path: keep the A/B core unchanged and add the frozen meaningful-purchase
+queue as a separate `10k` notional, one-position satellite overlay. It improved
+EV in all three canonical windows, but the lift was not material enough to add
+live capital or production complexity.
+
+Evidence: aggregate EV rose from `5.1785` to `5.4218` (`+4.70%`) and aggregate
+PnL rose `$4,658.62` (`+2.94%`). Window EV deltas were `late_strong +0.1223`,
+`mid_weak +0.1209`, and `old_thin +0.0001`. No window reached the `>10%` EV or
+`>5%` PnL materiality bar; the only hard Gate 4 pass was `mid_weak`
+Sharpe-daily `+0.11`, and trade-count/win-rate passed in only `2/3` windows.
+
+Mechanism insight: Form 4 meaningful purchases remain real signal candidates,
+but the current sample is a small overlay, not a production capital-allocation
+answer. The right interpretation is "continue forward observation", not
+"promote to live orders" and not "retune the insider threshold".
+
+Do not repeat: Form 4 overlay promotion, purchase-value threshold sweeps, or
+owner-role filters on the same frozen sample. A valid retry needs either a
+larger closed forward paper-sleeve sample, a higher-capacity event
+discriminator, or a shared trade-enabled sleeve adapter followed by the same
+three-window parity check.
+
+### 2026-05-04 mechanism update: Default-off event overlay bundle
+
+Status: promising replay-only / not promoted to live orders.
+
+Core conclusion: `exp-20260504-049` tested the strongest currently available
+alpha direction after core A/B, macro ETF, AI infra, LLM soft-ranking, and
+single-source event paths: combine the already-frozen default-off Form 4,
+SEC negative-reaction, and SEC governance/procedural event queues as independent
+`$10k` satellite overlays while leaving core A/B unchanged. This is not a
+threshold sweep and not a direct production promotion.
+
+Evidence: the bundle improved all three canonical windows: `late_strong`
+EV `3.4191 -> 4.0085` and PnL `+$8,351.28`, `mid_weak` EV
+`1.4415 -> 2.0246` and PnL `+$10,294.85`, and `old_thin` EV
+`0.3179 -> 0.3516` and PnL `+$1,404.66`. Aggregate EV rose `+1.2062`
+(`+23.29%`) and aggregate PnL rose `+$20,050.79` (`+12.67%`), with no
+EV-regressed window.
+
+Mechanism insight: the next high-priority alpha path is external event
+satellite allocation, not another A/B threshold, ranking, macro ETF, or simple
+LLM prompt tweak. The positive result is still replay-only because it combines
+sparse event families. Before live capital, the system needs a single shared
+default-off event-sleeve paper ledger that freezes source, candidate,
+same-day A/B alternatives, and realized outcomes.
+
+Do not repeat: retuning event thresholds, keyword lists, Form 4 purchase values,
+owner roles, or single-source overlay promotion on the same frozen sample.
+A valid next step is a production/backtest shared event-sleeve paper adapter
+for the frozen bundle, followed by forward replacement-value observation.
+
+### 2026-05-04 mechanism update: Event bundle forward attribution
+
+Status: accepted observe-only / production-visible but default-off.
+
+Core conclusion: `exp-20260504-053` did not retune the event bundle from
+`exp-20260504-049` and did not promote it to live orders. It added a shared
+default-off aggregate attribution layer over the existing Form 4, SEC
+negative-reaction, and SEC governance/procedural paper sleeves so the daily
+production path can observe the bundle as one candidate alpha surface.
+
+Evidence: focused tests passed (`24 passed` across the event sleeve bundle and
+source event-sleeve tests). All three canonical core backtests were unchanged:
+`late_strong` EV `3.4191`, `mid_weak` EV `1.4415`, and `old_thin` EV `0.3179`;
+Sharpe daily, drawdown, PnL, win rate, trade count, and survival rate also
+matched baseline.
+
+Mechanism insight: the external event bundle is still the best current alpha
+direction, but the next unit of work is forward paper replacement-value
+observation, not another frozen-sample threshold, notional, holding-period,
+capacity, keyword, or single-source promotion sweep.
+
+Do not repeat: direct live promotion or same-sample retuning of the bundle
+before closed forward paper outcomes exist. A valid next step needs daily
+pipeline runs that close paper outcomes and freeze same-day cash/core
+alternatives, followed by a separate shared trade-enabled adapter only if the
+forward attribution supports it.
+
+### 2026-05-04 mechanism update: BEAR_SHALLOW base risk budget
+
+Status: rejected / not promoted.
+
+Core conclusion: `exp-20260504-036` tested whether shallow-bear entries were
+worth keeping but at a smaller base risk budget. Variants changed only the
+`BEAR_SHALLOW` risk override (`0.50%` baseline versus `0.375%`, `0.25%`, and
+`0.75%`) while leaving universe, entries, exits, ranking, add-ons, caps, LLM,
+news, and earnings data unchanged.
+
+Evidence: the best variant was `0.25%`. Aggregate EV rose from `5.1785` to
+`5.1851` (`+0.13%`) and aggregate PnL rose `$321.79` (`+0.20%`). `late_strong`
+and `mid_weak` were unchanged; only `old_thin` improved, from EV `0.3179` to
+`0.3245` and PnL `$24,642.07` to `$24,963.86`. No window passed the material
+Gate 4 bars for EV, PnL, Sharpe, drawdown, or trade-count-with-win-rate.
+
+Mechanism insight: BEAR_SHALLOW sizing is not a meaningful alpha surface on
+the current frozen snapshots. Lowering risk trims a tiny weak-window loss
+pocket, but the trade set is too small and too localized to justify another
+shared policy parameter or parity test.
+
+Do not repeat: nearby `BEAR_SHALLOW` base-risk values in the `0.25%` to
+`0.75%` range on the same snapshots. A valid retry needs either forward
+bear-tape evidence, a new discriminator that changes which shallow-bear trades
+deserve risk, or a broader regime allocation hypothesis that is not just this
+single risk_pct override again.
+
+### 2026-05-04 mechanism update: SEC governance/procedural overlay
+
+Status: accepted_requires_followup / not live-promoted.
+
+Core conclusion: `exp-20260504-039` tested a fixed semantic allowlist from the
+residual SEC 8-K branch as a separate `10k` notional, one-position satellite
+overlay. The tested cells were `shareholder_vote + mild negative reaction`,
+`charter_or_securities_change + mild positive reaction`, and `exhibit_only`
+with mild positive or mild negative reaction. This is an event-sleeve candidate
+source, not a core A/B slot replacement and not a production order change.
+
+Evidence: aggregate EV rose from `5.1785` to `5.6080` (`+8.29%`) and aggregate
+PnL rose from `$158,257.48` to `$166,452.07` (`+$8,194.59`, `+5.18%`). EV
+improved in all three canonical windows with no EV regression:
+`late_strong +0.1554`, `mid_weak +0.2435`, and `old_thin +0.0306`. The sleeve
+selected `13` trades from `24` candidates, generated `$7,333.02` event PnL,
+had a `61.54%` event win rate, and top absolute trade concentration was `TRIP`
+at `24.14%` of absolute event PnL. The main cost is that `old_thin` max
+drawdown worsened from `8.05%` to `8.89%`, still inside the guardrail.
+
+Mechanism insight: the useful residual SEC branch is not generic "other filing"
+and not another reaction-threshold surface. It looks more like temporary
+uncertainty around governance/procedural disclosures where the market reaction
+is mild enough for 10-day absorption/drift. The next value step is execution
+parity and forward replacement-value measurement, not another static
+threshold/notional/cap sweep.
+
+Do not repeat: nearby reaction buckets, holding periods, event notionals,
+one-position capacity variants, or direct production promotion on the same
+frozen sample. A valid next step is a shared default-off trade-enabled event
+sleeve adapter plus a persistent SEC paper/outcome ledger that freezes same-day
+A/B and cash alternatives before any live capital is considered.
+
+### 2026-05-04 mechanism update: SEC governance forward ledger
+
+Status: accepted observe-only / production-visible but default-off.
+
+Core conclusion: `exp-20260504-044` did not retune the SEC governance/procedural
+alpha. It implemented the allowed follow-up from `exp-20260504-039`: a shared
+default-off daily queue plus paper outcome ledger for the fixed governance /
+procedural cells. This converts the alpha from experiment-only evidence into a
+forward-measurable production artifact without changing orders, ranking,
+sizing, signal generation, exits, or default core backtests.
+
+Evidence: focused tests passed (`12 passed` across `quant/test_sec_event_queue.py`
+and `quant/test_sec_event_sleeve.py`). All three canonical core backtests were
+unchanged after the queue/ledger integration: `late_strong` EV `3.4191`,
+`mid_weak` EV `1.4415`, and `old_thin` EV `0.3179`; PnL, Sharpe daily,
+drawdown, win rate, trade count, and survival rate also matched baseline.
+
+Mechanism insight: the highest-value current work is not another same-sample
+SEC threshold/cap/notional sweep. The blocker was production observation and
+replacement-value attribution for the already-positive governance/procedural
+event sleeve. The right next step is to accumulate closed forward paper
+outcomes and same-day alternatives, then decide whether a trade-enabled shared
+adapter is justified.
+
+Do not repeat: live promotion, reaction-bucket sweeps, holding-period sweeps,
+notional sweeps, or capacity sweeps before forward paper outcomes exist. A
+valid retry needs closed paper outcomes and replacement-value evidence, not
+another frozen-sample optimization.
+
+### 2026-05-04 mechanism update: Energy pair-confirmed macro ETF
+
+Status: rejected.
+
+Core conclusion: `exp-20260504-045` tested the valid retry condition left by
+`exp-20260504-028`: macro ETF expansion must have a regime discriminator.
+Requiring XLE and USO to both be above their 200-day averages with positive
+10d/20d momentum did not clear the three-window materiality gate.
+
+Evidence: best variant `xle_uso_pair_confirmed` moved aggregate EV by
+`0.96` and aggregate PnL by
+`$1665.95`. EV improved in
+`1` windows and regressed in
+`2` windows.
+
+Do not repeat: nearby XLE/USO pair-confirmation thresholds, XLE-only list
+promotion, or broad macro ETF baskets on the same frozen snapshots.
+
+Next valid retry requires: new macro/event evidence that explains when energy
+ETFs deserve scarce slots, not another ticker-list or local momentum gate.
 

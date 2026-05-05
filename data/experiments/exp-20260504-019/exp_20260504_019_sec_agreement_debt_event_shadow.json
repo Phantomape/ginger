@@ -1,0 +1,1582 @@
+{
+  "experiment_id": "exp-20260504-019",
+  "generated_at": "2026-05-04T06:28:26+00:00",
+  "lane": "alpha_discovery",
+  "status": "observed_only_not_promoted",
+  "decision": "observed_only_not_promoted",
+  "hypothesis": "PIT-safe SEC 8-K material agreement/debt event packets may surface a non-overlapping external event alpha source distinct from earnings text, leadership changes, Form 4, and raw reaction gates.",
+  "change_type": "new_strategy_shadow",
+  "single_causal_variable": "SEC agreement-or-debt 8-K event packet",
+  "history_check": {
+    "guardrails_checked": [
+      "not post-news continuation",
+      "not Form 4 threshold or role filter",
+      "not SEC positive-reaction gate",
+      "not Companyfacts simple scoring",
+      "not SEC negative-language direct promotion",
+      "not SEC negative-reaction replacement replay",
+      "not leadership-change reaction threshold tuning"
+    ],
+    "why_not_repeat": "This freezes filing category as the only causal variable and does not tune reaction thresholds, text phrases, owner roles, or existing sizing/cap logic."
+  },
+  "parameters": {
+    "primary_filing_category": "agreement_or_debt",
+    "event_unit": "ticker + usable_trade_date, same-day filings grouped",
+    "entry_timing": "next trading-day open after public filing/reaction day",
+    "forward_horizons": [
+      "5d",
+      "10d",
+      "20d"
+    ],
+    "locked_variables": [
+      "production universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "position sizing",
+      "add-ons",
+      "exits",
+      "LLM/news replay"
+    ]
+  },
+  "date_windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "state_note": "slow-melt bull / accepted-stack dominant tape"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "state_note": "rotation-heavy bull where strategy makes money but lags indexes"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "state_note": "mixed-to-weak older tape with lower win rate"
+    }
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "coverage": {
+    "sec_event_group_count": 1090,
+    "evaluated_window_event_count": 1083,
+    "price_covered_count": 739,
+    "price_coverage_rate": 0.6824,
+    "primary_event_count": 39,
+    "primary_valid_10d_count": 38,
+    "primary_unique_tickers": 16,
+    "by_price_status": {
+      "no_ticker_price": 342,
+      "covered": 739,
+      "no_entry_day": 2
+    }
+  },
+  "shadow_metrics": {
+    "agreement_or_debt_packet": {
+      "event_count": 39,
+      "unique_tickers": 16,
+      "forward_raw": {
+        "5d": {
+          "count": 38,
+          "avg_pct": -0.6753,
+          "median_pct": -0.5781,
+          "positive_rate_pct": 44.74,
+          "best_pct": 21.0022,
+          "worst_pct": -26.5655
+        },
+        "10d": {
+          "count": 38,
+          "avg_pct": -1.1554,
+          "median_pct": -2.6635,
+          "positive_rate_pct": 39.47,
+          "best_pct": 47.0388,
+          "worst_pct": -33.7777
+        },
+        "20d": {
+          "count": 34,
+          "avg_pct": 0.5517,
+          "median_pct": -1.2898,
+          "positive_rate_pct": 47.06,
+          "best_pct": 53.1257,
+          "worst_pct": -29.4779
+        }
+      },
+      "forward_excess": {
+        "5d": {
+          "count": 38,
+          "avg_pct": -0.5657,
+          "median_pct": -0.802,
+          "positive_rate_pct": 44.74,
+          "best_pct": 19.3026,
+          "worst_pct": -25.9106
+        },
+        "10d": {
+          "count": 38,
+          "avg_pct": -0.8619,
+          "median_pct": -2.6484,
+          "positive_rate_pct": 39.47,
+          "best_pct": 46.1492,
+          "worst_pct": -30.2388
+        },
+        "20d": {
+          "count": 34,
+          "avg_pct": 0.7622,
+          "median_pct": -0.1379,
+          "positive_rate_pct": 47.06,
+          "best_pct": 52.4309,
+          "worst_pct": -25.7801
+        }
+      },
+      "by_window": {
+        "late_strong": {
+          "event_count": 14,
+          "unique_tickers": 9,
+          "forward_excess": {
+            "5d": {
+              "count": 13,
+              "avg_pct": -1.8359,
+              "median_pct": -0.8982,
+              "positive_rate_pct": 46.15,
+              "best_pct": 9.3622,
+              "worst_pct": -25.9106
+            },
+            "10d": {
+              "count": 13,
+              "avg_pct": -1.1911,
+              "median_pct": -4.4085,
+              "positive_rate_pct": 23.08,
+              "best_pct": 46.1492,
+              "worst_pct": -30.2388
+            },
+            "20d": {
+              "count": 11,
+              "avg_pct": -0.1007,
+              "median_pct": 0.0472,
+              "positive_rate_pct": 54.55,
+              "best_pct": 52.4309,
+              "worst_pct": -24.1803
+            }
+          }
+        },
+        "mid_weak": {
+          "event_count": 10,
+          "unique_tickers": 9,
+          "forward_excess": {
+            "5d": {
+              "count": 10,
+              "avg_pct": 4.924,
+              "median_pct": 1.4413,
+              "positive_rate_pct": 70.0,
+              "best_pct": 19.3026,
+              "worst_pct": -8.5211
+            },
+            "10d": {
+              "count": 10,
+              "avg_pct": 7.899,
+              "median_pct": 8.5906,
+              "positive_rate_pct": 90.0,
+              "best_pct": 19.7386,
+              "worst_pct": -7.413
+            },
+            "20d": {
+              "count": 9,
+              "avg_pct": 9.8878,
+              "median_pct": 11.3484,
+              "positive_rate_pct": 88.89,
+              "best_pct": 20.9032,
+              "worst_pct": -6.4347
+            }
+          }
+        },
+        "old_thin": {
+          "event_count": 15,
+          "unique_tickers": 7,
+          "forward_excess": {
+            "5d": {
+              "count": 15,
+              "avg_pct": -3.1246,
+              "median_pct": -4.4697,
+              "positive_rate_pct": 26.67,
+              "best_pct": 13.6964,
+              "worst_pct": -16.9361
+            },
+            "10d": {
+              "count": 15,
+              "avg_pct": -6.4173,
+              "median_pct": -8.1317,
+              "positive_rate_pct": 20.0,
+              "best_pct": 9.5123,
+              "worst_pct": -15.5434
+            },
+            "20d": {
+              "count": 14,
+              "avg_pct": -4.4262,
+              "median_pct": -3.8833,
+              "positive_rate_pct": 14.29,
+              "best_pct": 25.0805,
+              "worst_pct": -25.7801
+            }
+          }
+        }
+      },
+      "by_reaction_bucket": {
+        "negative_excess_0_to_minus_2pct": {
+          "event_count": 17,
+          "unique_tickers": 11,
+          "forward_excess": {
+            "5d": {
+              "count": 17,
+              "avg_pct": 1.3139,
+              "median_pct": 0.2719,
+              "positive_rate_pct": 52.94,
+              "best_pct": 19.3026,
+              "worst_pct": -11.6027
+            },
+            "10d": {
+              "count": 17,
+              "avg_pct": 1.6562,
+              "median_pct": -0.6174,
+              "positive_rate_pct": 47.06,
+              "best_pct": 46.1492,
+              "worst_pct": -15.5434
+            },
+            "20d": {
+              "count": 16,
+              "avg_pct": 4.9938,
+              "median_pct": 1.4396,
+              "positive_rate_pct": 50.0,
+              "best_pct": 52.4309,
+              "worst_pct": -14.9566
+            }
+          }
+        },
+        "negative_excess_le_minus_2pct": {
+          "event_count": 8,
+          "unique_tickers": 7,
+          "forward_excess": {
+            "5d": {
+              "count": 8,
+              "avg_pct": 2.4872,
+              "median_pct": 1.409,
+              "positive_rate_pct": 50.0,
+              "best_pct": 17.2658,
+              "worst_pct": -18.1195
+            },
+            "10d": {
+              "count": 8,
+              "avg_pct": -0.4333,
+              "median_pct": -2.6484,
+              "positive_rate_pct": 37.5,
+              "best_pct": 14.4722,
+              "worst_pct": -13.1216
+            },
+            "20d": {
+              "count": 6,
+              "avg_pct": -3.8584,
+              "median_pct": -1.8202,
+              "positive_rate_pct": 50.0,
+              "best_pct": 7.3904,
+              "worst_pct": -24.1803
+            }
+          }
+        },
+        "positive_excess_0_to_2pct": {
+          "event_count": 7,
+          "unique_tickers": 6,
+          "forward_excess": {
+            "5d": {
+              "count": 7,
+              "avg_pct": -1.0769,
+              "median_pct": -0.6495,
+              "positive_rate_pct": 42.86,
+              "best_pct": 6.4049,
+              "worst_pct": -7.9162
+            },
+            "10d": {
+              "count": 7,
+              "avg_pct": 0.2765,
+              "median_pct": -1.086,
+              "positive_rate_pct": 42.86,
+              "best_pct": 14.8444,
+              "worst_pct": -10.6602
+            },
+            "20d": {
+              "count": 7,
+              "avg_pct": 0.5743,
+              "median_pct": 3.5446,
+              "positive_rate_pct": 71.43,
+              "best_pct": 15.2928,
+              "worst_pct": -25.7801
+            }
+          }
+        },
+        "positive_excess_ge_2pct": {
+          "event_count": 7,
+          "unique_tickers": 5,
+          "forward_excess": {
+            "5d": {
+              "count": 6,
+              "avg_pct": -9.3651,
+              "median_pct": -9.6286,
+              "positive_rate_pct": 16.67,
+              "best_pct": 12.803,
+              "worst_pct": -25.9106
+            },
+            "10d": {
+              "count": 6,
+              "avg_pct": -9.8963,
+              "median_pct": -9.2147,
+              "positive_rate_pct": 16.67,
+              "best_pct": 8.4801,
+              "worst_pct": -30.2388
+            },
+            "20d": {
+              "count": 5,
+              "avg_pct": -6.971,
+              "median_pct": -6.4347,
+              "positive_rate_pct": 0.0,
+              "best_pct": -0.1616,
+              "worst_pct": -16.8441
+            }
+          }
+        }
+      },
+      "dominance_10d": {
+        "valid_events": 38,
+        "unique_tickers": 16,
+        "top_count_ticker": "AMD",
+        "top_count_share_pct": 15.79,
+        "top_abs_contribution_share_pct": 21.3698
+      },
+      "examples": [
+        {
+          "ticker": "BE",
+          "window": "late_strong",
+          "usable_trade_date": "2025-10-30",
+          "reaction_date": "2025-10-30",
+          "entry_date": "2025-10-31",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "3.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.032828,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 1405138037.11,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.026729,
+              "spy_return": -0.020539,
+              "excess_return": 0.047268,
+              "end_date": "2025-11-07"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.150353,
+              "spy_return": -0.019138,
+              "excess_return": -0.131216,
+              "end_date": "2025-11-14"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.248766,
+              "spy_return": -0.006963,
+              "excess_return": -0.241803,
+              "end_date": "2025-12-01"
+            }
+          },
+          "slot_conflict_proxy": true,
+          "same_day_core_trade_count": 1,
+          "replacement_value_10d_excess_proxy": -0.128373
+        },
+        {
+          "ticker": "BE",
+          "window": "late_strong",
+          "usable_trade_date": "2025-11-05",
+          "reaction_date": "2025-11-05",
+          "entry_date": "2025-11-06",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "3.02",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.092311,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 1639921667.39,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.265655,
+              "spy_return": -0.006549,
+              "excess_return": -0.259106,
+              "end_date": "2025-11-13"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.337777,
+              "spy_return": -0.03539,
+              "excess_return": -0.302388,
+              "end_date": "2025-11-20"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.154812,
+              "spy_return": 0.01363,
+              "excess_return": -0.168441,
+              "end_date": "2025-12-05"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "BKNG",
+          "window": "late_strong",
+          "usable_trade_date": "2025-11-10",
+          "reaction_date": "2025-11-10",
+          "entry_date": "2025-11-11",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.01188,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1388742723.73,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.038204,
+              "spy_return": -0.029223,
+              "excess_return": -0.008982,
+              "end_date": "2025-11-18"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.013424,
+              "spy_return": -0.007251,
+              "excess_return": -0.006174,
+              "end_date": "2025-11-25"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.063201,
+              "spy_return": 0.011207,
+              "excess_return": 0.051994,
+              "end_date": "2025-12-10"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MA",
+          "window": "late_strong",
+          "usable_trade_date": "2025-11-13",
+          "reaction_date": "2025-11-13",
+          "entry_date": "2025-11-14",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.006509,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 1470314946.72,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.028127,
+              "spy_return": -0.009543,
+              "excess_return": -0.018584,
+              "end_date": "2025-11-21"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.021707,
+              "spy_return": 0.022378,
+              "excess_return": -0.044085,
+              "end_date": "2025-12-01"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.023541,
+              "spy_return": 0.023069,
+              "excess_return": 0.000472,
+              "end_date": "2025-12-15"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NFLX",
+          "window": "late_strong",
+          "usable_trade_date": "2025-12-08",
+          "reaction_date": "2025-12-08",
+          "entry_date": "2025-12-09",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 2,
+          "reaction_excess_return": -0.031413,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 4549450544.33,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.025353,
+              "spy_return": -0.006265,
+              "excess_return": -0.019088,
+              "end_date": "2025-12-16"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.03638,
+              "spy_return": 0.010017,
+              "excess_return": -0.046397,
+              "end_date": "2025-12-23"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.06699,
+              "spy_return": 0.012292,
+              "excess_return": -0.079282,
+              "end_date": "2026-01-08"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "BE",
+          "window": "late_strong",
+          "usable_trade_date": "2025-12-23",
+          "reaction_date": "2025-12-23",
+          "entry_date": "2025-12-24",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.013567,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1365096363.65,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.082365,
+              "spy_return": -0.006948,
+              "excess_return": 0.089313,
+              "end_date": "2026-01-02"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.470388,
+              "spy_return": 0.008896,
+              "excess_return": 0.461492,
+              "end_date": "2026-01-09"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.531257,
+              "spy_return": 0.006948,
+              "excess_return": 0.524309,
+              "end_date": "2026-01-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "LITE",
+          "window": "late_strong",
+          "usable_trade_date": "2025-12-23",
+          "reaction_date": "2025-12-23",
+          "entry_date": "2025-12-24",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.010906,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1494884365.14,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.00423,
+              "spy_return": -0.006948,
+              "excess_return": 0.002719,
+              "end_date": "2026-01-02"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.093694,
+              "spy_return": 0.008896,
+              "excess_return": -0.10259,
+              "end_date": "2026-01-09"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.142618,
+              "spy_return": 0.006948,
+              "excess_return": -0.149566,
+              "end_date": "2026-01-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NFLX",
+          "window": "late_strong",
+          "usable_trade_date": "2025-12-23",
+          "reaction_date": "2025-12-23",
+          "entry_date": "2025-12-24",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.001674,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 5084252933.49,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.022769,
+              "spy_return": -0.006948,
+              "excess_return": -0.015821,
+              "end_date": "2026-01-02"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.039201,
+              "spy_return": 0.008896,
+              "excess_return": -0.048097,
+              "end_date": "2026-01-09"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.079583,
+              "spy_return": 0.006948,
+              "excess_return": -0.086531,
+              "end_date": "2026-01-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AMD",
+          "window": "late_strong",
+          "usable_trade_date": "2026-02-25",
+          "reaction_date": "2026-02-25",
+          "entry_date": "2026-02-26",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "3.02",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.022374,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 8989155069.69,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.04478,
+              "spy_return": -0.017266,
+              "excess_return": -0.027514,
+              "end_date": "2026-03-05"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.052969,
+              "spy_return": -0.039263,
+              "excess_return": -0.013707,
+              "end_date": "2026-03-12"
+            },
+            "20d": {
+              "status": "valid",
+              "return": -0.02409,
+              "spy_return": -0.066969,
+              "excess_return": 0.042879,
+              "end_date": "2026-03-26"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AMZN",
+          "window": "late_strong",
+          "usable_trade_date": "2026-03-02",
+          "reaction_date": "2026-03-02",
+          "entry_date": "2026-03-03",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "7.01",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.008235,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 13899586116.8,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.055293,
+              "spy_return": 0.00314,
+              "excess_return": 0.052153,
+              "end_date": "2026-03-10"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.059577,
+              "spy_return": -0.006325,
+              "excess_return": 0.065902,
+              "end_date": "2026-03-17"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.025455,
+              "spy_return": -0.033988,
+              "excess_return": 0.059443,
+              "end_date": "2026-03-31"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NFLX",
+          "window": "late_strong",
+          "usable_trade_date": "2026-03-02",
+          "reaction_date": "2026-03-02",
+          "entry_date": "2026-03-03",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.02"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.008263,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 4512490911.97,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.009686,
+              "spy_return": 0.00314,
+              "excess_return": 0.006546,
+              "end_date": "2026-03-10"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.017186,
+              "spy_return": -0.006325,
+              "excess_return": -0.01086,
+              "end_date": "2026-03-17"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.001458,
+              "spy_return": -0.033988,
+              "excess_return": 0.035446,
+              "end_date": "2026-03-31"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "TRIP",
+          "window": "late_strong",
+          "usable_trade_date": "2026-03-24",
+          "reaction_date": "2026-03-24",
+          "entry_date": "2026-03-25",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "5.02",
+            "5.03",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.028516,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 38194586.12,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.088415,
+              "spy_return": -0.005207,
+              "excess_return": 0.093622,
+              "end_date": "2026-04-01"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.167683,
+              "spy_return": 0.032247,
+              "excess_return": 0.135436,
+              "end_date": "2026-04-09"
+            },
+            "20d": {
+              "status": "pending"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "NOW",
+          "window": "late_strong",
+          "usable_trade_date": "2026-04-02",
+          "reaction_date": "2026-04-02",
+          "entry_date": "2026-04-06",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.020508,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 1857511284.49,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.135088,
+              "spy_return": 0.046107,
+              "excess_return": -0.181195,
+              "end_date": "2026-04-13"
+            },
+            "10d": {
+              "status": "valid",
+              "return": -0.031563,
+              "spy_return": 0.080596,
+              "excess_return": -0.112159,
+              "end_date": "2026-04-20"
+            },
+            "20d": {
+              "status": "pending"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "BE",
+          "window": "late_strong",
+          "usable_trade_date": "2026-04-14",
+          "reaction_date": "2026-04-14",
+          "entry_date": "2026-04-15",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "3.02",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.227584,
+          "reaction_bucket": "positive_excess_ge_2pct",
+          "avg_dollar_volume_20d": 1432331512.24,
+          "horizons": {
+            "5d": {
+              "status": "pending"
+            },
+            "10d": {
+              "status": "pending"
+            },
+            "20d": {
+              "status": "pending"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "MU",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-04-30",
+          "reaction_date": "2025-04-30",
+          "entry_date": "2025-05-01",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.000513,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 2164277493.55,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.072418,
+              "spy_return": 0.00837,
+              "excess_return": 0.064049,
+              "end_date": "2025-05-08"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.202141,
+              "spy_return": 0.053697,
+              "excess_return": 0.148444,
+              "end_date": "2025-05-15"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.189672,
+              "spy_return": 0.051787,
+              "excess_return": 0.137885,
+              "end_date": "2025-05-30"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "TRIP",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-04-30",
+          "reaction_date": "2025-04-30",
+          "entry_date": "2025-05-01",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.02",
+            "2.01",
+            "5.01",
+            "7.01",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.020853,
+          "reaction_bucket": "negative_excess_le_minus_2pct",
+          "avg_dollar_volume_20d": 32330211.88,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.181028,
+              "spy_return": 0.00837,
+              "excess_return": 0.172658,
+              "end_date": "2025-05-08"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.198419,
+              "spy_return": 0.053697,
+              "excess_return": 0.144722,
+              "end_date": "2025-05-15"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.125692,
+              "spy_return": 0.051787,
+              "excess_return": 0.073904,
+              "end_date": "2025-05-30"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "BKNG",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-12",
+          "reaction_date": "2025-05-12",
+          "entry_date": "2025-05-13",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "2.03",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.008908,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 1213274154.91,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.028731,
+              "spy_return": 0.016181,
+              "excess_return": 0.01255,
+              "end_date": "2025-05-20"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.060612,
+              "spy_return": 0.007405,
+              "excess_return": 0.053207,
+              "end_date": "2025-05-28"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.0607,
+              "spy_return": 0.030767,
+              "excess_return": 0.029933,
+              "end_date": "2025-06-11"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AMD",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-05-20",
+          "reaction_date": "2025-05-20",
+          "entry_date": "2025-05-21",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "7.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.007358,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 4484436428.85,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.007202,
+              "spy_return": 0.002736,
+              "excess_return": -0.009938,
+              "end_date": "2025-05-29"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.016162,
+              "spy_return": 0.007834,
+              "excess_return": 0.008327,
+              "end_date": "2025-06-05"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.126394,
+              "spy_return": 0.01291,
+              "excess_return": 0.113484,
+              "end_date": "2025-06-20"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "APP",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-07-02",
+          "reaction_date": "2025-07-02",
+          "entry_date": "2025-07-03",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.01",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": -0.006583,
+          "reaction_bucket": "negative_excess_0_to_minus_2pct",
+          "avg_dollar_volume_20d": 2200062538.82,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": 0.009337,
+              "spy_return": 0.00188,
+              "excess_return": 0.007458,
+              "end_date": "2025-07-11"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.097771,
+              "spy_return": 0.008242,
+              "excess_return": 0.08953,
+              "end_date": "2025-07-18"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.142078,
+              "spy_return": -0.001173,
+              "excess_return": 0.143251,
+              "end_date": "2025-08-01"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        },
+        {
+          "ticker": "AVGO",
+          "window": "mid_weak",
+          "usable_trade_date": "2025-07-14",
+          "reaction_date": "2025-07-14",
+          "entry_date": "2025-07-15",
+          "filing_category": "agreement_or_debt",
+          "form_bases": [
+            "8-K"
+          ],
+          "eight_k_item_codes": [
+            "1.02",
+            "8.01",
+            "9.01"
+          ],
+          "filing_count": 1,
+          "reaction_excess_return": 0.002538,
+          "reaction_bucket": "positive_excess_0_to_2pct",
+          "avg_dollar_volume_20d": 5782012637.75,
+          "horizons": {
+            "5d": {
+              "status": "valid",
+              "return": -0.00436,
+              "spy_return": 0.002135,
+              "excess_return": -0.006495,
+              "end_date": "2025-07-22"
+            },
+            "10d": {
+              "status": "valid",
+              "return": 0.062936,
+              "spy_return": 0.012334,
+              "excess_return": 0.050601,
+              "end_date": "2025-07-29"
+            },
+            "20d": {
+              "status": "valid",
+              "return": 0.118009,
+              "spy_return": 0.024174,
+              "excess_return": 0.093834,
+              "end_date": "2025-08-12"
+            }
+          },
+          "slot_conflict_proxy": false,
+          "same_day_core_trade_count": 0,
+          "replacement_value_10d_excess_proxy": null
+        }
+      ]
+    },
+    "all_sec_events_by_category": {
+      "8k_2_02_results": {
+        "event_count": 232,
+        "unique_tickers": 38,
+        "forward_excess": {
+          "5d": {
+            "count": 223,
+            "avg_pct": 0.15,
+            "median_pct": -0.213,
+            "positive_rate_pct": 48.43,
+            "best_pct": 45.708,
+            "worst_pct": -21.0601
+          },
+          "10d": {
+            "count": 218,
+            "avg_pct": 0.7204,
+            "median_pct": -0.0704,
+            "positive_rate_pct": 50.0,
+            "best_pct": 67.3909,
+            "worst_pct": -24.4745
+          },
+          "20d": {
+            "count": 215,
+            "avg_pct": 1.1459,
+            "median_pct": -0.1657,
+            "positive_rate_pct": 47.44,
+            "best_pct": 62.3447,
+            "worst_pct": -28.1881
+          }
+        }
+      },
+      "agreement_or_debt": {
+        "event_count": 39,
+        "unique_tickers": 16,
+        "forward_excess": {
+          "5d": {
+            "count": 38,
+            "avg_pct": -0.5657,
+            "median_pct": -0.802,
+            "positive_rate_pct": 44.74,
+            "best_pct": 19.3026,
+            "worst_pct": -25.9106
+          },
+          "10d": {
+            "count": 38,
+            "avg_pct": -0.8619,
+            "median_pct": -2.6484,
+            "positive_rate_pct": 39.47,
+            "best_pct": 46.1492,
+            "worst_pct": -30.2388
+          },
+          "20d": {
+            "count": 34,
+            "avg_pct": 0.7622,
+            "median_pct": -0.1379,
+            "positive_rate_pct": 47.06,
+            "best_pct": 52.4309,
+            "worst_pct": -25.7801
+          }
+        }
+      },
+      "fd_or_other_event": {
+        "event_count": 145,
+        "unique_tickers": 35,
+        "forward_excess": {
+          "5d": {
+            "count": 140,
+            "avg_pct": -0.7336,
+            "median_pct": -0.0157,
+            "positive_rate_pct": 49.29,
+            "best_pct": 12.678,
+            "worst_pct": -24.4787
+          },
+          "10d": {
+            "count": 131,
+            "avg_pct": -0.7924,
+            "median_pct": -0.6625,
+            "positive_rate_pct": 43.51,
+            "best_pct": 20.8749,
+            "worst_pct": -20.8307
+          },
+          "20d": {
+            "count": 117,
+            "avg_pct": -0.3821,
+            "median_pct": -0.5342,
+            "positive_rate_pct": 44.44,
+            "best_pct": 22.2248,
+            "worst_pct": -20.9426
+          }
+        }
+      },
+      "leadership_change": {
+        "event_count": 131,
+        "unique_tickers": 37,
+        "forward_excess": {
+          "5d": {
+            "count": 128,
+            "avg_pct": 0.8185,
+            "median_pct": -0.005,
+            "positive_rate_pct": 50.0,
+            "best_pct": 17.1663,
+            "worst_pct": -12.0101
+          },
+          "10d": {
+            "count": 120,
+            "avg_pct": 1.3748,
+            "median_pct": 0.5554,
+            "positive_rate_pct": 55.0,
+            "best_pct": 55.792,
+            "worst_pct": -38.6698
+          },
+          "20d": {
+            "count": 106,
+            "avg_pct": 1.8337,
+            "median_pct": 1.1764,
+            "positive_rate_pct": 56.6,
+            "best_pct": 35.5423,
+            "worst_pct": -31.7785
+          }
+        }
+      },
+      "other_sec_filing": {
+        "event_count": 64,
+        "unique_tickers": 35,
+        "forward_excess": {
+          "5d": {
+            "count": 61,
+            "avg_pct": -0.3563,
+            "median_pct": -0.0955,
+            "positive_rate_pct": 47.54,
+            "best_pct": 9.5749,
+            "worst_pct": -9.7371
+          },
+          "10d": {
+            "count": 60,
+            "avg_pct": 1.4814,
+            "median_pct": 0.293,
+            "positive_rate_pct": 51.67,
+            "best_pct": 28.5223,
+            "worst_pct": -14.6505
+          },
+          "20d": {
+            "count": 59,
+            "avg_pct": 1.9157,
+            "median_pct": 0.4843,
+            "positive_rate_pct": 52.54,
+            "best_pct": 33.7629,
+            "worst_pct": -16.775
+          }
+        }
+      },
+      "periodic_10q_10k": {
+        "event_count": 128,
+        "unique_tickers": 31,
+        "forward_excess": {
+          "5d": {
+            "count": 126,
+            "avg_pct": -0.5965,
+            "median_pct": -0.1914,
+            "positive_rate_pct": 46.83,
+            "best_pct": 14.4626,
+            "worst_pct": -34.1157
+          },
+          "10d": {
+            "count": 126,
+            "avg_pct": 0.2565,
+            "median_pct": 0.2298,
+            "positive_rate_pct": 50.79,
+            "best_pct": 30.1726,
+            "worst_pct": -27.4451
+          },
+          "20d": {
+            "count": 124,
+            "avg_pct": 0.9584,
+            "median_pct": -0.1317,
+            "positive_rate_pct": 48.39,
+            "best_pct": 31.7732,
+            "worst_pct": -28.2487
+          }
+        }
+      }
+    },
+    "slot_conflict": {
+      "same_day_core_conflict_count": 132,
+      "same_day_core_conflict_rate": 0.1786,
+      "valid_replacement_proxy_count": 122,
+      "positive_replacement_proxy_count": 41,
+      "positive_replacement_proxy_rate": 0.3361,
+      "replacement_value_10d_excess_proxy": {
+        "count": 122,
+        "avg": -0.042395,
+        "median": -0.035971,
+        "p25": -0.107317,
+        "p75": 0.004501,
+        "win_rate": 0.3361
+      }
+    }
+  },
+  "decision_rationale": "The event packet has non-positive average 10d excess return.",
+  "gate4": {
+    "applicable": false,
+    "result": "not_applicable_shadow_only",
+    "reason": "No executable strategy logic changed; canonical before/after metrics are unchanged by design."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "alters_orders": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "next_retry_requires": [
+    "Do not promote this packet without slot-aware replacement value versus same-day A/B alternatives.",
+    "Do not tune nearby reaction buckets or 8-K item combinations from this result alone.",
+    "A valid retry needs richer agreement semantics, contract value context, or forward queue evidence."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260504-019\\exp_20260504_019_sec_agreement_debt_event_shadow.json",
+    "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl"
+  ]
+}
