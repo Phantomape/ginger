@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from event_sleeve_bundle import build_event_sleeve_bundle_snapshot
+from event_sleeve_bundle import (
+    build_event_sleeve_bundle_snapshot,
+    evaluate_event_bundle_kill_switch,
+    evaluate_forward_paper_gate,
+)
 
 
 def _sleeve(
@@ -17,6 +21,7 @@ def _sleeve(
     unrealized_pnl: float = 0.0,
     open_positions: list[dict[str, object]] | None = None,
     closed_positions_today: list[dict[str, object]] | None = None,
+    closed_positions: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     return {
         "enabled": False,
@@ -34,6 +39,7 @@ def _sleeve(
         "unrealized_pnl": unrealized_pnl,
         "open_positions": open_positions or [],
         "closed_positions_today": closed_positions_today or [],
+        "closed_positions": closed_positions or [],
     }
 
 
@@ -85,6 +91,107 @@ def test_event_sleeve_bundle_aggregates_sources_without_trade_authority() -> Non
     assert snapshot["closed_positions_today"][0]["source"] == "sec_negative_reaction"
     assert snapshot["production_impact"]["alters_orders"] is False
     assert snapshot["production_impact"]["alters_sizing"] is False
+
+
+def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "XYZ",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+        sec_negative_event_queue={
+            "rule_version": "sec_negative_rule",
+            "candidates": [
+                {
+                    "ticker": "XYZ",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+        sec_governance_event_queue={
+            "rule_version": "sec_governance_rule",
+            "candidates": [
+                {
+                    "ticker": "XYZ",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "ABC",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+    )
+
+    assert snapshot["raw_candidate_count"] == 4
+    assert snapshot["deduped_candidate_count"] == 2
+    assert snapshot["duplicate_candidate_count"] == 2
+    assert snapshot["candidate_schema"]["audit"]["valid"] is True
+    xyz = [row for row in snapshot["candidates"] if row["ticker"] == "XYZ"]
+    assert len(xyz) == 1
+    assert xyz[0]["source"] == "sec_governance_procedural"
+    assert {row["source"] for row in snapshot["deduped_candidates"]} == {
+        "sec_negative_reaction",
+        "form4_meaningful_purchase",
+    }
+    assert all(row["alters_orders"] is False for row in snapshot["candidates"])
+
+
+def test_forward_paper_gate_passes_after_sufficient_source_diverse_outcomes() -> None:
+    closed = []
+    for idx in range(15):
+        source = "sec_governance_procedural" if idx < 8 else "sec_negative_reaction"
+        pnl = 100.0 if idx in {0, 1, 2, 3, 4, 5, 8, 9, 10, 11} else -20.0
+        closed.append(
+            {
+                "source": source,
+                "ticker": f"T{idx}",
+                "exit_date": f"2026-05-{idx + 1:02d}",
+                "pnl": pnl,
+            }
+        )
+
+    gate = evaluate_forward_paper_gate(
+        closed_positions=closed,
+        source_summaries={},
+        schema_audit={"valid": True},
+    )
+
+    assert gate["passed"] is True
+    assert gate["metrics"]["closed_trades"] == 15
+    assert gate["metrics"]["win_rate"] == 0.6667
+    assert set(gate["metrics"]["represented_sources"]) == {
+        "sec_governance_procedural",
+        "sec_negative_reaction",
+    }
+
+
+def test_event_bundle_kill_switch_trips_on_three_consecutive_losses() -> None:
+    closed = [
+        {"source": "form4_meaningful_purchase", "exit_date": "2026-05-01", "pnl": 50.0},
+        {"source": "form4_meaningful_purchase", "exit_date": "2026-05-02", "pnl": -10.0},
+        {"source": "form4_meaningful_purchase", "exit_date": "2026-05-03", "pnl": -20.0},
+        {"source": "form4_meaningful_purchase", "exit_date": "2026-05-04", "pnl": -30.0},
+    ]
+
+    kill = evaluate_event_bundle_kill_switch(
+        closed_positions=closed,
+        schema_audit={"valid": True},
+    )
+
+    assert kill["triggered"] is True
+    assert "consecutive_closed_losses" in kill["reasons"]
 
 
 def test_event_sleeve_bundle_reports_missing_source_as_zero() -> None:

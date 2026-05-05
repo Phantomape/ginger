@@ -805,6 +805,9 @@ def main():
     try:
         event_sleeve_bundle = build_event_sleeve_bundle_snapshot(
             as_of=today_iso,
+            form4_event_queue=form4_event_queue,
+            sec_negative_event_queue=sec_event_queue,
+            sec_governance_event_queue=sec_governance_event_queue,
             form4_event_sleeve=form4_event_sleeve,
             sec_negative_event_sleeve=sec_negative_event_sleeve,
             sec_governance_event_sleeve=sec_governance_event_sleeve,

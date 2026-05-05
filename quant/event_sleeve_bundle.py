@@ -14,12 +14,37 @@ from typing import Any
 
 
 SLEEVE_NAME = "DEFAULT_OFF_EVENT_OVERLAY_BUNDLE_PAPER"
-STATE_SCHEMA_VERSION = 1
+STATE_SCHEMA_VERSION = 2
 
 SOURCE_ORDER = (
     ("form4_meaningful_purchase", "Form 4 meaningful purchase"),
     ("sec_negative_reaction", "SEC negative reaction"),
     ("sec_governance_procedural", "SEC governance/procedural"),
+)
+
+SOURCE_PRIORITY = {
+    "sec_governance_procedural": 0,
+    "sec_negative_reaction": 1,
+    "form4_meaningful_purchase": 2,
+}
+
+DEFAULT_SOURCE_RULE_VERSIONS = {
+    "form4_meaningful_purchase": "form4_meaningful_purchase_ge_500k_v1",
+    "sec_negative_reaction": "sec_negative_language_negative_reaction_v1",
+    "sec_governance_procedural": "sec_governance_procedural_mild_reaction_v1",
+}
+
+REQUIRED_CANDIDATE_FIELDS = (
+    "source",
+    "rule_version",
+    "ticker",
+    "usable_trade_date",
+    "entry_date",
+    "event_notional_usd",
+    "hold_days",
+    "dedupe_key",
+    "counterfactuals",
+    "alters_orders",
 )
 
 DEFAULT_CONFIG = {
@@ -28,7 +53,20 @@ DEFAULT_CONFIG = {
     "trade_enabled": False,
     "event_notional_usd": 10_000.0,
     "per_source_max_positions": 1,
+    "hold_days": 10,
     "source_names": [source for source, _ in SOURCE_ORDER],
+    "micro_live_notional_usd": 2_500.0,
+    "micro_live_max_portfolio_pct": 0.025,
+    "micro_live_max_positions": 1,
+    "forward_gate_min_closed_trades": 15,
+    "forward_gate_min_sources": 2,
+    "forward_gate_min_win_rate": 0.55,
+    "forward_gate_max_drawdown_pct": 0.08,
+    "forward_gate_max_source_pnl_share": 0.70,
+    "kill_consecutive_closed_losses": 3,
+    "kill_recent_source_trades": 5,
+    "kill_recent_source_min_win_rate": 0.40,
+    "kill_drawdown_notional_fraction": 0.50,
 }
 
 
@@ -39,6 +77,9 @@ def utc_now_iso() -> str:
 def build_event_sleeve_bundle_snapshot(
     *,
     as_of: str,
+    form4_event_queue: dict[str, Any] | None = None,
+    sec_negative_event_queue: dict[str, Any] | None = None,
+    sec_governance_event_queue: dict[str, Any] | None = None,
     form4_event_sleeve: dict[str, Any] | None = None,
     sec_negative_event_sleeve: dict[str, Any] | None = None,
     sec_governance_event_sleeve: dict[str, Any] | None = None,
@@ -53,29 +94,52 @@ def build_event_sleeve_bundle_snapshot(
         "sec_negative_reaction": sec_negative_event_sleeve,
         "sec_governance_procedural": sec_governance_event_sleeve,
     }
+    raw_queues = {
+        "form4_meaningful_purchase": form4_event_queue,
+        "sec_negative_reaction": sec_negative_event_queue,
+        "sec_governance_procedural": sec_governance_event_queue,
+    }
     source_summaries = {}
     open_positions = []
+    closed_positions = []
     closed_positions_today = []
     new_pending_entries = []
     skipped_entries_today = []
 
     for source, label in SOURCE_ORDER:
-        summary = _summarize_source(source, label, raw_sources.get(source))
+        snapshot = raw_sources.get(source)
+        summary = _summarize_source(source, label, snapshot)
         source_summaries[source] = summary
-        open_positions.extend(
-            _tag_rows(source, raw_sources.get(source), "open_positions")
-        )
+        open_positions.extend(_tag_rows(source, snapshot, "open_positions"))
+        closed_positions.extend(_tag_rows(source, snapshot, "closed_positions"))
         closed_positions_today.extend(
-            _tag_rows(source, raw_sources.get(source), "closed_positions_today")
+            _tag_rows(source, snapshot, "closed_positions_today")
         )
-        new_pending_entries.extend(
-            _tag_rows(source, raw_sources.get(source), "new_pending_entries")
-        )
-        skipped_entries_today.extend(
-            _tag_rows(source, raw_sources.get(source), "skipped_entries_today")
-        )
+        new_pending_entries.extend(_tag_rows(source, snapshot, "new_pending_entries"))
+        skipped_entries_today.extend(_tag_rows(source, snapshot, "skipped_entries_today"))
 
+    raw_candidates = _normalise_bundle_candidates(
+        queues=raw_queues,
+        sleeves=raw_sources,
+        config=cfg,
+    )
+    accepted_candidates, deduped_candidates = _dedupe_candidates(raw_candidates)
+    schema_audit = _candidate_schema_audit(accepted_candidates)
     totals = _aggregate_totals(source_summaries)
+    all_closed = closed_positions or closed_positions_today
+    forward_gate = evaluate_forward_paper_gate(
+        closed_positions=all_closed,
+        open_positions=open_positions,
+        source_summaries=source_summaries,
+        schema_audit=schema_audit,
+        config=cfg,
+    )
+    kill_switch = evaluate_event_bundle_kill_switch(
+        closed_positions=all_closed,
+        open_positions=open_positions,
+        schema_audit=schema_audit,
+        config=cfg,
+    )
     return {
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
@@ -84,6 +148,9 @@ def build_event_sleeve_bundle_snapshot(
         "enabled": False,
         "paper_enabled": bool(cfg.get("paper_enabled", True)),
         "trade_enabled": False,
+        "trade_enabled_reason": (
+            "default_off_until_forward_gate_passes_and_live_adapter_is_explicitly_enabled"
+        ),
         "source_count": len(SOURCE_ORDER),
         "sources_with_open_positions": sum(
             1 for row in source_summaries.values() if row["open_position_count"] > 0
@@ -92,6 +159,9 @@ def build_event_sleeve_bundle_snapshot(
             1 for row in source_summaries.values() if row["closed_position_count"] > 0
         ),
         "candidate_count": totals["candidate_count"],
+        "raw_candidate_count": len(raw_candidates),
+        "deduped_candidate_count": len(accepted_candidates),
+        "duplicate_candidate_count": len(deduped_candidates),
         "new_pending_count": totals["new_pending_count"],
         "filled_count": totals["filled_count"],
         "closed_count_today": totals["closed_count_today"],
@@ -102,10 +172,38 @@ def build_event_sleeve_bundle_snapshot(
         "realized_pnl_to_date": totals["realized_pnl_to_date"],
         "unrealized_pnl": totals["unrealized_pnl"],
         "source_summaries": source_summaries,
+        "candidate_schema": {
+            "required_fields": list(REQUIRED_CANDIDATE_FIELDS),
+            "audit": schema_audit,
+        },
+        "candidates": accepted_candidates,
+        "deduped_candidates": deduped_candidates,
+        "dedupe_policy": {
+            "same_source_key": "source+ticker+usable_trade_date+rule_version",
+            "cross_source_key": "ticker+usable_trade_date",
+            "source_priority": {
+                source: priority
+                for source, priority in sorted(
+                    SOURCE_PRIORITY.items(),
+                    key=lambda item: item[1],
+                )
+            },
+        },
         "open_positions": open_positions,
+        "closed_positions": all_closed,
         "closed_positions_today": closed_positions_today,
         "new_pending_entries": new_pending_entries,
         "skipped_entries_today": skipped_entries_today,
+        "forward_paper_gate": forward_gate,
+        "kill_switch": kill_switch,
+        "micro_live_plan": {
+            "status": "blocked" if not forward_gate["passed"] else "eligible_for_manual_enablement",
+            "trade_enabled": False,
+            "max_positions": int(cfg["micro_live_max_positions"]),
+            "event_notional_usd": float(cfg["micro_live_notional_usd"]),
+            "max_portfolio_pct": float(cfg["micro_live_max_portfolio_pct"]),
+            "requires_explicit_config_change": True,
+        },
         "parameters": dict(cfg),
         "production_impact": _production_impact(),
         "next_action": (
@@ -124,14 +222,386 @@ def empty_event_sleeve_bundle_snapshot(as_of: str, reason: str) -> dict[str, Any
         "paper_enabled": False,
         "trade_enabled": False,
         "candidate_count": 0,
+        "raw_candidate_count": 0,
+        "deduped_candidate_count": 0,
+        "duplicate_candidate_count": 0,
         "pending_count": 0,
         "open_position_count": 0,
         "closed_position_count": 0,
         "realized_pnl_to_date": 0.0,
         "unrealized_pnl": 0.0,
         "source_summaries": {},
+        "candidate_schema": {
+            "required_fields": list(REQUIRED_CANDIDATE_FIELDS),
+            "audit": {
+                "valid": False,
+                "missing_required_field_count": 1,
+                "rows_with_missing_required_fields": [
+                    {
+                        "row_index": None,
+                        "ticker": None,
+                        "source": None,
+                        "missing_fields": ["source_snapshot"],
+                    }
+                ],
+            },
+        },
+        "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
+        "kill_switch": {"triggered": True, "status": "blocked", "reasons": [reason]},
         "production_impact": _production_impact(),
         "error": reason,
+    }
+
+
+def evaluate_forward_paper_gate(
+    *,
+    closed_positions: list[dict[str, Any]],
+    open_positions: list[dict[str, Any]] | None = None,
+    source_summaries: dict[str, dict[str, Any]] | None = None,
+    schema_audit: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    closed = [row for row in closed_positions or [] if isinstance(row, dict)]
+    realized_pnl = round(sum(_money(row.get("pnl")) for row in closed), 2)
+    closed_count = len(closed)
+    wins = sum(1 for row in closed if _money(row.get("pnl")) > 0)
+    win_rate = round(wins / closed_count, 4) if closed_count else None
+    source_pnl = _pnl_by_source(closed, source_summaries or {})
+    represented_sources = sorted(
+        source
+        for source, pnl in source_pnl.items()
+        if _source_closed_count(closed, source, source_summaries or {}) > 0
+    )
+    source_pnl_share = _max_positive_source_pnl_share(source_pnl)
+    drawdown = _closed_pnl_drawdown(closed, cfg)
+    schema_valid = bool((schema_audit or {}).get("valid", False))
+
+    checks = {
+        "min_closed_trades": closed_count >= int(cfg["forward_gate_min_closed_trades"]),
+        "min_sources": len(represented_sources) >= int(cfg["forward_gate_min_sources"]),
+        "positive_net_pnl": realized_pnl > 0,
+        "min_win_rate": win_rate is not None
+        and win_rate >= float(cfg["forward_gate_min_win_rate"]),
+        "max_drawdown": drawdown["max_drawdown_pct"] is not None
+        and drawdown["max_drawdown_pct"] <= float(cfg["forward_gate_max_drawdown_pct"]),
+        "max_source_concentration": source_pnl_share is not None
+        and source_pnl_share <= float(cfg["forward_gate_max_source_pnl_share"]),
+        "schema_valid": schema_valid,
+    }
+    reasons = [name for name, passed in checks.items() if not passed]
+    return {
+        "passed": not reasons,
+        "status": "passed" if not reasons else "blocked",
+        "reasons": reasons,
+        "checks": checks,
+        "metrics": {
+            "closed_trades": closed_count,
+            "represented_sources": represented_sources,
+            "realized_pnl": realized_pnl,
+            "win_rate": win_rate,
+            "source_pnl": source_pnl,
+            "max_positive_source_pnl_share": source_pnl_share,
+            **drawdown,
+        },
+        "thresholds": {
+            "min_closed_trades": int(cfg["forward_gate_min_closed_trades"]),
+            "min_sources": int(cfg["forward_gate_min_sources"]),
+            "min_win_rate": float(cfg["forward_gate_min_win_rate"]),
+            "max_drawdown_pct": float(cfg["forward_gate_max_drawdown_pct"]),
+            "max_source_pnl_share": float(cfg["forward_gate_max_source_pnl_share"]),
+        },
+        "open_position_count": len(open_positions or []),
+        "trade_enabled_after_gate": False,
+    }
+
+
+def evaluate_event_bundle_kill_switch(
+    *,
+    closed_positions: list[dict[str, Any]],
+    open_positions: list[dict[str, Any]] | None = None,
+    schema_audit: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    closed = sorted(
+        [row for row in closed_positions or [] if isinstance(row, dict)],
+        key=lambda row: (
+            str(row.get("exit_date") or row.get("entry_date") or ""),
+            str(row.get("ticker") or ""),
+        ),
+    )
+    open_rows = [row for row in open_positions or [] if isinstance(row, dict)]
+    consecutive_losses = _trailing_consecutive_losses(closed)
+    recent_source_failures = _recent_source_failures(closed, cfg)
+    realized = sum(_money(row.get("pnl")) for row in closed)
+    unrealized = sum(_money(row.get("net_pnl_if_closed_now") or row.get("unrealized_pnl")) for row in open_rows)
+    combined_pnl = round(realized + unrealized, 2)
+    drawdown_trigger_usd = round(
+        float(cfg["event_notional_usd"])
+        * float(cfg["kill_drawdown_notional_fraction"]),
+        2,
+    )
+    schema_valid = bool((schema_audit or {}).get("valid", False))
+    reasons = []
+    if consecutive_losses >= int(cfg["kill_consecutive_closed_losses"]):
+        reasons.append("consecutive_closed_losses")
+    if combined_pnl < -drawdown_trigger_usd:
+        reasons.append("bundle_pnl_drawdown")
+    if recent_source_failures:
+        reasons.append("recent_source_win_rate_breach")
+    if not schema_valid:
+        reasons.append("schema_invalid")
+    return {
+        "triggered": bool(reasons),
+        "status": "halt" if reasons else "clear",
+        "reasons": reasons,
+        "metrics": {
+            "closed_trades": len(closed),
+            "trailing_consecutive_losses": consecutive_losses,
+            "combined_realized_unrealized_pnl": combined_pnl,
+            "drawdown_trigger_usd": drawdown_trigger_usd,
+            "recent_source_failures": recent_source_failures,
+        },
+        "thresholds": {
+            "consecutive_closed_losses": int(cfg["kill_consecutive_closed_losses"]),
+            "drawdown_notional_fraction": float(cfg["kill_drawdown_notional_fraction"]),
+            "recent_source_trades": int(cfg["kill_recent_source_trades"]),
+            "recent_source_min_win_rate": float(cfg["kill_recent_source_min_win_rate"]),
+        },
+    }
+
+
+def _normalise_bundle_candidates(
+    *,
+    queues: dict[str, dict[str, Any] | None],
+    sleeves: dict[str, dict[str, Any] | None],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for source, label in SOURCE_ORDER:
+        queue = queues.get(source)
+        if isinstance(queue, dict) and queue.get("candidates"):
+            rule_version = str(
+                queue.get("rule_version")
+                or DEFAULT_SOURCE_RULE_VERSIONS.get(source)
+                or "unknown_rule"
+            )
+            for raw in queue.get("candidates") or []:
+                if isinstance(raw, dict):
+                    rows.append(
+                        _normalise_candidate_row(
+                            source=source,
+                            source_label=label,
+                            raw=raw,
+                            rule_version=rule_version,
+                            status="candidate",
+                            config=config,
+                        )
+                    )
+            continue
+
+        sleeve = sleeves.get(source)
+        if not isinstance(sleeve, dict):
+            continue
+        rule_version = str(DEFAULT_SOURCE_RULE_VERSIONS.get(source) or "unknown_rule")
+        for bucket, status in (
+            ("new_pending_entries", "pending"),
+            ("pending_entries", "pending"),
+            ("open_positions", "open"),
+            ("closed_positions", "closed"),
+            ("closed_positions_today", "closed_today"),
+            ("skipped_entries_today", "skipped"),
+        ):
+            for raw in sleeve.get(bucket) or []:
+                if isinstance(raw, dict):
+                    rows.append(
+                        _normalise_candidate_row(
+                            source=source,
+                            source_label=label,
+                            raw=raw,
+                            rule_version=rule_version,
+                            status=status,
+                            config=config,
+                        )
+                    )
+    return rows
+
+
+def _normalise_candidate_row(
+    *,
+    source: str,
+    source_label: str,
+    raw: dict[str, Any],
+    rule_version: str,
+    status: str,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    candidate = raw.get("candidate") or raw.get("source_candidate") or raw
+    ticker = str(raw.get("ticker") or candidate.get("ticker") or "").upper()
+    usable_trade_date = _date10(
+        candidate.get("usable_trade_date")
+        or raw.get("source_event_date")
+        or raw.get("usable_trade_date")
+        or raw.get("entry_date")
+    )
+    entry_date = _date10(
+        raw.get("entry_date") or candidate.get("entry_date") or usable_trade_date
+    )
+    event_notional = _float_or_none(
+        raw.get("notional")
+        or raw.get("event_notional_usd")
+        or candidate.get("event_notional_usd")
+        or config.get("event_notional_usd")
+    )
+    hold_days = _int(raw.get("hold_days") or candidate.get("hold_days") or config.get("hold_days"))
+    decision_id = str(raw.get("decision_id") or candidate.get("decision_id") or "")
+    source_unique_key = "|".join(
+        [
+            source,
+            ticker,
+            usable_trade_date or "unknown_date",
+            rule_version,
+        ]
+    )
+    cross_source_key = "|".join([ticker, usable_trade_date or "unknown_date"])
+    return {
+        "source": source,
+        "source_label": source_label,
+        "source_priority": SOURCE_PRIORITY[source],
+        "rule_version": rule_version,
+        "ticker": ticker,
+        "usable_trade_date": usable_trade_date,
+        "entry_date": entry_date,
+        "event_notional_usd": event_notional,
+        "hold_days": hold_days,
+        "dedupe_key": source_unique_key,
+        "cross_source_dedupe_key": cross_source_key,
+        "decision_id": decision_id or source_unique_key,
+        "candidate_status": status,
+        "counterfactuals": deepcopy(
+            candidate.get("counterfactuals")
+            or candidate.get("counterfactual")
+            or raw.get("counterfactuals")
+            or raw.get("counterfactual")
+            or {}
+        ),
+        "trade_enabled": False,
+        "alters_orders": False,
+        "pnl": _float_or_none(raw.get("pnl")),
+        "net_return_pct": _float_or_none(raw.get("net_return_pct")),
+        "source_payload": deepcopy(candidate),
+    }
+
+
+def _dedupe_candidates(
+    candidates: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    accepted_by_source_key: dict[str, dict[str, Any]] = {}
+    duplicates: list[dict[str, Any]] = []
+
+    for row in sorted(
+        candidates,
+        key=lambda item: (
+            item.get("dedupe_key") or "",
+            item.get("source_priority", 99),
+            item.get("decision_id") or "",
+        ),
+    ):
+        key = str(row.get("dedupe_key") or "")
+        if key in accepted_by_source_key:
+            duplicates.append(
+                _deduped_row(row, "duplicate_same_source_ticker_date_rule", accepted_by_source_key[key])
+            )
+            continue
+        accepted_by_source_key[key] = row
+
+    accepted: list[dict[str, Any]] = []
+    by_cross_key: dict[str, dict[str, Any]] = {}
+    for row in sorted(
+        accepted_by_source_key.values(),
+        key=lambda item: (
+            item.get("cross_source_dedupe_key") or "",
+            item.get("source_priority", 99),
+            item.get("source") or "",
+        ),
+    ):
+        key = str(row.get("cross_source_dedupe_key") or "")
+        existing = by_cross_key.get(key)
+        if existing is None:
+            by_cross_key[key] = row
+            accepted.append(row)
+            continue
+        if int(row.get("source_priority", 99)) < int(existing.get("source_priority", 99)):
+            accepted.remove(existing)
+            duplicates.append(
+                _deduped_row(
+                    existing,
+                    "lower_priority_same_ticker_date",
+                    row,
+                )
+            )
+            by_cross_key[key] = row
+            accepted.append(row)
+        else:
+            duplicates.append(
+                _deduped_row(
+                    row,
+                    "lower_priority_same_ticker_date",
+                    existing,
+                )
+            )
+    accepted.sort(
+        key=lambda row: (
+            row.get("usable_trade_date") or "",
+            row.get("source_priority", 99),
+            row.get("ticker") or "",
+        )
+    )
+    duplicates.sort(
+        key=lambda row: (
+            row.get("usable_trade_date") or "",
+            row.get("source_priority", 99),
+            row.get("ticker") or "",
+        )
+    )
+    return accepted, duplicates
+
+
+def _deduped_row(
+    row: dict[str, Any],
+    reason: str,
+    kept: dict[str, Any],
+) -> dict[str, Any]:
+    out = deepcopy(row)
+    out["dedupe_reason"] = reason
+    out["kept_source"] = kept.get("source")
+    out["kept_dedupe_key"] = kept.get("dedupe_key")
+    return out
+
+
+def _candidate_schema_audit(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    rows = []
+    for idx, row in enumerate(candidates):
+        missing = [
+            field
+            for field in REQUIRED_CANDIDATE_FIELDS
+            if row.get(field) in (None, "", [])
+        ]
+        if missing:
+            rows.append(
+                {
+                    "row_index": idx,
+                    "ticker": row.get("ticker"),
+                    "source": row.get("source"),
+                    "missing_fields": missing,
+                }
+            )
+    return {
+        "valid": not rows,
+        "candidate_count": len(candidates),
+        "missing_required_field_count": sum(len(row["missing_fields"]) for row in rows),
+        "rows_with_missing_required_fields": rows,
     }
 
 
@@ -216,6 +686,121 @@ def _tag_rows(
             tagged.setdefault("source", source)
             rows.append(tagged)
     return rows
+
+
+def _pnl_by_source(
+    closed_positions: list[dict[str, Any]],
+    source_summaries: dict[str, dict[str, Any]],
+) -> dict[str, float]:
+    out = {source: 0.0 for source, _ in SOURCE_ORDER}
+    counted = False
+    for row in closed_positions:
+        source = str(row.get("source") or "")
+        if source in out:
+            out[source] += _money(row.get("pnl"))
+            counted = True
+    if not counted:
+        for source, summary in source_summaries.items():
+            out[source] = _money(summary.get("realized_pnl_to_date"))
+    return {source: round(value, 2) for source, value in out.items()}
+
+
+def _source_closed_count(
+    closed_positions: list[dict[str, Any]],
+    source: str,
+    source_summaries: dict[str, dict[str, Any]],
+) -> int:
+    direct = sum(1 for row in closed_positions if row.get("source") == source)
+    if direct:
+        return direct
+    return _int((source_summaries.get(source) or {}).get("closed_position_count"))
+
+
+def _max_positive_source_pnl_share(source_pnl: dict[str, float]) -> float | None:
+    positive = [value for value in source_pnl.values() if value > 0]
+    total_positive = sum(positive)
+    if total_positive <= 0:
+        return None
+    return round(max(positive) / total_positive, 4)
+
+
+def _closed_pnl_drawdown(
+    closed_positions: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    rows = sorted(
+        closed_positions,
+        key=lambda row: (
+            str(row.get("exit_date") or row.get("entry_date") or ""),
+            str(row.get("ticker") or ""),
+        ),
+    )
+    equity = 0.0
+    peak = 0.0
+    max_dd = 0.0
+    for row in rows:
+        equity += _money(row.get("pnl"))
+        peak = max(peak, equity)
+        max_dd = max(max_dd, peak - equity)
+    denominator = float(config["event_notional_usd"]) * len(SOURCE_ORDER)
+    return {
+        "max_drawdown_usd": round(max_dd, 2),
+        "drawdown_denominator_usd": round(denominator, 2),
+        "max_drawdown_pct": round(max_dd / denominator, 4) if denominator else None,
+    }
+
+
+def _trailing_consecutive_losses(closed_positions: list[dict[str, Any]]) -> int:
+    count = 0
+    for row in reversed(closed_positions):
+        if _money(row.get("pnl")) < 0:
+            count += 1
+        else:
+            break
+    return count
+
+
+def _recent_source_failures(
+    closed_positions: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    failures = []
+    sample_size = int(config["kill_recent_source_trades"])
+    min_win_rate = float(config["kill_recent_source_min_win_rate"])
+    by_source: dict[str, list[dict[str, Any]]] = {source: [] for source, _ in SOURCE_ORDER}
+    for row in closed_positions:
+        source = row.get("source")
+        if source in by_source:
+            by_source[source].append(row)
+    for source, rows in by_source.items():
+        recent = rows[-sample_size:]
+        if len(recent) < sample_size:
+            continue
+        wins = sum(1 for row in recent if _money(row.get("pnl")) > 0)
+        win_rate = wins / len(recent)
+        if win_rate < min_win_rate:
+            failures.append(
+                {
+                    "source": source,
+                    "sample_size": len(recent),
+                    "win_rate": round(win_rate, 4),
+                    "threshold": min_win_rate,
+                }
+            )
+    return failures
+
+
+def _date10(value: Any) -> str | None:
+    text = str(value or "")[:10]
+    return text or None
+
+
+def _float_or_none(value: Any) -> float | None:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed
 
 
 def _int(value: Any) -> int:

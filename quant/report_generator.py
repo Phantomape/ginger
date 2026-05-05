@@ -418,11 +418,37 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"Open: {event_sleeve_bundle.get('open_position_count', 0)}  |  "
             f"Closed today: {event_sleeve_bundle.get('closed_count_today', 0)}"
         )
+        if event_sleeve_bundle.get("raw_candidate_count") is not None:
+            lines.append(
+                f"  Candidates: raw={event_sleeve_bundle.get('raw_candidate_count', 0)} "
+                f"deduped={event_sleeve_bundle.get('deduped_candidate_count', 0)} "
+                f"duplicates={event_sleeve_bundle.get('duplicate_candidate_count', 0)}"
+            )
         lines.append(
             "  Realized paper P&L: "
             f"${event_sleeve_bundle.get('realized_pnl_to_date', 0.0):,.2f}  |  "
             f"Unrealized: ${event_sleeve_bundle.get('unrealized_pnl', 0.0):,.2f}"
         )
+        gate = event_sleeve_bundle.get("forward_paper_gate") or {}
+        if gate:
+            gate_metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={gate_metrics.get('closed_trades', 0)} "
+                f"WR={gate_metrics.get('win_rate')} "
+                f"DD={gate_metrics.get('max_drawdown_pct')}  |  "
+                f"blocked_by={reason_text}"
+            )
+        kill = event_sleeve_bundle.get("kill_switch") or {}
+        if kill:
+            reasons = kill.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Kill switch: {kill.get('status', 'unknown')}  |  "
+                f"reasons={reason_text}"
+            )
         summaries = event_sleeve_bundle.get("source_summaries") or {}
         for source in (
             "form4_meaningful_purchase",

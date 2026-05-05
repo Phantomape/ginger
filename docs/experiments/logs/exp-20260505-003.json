@@ -1,8 +1,8 @@
 {
   "experiment_id": "exp-20260505-003",
-  "generated_at": "2026-05-05T01:20:41.548608+00:00",
-  "status": "accepted",
-  "decision": "accepted",
+  "generated_at": "2026-05-05T01:25:54.418411+00:00",
+  "status": "rejected",
+  "decision": "rejected",
   "lane": "alpha_search",
   "change_type": "capital_allocation_metadata_quality",
   "mechanism_family": "unknown_sector_risk_on_sizing",
@@ -631,13 +631,13 @@
         "win_rate_delta_min": 0.0,
         "sharpe_daily_delta_max": 0.04
       },
-      "gate4_passed": true
+      "gate4_passed": false
     }
   },
   "best_variant": "unknown_risk_on_cap_0_00x",
   "gate4": {
-    "passed": true,
-    "basis": "Gate4 requires >10% aggregate EV lift, >0.1 Sharpe lift, >1pp drawdown reduction, >5% PnL lift, or more trades without win-rate decline; accepted variants also cannot regress EV in any fixed window."
+    "passed": false,
+    "basis": "Gate4 requires >10% aggregate EV lift, >0.1 Sharpe lift, >1pp drawdown reduction, >5% PnL lift, or more trades without win-rate decline; accepted variants also need EV improvement in at least two fixed windows and no EV-regressed window."
   },
   "production_impact": {
     "shared_policy_changed": false,
@@ -652,7 +652,7 @@
     "llm_change_scope": "none",
     "blocker_relation": "LLM soft-ranking remains production-sample limited, so this run uses deterministic OHLCV/enrichment metadata instead."
   },
-  "rejection_reason": null,
+  "rejection_reason": "Unknown-sector risk-on sizing caps did not clear the three-window Gate 4 materiality bar; the best variant improved only old_thin while late_strong and mid_weak were unchanged.",
   "next_retry_requires": [
     "Do not retry Unknown-sector risk-on caps or TRIP-only sector mapping without a larger missing-sector cohort.",
     "A valid retry needs new production universe metadata coverage or forward evidence that Unknown-sector candidates are recurring.",

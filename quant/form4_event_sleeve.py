@@ -462,6 +462,7 @@ def _snapshot_payload(
         "new_pending_entries": deepcopy(new_pending),
         "filled_entries": deepcopy(filled_today),
         "closed_positions_today": deepcopy(closed_today),
+        "closed_positions": deepcopy(state["closed_positions"]),
         "skipped_entries_today": deepcopy(skipped_today),
         "pending_entries": deepcopy(state["pending_entries"]),
         "open_positions": deepcopy(state["open_positions"]),
