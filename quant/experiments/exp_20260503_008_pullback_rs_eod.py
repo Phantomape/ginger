@@ -67,7 +67,7 @@ VARIANTS = OrderedDict([
     ("reversal_5", "negative_z_ret_5d"),
 ])
 
-EXP_DIR = os.path.join(REPO_ROOT, "experiments", STRATEGY_NAME)
+EXP_DIR = os.path.join(REPO_ROOT, "experiments", "research", STRATEGY_NAME)
 LOG_DIR = os.path.join(REPO_ROOT, "research_log")
 DATA_EXP_DIR = os.path.join(REPO_ROOT, "data", "experiments", EXPERIMENT_ID)
 DOC_LOG = os.path.join(REPO_ROOT, "docs", "experiment_log.jsonl")

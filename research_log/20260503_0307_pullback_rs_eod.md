@@ -13,10 +13,10 @@ Strong 60-day relative strength combined with a short 5-day pullback can rank be
 This does not retry rejected low-TQS breakout, Financials target-width, semicap watchlist, or SEC/earnings sparse-archive variants. It is a standalone OHLCV cross-sectional ranking probe.
 
 ## Outputs
-- `D:\Github\ginger\experiments\pullback_rs_eod\results.csv`
-- `D:\Github\ginger\experiments\pullback_rs_eod\rank_ic_by_date.csv`
-- `D:\Github\ginger\experiments\pullback_rs_eod\notes.md`
-- `D:\Github\ginger\experiments\pullback_rs_eod\config.yaml`
+- `D:\Github\ginger\experiments\research\pullback_rs_eod\results.csv`
+- `D:\Github\ginger\experiments\research\pullback_rs_eod\rank_ic_by_date.csv`
+- `D:\Github\ginger\experiments\research\pullback_rs_eod\notes.md`
+- `D:\Github\ginger\experiments\research\pullback_rs_eod\config.yaml`
 
 ## Coverage
 {
