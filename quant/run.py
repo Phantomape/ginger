@@ -126,6 +126,10 @@ def main():
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
+    from backfill_non_ohlcv import (
+        catch_up_missing_non_ohlcv,
+        ensure_non_ohlcv_coverage,
+    )
     from crypto_sleeve      import (
         build_crypto_sleeve_advice,
         empty_crypto_sleeve_advice,
@@ -225,6 +229,35 @@ def main():
     except Exception as e:
         log.warning(f"Universe governance adapter unavailable: {e}")
 
+    data_universe = sorted(set(universe) | set(pilot_universe))
+    try:
+        non_ohlcv_catchup_summary = catch_up_missing_non_ohlcv(
+            as_of=today_iso,
+            universe=data_universe,
+            logger_obj=log,
+        )
+        if non_ohlcv_catchup_summary.get("status") != "skipped":
+            log.info(
+                "Non-OHLCV catch-up: status=%s days=%s generated=%s existing=%s failed=%s",
+                non_ohlcv_catchup_summary.get("status"),
+                non_ohlcv_catchup_summary.get("days_total"),
+                non_ohlcv_catchup_summary.get("days_generated"),
+                non_ohlcv_catchup_summary.get("days_recorded_existing"),
+                non_ohlcv_catchup_summary.get("days_failed"),
+            )
+    except Exception as e:
+        log.warning(f"Non-OHLCV catch-up unavailable: {e}")
+        non_ohlcv_catchup_summary = {
+            "status": "failed",
+            "error": str(e),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
+
     # ── Step 2: Market Regime ─────────────────────────────────────────────────
     _print_section("STEP 2 — Market regime")
     try:
@@ -239,13 +272,23 @@ def main():
     _print_section("STEP 3 — OHLCV + earnings data")
     ohlcv_dict    = {}
     earnings_dict = {}
-    data_universe = sorted(set(universe) | set(pilot_universe))
     for ticker in data_universe:
         ohlcv_dict[ticker]    = get_ohlcv(ticker)        # 350 calendar days
         earnings_dict[ticker] = get_earnings_data(ticker)
     spy_ohlcv = ohlcv_dict.get("SPY")
     if spy_ohlcv is None:
         spy_ohlcv = get_ohlcv("SPY")
+    option_underlying_prices = {}
+    for ticker, ohlcv in ohlcv_dict.items():
+        if ohlcv is None or ohlcv.empty:
+            continue
+        try:
+            raw_close = ohlcv["Close"].iloc[-1]
+            option_underlying_prices[ticker] = float(
+                raw_close.item() if hasattr(raw_close, "item") else raw_close
+            )
+        except Exception:
+            pass
 
     # P-ERN: persist today's earnings snapshot so backtester can reconstruct
     # eps_estimate and avg_historical_surprise_pct for earnings_event_long.
@@ -254,10 +297,54 @@ def main():
     persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
 
     try:
-        non_ohlcv_snapshot = persist_daily_non_ohlcv_snapshots(
-            as_of=today_iso,
-            logger=log,
+        non_ohlcv_daily_summary = ensure_non_ohlcv_coverage(
+            start=today_iso,
+            end=today_iso,
+            profile="daily",
+            only_missing=False,
+            universe=data_universe,
+            refresh_earnings=False,
+            refresh_options=True,
+            options_tickers=data_universe,
+            option_underlying_prices=option_underlying_prices,
+            options_max_expirations=2,
+            options_max_strikes_per_side=12,
+            logger_obj=log,
         )
+        non_ohlcv_snapshot = (
+            non_ohlcv_daily_summary.get("daily_snapshots", {}).get(today_iso)
+            or persist_daily_non_ohlcv_snapshots(
+                as_of=today_iso,
+                logger=log,
+                refresh_sec_submissions=False,
+                refresh_form4_submissions=False,
+            )
+        )
+        non_ohlcv_snapshot["coverage_manifest"] = {
+            "daily_summary": {
+                key: non_ohlcv_daily_summary.get(key)
+                for key in (
+                    "profile",
+                    "days_total",
+                    "days_generated",
+                    "days_recorded_existing",
+                    "days_failed",
+                    "errors",
+                )
+            },
+            "catchup_summary": {
+                key: non_ohlcv_catchup_summary.get(key)
+                for key in (
+                    "status",
+                    "days_total",
+                    "days_generated",
+                    "days_recorded_existing",
+                    "days_failed",
+                    "errors",
+                    "latest_complete_trade_date_before",
+                )
+            },
+        }
     except Exception as e:
         log.warning(f"Daily non-OHLCV snapshot unavailable: {e}")
         non_ohlcv_snapshot = {
@@ -273,6 +360,10 @@ def main():
                 "alters_candidate_ranking": False,
                 "alters_sizing": False,
                 "alters_orders": False,
+            },
+            "coverage_manifest": {
+                "catchup_summary": non_ohlcv_catchup_summary,
+                "daily_error": str(e),
             },
         }
 
@@ -949,6 +1040,7 @@ def main():
         sec_leadership_event_queue = sec_leadership_event_queue,
         sec_leadership_event_sleeve = sec_leadership_event_sleeve,
         event_sleeve_bundle = event_sleeve_bundle,
+        non_ohlcv_snapshot = non_ohlcv_snapshot,
         crypto_sleeve = crypto_sleeve,
     )
     print("\n" + report)

@@ -163,7 +163,61 @@ def load_news_items(date_key: str, data_dir: Path | str | None = None) -> list[d
             if filing_type and "filing_type" not in item["source_metadata"]:
                 item["source_metadata"]["filing_type"] = filing_type
             items.append(item)
+    items.extend(load_sec_filing_text_items(date_key, data_dir=data_dir))
     return _dedupe_news_items(items)
+
+
+def load_sec_filing_text_items(date_key: str, data_dir: Path | str | None = None) -> list[dict]:
+    """Load same-day SEC filing text rows as replayable event items."""
+
+    data_dir = Path(data_dir or DEFAULT_DATA_DIR)
+    path = data_dir / "non_ohlcv" / f"sec_filing_text_{date_key}.jsonl"
+    if not path.exists():
+        return []
+    date_iso = f"{date_key[:4]}-{date_key[4:6]}-{date_key[6:8]}"
+    items: list[dict] = []
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(row, dict) or row.get("usable_trade_date") != date_iso:
+            continue
+        ticker = str(row.get("ticker") or "").upper()
+        if not ticker:
+            continue
+        form_type = row.get("form_type") or row.get("form") or "SEC"
+        item_codes = row.get("eight_k_item_codes")
+        item_text = ""
+        if isinstance(item_codes, list) and item_codes:
+            item_text = " Item " + ", ".join(str(code) for code in item_codes)
+        title = f"{ticker} files {form_type}{item_text}"
+        summary = row.get("combined_text") or row.get("summary") or title
+        items.append({
+            "source": "sec",
+            "title": title,
+            "summary": str(summary)[:12000],
+            "url": row.get("index_url"),
+            "published_at": row.get("accepted_at") or row.get("accepted_datetime"),
+            "tickers": [ticker],
+            "raw_source": "sec_filing_text",
+            "filing_type": form_type,
+            "sec_cik": row.get("cik"),
+            "sec_accession_number": row.get("accession_number"),
+            "accepted_at": row.get("accepted_at") or row.get("accepted_datetime"),
+            "usable_trade_date": row.get("usable_trade_date"),
+            "source_file": f"non_ohlcv/sec_filing_text_{date_key}.jsonl",
+            "source_metadata": {
+                "filing_type": form_type,
+                "sec_cik": row.get("cik"),
+                "accession_number": row.get("accession_number"),
+                "usable_trade_date": row.get("usable_trade_date"),
+                "eight_k_item_codes": item_codes,
+            },
+        })
+    return items
 
 
 def _headline_buckets(text: str) -> list[str]:
@@ -373,7 +427,7 @@ def _build_sec_event(
         "point_in_time_complete": True,
         "headline_buckets": buckets,
         "quality_flags": _quality_flags(buckets),
-        "source_files": [f"news_{date_key}.json"],
+        "source_files": [item.get("source_file") or f"news_{date_key}.json"],
         "field_availability": {
             "sue_proxy": _field_state(False, None),
             "revenue_surprise": _field_state(True, [bucket for bucket in buckets if "revenue_" in bucket]),
@@ -390,6 +444,10 @@ def _build_sec_event(
             "raw_source": item.get("raw_source"),
             "title": item.get("title"),
             "sec_cik": item.get("sec_cik") or (item.get("source_metadata") or {}).get("sec_cik"),
+            "sec_accession_number": item.get("sec_accession_number")
+            or (item.get("source_metadata") or {}).get("accession_number"),
+            "accepted_at": item.get("accepted_at"),
+            "usable_trade_date": item.get("usable_trade_date"),
             "sec_company_name": item.get("sec_company_name")
             or (item.get("source_metadata") or {}).get("sec_company_name"),
             "guidance_signal": (

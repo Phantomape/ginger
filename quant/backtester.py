@@ -116,6 +116,7 @@ from pilot_sleeve import (
     select_pilot_entry_candidates,
 )
 from candidate_competition_logger import compute_decision_outcome_attribution
+from non_ohlcv_coverage import build_coverage_report
 
 DEFAULT_CONFIG = {
     "INITIAL_CAPITAL":     100_000.0,
@@ -930,7 +931,7 @@ class BacktestEngine:
     def __init__(self, universe, start=None, end=None, config=None,
                  replay_llm=False, replay_news=False, data_dir=None,
                  ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None,
-                 include_pilot_sleeve=False):
+                 include_pilot_sleeve=False, require_non_ohlcv=False):
         self.universe    = universe
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
@@ -938,6 +939,7 @@ class BacktestEngine:
         self.replay_llm  = bool(replay_llm)
         self.replay_news = bool(replay_news)
         self.include_pilot_sleeve = bool(include_pilot_sleeve)
+        self.require_non_ohlcv = bool(require_non_ohlcv)
         # Default data_dir = repo-root/data (one up from quant/).
         if data_dir is None:
             here = os.path.dirname(os.path.abspath(__file__))
@@ -1242,6 +1244,17 @@ class BacktestEngine:
 
         if len(sim_dates) < 2:
             return {"error": "Insufficient simulation dates"}
+
+        non_ohlcv_coverage = build_coverage_report(
+            sim_dates[0].date(),
+            sim_dates[-1].date(),
+            data_root=self.data_dir,
+        )
+        if self.require_non_ohlcv and non_ohlcv_coverage.get("decision") != "complete":
+            return {
+                "error": "Required non-OHLCV replay coverage is incomplete",
+                "non_ohlcv_coverage": non_ohlcv_coverage,
+            }
 
         logger.info(f"Simulating {len(sim_dates)} trading days: "
                     f"{sim_dates[0].date()} → {sim_dates[-1].date()}")
@@ -3286,6 +3299,20 @@ class BacktestEngine:
                 sim_dates,
             )
         )
+        known_biases["non_ohlcv_replay_coverage"] = {
+            "complete_fraction": non_ohlcv_coverage.get("complete_fraction"),
+            "complete_days": non_ohlcv_coverage.get("complete_days"),
+            "business_days": non_ohlcv_coverage.get("business_days"),
+            "missing_by_artifact": non_ohlcv_coverage.get("missing_by_artifact"),
+            "biased_days": non_ohlcv_coverage.get("biased_days"),
+            "require_non_ohlcv": self.require_non_ohlcv,
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": True,
+                "run_adapter_changed": False,
+                "replay_only": True,
+            },
+        }
         known_biases["notes"] = [
             note for note in known_biases["notes"]
             if not note.startswith("earnings_event_long: runs with partial data")
@@ -3623,6 +3650,7 @@ class BacktestEngine:
             "by_strategy":         by_strategy,
             "benchmarks":          benchmarks,
             "known_biases":        known_biases,
+            "non_ohlcv_coverage":  non_ohlcv_coverage,
             "llm_attribution":     llm_attribution,
             "news_attribution":    news_attribution,
             "addon_attribution":   addon_attribution,
@@ -3710,6 +3738,7 @@ class BacktestEngine:
                 ohlcv_snapshot_path=self.ohlcv_snapshot_path,
                 save_ohlcv_snapshot_path=self.save_ohlcv_snapshot_path,
                 include_pilot_sleeve=self.include_pilot_sleeve,
+                require_non_ohlcv=self.require_non_ohlcv,
             )
             result = engine.run()
             result["param_name"]  = param_name
@@ -3746,6 +3775,15 @@ def _print_results(results):
     tail_loss = results.get("tail_loss_share")
     tail_loss_str = f"{tail_loss*100:.1f}%" if tail_loss is not None else "N/A"
     print(f"  Tail loss share:   {tail_loss_str}")
+    non_ohlcv = results.get("non_ohlcv_coverage") or {}
+    if non_ohlcv:
+        print("\n  NON-OHLCV REPLAY COVERAGE:")
+        print(f"    complete days:       {non_ohlcv.get('complete_days')}/{non_ohlcv.get('business_days')}")
+        print(f"    complete fraction:   {(non_ohlcv.get('complete_fraction') or 0)*100:.1f}%")
+        print(f"    biased days:         {non_ohlcv.get('biased_days')}")
+        missing = non_ohlcv.get("missing_by_artifact") or {}
+        if missing:
+            print(f"    missing artifacts:   {missing}")
     print(f"  Signals generated: {results['signals_generated']}")
     print(f"  Signals survived:  {results['signals_survived']}")
     print(f"  Survival rate:     {results['survival_rate']*100:.1f}%")
@@ -4053,6 +4091,8 @@ def main():
     parser.add_argument("--include-pilot-sleeve", action="store_true",
                         help="Enable point-in-time AI_INFRA_PILOT sleeve replay. "
                              "Default backtests remain core-only.")
+    parser.add_argument("--require-non-ohlcv", action="store_true",
+                        help="Fail the run when non-OHLCV replay artifacts are incomplete.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -4079,7 +4119,8 @@ def main():
                             replay_news=args.replay_news,
                             ohlcv_snapshot_path=args.ohlcv_snapshot,
                             save_ohlcv_snapshot_path=args.save_ohlcv_snapshot,
-                            include_pilot_sleeve=args.include_pilot_sleeve)
+                            include_pilot_sleeve=args.include_pilot_sleeve,
+                            require_non_ohlcv=args.require_non_ohlcv)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
@@ -4115,7 +4156,8 @@ def main():
                     replay_llm=args.replay_llm,
                     replay_news=args.replay_news,
                     ohlcv_snapshot_path=args.ohlcv_snapshot,
-                    include_pilot_sleeve=args.include_pilot_sleeve)
+                    include_pilot_sleeve=args.include_pilot_sleeve,
+                    require_non_ohlcv=args.require_non_ohlcv)
                 secondary = secondary_engine.run()
                 if "error" in secondary:
                     print(f"  (secondary run failed: {secondary['error']})")

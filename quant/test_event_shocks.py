@@ -115,3 +115,35 @@ def test_build_event_snapshot_records_unmapped_sec_items(tmp_path: Path):
     assert payload["coverage"]["sec_items_mapped_to_ticker"] == 0
     assert payload["coverage"]["sec_items_unmapped"] == 1
     assert payload["unmapped_sec_items"][0]["sec_cik"] is None
+
+
+def test_build_event_snapshot_loads_same_day_sec_filing_text(tmp_path: Path):
+    _write_json(tmp_path / "earnings_snapshot_20260504.json", {"date": "20260504", "earnings": {}})
+    sec_dir = tmp_path / "non_ohlcv"
+    sec_dir.mkdir()
+    (sec_dir / "sec_filing_text_20260504.jsonl").write_text(
+        json.dumps(
+            {
+                "ticker": "ACME",
+                "cik": "0000000001",
+                "accession_number": "0001-26-000001",
+                "form_type": "8-K",
+                "accepted_at": "2026-05-01T17:05:00",
+                "usable_trade_date": "2026-05-04",
+                "eight_k_item_codes": ["2.02"],
+                "combined_text": "Item 2.02 Results of Operations. ACME raises guidance.",
+            },
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    payload = build_event_snapshot("20260504", data_dir=tmp_path, universe=["ACME"], persist=False)
+    events = payload["events_by_ticker"]["ACME"]
+    sec_event = next(event for event in events if event["event_type"] == "8k")
+
+    assert payload["coverage"]["sec_items_mapped_to_ticker"] == 1
+    assert sec_event["event_subtype"] == "8k_item_2_02"
+    assert sec_event["attributes"]["sec_accession_number"] == "0001-26-000001"
+    assert sec_event["attributes"]["usable_trade_date"] == "2026-05-04"

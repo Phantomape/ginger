@@ -45,7 +45,10 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            sec_negative_event_sleeve=None,
                            sec_governance_event_queue=None,
                            sec_governance_event_sleeve=None,
+                           sec_leadership_event_queue=None,
+                           sec_leadership_event_sleeve=None,
                            event_sleeve_bundle=None,
+                           non_ohlcv_snapshot=None,
                            crypto_sleeve=None):
     """
     Build a human-readable daily trade report string.
@@ -66,7 +69,10 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         sec_negative_event_sleeve (dict): Default-off SEC negative-reaction paper sleeve
         sec_governance_event_queue (dict): Default-off SEC governance/procedural queue
         sec_governance_event_sleeve (dict): Default-off SEC governance paper sleeve
+        sec_leadership_event_queue (dict): Default-off SEC leadership-change queue
+        sec_leadership_event_sleeve (dict): Default-off SEC leadership paper sleeve
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
+        non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
         crypto_sleeve (dict):           Isolated BTC/USD sleeve advice
 
     Returns:
@@ -102,6 +108,29 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 )
 
     # ── Portfolio heat ──────────────────────────────────────────────────────
+    if non_ohlcv_snapshot:
+        status = non_ohlcv_snapshot.get("status")
+        manifest = non_ohlcv_snapshot.get("coverage_manifest") or {}
+        daily = manifest.get("daily_summary") or {}
+        catchup = manifest.get("catchup_summary") or {}
+        lines.append("\nNON-OHLCV DATA COVERAGE:")
+        lines.append(f"  Daily snapshot: {status}")
+        if daily:
+            lines.append(
+                "  Manifest daily: "
+                f"generated={daily.get('days_generated')} "
+                f"existing={daily.get('days_recorded_existing')} "
+                f"failed={daily.get('days_failed')}"
+            )
+        if catchup:
+            lines.append(
+                "  Catch-up: "
+                f"status={catchup.get('status')} "
+                f"generated={catchup.get('days_generated')} "
+                f"existing={catchup.get('days_recorded_existing')} "
+                f"failed={catchup.get('days_failed')}"
+            )
+
     if portfolio_heat:
         heat_pct = portfolio_heat.get("portfolio_heat_pct", 0)
         can_add  = portfolio_heat.get("can_add_new_positions", True)
