@@ -72,6 +72,7 @@ def compute_trend_features(data):
 
     try:
         close  = _scalar(data['Close'].iloc[-1])
+        high   = _scalar(data['High'].iloc[-1])
         volume = _scalar(data['Volume'].iloc[-1])
 
         # 20-day avg volume (exclude today)
@@ -145,6 +146,7 @@ def compute_trend_features(data):
 
         return {
             "close":               round(close, 2),
+            "daily_high":          round(high, 2),
             "price_vs_200ma_pct":  price_vs_200ma_pct,
             "above_200ma":         above_200ma,
             "breakout_20d":        breakout_20d,

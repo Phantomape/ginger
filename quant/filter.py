@@ -15,6 +15,7 @@ import os
 from datetime import datetime, timedelta
 from dateutil import parser as date_parser
 import re
+from operator_input_paths import open_positions_path
 
 logger = logging.getLogger(__name__)
 
@@ -56,21 +57,18 @@ _BASE_WATCHLIST = [
 
 def _load_position_tickers():
     """Load tickers from open_positions.json, return empty set if unavailable."""
-    for path in [
-        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
-        'data/open_positions.json',
-    ]:
-        if os.path.exists(path):
-            try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                return {
-                    pos['ticker'].upper()
-                    for pos in data.get('positions', [])
-                    if pos.get('ticker')
-                }
-            except Exception:
-                pass
+    path = open_positions_path()
+    if path.exists():
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return {
+                pos['ticker'].upper()
+                for pos in data.get('positions', [])
+                if pos.get('ticker')
+            }
+        except Exception:
+            pass
     return set()
 
 

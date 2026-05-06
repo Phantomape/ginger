@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 APPROACHING_HARD_STOP_RULE_ENABLED = False
 TRAILING_STOP_ADVISORY_RULE_ENABLED = False
+PROFIT_LOCK_ADVISORY_RULES_ENABLED = False
 
 
 def compute_atr(data, period=ATR_PERIOD):
@@ -202,9 +203,10 @@ def compute_exit_levels(avg_cost, atr=None, override_stop_price=None, current_pr
     return levels
 
 
-def evaluate_exit_signals(current_price, avg_cost, exit_levels,
-                           high_water_mark=None, legacy_basis=False,
-                           days_held=None):
+def _evaluate_exit_signals_legacy_disabled(current_price, avg_cost, exit_levels,
+                                           current_high=None,
+                                           high_water_mark=None, legacy_basis=False,
+                                           days_held=None):
     """
     Evaluate which exit conditions are currently triggered.
 
@@ -268,12 +270,12 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
             and "signal_target_price" in exit_levels
             and avg_cost > 0):
         sig_target = exit_levels["signal_target_price"]
-        profit_tgt = exit_levels.get("profit_target_price", float("inf"))
-        # Only fire before the +20% PROFIT_TARGET zone to avoid conflicting messages
-        if sig_target <= current_price < profit_tgt:
+        target_probe = current_high if current_high is not None else current_price
+        target_source = "daily_high" if current_high is not None else "close_fallback"
+        if sig_target <= target_probe:
             triggered.append({
                 "rule":    "SIGNAL_TARGET",
-                "urgency": "LOW",
+                "urgency": "HIGH",
                 "message": (f"Price {current_price:.2f} >= signal target "
                             f"{sig_target:.2f} (+{exit_levels['signal_target_pct']*100:.1f}%) — "
                             f"3.5×ATR R:R captured; consider reducing 33% to lock gains, "
@@ -366,5 +368,104 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
         "any_triggered":   len(triggered) > 0,
         "critical_exit":   any(t["urgency"] == "CRITICAL" for t in triggered),
         "high_urgency":    any(t["urgency"] in ("CRITICAL", "HIGH") for t in triggered),
+        "triggered_rules": triggered,
+    }
+
+
+def evaluate_exit_signals(current_price, avg_cost, exit_levels,
+                           current_high=None,
+                           high_water_mark=None, legacy_basis=False,
+                           days_held=None):
+    """Evaluate executable exit rules using full-exit target parity.
+
+    Production now shares the backtester target semantics: target_price
+    (stored as signal_target_price in exit_levels) is a full-position exit
+    when the daily high reaches it.  If daily high is unavailable, close is
+    used as a conservative fallback and the rule records that source.
+
+    Profit-lock partial-reduce rules based on avg_cost * 1.2 are intentionally
+    disabled; that level remains diagnostic in exit_levels only.
+    """
+    triggered = []
+
+    hard_stop = exit_levels.get("hard_stop_price", 0)
+    if current_price <= hard_stop:
+        triggered.append({
+            "rule": "HARD_STOP",
+            "urgency": "CRITICAL",
+            "message": f"Price {current_price:.2f} <= hard stop {hard_stop:.2f}",
+        })
+
+    if (
+        "atr_stop_price" in exit_levels
+        and current_price <= exit_levels["atr_stop_price"]
+    ):
+        triggered.append({
+            "rule": "ATR_STOP",
+            "urgency": "HIGH",
+            "message": (
+                f"Price {current_price:.2f} <= ATR stop "
+                f"{exit_levels['atr_stop_price']:.2f}"
+            ),
+        })
+
+    if (
+        TRAILING_STOP_ADVISORY_RULE_ENABLED
+        and high_water_mark
+        and high_water_mark > avg_cost
+    ):
+        trailing_price = round(high_water_mark * (1 - TRAILING_STOP_PCT), 2)
+        if current_price <= trailing_price:
+            triggered.append({
+                "rule": "TRAILING_STOP",
+                "urgency": "HIGH",
+                "message": (
+                    f"Price {current_price:.2f} <= trailing stop "
+                    f"{trailing_price:.2f} ({TRAILING_STOP_PCT*100:.0f}% "
+                    f"from high {high_water_mark:.2f})"
+                ),
+            })
+
+    if (
+        not legacy_basis
+        and "signal_target_price" in exit_levels
+        and avg_cost > 0
+    ):
+        sig_target = exit_levels["signal_target_price"]
+        target_probe = current_high if current_high is not None else current_price
+        target_source = "daily_high" if current_high is not None else "close_fallback"
+        if target_probe >= sig_target:
+            triggered.append({
+                "rule": "SIGNAL_TARGET",
+                "urgency": "HIGH",
+                "message": (
+                    f"{target_source} {target_probe:.2f} >= signal target "
+                    f"{sig_target:.2f} "
+                    f"(+{exit_levels['signal_target_pct']*100:.1f}%) - "
+                    "full-position target exit"
+                ),
+                "target_price": sig_target,
+                "price_source": target_source,
+                "trigger_price": round(target_probe, 2),
+            })
+
+    if days_held is not None and days_held >= TIME_STOP_DAYS:
+        profit_target = exit_levels.get("profit_target_price", float("inf"))
+        halfway = (avg_cost + profit_target) / 2 if avg_cost > 0 else 0
+        if current_price < halfway:
+            triggered.append({
+                "rule": "TIME_STOP",
+                "urgency": "REVIEW",
+                "message": (
+                    f"Position held ~{days_held} trading days with "
+                    f"insufficient progress below halfway to diagnostic "
+                    f"profit target {profit_target:.2f}"
+                ),
+            })
+
+    return {
+        "any_triggered": len(triggered) > 0,
+        "critical_exit": any(t["urgency"] == "CRITICAL" for t in triggered),
+        "high_urgency": any(t["urgency"] in ("CRITICAL", "HIGH") for t in triggered),
         "triggered_rules": triggered,
     }

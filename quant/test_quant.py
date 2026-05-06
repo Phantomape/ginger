@@ -984,7 +984,7 @@ def test_evaluate_exit_signals_profit_ladder_suppresses_profit_target():
     levels = compute_exit_levels(avg_cost=100.0)   # profit_target = 120.0
     result = evaluate_exit_signals(current_price=135.0, avg_cost=100.0, exit_levels=levels)
     rules = [r["rule"] for r in result["triggered_rules"]]
-    assert "PROFIT_LADDER_30" in rules, "PROFIT_LADDER_30 must fire at 35% gain"
+    assert "PROFIT_LADDER_30" not in rules
     assert "PROFIT_TARGET" not in rules, (
         "PROFIT_TARGET must not fire when PROFIT_LADDER_30 is active — "
         "conflicting REDUCE-vs-HOLD signals confuse LLM"
@@ -997,7 +997,7 @@ def test_evaluate_exit_signals_profit_target_fires_in_20_30_range():
     levels = compute_exit_levels(avg_cost=100.0)   # profit_target = 120.0
     result = evaluate_exit_signals(current_price=125.0, avg_cost=100.0, exit_levels=levels)
     rules = [r["rule"] for r in result["triggered_rules"]]
-    assert "PROFIT_TARGET" in rules, "PROFIT_TARGET must fire at 25% gain"
+    assert "PROFIT_TARGET" not in rules
     assert "PROFIT_LADDER_30" not in rules, "PROFIT_LADDER_30 must not fire at only 25% gain"
 
 
@@ -1007,7 +1007,7 @@ def test_evaluate_exit_signals_profit_ladder_50_suppresses_profit_target():
     levels = compute_exit_levels(avg_cost=100.0)   # profit_target = 120.0
     result = evaluate_exit_signals(current_price=155.0, avg_cost=100.0, exit_levels=levels)
     rules = [r["rule"] for r in result["triggered_rules"]]
-    assert "PROFIT_LADDER_50" in rules
+    assert "PROFIT_LADDER_50" not in rules
     assert "PROFIT_TARGET" not in rules, "PROFIT_TARGET must not co-fire with PROFIT_LADDER_50"
 
 
@@ -1042,7 +1042,8 @@ def test_evaluate_exit_signals_signal_target_fires():
     )
     # Urgency should be LOW
     low_rules = [r for r in result["triggered_rules"] if r["rule"] == "SIGNAL_TARGET"]
-    assert low_rules[0]["urgency"] == "LOW"
+    assert low_rules[0]["urgency"] == "HIGH"
+    assert low_rules[0]["price_source"] == "close_fallback"
 
 
 def test_evaluate_exit_signals_signal_target_not_fired_before_target():
@@ -1064,10 +1065,8 @@ def test_evaluate_exit_signals_signal_target_not_fired_at_profit_target():
     # price=122: above profit_target (120) → PROFIT_TARGET fires, SIGNAL_TARGET must not
     result = evaluate_exit_signals(current_price=122.0, avg_cost=100.0, exit_levels=levels)
     rules = [r["rule"] for r in result["triggered_rules"]]
-    assert "SIGNAL_TARGET" not in rules, (
-        "SIGNAL_TARGET must not fire once price is above profit_target_price"
-    )
-    assert "PROFIT_TARGET" in rules, "PROFIT_TARGET should fire at 22% gain"
+    assert "SIGNAL_TARGET" in rules
+    assert "PROFIT_TARGET" not in rules
 
 
 def test_evaluate_exit_signals_signal_target_not_fired_without_field():
@@ -1083,6 +1082,145 @@ def test_evaluate_exit_signals_signal_target_not_fired_without_field():
 
 
 # ── feature_layer ─────────────────────────────────────────────────────────────
+
+def test_evaluate_exit_signals_signal_target_uses_daily_high():
+    from position_manager import evaluate_exit_signals, compute_exit_levels
+
+    levels = compute_exit_levels(avg_cost=100.0, signal_target_price=136.07)
+    result = evaluate_exit_signals(
+        current_price=130.56,
+        current_high=136.50,
+        avg_cost=100.0,
+        exit_levels=levels,
+    )
+
+    target_rules = [r for r in result["triggered_rules"] if r["rule"] == "SIGNAL_TARGET"]
+    assert len(target_rules) == 1
+    assert target_rules[0]["price_source"] == "daily_high"
+    assert target_rules[0]["trigger_price"] == 136.50
+
+
+def test_snxx_profit_target_no_reduce_before_signal_target():
+    from position_manager import evaluate_exit_signals, compute_exit_levels
+    from preflight_validator import compute_account_state
+
+    levels = compute_exit_levels(avg_cost=103.52, signal_target_price=136.07)
+    exit_signals = evaluate_exit_signals(
+        current_price=130.56,
+        current_high=130.56,
+        avg_cost=103.52,
+        exit_levels=levels,
+    )
+    rules = [r["rule"] for r in exit_signals["triggered_rules"]]
+    assert "SIGNAL_TARGET" not in rules
+    assert "PROFIT_TARGET" not in rules
+
+    ts = {
+        "signals": {
+            "SNXX": {
+                "close": 130.56,
+                "daily_high": 130.56,
+                "position": {
+                    "shares": 24,
+                    "avg_cost": 103.52,
+                    "unrealized_pnl_pct": 0.2612,
+                    "breach_status": "OK",
+                    "exit_levels": levels,
+                    "exit_signals": exit_signals,
+                },
+            }
+        }
+    }
+    result = compute_account_state(
+        ts,
+        heat_data={},
+        regime_data={"regime": "NORMAL"},
+        manual_trades=[
+            {"trade_date": "2026-05-05", "ticker": "SNXX", "side": "BUY", "shares": 2, "price": 127.0},
+            {"trade_date": "2026-05-05", "ticker": "SNXX", "side": "BUY", "shares": 2, "price": 131.0},
+        ],
+        asof_date="2026-05-05",
+    )
+    assert result["position_states"]["SNXX"] == "HOLD"
+    assert "SNXX" not in result["suggested_reduce_pct"]
+
+
+def test_preflight_signal_target_maps_to_target_exit_not_reduce():
+    from preflight_validator import compute_account_state
+
+    ts = {
+        "signals": {
+            "TEST": {
+                "close": 136.5,
+                "daily_high": 136.5,
+                "position": {
+                    "shares": 10,
+                    "avg_cost": 100.0,
+                    "unrealized_pnl_pct": 0.365,
+                    "breach_status": "OK",
+                    "exit_levels": {"hard_stop_price": 88.0, "signal_target_price": 136.07},
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "triggered_rules": [
+                            {
+                                "rule": "SIGNAL_TARGET",
+                                "urgency": "HIGH",
+                                "price_source": "daily_high",
+                                "message": "target hit",
+                            }
+                        ],
+                    },
+                },
+            }
+        }
+    }
+
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+    assert result["position_states"]["TEST"] == "TARGET_EXIT"
+    assert "TEST" not in result["suggested_reduce_pct"]
+
+
+def test_same_day_manual_buy_blocks_profit_reduce_rule():
+    from preflight_validator import compute_account_state
+
+    ts = {
+        "signals": {
+            "SNXX": {
+                "close": 130.56,
+                "position": {
+                    "shares": 24,
+                    "avg_cost": 103.52,
+                    "unrealized_pnl_pct": 0.2612,
+                    "breach_status": "OK",
+                    "exit_levels": {"hard_stop_price": 91.1},
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "triggered_rules": [
+                            {
+                                "rule": "PROFIT_TARGET",
+                                "urgency": "MEDIUM",
+                                "message": "old profit target trigger",
+                            }
+                        ],
+                    },
+                },
+            }
+        }
+    }
+
+    result = compute_account_state(
+        ts,
+        heat_data={},
+        regime_data={"regime": "NORMAL"},
+        manual_trades=[
+            {"trade_date": "2026-05-05", "ticker": "SNXX", "side": "BUY", "shares": 2, "price": 127.0},
+        ],
+        asof_date="2026-05-05",
+    )
+    assert result["position_states"]["SNXX"] == "HOLD"
+    assert "SNXX" not in result["suggested_reduce_pct"]
+    assert result["manual_trade_conflicts"]["SNXX"]["guard"] == "SAME_DAY_MANUAL_BUY_NO_PROFIT_REDUCE"
+
 
 def _make_ohlcv(n=250, base_close=100.0, trend=0.001):
     """Generate synthetic OHLCV data."""
@@ -2290,9 +2428,7 @@ def test_non_legacy_position_profit_ladder_fires():
         legacy_basis=False,
     )
     rules = [r["rule"] for r in result["triggered_rules"]]
-    assert "PROFIT_LADDER_50" in rules, (
-        "PROFIT_LADDER_50 must fire at 65% gain for non-legacy position"
-    )
+    assert "PROFIT_LADDER_50" not in rules
 
 
 # ── positions_requiring_attention exit_levels ─────────────────────────────────
@@ -2538,11 +2674,7 @@ def test_profit_ladder_30_message_mentions_breakeven():
     levels = compute_exit_levels(avg_cost=100.0)
     result = evaluate_exit_signals(current_price=135.0, avg_cost=100.0, exit_levels=levels)
     ladder_rules = [r for r in result["triggered_rules"] if r["rule"] == "PROFIT_LADDER_30"]
-    assert ladder_rules, "PROFIT_LADDER_30 must fire at 35% gain"
-    msg = ladder_rules[0]["message"].lower()
-    assert "avg_cost" in msg or "override_stop" in msg, (
-        f"PROFIT_LADDER_30 message must mention breakeven stop; got: {ladder_rules[0]['message']}"
-    )
+    assert ladder_rules == []
 
 
 # ── PROFIT_TARGET legacy_basis explicit guard ─────────────────────────────────
@@ -3472,7 +3604,7 @@ def test_build_prompt_cash_usd_missing_falls_back_to_stored_pv():
     # cash_usd intentionally absent — this is the bug condition.
     positions = {
         "portfolio_value_usd": 200_000,
-        # no "cash_usd" key at all — emulates data/open_positions.json before fill
+        # no "cash_usd" key at all — emulates open_positions.json before fill
         "positions": [{"ticker": "NVDA", "shares": 400, "avg_cost": 150.0}],
     }
     system_msg, user_msg = build_prompt([], positions, trend_signals=fake_trend_signals)
@@ -4041,6 +4173,7 @@ def test_preflight_outputs_required_fields():
         "lock_reason",
         "position_states",
         "suggested_reduce_pct",
+        "manual_trade_conflicts",
         "bear_emergency_stops",
         "data_warnings",
     ]
@@ -4216,6 +4349,7 @@ PROMPT_FIELD_REGISTRY = {
             "lock_reason",             # explains why trading is locked
             "account_state",           # FIRE | DEFENSIVE | NORMAL
             "position_states",         # {ticker: CRITICAL_EXIT|HIGH_REDUCE|HOLD}
+            "manual_trade_conflicts",  # same-day manual BUY guardrail
             "suggested_reduce_pct",    # {ticker: int} — pre-computed reduce %
             "bear_emergency_stops",    # {ticker: float} — current_price × 0.95 in BEAR
             "current_prices",          # {ticker: float} — for BEAR rule on HOLD positions
@@ -4284,7 +4418,8 @@ def test_registry_fields_exist_in_code_output():
     # current_prices is added by llm_advisor from trend_signals — test it separately
     preflight_provided = {
         "new_trade_locked", "lock_reason", "account_state",
-        "position_states", "suggested_reduce_pct", "bear_emergency_stops",
+        "position_states", "suggested_reduce_pct", "manual_trade_conflicts",
+        "bear_emergency_stops",
     }
     for field in preflight_provided:
         assert field in preflight, (
@@ -6589,9 +6724,10 @@ def test_backtester_emits_known_biases_and_integrity(monkeypatch):
     exit_policy = kb.get("exit_policy_unreplayed")
     assert isinstance(exit_policy, dict)
     assert exit_policy.get("gap_present") is True
-    assert "SIGNAL_TARGET" in exit_policy.get(
+    assert "SIGNAL_TARGET" not in exit_policy.get(
         "production_advisory_actions_not_replayed", []
     )
+    assert exit_policy.get("target_price_semantic_gap", {}).get("resolved") is True
     assert (
         exit_policy.get("rejected_simple_replay", {}).get("experiment_id")
         == "exp-20260429-032"

@@ -4,12 +4,12 @@
 
 `pending_actions` 是执行记忆层，不是新的 alpha 规则。
 
-它解决的问题是：某天系统已经建议 `REDUCE` / `EXIT`，但你没有实际下单，或者下单后没有更新 `data/open_positions.json`。如果第二天技术规则重新计算成 `HOLD`，旧系统会忘记昨天的减仓建议；现在系统会继续提醒，直到持仓股数真的对上。
+它解决的问题是：某天系统已经建议 `REDUCE` / `EXIT`，但你没有实际下单，或者下单后没有更新 `operator_inputs/open_positions.json`。如果第二天技术规则重新计算成 `HOLD`，旧系统会忘记昨天的减仓建议；现在系统会继续提醒，直到持仓股数真的对上。
 
 当前例子：
 
 - `2026-04-14`：MCD 曾被建议 `REDUCE 11`，触发规则是 `TRAILING_STOP`
-- 当前 `data/open_positions.json` 仍显示 MCD `shares=22`
+- 当前 `operator_inputs/open_positions.json` 仍显示 MCD `shares=22`
 - 因此 `data/pending_actions.json` 里保留一条 open pending action
 - 之后每日建议里，如果 MCD 被 fresh rule 写成 `HOLD`，保存层会改回 `REDUCE 11`
 
@@ -81,7 +81,7 @@ data\pending_actions.json
 
 ## 怎么让 pending action 关闭
 
-执行交易后，更新 `data/open_positions.json`。
+执行交易后，更新 `operator_inputs/open_positions.json`。
 
 例如 MCD 当前是 22 股，如果你卖出 11 股，就把 MCD 改成：
 

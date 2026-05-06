@@ -17,6 +17,7 @@ import pandas as pd
 import yfinance as yf
 
 from yfinance_bootstrap import configure_yfinance_runtime
+from operator_input_paths import open_positions_path
 
 logger = logging.getLogger(__name__)
 
@@ -40,21 +41,17 @@ def get_universe():
     """
     universe = set(WATCHLIST)
 
-    for path in [
-        os.path.join(os.path.dirname(__file__), "..", "data", "open_positions.json"),
-        "data/open_positions.json",
-    ]:
-        if os.path.exists(path):
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    positions = json.load(f)
-                for pos in positions.get("positions", []):
-                    ticker = pos.get("ticker")
-                    if ticker:
-                        universe.add(ticker)
-            except Exception:
-                pass
-            break
+    path = open_positions_path()
+    if path.exists():
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                positions = json.load(f)
+            for pos in positions.get("positions", []):
+                ticker = pos.get("ticker")
+                if ticker:
+                    universe.add(ticker)
+        except Exception:
+            pass
 
     return sorted(universe)
 

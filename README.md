@@ -32,7 +32,7 @@ pip install -r news_collector\requirements.txt
 编辑持仓文件：
 
 ```powershell
-notepad data\open_positions.json
+notepad operator_inputs\open_positions.json
 ```
 
 日常运行：
@@ -144,7 +144,7 @@ expected no-leakage result.
 
 ## 持仓配置
 
-编辑 `data\open_positions.json`：
+编辑 `operator_inputs\open_positions.json`：
 
 ```json
 {
@@ -181,7 +181,7 @@ expected no-leakage result.
 
 ```text
 quant\run.py
-  -> open_positions.json        持仓和账户状态
+  -> operator_inputs\open_positions.json        持仓和账户状态
   -> universe_adapter.py        point-in-time universe governance
   -> pilot_sleeve.py            pilot ticker 风险缩放和 counterfactual snapshot
   -> regime.py                  SPY/QQQ 市场状态

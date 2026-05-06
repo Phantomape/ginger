@@ -26,6 +26,7 @@ from constants import (
     REGIME_AWARE_EXIT,
 )
 from earnings_snapshot import persist_earnings_snapshot
+from operator_input_paths import open_positions_path, repo_relative
 from regime_exit import compute_regime_exit_profile
 
 # ── Logging setup ────────────────────────────────────────────────────────────
@@ -40,16 +41,14 @@ def _setup_logging():
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _load_open_positions():
-    """Load open_positions.json from data/ directory."""
-    candidates = [
-        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
-        'data/open_positions.json',
-    ]
-    for path in candidates:
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-    logging.getLogger(__name__).warning("open_positions.json not found")
+    """Load open_positions.json from operator inputs."""
+    path = open_positions_path()
+    if path.exists():
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    logging.getLogger(__name__).warning(
+        f"open_positions.json not found at {repo_relative(path)}"
+    )
     return None
 
 

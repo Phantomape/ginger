@@ -19,8 +19,11 @@ Do not move these without updating the readers first:
 - `trend_signals_YYYYMMDD.json`
 - `report_YYYYMMDD.txt`
 - `ohlcv_snapshot_*.json`
-- current state files such as `open_positions.json`, `pending_actions.json`,
-  and `universe_registry.json`
+- generated state files such as `pending_actions.json` and
+  `universe_registry.json`
+
+Manual operator-maintained inputs now live in `../operator_inputs/`, especially
+`open_positions.json` and `manual_trades.jsonl`.
 
 ## Subdirectories
 

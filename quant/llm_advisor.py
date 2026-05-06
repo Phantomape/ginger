@@ -9,6 +9,7 @@ import json
 import logging
 from datetime import datetime
 from openai import OpenAI
+from operator_input_paths import open_positions_path, repo_relative
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ def _build_archive_context(date_str, data_dir):
     return context
 
 
-def load_open_positions(filepath="../data/open_positions.json"):
+def load_open_positions(filepath=None):
     """
     Load open positions from JSON file.
 
@@ -114,16 +115,12 @@ def load_open_positions(filepath="../data/open_positions.json"):
         dict: Open positions data or None if file not found
     """
     try:
-        # Try relative path first
-        if not os.path.exists(filepath):
-            # Try from project root
-            filepath = "data/open_positions.json"
-
-        if not os.path.exists(filepath):
-            logger.warning(f"Open positions file not found: {filepath}")
+        path = open_positions_path(filepath)
+        if not path.exists():
+            logger.warning(f"Open positions file not found: {repo_relative(path)}")
             return None
 
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         logger.error(f"Failed to load open positions: {e}")
@@ -416,6 +413,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # verdict, not the raw flags — reducing the chance of conflicting rule
     # interpretations and "优先HOLD"/"必须EXIT" contradictions.
     from preflight_validator import enrich_positions_with_breach_status, compute_account_state
+    from manual_trades import load_manual_trades
     from pending_actions import get_open_pending_actions
     if trend_signals:
         enrich_positions_with_breach_status(trend_signals)
@@ -423,6 +421,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         trend_signals = trend_signals,
         heat_data     = heat,
         regime_data   = regime,
+        manual_trades = load_manual_trades(),
+        asof_date     = datetime.now().strftime("%Y-%m-%d"),
     )
     if isinstance(trend_signals, dict):
         # Persist the machine-state summary alongside the day payload so later
@@ -441,7 +441,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "account_state":    preflight["account_state"],
         "new_trade_locked": preflight["new_trade_locked"],
         "lock_reason":      preflight["lock_reason"],
-        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | HIGH_REDUCE | HOLD}
+        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | TARGET_EXIT | HIGH_REDUCE | HOLD}
+        "manual_trade_conflicts": preflight.get("manual_trade_conflicts", {}),
         "pending_unexecuted_actions": pending_actions,
         # Pre-computed reduce % for HIGH_REDUCE positions — LLM reads directly, no table lookup needed.
         "suggested_reduce_pct": preflight["suggested_reduce_pct"],  # {ticker: int}
@@ -493,7 +494,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # would flood section 4 with every +30% winner and dilute critical signals.
     _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1, "LOW": 0}
     _min_surface_rank = 1   # MEDIUM and above always surfaced
-    _action_required_low_rules = {"SIGNAL_TARGET"}   # LOW urgency but requires REDUCE
+    _action_required_low_rules = {"SIGNAL_TARGET"}   # target full exit visibility
     if trend_signals and trend_signals.get('signals'):
         for ticker, sig in trend_signals['signals'].items():
             pos_ctx   = sig.get('position', {})
@@ -511,6 +512,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             entry = {
                 "ticker":                      ticker,
                 "current_price":               sig['close'],
+                "daily_high":                  pos_ctx.get('daily_high') or sig.get('daily_high'),
                 "urgency":                     max_urgency,
                 "triggered_rules":             rules,
                 # Pre-computed position data — LLM prompt says "直接使用" these fields
@@ -566,6 +568,7 @@ def _save_decision_log(date_str, trade_news, trend_signals):
         # trend_signals (injected by build_prompt -> preflight_validator).
         position_states = {}
         suggested_reduce = {}
+        manual_trade_conflicts = {}
         new_trade_locked = None
         account_state = None
         lock_reason = None
@@ -574,6 +577,7 @@ def _save_decision_log(date_str, trade_news, trend_signals):
             if isinstance(preflight, dict):
                 position_states = preflight.get("position_states") or {}
                 suggested_reduce = preflight.get("suggested_reduce_pct") or {}
+                manual_trade_conflicts = preflight.get("manual_trade_conflicts") or {}
                 new_trade_locked = preflight.get("new_trade_locked")
                 account_state = preflight.get("account_state")
                 lock_reason = preflight.get("lock_reason")
@@ -605,6 +609,7 @@ def _save_decision_log(date_str, trade_news, trend_signals):
             "lock_reason": lock_reason,
             "position_states": position_states,
             "suggested_reduce_pct": suggested_reduce,
+            "manual_trade_conflicts": manual_trade_conflicts,
         }
 
         log_file = f"data/llm_decision_log_{date_str}.json"

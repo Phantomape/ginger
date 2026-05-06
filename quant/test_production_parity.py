@@ -220,6 +220,21 @@ def test_approaching_hard_stop_no_longer_maps_to_reduce():
     assert suggested_reduce_pct_for_rules(rules, 0.02) == 0
 
 
+def test_profit_lock_rules_no_longer_map_to_partial_reduce():
+    assert suggested_reduce_pct_for_rules(
+        [{"rule": "SIGNAL_TARGET", "urgency": "HIGH"}],
+        0.25,
+    ) == 100
+    assert suggested_reduce_pct_for_rules(
+        [{"rule": "PROFIT_TARGET", "urgency": "MEDIUM"}],
+        0.25,
+    ) == 0
+    assert suggested_reduce_pct_for_rules(
+        [{"rule": "PROFIT_LADDER_50", "urgency": "MEDIUM"}],
+        0.55,
+    ) == 0
+
+
 def test_exit_policy_replay_bias_discloses_advisory_gap():
     bias = backtester.build_exit_policy_replay_bias(
         partial_reduce_enabled=True,
@@ -227,8 +242,9 @@ def test_exit_policy_replay_bias_discloses_advisory_gap():
     )
 
     assert bias["gap_present"] is True
-    assert "SIGNAL_TARGET" in bias["production_advisory_actions_not_replayed"]
+    assert "SIGNAL_TARGET" not in bias["production_advisory_actions_not_replayed"]
     assert "TIME_STOP" in bias["production_advisory_actions_not_replayed"]
+    assert bias["target_price_semantic_gap"]["resolved"] is True
     assert bias["target_price_semantic_gap"]["backtester"].startswith(
         "Position.target_price is simulated as a hard full-position"
     )

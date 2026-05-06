@@ -155,7 +155,6 @@ DEFAULT_CONFIG = {
 }
 
 EXIT_POLICY_ADVISORY_RULES = (
-    "SIGNAL_TARGET",
     "PROFIT_TARGET",
     "PROFIT_LADDER_30",
     "PROFIT_LADDER_50",
@@ -189,18 +188,20 @@ def build_exit_policy_replay_bias(
         ],
         "production_advisory_actions_not_replayed": list(EXIT_POLICY_ADVISORY_RULES),
         "target_price_semantic_gap": {
+            "resolved": True,
             "backtester": (
                 "Position.target_price is simulated as a hard full-position "
                 "target exit when the intraday high reaches the level."
             ),
             "production": (
                 "open_positions.target_price is read as signal_target_price "
-                "and surfaces SIGNAL_TARGET as advisory reduce/review context "
-                "for the LLM and daily workflow."
+                "and surfaces SIGNAL_TARGET as TARGET_EXIT full-position "
+                "code action when daily_high, or close fallback, reaches it."
             ),
             "impact": (
-                "Backtest target exits are not proof that production advisory "
-                "SIGNAL_TARGET trims, ladders, or time stops add alpha."
+                "Backtest target exits now match production target-exit "
+                "semantics; close-only production fallback is conservative "
+                "when daily_high is unavailable."
             ),
         },
         "partial_reduce_replay_scope": {
@@ -846,14 +847,16 @@ def _build_news_context_alignment(
 
 
 def _open_positions_cash_populated():
-    """Check whether data/open_positions.json has a non-null cash_usd field.
+    """Check whether operator_inputs/open_positions.json has cash_usd.
 
     Used by BacktestEngine.run() integrity diagnostics. Returning False surfaces
     a known phantom-field condition (CLAUDE3.md §三.2) without mutating any
     decision logic — pure reporting.
     """
     try:
-        path = os.path.join(_script_dir, "..", "data", "open_positions.json")
+        from operator_input_paths import open_positions_path
+
+        path = open_positions_path()
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         return data.get("cash_usd") is not None
@@ -3268,7 +3271,7 @@ class BacktestEngine:
             "notes": [
                 "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
                 "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
-                "Exit policy: production advisory SIGNAL_TARGET/ladder/time-stop actions are disclosed under exit_policy_unreplayed and are not executed by default backtests",
+                "Exit policy: production target_price uses TARGET_EXIT full-position parity; profit-ladder/time-stop actions remain disclosed under exit_policy_unreplayed",
                 "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
                 "data_layer.get_universe() reads current watchlist, not point-in-time",
                 "earnings_event_long: runs with partial data (days_to_earnings only); eps_estimate and positive_surprise_history are None until P-ERN snapshots accumulate",
@@ -3644,11 +3647,11 @@ class BacktestEngine:
                 ]
             )
             + [
-                "exit_policy_unreplayed: production advisory SIGNAL_TARGET, "
-                "profit-ladder, time-stop, and pending "
+                "exit_policy_unreplayed: production profit-ladder, "
+                "time-stop, and pending "
                 "REDUCE/EXIT actions are disclosed but not executed by "
-                "default backtests; target_price is a full-position simulated "
-                "target exit in backtest."
+                "default backtests; target_price now maps to full-position "
+                "TARGET_EXIT in production and backtest."
             ]
             + (
                 [

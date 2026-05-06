@@ -222,7 +222,7 @@ The trend signal module generates technical trading signals using a simple 20-da
 
 The module analyzes tickers from:
 1. WATCHLIST defined in [filter.py](news_collector/filter.py)
-2. Current positions in `data/open_positions.json`
+2. Current positions in `operator_inputs/open_positions.json`
 3. Union of both (all unique tickers)
 
 ### Data Source
@@ -291,7 +291,7 @@ After filtering the trade news and generating trend signals, the pipeline combin
 ### Features
 
 The LLM advisor analyzes:
-- Your current portfolio positions (from `data/open_positions.json`)
+- Your current portfolio positions (from `operator_inputs/open_positions.json`)
 - Recent trade-filtered news (last 72 hours, event-driven)
 - Technical trend signals (20-day breakout system, price-action)
 - Event significance and impact on holdings

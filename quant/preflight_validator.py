@@ -66,6 +66,24 @@ def _suggested_reduce_pct(triggered_rules: list, unrealized_pnl_pct: float) -> i
     return suggested_reduce_pct_for_rules(triggered_rules, unrealized_pnl_pct)
 
 
+def _same_day_manual_buy_tickers(manual_trades: list | None, asof_date: str | None) -> set[str]:
+    """Return tickers with user-entered BUY trades on asof_date."""
+    if not manual_trades or not asof_date:
+        return set()
+    tickers = set()
+    for trade in manual_trades:
+        if not isinstance(trade, dict):
+            continue
+        if trade.get("trade_date") != asof_date:
+            continue
+        if str(trade.get("side", "")).upper() != "BUY":
+            continue
+        ticker = trade.get("ticker")
+        if ticker:
+            tickers.add(str(ticker).upper())
+    return tickers
+
+
 def enrich_positions_with_breach_status(trend_signals: dict) -> dict:
     """
     Walk trend_signals['signals'] and add breach_status to each position context.
@@ -88,6 +106,8 @@ def compute_account_state(
     trend_signals: dict,
     heat_data: dict,
     regime_data: dict,
+    manual_trades: list | None = None,
+    asof_date: str | None = None,
 ) -> dict:
     """
     Compute the top-level account_state and per-position decision_state.
@@ -110,6 +130,8 @@ def compute_account_state(
     data_warnings = []
     position_states: dict[str, str] = {}
     suggested_reduce_pct: dict[str, int] = {}
+    manual_trade_conflicts: dict[str, dict] = {}
+    same_day_buy_tickers = _same_day_manual_buy_tickers(manual_trades, asof_date)
 
     # ── Regime ──────────────────────────────────────────────────────────────
     regime = regime_data.get("regime", "UNKNOWN") if regime_data else "UNKNOWN"
@@ -133,13 +155,22 @@ def compute_account_state(
         breach_st        = pos_ctx.get("breach_status", "OK")
         triggered        = exit_sigs.get("triggered_rules", [])
         unrealized_pnl   = pos_ctx.get("unrealized_pnl_pct", 0) or 0
+        rule_names        = {r.get("rule", "") for r in triggered}
         max_urgency      = "NONE"
         if triggered:
             max_urgency = max(triggered, key=lambda r: rank.get(r["urgency"], 0))["urgency"]
 
-        if max_urgency == "CRITICAL" or breach_st in ("DELAYED_BREACH", "HISTORIC_BREACH"):
+        if (
+            "HARD_STOP" in rule_names
+            or max_urgency == "CRITICAL"
+            or breach_st in ("DELAYED_BREACH", "HISTORIC_BREACH")
+        ):
             decision_state = "CRITICAL_EXIT"
             has_critical = True
+        elif "ATR_STOP" in rule_names:
+            decision_state = "HIGH_REDUCE"
+        elif "SIGNAL_TARGET" in rule_names:
+            decision_state = "TARGET_EXIT"
         elif max_urgency == "HIGH":
             decision_state = "HIGH_REDUCE"
         elif max_urgency in ("WARNING", "MEDIUM"):
@@ -175,7 +206,26 @@ def compute_account_state(
         # Pre-compute reduce % for HIGH_REDUCE — eliminates REDUCE table lookup in prompt
         if decision_state == "HIGH_REDUCE" and triggered:
             reduce_pct = _suggested_reduce_pct(triggered, unrealized_pnl)
+            if (
+                ticker.upper() in same_day_buy_tickers
+                and not ({"HARD_STOP", "ATR_STOP", "SIGNAL_TARGET"} & rule_names)
+            ):
+                manual_trade_conflicts[ticker] = {
+                    "guard": "SAME_DAY_MANUAL_BUY_NO_PROFIT_REDUCE",
+                    "rules": sorted(r for r in rule_names if r),
+                    "asof_date": asof_date,
+                }
+                reduce_pct = 0
             if reduce_pct <= 0:
+                if (
+                    ticker.upper() in same_day_buy_tickers
+                    and {"PROFIT_TARGET", "PROFIT_LADDER_30", "PROFIT_LADDER_50"} & rule_names
+                ):
+                    manual_trade_conflicts.setdefault(ticker, {
+                        "guard": "SAME_DAY_MANUAL_BUY_NO_PROFIT_REDUCE",
+                        "rules": sorted(r for r in rule_names if r),
+                        "asof_date": asof_date,
+                    })
                 decision_state = "HOLD"
                 position_states[ticker] = decision_state
             else:
@@ -260,4 +310,5 @@ def compute_account_state(
         "suggested_reduce_pct": suggested_reduce_pct,   # {ticker: int} — only HIGH_REDUCE tickers
         "bear_emergency_stops": bear_emergency_stops,   # {ticker: float} — only when BEAR
         "data_warnings":        data_warnings,
+        "manual_trade_conflicts": manual_trade_conflicts,
     }

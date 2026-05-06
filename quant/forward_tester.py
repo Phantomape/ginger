@@ -62,6 +62,7 @@ from fill_model import (
 # legacy `ROUND_TRIP_COST` name because test_quant.py already imports it that
 # way.
 from portfolio_engine import ROUND_TRIP_COST_PCT as ROUND_TRIP_COST
+from operator_input_paths import open_positions_path as resolve_open_positions_path
 
 
 def get_next_open_price(ticker, rec_date):
@@ -424,8 +425,7 @@ def evaluate_profit_lock_timing(ticker, rec_date, eval_date, sell_price,
     return result
 
 
-def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
-                  n_days=EVAL_DAYS):
+def evaluate_file(filepath, open_positions_path=None, n_days=EVAL_DAYS):
     """
     Run forward test evaluation for a single llm_output file.
 
@@ -458,10 +458,8 @@ def evaluate_file(filepath, open_positions_path="../data/open_positions.json",
 
     # Load avg_cost from open_positions for reference
     avg_costs = {}
-    pos_file = open_positions_path
-    if not os.path.exists(pos_file):
-        pos_file = "data/open_positions.json"
-    if os.path.exists(pos_file):
+    pos_file = resolve_open_positions_path(open_positions_path)
+    if pos_file.exists():
         with open(pos_file, "r", encoding="utf-8") as f:
             pos_data = json.load(f)
         avg_costs = {p["ticker"]: p.get("avg_cost") for p in pos_data.get("positions", [])}

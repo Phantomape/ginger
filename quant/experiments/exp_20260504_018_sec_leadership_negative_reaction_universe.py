@@ -22,6 +22,7 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 from filter import WATCHLIST  # noqa: E402
+from operator_input_paths import open_positions_path  # noqa: E402
 
 
 EXPERIMENT_ID = "exp-20260504-018"
@@ -198,7 +199,7 @@ def _compact_candidate(row: dict[str, Any], current_universe: set[str]) -> dict[
 def _current_universe() -> set[str]:
     """Read the current watchlist plus open positions without importing yfinance."""
     universe = {str(ticker).upper() for ticker in WATCHLIST}
-    positions_path = ROOT / "data" / "open_positions.json"
+    positions_path = open_positions_path()
     if positions_path.exists():
         try:
             payload = _load_json(positions_path)

@@ -26,6 +26,7 @@ if QUANT_DIR not in sys.path:
 from backtester import BacktestEngine  # noqa: E402
 from data_layer import get_universe  # noqa: E402
 from filter import WATCHLIST  # noqa: E402
+from operator_input_paths import open_positions_path  # noqa: E402
 from risk_engine import SECTOR_MAP  # noqa: E402
 
 
@@ -149,7 +150,7 @@ def _summarize_returns(rows: list[dict]) -> dict[str, dict]:
 
 def _production_universe() -> set[str]:
     universe = {ticker.upper() for ticker in WATCHLIST}
-    positions_path = os.path.join(REPO_ROOT, "data", "open_positions.json")
+    positions_path = open_positions_path()
     if os.path.exists(positions_path):
         try:
             payload = _load_json(positions_path)

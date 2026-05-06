@@ -120,9 +120,9 @@ C 策略数据缺口：`positive_surprise_history` 和 `eps_estimate` 始终为 
 
 | 必检字段 | 所在文件 |
 |----------|----------|
-| entry_date | data/open_positions.json 每个 position |
-| target_price | data/open_positions.json 每个 position |
-| cash_usd | data/open_positions.json 顶层 |
+| entry_date | operator_inputs/open_positions.json 每个 position |
+| target_price | operator_inputs/open_positions.json 每个 position |
+| cash_usd | operator_inputs/open_positions.json 顶层 |
 | sector | signal enrichment 自动添加 |
 
 如果字段缺失，**只允许添加该字段**，不允许添加依赖该字段的规则。

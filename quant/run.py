@@ -35,6 +35,7 @@ from constants import (
     REGIME_AWARE_EXIT,
 )
 from earnings_snapshot import persist_earnings_snapshot
+from operator_input_paths import open_positions_path, repo_relative
 from regime_exit import compute_regime_exit_profile
 
 
@@ -85,14 +86,11 @@ def _save_text(text, filepath):
 
 
 def _load_open_positions():
-    for path in [
-        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
-        'data/open_positions.json',
-    ]:
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-    log.warning("open_positions.json not found")
+    path = open_positions_path()
+    if path.exists():
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    log.warning(f"open_positions.json not found at {repo_relative(path)}")
     return None
 
 
@@ -145,10 +143,12 @@ def main():
         empty_form4_event_sleeve_snapshot,
     )
     from sec_event_queue import (
+        build_forward_leadership_queue_from_sec_filing_text,
         build_forward_queue_from_sec_filing_text,
         build_forward_governance_queue_from_sec_filing_text,
         empty_sec_event_queue,
         empty_sec_governance_queue,
+        empty_sec_leadership_queue,
     )
     from sec_event_sleeve import (
         build_sec_event_sleeve_snapshot,
@@ -157,6 +157,10 @@ def main():
     from sec_negative_event_sleeve import (
         build_sec_negative_event_sleeve_snapshot,
         empty_sec_negative_event_sleeve_snapshot,
+    )
+    from sec_leadership_event_sleeve import (
+        build_sec_leadership_event_sleeve_snapshot,
+        empty_sec_leadership_event_sleeve_snapshot,
     )
     from event_sleeve_bundle import (
         build_event_sleeve_bundle_snapshot,
@@ -323,6 +327,7 @@ def main():
             continue
         sig = {
             "close":            f["close"],
+            "daily_high":       f.get("daily_high"),
             "20d_high":         f["high_20d"],
             "20d_low":          f["low_20d"],
             "breakout":         f["breakout_20d"],
@@ -376,6 +381,7 @@ def main():
             high_20d=f.get("high_20d"),
             high_since_entry=high_since_entry,
             prev_close=prev_close,
+            daily_high=f.get("daily_high"),
         )
         if pos_ctx:
             sig["position"] = pos_ctx
@@ -803,6 +809,53 @@ def main():
         )
 
     try:
+        sec_leadership_event_queue = build_forward_leadership_queue_from_sec_filing_text(
+            data_dir="data/non_ohlcv",
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            spy_ohlcv=spy_ohlcv,
+            core_signals=signals,
+            source_path=non_ohlcv_paths.get("sec_filing_text"),
+        )
+        if sec_leadership_event_queue.get("candidate_count", 0) > 0:
+            log.info(
+                "SEC leadership-change forward event queue candidates: %d",
+                sec_leadership_event_queue["candidate_count"],
+            )
+    except Exception as e:
+        log.warning(f"SEC leadership-change forward event queue unavailable: {e}")
+        sec_leadership_event_queue = empty_sec_leadership_queue(
+            today_iso,
+            "sec_leadership_event_queue_build_failed",
+        )
+
+    try:
+        sec_leadership_event_sleeve = build_sec_leadership_event_sleeve_snapshot(
+            sec_leadership_event_queue=sec_leadership_event_queue,
+            as_of=today_iso,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            sec_leadership_event_sleeve.get("new_pending_count", 0) > 0
+            or sec_leadership_event_sleeve.get("open_position_count", 0) > 0
+            or sec_leadership_event_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "SEC leadership paper event sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
+                sec_leadership_event_sleeve.get("pending_count", 0),
+                sec_leadership_event_sleeve.get("open_position_count", 0),
+                sec_leadership_event_sleeve.get("closed_count_today", 0),
+                sec_leadership_event_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"SEC leadership paper event sleeve unavailable: {e}")
+        sec_leadership_event_sleeve = empty_sec_leadership_event_sleeve_snapshot(
+            today_iso,
+            "sec_leadership_event_sleeve_build_failed",
+        )
+
+    try:
         event_sleeve_bundle = build_event_sleeve_bundle_snapshot(
             as_of=today_iso,
             form4_event_queue=form4_event_queue,
@@ -868,6 +921,8 @@ def main():
     trend_signals_dict["sec_negative_event_sleeve"] = sec_negative_event_sleeve
     trend_signals_dict["sec_governance_event_queue"] = sec_governance_event_queue
     trend_signals_dict["sec_governance_event_sleeve"] = sec_governance_event_sleeve
+    trend_signals_dict["sec_leadership_event_queue"] = sec_leadership_event_queue
+    trend_signals_dict["sec_leadership_event_sleeve"] = sec_leadership_event_sleeve
     trend_signals_dict["event_sleeve_bundle"] = event_sleeve_bundle
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
     trend_signals_dict["crypto_sleeve"] = crypto_sleeve
@@ -891,6 +946,8 @@ def main():
         sec_negative_event_sleeve = sec_negative_event_sleeve,
         sec_governance_event_queue = sec_governance_event_queue,
         sec_governance_event_sleeve = sec_governance_event_sleeve,
+        sec_leadership_event_queue = sec_leadership_event_queue,
+        sec_leadership_event_sleeve = sec_leadership_event_sleeve,
         event_sleeve_bundle = event_sleeve_bundle,
         crypto_sleeve = crypto_sleeve,
     )
@@ -918,6 +975,8 @@ def main():
         "sec_negative_event_sleeve": sec_negative_event_sleeve,
         "sec_governance_event_queue": sec_governance_event_queue,
         "sec_governance_event_sleeve": sec_governance_event_sleeve,
+        "sec_leadership_event_queue": sec_leadership_event_queue,
+        "sec_leadership_event_sleeve": sec_leadership_event_sleeve,
         "event_sleeve_bundle": event_sleeve_bundle,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,
         "crypto_sleeve": crypto_sleeve,

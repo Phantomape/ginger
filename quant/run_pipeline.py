@@ -32,6 +32,7 @@ from sources import get_all_sources
 from parser import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
 from filter import apply_hygiene_filters, apply_trade_filters
 from llm_advisor import get_investment_advice, save_advice
+from operator_input_paths import open_positions_path, repo_relative
 from trend_signals import generate_trend_signals, save_trend_signals
 from earnings_snapshot import persist_earnings_snapshot
 
@@ -140,62 +141,41 @@ def print_stats(stats, title):
 
 
 def _validate_open_positions():
-    """
-    Validate open_positions.json for fields required by exit rules.
-    Prints actionable console warnings (not just log entries) when fields are missing.
+    """Validate operator_inputs/open_positions.json required exit fields."""
+    path = open_positions_path()
+    if not path.exists():
+        return
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            positions_data = json.load(f)
+        positions = positions_data.get('positions', [])
 
-    Missing fields and their consequences:
-      entry_date   → TIME_STOP (45-day stagnation rule) DISABLED
-                     trailing stop HWM degrades to 20d-high (may miss peaks >20 days ago)
-      target_price → SIGNAL_TARGET (3.5×ATR partial-exit at R:R target) DISABLED
-                     +7% to +20% zone has no exit guidance; winners evaporate
-    """
-    for path in [
-        os.path.join(os.path.dirname(__file__), '..', 'data', 'open_positions.json'),
-        'data/open_positions.json',
-    ]:
-        if os.path.exists(path):
-            try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    positions_data = json.load(f)
-                positions = positions_data.get('positions', [])
+        missing_entry_date = [
+            p['ticker'] for p in positions
+            if p.get('ticker') and not p.get('entry_date')
+        ]
+        missing_target_price = [
+            p['ticker'] for p in positions
+            if p.get('ticker') and not p.get('target_price')
+        ]
 
-                missing_entry_date   = [p['ticker'] for p in positions
-                                        if p.get('ticker') and not p.get('entry_date')]
-                missing_target_price = [p['ticker'] for p in positions
-                                        if p.get('ticker') and not p.get('target_price')]
-                missing_override_after_profit = []
-                for p in positions:
-                    avg_cost = p.get('avg_cost', 0)
-                    if avg_cost > 0 and not p.get('override_stop_price'):
-                        # We can't compute current price here; flag positions where
-                        # notes suggest a past PROFIT_TARGET trigger (heuristic only)
-                        notes = (p.get('risk_notes') or '').lower()
-                        if any(k in notes for k in ('profit', 'target', 'reduce', '止盈')):
-                            missing_override_after_profit.append(p['ticker'])
+        if missing_entry_date or missing_target_price:
+            print()
+            print("!" * 60)
+            print("  OPEN POSITIONS: MISSING REQUIRED FIELDS")
+            print("!" * 60)
+            if missing_entry_date:
+                print(f"  TIME_STOP DISABLED for: {missing_entry_date}")
+                print('  Add "entry_date": "YYYY-MM-DD" to each position')
+            if missing_target_price:
+                print(f"  SIGNAL_TARGET DISABLED for: {missing_target_price}")
+                print('  Add "target_price": <original signal target_price>')
+            print(f"  File: {repo_relative(path)}")
+            print("!" * 60)
+            print()
 
-                if missing_entry_date or missing_target_price:
-                    print()
-                    print("!" * 60)
-                    print("  ⚠  OPEN POSITIONS: MISSING REQUIRED FIELDS")
-                    print("!" * 60)
-                    if missing_entry_date:
-                        print(f"  TIME_STOP DISABLED for: {missing_entry_date}")
-                        print("  → Add \"entry_date\": \"YYYY-MM-DD\" to each position")
-                        print("    (45-day stagnation rule cannot fire; trailing stop")
-                        print("     high-water mark degrades to 20-day high)")
-                    if missing_target_price:
-                        print(f"  SIGNAL_TARGET DISABLED for: {missing_target_price}")
-                        print("  → Add \"target_price\": <value from 3a signal's target_price>")
-                        print("    (3.5×ATR partial-exit cannot fire; +7%–+20% zone has")
-                        print("     no exit guidance and winners may evaporate)")
-                    print("!" * 60)
-                    print()
-
-            except Exception as e:
-                logger.warning(f"Could not validate open_positions.json: {e}")
-            break
-
+    except Exception as e:
+        logger.warning(f"Could not validate {repo_relative(path)}: {e}")
 
 def main():
     """

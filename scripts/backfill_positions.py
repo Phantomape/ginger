@@ -1,4 +1,4 @@
-"""Backfill missing fields in data/open_positions.json.
+"""Backfill missing fields in operator_inputs/open_positions.json.
 
 For positions with null target_price/stop_price/opened_by_strategy:
   1. Try matching historical quant_signals_*.json (ticker + entry_price ≈ avg_cost)
@@ -22,9 +22,10 @@ import yfinance as yf
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "quant"))
 from constants import ATR_STOP_MULT, ATR_TARGET_MULT, ATR_PERIOD
+from operator_input_paths import open_positions_path
 
 
-POSITIONS_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "open_positions.json")
+POSITIONS_PATH = str(open_positions_path())
 SIGNALS_GLOB   = os.path.join(os.path.dirname(__file__), "..", "data", "quant_signals_*.json")
 
 

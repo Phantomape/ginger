@@ -16,22 +16,22 @@ logger = logging.getLogger(__name__)
 
 # Import the watchlist from filter module
 from filter import WATCHLIST
+from operator_input_paths import open_positions_path, repo_relative
 from position_manager import compute_atr, compute_exit_levels, evaluate_exit_signals
 from regime import compute_market_regime
 
 
-def load_open_positions(filepath="../data/open_positions.json"):
+def load_open_positions(filepath=None):
     """Load open positions from JSON file."""
     try:
-        if not os.path.exists(filepath):
-            filepath = "data/open_positions.json"
-        if not os.path.exists(filepath):
+        path = open_positions_path(filepath)
+        if not path.exists():
             return None
 
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        logger.error(f"Failed to load open positions: {e}")
+        logger.error(f"Failed to load open positions from {repo_relative(path)}: {e}")
         return None
 
 
@@ -114,9 +114,11 @@ def compute_breakout_signals(data, window=20):
         return None
 
     try:
-        # Get the most recent close (handle both Series and scalar)
+        # Get the most recent close/high (handle both Series and scalar)
         close_value = data['Close'].iloc[-1]
         latest_close = float(close_value.item() if hasattr(close_value, 'item') else close_value)
+        high_value = data['High'].iloc[-1]
+        latest_high = float(high_value.item() if hasattr(high_value, 'item') else high_value)
 
         # Compute 20-day high/low from the PREVIOUS 20 days (excluding today)
         lookback_data = data.iloc[-(window + 1):-1]
@@ -138,6 +140,7 @@ def compute_breakout_signals(data, window=20):
 
         return {
             "close": round(latest_close, 2),
+            "daily_high": round(latest_high, 2),
             "20d_high": round(high_20d, 2),
             "20d_low": round(low_20d, 2),
             "breakout": breakout,
@@ -151,13 +154,15 @@ def compute_breakout_signals(data, window=20):
 
 
 def compute_position_context(ticker, latest_close, open_positions, atr=None, high_20d=None,
-                             high_since_entry=None, prev_close=None):
+                             high_since_entry=None, prev_close=None, daily_high=None):
     """
     Compute position context if ticker is held, including exit levels and signals.
 
     Args:
         ticker (str): Ticker symbol
         latest_close (float): Current close price
+        daily_high (float): Current session high for target_price full-exit parity.
+            When missing, evaluate_exit_signals falls back to close.
         open_positions (dict): Open positions data
         atr (float): Optional ATR value for volatility-adjusted stop
         high_20d (float): 20-day high (for reporting and fallback trailing stop)
@@ -251,6 +256,7 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
 
             exit_signals = evaluate_exit_signals(
                 latest_close, avg_cost, exit_levels,
+                current_high=daily_high,
                 high_water_mark=trailing_hwm,
                 days_held=days_held,
                 legacy_basis=legacy_basis,
@@ -277,6 +283,8 @@ def compute_position_context(ticker, latest_close, open_positions, atr=None, hig
                 "exit_levels": exit_levels,
                 "exit_signals": exit_signals,
             }
+            if daily_high is not None:
+                result["daily_high"] = round(daily_high, 2)
 
             # Today's price change vs yesterday — enables LLM to detect gap events.
             # Critical for post-earnings rules: "gap > +8% → REDUCE 50%",
@@ -387,6 +395,7 @@ def generate_trend_signals(universe=None, window=20, lookback_days=400):
                 high_20d=signal.get("20d_high"),
                 high_since_entry=high_since_entry,
                 prev_close=prev_close,
+                daily_high=signal.get("daily_high"),
             )
             if position_context:
                 signal["position"] = position_context
