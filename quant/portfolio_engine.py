@@ -65,6 +65,7 @@ from constants import (
     RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER,
     RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER,
     RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
+    TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
     ATR_STOP_MULT,
@@ -346,6 +347,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             financials_sector_leader_risk_multiplier = 1.0
             risk_on_unmodified_risk_multiplier = 1.0
             spy_relative_leader_risk_on_multiplier = 1.0
+            trend_mid_sector_dispersion_risk_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
                 strategy == "trend_long"
@@ -589,6 +591,14 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 == RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
             ):
                 max_position_pct = RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
+            if (
+                strategy == "trend_long"
+                and sig.get("mid_sector_dispersion") is True
+            ):
+                trend_mid_sector_dispersion_risk_multiplier = (
+                    TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER
+                )
+                signal_risk_pct *= trend_mid_sector_dispersion_risk_multiplier
 
             if signal_risk_pct <= 0:
                 sizing = _zero_risk_sizing(effective_risk_pct, entry, stop)
@@ -642,6 +652,11 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sizing["spy_relative_leader_risk_on_multiplier_applied"] = (
                     spy_relative_leader_risk_on_multiplier
                 )
+                sizing["trend_mid_sector_dispersion_risk_multiplier_applied"] = (
+                    trend_mid_sector_dispersion_risk_multiplier
+                )
+                sizing["sector_ret20_dispersion"] = sig.get("sector_ret20_dispersion")
+                sizing["mid_sector_dispersion"] = sig.get("mid_sector_dispersion")
                 sizing["trend_tech_tight_gap_risk_multiplier_applied"] = (
                     trend_tech_tight_gap_risk_multiplier
                 )

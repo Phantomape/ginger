@@ -197,6 +197,39 @@ def test_enrich_signals_marks_financials_sector_leader():
     assert jpm["financials_sector_leader"] is False
 
 
+def test_enrich_signals_marks_mid_sector_dispersion():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+    ]
+    features = {
+        "AAPL": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.08,
+            "momentum_20d_pct": 0.06,
+        },
+        "MSFT": {"momentum_20d_pct": 0.04},
+        "JPM": {"momentum_20d_pct": -0.08},
+        "XOM": {"momentum_20d_pct": 0.02},
+        "SPY": {"momentum_20d_pct": 0.0},
+    }
+
+    enriched = enrich_signals(signals, features, atr_target_mult=4.5)
+
+    assert len(enriched) == 1
+    assert enriched[0]["sector_ret20_dispersion"] == pytest.approx(0.0482)
+    assert enriched[0]["mid_sector_dispersion"] is True
+
+
 def test_trade_quality_score_range():
     """TQS must be within [0, 1]."""
     from risk_engine import _trade_quality_score
@@ -718,6 +751,47 @@ def test_size_signals_financials_sector_leader_total_risk():
         RISK_PER_TRADE_PCT * TREND_FINANCIALS_RISK_MULTIPLIER
     )
     assert non_leader_sizing["financials_sector_leader_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_boosts_mid_sector_dispersion_trends():
+    from constants import (
+        RISK_PER_TRADE_PCT,
+        TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
+    )
+    from portfolio_engine import size_signals
+
+    boosted = {
+        "ticker": "AAPL",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "trade_quality_score": 0.95,
+        "mid_sector_dispersion": True,
+        "sector_ret20_dispersion": 0.0482,
+    }
+    unboosted = {
+        **boosted,
+        "mid_sector_dispersion": False,
+    }
+
+    sized_boosted, sized_unboosted = size_signals(
+        [boosted, unboosted],
+        portfolio_value=100_000,
+    )
+
+    boosted_sizing = sized_boosted["sizing"]
+    unboosted_sizing = sized_unboosted["sizing"]
+    assert boosted_sizing["risk_pct"] == pytest.approx(
+        RISK_PER_TRADE_PCT * TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER
+    )
+    assert boosted_sizing["risk_pct"] == pytest.approx(
+        unboosted_sizing["risk_pct"] * TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER
+    )
+    assert boosted_sizing["trend_mid_sector_dispersion_risk_multiplier_applied"] == (
+        TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER
+    )
+    assert unboosted_sizing["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.0
 
 
 def test_enrich_signals_marks_spy_relative_leader():

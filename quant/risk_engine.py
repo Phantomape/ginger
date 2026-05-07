@@ -12,6 +12,8 @@ Every trade must include:
 """
 
 import logging
+import statistics
+from collections import defaultdict
 
 from constants import (
     ATR_STOP_MULT,
@@ -22,6 +24,8 @@ from constants import (
     TREND_GOLD_TARGET_TICKERS,
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
+    TREND_MID_SECTOR_DISPERSION_MIN,
+    TREND_MID_SECTOR_DISPERSION_MAX,
 )
 
 logger = logging.getLogger(__name__)
@@ -215,6 +219,26 @@ def _trade_quality_score(sig, features):
     return round(max(0.0, min(tqs, 1.0)), 3)
 
 
+def _sector_ret20_dispersion(features_dict):
+    """Return population stdev of sector-average 20d returns, or None."""
+    sector_returns = defaultdict(list)
+    for ticker, features in (features_dict or {}).items():
+        if not features:
+            continue
+        ret20 = features.get("momentum_20d_pct")
+        if isinstance(ret20, (int, float)):
+            sector_returns[SECTOR_MAP.get(ticker, "Unknown")].append(float(ret20))
+
+    sector_avgs = [
+        sum(values) / len(values)
+        for values in sector_returns.values()
+        if values
+    ]
+    if len(sector_avgs) < 2:
+        return None
+    return statistics.pstdev(sector_avgs)
+
+
 def enrich_signals(signals, features_dict, atr_target_mult=None):
     """
     Enrich all signals with risk parameters and Trade Quality Score.
@@ -244,6 +268,13 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         if financials_ret20 else None
     )
     spy_ret20 = (features_dict.get("SPY") or {}).get("momentum_20d_pct")
+    sector_ret20_dispersion = _sector_ret20_dispersion(features_dict)
+    mid_sector_dispersion = (
+        sector_ret20_dispersion is not None
+        and TREND_MID_SECTOR_DISPERSION_MIN
+        < sector_ret20_dispersion
+        < TREND_MID_SECTOR_DISPERSION_MAX
+    )
 
     for sig in signals:
         ticker   = sig["ticker"]
@@ -308,6 +339,9 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Inject sector so LLM can enforce the 40% sector concentration rule.
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
+        if sector_ret20_dispersion is not None:
+            enriched_sig["sector_ret20_dispersion"] = round(sector_ret20_dispersion, 4)
+            enriched_sig["mid_sector_dispersion"] = mid_sector_dispersion
         ticker_ret20 = features.get("momentum_20d_pct")
         if isinstance(ticker_ret20, (int, float)) and isinstance(spy_ret20, (int, float)):
             rel_spy_ret20 = ticker_ret20 - spy_ret20

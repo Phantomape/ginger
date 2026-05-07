@@ -395,6 +395,41 @@ def test_financials_trend_risk_boost_is_shared_sizing_policy():
     assert boosted["risk_pct"] > unboosted["risk_pct"]
 
 
+def test_mid_sector_dispersion_trend_boost_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "mid_sector_dispersion": True,
+            "sector_ret20_dispersion": 0.0482,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "AAPL",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "mid_sector_dispersion": True,
+            "sector_ret20_dispersion": 0.0482,
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    boosted = sized[0]["sizing"]
+    unboosted = sized[1]["sizing"]
+    assert boosted["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.25
+    assert unboosted["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.0
+    assert boosted["risk_pct"] > unboosted["risk_pct"]
+
+
 def test_risk_on_unmodified_risk_lift_does_not_stack_on_other_sizing_rules():
     signals = [
         {

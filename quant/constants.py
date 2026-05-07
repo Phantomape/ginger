@@ -63,6 +63,9 @@ RISK_ON_UNMODIFIED_MID_SCORE_MAX = 0.20
 RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER = 1.6
 RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER = 2.0
 RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT = 0.50
+TREND_MID_SECTOR_DISPERSION_MIN = 0.035
+TREND_MID_SECTOR_DISPERSION_MAX = 0.08
+TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # Low-TQS breakouts were net-negative in Consumer Discretionary/Financials/Technology
 # but net-positive in Commodities across the validated windows. Keep the accepted
 # haircut everywhere else and exempt only the defensive commodity breakout pocket.
