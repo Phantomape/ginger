@@ -107,19 +107,25 @@ def build_state_surface_queue(
         for signal in (core_signals or [])
         if signal.get("ticker")
     }
-    candidates = []
-    for row in ranked:
-        ticker = str(row.get("ticker") or "").upper()
-        if ticker in core_tickers:
-            continue
-        candidate = _candidate_payload(
+    scored_candidates = [
+        _candidate_payload(
             row,
-            rank=len(candidates) + 1,
+            rank=idx + 1,
             as_of=as_of_date,
             decision_date=decision_date,
             core_signals=core_signals or [],
             config=cfg,
         )
+        for idx, row in enumerate(ranked)
+    ]
+
+    candidates = []
+    for row in scored_candidates:
+        ticker = str(row.get("ticker") or "").upper()
+        if ticker in core_tickers:
+            continue
+        candidate = deepcopy(row)
+        candidate["queue_rank"] = len(candidates) + 1
         candidates.append(candidate)
         if len(candidates) >= int(cfg["max_candidates"]):
             break
@@ -133,6 +139,8 @@ def build_state_surface_queue(
         "enabled": False,
         "paper_enabled": bool(cfg.get("paper_enabled", True)),
         "trade_enabled": False,
+        "scored_candidate_count": len(scored_candidates),
+        "scored_candidates": scored_candidates,
         "candidate_count": len(candidates),
         "candidates": candidates,
         "excluded_core_tickers": sorted(core_tickers),

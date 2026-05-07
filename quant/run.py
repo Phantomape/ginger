@@ -953,11 +953,26 @@ def main():
         )
 
     try:
+        state_surface_queue = build_state_surface_queue(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            universe=universe,
+            core_signals=signals,
+        )
+    except Exception as e:
+        log.warning(f"State-surface queue unavailable: {e}")
+        state_surface_queue = empty_state_surface_queue(
+            today_iso,
+            "state_surface_queue_build_failed",
+        )
+
+    try:
         event_sleeve_bundle = build_event_sleeve_bundle_snapshot(
             as_of=today_iso,
             form4_event_queue=form4_event_queue,
             sec_negative_event_queue=sec_event_queue,
             sec_governance_event_queue=sec_governance_event_queue,
+            state_surface_queue=state_surface_queue,
             form4_event_sleeve=form4_event_sleeve,
             sec_negative_event_sleeve=sec_negative_event_sleeve,
             sec_governance_event_sleeve=sec_governance_event_sleeve,
@@ -982,12 +997,6 @@ def main():
         )
 
     try:
-        state_surface_queue = build_state_surface_queue(
-            as_of=today_iso,
-            ohlcv_by_ticker=ohlcv_dict,
-            universe=universe,
-            core_signals=signals,
-        )
         state_surface_sleeve = build_state_surface_sleeve_snapshot(
             state_surface_queue=state_surface_queue,
             as_of=today_iso,
@@ -1010,10 +1019,6 @@ def main():
             )
     except Exception as e:
         log.warning(f"State-surface paper sleeve unavailable: {e}")
-        state_surface_queue = empty_state_surface_queue(
-            today_iso,
-            "state_surface_queue_build_failed",
-        )
         state_surface_sleeve = empty_state_surface_sleeve_snapshot(
             today_iso,
             "state_surface_sleeve_build_failed",

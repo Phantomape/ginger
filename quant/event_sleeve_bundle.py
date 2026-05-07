@@ -28,6 +28,9 @@ SOURCE_PRIORITY = {
     "form4_meaningful_purchase": 2,
 }
 
+STATE_SURFACE_ADDON_RULE_VERSION = "non_generic_positive_state_surface_addon_v1"
+STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
+
 DEFAULT_SOURCE_RULE_VERSIONS = {
     "form4_meaningful_purchase": "form4_meaningful_purchase_ge_500k_v1",
     "sec_negative_reaction": "sec_negative_language_negative_reaction_v1",
@@ -67,6 +70,9 @@ DEFAULT_CONFIG = {
     "kill_recent_source_trades": 5,
     "kill_recent_source_min_win_rate": 0.40,
     "kill_drawdown_notional_fraction": 0.50,
+    "state_surface_addon_paper_enabled": True,
+    "state_surface_addon_scalar": 2.0,
+    "state_surface_addon_generic_surface": STATE_SURFACE_GENERIC_SURFACE,
 }
 
 
@@ -80,6 +86,7 @@ def build_event_sleeve_bundle_snapshot(
     form4_event_queue: dict[str, Any] | None = None,
     sec_negative_event_queue: dict[str, Any] | None = None,
     sec_governance_event_queue: dict[str, Any] | None = None,
+    state_surface_queue: dict[str, Any] | None = None,
     form4_event_sleeve: dict[str, Any] | None = None,
     sec_negative_event_sleeve: dict[str, Any] | None = None,
     sec_governance_event_sleeve: dict[str, Any] | None = None,
@@ -124,6 +131,21 @@ def build_event_sleeve_bundle_snapshot(
         config=cfg,
     )
     accepted_candidates, deduped_candidates = _dedupe_candidates(raw_candidates)
+    accepted_candidates = apply_state_surface_addon_to_event_candidates(
+        accepted_candidates,
+        state_surface_queue=state_surface_queue,
+        config=cfg,
+    )
+    deduped_candidates = apply_state_surface_addon_to_event_candidates(
+        deduped_candidates,
+        state_surface_queue=state_surface_queue,
+        config=cfg,
+    )
+    state_surface_addon = _state_surface_addon_summary(
+        accepted_candidates,
+        state_surface_queue=state_surface_queue,
+        config=cfg,
+    )
     schema_audit = _candidate_schema_audit(accepted_candidates)
     totals = _aggregate_totals(source_summaries)
     all_closed = closed_positions or closed_positions_today
@@ -172,6 +194,7 @@ def build_event_sleeve_bundle_snapshot(
         "realized_pnl_to_date": totals["realized_pnl_to_date"],
         "unrealized_pnl": totals["unrealized_pnl"],
         "source_summaries": source_summaries,
+        "state_surface_addon": state_surface_addon,
         "candidate_schema": {
             "required_fields": list(REQUIRED_CANDIDATE_FIELDS),
             "audit": schema_audit,
@@ -231,6 +254,7 @@ def empty_event_sleeve_bundle_snapshot(as_of: str, reason: str) -> dict[str, Any
         "realized_pnl_to_date": 0.0,
         "unrealized_pnl": 0.0,
         "source_summaries": {},
+        "state_surface_addon": _empty_state_surface_addon_summary(reason),
         "candidate_schema": {
             "required_fields": list(REQUIRED_CANDIDATE_FIELDS),
             "audit": {
@@ -578,6 +602,164 @@ def _deduped_row(
     out["kept_source"] = kept.get("source")
     out["kept_dedupe_key"] = kept.get("dedupe_key")
     return out
+
+
+def apply_state_surface_addon_to_event_candidates(
+    candidates: list[dict[str, Any]],
+    *,
+    state_surface_queue: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    state_by_ticker = _state_surface_candidates_by_ticker(state_surface_queue)
+    return [
+        _with_state_surface_addon(row, state_by_ticker.get(str(row.get("ticker") or "").upper()), cfg)
+        for row in candidates
+    ]
+
+
+def _state_surface_candidates_by_ticker(
+    state_surface_queue: dict[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    if not isinstance(state_surface_queue, dict):
+        return {}
+    rows = (
+        state_surface_queue.get("scored_candidates")
+        or state_surface_queue.get("candidates")
+        or []
+    )
+    out: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").upper()
+        if ticker:
+            out[ticker] = row
+    return out
+
+
+def _with_state_surface_addon(
+    candidate: dict[str, Any],
+    state_row: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    out = deepcopy(candidate)
+    base_notional = _float_or_none(out.get("event_notional_usd")) or float(config["event_notional_usd"])
+    scalar = 1.0
+    reason = "state_surface_ticker_not_scored"
+    eligible = False
+    surface = None
+    score = None
+    decision_date = None
+
+    if not bool(config.get("state_surface_addon_paper_enabled", True)):
+        reason = "state_surface_addon_disabled"
+    elif isinstance(state_row, dict):
+        surface = state_row.get("surface") or state_row.get("state_surface")
+        score = _float_or_none(state_row.get("score") or state_row.get("state_score"))
+        decision_date = state_row.get("decision_date") or state_row.get("date")
+        generic_surface = str(
+            config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
+        )
+        if score is None:
+            reason = "missing_state_surface_score"
+        elif score <= 0:
+            reason = "nonpositive_state_surface_score"
+        elif str(surface or "") == generic_surface:
+            reason = "generic_state_surface"
+        else:
+            eligible = True
+            scalar = float(config["state_surface_addon_scalar"])
+            reason = "eligible_non_generic_positive_state_surface"
+
+    adjusted_notional = base_notional * scalar
+    out["state_surface_addon"] = {
+        "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
+        "paper_enabled": bool(config.get("state_surface_addon_paper_enabled", True)),
+        "trade_enabled": False,
+        "eligible": eligible,
+        "reason": reason,
+        "scalar": round(scalar, 4),
+        "base_event_notional_usd": round(base_notional, 2),
+        "adjusted_event_notional_usd": round(adjusted_notional, 2),
+        "incremental_notional_usd": round(adjusted_notional - base_notional, 2),
+        "state_score": score,
+        "state_surface": surface,
+        "state_decision_date": decision_date,
+        "alters_orders": False,
+    }
+    out["paper_event_notional_usd"] = round(adjusted_notional, 2)
+    out["paper_notional_scalar"] = round(scalar, 4)
+    return out
+
+
+def _state_surface_addon_summary(
+    candidates: list[dict[str, Any]],
+    *,
+    state_surface_queue: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    rows = [row.get("state_surface_addon") or {} for row in candidates]
+    eligible = [row for row in rows if row.get("eligible")]
+    incremental = sum(_money(row.get("incremental_notional_usd")) for row in eligible)
+    scored_count = 0
+    if isinstance(state_surface_queue, dict):
+        scored_count = _int(
+            state_surface_queue.get("scored_candidate_count")
+            or len(state_surface_queue.get("scored_candidates") or [])
+            or state_surface_queue.get("candidate_count")
+        )
+    return {
+        "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
+        "paper_enabled": bool(config.get("state_surface_addon_paper_enabled", True)),
+        "trade_enabled": False,
+        "candidate_count": len(candidates),
+        "eligible_candidate_count": len(eligible),
+        "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
+        "scored_candidate_count": scored_count,
+        "incremental_notional_usd": round(incremental, 2),
+        "eligible_surfaces": sorted(
+            {
+                str(row.get("state_surface"))
+                for row in eligible
+                if row.get("state_surface")
+            }
+        ),
+        "parameters": {
+            "eligible_scalar": float(config["state_surface_addon_scalar"]),
+            "generic_surface_not_eligible": str(
+                config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
+            ),
+            "eligibility_rule": "score > 0 and state_surface != generic_surface",
+        },
+        "production_impact": {
+            "alters_orders": False,
+            "alters_sizing": False,
+            "trade_enabled": False,
+            "scope": "default_off_event_bundle_paper_addon_attribution",
+        },
+    }
+
+
+def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
+    return {
+        "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
+        "paper_enabled": False,
+        "trade_enabled": False,
+        "candidate_count": 0,
+        "eligible_candidate_count": 0,
+        "eligible_fraction": None,
+        "scored_candidate_count": 0,
+        "incremental_notional_usd": 0.0,
+        "eligible_surfaces": [],
+        "status": "blocked",
+        "reason": reason,
+        "production_impact": {
+            "alters_orders": False,
+            "alters_sizing": False,
+            "trade_enabled": False,
+        },
+    }
 
 
 def _candidate_schema_audit(candidates: list[dict[str, Any]]) -> dict[str, Any]:
