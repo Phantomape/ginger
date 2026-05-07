@@ -148,6 +148,74 @@ def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> 
     assert all(row["alters_orders"] is False for row in snapshot["candidates"])
 
 
+def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "EVT",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "BAL",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "NEG",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 3,
+            "scored_candidates": [
+                {
+                    "ticker": "EVT",
+                    "score": 1.24,
+                    "surface": "rotation_breakout_leadership",
+                    "decision_date": "2026-05-04",
+                },
+                {
+                    "ticker": "BAL",
+                    "score": 1.11,
+                    "surface": "balanced_state_leadership",
+                    "decision_date": "2026-05-04",
+                },
+                {
+                    "ticker": "NEG",
+                    "score": -0.22,
+                    "surface": "broad_breadth_trend_persistence",
+                    "decision_date": "2026-05-04",
+                },
+            ],
+        },
+    )
+
+    by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
+    addon = by_ticker["EVT"]["state_surface_addon"]
+    assert addon["eligible"] is True
+    assert addon["reason"] == "eligible_non_generic_positive_state_surface"
+    assert addon["scalar"] == 2.0
+    assert addon["base_event_notional_usd"] == 10000.0
+    assert addon["adjusted_event_notional_usd"] == 20000.0
+    assert addon["incremental_notional_usd"] == 10000.0
+    assert by_ticker["EVT"]["paper_event_notional_usd"] == 20000.0
+    assert by_ticker["EVT"]["event_notional_usd"] == 10000.0
+    assert by_ticker["EVT"]["trade_enabled"] is False
+    assert by_ticker["EVT"]["alters_orders"] is False
+    assert by_ticker["BAL"]["state_surface_addon"]["reason"] == "generic_state_surface"
+    assert by_ticker["NEG"]["state_surface_addon"]["reason"] == "nonpositive_state_surface_score"
+    assert snapshot["state_surface_addon"]["eligible_candidate_count"] == 1
+    assert snapshot["state_surface_addon"]["incremental_notional_usd"] == 10000.0
+    assert snapshot["state_surface_addon"]["production_impact"]["alters_orders"] is False
+
+
 def test_forward_paper_gate_passes_after_sufficient_source_diverse_outcomes() -> None:
     closed = []
     for idx in range(15):

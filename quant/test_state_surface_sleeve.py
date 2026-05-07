@@ -52,6 +52,8 @@ def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
     assert queue["queue_name"] == "STATE_SURFACE_SATELLITE_QUEUE"
     assert queue["enabled"] is False
     assert queue["trade_enabled"] is False
+    assert queue["scored_candidate_count"] == 3
+    assert {row["ticker"] for row in queue["scored_candidates"]} == {"AAA", "BBB", "CCC"}
     assert queue["candidate_count"] == 2
     assert {row["ticker"] for row in queue["candidates"]} == {"BBB", "CCC"}
     assert queue["candidates"][0]["counterfactuals"]["alternatives"][-1]["type"] == "cash"
