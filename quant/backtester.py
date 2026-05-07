@@ -32,7 +32,7 @@ import math
 import os
 import sys
 import tempfile
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 import yfinance as yf
@@ -135,6 +135,10 @@ DEFAULT_CONFIG = {
     "REPLAY_PARTIAL_REDUCES": True,  # replay production position-action policy
     "PRODUCTION_TRAILING_STOP_PCT": TRAILING_STOP_PCT,
     "TRAILING_PARTIAL_REDUCE_ENABLED": TRAILING_PARTIAL_REDUCE_ENABLED,
+    "POST_ADDON_WEAKNESS_REDUCE_ENABLED": False,
+    "POST_ADDON_WEAKNESS_DAYS": 3,
+    "POST_ADDON_WEAKNESS_MIN_RS_VS_SPY": 0.0,
+    "POST_ADDON_WEAKNESS_REQUIRE_NEGATIVE_ADDON_RETURN": True,
     "ADDON_ENABLED": ADDON_ENABLED,
     "ADDON_CHECKPOINT_DAYS": ADDON_CHECKPOINT_DAYS,
     "ADDON_MIN_UNREALIZED_PCT": ADDON_MIN_UNREALIZED_PCT,
@@ -875,7 +879,10 @@ class Position:
                  "regime_exit_bucket", "regime_exit_score",
                  "sizing_multipliers", "base_risk_pct", "actual_risk_pct",
                  "original_shares", "addon_done", "addon_count",
-                 "addon_shares", "addon_cost", "exit_advisory_rules_seen",
+                 "addon_shares", "addon_cost", "last_addon_fill_date",
+                 "last_addon_fill_price", "last_addon_spy_close",
+                 "post_addon_weakness_reduce_done",
+                 "exit_advisory_rules_seen",
                  "exit_advisory_first_seen", "sleeve", "pilot_decision_id",
                  "pilot_snapshot", "pilot_signal_date")
 
@@ -910,6 +917,10 @@ class Position:
         self.addon_count = 0
         self.addon_shares = 0
         self.addon_cost = 0.0
+        self.last_addon_fill_date = None
+        self.last_addon_fill_price = None
+        self.last_addon_spy_close = None
+        self.post_addon_weakness_reduce_done = False
         self.exit_advisory_rules_seen = set()
         self.exit_advisory_first_seen = {}
         self.sleeve = sleeve or "core"
@@ -932,7 +943,9 @@ class BacktestEngine:
     def __init__(self, universe, start=None, end=None, config=None,
                  replay_llm=False, replay_news=False, data_dir=None,
                  ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None,
-                 include_pilot_sleeve=False, require_non_ohlcv=False):
+                 include_pilot_sleeve=False, require_non_ohlcv=False,
+                 save_entry_candidate_events_path=None,
+                 include_entry_candidate_events=False):
         self.universe    = universe
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
@@ -941,6 +954,7 @@ class BacktestEngine:
         self.replay_news = bool(replay_news)
         self.include_pilot_sleeve = bool(include_pilot_sleeve)
         self.require_non_ohlcv = bool(require_non_ohlcv)
+        self.include_entry_candidate_events = bool(include_entry_candidate_events)
         # Default data_dir = repo-root/data (one up from quant/).
         if data_dir is None:
             here = os.path.dirname(os.path.abspath(__file__))
@@ -948,6 +962,9 @@ class BacktestEngine:
         self.data_dir    = data_dir
         self.ohlcv_snapshot_path = self._resolve_snapshot_path(ohlcv_snapshot_path)
         self.save_ohlcv_snapshot_path = self._resolve_snapshot_path(save_ohlcv_snapshot_path)
+        self.save_entry_candidate_events_path = self._resolve_snapshot_path(
+            save_entry_candidate_events_path
+        )
         self._sanitize_proxy_env()
         self._configure_yfinance_cache()
         # P-ERN: load all earnings snapshots once at init so _earnings_dict_for
@@ -985,6 +1002,39 @@ class BacktestEngine:
         if not raw_path:
             return None
         return raw_path if os.path.isabs(raw_path) else os.path.abspath(raw_path)
+
+    def _write_entry_candidate_events(self, path, events, result):
+        """Persist post-gate entry candidate decisions for shadow attribution."""
+        if not path:
+            return
+        payload = {
+            "schema_version": 1,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "period": result.get("period"),
+            "start": str(self.start.date()) if self.start is not None else None,
+            "end": str(self.end.date()) if self.end is not None else None,
+            "candidate_events": events,
+            "entry_execution_attribution": result.get("entry_execution_attribution"),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": True,
+                "run_adapter_changed": False,
+                "replay_only": True,
+                "alters_orders": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+            },
+            "notes": [
+                "Default-off measurement artifact; written only when --save-entry-candidate-events is supplied.",
+                "Rows are post-filter, post-sizing, pre-fill entry-loop decisions from the existing backtester path.",
+                "This artifact is for shadow attribution and must not be interpreted as a production signal path.",
+            ],
+        }
+        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, indent=2, ensure_ascii=False, default=str)
+            handle.write("\n")
 
     def _serialize_ohlcv_snapshot(self, ohlcv, download_start, download_end):
         """Convert OHLCV frames to a JSON-friendly payload."""
@@ -1422,9 +1472,51 @@ class BacktestEngine:
                 return 0, "portfolio_heat_cap"
             return shares, None
 
+        def _safe_candidate_scalar(value):
+            if value is None or isinstance(value, (str, int, float, bool)):
+                return value
+            if hasattr(value, "item"):
+                try:
+                    return value.item()
+                except Exception:
+                    pass
+            if isinstance(value, dict):
+                return {
+                    str(k): _safe_candidate_scalar(v)
+                    for k, v in value.items()
+                    if isinstance(k, (str, int, float, bool))
+                }
+            if isinstance(value, (list, tuple)):
+                return [_safe_candidate_scalar(v) for v in value]
+            return str(value)
+
+        def _entry_candidate_signal_snapshot(sig):
+            sizing = sig.get("sizing") or {}
+            return {
+                "entry_price": _safe_candidate_scalar(sig.get("entry_price")),
+                "stop_price": _safe_candidate_scalar(sig.get("stop_price")),
+                "target_price": _safe_candidate_scalar(sig.get("target_price")),
+                "sector": _safe_candidate_scalar(sig.get("sector")),
+                "confidence_score": _safe_candidate_scalar(sig.get("confidence_score")),
+                "trade_quality_score": _safe_candidate_scalar(sig.get("trade_quality_score")),
+                "target_mult_used": _safe_candidate_scalar(sig.get("target_mult_used")),
+                "regime_exit_bucket": _safe_candidate_scalar(sig.get("regime_exit_bucket")),
+                "regime_exit_score": _safe_candidate_scalar(sig.get("regime_exit_score")),
+                "sizing": {
+                    "shares_to_buy": _safe_candidate_scalar(sizing.get("shares_to_buy")),
+                    "risk_pct": _safe_candidate_scalar(sizing.get("risk_pct")),
+                    "base_risk_pct": _safe_candidate_scalar(sizing.get("base_risk_pct")),
+                    "risk_pct_before": _safe_candidate_scalar(sizing.get("risk_pct_before")),
+                    "risk_pct_after": _safe_candidate_scalar(sizing.get("risk_pct_after")),
+                    "risk_multipliers": _safe_candidate_scalar(
+                        _extract_sizing_multipliers(sizing)
+                    ),
+                },
+            }
+
         def _record_entry_decision(today, sig, decision, slots, candidate_rank, details=None):
             details = details or {}
-            entry_decision_events.append({
+            event = {
                 "date": str(today.date()) if hasattr(today, "date") else str(today),
                 "ticker": (sig.get("ticker") or "").upper(),
                 "strategy": sig.get("strategy", "unknown"),
@@ -1432,7 +1524,10 @@ class BacktestEngine:
                 "candidate_rank": candidate_rank,
                 "available_slots_at_entry_loop": slots,
                 "details": details,
-            })
+            }
+            if self.save_entry_candidate_events_path or self.include_entry_candidate_events:
+                event["signal_snapshot"] = _entry_candidate_signal_snapshot(sig)
+            entry_decision_events.append(event)
 
         def _core_position_count():
             return sum(1 for p in positions if getattr(p, "sleeve", "core") == "core")
@@ -1811,6 +1906,14 @@ class BacktestEngine:
                 pos.addon_done = pos.addon_count >= max_addon_count
                 pos.addon_shares += addon_shares
                 pos.addon_cost += entry_fill * addon_shares
+                pos.last_addon_fill_date = today
+                pos.last_addon_fill_price = entry_fill
+                spy_df = ohlcv_all.get("SPY")
+                pos.last_addon_spy_close = (
+                    _scalar_price(spy_df.loc[today], "Close")
+                    if spy_df is not None and today in spy_df.index else None
+                )
+                pos.post_addon_weakness_reduce_done = False
                 pos.high_water = max(pos.high_water, raw_open)
                 addon_executed_count += 1
                 addon_events.append({
@@ -1905,6 +2008,15 @@ class BacktestEngine:
                 )
                 equity += pnl
                 pos.shares -= shares_to_sell
+                if action.get("exit_reason") == "partial_reduce_post_addon_weakness":
+                    addon_before = int(pos.addon_shares or 0)
+                    addon_sold = min(addon_before, shares_to_sell)
+                    pos.addon_shares = max(0, addon_before - addon_sold)
+                    if addon_before > 0 and pos.addon_cost:
+                        pos.addon_cost = max(
+                            0.0,
+                            pos.addon_cost * (pos.addon_shares / addon_before),
+                        )
                 partial_reduce_executed_count += 1
                 partial_reduce_events.append({
                     **action,
@@ -1975,6 +2087,96 @@ class BacktestEngine:
                     "unrealized_pnl_pct": round(unrealized, 6),
                     "reduce_pct": reduce_pct,
                     "shares_before": pos.shares,
+                    "shares_to_sell": shares_to_sell,
+                })
+
+        def _schedule_post_addon_weakness_reduces(today):
+            nonlocal partial_reduce_scheduled_count
+            if not partial_reduce_enabled:
+                return
+            if not self.config.get("POST_ADDON_WEAKNESS_REDUCE_ENABLED"):
+                return
+
+            spy_df = ohlcv_all.get("SPY")
+            if spy_df is None or today not in spy_df.index:
+                return
+
+            weakness_days = int(self.config.get("POST_ADDON_WEAKNESS_DAYS", 3))
+            min_rs = float(self.config.get("POST_ADDON_WEAKNESS_MIN_RS_VS_SPY", 0.0))
+            require_negative_return = bool(
+                self.config.get("POST_ADDON_WEAKNESS_REQUIRE_NEGATIVE_ADDON_RETURN", True)
+            )
+
+            for pos in positions:
+                if getattr(pos, "sleeve", "core") != "core":
+                    continue
+                if pos.shares <= 0 or pos.addon_shares <= 0:
+                    continue
+                if pos.post_addon_weakness_reduce_done:
+                    continue
+                if pos.last_addon_fill_date is None or not pos.last_addon_fill_price:
+                    continue
+
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or today not in df.index:
+                    continue
+                addon_day = pd.Timestamp(pos.last_addon_fill_date)
+                if addon_day not in df.index:
+                    continue
+                today_idx = df.index.get_loc(today)
+                addon_idx = df.index.get_loc(addon_day)
+                if today_idx - addon_idx != weakness_days:
+                    continue
+
+                row = df.loc[today]
+                close = _scalar_price(row, "Close")
+                addon_fill = float(pos.last_addon_fill_price)
+                spy_close = _scalar_price(spy_df.loc[today], "Close")
+                spy_addon_close = pos.last_addon_spy_close
+                if spy_addon_close is None:
+                    if addon_day not in spy_df.index:
+                        continue
+                    spy_addon_close = _scalar_price(spy_df.loc[addon_day], "Close")
+                if close <= 0 or addon_fill <= 0 or spy_close <= 0 or spy_addon_close <= 0:
+                    continue
+
+                ticker_return = (close - addon_fill) / addon_fill
+                spy_return = (spy_close - spy_addon_close) / spy_addon_close
+                rs_vs_spy = ticker_return - spy_return
+                if rs_vs_spy > min_rs:
+                    continue
+                if require_negative_return and ticker_return >= 0:
+                    continue
+
+                fill_date = _next_trade_date_for_ticker(pos.ticker, today)
+                if fill_date is None:
+                    continue
+                shares_to_sell = min(int(pos.addon_shares), int(pos.shares))
+                if shares_to_sell <= 0:
+                    continue
+
+                pos.post_addon_weakness_reduce_done = True
+                partial_reduce_scheduled_count += 1
+                pending_partial_reduces.setdefault(str(fill_date.date()), []).append({
+                    "ticker": pos.ticker,
+                    "strategy": pos.strategy,
+                    "sector": pos.sector,
+                    "decision_mode": "code_post_addon_weakness_reduce",
+                    "trigger_date": str(today.date()),
+                    "scheduled_fill_date": str(fill_date.date()),
+                    "exit_reason": "partial_reduce_post_addon_weakness",
+                    "triggered_rule": "POST_ADDON_WEAKNESS",
+                    "weakness_days": weakness_days,
+                    "min_rs_vs_spy": min_rs,
+                    "require_negative_addon_return": require_negative_return,
+                    "addon_fill_date": str(addon_day.date()),
+                    "addon_fill_price": round(addon_fill, 4),
+                    "trigger_close": round(close, 4),
+                    "post_addon_return_pct": round(ticker_return, 6),
+                    "post_addon_spy_return_pct": round(spy_return, 6),
+                    "post_addon_rs_vs_spy": round(rs_vs_spy, 6),
+                    "shares_before": pos.shares,
+                    "addon_shares_before": pos.addon_shares,
                     "shares_to_sell": shares_to_sell,
                 })
 
@@ -2332,6 +2534,7 @@ class BacktestEngine:
 
             positions = still_open
             _schedule_partial_reduces(today)
+            _schedule_post_addon_weakness_reduces(today)
             _schedule_followthrough_addons(today)
 
             # ── 2. Generate signals using the REAL pipeline ─────────────────
@@ -3711,6 +3914,13 @@ class BacktestEngine:
             "converged_if_sharpe_daily":    bool(
                 result["convergence"]["converged"] and sharpe_daily_pass),
         }
+        if self.include_entry_candidate_events:
+            result["entry_candidate_events"] = entry_decision_events
+        self._write_entry_candidate_events(
+            self.save_entry_candidate_events_path,
+            entry_decision_events,
+            result,
+        )
         return result
 
     def sweep(self, param_name, values):
@@ -4094,6 +4304,9 @@ def main():
                              "Default backtests remain core-only.")
     parser.add_argument("--require-non-ohlcv", action="store_true",
                         help="Fail the run when non-OHLCV replay artifacts are incomplete.")
+    parser.add_argument("--save-entry-candidate-events", type=str, default=None,
+                        help=("Default-off shadow audit artifact. When set, write full "
+                              "post-gate entry candidate decision rows to this JSON path."))
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -4121,7 +4334,8 @@ def main():
                             ohlcv_snapshot_path=args.ohlcv_snapshot,
                             save_ohlcv_snapshot_path=args.save_ohlcv_snapshot,
                             include_pilot_sleeve=args.include_pilot_sleeve,
-                            require_non_ohlcv=args.require_non_ohlcv)
+                            require_non_ohlcv=args.require_non_ohlcv,
+                            save_entry_candidate_events_path=args.save_entry_candidate_events)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
