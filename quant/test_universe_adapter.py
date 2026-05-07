@@ -69,6 +69,51 @@ def test_read_only_adapter_keeps_pilot_out_of_core_trade_universe(tmp_path):
     assert state["production_impact"]["alters_orders"] is False
 
 
+def test_read_only_adapter_keeps_research_out_of_tradeable_universe(tmp_path):
+    registry_path = tmp_path / "registry.json"
+    events_path = tmp_path / "events.jsonl"
+    _write_json(
+        registry_path,
+        {
+            "schema_version": 1,
+            "protocol_version": "universe_protocol_v1.0",
+            "tickers": {},
+        },
+    )
+    event = {
+        "event_id": "research-1",
+        "effective_as_of": "2026-05-05",
+        "ticker": "HOOD",
+        "to_status": "research",
+        "record_patch": {
+            "ticker": "HOOD",
+            "status": "research",
+            "eligible_as_of": "2026-05-05",
+            "first_trade_allowed_as_of": None,
+        },
+    }
+    events_path.write_text(json.dumps(event) + "\n", encoding="utf-8")
+
+    state = universe_segments_as_of(
+        "2026-05-05",
+        core_universe=["AMD", "HOOD"],
+        registry_path=registry_path,
+        events_path=events_path,
+    )
+
+    assert state["segments"]["research"] == ["HOOD"]
+    assert "HOOD" in state["observation_universe"]
+    assert "HOOD" not in state["core_trade_universe"]
+    assert "HOOD" not in state["governance_tradeable_universe"]
+    assert state["core_trade_universe"] == ["AMD"]
+    assert state["production_impact"] == {
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
+        "alters_sizing": False,
+        "alters_orders": False,
+    }
+
+
 def test_adapter_reports_hashes_and_event_counts(tmp_path):
     registry_path = tmp_path / "registry.json"
     events_path = tmp_path / "events.jsonl"

@@ -70,6 +70,7 @@ Current AI infrastructure metadata:
 | --- | --- | --- |
 | Trade-enabled pilot | `INTC`, `LITE`, `BE` | Daily run can generate separate `AI_INFRA_PILOT` signals from `2026-05-01`; not core. |
 | Research | `COHR`, `APLD` | Signal/shadow candidates only. |
+| Research | `HOOD`, `RBLX`, `SOFI` | Consumer digital platform observation basket from `exp-20260505-014`; not core or pilot because `exp-20260505-011` was positive but unstable. |
 | Specialist | `SNDK`, `CRWV`, `CORZ`, `IREN`, `CIFR`, `WULF`, `RIOT`, `MARA` | Need short-history or BTC/HPC specialist handling. |
 | Quarantine | `DBRG`, `TLN`, `VST` | Do not trade until a distinct rule explains the prior failure mode. |
 
