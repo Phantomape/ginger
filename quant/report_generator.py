@@ -428,6 +428,64 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{position.get('hold_days', '?')} days)"
             )
 
+    if sec_leadership_event_queue and (
+        sec_leadership_event_queue.get("candidate_count", 0) > 0
+        or sec_leadership_event_queue.get("data_source", {}).get("status") != "loaded"
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC LEADERSHIP-CHANGE EVENT QUEUE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Enabled: {sec_leadership_event_queue.get('enabled', False)}  |  "
+            f"Candidates: {sec_leadership_event_queue.get('candidate_count', 0)}"
+        )
+        source = sec_leadership_event_queue.get("data_source") or {}
+        if source.get("status") != "loaded":
+            lines.append(f"  Source status: {source.get('status')}")
+        for candidate in (sec_leadership_event_queue.get("candidates") or [])[:5]:
+            excess = candidate.get("reaction_excess_return")
+            excess_text = f"{excess * 100:.2f}%" if isinstance(excess, (int, float)) else "n/a"
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('target_cell', 'leadership_change')} / "
+                f"reaction excess {excess_text} "
+                f"on {candidate.get('reaction_date', candidate.get('usable_trade_date', '?'))} "
+                "(paper only)"
+            )
+
+    if sec_leadership_event_sleeve and (
+        sec_leadership_event_sleeve.get("pending_count", 0) > 0
+        or sec_leadership_event_sleeve.get("open_position_count", 0) > 0
+        or sec_leadership_event_sleeve.get("closed_count_today", 0) > 0
+        or sec_leadership_event_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC LEADERSHIP PAPER EVENT SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {sec_leadership_event_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {sec_leadership_event_sleeve.get('trade_enabled', False)}"
+        )
+        if sec_leadership_event_sleeve.get("error"):
+            lines.append(f"  Source status: {sec_leadership_event_sleeve.get('error')}")
+        lines.append(
+            f"  Pending: {sec_leadership_event_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {sec_leadership_event_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {sec_leadership_event_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${sec_leadership_event_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${sec_leadership_event_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        for position in (sec_leadership_event_sleeve.get("open_positions") or [])[:5]:
+            lines.append(
+                f"  {position.get('ticker', '?')}: paper open "
+                f"since {position.get('entry_date', '?')} "
+                f"({position.get('observed_trading_days', 0)}/"
+                f"{position.get('hold_days', '?')} days)"
+            )
+
     if event_sleeve_bundle and (
         event_sleeve_bundle.get("pending_count", 0) > 0
         or event_sleeve_bundle.get("open_position_count", 0) > 0

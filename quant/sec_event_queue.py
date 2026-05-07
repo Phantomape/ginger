@@ -11,9 +11,13 @@ QUEUE_NAME = "SEC_NEGATIVE_REACTION_FORWARD_QUEUE"
 RULE_VERSION = "sec_negative_language_negative_reaction_v1"
 GOVERNANCE_QUEUE_NAME = "SEC_GOVERNANCE_PROCEDURAL_FORWARD_QUEUE"
 GOVERNANCE_RULE_VERSION = "sec_governance_procedural_mild_reaction_v1"
+LEADERSHIP_QUEUE_NAME = "SEC_LEADERSHIP_CHANGE_FORWARD_QUEUE"
+LEADERSHIP_RULE_VERSION = "sec_leadership_change_negative_reaction_v1"
 PRIMARY_HORIZON_TRADING_DAYS = 10
 MAX_COUNTERFACTUAL_SIGNALS = 3
 REQUIRED_ITEM_CODE = "2.02"
+LEADERSHIP_REQUIRED_ITEM_CODE = "5.02"
+LEADERSHIP_MAX_EXCESS_REACTION = -0.02
 GOVERNANCE_TARGET_CELLS = {
     ("shareholder_vote", "negative_excess_0_to_minus_2pct"),
     ("charter_or_securities_change", "positive_excess_0_to_2pct"),
@@ -272,6 +276,15 @@ def governance_semantic_subcategory(row: dict[str, Any]) -> str:
     return "misc_other"
 
 
+def leadership_semantic_subcategory(row: dict[str, Any]) -> str:
+    item_codes = {str(item) for item in row.get("eight_k_item_codes") or []}
+    return (
+        "leadership_change"
+        if LEADERSHIP_REQUIRED_ITEM_CODE in item_codes
+        else "not_leadership_change"
+    )
+
+
 def evaluate_first_reaction(
     row: dict[str, Any],
     ohlcv_by_ticker: dict[str, Any],
@@ -341,6 +354,18 @@ def qualifies_sec_governance_procedural_event(event: dict[str, Any]) -> bool:
         and event.get("price_status") == "covered"
         and "2.02" not in item_codes
         and (semantic, bucket) in GOVERNANCE_TARGET_CELLS
+    )
+
+
+def qualifies_sec_leadership_change_event(event: dict[str, Any]) -> bool:
+    item_codes = {str(item) for item in event.get("eight_k_item_codes") or []}
+    reaction = event.get("reaction_excess_return")
+    return (
+        event.get("status") == "ok"
+        and LEADERSHIP_REQUIRED_ITEM_CODE in item_codes
+        and event.get("price_status") == "covered"
+        and isinstance(reaction, (int, float))
+        and reaction <= LEADERSHIP_MAX_EXCESS_REACTION
     )
 
 
@@ -467,6 +492,71 @@ def build_sec_governance_procedural_queue(
     }
 
 
+def build_sec_leadership_change_queue(
+    rows: list[dict[str, Any]],
+    *,
+    as_of: str,
+    ohlcv_by_ticker: dict[str, Any] | None = None,
+    spy_ohlcv: Any = None,
+    core_signals: list[dict[str, Any]] | None = None,
+    source_path: str | Path | None = None,
+    source_status: str = "loaded",
+) -> dict[str, Any]:
+    ohlcv_by_ticker = ohlcv_by_ticker or {}
+    candidates: list[dict[str, Any]] = []
+    evaluated_count = 0
+    as_of_date = str(as_of)[:10]
+
+    for row in rows:
+        if str(row.get("usable_trade_date") or "")[:10] != as_of_date:
+            continue
+        evaluated_count += 1
+        event = {
+            **row,
+            **evaluate_first_reaction(row, ohlcv_by_ticker, spy_ohlcv),
+        }
+        if qualifies_sec_leadership_change_event(event):
+            candidates.append(
+                _leadership_candidate_payload(
+                    event,
+                    core_signals=core_signals or [],
+                )
+            )
+
+    return {
+        "queue_name": LEADERSHIP_QUEUE_NAME,
+        "rule_version": LEADERSHIP_RULE_VERSION,
+        "enabled": False,
+        "asof_date": as_of_date,
+        "candidate_count": len(candidates),
+        "candidates": candidates,
+        "data_source": {
+            "status": source_status,
+            "path": str(source_path) if source_path else None,
+            "loaded_row_count": len(rows),
+            "same_day_evaluated_count": evaluated_count,
+        },
+        "parameters": {
+            "packet_rule": (
+                "8-K Item 5.02 AND first-day SPY-relative reaction <= -2%"
+            ),
+            "target_cell": (
+                "leadership_change|negative_excess_le_minus_2pct"
+            ),
+            "primary_horizon_trading_days": PRIMARY_HORIZON_TRADING_DAYS,
+            "entry_timing": "next_trading_day_open_after_reaction_close",
+        },
+        "production_impact": {
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+            "scope": "observe_only_forward_leadership_event_queue",
+        },
+        "next_action": "freeze_paper_entries_and_measure_forward_replacement_value",
+    }
+
+
 def build_forward_queue_from_sec_filing_text(
     *,
     data_dir: str | Path,
@@ -513,6 +603,29 @@ def build_forward_governance_queue_from_sec_filing_text(
     )
 
 
+def build_forward_leadership_queue_from_sec_filing_text(
+    *,
+    data_dir: str | Path,
+    as_of: str,
+    ohlcv_by_ticker: dict[str, Any] | None = None,
+    spy_ohlcv: Any = None,
+    core_signals: list[dict[str, Any]] | None = None,
+    source_path: str | Path | None = None,
+) -> dict[str, Any]:
+    path = Path(source_path) if source_path else latest_sec_filing_text_path(data_dir)
+    if path is None or not path.exists():
+        return empty_sec_leadership_queue(as_of, "missing_sec_filing_text_jsonl")
+    rows = load_sec_filing_text_rows(path)
+    return build_sec_leadership_change_queue(
+        rows,
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv_by_ticker,
+        spy_ohlcv=spy_ohlcv,
+        core_signals=core_signals,
+        source_path=path,
+    )
+
+
 def empty_sec_event_queue(as_of: str, reason: str) -> dict[str, Any]:
     queue = build_sec_event_queue([], as_of=as_of, source_status=reason)
     queue["error"] = reason
@@ -521,6 +634,16 @@ def empty_sec_event_queue(as_of: str, reason: str) -> dict[str, Any]:
 
 def empty_sec_governance_queue(as_of: str, reason: str) -> dict[str, Any]:
     queue = build_sec_governance_procedural_queue(
+        [],
+        as_of=as_of,
+        source_status=reason,
+    )
+    queue["error"] = reason
+    return queue
+
+
+def empty_sec_leadership_queue(as_of: str, reason: str) -> dict[str, Any]:
+    queue = build_sec_leadership_change_queue(
         [],
         as_of=as_of,
         source_status=reason,
@@ -576,6 +699,34 @@ def _governance_candidate_payload(
         "semantic_subcategory": semantic,
         "reaction_bucket": bucket,
         "target_cell": f"{semantic}|{bucket}",
+        "eight_k_item_codes": event.get("eight_k_item_codes"),
+        "reaction_date": event.get("reaction_date"),
+        "reaction_return": event.get("reaction_return"),
+        "spy_reaction_return": event.get("spy_reaction_return"),
+        "reaction_excess_return": event.get("reaction_excess_return"),
+        "trade_enabled": False,
+        "action": "observe_only",
+        "counterfactual": _counterfactual_payload(core_signals),
+    }
+
+
+def _leadership_candidate_payload(
+    event: dict[str, Any],
+    *,
+    core_signals: list[dict[str, Any]],
+) -> dict[str, Any]:
+    semantic = leadership_semantic_subcategory(event)
+    return {
+        "ticker": event.get("ticker"),
+        "usable_trade_date": event.get("usable_trade_date"),
+        "filing_date": event.get("filing_date"),
+        "accepted_at": event.get("accepted_at"),
+        "accession_number": event.get("accession_number"),
+        "primary_document": event.get("primary_document"),
+        "index_url": event.get("index_url"),
+        "semantic_subcategory": semantic,
+        "reaction_bucket": "negative_excess_le_minus_2pct",
+        "target_cell": f"{semantic}|negative_excess_le_minus_2pct",
         "eight_k_item_codes": event.get("eight_k_item_codes"),
         "reaction_date": event.get("reaction_date"),
         "reaction_return": event.get("reaction_return"),

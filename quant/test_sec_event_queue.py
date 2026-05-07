@@ -4,15 +4,20 @@ from pathlib import Path
 
 from sec_event_queue import (
     GOVERNANCE_QUEUE_NAME,
+    LEADERSHIP_QUEUE_NAME,
     QUEUE_NAME,
     build_sec_governance_procedural_queue,
+    build_forward_leadership_queue_from_sec_filing_text,
     build_forward_queue_from_sec_filing_text,
+    build_sec_leadership_change_queue,
     build_sec_event_queue,
     governance_reaction_bucket,
     governance_semantic_subcategory,
+    leadership_semantic_subcategory,
     language_features,
     load_sec_filing_text_rows,
     qualifies_sec_governance_procedural_event,
+    qualifies_sec_leadership_change_event,
     qualifies_sec_negative_reaction_event,
 )
 
@@ -102,6 +107,37 @@ def test_governance_queue_is_default_off_and_freezes_counterfactuals():
     assert queue["production_impact"]["alters_orders"] is False
 
 
+def test_leadership_queue_is_default_off_and_freezes_counterfactuals():
+    row = _row(
+        ticker="CEOX",
+        accession_number="0003",
+        eight_k_item_codes=["5.02", "9.01"],
+        combined_text="Departure of directors or certain officers. A new CEO was appointed.",
+    )
+    queue = build_sec_leadership_change_queue(
+        [row],
+        as_of="2026-05-04",
+        ohlcv_by_ticker={"CEOX": _ohlcv(100.0, 96.0)},
+        spy_ohlcv=_ohlcv(100.0, 100.0),
+        core_signals=[{"ticker": "NVDA", "strategy": "trend_long", "confidence_score": 0.91}],
+        source_path="data/non_ohlcv/sec_filing_text_sample.jsonl",
+    )
+
+    assert queue["queue_name"] == LEADERSHIP_QUEUE_NAME
+    assert queue["enabled"] is False
+    assert queue["candidate_count"] == 1
+    candidate = queue["candidates"][0]
+    assert candidate["ticker"] == "CEOX"
+    assert candidate["trade_enabled"] is False
+    assert candidate["semantic_subcategory"] == "leadership_change"
+    assert candidate["reaction_bucket"] == "negative_excess_le_minus_2pct"
+    assert candidate["target_cell"] == "leadership_change|negative_excess_le_minus_2pct"
+    assert candidate["reaction_excess_return"] <= -0.02
+    assert candidate["counterfactual"]["alternatives"][0]["ticker"] == "NVDA"
+    assert candidate["counterfactual"]["alternatives"][-1]["type"] == "cash"
+    assert queue["production_impact"]["alters_orders"] is False
+
+
 def test_governance_semantics_and_reaction_buckets_match_frozen_cells():
     assert governance_semantic_subcategory({"eight_k_item_codes": ["5.07"]}) == "shareholder_vote"
     assert (
@@ -111,6 +147,7 @@ def test_governance_semantics_and_reaction_buckets_match_frozen_cells():
     assert governance_semantic_subcategory({"eight_k_item_codes": ["9.01"]}) == "exhibit_only"
     assert governance_reaction_bucket(0.015) == "positive_excess_0_to_2pct"
     assert governance_reaction_bucket(-0.015) == "negative_excess_0_to_minus_2pct"
+    assert leadership_semantic_subcategory({"eight_k_item_codes": ["5.02"]}) == "leadership_change"
 
 
 def test_earnings_item_2_02_is_not_governance_candidate():
@@ -121,6 +158,20 @@ def test_earnings_item_2_02_is_not_governance_candidate():
     }
 
     assert qualifies_sec_governance_procedural_event(event) is False
+
+
+def test_item_5_02_needs_negative_two_pct_excess_reaction_for_leadership_queue():
+    mild = {
+        **_row(eight_k_item_codes=["5.02"]),
+        "price_status": "covered",
+        "reaction_excess_return": -0.019,
+    }
+    strong = {**mild, "reaction_excess_return": -0.02}
+    wrong_item = {**strong, "eight_k_item_codes": ["5.07"]}
+
+    assert qualifies_sec_leadership_change_event(mild) is False
+    assert qualifies_sec_leadership_change_event(strong) is True
+    assert qualifies_sec_leadership_change_event(wrong_item) is False
 
 
 def test_nonnegative_reaction_is_not_queued():
@@ -170,6 +221,19 @@ def test_build_forward_queue_from_sec_filing_text_honors_explicit_daily_source(t
         ohlcv_by_ticker={},
         spy_ohlcv=[],
         source_path=daily,
+    )
+
+    assert queue["enabled"] is False
+    assert queue["candidate_count"] == 0
+    assert queue["data_source"]["status"] == "missing_sec_filing_text_jsonl"
+
+
+def test_build_forward_leadership_queue_handles_missing_source(tmp_path: Path):
+    queue = build_forward_leadership_queue_from_sec_filing_text(
+        data_dir=tmp_path,
+        as_of="2026-05-04",
+        ohlcv_by_ticker={},
+        spy_ohlcv=[],
     )
 
     assert queue["enabled"] is False
@@ -242,4 +306,25 @@ def test_report_generator_renders_sec_governance_queue_without_orders():
     assert "SEC GOVERNANCE/PROCEDURAL EVENT QUEUE" in report
     assert "Enabled: False" in report
     assert "CRDO" in report
+    assert "paper only" in report
+
+
+def test_report_generator_renders_sec_leadership_queue_without_orders():
+    from report_generator import generate_daily_report
+
+    queue = build_sec_leadership_change_queue(
+        [_row(ticker="CEOX", eight_k_item_codes=["5.02"])],
+        as_of="2026-05-04",
+        ohlcv_by_ticker={"CEOX": _ohlcv(100.0, 96.0)},
+        spy_ohlcv=_ohlcv(100.0, 100.0),
+    )
+    report = generate_daily_report(
+        signals=[],
+        market_regime={"regime": "BULL"},
+        sec_leadership_event_queue=queue,
+    )
+
+    assert "SEC LEADERSHIP-CHANGE EVENT QUEUE" in report
+    assert "Enabled: False" in report
+    assert "CEOX" in report
     assert "paper only" in report
