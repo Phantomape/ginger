@@ -18,6 +18,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_ROOT = REPO_ROOT / "data"
 DEFAULT_NON_OHLCV_DIR = DEFAULT_DATA_ROOT / "non_ohlcv"
+DEFAULT_COMPANYFACTS_GLOB = "sec_companyfacts_selected_*.jsonl"
 
 
 def build_daily_filing_features(
@@ -29,6 +30,8 @@ def build_daily_filing_features(
 ) -> dict[str, Any]:
     data_root_path = Path(data_root or DEFAULT_DATA_ROOT)
     non_root = Path(non_ohlcv_dir or data_root_path / "non_ohlcv")
+    if companyfacts_path is None:
+        companyfacts_path = discover_companyfacts_path(data_root_path, non_root)
     filings_path = non_root / f"sec_filing_text_{date_key}.jsonl"
     if not filings_path.exists():
         filings_path = non_root / f"sec_filing_events_{date_key}.jsonl"
@@ -40,6 +43,22 @@ def build_daily_filing_features(
         output_path=output,
         summary_path=summary_output,
     )
+
+
+def discover_companyfacts_path(
+    data_root: str | Path | None = None,
+    non_ohlcv_dir: str | Path | None = None,
+) -> Path | None:
+    """Return the latest selected Companyfacts JSONL available in the repo."""
+    data_root_path = Path(data_root or DEFAULT_DATA_ROOT)
+    non_root = Path(non_ohlcv_dir or data_root_path / "non_ohlcv")
+    candidates = [
+        path for path in non_root.glob(DEFAULT_COMPANYFACTS_GLOB)
+        if path.is_file() and path.stat().st_size > 0
+    ]
+    if not candidates:
+        return None
+    return sorted(candidates, key=lambda path: (path.stat().st_mtime, path.name))[-1]
 
 
 def build_filing_feature_file(
