@@ -32,6 +32,7 @@ try:
         write_json as write_sec_filing_text_summary,
         write_jsonl as write_sec_filing_text_jsonl,
     )
+    from options_onclickmedia import persist_daily_options_snapshot
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.form4_backfill import (
         DEFAULT_USER_AGENT as FORM4_USER_AGENT,
@@ -50,6 +51,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         write_json as write_sec_filing_text_summary,
         write_jsonl as write_sec_filing_text_jsonl,
     )
+    from quant.options_onclickmedia import persist_daily_options_snapshot
 
 
 DEFAULT_DATA_DIR = Path("data/non_ohlcv")
@@ -70,6 +72,13 @@ def persist_daily_non_ohlcv_snapshots(
     sleep_seconds: float = 0.11,
     request_delay_sec: float = 0.11,
     max_ciks: int | None = None,
+    refresh_options: bool = False,
+    options_tickers: list[str] | None = None,
+    option_underlying_prices: dict[str, float] | None = None,
+    options_max_expirations: int | None = 2,
+    options_max_strikes_per_side: int | None = 12,
+    options_max_tickers: int | None = None,
+    refresh_options_cache: bool = False,
 ) -> dict[str, Any]:
     """Write date-stamped SEC and Form 4 inputs for today's forward queues.
 
@@ -91,6 +100,8 @@ def persist_daily_non_ohlcv_snapshots(
         "sec_filing_text_summary": root / f"sec_filing_text_backfill_summary_{tag}.json",
         "form4_transactions": root / f"form4_transactions_{tag}.jsonl",
         "form4_summary": root / f"form4_backfill_summary_{tag}.json",
+        "options_onclickmedia_chain": root / f"options_onclickmedia_chain_{tag}.jsonl",
+        "options_onclickmedia_summary": root / f"options_onclickmedia_summary_{tag}.json",
         "summary": root / f"daily_non_ohlcv_snapshot_{tag}.json",
     }
 
@@ -151,11 +162,40 @@ def persist_daily_non_ohlcv_snapshots(
         max_ciks=max_ciks,
     )
 
+    if refresh_options and options_tickers:
+        snapshot["options_onclickmedia"] = _run_options_onclickmedia(
+            as_of_date=as_of_date,
+            data_dir=root,
+            tickers=options_tickers,
+            underlying_prices=option_underlying_prices,
+            max_expirations=options_max_expirations,
+            max_strikes_per_side=options_max_strikes_per_side,
+            max_tickers=options_max_tickers,
+            refresh=refresh_options_cache,
+            sleep_seconds=sleep_seconds,
+        )
+    else:
+        snapshot["options_onclickmedia"] = {
+            "status": "skipped",
+            "reason": "refresh_options_false_or_no_tickers",
+            "output_path": _path_text(paths["options_onclickmedia_chain"]),
+            "summary_output": _path_text(paths["options_onclickmedia_summary"]),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "options_data_collection_skipped",
+            },
+        }
+
     statuses = [
         snapshot["sec_filing_events"].get("status"),
         snapshot["sec_filing_text"].get("status"),
         snapshot["form4_transactions"].get("status"),
     ]
+    if snapshot["options_onclickmedia"].get("status") != "skipped":
+        statuses.append(snapshot["options_onclickmedia"].get("status"))
     if all(status == "ok" for status in statuses):
         snapshot["status"] = "ok"
     elif any(status == "ok" for status in statuses):
@@ -285,6 +325,52 @@ def _run_form4_transactions(
             "error": str(exc),
             "output_path": _path_text(paths["form4_transactions"]),
             "summary_output": _path_text(paths["form4_summary"]),
+        }
+
+
+def _run_options_onclickmedia(
+    *,
+    as_of_date: date,
+    data_dir: Path,
+    tickers: list[str],
+    underlying_prices: dict[str, float] | None,
+    max_expirations: int | None,
+    max_strikes_per_side: int | None,
+    max_tickers: int | None,
+    refresh: bool,
+    sleep_seconds: float,
+) -> dict[str, Any]:
+    try:
+        summary = persist_daily_options_snapshot(
+            as_of=as_of_date,
+            tickers=tickers,
+            underlying_prices=underlying_prices,
+            data_dir=data_dir,
+            max_expirations=max_expirations,
+            max_strikes_per_side=max_strikes_per_side,
+            max_tickers=max_tickers,
+            refresh=refresh,
+            sleep_seconds=sleep_seconds,
+        )
+        return summary
+    except Exception as exc:
+        tag = as_of_date.strftime("%Y%m%d")
+        return {
+            "status": "failed",
+            "error": str(exc),
+            "output_path": _path_text(data_dir / f"options_onclickmedia_chain_{tag}.jsonl"),
+            "summary_output": _path_text(data_dir / f"options_onclickmedia_summary_{tag}.json"),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "options_data_collection_failed_only",
+            },
         }
 
 

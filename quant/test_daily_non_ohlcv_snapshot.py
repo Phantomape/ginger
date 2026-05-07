@@ -77,3 +77,57 @@ def test_daily_snapshot_keeps_form4_when_sec_source_fails(tmp_path, monkeypatch)
     assert snapshot["sec_filing_text"]["status"] == "skipped"
     assert snapshot["form4_transactions"]["status"] == "ok"
     assert (tmp_path / "form4_transactions_20260504.jsonl").exists()
+
+
+def test_daily_snapshot_can_collect_options_as_data_only(tmp_path, monkeypatch):
+    def fake_sec_events(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_rows": 0}
+
+    def fake_sec_text(args):
+        return ([], {"rows_written": 0, "item_codes": args.item_codes})
+
+    def fake_form4(args):
+        Path(args.output).write_text("", encoding="utf-8")
+        Path(args.summary_output).write_text("{}\n", encoding="utf-8")
+        return {"rows_written": 0, "pit_safe_count": 0}
+
+    def fake_options(**kwargs):
+        assert kwargs["tickers"] == ["TSLA"]
+        assert kwargs["underlying_prices"] == {"TSLA": 300.0}
+        return {
+            "status": "ok",
+            "rows_written": 4,
+            "pit_safe_rows": 4,
+            "output_path": str(tmp_path / "options_onclickmedia_chain_20260504.jsonl"),
+            "summary_output": str(tmp_path / "options_onclickmedia_summary_20260504.json"),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
+
+    monkeypatch.setattr(daily_snapshot, "backfill_sec_filing_events", fake_sec_events)
+    monkeypatch.setattr(daily_snapshot, "build_sec_filing_text_rows", fake_sec_text)
+    monkeypatch.setattr(daily_snapshot, "backfill_form4_transactions", fake_form4)
+    monkeypatch.setattr(daily_snapshot, "persist_daily_options_snapshot", fake_options)
+
+    snapshot = daily_snapshot.persist_daily_non_ohlcv_snapshots(
+        as_of="2026-05-04",
+        data_dir=tmp_path,
+        refresh_options=True,
+        options_tickers=["TSLA"],
+        option_underlying_prices={"TSLA": 300.0},
+    )
+
+    assert snapshot["status"] == "ok"
+    assert snapshot["options_onclickmedia"]["status"] == "ok"
+    assert snapshot["options_onclickmedia"]["rows_written"] == 4
+    impact = snapshot["options_onclickmedia"]["production_impact"]
+    assert impact["alters_signal_generation"] is False
+    assert impact["alters_candidate_ranking"] is False
+    assert impact["alters_sizing"] is False
+    assert impact["alters_orders"] is False
