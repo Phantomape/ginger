@@ -170,6 +170,12 @@ def main():
         build_event_sleeve_bundle_snapshot,
         empty_event_sleeve_bundle_snapshot,
     )
+    from state_surface_sleeve import (
+        build_state_surface_queue,
+        build_state_surface_sleeve_snapshot,
+        empty_state_surface_queue,
+        empty_state_surface_sleeve_snapshot,
+    )
     from pilot_sleeve       import (
         append_pilot_decision_snapshots,
         apply_pilot_sizing_policy,
@@ -976,6 +982,44 @@ def main():
         )
 
     try:
+        state_surface_queue = build_state_surface_queue(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            universe=universe,
+            core_signals=signals,
+        )
+        state_surface_sleeve = build_state_surface_sleeve_snapshot(
+            state_surface_queue=state_surface_queue,
+            as_of=today_iso,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            state_surface_sleeve.get("candidate_count", 0) > 0
+            or state_surface_sleeve.get("pending_count", 0) > 0
+            or state_surface_sleeve.get("open_position_count", 0) > 0
+            or state_surface_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "State-surface paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                state_surface_sleeve.get("candidate_count", 0),
+                state_surface_sleeve.get("pending_count", 0),
+                state_surface_sleeve.get("open_position_count", 0),
+                state_surface_sleeve.get("closed_count_today", 0),
+                state_surface_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"State-surface paper sleeve unavailable: {e}")
+        state_surface_queue = empty_state_surface_queue(
+            today_iso,
+            "state_surface_queue_build_failed",
+        )
+        state_surface_sleeve = empty_state_surface_sleeve_snapshot(
+            today_iso,
+            "state_surface_sleeve_build_failed",
+        )
+
+    try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
             crypto_action = crypto_sleeve.get("action", {}).get("action")
@@ -1015,6 +1059,8 @@ def main():
     trend_signals_dict["sec_leadership_event_queue"] = sec_leadership_event_queue
     trend_signals_dict["sec_leadership_event_sleeve"] = sec_leadership_event_sleeve
     trend_signals_dict["event_sleeve_bundle"] = event_sleeve_bundle
+    trend_signals_dict["state_surface_queue"] = state_surface_queue
+    trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
     trend_signals_dict["crypto_sleeve"] = crypto_sleeve
 
@@ -1040,6 +1086,7 @@ def main():
         sec_leadership_event_queue = sec_leadership_event_queue,
         sec_leadership_event_sleeve = sec_leadership_event_sleeve,
         event_sleeve_bundle = event_sleeve_bundle,
+        state_surface_sleeve = state_surface_sleeve,
         non_ohlcv_snapshot = non_ohlcv_snapshot,
         crypto_sleeve = crypto_sleeve,
     )
@@ -1070,6 +1117,8 @@ def main():
         "sec_leadership_event_queue": sec_leadership_event_queue,
         "sec_leadership_event_sleeve": sec_leadership_event_sleeve,
         "event_sleeve_bundle": event_sleeve_bundle,
+        "state_surface_queue": state_surface_queue,
+        "state_surface_sleeve": state_surface_sleeve,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,
         "crypto_sleeve": crypto_sleeve,
         "heat_blocked_signals": heat_blocked_signals,

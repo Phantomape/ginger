@@ -48,6 +48,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            sec_leadership_event_queue=None,
                            sec_leadership_event_sleeve=None,
                            event_sleeve_bundle=None,
+                           state_surface_sleeve=None,
                            non_ohlcv_snapshot=None,
                            crypto_sleeve=None):
     """
@@ -72,6 +73,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         sec_leadership_event_queue (dict): Default-off SEC leadership-change queue
         sec_leadership_event_sleeve (dict): Default-off SEC leadership paper sleeve
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
+        state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
         crypto_sleeve (dict):           Isolated BTC/USD sleeve advice
 
@@ -493,6 +495,61 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"open={summary.get('open_position_count', 0)} "
                 f"closed_today={summary.get('closed_count_today', 0)} "
                 f"realized=${summary.get('realized_pnl_to_date', 0.0):,.2f}"
+            )
+
+    if state_surface_sleeve and (
+        state_surface_sleeve.get("candidate_count", 0) > 0
+        or state_surface_sleeve.get("pending_count", 0) > 0
+        or state_surface_sleeve.get("open_position_count", 0) > 0
+        or state_surface_sleeve.get("closed_count_today", 0) > 0
+        or state_surface_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("STATE-SURFACE SATELLITE PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {state_surface_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {state_surface_sleeve.get('trade_enabled', False)}"
+        )
+        if state_surface_sleeve.get("error"):
+            lines.append(f"  Source status: {state_surface_sleeve.get('error')}")
+        lines.append(
+            f"  Candidates: {state_surface_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {state_surface_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {state_surface_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {state_surface_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${state_surface_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${state_surface_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = state_surface_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"WR={metrics.get('win_rate')}  |  blocked_by={reason_text}"
+            )
+        state = state_surface_sleeve.get("state") or {}
+        if state:
+            lines.append(
+                "  State: "
+                f"{state.get('state_bucket', 'unknown')} / "
+                f"{state.get('breadth_bucket', 'unknown')} / "
+                f"{state.get('dispersion_bucket', 'unknown')}"
+            )
+        for candidate in (state_surface_sleeve.get("candidates") or [])[:5]:
+            score = candidate.get("score")
+            score_text = f"{score:.3f}" if isinstance(score, (int, float)) else "n/a"
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('surface', 'surface')} "
+                f"rank={candidate.get('rank', '?')} score={score_text} "
+                "(paper only)"
             )
 
     lines.append("\n" + "-" * 60)
