@@ -1,0 +1,1276 @@
+{
+  "experiment_id": "exp-20260506-029",
+  "timestamp": "2026-05-06T20:20:17.300516+00:00",
+  "lane": "alpha_search",
+  "alpha_hypothesis_category": "capital_allocation_meta_routing",
+  "hypothesis": "If trend entries lose edge when sector leadership is fragmented, then shrinking trend risk only when equal-weight sector 20-day return dispersion is at least 8% should improve old/thin tapes without harming the stronger windows.",
+  "why_not_llm_soft_ranking": "Production-aligned LLM soft-ranking samples remain too thin; this uses a deterministic, replayable market-structure feature instead.",
+  "history_guardrails": {
+    "not_mfe_exit_retry": true,
+    "not_broad_rotation_spy_leader_retry": true,
+    "not_universe_expansion_retry": true,
+    "why_not_simple_repeat": "This tests the specific high-dispersion trend cohort surfaced by exp-20260506-024, not another protective stop, broad breakout de-prioritization, or SPY-leader multiplier retune."
+  },
+  "parameters": {
+    "dispersion_definition": "population stddev of equal-weight sector 20-day returns over the existing universe",
+    "dispersion_threshold": 0.08,
+    "tested_variants": {
+      "trend_high_dispersion_0_50x": {
+        "risk_multiplier": 0.5
+      },
+      "trend_high_dispersion_0_25x": {
+        "risk_multiplier": 0.25
+      },
+      "trend_high_dispersion_0_00x": {
+        "risk_multiplier": 0.0
+      }
+    },
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "add-ons",
+      "all exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ],
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "state_note": "slow-melt bull / accepted-stack dominant tape"
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "state_note": "rotation-heavy bull where strategy profits but can lag indexes"
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "state_note": "mixed-to-weak older tape with lower win rate"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "metrics": {
+        "expected_value_score": 3.4191,
+        "sharpe_daily": 4.35,
+        "total_pnl": 78600.33,
+        "total_return_pct": 0.786,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5149,
+        "trend_signals_seen": 0,
+        "high_dispersion_trend_signals_seen": 0,
+        "signals_resized": 0,
+        "high_dispersion_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "trades": []
+    },
+    "mid_weak": {
+      "metrics": {
+        "expected_value_score": 1.4415,
+        "sharpe_daily": 2.62,
+        "total_pnl": 55015.08,
+        "total_return_pct": 0.5502,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4738,
+        "trend_signals_seen": 0,
+        "high_dispersion_trend_signals_seen": 0,
+        "signals_resized": 0,
+        "high_dispersion_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "trades": []
+    },
+    "old_thin": {
+      "metrics": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "max_drawdown_pct": 0.0805,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4547,
+        "trend_signals_seen": 0,
+        "high_dispersion_trend_signals_seen": 0,
+        "signals_resized": 0,
+        "high_dispersion_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "trades": []
+    }
+  },
+  "variant_results": {
+    "trend_high_dispersion_0_50x": {
+      "parameters": {
+        "risk_multiplier": 0.5
+      },
+      "by_window": {
+        "late_strong": {
+          "metrics": {
+            "expected_value_score": 3.1453,
+            "sharpe_daily": 4.42,
+            "total_pnl": 71163.63,
+            "total_return_pct": 0.7116,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7273,
+            "trade_count": 22,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.9241,
+            "trend_signals_seen": 22,
+            "high_dispersion_trend_signals_seen": 8,
+            "signals_resized": 8,
+            "high_dispersion_sizing_days": 5,
+            "touched_trade_count": 5,
+            "touched_trade_pnl": 7754.09,
+            "touched_trade_win_rate": 0.6
+          },
+          "trades": [
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "entry_date": "2026-01-22",
+              "exit_date": "2026-01-29",
+              "sector": "Commodities",
+              "pnl": 3868.19,
+              "sizing_multipliers": {
+                "trend_commodities_near_high_risk_multiplier_applied": 1.5,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "entry_date": "2026-01-22",
+              "exit_date": "2026-01-29",
+              "sector": "Commodities",
+              "pnl": 3871.82,
+              "sizing_multipliers": {
+                "trend_commodities_near_high_risk_multiplier_applied": 1.5,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2026-02-05",
+              "exit_date": "2026-02-12",
+              "sector": "Industrials",
+              "pnl": 58.8,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "MCD",
+              "strategy": "trend_long",
+              "entry_date": "2026-02-13",
+              "exit_date": "2026-02-18",
+              "sector": "Consumer Discretionary",
+              "pnl": -10.16,
+              "sizing_multipliers": {
+                "trend_consumer_near_high_dte_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2026-02-20",
+              "exit_date": "2026-02-25",
+              "sector": "Industrials",
+              "pnl": -34.56,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.2738,
+            "sharpe_daily": 0.07,
+            "total_pnl": -7436.7,
+            "total_return_pct": -0.0744,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0622,
+            "trade_count": 3.0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.4092,
+            "trend_signals_seen": 22.0,
+            "high_dispersion_trend_signals_seen": 8.0,
+            "signals_resized": 8.0,
+            "high_dispersion_sizing_days": 5.0,
+            "touched_trade_count": 5.0,
+            "touched_trade_pnl": 7754.09,
+            "touched_trade_win_rate": 0.6
+          }
+        },
+        "mid_weak": {
+          "metrics": {
+            "expected_value_score": 1.1737,
+            "sharpe_daily": 2.71,
+            "total_pnl": 43311.31,
+            "total_return_pct": 0.4331,
+            "max_drawdown_pct": 0.046,
+            "win_rate": 0.4762,
+            "trade_count": 21,
+            "survival_rate": 0.8298,
+            "tail_loss_share": 0.6538,
+            "trend_signals_seen": 20,
+            "high_dispersion_trend_signals_seen": 3,
+            "signals_resized": 3,
+            "high_dispersion_sizing_days": 3,
+            "touched_trade_count": 2,
+            "touched_trade_pnl": 4857.91,
+            "touched_trade_win_rate": 0.5
+          },
+          "trades": [
+            {
+              "ticker": "COIN",
+              "strategy": "trend_long",
+              "entry_date": "2025-05-14",
+              "exit_date": "2025-06-24",
+              "sector": "Financials",
+              "pnl": 4881.49,
+              "sizing_multipliers": {
+                "trend_financials_risk_multiplier_applied": 1.5,
+                "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2025-05-16",
+              "exit_date": "2025-07-17",
+              "sector": "Industrials",
+              "pnl": -23.58,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.2678,
+            "sharpe_daily": 0.09,
+            "total_pnl": -11703.77,
+            "total_return_pct": -0.1171,
+            "max_drawdown_pct": -0.0419,
+            "win_rate": -0.0476,
+            "trade_count": 0.0,
+            "survival_rate": 0.0373,
+            "tail_loss_share": 0.18,
+            "trend_signals_seen": 20.0,
+            "high_dispersion_trend_signals_seen": 3.0,
+            "signals_resized": 3.0,
+            "high_dispersion_sizing_days": 3.0,
+            "touched_trade_count": 2.0,
+            "touched_trade_pnl": 4857.91,
+            "touched_trade_win_rate": 0.5
+          }
+        },
+        "old_thin": {
+          "metrics": {
+            "expected_value_score": 0.3271,
+            "sharpe_daily": 1.3,
+            "total_pnl": 25164.84,
+            "total_return_pct": 0.2516,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.8983,
+            "tail_loss_share": 0.4723,
+            "trend_signals_seen": 40,
+            "high_dispersion_trend_signals_seen": 5,
+            "signals_resized": 5,
+            "high_dispersion_sizing_days": 4,
+            "touched_trade_count": 3,
+            "touched_trade_pnl": -874.51,
+            "touched_trade_win_rate": 0.0
+          },
+          "trades": [
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "entry_date": "2024-11-25",
+              "exit_date": "2024-12-19",
+              "sector": "Technology",
+              "pnl": -9.86,
+              "sizing_multipliers": {
+                "trend_tech_gap_risk_multiplier_applied": 0.25,
+                "trend_tech_near_high_risk_multiplier_applied": 0.25,
+                "trend_tech_dte_risk_multiplier_applied": 0.25,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2024-11-22",
+              "exit_date": "2024-12-30",
+              "sector": "Industrials",
+              "pnl": -15.92,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            },
+            {
+              "ticker": "V",
+              "strategy": "trend_long",
+              "entry_date": "2024-11-26",
+              "exit_date": "2025-01-10",
+              "sector": "Financials",
+              "pnl": -848.73,
+              "sizing_multipliers": {
+                "trend_financials_risk_multiplier_applied": 1.5,
+                "high_dispersion_trend_risk_multiplier_applied": 0.5
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": 0.0092,
+            "sharpe_daily": 0.01,
+            "total_pnl": 522.77,
+            "total_return_pct": 0.0052,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0178,
+            "trade_count": 1.0,
+            "survival_rate": -0.0184,
+            "tail_loss_share": 0.0176,
+            "trend_signals_seen": 40.0,
+            "high_dispersion_trend_signals_seen": 5.0,
+            "signals_resized": 5.0,
+            "high_dispersion_sizing_days": 4.0,
+            "touched_trade_count": 3.0,
+            "touched_trade_pnl": -874.51,
+            "touched_trade_win_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "after_expected_value_score_sum": 4.6461,
+        "expected_value_score_delta_sum": -0.5324,
+        "expected_value_score_delta_pct": -0.10281,
+        "baseline_total_pnl_sum": 158257.48,
+        "after_total_pnl_sum": 139639.78,
+        "total_pnl_delta_sum": -18617.7,
+        "total_pnl_delta_pct": -0.117642,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 2,
+        "by_window_ev_delta": {
+          "late_strong": -0.2738,
+          "mid_weak": -0.2678,
+          "old_thin": 0.0092
+        },
+        "by_window_pnl_delta": {
+          "late_strong": -7436.7,
+          "mid_weak": -11703.77,
+          "old_thin": 522.77
+        },
+        "trade_count_delta_sum": 4
+      },
+      "gate4_pass": false
+    },
+    "trend_high_dispersion_0_25x": {
+      "parameters": {
+        "risk_multiplier": 0.25
+      },
+      "by_window": {
+        "late_strong": {
+          "metrics": {
+            "expected_value_score": 2.9437,
+            "sharpe_daily": 4.43,
+            "total_pnl": 66453.39,
+            "total_return_pct": 0.6645,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7273,
+            "trade_count": 22,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.9241,
+            "trend_signals_seen": 22,
+            "high_dispersion_trend_signals_seen": 8,
+            "signals_resized": 8,
+            "high_dispersion_sizing_days": 5,
+            "touched_trade_count": 5,
+            "touched_trade_pnl": 3852.38,
+            "touched_trade_win_rate": 0.6
+          },
+          "trades": [
+            {
+              "ticker": "GLD",
+              "strategy": "trend_long",
+              "entry_date": "2026-01-22",
+              "exit_date": "2026-01-29",
+              "sector": "Commodities",
+              "pnl": 1902.39,
+              "sizing_multipliers": {
+                "trend_commodities_near_high_risk_multiplier_applied": 1.5,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "IAU",
+              "strategy": "trend_long",
+              "entry_date": "2026-01-22",
+              "exit_date": "2026-01-29",
+              "sector": "Commodities",
+              "pnl": 1935.91,
+              "sizing_multipliers": {
+                "trend_commodities_near_high_risk_multiplier_applied": 1.5,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2026-02-05",
+              "exit_date": "2026-02-12",
+              "sector": "Industrials",
+              "pnl": 58.8,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "MCD",
+              "strategy": "trend_long",
+              "entry_date": "2026-02-13",
+              "exit_date": "2026-02-18",
+              "sector": "Consumer Discretionary",
+              "pnl": -10.16,
+              "sizing_multipliers": {
+                "trend_consumer_near_high_dte_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2026-02-20",
+              "exit_date": "2026-02-25",
+              "sector": "Industrials",
+              "pnl": -34.56,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.4754,
+            "sharpe_daily": 0.08,
+            "total_pnl": -12146.94,
+            "total_return_pct": -0.1215,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0622,
+            "trade_count": 3.0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.4092,
+            "trend_signals_seen": 22.0,
+            "high_dispersion_trend_signals_seen": 8.0,
+            "signals_resized": 8.0,
+            "high_dispersion_sizing_days": 5.0,
+            "touched_trade_count": 5.0,
+            "touched_trade_pnl": 3852.38,
+            "touched_trade_win_rate": 0.6
+          }
+        },
+        "mid_weak": {
+          "metrics": {
+            "expected_value_score": 1.0653,
+            "sharpe_daily": 2.65,
+            "total_pnl": 40204.14,
+            "total_return_pct": 0.402,
+            "max_drawdown_pct": 0.046,
+            "win_rate": 0.4762,
+            "trade_count": 21,
+            "survival_rate": 0.8298,
+            "tail_loss_share": 0.6604,
+            "trend_signals_seen": 20,
+            "high_dispersion_trend_signals_seen": 3,
+            "signals_resized": 3,
+            "high_dispersion_sizing_days": 3,
+            "touched_trade_count": 2,
+            "touched_trade_pnl": 2417.17,
+            "touched_trade_win_rate": 0.5
+          },
+          "trades": [
+            {
+              "ticker": "COIN",
+              "strategy": "trend_long",
+              "entry_date": "2025-05-14",
+              "exit_date": "2025-06-24",
+              "sector": "Financials",
+              "pnl": 2440.75,
+              "sizing_multipliers": {
+                "trend_financials_risk_multiplier_applied": 1.5,
+                "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2025-05-16",
+              "exit_date": "2025-07-17",
+              "sector": "Industrials",
+              "pnl": -23.58,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.3762,
+            "sharpe_daily": 0.03,
+            "total_pnl": -14810.94,
+            "total_return_pct": -0.1482,
+            "max_drawdown_pct": -0.0419,
+            "win_rate": -0.0476,
+            "trade_count": 0.0,
+            "survival_rate": 0.0373,
+            "tail_loss_share": 0.1866,
+            "trend_signals_seen": 20.0,
+            "high_dispersion_trend_signals_seen": 3.0,
+            "signals_resized": 3.0,
+            "high_dispersion_sizing_days": 3.0,
+            "touched_trade_count": 2.0,
+            "touched_trade_pnl": 2417.17,
+            "touched_trade_win_rate": 0.5
+          }
+        },
+        "old_thin": {
+          "metrics": {
+            "expected_value_score": 0.3359,
+            "sharpe_daily": 1.31,
+            "total_pnl": 25637.41,
+            "total_return_pct": 0.2564,
+            "max_drawdown_pct": 0.0804,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.8983,
+            "tail_loss_share": 0.4886,
+            "trend_signals_seen": 40,
+            "high_dispersion_trend_signals_seen": 5,
+            "signals_resized": 5,
+            "high_dispersion_sizing_days": 4,
+            "touched_trade_count": 3,
+            "touched_trade_pnl": -450.14,
+            "touched_trade_win_rate": 0.0
+          },
+          "trades": [
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "entry_date": "2024-11-25",
+              "exit_date": "2024-12-19",
+              "sector": "Technology",
+              "pnl": -9.86,
+              "sizing_multipliers": {
+                "trend_tech_gap_risk_multiplier_applied": 0.25,
+                "trend_tech_near_high_risk_multiplier_applied": 0.25,
+                "trend_tech_dte_risk_multiplier_applied": 0.25,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "DE",
+              "strategy": "trend_long",
+              "entry_date": "2024-11-22",
+              "exit_date": "2024-12-30",
+              "sector": "Industrials",
+              "pnl": -15.92,
+              "sizing_multipliers": {
+                "trend_industrials_risk_multiplier_applied": 0.0,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            },
+            {
+              "ticker": "V",
+              "strategy": "trend_long",
+              "entry_date": "2024-11-26",
+              "exit_date": "2025-01-10",
+              "sector": "Financials",
+              "pnl": -424.36,
+              "sizing_multipliers": {
+                "trend_financials_risk_multiplier_applied": 1.5,
+                "high_dispersion_trend_risk_multiplier_applied": 0.25
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": 0.018,
+            "sharpe_daily": 0.02,
+            "total_pnl": 995.34,
+            "total_return_pct": 0.01,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": -0.0178,
+            "trade_count": 1.0,
+            "survival_rate": -0.0184,
+            "tail_loss_share": 0.0339,
+            "trend_signals_seen": 40.0,
+            "high_dispersion_trend_signals_seen": 5.0,
+            "signals_resized": 5.0,
+            "high_dispersion_sizing_days": 4.0,
+            "touched_trade_count": 3.0,
+            "touched_trade_pnl": -450.14,
+            "touched_trade_win_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "after_expected_value_score_sum": 4.3449,
+        "expected_value_score_delta_sum": -0.8336,
+        "expected_value_score_delta_pct": -0.160973,
+        "baseline_total_pnl_sum": 158257.48,
+        "after_total_pnl_sum": 132294.94,
+        "total_pnl_delta_sum": -25962.54,
+        "total_pnl_delta_pct": -0.164053,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 2,
+        "by_window_ev_delta": {
+          "late_strong": -0.4754,
+          "mid_weak": -0.3762,
+          "old_thin": 0.018
+        },
+        "by_window_pnl_delta": {
+          "late_strong": -12146.94,
+          "mid_weak": -14810.94,
+          "old_thin": 995.34
+        },
+        "trade_count_delta_sum": 4
+      },
+      "gate4_pass": false
+    },
+    "trend_high_dispersion_0_00x": {
+      "parameters": {
+        "risk_multiplier": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "metrics": {
+            "expected_value_score": 3.2151,
+            "sharpe_daily": 5.21,
+            "total_pnl": 61711.23,
+            "total_return_pct": 0.6171,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7647,
+            "trade_count": 17,
+            "survival_rate": 0.8704,
+            "tail_loss_share": 0.5149,
+            "trend_signals_seen": 26,
+            "high_dispersion_trend_signals_seen": 12,
+            "signals_resized": 12,
+            "high_dispersion_sizing_days": 7,
+            "touched_trade_count": 0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          },
+          "trades": [],
+          "delta": {
+            "expected_value_score": -0.204,
+            "sharpe_daily": 0.86,
+            "total_pnl": -16889.1,
+            "total_return_pct": -0.1689,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0248,
+            "trade_count": -2.0,
+            "survival_rate": 0.0665,
+            "tail_loss_share": 0.0,
+            "trend_signals_seen": 26.0,
+            "high_dispersion_trend_signals_seen": 12.0,
+            "signals_resized": 12.0,
+            "high_dispersion_sizing_days": 7.0,
+            "touched_trade_count": 0.0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          }
+        },
+        "mid_weak": {
+          "metrics": {
+            "expected_value_score": 1.1886,
+            "sharpe_daily": 2.8,
+            "total_pnl": 42446.2,
+            "total_return_pct": 0.4245,
+            "max_drawdown_pct": 0.046,
+            "win_rate": 0.5,
+            "trade_count": 20,
+            "survival_rate": 0.8491,
+            "tail_loss_share": 0.479,
+            "trend_signals_seen": 23,
+            "high_dispersion_trend_signals_seen": 4,
+            "signals_resized": 4,
+            "high_dispersion_sizing_days": 4,
+            "touched_trade_count": 0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          },
+          "trades": [],
+          "delta": {
+            "expected_value_score": -0.2529,
+            "sharpe_daily": 0.18,
+            "total_pnl": -12568.88,
+            "total_return_pct": -0.1257,
+            "max_drawdown_pct": -0.0419,
+            "win_rate": -0.0238,
+            "trade_count": -1.0,
+            "survival_rate": 0.0566,
+            "tail_loss_share": 0.0052,
+            "trend_signals_seen": 23.0,
+            "high_dispersion_trend_signals_seen": 4.0,
+            "signals_resized": 4.0,
+            "high_dispersion_sizing_days": 4.0,
+            "touched_trade_count": 0.0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          }
+        },
+        "old_thin": {
+          "metrics": {
+            "expected_value_score": 0.3035,
+            "sharpe_daily": 1.26,
+            "total_pnl": 24086.06,
+            "total_return_pct": 0.2409,
+            "max_drawdown_pct": 0.0804,
+            "win_rate": 0.4286,
+            "trade_count": 21,
+            "survival_rate": 0.9333,
+            "tail_loss_share": 0.4478,
+            "trend_signals_seen": 42,
+            "high_dispersion_trend_signals_seen": 7,
+            "signals_resized": 7,
+            "high_dispersion_sizing_days": 5,
+            "touched_trade_count": 0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          },
+          "trades": [],
+          "delta": {
+            "expected_value_score": -0.0144,
+            "sharpe_daily": -0.03,
+            "total_pnl": -556.01,
+            "total_return_pct": -0.0055,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": 0.0195,
+            "trade_count": -1.0,
+            "survival_rate": 0.0166,
+            "tail_loss_share": -0.0069,
+            "trend_signals_seen": 42.0,
+            "high_dispersion_trend_signals_seen": 7.0,
+            "signals_resized": 7.0,
+            "high_dispersion_sizing_days": 5.0,
+            "touched_trade_count": 0.0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "after_expected_value_score_sum": 4.7072,
+        "expected_value_score_delta_sum": -0.4713,
+        "expected_value_score_delta_pct": -0.091011,
+        "baseline_total_pnl_sum": 158257.48,
+        "after_total_pnl_sum": 128243.49,
+        "total_pnl_delta_sum": -30013.99,
+        "total_pnl_delta_pct": -0.189653,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 3,
+        "windows_pnl_improved": 0,
+        "windows_pnl_regressed": 3,
+        "by_window_ev_delta": {
+          "late_strong": -0.204,
+          "mid_weak": -0.2529,
+          "old_thin": -0.0144
+        },
+        "by_window_pnl_delta": {
+          "late_strong": -16889.1,
+          "mid_weak": -12568.88,
+          "old_thin": -556.01
+        },
+        "trade_count_delta_sum": -4
+      },
+      "gate4_pass": false
+    }
+  },
+  "best_variant": "trend_high_dispersion_0_00x",
+  "best_variant_gate4": false,
+  "decision": "rejected",
+  "interpretation": "High-sector-dispersion trend de-risking did not pass Gate 4. The best variant `trend_high_dispersion_0_00x` changed aggregate EV by -0.4713 and PnL by -30013.99; it does not justify a new state-aware trend sizing branch.",
+  "rejection_reason": "High-sector-dispersion trend de-risking did not pass Gate 4. The best variant `trend_high_dispersion_0_00x` changed aggregate EV by -0.4713 and PnL by -30013.99; it does not justify a new state-aware trend sizing branch.",
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_role_changed": false,
+    "blocker_relation": "LLM data limits were bypassed by selecting another alpha branch."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted later, compute sector dispersion in shared production/backtest enrichment and consume it from shared sizing."
+  },
+  "ticket": {
+    "experiment_id": "exp-20260506-029",
+    "title": "High-dispersion trend risk allocation",
+    "decision": "rejected",
+    "best_variant": "trend_high_dispersion_0_00x",
+    "next_action": "Do not promote; use a different alpha branch unless new dispersion evidence appears."
+  },
+  "related_files": [
+    "data\\experiments\\exp-20260506-029\\high_dispersion_trend_risk.json",
+    "docs\\experiments\\logs\\exp-20260506-029.json",
+    "docs\\experiments\\tickets\\exp-20260506-029.json",
+    "docs\\experiments\\artifacts\\exp-20260506-029_high_dispersion_trend_risk.md",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "experiment_log_entry": {
+    "experiment_id": "exp-20260506-029",
+    "timestamp": "2026-05-06T20:20:17.300516+00:00",
+    "lane": "alpha_search",
+    "change_type": "capital_allocation_high_dispersion_trend_risk",
+    "alpha_hypothesis_category": "capital_allocation_meta_routing",
+    "hypothesis": "If trend entries lose edge when sector leadership is fragmented, then shrinking trend risk only when equal-weight sector 20-day return dispersion is at least 8% should improve old/thin tapes without harming the stronger windows.",
+    "parameters": {
+      "dispersion_definition": "population stddev of equal-weight sector 20-day returns over the existing universe",
+      "dispersion_threshold": 0.08,
+      "tested_variants": {
+        "trend_high_dispersion_0_50x": {
+          "risk_multiplier": 0.5
+        },
+        "trend_high_dispersion_0_25x": {
+          "risk_multiplier": 0.25
+        },
+        "trend_high_dispersion_0_00x": {
+          "risk_multiplier": 0.0
+        }
+      },
+      "locked_variables": [
+        "universe",
+        "signal generation",
+        "entry filters",
+        "candidate ranking",
+        "MAX_POSITIONS",
+        "MAX_POSITION_PCT",
+        "MAX_PORTFOLIO_HEAT",
+        "MAX_PER_SECTOR",
+        "gap cancels",
+        "add-ons",
+        "all exits",
+        "LLM/news replay",
+        "earnings strategy"
+      ],
+      "windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "state_note": "slow-melt bull / accepted-stack dominant tape"
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "state_note": "rotation-heavy bull where strategy profits but can lag indexes"
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "state_note": "mixed-to-weak older tape with lower win rate"
+        }
+      }
+    },
+    "date_range": {
+      "primary": "2025-10-23 -> 2026-04-21",
+      "secondary": [
+        "2025-04-23 -> 2025-10-22",
+        "2024-10-02 -> 2025-04-22"
+      ]
+    },
+    "market_regime_summary": {
+      "late_strong": "slow-melt bull / accepted-stack dominant tape",
+      "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+      "old_thin": "mixed-to-weak older tape with lower win rate"
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 3.4191,
+        "sharpe_daily": 4.35,
+        "total_pnl": 78600.33,
+        "total_return_pct": 0.786,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5149,
+        "trend_signals_seen": 0,
+        "high_dispersion_trend_signals_seen": 0,
+        "signals_resized": 0,
+        "high_dispersion_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4415,
+        "sharpe_daily": 2.62,
+        "total_pnl": 55015.08,
+        "total_return_pct": 0.5502,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4738,
+        "trend_signals_seen": 0,
+        "high_dispersion_trend_signals_seen": 0,
+        "signals_resized": 0,
+        "high_dispersion_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "max_drawdown_pct": 0.0805,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4547,
+        "trend_signals_seen": 0,
+        "high_dispersion_trend_signals_seen": 0,
+        "signals_resized": 0,
+        "high_dispersion_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      }
+    },
+    "after_metrics": {
+      "trend_high_dispersion_0_50x": {
+        "late_strong": {
+          "expected_value_score": 3.1453,
+          "sharpe_daily": 4.42,
+          "total_pnl": 71163.63,
+          "total_return_pct": 0.7116,
+          "max_drawdown_pct": 0.0541,
+          "win_rate": 0.7273,
+          "trade_count": 22,
+          "survival_rate": 0.8039,
+          "tail_loss_share": 0.9241,
+          "trend_signals_seen": 22,
+          "high_dispersion_trend_signals_seen": 8,
+          "signals_resized": 8,
+          "high_dispersion_sizing_days": 5,
+          "touched_trade_count": 5,
+          "touched_trade_pnl": 7754.09,
+          "touched_trade_win_rate": 0.6
+        },
+        "mid_weak": {
+          "expected_value_score": 1.1737,
+          "sharpe_daily": 2.71,
+          "total_pnl": 43311.31,
+          "total_return_pct": 0.4331,
+          "max_drawdown_pct": 0.046,
+          "win_rate": 0.4762,
+          "trade_count": 21,
+          "survival_rate": 0.8298,
+          "tail_loss_share": 0.6538,
+          "trend_signals_seen": 20,
+          "high_dispersion_trend_signals_seen": 3,
+          "signals_resized": 3,
+          "high_dispersion_sizing_days": 3,
+          "touched_trade_count": 2,
+          "touched_trade_pnl": 4857.91,
+          "touched_trade_win_rate": 0.5
+        },
+        "old_thin": {
+          "expected_value_score": 0.3271,
+          "sharpe_daily": 1.3,
+          "total_pnl": 25164.84,
+          "total_return_pct": 0.2516,
+          "max_drawdown_pct": 0.0805,
+          "win_rate": 0.3913,
+          "trade_count": 23,
+          "survival_rate": 0.8983,
+          "tail_loss_share": 0.4723,
+          "trend_signals_seen": 40,
+          "high_dispersion_trend_signals_seen": 5,
+          "signals_resized": 5,
+          "high_dispersion_sizing_days": 4,
+          "touched_trade_count": 3,
+          "touched_trade_pnl": -874.51,
+          "touched_trade_win_rate": 0.0
+        }
+      },
+      "trend_high_dispersion_0_25x": {
+        "late_strong": {
+          "expected_value_score": 2.9437,
+          "sharpe_daily": 4.43,
+          "total_pnl": 66453.39,
+          "total_return_pct": 0.6645,
+          "max_drawdown_pct": 0.0541,
+          "win_rate": 0.7273,
+          "trade_count": 22,
+          "survival_rate": 0.8039,
+          "tail_loss_share": 0.9241,
+          "trend_signals_seen": 22,
+          "high_dispersion_trend_signals_seen": 8,
+          "signals_resized": 8,
+          "high_dispersion_sizing_days": 5,
+          "touched_trade_count": 5,
+          "touched_trade_pnl": 3852.38,
+          "touched_trade_win_rate": 0.6
+        },
+        "mid_weak": {
+          "expected_value_score": 1.0653,
+          "sharpe_daily": 2.65,
+          "total_pnl": 40204.14,
+          "total_return_pct": 0.402,
+          "max_drawdown_pct": 0.046,
+          "win_rate": 0.4762,
+          "trade_count": 21,
+          "survival_rate": 0.8298,
+          "tail_loss_share": 0.6604,
+          "trend_signals_seen": 20,
+          "high_dispersion_trend_signals_seen": 3,
+          "signals_resized": 3,
+          "high_dispersion_sizing_days": 3,
+          "touched_trade_count": 2,
+          "touched_trade_pnl": 2417.17,
+          "touched_trade_win_rate": 0.5
+        },
+        "old_thin": {
+          "expected_value_score": 0.3359,
+          "sharpe_daily": 1.31,
+          "total_pnl": 25637.41,
+          "total_return_pct": 0.2564,
+          "max_drawdown_pct": 0.0804,
+          "win_rate": 0.3913,
+          "trade_count": 23,
+          "survival_rate": 0.8983,
+          "tail_loss_share": 0.4886,
+          "trend_signals_seen": 40,
+          "high_dispersion_trend_signals_seen": 5,
+          "signals_resized": 5,
+          "high_dispersion_sizing_days": 4,
+          "touched_trade_count": 3,
+          "touched_trade_pnl": -450.14,
+          "touched_trade_win_rate": 0.0
+        }
+      },
+      "trend_high_dispersion_0_00x": {
+        "late_strong": {
+          "expected_value_score": 3.2151,
+          "sharpe_daily": 5.21,
+          "total_pnl": 61711.23,
+          "total_return_pct": 0.6171,
+          "max_drawdown_pct": 0.0541,
+          "win_rate": 0.7647,
+          "trade_count": 17,
+          "survival_rate": 0.8704,
+          "tail_loss_share": 0.5149,
+          "trend_signals_seen": 26,
+          "high_dispersion_trend_signals_seen": 12,
+          "signals_resized": 12,
+          "high_dispersion_sizing_days": 7,
+          "touched_trade_count": 0,
+          "touched_trade_pnl": 0.0,
+          "touched_trade_win_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 1.1886,
+          "sharpe_daily": 2.8,
+          "total_pnl": 42446.2,
+          "total_return_pct": 0.4245,
+          "max_drawdown_pct": 0.046,
+          "win_rate": 0.5,
+          "trade_count": 20,
+          "survival_rate": 0.8491,
+          "tail_loss_share": 0.479,
+          "trend_signals_seen": 23,
+          "high_dispersion_trend_signals_seen": 4,
+          "signals_resized": 4,
+          "high_dispersion_sizing_days": 4,
+          "touched_trade_count": 0,
+          "touched_trade_pnl": 0.0,
+          "touched_trade_win_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.3035,
+          "sharpe_daily": 1.26,
+          "total_pnl": 24086.06,
+          "total_return_pct": 0.2409,
+          "max_drawdown_pct": 0.0804,
+          "win_rate": 0.4286,
+          "trade_count": 21,
+          "survival_rate": 0.9333,
+          "tail_loss_share": 0.4478,
+          "trend_signals_seen": 42,
+          "high_dispersion_trend_signals_seen": 7,
+          "signals_resized": 7,
+          "high_dispersion_sizing_days": 5,
+          "touched_trade_count": 0,
+          "touched_trade_pnl": 0.0,
+          "touched_trade_win_rate": 0.0
+        }
+      }
+    },
+    "delta_metrics": {
+      "trend_high_dispersion_0_50x": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "after_expected_value_score_sum": 4.6461,
+        "expected_value_score_delta_sum": -0.5324,
+        "expected_value_score_delta_pct": -0.10281,
+        "baseline_total_pnl_sum": 158257.48,
+        "after_total_pnl_sum": 139639.78,
+        "total_pnl_delta_sum": -18617.7,
+        "total_pnl_delta_pct": -0.117642,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 2,
+        "by_window_ev_delta": {
+          "late_strong": -0.2738,
+          "mid_weak": -0.2678,
+          "old_thin": 0.0092
+        },
+        "by_window_pnl_delta": {
+          "late_strong": -7436.7,
+          "mid_weak": -11703.77,
+          "old_thin": 522.77
+        },
+        "trade_count_delta_sum": 4
+      },
+      "trend_high_dispersion_0_25x": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "after_expected_value_score_sum": 4.3449,
+        "expected_value_score_delta_sum": -0.8336,
+        "expected_value_score_delta_pct": -0.160973,
+        "baseline_total_pnl_sum": 158257.48,
+        "after_total_pnl_sum": 132294.94,
+        "total_pnl_delta_sum": -25962.54,
+        "total_pnl_delta_pct": -0.164053,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 2,
+        "by_window_ev_delta": {
+          "late_strong": -0.4754,
+          "mid_weak": -0.3762,
+          "old_thin": 0.018
+        },
+        "by_window_pnl_delta": {
+          "late_strong": -12146.94,
+          "mid_weak": -14810.94,
+          "old_thin": 995.34
+        },
+        "trade_count_delta_sum": 4
+      },
+      "trend_high_dispersion_0_00x": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "after_expected_value_score_sum": 4.7072,
+        "expected_value_score_delta_sum": -0.4713,
+        "expected_value_score_delta_pct": -0.091011,
+        "baseline_total_pnl_sum": 158257.48,
+        "after_total_pnl_sum": 128243.49,
+        "total_pnl_delta_sum": -30013.99,
+        "total_pnl_delta_pct": -0.189653,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 3,
+        "windows_pnl_improved": 0,
+        "windows_pnl_regressed": 3,
+        "by_window_ev_delta": {
+          "late_strong": -0.204,
+          "mid_weak": -0.2529,
+          "old_thin": -0.0144
+        },
+        "by_window_pnl_delta": {
+          "late_strong": -16889.1,
+          "mid_weak": -12568.88,
+          "old_thin": -556.01
+        },
+        "trade_count_delta_sum": -4
+      }
+    },
+    "best_variant": "trend_high_dispersion_0_00x",
+    "best_variant_gate4": false,
+    "decision": "rejected",
+    "rejection_reason": "High-sector-dispersion trend de-risking did not pass Gate 4. The best variant `trend_high_dispersion_0_00x` changed aggregate EV by -0.4713 and PnL by -30013.99; it does not justify a new state-aware trend sizing branch.",
+    "llm_metrics": {
+      "used_llm": false,
+      "llm_role_changed": false,
+      "blocker_relation": "LLM data limits were bypassed by selecting another alpha branch."
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": false,
+      "parity_test_added": false,
+      "promotion_requirement": "If accepted later, compute sector dispersion in shared production/backtest enrichment and consume it from shared sizing."
+    },
+    "history_guardrails": {
+      "not_mfe_exit_retry": true,
+      "not_broad_rotation_spy_leader_retry": true,
+      "not_universe_expansion_retry": true,
+      "why_not_simple_repeat": "This tests the specific high-dispersion trend cohort surfaced by exp-20260506-024, not another protective stop, broad breakout de-prioritization, or SPY-leader multiplier retune."
+    },
+    "next_retry_requires": [
+      "Do not retry nearby trend-only high-dispersion multipliers at the same 8% threshold.",
+      "A valid retry needs a new discriminator such as event/news context or forward evidence.",
+      "If promoted later, implement the dispersion field and sizing branch through shared production/backtest policy."
+    ],
+    "related_files": [
+      "data\\experiments\\exp-20260506-029\\high_dispersion_trend_risk.json",
+      "docs\\experiments\\logs\\exp-20260506-029.json",
+      "docs\\experiments\\tickets\\exp-20260506-029.json",
+      "docs\\experiments\\artifacts\\exp-20260506-029_high_dispersion_trend_risk.md",
+      "docs/experiment_log.jsonl",
+      "docs/alpha-optimization-playbook.md"
+    ],
+    "status": "rejected"
+  }
+}

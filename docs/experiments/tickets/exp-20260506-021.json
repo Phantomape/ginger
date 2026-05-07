@@ -1,0 +1,62 @@
+{
+  "experiment_id": "exp-20260506-021",
+  "status": "observed_only",
+  "decision": "shadow_only",
+  "lane": "alpha_discovery",
+  "owner": "codex",
+  "hypothesis": "Public-market insider Form 4 buying may confirm existing trend_long/breakout_long candidates, but this run only audits the latest PIT-safe daily snapshot and default-off paper sleeve for actionable meaningful-purchase coverage.",
+  "change_type": "data_audit_shadow_only_current_snapshot",
+  "single_causal_variable": "current 20260505 PIT-safe Form 4 transaction availability for meaningful open-market purchase overlay",
+  "baseline_result_file": "data/backtest_results_20260506.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl",
+    "C:/Users/Administrator/.codex/automations/loss-attribution/memory.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "orders",
+    "sizing",
+    "ranking",
+    "entry filters",
+    "exit logic",
+    "OHLCV thresholds",
+    "universe"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report coverage, PIT status, missingness, candidate_count, overlap, slot value, and keep production unchanged.",
+  "created_at": "2026-05-06T17:20:00Z",
+  "completed_at": "2026-05-06T17:20:00Z",
+  "result": {
+    "decision": "shadow_only",
+    "summary": "PIT-safe Form 4 rows exist, but zero meaningful purchase candidates are available in the 20260505 snapshot.",
+    "log_file": "docs/experiments/logs/exp-20260506-021.json",
+    "audit_file": "docs/non_ohlcv_data_audit/form4_current_snapshot_20260506.md",
+    "source_path": "data/non_ohlcv/form4_transactions_20260505.jsonl",
+    "candidate_count": 0,
+    "overlap_with_existing_signals": 0,
+    "slot_value_measurable": false,
+    "expected_value_score_delta": 0.0,
+    "production_impact": "shadow_audit_only_no_production_change"
+  }
+}

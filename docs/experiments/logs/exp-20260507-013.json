@@ -1,0 +1,559 @@
+{
+  "alpha_hypothesis_category": "exit",
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.7435,
+      "max_drawdown_pct": 0.0539,
+      "sharpe_daily": 4.48,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 83562.53,
+      "total_return_pct": 0.8356,
+      "trade_count": 19,
+      "vs_qqq_pct": 0.7777,
+      "vs_spy_pct": 0.7815,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 57542.74,
+      "total_return_pct": 0.5754,
+      "trade_count": 21,
+      "vs_qqq_pct": 0.2404,
+      "vs_spy_pct": 0.321,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "max_drawdown_pct": 0.0905,
+      "sharpe_daily": 1.28,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 26242.68,
+      "total_return_pct": 0.2624,
+      "trade_count": 22,
+      "vs_qqq_pct": 0.3373,
+      "vs_spy_pct": 0.3297,
+      "win_rate": 0.4091
+    }
+  },
+  "change_type": "exit_capture_diagnostic",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "shadow_only",
+  "experiment_id": "exp-20260507-013",
+  "gate4": {
+    "basis": "Observed-only diagnostic. No after-metrics exist until a replay exit variant is pre-registered.",
+    "passed": null
+  },
+  "historical_experiment_check": {
+    "exp-20260426-051": "Do not retry broad pullback-source logic.",
+    "exp-20260505-011_and_020": "Do not promote consumer-platform universe/gate variants.",
+    "exp-20260506-019": "Do not retry pullback/RS ranking variants.",
+    "exp-20260507-008": "Rejected entry waiting: 0 fills across 11 touched treatment entries. This run changes the question from entry timing to exit capture.",
+    "mechanism_insight_conflict": "none; this is observed-only exit/capture attribution, not ranking, entry, or universe expansion."
+  },
+  "hypothesis": "Core platform entries may not need a cheaper fill; they may need better upside capture after valid entry.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM/news replay remains deliberately outside this exit-capture diagnostic.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "core_platform_exit_capture",
+  "next_action": "pre_register_core_platform_runner_exit_replay",
+  "next_retry_requires": [
+    "Do not change exits from this diagnostic alone.",
+    "A runner-exit replay needs a pre-registered shared-policy treatment and three-window Gate 4.",
+    "Any promoted exit policy must be shared by run.py and backtester.py with parity tests."
+  ],
+  "observed_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 5.6272,
+      "total_pnl_sum": 167347.95,
+      "trade_count_sum": 62
+    },
+    "candidate_counts": {
+      "control": {
+        "candidate_count": 21,
+        "entered_count": 6
+      },
+      "treatment": {
+        "candidate_count": 19,
+        "entered_count": 11
+      }
+    },
+    "control_trade_capture": {
+      "avg_pnl": 1048.05,
+      "capture_20d_mfe": {
+        "avg": -0.561939,
+        "best": 1.951073,
+        "count": 6,
+        "median": -0.831616,
+        "p25": -1.33855,
+        "p75": 0.774035,
+        "positive_rate": 0.3333,
+        "worst": -3.461196
+      },
+      "capture_40d_mfe": {
+        "avg": -0.170877,
+        "best": 0.777554,
+        "count": 6,
+        "median": -0.406788,
+        "p25": -0.688433,
+        "p75": 0.471728,
+        "positive_rate": 0.3333,
+        "worst": -0.971493
+      },
+      "exit_before_40d_mfe_count": 4,
+      "exit_reason_counts": {
+        "stop": 4,
+        "target": 2
+      },
+      "mae_40d_pct": {
+        "avg": -0.091676,
+        "best": -0.024696,
+        "count": 6,
+        "median": -0.083268,
+        "p25": -0.12541,
+        "p75": -0.040664,
+        "positive_rate": 0.0,
+        "worst": -0.192901
+      },
+      "mfe_20d_pct": {
+        "avg": 0.063293,
+        "best": 0.111553,
+        "count": 6,
+        "median": 0.064545,
+        "p25": 0.034349,
+        "p75": 0.088182,
+        "positive_rate": 1.0,
+        "worst": 0.018772
+      },
+      "mfe_40d_pct": {
+        "avg": 0.152089,
+        "best": 0.308811,
+        "count": 6,
+        "median": 0.112805,
+        "p25": 0.092787,
+        "p75": 0.189196,
+        "positive_rate": 1.0,
+        "worst": 0.077342
+      },
+      "missed_after_exit_40d_pct": {
+        "avg": 0.094786,
+        "best": 0.308811,
+        "count": 6,
+        "median": 0.067632,
+        "p25": 0.038447,
+        "p75": 0.088852,
+        "positive_rate": 0.8333,
+        "worst": 0.0
+      },
+      "pnl_pct_net": {
+        "avg": -0.000584,
+        "best": 0.14085,
+        "count": 6,
+        "median": -0.052603,
+        "p25": -0.064606,
+        "p75": 0.065297,
+        "positive_rate": 0.3333,
+        "worst": -0.075137
+      },
+      "runner_candidate_count": 1,
+      "sample_runner_candidates": [
+        {
+          "capture_20d_mfe": -1.460903,
+          "capture_40d_mfe": -0.13506,
+          "cohort": "control",
+          "days_to_mfe_40d": 39,
+          "entry_date": "2024-10-11",
+          "entry_price": 129.95,
+          "exit_before_40d_mfe": true,
+          "exit_date": "2024-10-16",
+          "exit_price": 124.98,
+          "exit_reason": "stop",
+          "forward_return": {
+            "10d": -0.025779,
+            "20d": -0.042324,
+            "40d": 0.2404,
+            "5d": -0.014082
+          },
+          "holding_trading_days": 3,
+          "mae_20d_pct": -0.070566,
+          "mae_40d_pct": -0.070566,
+          "mfe_20d_pct": 0.028549,
+          "mfe_40d_date": "2024-12-06",
+          "mfe_40d_pct": 0.308811,
+          "missed_after_exit_40d_pct": 0.308811,
+          "pnl": -1772.04,
+          "pnl_pct_net": -0.041708,
+          "post_exit_mfe_40d_pct": 0.308811,
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.1008,
+          "runner_candidate": true,
+          "shares": 328,
+          "strategy": "breakout_long",
+          "target_mult_used": 4.5,
+          "ticker": "DDOG"
+        }
+      ],
+      "strategy_counts": {
+        "breakout_long": 2,
+        "trend_long": 4
+      },
+      "total_pnl": 6288.28,
+      "trade_count": 6,
+      "win_rate": 0.3333,
+      "wins": 2
+    },
+    "diagnostic_read": {
+      "next_action": "pre_register_core_platform_runner_exit_replay",
+      "reason": "Runner-exit replay needs at least 8 treatment trades, at least 3 runner candidates, and median 40d MFE capture below 0.65.",
+      "treatment_capture_40d_mfe_median": 0.410675,
+      "treatment_runner_candidate_count": 5,
+      "treatment_trade_count": 11
+    },
+    "treatment_trade_capture": {
+      "avg_pnl": 2517.52,
+      "capture_20d_mfe": {
+        "avg": 0.120466,
+        "best": 1.15929,
+        "count": 11,
+        "median": 0.410675,
+        "p25": -0.588633,
+        "p75": 0.866818,
+        "positive_rate": 0.5455,
+        "worst": -1.146062
+      },
+      "capture_40d_mfe": {
+        "avg": 0.106767,
+        "best": 0.933257,
+        "count": 11,
+        "median": 0.410675,
+        "p25": -0.560398,
+        "p75": 0.587832,
+        "positive_rate": 0.5455,
+        "worst": -0.603809
+      },
+      "exit_before_40d_mfe_count": 5,
+      "exit_reason_counts": {
+        "end_of_backtest": 1,
+        "stop": 5,
+        "target": 5
+      },
+      "mae_40d_pct": {
+        "avg": -0.04427,
+        "best": -0.003961,
+        "count": 11,
+        "median": -0.042119,
+        "p25": -0.058424,
+        "p75": -0.021386,
+        "positive_rate": 0.0,
+        "worst": -0.108317
+      },
+      "mfe_20d_pct": {
+        "avg": 0.161009,
+        "best": 0.675836,
+        "count": 11,
+        "median": 0.098448,
+        "p25": 0.053945,
+        "p75": 0.135395,
+        "positive_rate": 1.0,
+        "worst": 0.032997
+      },
+      "mfe_40d_pct": {
+        "avg": 0.18849,
+        "best": 0.675836,
+        "count": 11,
+        "median": 0.114458,
+        "p25": 0.065625,
+        "p75": 0.207364,
+        "positive_rate": 1.0,
+        "worst": 0.046165
+      },
+      "missed_after_exit_40d_pct": {
+        "avg": 0.085692,
+        "best": 0.398287,
+        "count": 10,
+        "median": 0.050973,
+        "p25": 0.017343,
+        "p75": 0.103673,
+        "positive_rate": 0.9,
+        "worst": 0.0
+      },
+      "pnl_pct_net": {
+        "avg": 0.071578,
+        "best": 0.29043,
+        "count": 11,
+        "median": 0.038443,
+        "p25": -0.035174,
+        "p75": 0.131711,
+        "positive_rate": 0.5455,
+        "worst": -0.059021
+      },
+      "runner_candidate_count": 5,
+      "sample_runner_candidates": [
+        {
+          "capture_20d_mfe": 1.040575,
+          "capture_40d_mfe": 0.487853,
+          "cohort": "treatment",
+          "days_to_mfe_40d": 36,
+          "entry_date": "2024-10-21",
+          "entry_price": 76.61,
+          "exit_before_40d_mfe": true,
+          "exit_date": "2024-11-19",
+          "exit_price": 85.45,
+          "exit_reason": "target",
+          "forward_return": {
+            "10d": -0.013823,
+            "20d": 0.105665,
+            "40d": 0.199752,
+            "5d": -0.022164
+          },
+          "holding_trading_days": 21,
+          "mae_20d_pct": -0.028508,
+          "mae_40d_pct": -0.028508,
+          "mfe_20d_pct": 0.107493,
+          "mfe_40d_date": "2024-12-11",
+          "mfe_40d_pct": 0.229278,
+          "missed_after_exit_40d_pct": 0.117424,
+          "pnl": 4550.88,
+          "pnl_pct_net": 0.111854,
+          "post_exit_mfe_40d_pct": 0.229278,
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.1097,
+          "runner_candidate": true,
+          "shares": 533,
+          "strategy": "trend_long",
+          "target_mult_used": 4.5,
+          "ticker": "NFLX"
+        },
+        {
+          "capture_20d_mfe": 0.410675,
+          "capture_40d_mfe": 0.410675,
+          "cohort": "treatment",
+          "days_to_mfe_40d": 19,
+          "entry_date": "2024-11-08",
+          "entry_price": 249.21,
+          "exit_before_40d_mfe": true,
+          "exit_date": "2024-11-19",
+          "exit_price": 319.25,
+          "exit_reason": "target",
+          "forward_return": {
+            "10d": 0.337466,
+            "20d": 0.374503,
+            "40d": 0.320974,
+            "5d": 0.168051
+          },
+          "holding_trading_days": 7,
+          "mae_20d_pct": -0.023916,
+          "mae_40d_pct": -0.023916,
+          "mfe_20d_pct": 0.675836,
+          "mfe_40d_date": "2024-12-06",
+          "mfe_40d_pct": 0.675836,
+          "missed_after_exit_40d_pct": 0.398287,
+          "pnl": 8408.6,
+          "pnl_pct_net": 0.277549,
+          "post_exit_mfe_40d_pct": 0.675836,
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.1349,
+          "runner_candidate": true,
+          "shares": 122,
+          "strategy": "trend_long",
+          "target_mult_used": 6.0,
+          "ticker": "APP"
+        },
+        {
+          "capture_20d_mfe": -0.723385,
+          "capture_40d_mfe": -0.319742,
+          "cohort": "treatment",
+          "days_to_mfe_40d": 38,
+          "entry_date": "2024-11-22",
+          "entry_price": 89.64,
+          "exit_before_40d_mfe": true,
+          "exit_date": "2024-11-25",
+          "exit_price": 86.67,
+          "exit_reason": "stop",
+          "forward_return": {
+            "10d": 0.019288,
+            "20d": 0.016789,
+            "40d": 0.090573,
+            "5d": 0.001495
+          },
+          "holding_trading_days": 1,
+          "mae_20d_pct": -0.041823,
+          "mae_40d_pct": -0.081303,
+          "mfe_20d_pct": 0.050591,
+          "mfe_40d_date": "2025-01-22",
+          "mfe_40d_pct": 0.114458,
+          "missed_after_exit_40d_pct": 0.114458,
+          "pnl": -62.13,
+          "pnl_pct_net": -0.036597,
+          "post_exit_mfe_40d_pct": 0.114458,
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.0905,
+          "runner_candidate": true,
+          "shares": 19,
+          "strategy": "breakout_long",
+          "target_mult_used": 4.5,
+          "ticker": "NFLX"
+        },
+        {
+          "capture_20d_mfe": 1.15929,
+          "capture_40d_mfe": 0.615425,
+          "cohort": "treatment",
+          "days_to_mfe_40d": 29,
+          "entry_date": "2024-11-04",
+          "entry_price": 196.55,
+          "exit_before_40d_mfe": true,
+          "exit_date": "2024-12-04",
+          "exit_price": 219.67,
+          "exit_reason": "target",
+          "forward_return": {
+            "10d": 0.026202,
+            "20d": 0.085932,
+            "40d": 0.120427,
+            "5d": 0.052353
+          },
+          "holding_trading_days": 21,
+          "mae_20d_pct": -0.011397,
+          "mae_40d_pct": -0.011397,
+          "mfe_20d_pct": 0.098448,
+          "mfe_40d_date": "2024-12-16",
+          "mfe_40d_pct": 0.185449,
+          "missed_after_exit_40d_pct": 0.071319,
+          "pnl": 5431.35,
+          "pnl_pct_net": 0.11413,
+          "post_exit_mfe_40d_pct": 0.185449,
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.0602,
+          "runner_candidate": true,
+          "shares": 243,
+          "strategy": "trend_long",
+          "target_mult_used": 4.5,
+          "ticker": "AMZN"
+        },
+        {
+          "capture_20d_mfe": -0.532579,
+          "capture_40d_mfe": -0.532579,
+          "cohort": "treatment",
+          "days_to_mfe_40d": 16,
+          "entry_date": "2025-01-23",
+          "entry_price": 95.83,
+          "exit_before_40d_mfe": false,
+          "exit_date": "2025-03-06",
+          "exit_price": 90.51,
+          "exit_reason": "stop",
+          "forward_return": {
+            "10d": 0.059877,
+            "20d": 0.046802,
+            "40d": 0.002077,
+            "5d": 0.01559
+          },
+          "holding_trading_days": 29,
+          "mae_20d_pct": -0.004591,
+          "mae_40d_pct": -0.108317,
+          "mfe_20d_pct": 0.110821,
+          "mfe_40d_date": "2025-02-14",
+          "mfe_40d_pct": 0.110821,
+          "missed_after_exit_40d_pct": 0.010122,
+          "pnl": -3044.19,
+          "pnl_pct_net": -0.059021,
+          "post_exit_mfe_40d_pct": 0.010122,
+          "regime_exit_bucket": "risk_on",
+          "regime_exit_score": 0.1094,
+          "runner_candidate": true,
+          "shares": 540,
+          "strategy": "trend_long",
+          "target_mult_used": 4.5,
+          "ticker": "NFLX"
+        }
+      ],
+      "strategy_counts": {
+        "breakout_long": 3,
+        "trend_long": 8
+      },
+      "total_pnl": 27692.68,
+      "trade_count": 11,
+      "win_rate": 0.5455,
+      "wins": 6
+    }
+  },
+  "parameters": {
+    "capture_horizon": 40,
+    "control_pool": [
+      "AAPL",
+      "MSFT",
+      "PLTR",
+      "DDOG",
+      "SNOW",
+      "NOW"
+    ],
+    "forward_horizons": [
+      5,
+      10,
+      20,
+      40
+    ],
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry timing",
+      "entry filters",
+      "candidate ranking",
+      "sizing",
+      "MAX_POSITIONS",
+      "add-ons",
+      "exits",
+      "LLM/news replay",
+      "earnings strategy"
+    ],
+    "treatment_pool": [
+      "NFLX",
+      "APP",
+      "META",
+      "GOOG",
+      "AMZN",
+      "SPOT",
+      "DIS"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "data\\experiments\\exp-20260507-013\\core_platform_exit_capture_diagnostic.json",
+    "docs\\experiments\\logs\\exp-20260507-013.json",
+    "docs\\experiments\\tickets\\exp-20260507-013.json",
+    "docs\\experiments\\artifacts\\exp-20260507-013_core_platform_exit_capture_diagnostic.md",
+    "docs\\experiment_log.jsonl"
+  ],
+  "single_causal_variable": "core_platform_exit_capture_diagnostic",
+  "status": "observed_only",
+  "timestamp": "2026-05-07T06:37:33.950262+00:00"
+}

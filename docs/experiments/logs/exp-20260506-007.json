@@ -1,0 +1,137 @@
+{
+  "experiment_id": "exp-20260506-007",
+  "timestamp": "2026-05-06T07:07:05Z",
+  "lane": "alpha_search",
+  "status": "rejected",
+  "decision": "rejected_shadow",
+  "change_type": "exit_lifecycle_shadow_replay",
+  "single_causal_variable": "post_addon_day3_weakness_reduce_addon_shares",
+  "hypothesis": "After an accepted follow-through add-on, day-3 loss of SPY-relative follow-through plus negative post-add-on return identifies capital that should be trimmed from the add-on sleeve only.",
+  "alpha_category": "exit/capital_allocation",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4553,
+      "sharpe_daily": 4.36,
+      "total_pnl": 79249.48,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.8,
+      "trade_count": 20,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4037,
+      "sharpe_daily": 2.64,
+      "total_pnl": 53174.73,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5,
+      "trade_count": 22,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "aggregate_ev_before": 5.1785,
+    "aggregate_ev_after": 5.1769,
+    "expected_value_score_delta": -0.0016,
+    "expected_value_score_delta_pct": -0.000309,
+    "aggregate_pnl_before": 158257.48,
+    "aggregate_pnl_after": 157066.28,
+    "total_pnl_delta": -1191.2,
+    "ev_improved_windows": 1,
+    "pnl_improved_windows": 1,
+    "post_addon_weakness_reduce_events_executed": 2
+  },
+  "parameters": {
+    "POST_ADDON_WEAKNESS_REDUCE_ENABLED": true,
+    "POST_ADDON_WEAKNESS_DAYS": 3,
+    "POST_ADDON_WEAKNESS_MIN_RS_VS_SPY": 0.0,
+    "POST_ADDON_WEAKNESS_REQUIRE_NEGATIVE_ADDON_RETURN": true
+  },
+  "history_guardrails": {
+    "not_llm_soft_ranking": true,
+    "not_static_universe_expansion": true,
+    "not_target_width": true,
+    "not_sector_cap": true,
+    "not_slot_ranking": true,
+    "not_addon_cap_or_checkpoint_gate": true,
+    "prior_support": "exp-20260505-028 observed post-add-on deterioration family",
+    "why_not_simple_repeat": "This tests a post-add-on lifecycle trim after capital is added; it does not retune the accepted day-2 add-on trigger or cap."
+  },
+  "gate4": {
+    "passed": false,
+    "rejection_reason": "Aggregate EV and PnL regressed; only one of three windows improved, and only two partial-reduce events executed."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "Do not promote. A future retry would need a stronger post-add-on quality discriminator and shared run/backtester policy before acceptance."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none",
+    "why_not_llm": "Production-aligned LLM soft-ranking samples remain sparse."
+  },
+  "rejection_reason": "The trigger was too sparse and did not improve the three-window objective; it should not be implemented as production lifecycle logic.",
+  "next_retry_requires": [
+    "A larger touched cohort with candidate-level replacement evidence.",
+    "An orthogonal post-add-on quality discriminator, not nearby day/count or RS threshold retuning.",
+    "Shared production/backtest lifecycle policy before any accepted executable change."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260506_007_post_addon_weakness_reduce.py",
+    "data/experiments/exp-20260506-007/exp_20260506_007_post_addon_weakness_reduce.json",
+    "docs/experiments/logs/exp-20260506-007.json",
+    "docs/experiments/tickets/exp-20260506-007.json",
+    "docs/experiments/artifacts/exp-20260506-007_post_addon_weakness_reduce.md"
+  ]
+}

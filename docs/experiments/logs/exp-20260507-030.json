@@ -1,0 +1,287 @@
+{
+  "experiment_id": "exp-20260507-030",
+  "timestamp": "2026-05-07T17:48:02.205146+00:00",
+  "status": "observed_only",
+  "decision": "shadow_only",
+  "lane": "alpha_discovery",
+  "change_type": "non_ohlcv_data_gap_repair",
+  "mechanism_family": "earnings_sec_filing_shock_event_confirmation_overlay",
+  "hypothesis": "Directional SEC filing-shock fields can be repaired without vendor data if the existing PIT companyfacts selected JSONL is auto-discovered and joined by same accession during non-OHLCV backfill.",
+  "single_causal_variable": "auto_discover_existing_companyfacts_for_same_accession_feature_derivation",
+  "non_ohlcv_data_source": "SEC Companyfacts selected JSONL joined to SEC filings by same accession; accepted_datetime/usable_trade_date remain the only tradability dates.",
+  "date_range": {
+    "smoke": "2026-04-27 -> 2026-05-05",
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "historical_experiment_check": {
+    "exp-20260507-006": "Full candidate rows were persisted, but directional_financial_shock_rows was 0 before same-accession/companyfacts auto-discovery.",
+    "exp-20260507-004": "Candidate filing-shock tagging showed broad filing recency was not enough; this repair adds directional fields rather than retrying a recency scalar.",
+    "exp-20260507-003": "Recent SEC filing breakout sizing failed Gate 4; do not retry broad filing presence multipliers.",
+    "exp-20260418-004": "P-ERN remains a data-quality blocker; C strategy cannot be rescued by a single generic field."
+  },
+  "baseline_metrics": {
+    "before_directional_financial_shock_rows": 0,
+    "before_same_accession_rows": 0,
+    "source": "exp-20260507-006 before same-accession/companyfacts auto-discovery repair"
+  },
+  "after_metrics": {
+    "feature_rebuild_summary": {
+      "smoke": {
+        "start": "2026-04-27",
+        "end": "2026-05-05",
+        "rows": 222,
+        "same_accession_rows": 0,
+        "directional_rows": 0,
+        "field_counts": {
+          "gross_margin_delta": 0,
+          "fcf_to_net_income_gap": 0,
+          "inventory_growth": 0,
+          "receivables_growth": 0
+        }
+      },
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "rows": 2766,
+        "same_accession_rows": 16,
+        "directional_rows": 9,
+        "field_counts": {
+          "gross_margin_delta": 0,
+          "fcf_to_net_income_gap": 9,
+          "inventory_growth": 9,
+          "receivables_growth": 9
+        }
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "rows": 2465,
+        "same_accession_rows": 0,
+        "directional_rows": 0,
+        "field_counts": {
+          "gross_margin_delta": 0,
+          "fcf_to_net_income_gap": 0,
+          "inventory_growth": 0,
+          "receivables_growth": 0
+        }
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "rows": 2304,
+        "same_accession_rows": 9,
+        "directional_rows": 9,
+        "field_counts": {
+          "gross_margin_delta": 9,
+          "fcf_to_net_income_gap": 9,
+          "inventory_growth": 9,
+          "receivables_growth": 9
+        }
+      }
+    },
+    "full_candidate_shadow_field_availability": {
+      "sec_feature_rows": 8450,
+      "pit_safe_rows": 8450,
+      "pit_safe_fraction": 1.0,
+      "directional_financial_shock_rows": 18,
+      "field_availability_top": {
+        "accepted_datetime:observed": 8450,
+        "eps_surprise:missing_no_vendor_consensus": 8450,
+        "guidance_raise_cut:missing_no_structured_guidance_source": 8450,
+        "revenue_surprise:missing_no_vendor_consensus": 8450,
+        "usable_trade_date:observed": 8450,
+        "gross_margin_delta:missing": 8441,
+        "fcf_to_net_income_gap:missing": 8432,
+        "inventory_growth:missing": 8432,
+        "receivables_growth:missing": 8432,
+        "same_accession_facts:missing": 8425,
+        "same_accession_facts:derived": 25,
+        "fcf_to_net_income_gap:derived": 18,
+        "inventory_growth:derived": 18,
+        "receivables_growth:derived": 18,
+        "gross_margin_delta:derived": 9
+      },
+      "gap_reasons_top": {
+        "eps_and_revenue_surprise_require_pit_consensus_vendor": 8450,
+        "guidance_raise_cut_requires_structured_guidance_source": 8450,
+        "missing_same_accession_companyfacts": 8425
+      }
+    },
+    "tag_counts_by_window": {
+      "late_strong": {
+        "A_no_recent_filing_event": 22,
+        "D_unclear_or_missing_data": 19
+      },
+      "mid_weak": {
+        "A_no_recent_filing_event": 21,
+        "D_unclear_or_missing_data": 21
+      },
+      "old_thin": {
+        "A_no_recent_filing_event": 24,
+        "D_unclear_or_missing_data": 31
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0,
+  "delta_metrics": {
+    "strategy_metrics_changed": false,
+    "directional_financial_shock_rows_delta": 18,
+    "same_accession_rows_delta": 25,
+    "reason": "Data adapter repair and shadow rerun only; no strategy policy changed."
+  },
+  "coverage_summary": {
+    "smoke_backfill_complete_fraction": 1.0,
+    "canonical_windows_complete": true,
+    "companyfacts_rows_written": 17689,
+    "companyfacts_error_count": 0,
+    "feature_rebuild_summary": {
+      "smoke": {
+        "start": "2026-04-27",
+        "end": "2026-05-05",
+        "rows": 222,
+        "same_accession_rows": 0,
+        "directional_rows": 0,
+        "field_counts": {
+          "gross_margin_delta": 0,
+          "fcf_to_net_income_gap": 0,
+          "inventory_growth": 0,
+          "receivables_growth": 0
+        }
+      },
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "rows": 2766,
+        "same_accession_rows": 16,
+        "directional_rows": 9,
+        "field_counts": {
+          "gross_margin_delta": 0,
+          "fcf_to_net_income_gap": 9,
+          "inventory_growth": 9,
+          "receivables_growth": 9
+        }
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "rows": 2465,
+        "same_accession_rows": 0,
+        "directional_rows": 0,
+        "field_counts": {
+          "gross_margin_delta": 0,
+          "fcf_to_net_income_gap": 0,
+          "inventory_growth": 0,
+          "receivables_growth": 0
+        }
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "rows": 2304,
+        "same_accession_rows": 9,
+        "directional_rows": 9,
+        "field_counts": {
+          "gross_margin_delta": 9,
+          "fcf_to_net_income_gap": 9,
+          "inventory_growth": 9,
+          "receivables_growth": 9
+        }
+      }
+    }
+  },
+  "shadow_metrics_reference": {
+    "field_availability": {
+      "sec_feature_rows": 8450,
+      "pit_safe_rows": 8450,
+      "pit_safe_fraction": 1.0,
+      "directional_financial_shock_rows": 18,
+      "field_availability_top": {
+        "accepted_datetime:observed": 8450,
+        "eps_surprise:missing_no_vendor_consensus": 8450,
+        "guidance_raise_cut:missing_no_structured_guidance_source": 8450,
+        "revenue_surprise:missing_no_vendor_consensus": 8450,
+        "usable_trade_date:observed": 8450,
+        "gross_margin_delta:missing": 8441,
+        "fcf_to_net_income_gap:missing": 8432,
+        "inventory_growth:missing": 8432,
+        "receivables_growth:missing": 8432,
+        "same_accession_facts:missing": 8425,
+        "same_accession_facts:derived": 25,
+        "fcf_to_net_income_gap:derived": 18,
+        "inventory_growth:derived": 18,
+        "receivables_growth:derived": 18,
+        "gross_margin_delta:derived": 9
+      },
+      "gap_reasons_top": {
+        "eps_and_revenue_surprise_require_pit_consensus_vendor": 8450,
+        "guidance_raise_cut_requires_structured_guidance_source": 8450,
+        "missing_same_accession_companyfacts": 8425
+      }
+    },
+    "tag_counts_by_window": {
+      "late_strong": {
+        "A_no_recent_filing_event": 22,
+        "D_unclear_or_missing_data": 19
+      },
+      "mid_weak": {
+        "A_no_recent_filing_event": 21,
+        "D_unclear_or_missing_data": 21
+      },
+      "old_thin": {
+        "A_no_recent_filing_event": 24,
+        "D_unclear_or_missing_data": 31
+      }
+    },
+    "b_positive_candidate_count": 0,
+    "c_negative_candidate_count": 0
+  },
+  "data_availability": {
+    "status": "partial_repair",
+    "same_accession_rows": 25,
+    "directional_financial_shock_rows": 18,
+    "remaining_gaps": [
+      "mid_weak and smoke windows still have zero same-accession directional rows from the current free Companyfacts source.",
+      "eps_surprise and revenue_surprise still require a PIT consensus source.",
+      "guidance_raise_cut still requires a structured guidance parser/source.",
+      "Directional rows did not create B/C tagged candidate cohorts under the conservative classifier; they remained D/mixed or did not touch candidates."
+    ]
+  },
+  "pit_status": {
+    "sec_filing_tradability": "accepted_datetime -> usable_trade_date only",
+    "companyfacts_pit_proxy": "SEC Companyfacts filed date/public cache; not proof local production observed the fact intraday",
+    "period_end_date_used_as_trade_date": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "production_signal_path_changed": false
+  },
+  "tests": {
+    "pytest": "19 passed: non_ohlcv coverage/backfill/sec_filing_features/sec_companyfacts/event_shocks/daily_snapshot/backtester_pilot_sleeve",
+    "syntax_compile": "ok via in-memory compile",
+    "smoke_backfill": "2026-04-27..2026-05-05 complete_fraction=1.0"
+  },
+  "decision_reason": "The adapter now derives nonzero PIT-safe same-accession financial fields where public Companyfacts has matching accessions, but B/C candidate cohorts are still empty and the sample is too sparse for alpha promotion.",
+  "next_action": "Improve event-quality classification or source coverage: prioritize same-accession 10-Q/10-K candidate touches, structured guidance raise/cut, or PIT consensus EPS/revenue surprise before another production alpha attempt.",
+  "related_files": [
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_features.py",
+    "data/non_ohlcv/sec_companyfacts_selected_20241002_20260505.jsonl",
+    "data/non_ohlcv/sec_companyfacts_backfill_summary_20241002_20260505.json",
+    "data/experiments/exp-20260507-030/feature_rebuild_summary.json",
+    "data/experiments/exp-20260507-006/full_candidate_filing_shock_shadow.json",
+    "docs/non_ohlcv_data_audit/sec_companyfacts_same_accession_feature_repair_exp-20260507-030_20260507.md",
+    "docs/experiments/tickets/exp-20260507-030.json",
+    "docs/experiments/logs/exp-20260507-030.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

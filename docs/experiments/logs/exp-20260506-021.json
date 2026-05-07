@@ -1,0 +1,332 @@
+{
+  "experiment_id": "exp-20260506-021",
+  "generated_at": "2026-05-06T17:20:00Z",
+  "status": "observed_only",
+  "decision": "shadow_only",
+  "lane": "alpha_discovery",
+  "change_type": "data_audit_shadow_only_current_snapshot",
+  "mechanism_family": "non_ohlcv_event_confirmation_insider_form4",
+  "hypothesis": "Public-market insider Form 4 buying, especially CEO/CFO large buys, cluster buying, first buys, and post-drawdown buys, may confirm existing trend_long/breakout_long candidates. This run audits only the latest PIT-safe daily transaction snapshot and default-off paper sleeve.",
+  "non_ohlcv_data_source": "SEC Form 4 insider ownership filings",
+  "single_causal_variable": "current 20260505 PIT-safe Form 4 transaction availability for meaningful open-market purchase overlay",
+  "experiment_mode": "data_audit_shadow_only_current_snapshot",
+  "production_change_allowed": false,
+  "alpha_hypothesis": {
+    "category": "entry_confirmation_addon_confirmation",
+    "text": "Meaningful open-market insider buying can be a positive confirmation tag for existing A/B candidates rather than a standalone entry source.",
+    "why_not_production": "The latest PIT-safe daily snapshot has zero meaningful purchase candidates and zero paper outcomes."
+  },
+  "historical_experiment_check": {
+    "prior_insider_form4_experiment_found": true,
+    "similar_experiments": {
+      "exp-20260503-017": "Initial Form 4 audit; data gap before transaction-level archive existed.",
+      "exp-20260503-052": "Standalone meaningful-purchase sleeve was shadow-promising but not promoted.",
+      "exp-20260503-053": "Owner-role discriminator rejected.",
+      "exp-20260504-001": "Default-off forward Form 4 event queue accepted without core strategy change.",
+      "exp-20260504-006": "Slot replacement value inconclusive.",
+      "exp-20260504-009": "Default-off event-sleeve replay positive but not promoted.",
+      "exp-20260504-034": "Form 4 satellite overlay positive sample but below materiality.",
+      "exp-20260504-042": "No-new-actionable-evidence Form 4 audit.",
+      "exp-20260505-010": "Simple Form 4 sale-pressure de-risk rejected.",
+      "exp-20260505-023": "Prior current snapshot audit for 20260504 found zero meaningful purchase candidates.",
+      "exp-20260506-001": "Adverse cluster sale-pressure branch did not change the purchase-side confirmation thesis."
+    },
+    "mechanism_insight_check": {
+      "conflict_with_recent_guardrails": false,
+      "notes": "This run does not retune Form 4 thresholds, owner roles, holding period, notional, capacity, sale-pressure logic, or production promotion. It checks the new 20260505 PIT-safe snapshot that arrived after the prior current-snapshot audit."
+    },
+    "why_not_simple_repeat": "The 20260505 snapshot is new since exp-20260505-023 and contains one additional raw CAT purchase, but it remains below the existing meaningful-purchase threshold."
+  },
+  "repo_adapter_status": {
+    "form4_transaction_adapter_exists": true,
+    "adapter_files": [
+      "quant/form4_backfill.py",
+      "quant/form4_event_queue.py",
+      "quant/form4_event_sleeve.py",
+      "quant/form4_shadow_outcomes.py"
+    ],
+    "ticker_to_cik_mapping_exists": true,
+    "ticker_to_cik_mapping_file": "data/sec_company_tickers.json",
+    "core_universe_mapping": {
+      "source": "data/universe_state_20260505.json",
+      "ticker_count": 45,
+      "mapped_count": 43,
+      "missing_count": 2,
+      "mapping_rate": 0.9556,
+      "missing_tickers": [
+        "IWM",
+        "SNXX"
+      ]
+    },
+    "pilot_universe_mapping": {
+      "ticker_count": 3,
+      "mapped_count": 3,
+      "missing_count": 0,
+      "mapping_rate": 1.0,
+      "missing_tickers": []
+    },
+    "observation_universe_mapping": {
+      "ticker_count": 16,
+      "mapped_count": 16,
+      "missing_count": 0,
+      "mapping_rate": 1.0,
+      "missing_tickers": []
+    }
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "data_availability": {
+    "source_path": "data/non_ohlcv/form4_transactions_20260505.jsonl",
+    "snapshot_asof_date": "2026-05-05",
+    "snapshot_generated_at": "2026-05-06T06:18:13+00:00",
+    "date_range": {
+      "start": "2026-04-25",
+      "end": "2026-05-05"
+    },
+    "coverage": {
+      "filings_seen": 122,
+      "documents_fetched_or_read": 122,
+      "rows_written": 573,
+      "pit_safe_count": 573,
+      "open_market_purchase_count": 4,
+      "meaningful_purchase_rows_ge_500k": 0,
+      "option_exercise_count": 164,
+      "ten_b5_1_count": 238,
+      "excluded_external_issuer_rows": 24,
+      "source_watermark": "2026-05-06T00:38:02"
+    },
+    "transaction_code_counts": {
+      "A": 39,
+      "C": 22,
+      "F": 42,
+      "G": 2,
+      "M": 122,
+      "P": 4,
+      "S": 342
+    },
+    "required_field_availability": {
+      "available_fields": [
+        "ticker",
+        "cik",
+        "accession_number",
+        "accepted_at",
+        "transaction_date",
+        "officer_title",
+        "is_director",
+        "is_officer",
+        "is_10pct_owner",
+        "transaction_code",
+        "shares",
+        "price",
+        "transaction_value",
+        "direct_or_indirect",
+        "ownership_nature",
+        "10b5_1_flag",
+        "option_exercise_flag",
+        "open_market_purchase_flag",
+        "usable_trade_date",
+        "pit_safe_flag"
+      ],
+      "missing_or_not_joined_fields": [
+        "market_cap"
+      ],
+      "filing_datetime_substitute": "accepted_at"
+    },
+    "pit_status": {
+      "point_in_time_safe_for_forward_snapshot": true,
+      "historical_performance_claim_allowed_from_this_snapshot": false,
+      "reason": "The daily snapshot has SEC accepted_at, usable_trade_date, and pit_safe_flag fields and can support forward observation. This run does not infer historical alpha from the current snapshot."
+    }
+  },
+  "raw_purchase_rows": {
+    "raw_open_market_purchase_rows": 4,
+    "raw_purchase_issuers": [
+      "TSM",
+      "CAT"
+    ],
+    "raw_total_purchase_value": 226970.0,
+    "meaningful_purchase_rows_ge_500k": 0,
+    "exclusion_reason": "exclude_tiny_purchase",
+    "purchase_summary": [
+      {
+        "ticker": "TSM",
+        "row_count": 3,
+        "total_value": 7760.0,
+        "owner_names": [
+          "Tien Bor-Zen"
+        ],
+        "max_value": 3860.0
+      },
+      {
+        "ticker": "CAT",
+        "row_count": 1,
+        "total_value": 219210.0,
+        "owner_names": [
+          "MacLennan David"
+        ],
+        "max_value": 219210.0
+      }
+    ]
+  },
+  "shadow_scoring": {
+    "insider_buy_value_to_market_cap": "blocked_no_market_cap_join_and_zero_meaningful_purchase_rows",
+    "cluster_buying_30d": "no_meaningful_cluster; only tiny TSM rows and one sub-threshold CAT director row",
+    "CEO_CFO_buy_flag": "not_triggered",
+    "first_purchase_1y": "not_evaluated_zero_meaningful_candidates",
+    "first_purchase_3y": "not_evaluated_zero_meaningful_candidates",
+    "post_drawdown_purchase": "not_evaluated_zero_meaningful_candidates",
+    "exclude_option_exercise": "available",
+    "exclude_tiny_purchase": "available_and_excludes_all_open_market_purchase_rows"
+  },
+  "shadow_overlay_metrics": {
+    "candidate_count": 0,
+    "meaningful_insider_buy_definition": "open_market_purchase_flag=true, option_exercise_flag=false, pit_safe_flag=true, and purchase value >= 500000 USD",
+    "latest_signal_file": "data/quant_signals_20260505.json",
+    "latest_signal_count": 0,
+    "signals_with_meaningful_insider_buy": 0,
+    "signals_without_meaningful_insider_buy": 0,
+    "insider_buy_but_no_signal": 0,
+    "raw_subthreshold_purchase_issuers_without_signal": [
+      "TSM",
+      "CAT"
+    ],
+    "overlap_with_existing_signals": {
+      "candidate_count": 0,
+      "overlap_count": 0,
+      "overlap_rate": null,
+      "reason": "No meaningful insider-buy candidates exist in the current snapshot; latest production quant_signals file also has zero signals."
+    },
+    "scarce_slot_opportunity_cost": {
+      "measurable": false,
+      "slot_conflict_count": 0,
+      "replacement_value_10d_excess_proxy": null,
+      "reason": "No tagged candidates and no forward sleeve entries."
+    },
+    "forward_return_of_tagged_candidates": {
+      "5d": {
+        "count": 0,
+        "avg": null,
+        "median": null,
+        "win_rate": null
+      },
+      "10d": {
+        "count": 0,
+        "avg": null,
+        "median": null,
+        "win_rate": null
+      },
+      "20d": {
+        "count": 0,
+        "avg": null,
+        "median": null,
+        "win_rate": null
+      },
+      "60d": {
+        "count": 0,
+        "avg": null,
+        "median": null,
+        "win_rate": null
+      },
+      "90d": {
+        "count": 0,
+        "avg": null,
+        "median": null,
+        "win_rate": null
+      }
+    }
+  },
+  "forward_sleeve_status": {
+    "snapshot_count": 7,
+    "latest_asof_date": "2026-05-05",
+    "candidate_count": 0,
+    "pending_count": 0,
+    "open_position_count": 0,
+    "closed_position_count": 0,
+    "closed_count_today": 0,
+    "realized_pnl_to_date": 0.0,
+    "unrealized_pnl": 0.0,
+    "trade_enabled": false,
+    "paper_enabled": true
+  },
+  "after_metrics": {
+    "expected_value_score_delta": 0.0,
+    "production_metrics_changed": false,
+    "reason": "Data audit only; no replay, strategy, sizing, ranking, entry, exit, universe, or production-order path changed."
+  },
+  "expected_value_score_delta": 0.0,
+  "candidate_overlap_and_slot_value": {
+    "candidate_count": 0,
+    "overlap_with_existing_signals": 0,
+    "slot_conflict_count": 0,
+    "slot_value_measurable": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false,
+    "production_impact": "shadow_audit_only_no_production_change"
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "decision_rationale": "The current Form 4 adapter and CIK mapping are adequate for forward observation, but the 20260505 snapshot has zero meaningful open-market purchase candidates and zero forward paper outcomes. This supports continued default-off observation only.",
+  "next_action": "Continue the default-off Form 4 forward queue and wait for nonzero meaningful purchase candidates plus closed paper outcomes before any replay, threshold retune, or production promotion attempt.",
+  "related_files": [
+    "data/non_ohlcv/form4_transactions_20260505.jsonl",
+    "data/non_ohlcv/form4_backfill_summary_20260505.json",
+    "data/non_ohlcv/daily_non_ohlcv_snapshot_20260505.json",
+    "data/form4_event_sleeve_paper_state.json",
+    "data/form4_event_sleeve_paper_snapshots.jsonl",
+    "docs/non_ohlcv_data_audit/form4_current_snapshot_20260506.md",
+    "docs/experiments/tickets/exp-20260506-021.json",
+    "docs/experiments/logs/exp-20260506-021.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

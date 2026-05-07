@@ -1,0 +1,223 @@
+{
+  "experiment_id": "exp-20260506-022",
+  "generated_at": "2026-05-06T17:24:42+00:00",
+  "status": "completed_data_audit",
+  "decision": "data_gap",
+  "lane": "alpha_discovery",
+  "change_type": "non_ohlcv_options_overlay_repeat_guard_audit",
+  "mechanism_family": "eod_options_structure_overlay",
+  "hypothesis": "EOD options IV, skew, term structure, OI concentration, and put/call structure may help as a breakout, short-pressure, or earnings-event overlay, but only if the evidence is PIT-safe and improves slot conflict value for existing Ginger candidates.",
+  "alpha_hypothesis": {
+    "category": "entry_overlay_event_confirmation",
+    "text": "Options structure may confirm or de-risk existing breakout/event/earnings candidates, not create standalone entries.",
+    "why_not_production": "The only multi-window shadow test is PIT-unsafe and unstable; current PIT-safe forward rows have only one date, one liquidity-pass row, and no closed 5/10/20/60d outcomes."
+  },
+  "non_ohlcv_data_source": "OnClickMedia EOD options chain via quant/options_onclickmedia.py",
+  "single_causal_variable": "eod_options_overlay_new_pit_evidence_check",
+  "experiment_mode": "data_audit_repeat_guard",
+  "production_change_allowed": false,
+  "historical_experiment_check": {
+    "prior_options_experiments_found": true,
+    "similar_experiments": {
+      "exp-20260505-021": "EOD options data gap; no local chain, IV, skew, OI, put/call, term-structure, usable_trade_date, or pit_safe rows existed.",
+      "exp-20260506-003": "OnClickMedia default-off options harness and daily snapshot collection were added; historical rows are PIT-unsafe without vendor_asof.",
+      "exp-20260506-009": "Canonical-window options overlay shadow covered 135/138 candidate days, but historical rows were PIT-unsafe and call/downside overlays were unstable or negative for slot value."
+    },
+    "mechanism_insight_check": {
+      "conflict_with_recent_guardrails": false,
+      "notes": "This run does not repeat naive call OI, put OI, call-dominance, or put-skew promotion. It audits whether new PIT-safe evidence exists since exp-20260506-009."
+    },
+    "why_not_simple_repeat": "There is one new forward daily options snapshot from 2026-05-05, but it has no closed forward outcomes and only one option-liquidity-pass row, so a replay would be a repeat without decision-grade evidence."
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "date_range": "2025-10-23..2026-04-21",
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "date_range": "2025-04-23..2025-10-22",
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "date_range": "2024-10-02..2025-04-22",
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "data_availability": {
+    "repo_options_adapter_exists": true,
+    "adapter_file": "quant/options_onclickmedia.py",
+    "shadow_runner_exists": true,
+    "shadow_runner_file": "scripts/run_options_overlay_shadow.py",
+    "available_schema_fields": [
+      "ticker",
+      "date",
+      "expiry",
+      "strike",
+      "call_put",
+      "volume",
+      "open_interest",
+      "bid",
+      "ask",
+      "mid",
+      "implied_vol",
+      "delta",
+      "option_liquidity_score",
+      "usable_trade_date",
+      "pit_safe"
+    ],
+    "missing_or_unpromoted_fields": [
+      "iv_rank",
+      "iv_percentile",
+      "iv_minus_realized_vol",
+      "earnings_iv_flag",
+      "vendor_asof",
+      "ticker_level_option_liquidity_filter",
+      "closed_forward_outcomes_for_current_pit_rows",
+      "true_short_interest_or_borrow_linkage"
+    ],
+    "current_forward_snapshot": {
+      "file": "data/non_ohlcv/options_onclickmedia_summary_20260505.json",
+      "collection_mode": "forward_daily",
+      "date": "2026-05-05",
+      "rows_written": 4767,
+      "ticker_date_requests": 48,
+      "errors": 0,
+      "pit_safe_rows": 4767,
+      "pit_unsafe_rows": 0,
+      "option_liquidity_pass_rows": 1,
+      "option_liquidity_pass_rate": 0.0002,
+      "closed_forward_outcomes": 0
+    },
+    "historical_shadow_dataset": {
+      "source_experiment": "exp-20260506-009",
+      "candidate_count": 138,
+      "options_covered_candidates": 135,
+      "coverage_rate": 0.978261,
+      "options_chain_rows": 13484,
+      "pit_safe_rows": 0,
+      "pit_unsafe_rows": 13484
+    },
+    "earnings_date_alignment": {
+      "exists_for_options_overlay": false,
+      "status": "schema_gap"
+    },
+    "short_interest_linkage": {
+      "true_short_interest_available": false,
+      "free_short_pressure_proxy_available": true,
+      "status": "not_promoted_for_options_overlay"
+    }
+  },
+  "pit_status": {
+    "historical_rows_decision_grade": false,
+    "historical_reason": "OnClickMedia historical rows do not expose vendor_asof/retrieval-time market availability, so they are PIT-unsafe for production alpha proof.",
+    "current_forward_rows_pit_safe": true,
+    "current_forward_limitations": "Only one current daily snapshot is available, OI lag remains a caveat, option-liquidity-pass count is one, and no 5/10/20/60d outcomes have closed."
+  },
+  "shadow_overlay_metrics_reference": {
+    "source_experiment": "exp-20260506-009",
+    "candidate_count": 138,
+    "options_covered_candidates": 135,
+    "all_tagged_candidates": {
+      "forward_return_5d_avg": 0.010061,
+      "forward_return_10d_avg": 0.017511,
+      "forward_return_20d_avg": 0.032044,
+      "forward_return_60d_avg": 0.066281,
+      "future_drawdown_20d_avg": -0.060482,
+      "future_realized_vol_20d_avg": 0.361229
+    },
+    "call_structure_support": {
+      "count": 75,
+      "forward_return_5d_avg": 0.004794,
+      "forward_return_10d_avg": 0.012558,
+      "forward_return_20d_avg": 0.016569,
+      "forward_return_60d_avg": 0.03472,
+      "win_rate_20d": 0.523077,
+      "minus_no_call_20d": -0.008225,
+      "by_window_minus_no_call_20d": {
+        "late_strong": -0.021347,
+        "mid_weak": 0.07693,
+        "old_thin": -0.057693
+      }
+    },
+    "downside_structure_risk": {
+      "count": 31,
+      "forward_return_5d_avg": 0.002356,
+      "forward_return_10d_avg": -0.001266,
+      "forward_return_20d_avg": -0.008001,
+      "forward_return_60d_avg": -0.013216,
+      "win_rate_20d": 0.533333,
+      "minus_no_downside_20d": -0.037732,
+      "by_window_minus_no_downside_20d": {
+        "late_strong": -0.094107,
+        "mid_weak": -0.120848,
+        "old_thin": 0.061721
+      }
+    }
+  },
+  "candidate_overlap_and_slot_value": {
+    "scope": "existing_backtester_candidate_days_only",
+    "standalone_options_entries_created": 0,
+    "entered_count": 62,
+    "skipped_count": 76,
+    "options_covered_entered_count": 61,
+    "options_covered_skipped_count": 74,
+    "call_structure_support_slot_conflict_count": 12,
+    "call_structure_support_avg_slot_conflict_value_20d": -0.113189,
+    "downside_structure_risk_slot_conflict_count": 5,
+    "downside_structure_risk_avg_slot_conflict_value_20d": -0.136492
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "reason": "Data audit only; no backtest replay, production path, strategy rule, ranking, sizing, entry, exit, or universe changed."
+  },
+  "production_impact": {
+    "production_impact": "data_audit_only_no_production_change",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "production_signal_path_changed": false,
+    "production_orders_changed": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "decision_rationale": "Reject production or default-off replay promotion for now. The existing shadow overlay was PIT-unsafe and failed stable slot-value evidence; the new forward snapshot is PIT-safe but too sparse and too recent for closed outcomes.",
+  "next_action": "Accumulate at least 5 to 10 forward PIT-safe option snapshot days, freeze richer IV/earnings/short-linked tags, and evaluate only after closed 5/10/20/60d outcomes exist for option-liquid existing candidates."
+}

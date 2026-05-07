@@ -1,0 +1,179 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "candidate_count": 138,
+  "change_summary": "Joined OnClickMedia historical options structure rows to existing Ginger candidate days across the three canonical windows as a shadow-only overlay.",
+  "change_type": "shadow_overlay_candidate_day_backfill",
+  "component": "scripts/run_options_overlay_shadow.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected_for_promotion",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "production_portfolio_delta": 0.0,
+    "reason": "Shadow-only overlay did not alter signal generation, candidate ranking, sizing, exits, or orders."
+  },
+  "experiment_id": "exp-20260506-009",
+  "gate4": {
+    "applicable": false,
+    "passed": false,
+    "reason": "No production strategy rule was changed; shadow overlay was not stable enough to justify promotion."
+  },
+  "historical_experiment_check": {
+    "prior_data_gap_experiments": [
+      "exp-20260503-044",
+      "exp-20260504-043",
+      "exp-20260505-021"
+    ],
+    "why_not_simple_repeat": "This run used new local OnClickMedia chain rows from exp-20260506-003 instead of repeating the previous no-options-data audits."
+  },
+  "hypothesis": "EOD options structure may add overlay information to existing Ginger candidate days: call OI structure could identify better continuation candidates, while put-skew/downside structure could identify weaker candidates.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "accepted-stack dominant bull tape",
+    "mid_weak": "rotation-heavy tape where strategy profits but lags indexes",
+    "old_thin": "mixed older tape with lower win rate"
+  },
+  "mechanism_insight": "The OnClickMedia options overlay has high historical candidate coverage, but naive call-structure support was not bullish on aggregate and downside-risk structure was directionally negative only in two of three windows. Historical rows remain PIT-unsafe, so this is not production-promotable alpha.",
+  "next_retry_requires": [
+    "Forward PIT-safe OnClickMedia rows with closed outcomes",
+    "A richer options feature set such as IV rank, IV-vs-realized, earnings IV flag, and vendor-asof metadata",
+    "A replay that proves options tags improve same-day slot replacement value in most windows"
+  ],
+  "parameters": {
+    "call_structure_support": "liquid rows >= 10, call OI > put OI, and max call OI concentration >= 12%",
+    "downside_structure_risk": "liquid rows >= 10 and either put/call OI >= 1.25 or approx 25-delta skew >= 0.05",
+    "single_causal_variable": "onclickmedia_options_candidate_day_shadow_overlay"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "scripts/run_options_overlay_shadow.py",
+    "data/experiments/exp-20260506-009/options_overlay_shadow_report.json",
+    "data/experiments/exp-20260506-009/options_candidate_overlay_rows.jsonl",
+    "data/experiments/exp-20260506-009/options_candidate_chain.jsonl",
+    "docs/non_ohlcv_data_audit/eod_options_onclickmedia_overlay_exp-20260506-009_20260506.md"
+  ],
+  "rejection_reason": "No production EV changed; shadow call-support underperformed aggregate candidates and downside-risk tags were unstable across windows while the source lacks historical vendor-asof metadata.",
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "shadow_metrics": {
+    "call_support_minus_no_call_support_forward_20d": -0.008225,
+    "downside_minus_no_downside_forward_20d": -0.037732,
+    "options_candidate_coverage_rate": 0.978261,
+    "options_chain_rows": 13484,
+    "slot_conflict_value_20d": {
+      "call_structure_support": -0.113189,
+      "downside_structure_risk": -0.136492
+    }
+  },
+  "shadow_metrics_by_window": {
+    "late_strong": {
+      "call_support_minus_no_call_support_forward_20d": -0.021347,
+      "downside_minus_no_downside_forward_20d": -0.094107
+    },
+    "mid_weak": {
+      "call_support_minus_no_call_support_forward_20d": 0.07693,
+      "downside_minus_no_downside_forward_20d": -0.120848
+    },
+    "old_thin": {
+      "call_support_minus_no_call_support_forward_20d": -0.057693,
+      "downside_minus_no_downside_forward_20d": 0.061721
+    }
+  },
+  "status": "observed_only",
+  "timestamp": "2026-05-06T06:06:10Z"
+}

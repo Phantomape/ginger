@@ -1,0 +1,85 @@
+{
+  "experiment_id": "exp-20260505-025",
+  "timestamp": "2026-05-05T18:21:05Z",
+  "lane": "alpha_search",
+  "status": "accepted_direction_observe_only",
+  "decision": "focus_next_alpha_on_default_off_event_overlay_bundle",
+  "change_type": "alpha_direction_selection_and_parity_validation",
+  "mechanism_family": "external_event_satellite_overlay",
+  "hypothesis": "The highest expected-value alpha direction now is not another core A/B threshold or slot tweak, but the frozen default-off external event overlay bundle as a satellite entry/allocation sleeve.",
+  "alpha_hypothesis_category": "satellite_entry_allocation",
+  "why_this_now": "LLM soft-ranking lacks enough production-aligned outcome joins, options and short/borrow overlays have no PIT-safe local rows, consumer platform expansion regressed two of three windows, and recent core ranking/sizing/lifecycle variants mostly failed. The external event bundle is the recent family with positive EV in all three canonical windows.",
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 3.4191, "sharpe_daily": 4.35, "total_pnl": 78600.33, "max_drawdown_pct": 0.0541, "win_rate": 0.7895, "trade_count": 19, "survival_rate": 0.8039},
+    "mid_weak": {"expected_value_score": 1.4415, "sharpe_daily": 2.62, "total_pnl": 55015.08, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "trade_count": 21, "survival_rate": 0.7925},
+    "old_thin": {"expected_value_score": 0.3179, "sharpe_daily": 1.29, "total_pnl": 24642.07, "max_drawdown_pct": 0.0805, "win_rate": 0.4091, "trade_count": 22, "survival_rate": 0.9167}
+  },
+  "after_metrics": {
+    "source": "exp-20260504-049 replay-only event overlay bundle on the same canonical windows",
+    "late_strong": {"expected_value_score": 4.0085, "sharpe_daily": 4.61, "total_pnl": 86951.61, "max_drawdown_pct": 0.0478, "win_rate": 0.7419, "trade_count": 31, "survival_rate": 0.8039, "event_trade_count": 12, "event_pnl": 7713.06},
+    "mid_weak": {"expected_value_score": 2.0246, "sharpe_daily": 3.1, "total_pnl": 65309.93, "max_drawdown_pct": 0.0849, "win_rate": 0.6389, "trade_count": 36, "survival_rate": 0.7925, "event_trade_count": 15, "event_pnl": 10535.55},
+    "old_thin": {"expected_value_score": 0.3516, "sharpe_daily": 1.35, "total_pnl": 26046.73, "max_drawdown_pct": 0.0889, "win_rate": 0.5, "trade_count": 30, "survival_rate": 0.9167, "event_trade_count": 8, "event_pnl": 1404.66}
+  },
+  "delta_metrics": {
+    "aggregate_ev_delta": 1.2062,
+    "aggregate_ev_delta_pct": 0.232925,
+    "aggregate_pnl_delta": 20050.79,
+    "aggregate_pnl_delta_pct": 0.126697,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "gate4": {
+    "passed_directionally": true,
+    "basis": "The event overlay bundle improves expected_value_score and total PnL in all three canonical windows, but remains replay-only evidence until forward paper outcomes and shared production controls mature."
+  },
+  "history_check": {
+    "mechanism_insight_guardrails_checked": true,
+    "not_repeating": [
+      "first add-on haircut gate rejected in exp-20260430-030",
+      "second add-on retries rejected in exp-20260428-031 / exp-20260429-028 / exp-20260430-019",
+      "consumer digital platform basket rejected in exp-20260505-011",
+      "FD source marginal event-bundle addition rejected in exp-20260505-004"
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "alters_orders": false,
+    "production_impact": "direction_record_only_no_strategy_or_order_change",
+    "positive_promotion_requirement": "Keep the bundle default-off and production-visible through paper attribution; consider live capital only after forward gate passes with closed outcomes across at least two sources."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none",
+    "why_not_llm": "LLM soft-ranking remains sample-limited; this run chooses a non-LLM event sleeve with stronger replay evidence."
+  },
+  "validation": {
+    "canonical_baseline_runs": [
+      "data/experiments/exp-20260505-025/baseline_late_strong.json",
+      "data/experiments/exp-20260505-025/baseline_mid_weak.json",
+      "data/experiments/exp-20260505-025/baseline_old_thin.json"
+    ],
+    "tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_event_sleeve_bundle.py quant\\test_form4_event_sleeve.py quant\\test_sec_negative_event_sleeve.py quant\\test_sec_event_sleeve.py",
+    "test_result": "16 passed"
+  },
+  "decision_rationale": "Treat default-off external event overlay as the current alpha priority. Do not start another core A/B threshold, ranking, add-on, or noisy universe expansion until the event bundle has forward paper outcomes or a materially new alpha source appears.",
+  "next_action": "Accumulate forward event-bundle paper outcomes and evaluate the existing forward gate before any live-capital promotion.",
+  "related_files": [
+    "data/experiments/exp-20260505-025/event_bundle_direction.json",
+    "docs/experiments/logs/exp-20260505-025.json",
+    "docs/experiments/tickets/exp-20260505-025.json",
+    "docs/experiments/artifacts/exp-20260505-025_event_bundle_direction.md"
+  ]
+}

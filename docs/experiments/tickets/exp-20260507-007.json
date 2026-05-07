@@ -1,0 +1,57 @@
+{
+  "experiment_id": "exp-20260507-007",
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex",
+  "hypothesis": "Existing trend_long candidates have higher expectancy when at least 75% of the current feature-complete universe is above its 200-day average, so a trend-only risk multiplier may improve EV without adding tickers, filters, exits, or ranking rules.",
+  "change_type": "capital_allocation_broad_breadth_trend_risk",
+  "single_causal_variable": "trend_long risk multiplier when universe_breadth_above_200ma >= 0.75",
+  "baseline_result_file": "data/backtest_results_20260507.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260507_007_broad_breadth_trend_risk.py",
+    "data/experiments/exp-20260507-007/broad_breadth_trend_risk.json",
+    "docs/experiments/tickets/exp-20260507-007.json",
+    "docs/experiments/logs/exp-20260507-007.json",
+    "docs/experiments/artifacts/exp-20260507-007_broad_breadth_trend_risk.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "universe",
+    "signal generation",
+    "entry filters",
+    "candidate ranking",
+    "MAX_POSITIONS",
+    "MAX_POSITION_PCT",
+    "MAX_PORTFOLIO_HEAT",
+    "MAX_PER_SECTOR",
+    "scarce-slot breakout deferral",
+    "gap cancels",
+    "add-ons",
+    "all exits",
+    "LLM/news replay",
+    "earnings strategy"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Three-window Gate 4; reject if EV lift is below materiality, Sharpe regresses materially, drawdown worsens, or the added allocation complexity is not justified.",
+  "created_at": "2026-05-06T19:26:00+00:00",
+  "claimed_at": "2026-05-06T19:26:00+00:00",
+  "completed_at": "2026-05-06T19:31:14+00:00",
+  "result": {
+    "decision": "rejected",
+    "summary": "Broad-breadth trend risk improved aggregate PnL but failed promotion because Sharpe regressed and drawdown worsened in touched windows."
+  }
+}

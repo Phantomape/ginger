@@ -1,0 +1,55 @@
+{
+  "experiment_id": "exp-20260505-021",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "universe-scout",
+  "hypothesis": "EOD options structure may confirm existing Ginger breakout/event candidates, but this run only rechecks whether any new PIT-safe options chain, IV/skew/OI, option-liquidity, short-interest linkage, or earnings-aligned options data appeared after exp-20260504-043.",
+  "change_type": "non_ohlcv_data_audit",
+  "single_causal_variable": "EOD options structure data availability since exp-20260504-043",
+  "baseline_result_file": "data/backtest_results_20260505.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets/exp-20260505-021.json",
+    "docs/experiments/logs/exp-20260505-021.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/eod_options_no_new_data_exp-20260505-021_20260505.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "no production signal path",
+    "no OHLCV threshold sweep",
+    "no option overlay scoring without PIT data",
+    "no core slot promotion"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "data audit only: report coverage, PIT risk, missingness, available fields, duplicate-history check, and next minimum action; decision can only be data_gap unless PIT-safe options rows exist",
+  "created_at": "2026-05-05T17:20:52+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-05T17:23:20+00:00",
+  "result": {
+    "decision": "data_gap",
+    "summary": "No new PIT-safe EOD options chain, IV/skew/OI, option-liquidity, short-interest, or earnings-aligned options rows were found after exp-20260504-043.",
+    "log_file": "docs/experiments/logs/exp-20260505-021.json",
+    "audit_file": "docs/non_ohlcv_data_audit/eod_options_no_new_data_exp-20260505-021_20260505.md",
+    "production_impact": "data_audit_only_no_production_change"
+  }
+}

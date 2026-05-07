@@ -1,0 +1,68 @@
+{
+  "experiment_id": "exp-20260506-022",
+  "status": "completed_data_audit",
+  "decision": "data_gap",
+  "title": "EOD options structure overlay repeat guard",
+  "lane": "alpha_discovery",
+  "owner": "universe-scout",
+  "hypothesis": "EOD options structure can improve Ginger only if new PIT-safe vendor-as-of rows or richer IV, earnings, and short-linked features appear beyond exp-20260506-009; this run audits whether such new evidence exists before repeating the overlay.",
+  "change_type": "non_ohlcv_options_overlay_repeat_guard_audit",
+  "single_causal_variable": "eod_options_overlay_new_pit_evidence_check",
+  "mechanism_family": "eod_options_structure_overlay",
+  "non_ohlcv_data_source": "OnClickMedia EOD options chain via quant/options_onclickmedia.py",
+  "baseline_result_file": "data/backtest_results_20260506.json",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl",
+    "C:/Users/Administrator/.codex/automations/universe-scout/memory.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "orders",
+    "sizing",
+    "ranking",
+    "entry filters",
+    "exit logic",
+    "OHLCV thresholds",
+    "universe"
+  ],
+  "evaluation_windows": [
+    {
+      "name": "late_strong",
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "name": "mid_weak",
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "name": "old_thin",
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report options coverage, PIT status, missingness, overlap, slot value, and keep production unchanged.",
+  "created_at": "2026-05-06T17:24:42+00:00",
+  "completed_at": "2026-05-06T17:24:42+00:00",
+  "result": {
+    "decision": "data_gap",
+    "summary": "No new decision-grade options overlay evidence exists beyond exp-20260506-009; current forward PIT-safe rows cover only one date and have one liquidity-pass row with no closed outcomes.",
+    "log_file": "docs/experiments/logs/exp-20260506-022.json",
+    "audit_file": "docs/non_ohlcv_data_audit/eod_options_repeat_guard_exp-20260506-022_20260506.md",
+    "reference_shadow_report_file": "data/experiments/exp-20260506-009/options_overlay_shadow_report.json",
+    "expected_value_score_delta": 0.0,
+    "candidate_count": 138,
+    "overlap_with_existing_signals": "existing candidates only",
+    "slot_value_measurable": true,
+    "production_impact": "data_audit_only_no_production_change"
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "experiment_id": "exp-20260506-028",
+  "run_at": "2026-05-06T12:15:00-07:00",
+  "automation_id": "alpha-search",
+  "experiment_type": "alpha_search",
+  "alpha_hypothesis": "Broad-rotation market structure may justify more capital for risk-on breakout_long signals that are also 20-day leaders versus SPY.",
+  "alpha_category": "capital_allocation",
+  "why_this_direction": [
+    "Recent state-map audit found broad_rotation plus spy_relative_leader sizing family positive across three windows.",
+    "LLM soft-ranking, options overlays, simple Form4 overlays, and MFE/giveback exits are currently data-limited or recently rejected.",
+    "This tested an allocation change on an already tradable sleeve instead of adding noisy tickers."
+  ],
+  "historical_failure_check": {
+    "similar_rejected_families": [
+      "simple SPY leader target-width widening",
+      "nearby SPY leader multiplier/cap tweaks without new state conditioning",
+      "index-state breakout deferral"
+    ],
+    "why_not_simple_repeat": "This variant conditioned the existing SPY-leader sleeve on IWM 20-day outperformance versus SPY, a market-structure state surfaced by exp-20260506-024 rather than a broad SPY-leader retune.",
+    "mechanism_insight_conflict": "No direct conflict, but the playbook cautions against nearby SPY-leader tuning unless a new state split supplies evidence."
+  },
+  "change_type": "capital_allocation",
+  "candidate_parameters": {
+    "broad_rotation_definition": "IWM momentum_20d_pct - SPY momentum_20d_pct > 0.02",
+    "strategy": "breakout_long",
+    "requires_regime_exit_bucket": "risk_on",
+    "requires_spy_relative_leader": true,
+    "old_total_risk_multiplier": 2.0,
+    "new_total_risk_multiplier": 2.5
+  },
+  "implementation_path_tested": {
+    "candidate_shared_policy_changed": true,
+    "candidate_modules": [
+      "quant/risk_engine.py",
+      "quant/portfolio_engine.py",
+      "quant/constants.py"
+    ],
+    "backtester_only_logic": false,
+    "production_parity_assessment": "Candidate was implemented through shared risk enrichment and shared sizing, so an accepted version would be visible to both backtester.py and run.py. The code was rolled back after Gate 4 rejection.",
+    "retained_strategy_code": false
+  },
+  "windows": {
+    "late_strong": {
+      "date_range": "2025-10-23..2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "market_regime_summary": "dominant strong/risk-on tape with broad breakout opportunity",
+      "before_metrics": {
+        "expected_value_score": 3.4078,
+        "sharpe_daily": 4.34,
+        "max_drawdown_pct": 5.41,
+        "total_pnl_usd": 78522.07,
+        "win_rate": 0.7895,
+        "total_trades": 19,
+        "survival_rate": 0.8039
+      },
+      "after_metrics": {
+        "expected_value_score": 3.5558,
+        "sharpe_daily": 4.41,
+        "max_drawdown_pct": 5.41,
+        "total_pnl_usd": 80629.86,
+        "win_rate": 0.7895,
+        "total_trades": 19,
+        "survival_rate": 0.8039
+      },
+      "deltas": {
+        "expected_value_score": 0.148,
+        "expected_value_score_pct": 4.34,
+        "sharpe_daily": 0.07,
+        "max_drawdown_pct_points": 0.0,
+        "total_pnl_usd": 2107.79,
+        "total_pnl_pct": 2.68,
+        "win_rate": 0.0,
+        "total_trades": 0
+      }
+    },
+    "mid_weak": {
+      "date_range": "2025-04-23..2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "market_regime_summary": "mixed/weak tape with recovery and commodity support",
+      "before_metrics": {
+        "expected_value_score": 1.2993,
+        "sharpe_daily": 2.5,
+        "max_drawdown_pct": 8.79,
+        "total_pnl_usd": 51965.99,
+        "win_rate": 0.5,
+        "total_trades": 22,
+        "survival_rate": 0.7925
+      },
+      "after_metrics": {
+        "expected_value_score": 1.3033,
+        "sharpe_daily": 2.5,
+        "max_drawdown_pct": 8.79,
+        "total_pnl_usd": 52134.3,
+        "win_rate": 0.5,
+        "total_trades": 22,
+        "survival_rate": 0.7925
+      },
+      "deltas": {
+        "expected_value_score": 0.004,
+        "expected_value_score_pct": 0.31,
+        "sharpe_daily": 0.0,
+        "max_drawdown_pct_points": 0.0,
+        "total_pnl_usd": 168.31,
+        "total_pnl_pct": 0.32,
+        "win_rate": 0.0,
+        "total_trades": 0
+      }
+    },
+    "old_thin": {
+      "date_range": "2024-10-02..2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "market_regime_summary": "older/thinner tape with bearish drawdown period",
+      "before_metrics": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "max_drawdown_pct": 8.05,
+        "total_pnl_usd": 24642.07,
+        "win_rate": 0.4091,
+        "total_trades": 22,
+        "survival_rate": 0.9167
+      },
+      "after_metrics": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "max_drawdown_pct": 8.05,
+        "total_pnl_usd": 24642.07,
+        "win_rate": 0.4091,
+        "total_trades": 22,
+        "survival_rate": 0.9167
+      },
+      "deltas": {
+        "expected_value_score": 0.0,
+        "expected_value_score_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "max_drawdown_pct_points": 0.0,
+        "total_pnl_usd": 0.0,
+        "total_pnl_pct": 0.0,
+        "win_rate": 0.0,
+        "total_trades": 0
+      }
+    }
+  },
+  "aggregate_assessment": {
+    "ev_positive_windows": "2/3 positive, 1/3 unchanged",
+    "expected_value_score_sum_before": 5.025,
+    "expected_value_score_sum_after": 5.177,
+    "expected_value_score_sum_delta": 0.152,
+    "expected_value_score_sum_delta_pct": 3.02,
+    "gate4_result": "failed",
+    "gate4_reason": "No window reached >10% EV improvement, >0.1 Sharpe improvement, >1pp drawdown reduction, >5% PnL improvement, or trade-count increase with stable win rate."
+  },
+  "decision": "rejected",
+  "rejection_reason": "The effect was weakly positive but below Gate 4 thresholds and did not justify adding a new IWM-vs-SPY market-structure sizing rule.",
+  "next_do_not_repeat": "Do not retry nearby 2.25x/2.75x broad_rotation breakout SPY-leader multipliers without new forward evidence or a stronger independent discriminator.",
+  "verification": {
+    "unit_tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_low_score_risk_on_sizing.py quant\\test_quant.py -q",
+    "unit_test_result": "303 passed after rollback; candidate patch had 304 passed before rollback",
+    "backtest_commands": [
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+    ]
+  }
+}

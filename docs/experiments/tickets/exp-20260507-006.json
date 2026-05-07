@@ -1,0 +1,74 @@
+{
+  "experiment_id": "exp-20260507-006",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "Filing-shock slot value can only be measured after the backtester persists full post-gate entry candidate decision rows, not only selected trades and scarce-slot deferrals.",
+  "change_type": "measurement_repair",
+  "single_causal_variable": "default_off_full_entry_candidate_event_persistence",
+  "baseline_result_file": "data/backtest_results_20260506.json",
+  "allowed_write_scope": [
+    "quant/backtester.py",
+    "quant/experiments/exp_20260507_006_full_candidate_filing_shock_shadow.py",
+    "data/experiments/exp-20260507-006",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_full_candidate_exp-20260507-006_20260507.md",
+    "docs/experiments/tickets/exp-20260507-006.json",
+    "docs/experiments/logs/exp-20260507-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "OHLCV thresholds",
+    "technical entries",
+    "production signal path",
+    "signal ranking",
+    "risk sizing",
+    "exits",
+    "LLM prompts",
+    "SEC event thresholds",
+    "event notionals",
+    "capacity",
+    "holding periods"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Default-off instrumentation only: persisted candidate rows must reproduce entry_execution_attribution counts, three windows must keep non_ohlcv complete_fraction == 1.0, and production impact must be replay_only.",
+  "created_at": "2026-05-07T01:41:02+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-07T17:43:13.431435+00:00",
+  "result": {
+    "decision": "shadow_only",
+    "candidate_artifact_validation_passed": true,
+    "coverage_all_windows_complete": true,
+    "expected_value_score_delta": 0.0,
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": true,
+      "run_adapter_changed": false,
+      "parity_test_added": false,
+      "replay_only": true,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "production_signal_path_changed": false
+    }
+  }
+}
