@@ -21,6 +21,8 @@ A forward-only estimate revision ledger with same-event identity and PIT flags c
 - `quant/earnings_snapshot.py` now persists `next_earnings_date`, which `get_earnings_data()` already produced, and reports `tickers_with_next_earnings_date` coverage.
 - `quant/estimate_revision_ledger.py` builds same-event EPS estimate delta rows and marks whether each row is PIT-usable.
 - `scripts/run_estimate_revision_forward_ledger.py` writes default-off ledger and summary artifacts.
+- `quant/run.py` now calls the same ledger helper after the daily earnings snapshot, so the daily operator flow remains one command: `python quant/run.py`.
+- `quant/report_generator.py` surfaces the ledger row/usable/up/down counts inside the existing non-OHLCV coverage block.
 - `quant/test_estimate_revision_ledger.py` covers snapshot schema persistence, same-event delta logic, event-roll rejection, and backfill PIT rejection.
 
 ## Smoke Output
@@ -40,6 +42,9 @@ Summary:
 - PIT-usable revision rows: 0
 - Up revisions: 0
 - Down revisions: 0
+- Same-day feature row matches: 48
+- Same-day candidate matches: 2 (`GS`, `LITE`)
+- Same-day selected signal matches: 0
 
 The zero usable rows are expected because the existing `2026-05-06` snapshot was written before `next_earnings_date` was persisted. The harness becomes useful after at least two forward snapshots with the new schema exist.
 
@@ -54,12 +59,13 @@ A row is usable only if:
 
 ## Production Impact
 
-No trading behavior changed. This is a data schema and default-off artifact generator only.
+No trading behavior changed. This is a data schema and default-off artifact generator only. The run adapter now writes the observation artifact during the normal daily `run.py` flow, but it does not alter signals, ranking, sizing, exits, orders, or portfolio heat.
 
 ## Verification
 
-- `pytest quant/test_estimate_revision_ledger.py -q` -> 4 passed
+- `pytest quant/test_estimate_revision_ledger.py -q` -> 7 passed
 - `pytest quant/test_quant.py -k persist_earnings_snapshot -q` -> 3 passed, 300 deselected
+- `pytest quant/test_daily_non_ohlcv_snapshot.py -q` -> 3 passed
 
 ## Next Minimum Action
 

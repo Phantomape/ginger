@@ -1,0 +1,295 @@
+{
+  "alpha_hypothesis_category": "entry_execution",
+  "change_type": "entry_open_cancel_bypass_replay",
+  "decision": "rejected",
+  "decision_reason": "Three-window replay failed the promotion gate, so no production or shared backtest policy was changed.",
+  "experiment_id": "exp-20260508-009",
+  "gate4": {
+    "basis": "Three-window replay requires EV improvement in most windows and no negative EV window before any shared production/backtest promotion.",
+    "negative_ev_windows": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "passed": false,
+    "positive_ev_windows": [
+      "late_strong"
+    ]
+  },
+  "historical_experiment_check": {
+    "exp-20260507-920": "Loss-attribution audit found bbwidth20>=0.269211 among top orthogonal discriminators for cancelled entries.",
+    "exp-20260508-003": "Commodity near-high scalar failed; this experiment does not touch commodity sizing or near-high thresholds.",
+    "gap_threshold_family": "This is not a raw CANCEL_GAP_PCT relaxation; the cancel threshold stays fixed and the test uses a separate signal-day volatility state discriminator.",
+    "mechanism_insight_conflict": "No direct conflict, but sample support is small; promotion requires the canonical three-window gate."
+  },
+  "hypothesis": "Some open-gap cancelled entries are not bad chase risk; when the signal-day 20-day Bollinger bandwidth is already high, the gap may confirm volatility expansion and should be allowed to fill.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking data limitations did not block this deterministic entry-execution alpha search.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "mechanism_family": "gap_cancel_follow_through",
+  "next_action": "Do not retry this exact BB-width bypass without new forward evidence or a different orthogonal discriminator.",
+  "parameters": {
+    "baseline_source": "Current dirty-tree canonical baseline run in this automation turn; see artifact metrics table.",
+    "canonical_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "min_bbwidth20": 0.269211,
+    "target_cancel_reasons": [
+      "adverse_gap_down_cancel",
+      "gap_cancel"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "report_adapter_changed": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260508_009_gap_cancel_bbwidth_bypass_replay.py",
+    "data/experiments/exp-20260508-009/gap_cancel_bbwidth_bypass_replay.json",
+    "docs/experiments/logs/exp-20260508-009.json",
+    "docs/experiments/tickets/exp-20260508-009.json",
+    "docs/experiments/artifacts/exp-20260508-009_gap_cancel_bbwidth_bypass_replay.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "single_causal_variable": "bbwidth20_ge_0_269211_bypass_for_gap_cancelled_entries",
+  "status": "rejected",
+  "timestamp": "2026-05-08T04:14:58.405220+00:00",
+  "verification": {
+    "command": ".\\.venv\\Scripts\\python.exe quant\\experiments\\exp_20260508_009_gap_cancel_bbwidth_bypass_replay.py",
+    "three_window_protocol": "docs/backtesting.md canonical windows with fixed OHLCV snapshots"
+  },
+  "windows": {
+    "late_strong": {
+      "after_metrics": {
+        "expected_value_score": 3.8321,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.52,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.8478,
+        "survival_rate": 0.8039,
+        "total_pnl": 84776.71,
+        "total_trades": 22,
+        "win_rate": 0.7273
+      },
+      "before_metrics": {
+        "expected_value_score": 3.6257,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.42,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.8203,
+        "survival_rate": 0.804,
+        "total_pnl": 82030.12,
+        "total_trades": 20,
+        "win_rate": 0.75
+      },
+      "bypass_count": 2,
+      "bypass_events": [
+        {
+          "bbwidth20": 0.395271,
+          "date": "2026-01-14",
+          "fill_price": 80.74,
+          "gap_pct": -0.045175,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "adverse_gap_down_cancel",
+          "sector": "Commodities",
+          "signal_entry": 84.56,
+          "strategy": "trend_long",
+          "ticker": "SLV"
+        },
+        {
+          "bbwidth20": 0.576781,
+          "date": "2026-04-14",
+          "fill_price": 164.54,
+          "gap_pct": 0.031469,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "gap_cancel",
+          "sector": "Technology",
+          "signal_entry": 159.52,
+          "strategy": "trend_long",
+          "ticker": "CRDO"
+        }
+      ],
+      "date_range": {
+        "end": "2026-04-21",
+        "start": "2025-10-23"
+      },
+      "metric_deltas": {
+        "expected_value_score": 0.2064,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.1,
+        "strategy_total_return_pct": 0.0275,
+        "survival_rate": -0.0001,
+        "total_pnl": 2746.59,
+        "total_trades": 2.0,
+        "win_rate": -0.0227
+      },
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "window": "late_strong"
+    },
+    "mid_weak": {
+      "after_metrics": {
+        "expected_value_score": 1.3149,
+        "max_drawdown_pct": 0.051,
+        "sharpe_daily": 2.52,
+        "signals_generated": 49,
+        "signals_survived": 39,
+        "strategy_total_return_pct": 0.5218,
+        "survival_rate": 0.7959,
+        "total_pnl": 52175.95,
+        "total_trades": 21,
+        "win_rate": 0.5238
+      },
+      "before_metrics": {
+        "expected_value_score": 1.5478,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.69,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.5754,
+        "survival_rate": 0.792,
+        "total_pnl": 57542.74,
+        "total_trades": 21,
+        "win_rate": 0.524
+      },
+      "bypass_count": 2,
+      "bypass_events": [
+        {
+          "bbwidth20": 0.386307,
+          "date": "2025-06-03",
+          "fill_price": 73.03,
+          "gap_pct": 0.015434,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "gap_cancel",
+          "sector": "Technology",
+          "signal_entry": 71.92,
+          "strategy": "breakout_long",
+          "ticker": "CRDO"
+        },
+        {
+          "bbwidth20": 0.405055,
+          "date": "2025-06-24",
+          "fill_price": 360.6,
+          "gap_pct": 0.045763,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "gap_cancel",
+          "sector": "Financials",
+          "signal_entry": 344.82,
+          "strategy": "trend_long",
+          "ticker": "COIN"
+        }
+      ],
+      "date_range": {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      "metric_deltas": {
+        "expected_value_score": -0.2329,
+        "max_drawdown_pct": -0.0369,
+        "sharpe_daily": -0.17,
+        "strategy_total_return_pct": -0.0536,
+        "survival_rate": 0.0039,
+        "total_pnl": -5366.79,
+        "total_trades": 0.0,
+        "win_rate": -0.0002
+      },
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "window": "mid_weak"
+    },
+    "old_thin": {
+      "after_metrics": {
+        "expected_value_score": 0.3248,
+        "max_drawdown_pct": 0.0802,
+        "sharpe_daily": 1.23,
+        "signals_generated": 63,
+        "signals_survived": 56,
+        "strategy_total_return_pct": 0.2641,
+        "survival_rate": 0.8889,
+        "total_pnl": 26408.1,
+        "total_trades": 25,
+        "win_rate": 0.4
+      },
+      "before_metrics": {
+        "expected_value_score": 0.3359,
+        "max_drawdown_pct": 0.0905,
+        "sharpe_daily": 1.28,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "strategy_total_return_pct": 0.2624,
+        "survival_rate": 0.917,
+        "total_pnl": 26242.68,
+        "total_trades": 22,
+        "win_rate": 0.409
+      },
+      "bypass_count": 3,
+      "bypass_events": [
+        {
+          "bbwidth20": 0.386325,
+          "date": "2024-11-21",
+          "fill_price": 175.0,
+          "gap_pct": 0.021301,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "gap_cancel",
+          "sector": "Technology",
+          "signal_entry": 171.35,
+          "strategy": "trend_long",
+          "ticker": "SNOW"
+        },
+        {
+          "bbwidth20": 0.525594,
+          "date": "2024-12-03",
+          "fill_price": 72.11,
+          "gap_pct": 0.020088,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "gap_cancel",
+          "sector": "Technology",
+          "signal_entry": 70.69,
+          "strategy": "trend_long",
+          "ticker": "CRDO"
+        },
+        {
+          "bbwidth20": 0.322559,
+          "date": "2024-12-13",
+          "fill_price": 228.6208,
+          "gap_pct": 0.031077,
+          "min_bbwidth20": 0.269211,
+          "original_cancel_reason": "gap_cancel",
+          "sector": "Technology",
+          "signal_entry": 221.73,
+          "strategy": "trend_long",
+          "ticker": "AVGO"
+        }
+      ],
+      "date_range": {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      },
+      "metric_deltas": {
+        "expected_value_score": -0.0111,
+        "max_drawdown_pct": -0.0103,
+        "sharpe_daily": -0.05,
+        "strategy_total_return_pct": 0.0017,
+        "survival_rate": -0.0281,
+        "total_pnl": 165.42,
+        "total_trades": 3.0,
+        "win_rate": -0.009
+      },
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "window": "old_thin"
+    }
+  }
+}

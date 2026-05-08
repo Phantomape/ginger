@@ -1,0 +1,184 @@
+{
+  "experiment_id": "exp-20260508-023",
+  "timestamp": "2026-05-08T09:20:47.9716079-07:00",
+  "automation": "Alpha Search",
+  "hypothesis": "Follow-through add-ons are the strongest current alpha direction, but further add-on capital-allocation experiments are not trustworthy while production and backtest cap add-on shares with different portfolio-heat semantics.",
+  "alpha_hypothesis": {
+    "category": "capital_allocation",
+    "statement": "Winners that pass day-2 follow-through may deserve additional capital when effective-stop heat has room.",
+    "why_not_direct_alpha_promotion": "Previous add-on shadow work showed positive marginal expectancy, but exp-20260508-019 found the backtester execution cap used local stop-price heat while production used portfolio_engine.compute_portfolio_heat effective-stop heat."
+  },
+  "change_type": "production_backtest_parity_repair",
+  "single_causal_variable": "follow-through add-on share cap now uses the shared production_parity cap helper with portfolio_engine effective-stop portfolio heat in backtester execution replay",
+  "parameters": {
+    "changed": {
+      "backtester_addon_execution_heat_cap": "local Position.stop_price heat -> shared cap_followthrough_addon_shares(portfolio_heat effective_stop)",
+      "production_parity_cap_helper": "private _cap_addon_shares -> public cap_followthrough_addon_shares"
+    },
+    "unchanged": [
+      "ADDON_CHECKPOINT_DAYS=2",
+      "ADDON_MIN_UNREALIZED_PCT=0.02",
+      "ADDON_MIN_RS_VS_SPY=0.0",
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES=0.50",
+      "ADDON_MAX_POSITION_PCT=0.35",
+      "ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT=0.60",
+      "SECOND_ADDON_ENABLED=false",
+      "entry ranking",
+      "entry/exit thresholds",
+      "universe",
+      "LLM/news replay settings"
+    ]
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "market_regime_summary": {
+    "late_strong": "mostly BULL/risk-on",
+    "mid_weak": "BEAR_SHALLOW early, then BULL/risk-on",
+    "old_thin": "BULL early, then NEUTRAL/BEAR stress into 2025-03"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.7435,
+      "sharpe_daily": 4.48,
+      "total_pnl": 83562.53,
+      "total_return_pct": 0.8356,
+      "max_drawdown_pct": 0.0539,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "sharpe_daily": 2.69,
+      "total_pnl": 57542.74,
+      "total_return_pct": 0.5754,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "sharpe_daily": 1.28,
+      "total_pnl": 26242.68,
+      "total_return_pct": 0.2624,
+      "max_drawdown_pct": 0.0905,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 4.0674,
+      "sharpe_daily": 4.48,
+      "total_pnl": 90788.88,
+      "total_return_pct": 0.9079,
+      "max_drawdown_pct": 0.0539,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.6195,
+      "sharpe_daily": 2.72,
+      "total_pnl": 59540.63,
+      "total_return_pct": 0.5954,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.2892,
+      "sharpe_daily": 1.18,
+      "total_pnl": 24512.21,
+      "total_return_pct": 0.2451,
+      "max_drawdown_pct": 0.0907,
+      "win_rate": 0.375,
+      "trade_count": 24,
+      "survival_rate": 0.918
+    }
+  },
+  "delta_metrics": {
+    "aggregate_ev_delta": 0.3489,
+    "aggregate_ev_delta_pct": 0.062,
+    "aggregate_pnl_delta": 7493.77,
+    "aggregate_pnl_delta_pct": 0.0448,
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 2,
+    "windows_pnl_regressed": 1,
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.3239,
+        "sharpe_daily": 0.0,
+        "total_pnl": 7226.35,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0717,
+        "sharpe_daily": 0.03,
+        "total_pnl": 1997.89,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0
+      },
+      "old_thin": {
+        "expected_value_score": -0.0467,
+        "sharpe_daily": -0.1,
+        "total_pnl": -1730.47,
+        "max_drawdown_pct": 0.0002,
+        "win_rate": -0.0341,
+        "trade_count": 2
+      }
+    }
+  },
+  "gate_4_result": {
+    "alpha_promotion_passed": false,
+    "reason": "Aggregate PnL improved 4.48% (<5%) and aggregate EV improved 6.20% (<10%); old_thin EV, Sharpe, and win rate regressed.",
+    "measurement_repair_exception": true,
+    "exception_reason": "The change fixes a documented production/backtest add-on heat-cap inconsistency that made further add-on alpha experiments untrustworthy."
+  },
+  "decision": "accepted_as_parity_repair_rejected_as_alpha_promotion",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "notes": "run.py already reaches the helper through build_followthrough_addon_actions; production behavior is unchanged except the cap helper is now public and tested."
+  },
+  "llm_questions": {
+    "llm_blamed": false,
+    "llm_boundary_changed": false,
+    "llm_attribution_changed": false
+  },
+  "risk": "Effective-stop heat can release add-on room that raises downstream capital exposure; old_thin showed lower win rate and two extra trades, so do not loosen add-on capacity without a separate quality discriminator.",
+  "next_not_repeat": "Do not repeat raw add-on capacity expansion, heat-cap relaxation, or same-day priority ordering. Next eligible alpha search should test a state-specific add-on quality discriminator or add-on reserve that preserves hard portfolio heat and improves old_thin.",
+  "commands": [
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "related_files": [
+    "quant/production_parity.py",
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "docs/production_backtest_parity.md",
+    "docs/experiments/logs/exp-20260508-023.json",
+    "docs/experiments/artifacts/exp-20260508-023_addon_heat_parity.md",
+    "docs/experiments/tickets/exp-20260508-023.json"
+  ]
+}

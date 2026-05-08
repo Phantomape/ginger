@@ -1,0 +1,62 @@
+{
+  "baseline_metrics": {
+    "expected_value_score": null,
+    "max_drawdown": null,
+    "reason": "Data artifact repair only; no strategy replay or production order path changed.",
+    "sharpe_daily": null,
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "change_type": "data_gap_repair",
+  "decision": "data_gap_repaired",
+  "experiment_id": "exp-20260508-006",
+  "hypothesis": "Estimate-revision shadow alpha remains blocked until earnings snapshots persist a stable same-event key; when next_earnings_date is missing but PIT snapshot days_to_earnings exists, deriving the date from the as-of business-day offset should repair replay coverage without adding strategy logic.",
+  "lane": "measurement_repair",
+  "mechanism_family": "earnings_estimate_revision_event_confirmation_overlay",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "run_data_artifact_changed": true,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/earnings_snapshot.py",
+    "quant/test_estimate_revision_ledger.py",
+    "data/experiments/exp-20260508-006/earnings_snapshot_20260504.json",
+    "data/experiments/exp-20260508-006/earnings_snapshot_20260505.json",
+    "data/experiments/exp-20260508-006/earnings_snapshot_20260506.json",
+    "data/experiments/exp-20260508-006/estimate_revision_ledger_20260506.jsonl",
+    "data/experiments/exp-20260508-006/estimate_revision_ledger_summary_20260506.json",
+    "docs/non_ohlcv_data_audit/earnings_next_date_repair_exp-20260508-006_20260508.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "shadow_metrics": {
+    "as_of_date": "2026-05-06",
+    "candidate_count": 2,
+    "estimate_revision_usable_and_matched_candidate_rows": 1,
+    "matched_candidate_tickers": [
+      "GS",
+      "LITE"
+    ],
+    "rows_with_next_earnings_date": 41,
+    "rows_with_prior_same_event": 39
+  },
+  "single_causal_variable": "earnings_snapshot_next_earnings_date_from_dte_repair",
+  "status": "observed_only",
+  "timestamp": "2026-05-08T03:34:40+00:00",
+  "verification": {
+    "ledger_smoke": "python scripts/run_estimate_revision_forward_ledger.py --data-dir data/experiments/exp-20260508-006 --signal-data-dir data --output-dir data/experiments/exp-20260508-006 --as-of 2026-05-06 --start 2026-05-04",
+    "tests": "pytest quant/test_estimate_revision_ledger.py -> 9 passed"
+  }
+}

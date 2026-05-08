@@ -1,0 +1,54 @@
+{
+  "experiment_id": "exp-20260508-004",
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "codex_alpha_discovery",
+  "hypothesis": "Forward PIT earnings estimate ledgers are only useful for filing-shock shadow alpha if each row can declare whether it touched same-day Ginger candidates or selected signals without entering production signal logic.",
+  "change_type": "default_off_forward_ledger_harness",
+  "single_causal_variable": "estimate_revision_ledger_candidate_signal_match_fields",
+  "baseline_result_file": "data/backtest_results_20260507.json",
+  "allowed_write_scope": [
+    "quant/estimate_revision_ledger.py",
+    "scripts/run_estimate_revision_forward_ledger.py",
+    "quant/test_estimate_revision_ledger.py",
+    "docs/experiments/tickets/exp-20260508-004.json",
+    "docs/experiments/logs/exp-20260508-004.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260508-004/estimate_revision_ledger_20260506.jsonl",
+    "data/experiments/exp-20260508-004/estimate_revision_ledger_summary_20260506.json",
+    "docs/non_ohlcv_data_audit/estimate_revision_candidate_match_exp-20260508-004_20260507.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "OHLCV thresholds",
+    "technical entries",
+    "production signal path",
+    "signal ranking",
+    "risk sizing",
+    "exits",
+    "LLM prompts"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2026-05-04",
+      "end": "2026-05-06"
+    }
+  ],
+  "acceptance_rule": "Default-off ledger rows include candidate/signal touch fields; focused tests pass; no production signal/risk/portfolio files changed.",
+  "created_at": "2026-05-08T02:53:49+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-08T03:01:42+00:00",
+  "result": {
+    "decision": "data_gap",
+    "summary": "Candidate/signal match fields added; 2026-05-06 has 48 feature matches, 2 candidate matches, 0 selected signal matches, and 0 usable estimate-revision rows.",
+    "verification": {
+      "tests": "pytest quant\\test_estimate_revision_ledger.py -> 7 passed",
+      "smoke": "python scripts\\run_estimate_revision_forward_ledger.py --data-dir data --signal-data-dir data --output-dir data\\experiments\\exp-20260508-004 --as-of 2026-05-06 --start 2026-05-04"
+    }
+  }
+}

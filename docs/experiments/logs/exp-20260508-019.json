@@ -1,0 +1,153 @@
+{
+  "experiment_id": "exp-20260508-019",
+  "run_started_at": "2026-05-08T12:55:00Z",
+  "category": "alpha_search",
+  "alpha_hypothesis": {
+    "type": "capital_allocation",
+    "statement": "Reserve part of the entry heat budget for already-confirmed day-2 follow-through add-ons, preserving the hard 8% portfolio heat cap while allowing high-expectancy add-ons to execute."
+  },
+  "why_this_direction": [
+    "LLM soft-ranking remains blocked by insufficient replay coverage.",
+    "10-K and estimate-revision sleeves are forward/sample blocked.",
+    "exp-20260508-017 showed add-on heat-cap relief improved EV in all three fixed windows, but raw heat-cap relaxation was rejected as a production policy violation.",
+    "exp-20260508-018 showed same-day add-on ordering is not the bottleneck."
+  ],
+  "mechanism_insight_checks": {
+    "not_repeating_gap_cancel_joint_discriminator": true,
+    "not_repeating_addon_priority_ordering": true,
+    "not_relaxing_hard_portfolio_heat_cap": true,
+    "not_using_llm_soft_ranking_without_coverage": true
+  },
+  "change_type": "capital_allocation_sweep",
+  "parameters": {
+    "entry_heat_reserve_pct_tested": [0.0, 0.005, 0.01],
+    "hard_portfolio_heat_cap_pct": 0.08,
+    "implementation": "temporary in-memory monkey patch of portfolio_engine.compute_portfolio_heat for entry gating only; no production code changed"
+  },
+  "date_ranges": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.7435,
+      "total_return_pct": 83.56,
+      "sharpe_daily": 4.48,
+      "max_drawdown_pct": 5.39,
+      "win_rate_pct": 78.95,
+      "total_trades": 19,
+      "addon_scheduled": 7,
+      "addon_executed": 4,
+      "addon_skipped": 3
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "total_return_pct": 57.54,
+      "sharpe_daily": 2.69,
+      "max_drawdown_pct": 8.79,
+      "win_rate_pct": 52.38,
+      "total_trades": 21,
+      "addon_scheduled": 7,
+      "addon_executed": 5,
+      "addon_skipped": 2
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "total_return_pct": 26.24,
+      "sharpe_daily": 1.28,
+      "max_drawdown_pct": 9.05,
+      "win_rate_pct": 40.91,
+      "total_trades": 22,
+      "addon_scheduled": 4,
+      "addon_executed": 2,
+      "addon_skipped": 2
+    }
+  },
+  "after_metrics": {
+    "reserve_0_005": {
+      "late_strong": {
+        "expected_value_score": 3.7435,
+        "total_pnl": 83562.53,
+        "addon_scheduled": 7,
+        "addon_executed": 4,
+        "addon_skipped": 3
+      },
+      "mid_weak": {
+        "expected_value_score": 1.5478,
+        "total_pnl": 57542.74,
+        "addon_scheduled": 7,
+        "addon_executed": 5,
+        "addon_skipped": 2
+      },
+      "old_thin": {
+        "expected_value_score": 0.3359,
+        "total_pnl": 26242.68,
+        "addon_scheduled": 4,
+        "addon_executed": 2,
+        "addon_skipped": 2
+      }
+    },
+    "reserve_0_01": {
+      "late_strong": {
+        "expected_value_score": 3.7435,
+        "total_pnl": 83562.53,
+        "addon_scheduled": 7,
+        "addon_executed": 4,
+        "addon_skipped": 3
+      },
+      "mid_weak": {
+        "expected_value_score": 1.5478,
+        "total_pnl": 57542.74,
+        "addon_scheduled": 7,
+        "addon_executed": 5,
+        "addon_skipped": 2
+      },
+      "old_thin": {
+        "expected_value_score": 0.3359,
+        "total_pnl": 26242.68,
+        "addon_scheduled": 4,
+        "addon_executed": 2,
+        "addon_skipped": 2,
+        "signals_survived_delta": -1
+      }
+    }
+  },
+  "expected_value_score_delta": {
+    "reserve_0_005": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "reserve_0_01": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    }
+  },
+  "decision": "rejected",
+  "rejection_reason": "Entry heat reserve did not unlock add-on execution or improve EV/PnL in any fixed window. The observed blocker is not entry budget consumed before add-on day.",
+  "new_blocker_discovered": {
+    "blocker": "Backtester add-on execution caps shares with a local initial-stop heat calculation, while production add-on actions use production_parity plus portfolio_engine effective-stop heat.",
+    "why_it_blocks_alpha_search": "Follow-through add-on capital-allocation experiments cannot be trusted until the add-on heat cap is measured through the same shared policy path used by production."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  }
+}

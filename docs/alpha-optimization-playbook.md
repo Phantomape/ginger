@@ -21,42 +21,40 @@
 
 鑻ユ湰鏂囨。涓?`AGENTS.md` 鍐茬獊锛屼互 `AGENTS.md` 涓哄噯銆傝嫢闇€瑕佸鐜板疄楠岋紝鍏堟煡鏈枃妗ｇ殑瀹為獙绱㈠紩锛屽啀鏌ョ粨鏋勫寲鏃ュ織銆?
 
-## 2026-05-02 accepted state
+## 2026-05-07 accepted state
 
-Latest accepted core alpha mechanism: `exp-20260502-022` lifted only the first
-day-2 follow-through add-on cap for the already-accepted SPY-relative leader
-sleeve to 60%. This sits on top of the 50% initial position cap from
-`exp-20260502-021`, the 2.0x SPY-relative leader risk budget from
-`exp-20260501-024`, and the Financials leader sizing from `exp-20260501-006`.
-It is lifecycle capital-allocation alpha, not a new entry filter, universe
-expansion, or sector-priority rule.
+Latest refreshed accepted-stack checkpoint: keep the accepted lifecycle
+allocation core from `exp-20260502-022` and treat
+`data/backtest_results_20260507.json` plus the embedded baseline blocks in the
+2026-05-07 and 2026-05-08 experiment logs as the current no-drift source of
+truth for the replayable A+B stack. The stack remains a capital-allocation /
+event-quality baseline, not a new entry filter, universe expansion, or sector
+priority rule.
 
 Accepted fixed-window metrics after the current core stack:
 
 | Window | EV | Return | Sharpe daily | Max DD | Win rate | Trades |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 3.4191 | +78.60% | 4.35 | 5.41% | 78.95% | 19 |
-| `mid_weak` | 1.4415 | +55.02% | 2.62 | 8.79% | 52.38% | 21 |
-| `old_thin` | 0.3179 | +24.64% | 1.29 | 8.05% | 40.91% | 22 |
+| `late_strong` | 3.7435 | +83.56% | 4.48 | 5.39% | 78.95% | 19 |
+| `mid_weak` | 1.5478 | +57.54% | 2.69 | 8.79% | 52.38% | 21 |
+| `old_thin` | 0.3359 | +26.24% | 1.28 | 9.05% | 40.91% | 22 |
 
-Evidence: `exp-20260502-022` improved EV in all three canonical windows versus
-the post-`exp-20260502-021` stack and added aggregate PnL `+$9,346.49`
-(`+6.28%`) with aggregate EV `+0.3536` (`+7.33%`). The main cost is higher
-follow-through concentration and a `+0.80pp` max-drawdown increase in
-`mid_weak`, but all three windows remain inside the drawdown cap and keep
-convergence `8/8`.
+Evidence: this exact checkpoint is the shared baseline reused by
+`exp-20260507-013`, `exp-20260507-027`, `exp-20260508-005`,
+`exp-20260508-010`, `exp-20260508-011`, and `exp-20260508-012`. Across those
+logs, the three canonical windows stayed unchanged whenever the run was
+observe-only, replay-only, or blocked before promotion. Aggregate accepted-stack
+EV is `5.6272` with aggregate PnL `+$167,347.95`, and convergence remains
+`8/8`.
 
-Latest unchanged validation point: the 2026-05-03 through 2026-05-07
+Latest unchanged validation point: the 2026-05-03 through 2026-05-08
 observed-only SEC/Form 4 queue, shadow-universe, event-harness, short-pressure,
-options-overlay, and measurement experiments (`exp-20260504-001`,
-`exp-20260504-012`, `exp-20260504-015`, `exp-20260504-017`,
-`exp-20260504-018`, `exp-20260504-019`, `exp-20260504-051`,
-`exp-20260504-053`, `exp-20260505-008`, `exp-20260506-008`,
-`exp-20260506-009`, `exp-20260506-010`, `exp-20260507-013`) all reused the
-same canonical three-window core metrics with zero drift. Treat
-`data/backtest_results_20260506.json` as the latest refreshed checkpoint and
-those experiment logs' embedded three-window before/after blocks as the latest
-no-drift verification of the accepted stack.
+options-overlay, entry-state oracle, earnings-estimate readiness, and 10-K
+forward-watch experiments all reused the same canonical three-window core
+metrics with zero drift whenever no executable policy was promoted. Treat
+`data/backtest_results_20260507.json` as the latest refreshed checkpoint and
+those logs' embedded baseline blocks as the latest no-drift verification of the
+accepted stack.
 
 Forward-only accepted support work on 2026-05-01 also matters:
 
@@ -78,6 +76,29 @@ leader initial-cap levels, nearby SPY-relative leader add-on cap levels above
 60%, nearby Financials leader multipliers, or broader raw `risk_on`/sector risk
 boosts without forward evidence, event/news context, or a materially richer
 discriminator.
+
+### 2026-05-08 mechanism update: Gap-cancel joint discriminators
+
+Status: rejected.
+
+Core conclusion: `exp-20260508-014` tested the pre-registered Phase B
+gap-cancel bypass families from the `exp-20260507-920` oracle audit. The best
+joint discriminator, `volume_vs_20d_avg < 3.263312` plus
+`sector_5d_rs >= 0.13675`, improved `late_strong` but regressed `mid_weak` and
+added only `+$230.22` aggregate PnL (`+0.14%`). The stronger-looking raw gap
+families were actively harmful, with `gap_bucket_4_5` losing `-$23,713.29` and
+`gap_abs_high` losing `-$21,476.26` across the canonical windows.
+
+Evidence: no tested variant passed Gate 4. The Phase A oracle forward-return
+lift did not survive executable replay once fills, sizing, slots, and exits were
+restored.
+
+Do not repeat: gap-cancel bypasses using these same thresholds, nearby raw
+gap-size buckets, or the same volume/sector-RS/8-K severity combinations.
+
+Next valid retry requires: a genuinely new information source or forward paper
+evidence that predicts fill quality before entry; otherwise prioritize a
+different alpha family.
 
 ### 2026-05-05 mechanism update: Positionable entry planning
 
@@ -298,13 +319,13 @@ target winners are eligible rather than only how much size is left on.
 - `earnings_event_long`锛歅EAD 澶х被浠嶆湁閲戣瀺閫昏緫锛屼絾褰撳墠浠撳簱瀹炵幇灏氭湭璇佹槑鍙ǔ瀹氬鍘?A+B銆?
 - LLM / news锛氭渶閫傚悎浜嬩欢鐞嗚В銆佺伨闅?veto銆佺粨鏋勫寲 grading / ranking锛涗笉閫傚悎鎺ョ浠撲綅銆佹鎹熴€佺洰鏍囦綅鍜岀‖椋庢帶銆?
 
-褰撳墠鍥哄畾涓夌獥鍙?baseline锛堟渶鏂?accepted stack锛屾暟鎹偣鏉ヨ嚜 `data/backtest_results_20260502.json` 涓?`exp-20260502-022` 鐨勫綋鍓嶆牳蹇冮厤缃級锛?
+褰撳墠鍥哄畾涓夌獥鍙?baseline锛堟渶鏂?accepted stack锛屾暟鎹偣鏉ヨ嚜 `data/backtest_results_20260507.json` 鍜?2026-05-07 / 2026-05-08 瀹為獙鏃ュ織鐨勫叡浜?baseline blocks锛夛細
 
 | Window | Range | EV | Return | Sharpe daily | Max DD | Win rate | Trades | Main interpretation |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| `late_strong` | 2025-10-23 -> 2026-04-21 | 3.4191 | +78.60% | 4.35 | 5.41% | 78.95% | 19 | accepted lifecycle allocation stack 缁х画鎻愬崌 winner capture锛涙渶鏂板鐩婃潵鑷?SPY-relative leader first add-on cap 鎶崌鍒?60% |
-| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.4415 | +55.02% | 2.62 | 8.79% | 52.38% | 21 | 浠嶇劧鏄?meta-allocation / regime-routing 鏈€闇€瑕佽В閲婄殑绐楀彛锛屼絾 accepted stack 鐩墠浠嶅湪缁х画鎶崌 EV 涓?PnL |
-| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.3179 | +24.64% | 1.29 | 8.05% | 40.91% | 22 | 浠嶆槸鏈€鑴嗗急绐楀彛锛屼絾 accepted stack 宸茬户缁敼鍠勮祫鏈晥鐜囦笖鏈牬鍧?drawdown guardrail |
+| `late_strong` | 2025-10-23 -> 2026-04-21 | 3.7435 | +83.56% | 4.48 | 5.39% | 78.95% | 19 | accepted stack remains strongest here; no-drift checkpoint now includes the post-5/2 refreshed event-quality baseline |
+| `mid_weak` | 2025-04-23 -> 2025-10-22 | 1.5478 | +57.54% | 2.69 | 8.79% | 52.38% | 21 | still the main regime-routing explanation window, but current accepted stack remains profitable and improved versus the older 5/2 checkpoint |
+| `old_thin` | 2024-10-02 -> 2025-04-22 | 0.3359 | +26.24% | 1.28 | 9.05% | 40.91% | 22 | still the weakest window, but the refreshed accepted stack keeps positive EV and stays inside the drawdown guardrail |
 
 鏈€鏂?accepted-stack 娴嬮噺鐩插尯涔熻涓€骞惰浣忥細news archive coverage 宸插崌鑷?15/123 浜ゆ槗鏃ワ紙12.2%锛夛紝prompt/response archive_context 鎴愮啛搴﹀凡鍒?7/10锛屼絾 production-aligned LLM ranking-eligible replay 浠嶅彧鏈?3 澶?/ 8 涓俊鍙凤紱`exp-20260502-007` 杩涗竴姝ヨ瘉鏄庡綋鍓嶅彧鍓?1/8 涓?effective candidate row 鑳藉拰鍥炴斁 trade outcome 瀵归綈锛屽洜姝?LLM soft-ranking 渚濇棫灞炰簬 measurement-blocked銆俥xit advisory replay 涔熶粛澶勪簬 shadow-only 鎶湶闃舵锛沺ilot sleeve 鍒欏凡寮€濮嬬Н绱?forward replacement-value attribution锛屼絾杩樻病鏈夎冻澶熷凡骞充粨鏍锋湰銆?
 
@@ -507,6 +528,8 @@ mean reversion銆乣0DTE` flow 閮戒笉绗﹀悎褰撳墠绯荤粺鐨?EOD / 浜
 | Trailing partial reductions | measurable but rejected alpha | 鐜板湪鍙洖鏀撅紝浣?replay-on 瀵瑰綋鍓?stack 涓鸿礋锛涗繚鐣欎负鍏变韩鍙璁℃満鍒讹紝涓嶄綔涓洪粯璁?alpha | exp-20260429-012 |
 | Residual narrow sector pockets | accepted but overfit-prone | 鍙綔涓虹嚎绱紝涓嶅簲鏃犻檺鎸栨畫宸?| exp-20260423/25 residual pocket series |
 | Universe expansion scouts | observed-only | 浜嬩欢/楂?beta/mid-cap scouts 鏈夌嚎绱紝浣嗗彈 snapshot / coverage 闄愬埗 | exp-20260426-013/021/025/031 |
+| Analyst estimate revision overlay | blocked after data repair | same-event key repair was necessary but insufficient; no three-window candidate touch yet, so revisions remain a forward-ledger question rather than a current ranking field | exp-20260508-006/011 |
+| Liquidity-gated 10-K forward watch | accepted measurement adapter | currently the best blocked external candidate-pool direction, but only as an append-only PIT watch until it accumulates real outside-universe candidates and replacement-value outcomes | exp-20260503-011, exp-20260508-011/012 |
 
 ## 5. 宸茶瘉浼垨闄嶇骇鐨勬満鍒舵棌
 
@@ -5725,3 +5748,316 @@ Do not repeat: nearby `pre_earnings_46_plus` risk multipliers, cap-only variants
 or small distance-from-earnings threshold tweaks on the same three frozen
 windows without forward evidence or a materially different event-quality
 discriminator.
+
+### 2026-05-08 mechanism update: Commodity near-high risk scalar
+
+Experiment: `exp-20260508-003`
+
+Decision: `rejected`.
+
+Finding: Raising the accepted `trend_long + Commodities + pct_from_52w_high >= -0.03`
+risk multiplier from `1.5x` to `2.0x` did not clear Gate 4. It improved only
+`late_strong` (`EV +0.0657`, PnL `+$1,110.16`) while `mid_weak` and `old_thin`
+were unchanged because the extra risk budget was mostly absorbed by position
+caps and existing allocation constraints. Aggregate EV improved only `+1.19%`
+and aggregate PnL only `+0.67%`.
+
+Mechanism insight: the Commodity near-high sleeve is still high quality, but
+the next raw risk-budget increment is not the current bottleneck. More scalar
+tuning on this sleeve is unlikely to matter without new evidence that cap room,
+heat, macro state, or event context can unlock additional return without
+repeating the rejected heat/add-on-cap families.
+
+Do not repeat: nearby `1.75x`, `2.0x`, or `2.5x` Commodity near-high risk
+multipliers on the same fixed snapshots. A valid retry needs a materially new
+capacity or ex-ante context discriminator, not another scalar-only replay.
+
+### 2026-05-08 mechanism update: Platform RS20 entry-state replay
+
+Experiments: `exp-20260507-034`, `exp-20260507-035`
+
+Decision: `rejected / observed-only underpowered`.
+
+Finding: Platform `rs20_leader` is a useful oracle tag but not a production entry rule. The hard no-backfill entry gate skipped only 4 candidates, improved aggregate EV only `+2.84%`, reduced PnL by `$1,925.31`, and had NFLX concentration `77.58%` of positive contribution. The complementary missed-candidate fixed-notional sleeve audit showed `+$7,971.93` on 6 missed candidates, but APP contributed `87.76%` of positive PnL and late_strong lost money.
+
+Mechanism insight: RS20 leadership describes where platform upside can appear, but the tradable edge is currently dominated by too few names and too few missed entries. Treat it as an oracle/forward attribution feature, not a hard entry gate, risk scalar, or sleeve.
+
+Do not repeat: nearby platform RS20 thresholds (`0pp`, `3pp`, `4pp`, `5pp`), same-day refill variants, or platform-RS20 missed-candidate sleeve promotion on the same frozen sample. A valid retry needs forward paper evidence, at least 8 missed candidates, lower single-ticker concentration, or an orthogonal event/news/earnings-quality discriminator.
+
+### 2026-05-08 mechanism update: event state-score floor
+
+Experiment: `exp-20260508-005`
+
+Decision: `rejected`.
+
+Finding: Tightening the current non-generic positive state-surface event add-on
+by requiring a higher PIT state score did not clear the correct marginal
+baseline. The best stricter variant, `non_generic_score_gt_050_2x`, improved
+EV in all three fixed windows versus the current `score > 0` add-on, but only
+by `+0.0796` aggregate EV (`+1.12%`) and `+$1,569.68` aggregate PnL (`+0.82%`).
+It remained strongly positive versus the full frozen event bundle, but the
+current paper rule had already captured most of that edge.
+
+Mechanism insight: the non-generic state-surface event add-on is still the
+right event-quality direction, but extra score-floor precision is not the
+current bottleneck. Requiring `state_score > 0.50` mostly removes weak-positive
+event rows without creating enough marginal return to justify another rule.
+
+Do not repeat: nearby event state-score floors such as `>0.25`, `>0.50`,
+`>0.75`, or `>1.00` on the same frozen event sample. A valid retry needs closed
+forward event replacement-value evidence or a materially different event-quality
+feature, not another small score threshold.
+
+### 2026-05-08 mechanism update: Platform RS20 no-gap missed feature
+
+Experiment: `exp-20260508-007`
+
+Decision: `observed_only_underpowered`.
+
+Finding: On the six missed platform `rs20_leader` candidates from
+`exp-20260507-035`, the existing `no_gap_up_3pct` state split was directionally
+clean but too small. No-gap rows were `3/3` winners with `+$10,353.51` fixed
+notional PnL and `34.95%` average return; the complement `gap_up_3pct` rows were
+`0/3` winners with `-$2,381.58` PnL. The observed gate still failed because the
+matched sample had only 3 candidates and APP contributed `87.76%` of positive
+PnL.
+
+Mechanism insight: For missed platform RS20 candidates, the apparent edge is
+not "RS20 strength" alone. It is closer to "RS20 strength without signal-day
+gap chase." This is a strong forward-watch hypothesis, but not a tradable sleeve
+or entry rule on the frozen sample.
+
+Do not repeat: no-gap platform RS20 missed-candidate sleeve promotion, hard
+gap-up skips, or same-day refill variants on this same six-row sample. A valid
+retry needs at least 8 no-gap missed candidates, lower single-ticker
+concentration, or a genuinely orthogonal event/news/earnings-quality
+discriminator.
+
+### 2026-05-08 mechanism update: Platform RS20 no-gap forward watch
+
+Experiment: `exp-20260508-008`
+
+Decision: `accepted_measurement_adapter`.
+
+Finding: The platform RS20 no-gap hypothesis was moved from frozen-sample
+analysis into a default-off forward watch. `run.py` now records platform-pool
+missed entry candidates from `scarce_slot_breakout_deferred` and `slot_sliced`
+when they are RS20 leaders without a signal-day `gap_up_3pct`; the report
+renders them as observe-only and the ledger dedupes daily rows. This does not
+alter signal generation, ranking, sizing, exits, slots, or orders.
+
+Mechanism insight: The correct response to the clean-but-underpowered no-gap
+split is sample accumulation, not another same-sample rule. Future promotion
+requires closed forward outcomes, at least 8 no-gap missed candidates, and
+single-ticker positive contribution at or below `50%`.
+
+Do not repeat: additional same-sample platform RS20/no-gap sweeps before the
+forward ledger has enough closed outcomes.
+
+### 2026-05-08 mechanism update: SMA20 reclaim missed-candidate sleeve
+
+Experiment: `exp-20260508-010`
+
+Decision: `rejected`.
+
+Finding: Existing A/B candidates tagged `sma20_reclaim` but missed by the core
+entry path did not show replacement value as a fixed-notional 20-day sleeve.
+Across the canonical three windows, the audit found 8 missed candidates, total
+PnL `-$1,710.86`, win rate `37.5%`, and only 1/3 positive windows. The only
+positive window was `mid_weak` with `+$365.22`; `late_strong` lost `-$2,040.69`
+and `old_thin` lost `-$35.39`. Positive contribution was still too concentrated
+at `57.07%`.
+
+Mechanism insight: Narrowing pullback/reclaim logic to existing missed
+candidates did not rescue the rejected broad pullback/reclaim family. SMA20
+reclaim remains descriptive state context, not a default-off sleeve or entry
+permission signal.
+
+Do not repeat: broad pullback/reclaim promotion, SMA20 reclaim missed-candidate
+sleeves, or nearby reclaim-entry variants on the same frozen samples. A valid
+retry needs a materially different discriminator or closed forward missed-entry
+evidence.
+
+### 2026-05-08 mechanism update: Analyst estimate revision readiness
+
+Experiments: `exp-20260508-006`, `exp-20260508-011`
+
+Decision: `data-gap repaired, alpha still blocked`.
+
+Finding: repairing `next_earnings_date` from PIT `days_to_earnings` was useful
+infrastructure, not proof of alpha. `exp-20260508-006` repaired same-event
+identity well enough to produce forward-ledger rows (`41` rows with
+`next_earnings_date`, `39` with a prior same-event snapshot, `GS` and `LITE`
+matched in the smoke check), but the three-window readiness audit in
+`exp-20260508-011` still found zero candidate touches and revision steps only
+inside `late_strong` (`37` total). `mid_weak` and `old_thin` still have zero
+usable non-event-day revision steps.
+
+Mechanism insight: "schema repaired" is not the same as "ranking field ready."
+Do not promote analyst estimate revisions as an A/B ranking or veto input until
+the data exists across multiple windows and actually touches candidate dates.
+
+Do not repeat: nearby revision-lookback tweaks, nearby DTE gates, or replaying
+the same historical estimate snapshots as if they were already a stable
+three-window PIT revision ledger.
+
+Next valid retry requires: 30-60 forward trading days of append-only revision
+ledgers with same-event identity, real candidate touches across at least two
+regimes, and replacement-value evidence that tagged names beat the default
+same-day A/B alternatives.
+
+### 2026-05-08 mechanism update: Liquidity-gated 10-K forward watch
+
+Experiments: `exp-20260508-011`, `exp-20260508-012`
+
+Decision: `accepted measurement adapter, not promoted alpha`.
+
+Finding: among the currently blocked external-alpha directions, liquidity-gated
+outside-universe 10-K scouts remain the best next candidate-pool lead, but the
+right action was to freeze forward evidence instead of promoting a rule.
+`exp-20260508-011` kept 10-K ahead of analyst revisions because old/late
+windows showed positive 10-day excess and same-day replacement proxy, but
+`mid_weak` had only one negative row. `exp-20260508-012` then created the
+append-only PIT watch, and the first five PIT-safe 10-K rows produced zero
+eligible candidates because all observed rows were amendment-excluded
+`TSLA 10-K/A`.
+
+Mechanism insight: the right next step for 10-K alpha is not threshold tuning,
+SEC universe expansion, or replay promotion. It is sample accumulation with
+frozen same-day alternatives and closed forward replacement-value outcomes.
+
+Do not repeat: same-sample 10-K promotion attempts, broad SEC filing universe
+expansion, or static threshold retunes before the forward watch has real
+outside-universe eligible candidates.
+
+Next valid retry requires: append-only PIT 10-K eligibility rows with actual
+outside-universe candidates, frozen same-day A/B alternatives before entry, and
+closed 5/10/20-day replacement-value outcomes across at least two regimes.
+
+### 2026-05-08 mechanism update: SLV precious-metals target state
+
+Experiment: `exp-20260508-016`
+
+Decision: `rejected`.
+
+Finding: Retrying SLV trend target widening with a pre-registered
+precious-metals state discriminator did not clear the canonical three-window
+gate. The best variant, `slv_ret20_gt_gld_ret20`, retargeted SLV from 7 ATR to
+8 ATR when SLV 20-day momentum led GLD. It improved `late_strong` only
+slightly (`EV +0.0576`, `PnL +$910.47`), damaged `mid_weak` materially
+(`EV -0.3248`, `PnL -$7,625.95`, `Sharpe -0.24`), and had no effect in
+`old_thin`. The stricter 2pp spread and both-positive variants produced the
+same rejection pattern.
+
+Mechanism insight: SLV leadership over GLD is not enough to explain when
+silver trend continuation deserves the gold-like 8 ATR target. The old
+commodity lesson still holds: gold ETF convexity is robust enough for the wider
+target, while SLV target extension remains regime-fragile and can consume slots
+long enough to hurt replacement value.
+
+Do not repeat: SLV 7-to-8 ATR target variants based only on SLV-vs-GLD 20-day
+relative momentum, positive precious-metals momentum, or nearby spread
+thresholds on the same frozen samples. A valid retry needs a materially
+different silver-specific lifecycle signal, such as forward evidence that SLV
+target misses beat same-day alternatives after accounting for slot occupancy.
+
+### 2026-05-08 mechanism update: Add-on heat ceiling
+
+Experiment: `exp-20260508-017`
+
+Decision: `rejected_for_production_policy`.
+
+Finding: Removing the portfolio-heat cap only from add-on execution, while
+leaving entry heat gating and all add-on trigger/fraction/position-cap logic
+unchanged, improved EV in all three canonical windows: `late_strong +0.3239`,
+`mid_weak +0.0717`, and `old_thin +0.0224`. Aggregate PnL improved
+`+$10,328.98` (`+6.17%`), and scheduled add-ons moved from `11/18` executed to
+`18/18` executed. The replay still passed per-window Gate 4 only in
+`late_strong`, and the change is not production-safe because it weakens a hard
+portfolio risk cap.
+
+Mechanism insight: day-2 follow-through add-ons still have positive marginal
+expectancy after the accepted stack, but raw heat-cap relaxation is the wrong
+implementation surface. The alpha surface is capital reservation or an
+add-on-specific spending discriminator, not another global heat-cap sweep or
+add-on trigger retune.
+
+Do not repeat: raw add-on heat-cap removal or nearby heat-cap increases as a
+production policy. A valid retry must keep the hard portfolio risk cap intact
+and test a shared production/backtest add-on reserve or state-specific
+discriminator that decides when confirmed-winner heat is worth spending.
+
+### 2026-05-08 mechanism update: Add-on execution priority
+
+Experiment: `exp-20260508-018`
+
+Decision: `rejected_no_effect`.
+
+Finding: Sorting same-day scheduled follow-through add-ons by checkpoint
+`rs_vs_spy`, `unrealized_pct`, and SPY-relative leader status before sequential
+heat allocation produced no metric changes in any canonical window. EV, PnL,
+Sharpe, drawdown, trade count, win rate, and survival all stayed exactly flat:
+`late_strong 3.7435`, `mid_weak 1.5478`, and `old_thin 0.3359` EV before and
+after.
+
+Mechanism insight: the add-on heat bottleneck from `exp-20260508-017` is not a
+same-day ordering problem. Missed add-ons usually had zero available heat room
+before ordering mattered, so a priority key cannot unlock the positive shadow
+capacity.
+
+Do not repeat: nearby same-day add-on ordering keys on the same fixed windows.
+A valid retry needs a real hard-cap-preserving reserve, lifecycle-staged
+sizing, or an ex-ante discriminator that changes budget availability, not just
+which queued add-on is processed first.
+
+### 2026-05-08 mechanism update: Same-sector cap quality replacement
+
+Experiment: `exp-20260508-020`
+
+Decision: `rejected`.
+
+Finding: Replacing the current input-order same-day sector cap with a local
+quality selector inside each sector collision did not improve the fixed-window
+stack. The variant kept the top same-sector candidates by
+`trade_quality_score`, then `confidence_score`, then `pct_from_52w_high`, while
+preserving global order for kept candidates and leaving `MAX_PER_SECTOR`,
+sizing, exits, add-ons, scarce-slot routing, LLM/news, and the universe
+unchanged. It was inert in `late_strong` and `old_thin`, but regressed
+`mid_weak`: EV `1.5478 -> 1.4800`, PnL `$57,542.74 -> $56,062.37`, and win rate
+`52.38% -> 50.00%`.
+
+Mechanism insight: Same-sector cap collisions are not a hidden TQS/confidence
+misallocation surface in the accepted stack. The current sector cap should
+remain order-preserving unless a genuinely new event/news replacement signal
+shows that the skipped clustered trade is worse than the admitted alternative.
+
+Do not repeat: nearby sector-cap quality keys, confidence keys, TQS-only local
+replacement, or same-sector near-high replacement on the same fixed windows.
+
+Next valid retry requires: candidate-level replacement evidence from an
+orthogonal source, preferably event/news context, not another deterministic
+quality-key permutation.
+
+
+### 2026-05-08 mechanism update: Adverse-gap reclaim delayed entry
+
+Experiment: `exp-20260508-022`
+
+Decision: `rejected`.
+
+Finding: A delayed-entry satellite for adverse-gap-cancelled A/B candidates
+with same-day reclaim evidence did not clear the three-window Gate 4 standard.
+Best variant `intraday_reclaim_next_open` changed aggregate EV by
+`-0.0411` and aggregate PnL by
+`$153.08` across
+`2` satellite trades.
+
+Mechanism insight: reclaim behavior is a valid orthogonal information source
+relative to rejected raw gap-cancel bypasses, but this replay is not strong
+enough for production promotion. Keep the accepted 2% adverse-gap cancel
+unchanged.
+
+Do not repeat: adverse-gap delayed-entry sleeves based only on same-day high or
+close reclaim of the original signal entry. A valid retry needs richer
+intraday structure, fresh event/news confirmation, or forward paper evidence
+that reclaimed adverse-gap candidates beat same-day alternatives.

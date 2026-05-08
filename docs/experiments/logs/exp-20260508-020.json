@@ -1,0 +1,382 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 4,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      },
+      "expected_value_score": 3.7435,
+      "max_drawdown_pct": 0.0539,
+      "sharpe_daily": 4.48,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 83562.53,
+      "total_trades": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 2,
+        "entered": 22,
+        "gap_cancel": 4,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      },
+      "expected_value_score": 1.48,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.64,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 56062.37,
+      "total_trades": 22,
+      "win_rate": 0.5
+    },
+    "old_thin": {
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      },
+      "expected_value_score": 0.3359,
+      "max_drawdown_pct": 0.0905,
+      "sharpe_daily": 1.28,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 26242.68,
+      "total_trades": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 4,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      },
+      "expected_value_score": 3.7435,
+      "max_drawdown_pct": 0.0539,
+      "sharpe_daily": 4.48,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 83562.53,
+      "total_trades": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      },
+      "expected_value_score": 1.5478,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 57542.74,
+      "total_trades": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "entry_reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      },
+      "expected_value_score": 0.3359,
+      "max_drawdown_pct": 0.0905,
+      "sharpe_daily": 1.28,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 26242.68,
+      "total_trades": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "change_type": "entry_candidate_cap_replay",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "rejected",
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": -0.0678,
+    "old_thin": 0.0
+  },
+  "experiment_id": "exp-20260508-020",
+  "gate4": {
+    "aggregate_ev_delta": -0.0678,
+    "aggregate_ev_delta_pct": -0.012049,
+    "aggregate_pnl_delta": -1480.37,
+    "aggregate_pnl_delta_pct": -0.008846,
+    "passed": false,
+    "rule": "EV first over the three canonical backtesting.md windows; require material Gate 4 lift and no multi-window instability.",
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 1
+  },
+  "historical_experiment_check": {
+    "mechanism_insight_conflict": "Allowed as a narrow candidate-level replacement test, but the negative result strengthens the sector-cap anti-repeat guardrail.",
+    "nearby_rejected": {
+      "active_position_sector_cap": "Counting already-open positions damaged clustered exposure.",
+      "global_sector_cap_sweeps": "MAX_PER_SECTOR=1 damaged all windows; MAX_PER_SECTOR=3 was inert.",
+      "global_tqs_sorting": "Global TQS allocation ordering was rejected."
+    },
+    "why_not_simple_repeat": "This does not change sector cap size or globally sort by TQS; it only tests replacement selection inside same-sector cap collisions."
+  },
+  "hypothesis": "When same-day sector cap has to drop candidates, preserving the top same-sector candidates by existing quality fields may improve local capital allocation without changing MAX_PER_SECTOR.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this deterministic candidate replacement test avoided LLM changes.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "same_day_sector_cap_candidate_replacement",
+  "next_retry_requires": [
+    "Do not retry nearby sector-cap quality, confidence, TQS, or same-sector replacement keys on the same fixed windows.",
+    "A valid sector-cap retry needs new candidate-level replacement evidence, preferably event/news context, showing the skipped clustered trade is worse than the admitted alternative."
+  ],
+  "parameters": {
+    "locked_variables": [
+      "signal generation",
+      "global candidate order outside same-sector drops",
+      "MAX_PER_SECTOR",
+      "scarce-slot breakout deferral",
+      "sizing",
+      "entry open cancels",
+      "exits",
+      "add-ons",
+      "LLM/news replay",
+      "universe"
+    ],
+    "max_per_sector": 2,
+    "preserve_global_order_after_sector_selection": true,
+    "quality_key": [
+      "trade_quality_score desc",
+      "confidence_score desc",
+      "pct_from_52w_high desc"
+    ]
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "promotion_requirement_if_positive": "Move quality selection into production_parity.filter_entry_signal_candidates and add parity tests before enabling.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Rejected: the variant was inert in late_strong and old_thin, but regressed mid_weak EV and PnL while lowering win rate.",
+  "related_files": [
+    "quant/experiments/exp_20260508_020_sector_cap_quality_replay.py",
+    "data/experiments/exp-20260508-020/sector_cap_quality_replay.json",
+    "docs/experiments/logs/exp-20260508-020.json",
+    "docs/experiments/tickets/exp-20260508-020.json",
+    "docs/experiments/artifacts/exp-20260508-020_sector_cap_quality_replay.md"
+  ],
+  "rows": [
+    {
+      "after": {
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 4,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        },
+        "expected_value_score": 3.7435,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.48,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 83562.53,
+        "total_trades": 19,
+        "win_rate": 0.7895
+      },
+      "before": {
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 5,
+          "entered": 19,
+          "gap_cancel": 4,
+          "no_future_fill": 1,
+          "no_shares": 9,
+          "slot_sliced": 3
+        },
+        "expected_value_score": 3.7435,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.48,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 83562.53,
+        "total_trades": 19,
+        "win_rate": 0.7895
+      },
+      "delta": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_survived": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "total_trades": 0.0,
+        "win_rate": 0.0
+      },
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23",
+      "state_note": "slow-melt bull / accepted-stack dominant tape",
+      "window": "late_strong"
+    },
+    {
+      "after": {
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 2,
+          "entered": 22,
+          "gap_cancel": 4,
+          "no_shares": 9,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        },
+        "expected_value_score": 1.48,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.64,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 56062.37,
+        "total_trades": 22,
+        "win_rate": 0.5
+      },
+      "before": {
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 21,
+          "gap_cancel": 4,
+          "no_shares": 11,
+          "scarce_slot_breakout_deferred": 4,
+          "slot_sliced": 1
+        },
+        "expected_value_score": 1.5478,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.69,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 57542.74,
+        "total_trades": 21,
+        "win_rate": 0.5238
+      },
+      "delta": {
+        "expected_value_score": -0.0678,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": -0.05,
+        "signals_survived": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": -1480.37,
+        "total_trades": 1.0,
+        "win_rate": -0.0238
+      },
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23",
+      "state_note": "rotation-heavy bull where strategy profits but can lag indexes",
+      "window": "mid_weak"
+    },
+    {
+      "after": {
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        },
+        "expected_value_score": 0.3359,
+        "max_drawdown_pct": 0.0905,
+        "sharpe_daily": 1.28,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "total_pnl": 26242.68,
+        "total_trades": 22,
+        "win_rate": 0.4091
+      },
+      "before": {
+        "entry_reason_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 22,
+          "gap_cancel": 5,
+          "no_shares": 10,
+          "scarce_slot_breakout_deferred": 8,
+          "slot_sliced": 9
+        },
+        "expected_value_score": 0.3359,
+        "max_drawdown_pct": 0.0905,
+        "sharpe_daily": 1.28,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "total_pnl": 26242.68,
+        "total_trades": 22,
+        "win_rate": 0.4091
+      },
+      "delta": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_survived": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "total_trades": 0.0,
+        "win_rate": 0.0
+      },
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02",
+      "state_note": "mixed-to-weak older tape with lower win rate",
+      "window": "old_thin"
+    }
+  ],
+  "single_causal_variable": "same_sector_cap_quality_top_n_selection",
+  "status": "rejected",
+  "timestamp": "2026-05-08T14:17:53.516742+00:00",
+  "why_not_other_attractive_points": {
+    "10k_candidate_pool": "Forward watch has no eligible outside-universe closed outcomes yet.",
+    "addon_capital_allocation": "Blocked by add-on heat parity mismatch found in exp-20260508-019.",
+    "estimate_revisions": "Zero three-window candidate touches after data repair.",
+    "llm_soft_ranking": "Production-aligned replay sample remains too sparse."
+  }
+}

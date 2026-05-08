@@ -1,0 +1,58 @@
+{
+  "explicit_non_parameters": {
+    "do_not_add_sector_or_strategy_exceptions": true,
+    "do_not_test_joint_pairs_first": true,
+    "do_not_use_gap_abs_pct_as_selector": true,
+    "do_not_use_gap_bucket_as_selector": true,
+    "do_not_use_news_or_earnings_until_coverage_recovers": true
+  },
+  "gap_cap_guidance": {
+    "phase_a_observation": "The strongest gap-magnitude buckets were 4-5% and >5%; a 3% cap would not test the Phase A top effect.",
+    "preregistered_first_test": "Do not introduce a new max-gap cap in the first bbwidth20 Phase B replay; adding a cap is a separate causal variable.",
+    "production_risk_note": "If a safety cap is later required, run it as a separately named experiment and do not count that result as the pure bbwidth20 test."
+  },
+  "historical_experiment_check": {
+    "exp-20260427-019_to_025": "Not scarce-slot, regime, breadth, rank, or TQS conditionalization.",
+    "exp-20260428-021": "Not a global gap threshold scan; gap magnitude is explicitly excluded as the first selector.",
+    "exp-20260428-022": "Not a sector or strategy exception.",
+    "exp-20260504-055": "Not event-bundle coverage; news/earnings are explicitly deferred due missingness."
+  },
+  "lane": "alpha_discovery",
+  "phase_b_experiment_stub": "exp-20260508-MMM_gap_cancel_bbwidth_bypass",
+  "policy_scope": {
+    "bypass_adverse_gap_down_cancel": false,
+    "bypass_upside_gap_cancel": true,
+    "candidate_ranking_changed": false,
+    "exit_logic_changed": false,
+    "position_sizing_changed": false
+  },
+  "pre_registered_discriminator": {
+    "field": "bbwidth20",
+    "phase_a_avg_forward_return": 0.192611,
+    "phase_a_count": 10,
+    "phase_a_lift_vs_all": 1.279892,
+    "phase_a_windows": {
+      "late_strong": 4,
+      "mid_weak": 2,
+      "old_thin": 4
+    },
+    "predicate": "bbwidth20>=0.269211",
+    "threshold": 0.269211,
+    "threshold_source": "Phase A median split from exp-20260507-920; no post-hoc retuning."
+  },
+  "required_verification": [
+    "pytest quant/test_production_parity.py with policy=None must pass bit-for-bit default behavior.",
+    "Feature builder coverage for bbwidth20 on replayed gap-cancel events must be at least 80%.",
+    "Run late_strong, mid_weak, and old_thin windows with baseline versus bypass_upside_only.",
+    "Pass Gate 4 in at least 2 of 3 windows with no window showing material EV deterioration.",
+    "Skip attribution diff must show only gap_cancel count declines by the bypass hit count.",
+    "New admitted cohort win rate must not be materially below baseline."
+  ],
+  "single_causal_variable": "Allow upside gap_cancel bypass only when bbwidth20 is at or above the Phase A median.",
+  "superseded_by": {
+    "decision": "rejected",
+    "do_not_retry_without": "new forward evidence or a materially different orthogonal discriminator",
+    "experiment_id": "exp-20260508-009",
+    "reason": "The preregistered bbwidth20>=0.269211 gap-cancel bypass was already replayed across the canonical three windows and failed with negative EV windows in mid_weak and old_thin."
+  }
+}

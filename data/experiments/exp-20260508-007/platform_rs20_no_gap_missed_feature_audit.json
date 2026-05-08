@@ -1,0 +1,767 @@
+{
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_underpowered",
+  "experiment_id": "exp-20260508-007",
+  "feature_matrix": [
+    {
+      "candidate_rank": 1,
+      "days_to_earnings": 69,
+      "decision": "gap_cancel",
+      "excess_spy_return_20d": 0.093367,
+      "gap_pct": 0.122229,
+      "no_gap_up_3pct": false,
+      "pnl": -904.5,
+      "return_pct": -0.090505,
+      "signal_date": "2025-10-31",
+      "strategy": "trend_long",
+      "tags": [
+        "above_sma20",
+        "above_sma50",
+        "gap_up_3pct",
+        "pre_earnings_46_plus",
+        "rs20_leader",
+        "sma50_reclaim"
+      ],
+      "ticker": "AMZN",
+      "window": "late_strong"
+    },
+    {
+      "candidate_rank": 4,
+      "days_to_earnings": 64,
+      "decision": "slot_sliced",
+      "excess_spy_return_20d": 0.098424,
+      "gap_pct": 0.102732,
+      "no_gap_up_3pct": false,
+      "pnl": -1092.82,
+      "return_pct": -0.115246,
+      "signal_date": "2026-01-29",
+      "strategy": "trend_long",
+      "tags": [
+        "above_sma20",
+        "above_sma50",
+        "gap_up_3pct",
+        "pre_earnings_46_plus",
+        "rs20_leader"
+      ],
+      "ticker": "META",
+      "window": "late_strong"
+    },
+    {
+      "candidate_rank": 1,
+      "days_to_earnings": 64,
+      "decision": "gap_cancel",
+      "excess_spy_return_20d": 0.252546,
+      "gap_pct": 0.017103,
+      "no_gap_up_3pct": true,
+      "pnl": 843.79,
+      "return_pct": 0.085199,
+      "signal_date": "2025-08-07",
+      "strategy": "breakout_long",
+      "tags": [
+        "above_sma20",
+        "above_sma50",
+        "pre_earnings_46_plus",
+        "rs20_leader"
+      ],
+      "ticker": "APP",
+      "window": "mid_weak"
+    },
+    {
+      "candidate_rank": null,
+      "days_to_earnings": 12,
+      "decision": "scarce_slot_breakout_deferred",
+      "excess_spy_return_20d": 0.235009,
+      "gap_pct": 0.021003,
+      "no_gap_up_3pct": true,
+      "pnl": 8242.48,
+      "return_pct": 0.834943,
+      "signal_date": "2024-10-21",
+      "strategy": "breakout_long",
+      "tags": [
+        "above_sma20",
+        "above_sma50",
+        "pre_earnings_8_21",
+        "rs20_leader"
+      ],
+      "ticker": "APP",
+      "window": "old_thin"
+    },
+    {
+      "candidate_rank": null,
+      "days_to_earnings": 6,
+      "decision": "scarce_slot_breakout_deferred",
+      "excess_spy_return_20d": 0.116588,
+      "gap_pct": -0.030014,
+      "no_gap_up_3pct": true,
+      "pnl": 1267.24,
+      "return_pct": 0.12831,
+      "signal_date": "2025-01-27",
+      "strategy": "breakout_long",
+      "tags": [
+        "above_sma20",
+        "above_sma50",
+        "gap_down_3pct",
+        "pre_earnings_0_7",
+        "rs20_leader"
+      ],
+      "ticker": "SPOT",
+      "window": "old_thin"
+    },
+    {
+      "candidate_rank": 3,
+      "days_to_earnings": 64,
+      "decision": "slot_sliced",
+      "excess_spy_return_20d": 0.13337,
+      "gap_pct": 0.030052,
+      "no_gap_up_3pct": false,
+      "pnl": -384.26,
+      "return_pct": -0.039741,
+      "signal_date": "2025-01-30",
+      "strategy": "trend_long",
+      "tags": [
+        "above_sma20",
+        "above_sma50",
+        "gap_up_3pct",
+        "pre_earnings_46_plus",
+        "rs20_leader"
+      ],
+      "ticker": "META",
+      "window": "old_thin"
+    }
+  ],
+  "gate4": {
+    "basis": "Observed-only discriminator audit of prior missed rows; not a portfolio backtest.",
+    "passed": null
+  },
+  "history_check": {
+    "exp-20260507-034": "Hard platform RS20 entry gate rejected; do not retry nearby RS20 thresholds.",
+    "exp-20260507-035": "Missed platform RS20 sleeve was positive but underpowered and APP-concentrated.",
+    "exp-20260508-005": "Event state-score floor rejected; avoid another small threshold-only production rule.",
+    "mechanism_insight_conflict": "No conflict: this keeps RS20 as an oracle feature and tests one orthogonal existing entry-state tag without promotion."
+  },
+  "hypothesis": "Among platform-pool rs20_leader candidates already missed by the core entry path, the absence of a signal-date `gap_up_3pct` tag may separate cleaner continuation misses from overextended chased entries.",
+  "llm_metrics": {
+    "blocker_relation": "LLM/news replay is locked out of this deterministic feature audit.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "next_retry_requires": [
+    "Do not promote no-gap platform RS20 missed candidates from this six-row sample.",
+    "A valid retry needs at least eight no-gap missed candidates with single-ticker positive contribution <= 50%.",
+    "If forward evidence appears, test as a default-off sleeve with shared run.py/backtester semantics.",
+    "A better retry should add an orthogonal event/news/earnings-quality discriminator, not another RS20 threshold."
+  ],
+  "observed_gate": {
+    "failures": [
+      "matched_candidate_count_lt_8",
+      "single_ticker_positive_share_gt_50pct"
+    ],
+    "passed": false,
+    "rules": {
+      "complement_total_pnl": "< 0",
+      "matched_candidate_count": ">= 8",
+      "matched_single_ticker_positive_share": "<= 50%",
+      "matched_total_pnl": "> 0",
+      "matched_win_rate": ">= 50%"
+    }
+  },
+  "observed_metrics": {
+    "avg_pnl": 1328.65,
+    "avg_return_pct": 0.133827,
+    "candidate_count": 6,
+    "decision_counts": {
+      "gap_cancel": 2,
+      "scarce_slot_breakout_deferred": 2,
+      "slot_sliced": 2
+    },
+    "max_single_ticker_positive_share": 0.8776,
+    "median_return_pct": 0.022729,
+    "pnl_by_ticker": {
+      "AMZN": -904.5,
+      "APP": 9086.27,
+      "META": -1477.08,
+      "SPOT": 1267.24
+    },
+    "total_pnl": 7971.93,
+    "win_rate": 0.5,
+    "windows_present": 3
+  },
+  "parameters": {
+    "locked_variables": [
+      "core universe",
+      "signal generation",
+      "candidate ranking",
+      "entry execution",
+      "sizing",
+      "exits",
+      "LLM/news replay"
+    ],
+    "observed_gate": {
+      "complement_total_pnl": "< 0",
+      "matched_candidate_count": ">= 8",
+      "matched_single_ticker_positive_share": "<= 50%",
+      "matched_total_pnl": "> 0",
+      "matched_win_rate": ">= 50%"
+    },
+    "platform_pool": [
+      "META",
+      "NFLX",
+      "GOOG",
+      "AMZN",
+      "SPOT",
+      "DIS",
+      "APP"
+    ],
+    "primary_feature": "no_gap_up_3pct",
+    "source_rows": "exp-20260507-035 missed_rows"
+  },
+  "primary_split": {
+    "complement": {
+      "avg_pnl": -793.86,
+      "avg_return_pct": -0.081831,
+      "candidate_count": 3,
+      "decision_counts": {
+        "gap_cancel": 1,
+        "slot_sliced": 2
+      },
+      "max_single_ticker_positive_share": null,
+      "median_return_pct": -0.090505,
+      "pnl_by_ticker": {
+        "AMZN": -904.5,
+        "META": -1477.08
+      },
+      "total_pnl": -2381.58,
+      "win_rate": 0.0,
+      "windows_present": 2
+    },
+    "feature": "no_gap_up_3pct",
+    "matched": {
+      "avg_pnl": 3451.17,
+      "avg_return_pct": 0.349484,
+      "candidate_count": 3,
+      "decision_counts": {
+        "gap_cancel": 1,
+        "scarce_slot_breakout_deferred": 2
+      },
+      "max_single_ticker_positive_share": 0.8776,
+      "median_return_pct": 0.12831,
+      "pnl_by_ticker": {
+        "APP": 9086.27,
+        "SPOT": 1267.24
+      },
+      "total_pnl": 10353.51,
+      "win_rate": 1.0,
+      "windows_present": 2
+    },
+    "matched_rows": [
+      {
+        "days_to_earnings": 64,
+        "decision": "gap_cancel",
+        "excess_spy_return_20d": 0.252546,
+        "gap_pct": 0.017103,
+        "pnl": 843.79,
+        "return_pct": 0.085199,
+        "signal_date": "2025-08-07",
+        "strategy": "breakout_long",
+        "ticker": "APP",
+        "window": "mid_weak"
+      },
+      {
+        "days_to_earnings": 12,
+        "decision": "scarce_slot_breakout_deferred",
+        "excess_spy_return_20d": 0.235009,
+        "gap_pct": 0.021003,
+        "pnl": 8242.48,
+        "return_pct": 0.834943,
+        "signal_date": "2024-10-21",
+        "strategy": "breakout_long",
+        "ticker": "APP",
+        "window": "old_thin"
+      },
+      {
+        "days_to_earnings": 6,
+        "decision": "scarce_slot_breakout_deferred",
+        "excess_spy_return_20d": 0.116588,
+        "gap_pct": -0.030014,
+        "pnl": 1267.24,
+        "return_pct": 0.12831,
+        "signal_date": "2025-01-27",
+        "strategy": "breakout_long",
+        "ticker": "SPOT",
+        "window": "old_thin"
+      }
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "No-gap platform RS20 missed candidates split cleanly in-sample, but fail observed-only gate: matched_candidate_count_lt_8, single_ticker_positive_share_gt_50pct.",
+  "related_files": [
+    "data\\experiments\\exp-20260508-007\\platform_rs20_no_gap_missed_feature_audit.json",
+    "docs\\experiments\\logs\\exp-20260508-007.json",
+    "docs\\experiments\\tickets\\exp-20260508-007.json",
+    "docs\\experiments\\artifacts\\exp-20260508-007_platform_rs20_no_gap_missed_feature_audit.md",
+    "docs\\experiment_log.jsonl",
+    "quant\\experiments\\exp_20260508_007_platform_rs20_no_gap_missed_feature_audit.py"
+  ],
+  "source_experiment": "exp-20260507-035",
+  "supporting_splits": {
+    "breakout_long": {
+      "complement": {
+        "avg_pnl": -793.86,
+        "avg_return_pct": -0.081831,
+        "candidate_count": 3,
+        "decision_counts": {
+          "gap_cancel": 1,
+          "slot_sliced": 2
+        },
+        "max_single_ticker_positive_share": null,
+        "median_return_pct": -0.090505,
+        "pnl_by_ticker": {
+          "AMZN": -904.5,
+          "META": -1477.08
+        },
+        "total_pnl": -2381.58,
+        "win_rate": 0.0,
+        "windows_present": 2
+      },
+      "feature": "breakout_long",
+      "matched": {
+        "avg_pnl": 3451.17,
+        "avg_return_pct": 0.349484,
+        "candidate_count": 3,
+        "decision_counts": {
+          "gap_cancel": 1,
+          "scarce_slot_breakout_deferred": 2
+        },
+        "max_single_ticker_positive_share": 0.8776,
+        "median_return_pct": 0.12831,
+        "pnl_by_ticker": {
+          "APP": 9086.27,
+          "SPOT": 1267.24
+        },
+        "total_pnl": 10353.51,
+        "win_rate": 1.0,
+        "windows_present": 2
+      },
+      "matched_rows": [
+        {
+          "days_to_earnings": 64,
+          "decision": "gap_cancel",
+          "excess_spy_return_20d": 0.252546,
+          "gap_pct": 0.017103,
+          "pnl": 843.79,
+          "return_pct": 0.085199,
+          "signal_date": "2025-08-07",
+          "strategy": "breakout_long",
+          "ticker": "APP",
+          "window": "mid_weak"
+        },
+        {
+          "days_to_earnings": 12,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.235009,
+          "gap_pct": 0.021003,
+          "pnl": 8242.48,
+          "return_pct": 0.834943,
+          "signal_date": "2024-10-21",
+          "strategy": "breakout_long",
+          "ticker": "APP",
+          "window": "old_thin"
+        },
+        {
+          "days_to_earnings": 6,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.116588,
+          "gap_pct": -0.030014,
+          "pnl": 1267.24,
+          "return_pct": 0.12831,
+          "signal_date": "2025-01-27",
+          "strategy": "breakout_long",
+          "ticker": "SPOT",
+          "window": "old_thin"
+        }
+      ]
+    },
+    "candidate_rank_missing": {
+      "complement": {
+        "avg_pnl": -384.45,
+        "avg_return_pct": -0.040073,
+        "candidate_count": 4,
+        "decision_counts": {
+          "gap_cancel": 2,
+          "slot_sliced": 2
+        },
+        "max_single_ticker_positive_share": 1.0,
+        "median_return_pct": -0.065123,
+        "pnl_by_ticker": {
+          "AMZN": -904.5,
+          "APP": 843.79,
+          "META": -1477.08
+        },
+        "total_pnl": -1537.79,
+        "win_rate": 0.25,
+        "windows_present": 3
+      },
+      "feature": "candidate_rank_missing",
+      "matched": {
+        "avg_pnl": 4754.86,
+        "avg_return_pct": 0.481627,
+        "candidate_count": 2,
+        "decision_counts": {
+          "scarce_slot_breakout_deferred": 2
+        },
+        "max_single_ticker_positive_share": 0.8667,
+        "median_return_pct": 0.481627,
+        "pnl_by_ticker": {
+          "APP": 8242.48,
+          "SPOT": 1267.24
+        },
+        "total_pnl": 9509.72,
+        "win_rate": 1.0,
+        "windows_present": 1
+      },
+      "matched_rows": [
+        {
+          "days_to_earnings": 12,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.235009,
+          "gap_pct": 0.021003,
+          "pnl": 8242.48,
+          "return_pct": 0.834943,
+          "signal_date": "2024-10-21",
+          "strategy": "breakout_long",
+          "ticker": "APP",
+          "window": "old_thin"
+        },
+        {
+          "days_to_earnings": 6,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.116588,
+          "gap_pct": -0.030014,
+          "pnl": 1267.24,
+          "return_pct": 0.12831,
+          "signal_date": "2025-01-27",
+          "strategy": "breakout_long",
+          "ticker": "SPOT",
+          "window": "old_thin"
+        }
+      ]
+    },
+    "gap_up_3pct": {
+      "complement": {
+        "avg_pnl": 3451.17,
+        "avg_return_pct": 0.349484,
+        "candidate_count": 3,
+        "decision_counts": {
+          "gap_cancel": 1,
+          "scarce_slot_breakout_deferred": 2
+        },
+        "max_single_ticker_positive_share": 0.8776,
+        "median_return_pct": 0.12831,
+        "pnl_by_ticker": {
+          "APP": 9086.27,
+          "SPOT": 1267.24
+        },
+        "total_pnl": 10353.51,
+        "win_rate": 1.0,
+        "windows_present": 2
+      },
+      "feature": "gap_up_3pct",
+      "matched": {
+        "avg_pnl": -793.86,
+        "avg_return_pct": -0.081831,
+        "candidate_count": 3,
+        "decision_counts": {
+          "gap_cancel": 1,
+          "slot_sliced": 2
+        },
+        "max_single_ticker_positive_share": null,
+        "median_return_pct": -0.090505,
+        "pnl_by_ticker": {
+          "AMZN": -904.5,
+          "META": -1477.08
+        },
+        "total_pnl": -2381.58,
+        "win_rate": 0.0,
+        "windows_present": 2
+      },
+      "matched_rows": [
+        {
+          "days_to_earnings": 69,
+          "decision": "gap_cancel",
+          "excess_spy_return_20d": 0.093367,
+          "gap_pct": 0.122229,
+          "pnl": -904.5,
+          "return_pct": -0.090505,
+          "signal_date": "2025-10-31",
+          "strategy": "trend_long",
+          "ticker": "AMZN",
+          "window": "late_strong"
+        },
+        {
+          "days_to_earnings": 64,
+          "decision": "slot_sliced",
+          "excess_spy_return_20d": 0.098424,
+          "gap_pct": 0.102732,
+          "pnl": -1092.82,
+          "return_pct": -0.115246,
+          "signal_date": "2026-01-29",
+          "strategy": "trend_long",
+          "ticker": "META",
+          "window": "late_strong"
+        },
+        {
+          "days_to_earnings": 64,
+          "decision": "slot_sliced",
+          "excess_spy_return_20d": 0.13337,
+          "gap_pct": 0.030052,
+          "pnl": -384.26,
+          "return_pct": -0.039741,
+          "signal_date": "2025-01-30",
+          "strategy": "trend_long",
+          "ticker": "META",
+          "window": "old_thin"
+        }
+      ]
+    },
+    "pre_earnings_0_21": {
+      "complement": {
+        "avg_pnl": -384.45,
+        "avg_return_pct": -0.040073,
+        "candidate_count": 4,
+        "decision_counts": {
+          "gap_cancel": 2,
+          "slot_sliced": 2
+        },
+        "max_single_ticker_positive_share": 1.0,
+        "median_return_pct": -0.065123,
+        "pnl_by_ticker": {
+          "AMZN": -904.5,
+          "APP": 843.79,
+          "META": -1477.08
+        },
+        "total_pnl": -1537.79,
+        "win_rate": 0.25,
+        "windows_present": 3
+      },
+      "feature": "pre_earnings_0_21",
+      "matched": {
+        "avg_pnl": 4754.86,
+        "avg_return_pct": 0.481627,
+        "candidate_count": 2,
+        "decision_counts": {
+          "scarce_slot_breakout_deferred": 2
+        },
+        "max_single_ticker_positive_share": 0.8667,
+        "median_return_pct": 0.481627,
+        "pnl_by_ticker": {
+          "APP": 8242.48,
+          "SPOT": 1267.24
+        },
+        "total_pnl": 9509.72,
+        "win_rate": 1.0,
+        "windows_present": 1
+      },
+      "matched_rows": [
+        {
+          "days_to_earnings": 12,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.235009,
+          "gap_pct": 0.021003,
+          "pnl": 8242.48,
+          "return_pct": 0.834943,
+          "signal_date": "2024-10-21",
+          "strategy": "breakout_long",
+          "ticker": "APP",
+          "window": "old_thin"
+        },
+        {
+          "days_to_earnings": 6,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.116588,
+          "gap_pct": -0.030014,
+          "pnl": 1267.24,
+          "return_pct": 0.12831,
+          "signal_date": "2025-01-27",
+          "strategy": "breakout_long",
+          "ticker": "SPOT",
+          "window": "old_thin"
+        }
+      ]
+    },
+    "pre_earnings_46_plus": {
+      "complement": {
+        "avg_pnl": 4754.86,
+        "avg_return_pct": 0.481627,
+        "candidate_count": 2,
+        "decision_counts": {
+          "scarce_slot_breakout_deferred": 2
+        },
+        "max_single_ticker_positive_share": 0.8667,
+        "median_return_pct": 0.481627,
+        "pnl_by_ticker": {
+          "APP": 8242.48,
+          "SPOT": 1267.24
+        },
+        "total_pnl": 9509.72,
+        "win_rate": 1.0,
+        "windows_present": 1
+      },
+      "feature": "pre_earnings_46_plus",
+      "matched": {
+        "avg_pnl": -384.45,
+        "avg_return_pct": -0.040073,
+        "candidate_count": 4,
+        "decision_counts": {
+          "gap_cancel": 2,
+          "slot_sliced": 2
+        },
+        "max_single_ticker_positive_share": 1.0,
+        "median_return_pct": -0.065123,
+        "pnl_by_ticker": {
+          "AMZN": -904.5,
+          "APP": 843.79,
+          "META": -1477.08
+        },
+        "total_pnl": -1537.79,
+        "win_rate": 0.25,
+        "windows_present": 3
+      },
+      "matched_rows": [
+        {
+          "days_to_earnings": 69,
+          "decision": "gap_cancel",
+          "excess_spy_return_20d": 0.093367,
+          "gap_pct": 0.122229,
+          "pnl": -904.5,
+          "return_pct": -0.090505,
+          "signal_date": "2025-10-31",
+          "strategy": "trend_long",
+          "ticker": "AMZN",
+          "window": "late_strong"
+        },
+        {
+          "days_to_earnings": 64,
+          "decision": "slot_sliced",
+          "excess_spy_return_20d": 0.098424,
+          "gap_pct": 0.102732,
+          "pnl": -1092.82,
+          "return_pct": -0.115246,
+          "signal_date": "2026-01-29",
+          "strategy": "trend_long",
+          "ticker": "META",
+          "window": "late_strong"
+        },
+        {
+          "days_to_earnings": 64,
+          "decision": "gap_cancel",
+          "excess_spy_return_20d": 0.252546,
+          "gap_pct": 0.017103,
+          "pnl": 843.79,
+          "return_pct": 0.085199,
+          "signal_date": "2025-08-07",
+          "strategy": "breakout_long",
+          "ticker": "APP",
+          "window": "mid_weak"
+        },
+        {
+          "days_to_earnings": 64,
+          "decision": "slot_sliced",
+          "excess_spy_return_20d": 0.13337,
+          "gap_pct": 0.030052,
+          "pnl": -384.26,
+          "return_pct": -0.039741,
+          "signal_date": "2025-01-30",
+          "strategy": "trend_long",
+          "ticker": "META",
+          "window": "old_thin"
+        }
+      ]
+    },
+    "scarce_slot_breakout_deferred": {
+      "complement": {
+        "avg_pnl": -384.45,
+        "avg_return_pct": -0.040073,
+        "candidate_count": 4,
+        "decision_counts": {
+          "gap_cancel": 2,
+          "slot_sliced": 2
+        },
+        "max_single_ticker_positive_share": 1.0,
+        "median_return_pct": -0.065123,
+        "pnl_by_ticker": {
+          "AMZN": -904.5,
+          "APP": 843.79,
+          "META": -1477.08
+        },
+        "total_pnl": -1537.79,
+        "win_rate": 0.25,
+        "windows_present": 3
+      },
+      "feature": "scarce_slot_breakout_deferred",
+      "matched": {
+        "avg_pnl": 4754.86,
+        "avg_return_pct": 0.481627,
+        "candidate_count": 2,
+        "decision_counts": {
+          "scarce_slot_breakout_deferred": 2
+        },
+        "max_single_ticker_positive_share": 0.8667,
+        "median_return_pct": 0.481627,
+        "pnl_by_ticker": {
+          "APP": 8242.48,
+          "SPOT": 1267.24
+        },
+        "total_pnl": 9509.72,
+        "win_rate": 1.0,
+        "windows_present": 1
+      },
+      "matched_rows": [
+        {
+          "days_to_earnings": 12,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.235009,
+          "gap_pct": 0.021003,
+          "pnl": 8242.48,
+          "return_pct": 0.834943,
+          "signal_date": "2024-10-21",
+          "strategy": "breakout_long",
+          "ticker": "APP",
+          "window": "old_thin"
+        },
+        {
+          "days_to_earnings": 6,
+          "decision": "scarce_slot_breakout_deferred",
+          "excess_spy_return_20d": 0.116588,
+          "gap_pct": -0.030014,
+          "pnl": 1267.24,
+          "return_pct": 0.12831,
+          "signal_date": "2025-01-27",
+          "strategy": "breakout_long",
+          "ticker": "SPOT",
+          "window": "old_thin"
+        }
+      ]
+    }
+  },
+  "timestamp": "2026-05-08T03:48:58.139553+00:00"
+}

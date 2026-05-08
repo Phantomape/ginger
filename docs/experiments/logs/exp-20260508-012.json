@@ -1,0 +1,421 @@
+{
+  "aggregate": {
+    "by_liquidity_bucket": {
+      "adv_ge_20m": 5
+    },
+    "by_status": {
+      "amendment_excluded": 5
+    },
+    "candidate_count": 0,
+    "liquidity_qualified_count": 5,
+    "ohlcv_covered_10k_count": 5,
+    "outside_universe_10k_count": 0,
+    "pit_safe_10k_count": 5,
+    "sec_event_count": 312,
+    "source_file_count": 5,
+    "ten_k_event_count": 5
+  },
+  "alpha_hypothesis_category": "candidate_pool / event_quality",
+  "decision": "observe_only_forward_adapter_added",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260508-012",
+  "gate4": {
+    "basis": "No strategy rule changed; this is an observe-only forward ledger adapter.",
+    "passed": null
+  },
+  "history_check": {
+    "exp-20260503-011": "Historical 10-K + ADV>=5M shadow scout found positive old/late evidence but explicitly blocked promotion until PIT eligibility and replacement value exist.",
+    "exp-20260508-011": "Direction triage selected 10-K liquidity scouts as best next alpha direction, with forward ledger and frozen same-day A/B alternatives required first.",
+    "guardrail": "This is not broad SEC filing promotion, static universe expansion, or same-sample threshold tuning; it only creates the forward evidence container."
+  },
+  "hypothesis": "Liquidity-gated 10-K filings outside the current production universe may improve future candidate-pool quality, but only after an append-only PIT ledger proves closed forward replacement value.",
+  "lane": "measurement_repair_for_alpha_search",
+  "next_action": "Let the daily ledger accumulate outside-universe eligible 10-K rows; compute 5/10/20d forward excess and replacement value only after enough candidates close across at least two regimes.",
+  "parameters": {
+    "adv_lookback_days": 20,
+    "forms": [
+      "10-K"
+    ],
+    "include_current_universe": false,
+    "locked_variables": [
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "sizing",
+      "MAX_POSITIONS",
+      "exits",
+      "core universe",
+      "pilot universe",
+      "orders"
+    ],
+    "min_adv_observations": 20,
+    "min_avg_dollar_volume_20d": 5000000,
+    "ohlcv_snapshot": "D:\\Github\\ginger\\data\\ohlcv_snapshot_20251023_20260501_with_pilot.json",
+    "source_glob": "data/non_ohlcv/sec_filing_events_202605*.jsonl"
+  },
+  "persistence": {
+    "appended_count": 0,
+    "asof_date": "2026-05-07",
+    "candidate_count": 0,
+    "candidates": [],
+    "history_by_liquidity_bucket": {},
+    "history_by_ticker": {},
+    "ledger_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260508-012\\sec_10k_liquidity_forward_watch.jsonl",
+    "ledger_row_count": 0,
+    "liquidity_qualified_count": 1,
+    "ohlcv_covered_10k_count": 1,
+    "outside_universe_10k_count": 0,
+    "pit_safe_10k_count": 1,
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_exits": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "parity_test_added": false,
+      "replay_only": false,
+      "run_adapter_changed": true,
+      "shared_policy_changed": false
+    },
+    "rule_version": "sec_10k_liquidity_v1",
+    "schema_version": 1,
+    "summary_path": "D:\\Github\\ginger\\data\\experiments\\exp-20260508-012\\sec_10k_liquidity_forward_watch_summary.json",
+    "ten_k_event_count": 1,
+    "updated_at": "2026-05-08T06:59:40+00:00",
+    "watch_name": "SEC_10K_LIQUIDITY_FORWARD_WATCH"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "report_adapter_changed": true,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "D:\\Github\\ginger\\data\\experiments\\exp-20260508-012\\sec_10k_forward_watch_adapter_audit.json",
+    "D:\\Github\\ginger\\data\\experiments\\exp-20260508-012\\sec_10k_liquidity_forward_watch.jsonl",
+    "D:\\Github\\ginger\\data\\experiments\\exp-20260508-012\\sec_10k_liquidity_forward_watch_summary.json",
+    "D:\\Github\\ginger\\docs\\experiments\\logs\\exp-20260508-012.json",
+    "quant/sec_10k_forward_watch.py",
+    "quant/test_sec_10k_forward_watch.py",
+    "quant/run.py",
+    "quant/report_generator.py"
+  ],
+  "single_causal_variable": "append_only_pit_10k_liquidity_forward_watch",
+  "snapshots": [
+    {
+      "all_10k_rows": [
+        {
+          "accepted_at": "2026-04-30T21:13:17",
+          "accession_number": "0001104659-26-053166",
+          "adv_observation_count": 20,
+          "archive_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/tm2611837d1_10ka.htm",
+          "asof_date": "2026-05-01",
+          "avg_dollar_volume_20d": 25232442294.28,
+          "cik": "0001318605",
+          "eligibility_status": "amendment_excluded",
+          "eligible": false,
+          "filing_date": "2026-04-30",
+          "form_base": "10-K",
+          "form_type": "10-K/A",
+          "in_current_universe": true,
+          "is_amendment": true,
+          "liquidity_bucket": "adv_ge_20m",
+          "liquidity_qualified": true,
+          "pit_safe_flag": true,
+          "pit_source": "sec_submissions_recent",
+          "production_impact": {
+            "alters_candidate_ranking": false,
+            "alters_exits": false,
+            "alters_orders": false,
+            "alters_signal_generation": false,
+            "alters_sizing": false,
+            "backtester_adapter_changed": false,
+            "parity_test_added": false,
+            "replay_only": false,
+            "run_adapter_changed": true,
+            "shared_policy_changed": false
+          },
+          "same_day_core_alternative_count": 0,
+          "same_day_core_alternatives": [],
+          "ticker": "TSLA",
+          "usable_trade_date": "2026-05-01",
+          "watch_hypothesis": null
+        }
+      ],
+      "asof_date": "2026-05-01",
+      "candidate_count": 0,
+      "candidates": [],
+      "liquidity_qualified_count": 1,
+      "ohlcv_covered_10k_count": 1,
+      "outside_universe_10k_count": 0,
+      "pit_safe_10k_count": 1,
+      "sec_event_count": 61,
+      "source_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260501.jsonl",
+      "summary": {
+        "by_liquidity_bucket": {
+          "adv_ge_20m": 1
+        },
+        "by_status": {
+          "amendment_excluded": 1
+        },
+        "candidate_by_ticker": {},
+        "same_day_core_alternative_count": 0
+      },
+      "ten_k_event_count": 1
+    },
+    {
+      "all_10k_rows": [
+        {
+          "accepted_at": "2026-04-30T21:13:17",
+          "accession_number": "0001104659-26-053166",
+          "adv_observation_count": 20,
+          "archive_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/tm2611837d1_10ka.htm",
+          "asof_date": "2026-05-04",
+          "avg_dollar_volume_20d": 25232442294.28,
+          "cik": "0001318605",
+          "eligibility_status": "amendment_excluded",
+          "eligible": false,
+          "filing_date": "2026-04-30",
+          "form_base": "10-K",
+          "form_type": "10-K/A",
+          "in_current_universe": true,
+          "is_amendment": true,
+          "liquidity_bucket": "adv_ge_20m",
+          "liquidity_qualified": true,
+          "pit_safe_flag": true,
+          "pit_source": "sec_submissions_recent",
+          "production_impact": {
+            "alters_candidate_ranking": false,
+            "alters_exits": false,
+            "alters_orders": false,
+            "alters_signal_generation": false,
+            "alters_sizing": false,
+            "backtester_adapter_changed": false,
+            "parity_test_added": false,
+            "replay_only": false,
+            "run_adapter_changed": true,
+            "shared_policy_changed": false
+          },
+          "same_day_core_alternative_count": 0,
+          "same_day_core_alternatives": [],
+          "ticker": "TSLA",
+          "usable_trade_date": "2026-05-01",
+          "watch_hypothesis": null
+        }
+      ],
+      "asof_date": "2026-05-04",
+      "candidate_count": 0,
+      "candidates": [],
+      "liquidity_qualified_count": 1,
+      "ohlcv_covered_10k_count": 1,
+      "outside_universe_10k_count": 0,
+      "pit_safe_10k_count": 1,
+      "sec_event_count": 48,
+      "source_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260504.jsonl",
+      "summary": {
+        "by_liquidity_bucket": {
+          "adv_ge_20m": 1
+        },
+        "by_status": {
+          "amendment_excluded": 1
+        },
+        "candidate_by_ticker": {},
+        "same_day_core_alternative_count": 0
+      },
+      "ten_k_event_count": 1
+    },
+    {
+      "all_10k_rows": [
+        {
+          "accepted_at": "2026-04-30T21:13:17",
+          "accession_number": "0001104659-26-053166",
+          "adv_observation_count": 20,
+          "archive_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/tm2611837d1_10ka.htm",
+          "asof_date": "2026-05-05",
+          "avg_dollar_volume_20d": 25232442294.28,
+          "cik": "0001318605",
+          "eligibility_status": "amendment_excluded",
+          "eligible": false,
+          "filing_date": "2026-04-30",
+          "form_base": "10-K",
+          "form_type": "10-K/A",
+          "in_current_universe": true,
+          "is_amendment": true,
+          "liquidity_bucket": "adv_ge_20m",
+          "liquidity_qualified": true,
+          "pit_safe_flag": true,
+          "pit_source": "sec_submissions_recent",
+          "production_impact": {
+            "alters_candidate_ranking": false,
+            "alters_exits": false,
+            "alters_orders": false,
+            "alters_signal_generation": false,
+            "alters_sizing": false,
+            "backtester_adapter_changed": false,
+            "parity_test_added": false,
+            "replay_only": false,
+            "run_adapter_changed": true,
+            "shared_policy_changed": false
+          },
+          "same_day_core_alternative_count": 0,
+          "same_day_core_alternatives": [],
+          "ticker": "TSLA",
+          "usable_trade_date": "2026-05-01",
+          "watch_hypothesis": null
+        }
+      ],
+      "asof_date": "2026-05-05",
+      "candidate_count": 0,
+      "candidates": [],
+      "liquidity_qualified_count": 1,
+      "ohlcv_covered_10k_count": 1,
+      "outside_universe_10k_count": 0,
+      "pit_safe_10k_count": 1,
+      "sec_event_count": 54,
+      "source_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260505.jsonl",
+      "summary": {
+        "by_liquidity_bucket": {
+          "adv_ge_20m": 1
+        },
+        "by_status": {
+          "amendment_excluded": 1
+        },
+        "candidate_by_ticker": {},
+        "same_day_core_alternative_count": 0
+      },
+      "ten_k_event_count": 1
+    },
+    {
+      "all_10k_rows": [
+        {
+          "accepted_at": "2026-04-30T21:13:17",
+          "accession_number": "0001104659-26-053166",
+          "adv_observation_count": 20,
+          "archive_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/tm2611837d1_10ka.htm",
+          "asof_date": "2026-05-06",
+          "avg_dollar_volume_20d": 25232442294.28,
+          "cik": "0001318605",
+          "eligibility_status": "amendment_excluded",
+          "eligible": false,
+          "filing_date": "2026-04-30",
+          "form_base": "10-K",
+          "form_type": "10-K/A",
+          "in_current_universe": true,
+          "is_amendment": true,
+          "liquidity_bucket": "adv_ge_20m",
+          "liquidity_qualified": true,
+          "pit_safe_flag": true,
+          "pit_source": "sec_submissions_recent",
+          "production_impact": {
+            "alters_candidate_ranking": false,
+            "alters_exits": false,
+            "alters_orders": false,
+            "alters_signal_generation": false,
+            "alters_sizing": false,
+            "backtester_adapter_changed": false,
+            "parity_test_added": false,
+            "replay_only": false,
+            "run_adapter_changed": true,
+            "shared_policy_changed": false
+          },
+          "same_day_core_alternative_count": 0,
+          "same_day_core_alternatives": [],
+          "ticker": "TSLA",
+          "usable_trade_date": "2026-05-01",
+          "watch_hypothesis": null
+        }
+      ],
+      "asof_date": "2026-05-06",
+      "candidate_count": 0,
+      "candidates": [],
+      "liquidity_qualified_count": 1,
+      "ohlcv_covered_10k_count": 1,
+      "outside_universe_10k_count": 0,
+      "pit_safe_10k_count": 1,
+      "sec_event_count": 67,
+      "source_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260506.jsonl",
+      "summary": {
+        "by_liquidity_bucket": {
+          "adv_ge_20m": 1
+        },
+        "by_status": {
+          "amendment_excluded": 1
+        },
+        "candidate_by_ticker": {},
+        "same_day_core_alternative_count": 0
+      },
+      "ten_k_event_count": 1
+    },
+    {
+      "all_10k_rows": [
+        {
+          "accepted_at": "2026-04-30T21:13:17",
+          "accession_number": "0001104659-26-053166",
+          "adv_observation_count": 20,
+          "archive_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/tm2611837d1_10ka.htm",
+          "asof_date": "2026-05-07",
+          "avg_dollar_volume_20d": 25232442294.28,
+          "cik": "0001318605",
+          "eligibility_status": "amendment_excluded",
+          "eligible": false,
+          "filing_date": "2026-04-30",
+          "form_base": "10-K",
+          "form_type": "10-K/A",
+          "in_current_universe": true,
+          "is_amendment": true,
+          "liquidity_bucket": "adv_ge_20m",
+          "liquidity_qualified": true,
+          "pit_safe_flag": true,
+          "pit_source": "sec_submissions_recent",
+          "production_impact": {
+            "alters_candidate_ranking": false,
+            "alters_exits": false,
+            "alters_orders": false,
+            "alters_signal_generation": false,
+            "alters_sizing": false,
+            "backtester_adapter_changed": false,
+            "parity_test_added": false,
+            "replay_only": false,
+            "run_adapter_changed": true,
+            "shared_policy_changed": false
+          },
+          "same_day_core_alternative_count": 0,
+          "same_day_core_alternatives": [],
+          "ticker": "TSLA",
+          "usable_trade_date": "2026-05-01",
+          "watch_hypothesis": null
+        }
+      ],
+      "asof_date": "2026-05-07",
+      "candidate_count": 0,
+      "candidates": [],
+      "liquidity_qualified_count": 1,
+      "ohlcv_covered_10k_count": 1,
+      "outside_universe_10k_count": 0,
+      "pit_safe_10k_count": 1,
+      "sec_event_count": 82,
+      "source_path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260507.jsonl",
+      "summary": {
+        "by_liquidity_bucket": {
+          "adv_ge_20m": 1
+        },
+        "by_status": {
+          "amendment_excluded": 1
+        },
+        "candidate_by_ticker": {},
+        "same_day_core_alternative_count": 0
+      },
+      "ten_k_event_count": 1
+    }
+  ],
+  "status": "completed",
+  "timestamp": "2026-05-08T06:59:40+00:00"
+}
