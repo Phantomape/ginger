@@ -50,6 +50,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            event_sleeve_bundle=None,
                            state_surface_sleeve=None,
                            platform_rs20_watch=None,
+                           sec_10k_forward_watch=None,
                            non_ohlcv_snapshot=None,
                            crypto_sleeve=None):
     """
@@ -76,6 +77,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         platform_rs20_watch (dict):     Default-off platform RS20 no-gap watch ledger
+        sec_10k_forward_watch (dict):   Default-off SEC 10-K liquidity watch ledger
         non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
         crypto_sleeve (dict):           Isolated BTC/USD sleeve advice
 
@@ -251,6 +253,46 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"{candidate.get('decision', '?')} / {candidate.get('strategy', '?')} "
                 f"RS20 excess {excess_text}, gap {gap_text} "
+                "(observe only)"
+            )
+
+    if sec_10k_forward_watch and (
+        sec_10k_forward_watch.get("candidate_count", 0) > 0
+        or sec_10k_forward_watch.get("ten_k_event_count", 0) > 0
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC 10-K LIQUIDITY WATCH")
+        lines.append("-" * 60)
+        persistence = sec_10k_forward_watch.get("persistence") or {}
+        lines.append(
+            f"  Trade enabled: {sec_10k_forward_watch.get('trade_enabled', False)}  |  "
+            f"10-K events: {sec_10k_forward_watch.get('ten_k_event_count', 0)}  |  "
+            f"Outside universe: {sec_10k_forward_watch.get('outside_universe_10k_count', 0)}  |  "
+            f"Liquidity qualified: {sec_10k_forward_watch.get('liquidity_qualified_count', 0)}  |  "
+            f"Candidates: {sec_10k_forward_watch.get('candidate_count', 0)}"
+        )
+        if persistence:
+            lines.append(
+                f"  Ledger rows: {persistence.get('ledger_row_count', 0)}  |  "
+                f"Appended today: {persistence.get('appended_count', 0)}"
+            )
+        if sec_10k_forward_watch.get("candidate_count", 0) == 0:
+            status = (sec_10k_forward_watch.get("summary") or {}).get("by_status") or {}
+            if status:
+                status_text = ", ".join(f"{key}={value}" for key, value in sorted(status.items()))
+                lines.append(f"  No watch candidate today: {status_text}")
+        for candidate in (sec_10k_forward_watch.get("candidates") or [])[:5]:
+            adv = candidate.get("avg_dollar_volume_20d")
+            adv_text = (
+                f"${adv / 1_000_000:.1f}M"
+                if isinstance(adv, (int, float))
+                else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('form_type', '10-K')} usable={candidate.get('usable_trade_date')} "
+                f"ADV20={adv_text} {candidate.get('liquidity_bucket', 'adv_unknown')} "
+                f"alts={candidate.get('same_day_core_alternative_count', 0)} "
                 "(observe only)"
             )
 
