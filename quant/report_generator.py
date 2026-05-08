@@ -518,6 +518,19 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"${event_sleeve_bundle.get('realized_pnl_to_date', 0.0):,.2f}  |  "
             f"Unrealized: ${event_sleeve_bundle.get('unrealized_pnl', 0.0):,.2f}"
         )
+        state_surface_addon = event_sleeve_bundle.get("state_surface_addon") or {}
+        if state_surface_addon:
+            eligible_surfaces = state_surface_addon.get("eligible_surfaces") or []
+            surface_text = ", ".join(str(surface) for surface in eligible_surfaces)
+            if not surface_text:
+                surface_text = "none"
+            lines.append(
+                "  State-surface add-on: "
+                f"eligible={state_surface_addon.get('eligible_candidate_count', 0)}/"
+                f"{state_surface_addon.get('candidate_count', 0)} "
+                f"incremental=${state_surface_addon.get('incremental_notional_usd', 0.0):,.2f} "
+                f"surfaces={surface_text}"
+            )
         gate = event_sleeve_bundle.get("forward_paper_gate") or {}
         if gate:
             gate_metrics = gate.get("metrics") or {}

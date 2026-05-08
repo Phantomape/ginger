@@ -1,0 +1,148 @@
+{
+  "experiment_id": "exp-20260507-906",
+  "run_time_utc": "2026-05-07T20:54:00Z",
+  "automation": "alpha-search",
+  "iteration_type": "alpha_search",
+  "alpha_hypothesis": "Non-generic positive state-surface confirmation can improve event-sleeve capital allocation; because exp-20260507-026 was positive but default-off, production reports must surface the paper add-on attribution so forward replacement-value samples can be collected before live promotion.",
+  "alpha_hypothesis_category": "capital_allocation",
+  "change_type": "default_off_alpha_attribution_report_surface",
+  "past_experiment_context": {
+    "positive_lead": {
+      "experiment_id": "exp-20260507-026",
+      "summary": "Non-generic event state add-on at 2.0x beat the frozen event bundle and core stack in all three canonical windows, but remained replay-only/default-off pending production-visible forward attribution."
+    },
+    "avoided_repeats": [
+      "LLM soft-ranking remains data-limited by sparse replay/outcome join coverage.",
+      "Broad universe expansion was recently observation-only and did not prove replacement value.",
+      "Same-day entry-cluster risk was rejected in exp-20260507-905 due old_thin EV regression.",
+      "Earnings C-sleeve reactivation remains data-quality limited."
+    ]
+  },
+  "parameters": {
+    "state_surface_addon_scalar": 2.0,
+    "eligible_rule": "score > 0 and state_surface != balanced_state_leadership",
+    "trade_enabled": false,
+    "report_fields_added": [
+      "eligible_candidate_count",
+      "candidate_count",
+      "incremental_notional_usd",
+      "eligible_surfaces"
+    ]
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.6257,
+      "max_drawdown_pct": 0.0539,
+      "sharpe": 5.99,
+      "sharpe_daily": 4.42,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 82030.12,
+      "total_return_pct": 0.8203,
+      "trade_count": 20,
+      "win_rate": 0.75
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "max_drawdown_pct": 0.0879,
+      "sharpe": 4.27,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 57542.74,
+      "total_return_pct": 0.5754,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "max_drawdown_pct": 0.0905,
+      "sharpe": 2.05,
+      "sharpe_daily": 1.28,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 26242.68,
+      "total_return_pct": 0.2624,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.6257,
+      "max_drawdown_pct": 0.0539,
+      "sharpe": 5.99,
+      "sharpe_daily": 4.42,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 82030.12,
+      "total_return_pct": 0.8203,
+      "trade_count": 20,
+      "win_rate": 0.75
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "max_drawdown_pct": 0.0879,
+      "sharpe": 4.27,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 57542.74,
+      "total_return_pct": 0.5754,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "max_drawdown_pct": 0.0905,
+      "sharpe": 2.05,
+      "sharpe_daily": 1.28,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 26242.68,
+      "total_return_pct": 0.2624,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "decision": "accepted",
+  "acceptance_reason": "Accepted as a default-off production attribution bridge for the already-positive exp-20260507-026 alpha lead. It does not change live orders or backtest strategy logic, and three canonical windows confirmed no core metric drift.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "report_surface_changed": true,
+    "parity_test_added": true,
+    "replay_only": false,
+    "default_off": true,
+    "trade_enabled": false,
+    "alters_orders": false
+  },
+  "validation": {
+    "pytest": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_event_sleeve_bundle.py -q",
+    "backtests": [
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json --no-secondary",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json --no-secondary",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json --no-secondary"
+    ],
+    "pytest_result": "8 passed",
+    "backtest_result": "3/3 canonical windows CONVERGED"
+  },
+  "next_action": "Collect daily forward paper snapshots where event candidates also have non-generic positive state-surface scores, then compare paper add-on incremental notional outcomes against base event notional before any trade-enabled promotion."
+}

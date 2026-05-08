@@ -293,3 +293,42 @@ def test_report_generator_renders_event_sleeve_bundle_without_orders() -> None:
     assert "Form 4 meaningful purchase" in report
     assert "SEC negative reaction" in report
     assert "SEC governance/procedural" in report
+
+
+def test_report_generator_renders_event_state_surface_addon_attribution() -> None:
+    from report_generator import generate_daily_report
+
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "EVT",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": {"frozen": True},
+                }
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 1,
+            "scored_candidates": [
+                {
+                    "ticker": "EVT",
+                    "score": 1.24,
+                    "surface": "rotation_breakout_leadership",
+                    "decision_date": "2026-05-04",
+                }
+            ],
+        },
+    )
+    report = generate_daily_report(
+        signals=[],
+        market_regime={"regime": "BULL"},
+        event_sleeve_bundle=snapshot,
+    )
+
+    assert "State-surface add-on:" in report
+    assert "eligible=1/1" in report
+    assert "incremental=$10,000.00" in report
+    assert "surfaces=rotation_breakout_leadership" in report
