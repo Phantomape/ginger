@@ -6061,3 +6061,26 @@ Do not repeat: adverse-gap delayed-entry sleeves based only on same-day high or
 close reclaim of the original signal entry. A valid retry needs richer
 intraday structure, fresh event/news confirmation, or forward paper evidence
 that reclaimed adverse-gap candidates beat same-day alternatives.
+
+### 2026-05-08 mechanism update: Add-on execution memory
+
+Experiment: `exp-20260508-027`
+
+Decision: `accepted_measurement_adapter`.
+
+Finding: Production already had code-decided day-2 follow-through add-ons, but
+the pending-action ledger only tracked `REDUCE` and `EXIT`. A missed or
+conservatively skipped `ADD` could disappear after the checkpoint day even
+though recent add-on attribution showed confirmed-winner exposure still has
+positive marginal value. The adapter now records `add_on_trades` as pending
+`ADD` actions and repeats them until `open_positions` share count reconciles.
+
+Mechanism insight: the immediate production gap was execution memory, not
+another add-on trigger. This preserves already-decided add-on intent without
+relaxing heat caps, changing add-on fractions, or expanding the checkpoint
+window.
+
+Do not repeat: using this finding as justification for raw heat-cap increases,
+same-day add-on ordering keys, volume confirmation filters, or wider add-on
+windows. The next valid step is a separate intended-share/top-up replay for
+conservative entries.

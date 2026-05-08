@@ -865,6 +865,7 @@ def save_advice(advice, filepath, token_usage=None):
                 {
                     "ticker": item.get("ticker"),
                     "action": item.get("action"),
+                    "shares_to_buy": item.get("shares_to_buy"),
                     "first_advice_date": item.get("first_advice_date"),
                     "exit_rule_triggered": item.get("exit_rule_triggered"),
                 }

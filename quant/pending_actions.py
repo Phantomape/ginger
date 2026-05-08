@@ -17,7 +17,8 @@ from datetime import datetime
 from typing import Any
 
 PENDING_ACTIONS_FILENAME = "pending_actions.json"
-ACTIONABLE = {"REDUCE", "EXIT"}
+ACTIONABLE = {"ADD", "REDUCE", "EXIT"}
+POSITION_ACTIONABLE = {"REDUCE", "EXIT"}
 
 
 def _today_yyyymmdd() -> str:
@@ -109,8 +110,18 @@ def _make_pending_record(
         return None
 
     raw_shares_to_sell = action.get("shares_to_sell")
+    raw_shares_to_buy = action.get("shares_to_buy")
+    shares_to_sell = None
+    shares_to_buy = None
     if action_name == "EXIT":
-        shares_to_sell = None
+        pass
+    elif action_name == "ADD":
+        try:
+            shares_to_buy = int(raw_shares_to_buy)
+        except (TypeError, ValueError):
+            return None
+        if shares_to_buy <= 0:
+            return None
     else:
         try:
             shares_to_sell = int(raw_shares_to_sell)
@@ -120,20 +131,32 @@ def _make_pending_record(
             return None
 
     original_shares = current_shares[ticker]
-    expected_remaining = 0.0 if action_name == "EXIT" else max(original_shares - shares_to_sell, 0.0)
+    if action_name == "EXIT":
+        expected_remaining = 0.0
+    elif action_name == "ADD":
+        expected_remaining = original_shares + shares_to_buy
+    else:
+        expected_remaining = max(original_shares - shares_to_sell, 0.0)
+    trigger = (
+        action.get("exit_rule_triggered")
+        or action.get("decision_mode")
+        or ("ADD_ON" if action_name == "ADD" else "UNKNOWN")
+    )
     return {
-        "id": f"{date_str}:{ticker}:{action_name}:{action.get('exit_rule_triggered') or 'UNKNOWN'}",
+        "id": f"{date_str}:{ticker}:{action_name}:{trigger}",
         "status": "open",
         "first_advice_date": date_str,
         "last_seen_date": date_str,
         "ticker": ticker,
         "action": action_name,
         "shares_to_sell": shares_to_sell,
+        "shares_to_buy": shares_to_buy,
         "original_shares": original_shares,
         "expected_remaining_shares": expected_remaining,
         "exit_rule_triggered": action.get("exit_rule_triggered") or "UNKNOWN",
         "original_reason": action.get("reason") or "",
         "decision_mode": action.get("decision_mode") or "forced_rule",
+        "fill_timing": action.get("fill_timing"),
         "source_file": source_file,
     }
 
@@ -147,6 +170,8 @@ def _is_executed(record: dict, current_shares: dict[str, float]) -> bool:
         expected_remaining = float(record.get("expected_remaining_shares"))
     except (TypeError, ValueError):
         return False
+    if record.get("action") == "ADD":
+        return now >= expected_remaining
     return now <= expected_remaining
 
 
@@ -185,13 +210,15 @@ def register_pending_actions_from_advice(
     actions = reconcile_pending_actions(existing_actions or [], open_positions, date_str)
     open_ids = {a.get("id") for a in actions if a.get("status", "open") == "open"}
 
-    for action in (_unwrap_advice(parsed_advice) or {}).get("position_actions", []) or []:
-        if not isinstance(action, dict):
-            continue
-        record = _make_pending_record(action, current_shares, date_str, source_file=source_file)
-        if record and record["id"] not in open_ids:
-            actions.append(record)
-            open_ids.add(record["id"])
+    parsed = _unwrap_advice(parsed_advice) or {}
+    for section_name in ("position_actions", "add_on_trades"):
+        for action in parsed.get(section_name, []) or []:
+            if not isinstance(action, dict):
+                continue
+            record = _make_pending_record(action, current_shares, date_str, source_file=source_file)
+            if record and record["id"] not in open_ids:
+                actions.append(record)
+                open_ids.add(record["id"])
     return actions
 
 
@@ -254,7 +281,7 @@ def apply_pending_action_overrides(
     data_dir: str = "data",
     as_of_date: str | None = None,
 ) -> tuple[dict | None, list[dict]]:
-    """Force unexecuted prior REDUCE/EXIT actions back into today's parsed advice."""
+    """Force unexecuted prior position/add-on actions back into today's advice."""
     if not isinstance(parsed_advice, dict):
         return parsed_advice, []
     pending = get_open_pending_actions(
@@ -263,8 +290,17 @@ def apply_pending_action_overrides(
         as_of_date=as_of_date,
         bootstrap_if_empty=False,
     )
-    by_ticker = {str(p.get("ticker", "")).upper(): p for p in pending}
-    if not by_ticker:
+    pending_position_by_ticker = {
+        str(p.get("ticker", "")).upper(): p
+        for p in pending
+        if p.get("action") in POSITION_ACTIONABLE
+    }
+    pending_adds_by_ticker = {
+        str(p.get("ticker", "")).upper(): p
+        for p in pending
+        if p.get("action") == "ADD"
+    }
+    if not pending_position_by_ticker and not pending_adds_by_ticker:
         return parsed_advice, []
 
     updated = dict(parsed_advice)
@@ -275,11 +311,11 @@ def apply_pending_action_overrides(
             position_actions.append(action)
             continue
         ticker = str(action.get("ticker", "")).upper()
-        pending_record = by_ticker.get(ticker)
+        pending_record = pending_position_by_ticker.get(ticker)
         if not pending_record:
             position_actions.append(action)
             continue
-        if str(action.get("action", "")).upper() in ACTIONABLE:
+        if str(action.get("action", "")).upper() in POSITION_ACTIONABLE:
             position_actions.append(action)
             continue
 
@@ -299,4 +335,30 @@ def apply_pending_action_overrides(
         changed.append(pending_record)
 
     updated["position_actions"] = position_actions
+    add_on_trades = [
+        item for item in updated.get("add_on_trades", []) or []
+        if isinstance(item, dict)
+    ]
+    existing_add_tickers = {
+        str(item.get("ticker", "")).upper()
+        for item in add_on_trades
+        if str(item.get("action", "")).upper() == "ADD"
+    }
+    for ticker, pending_record in pending_adds_by_ticker.items():
+        if ticker in existing_add_tickers:
+            continue
+        add_on_trades.append({
+            "ticker": ticker,
+            "action": "ADD",
+            "shares_to_buy": pending_record.get("shares_to_buy"),
+            "fill_timing": pending_record.get("fill_timing") or "next_session_open",
+            "decision_mode": "pending_unexecuted_action",
+            "reason": (
+                f"Previous ADD from {pending_record.get('first_advice_date')} "
+                "was not reflected in open_positions; repeating until shares reconcile. "
+                f"Original reason: {pending_record.get('original_reason') or 'n/a'}"
+            ),
+        })
+        changed.append(pending_record)
+    updated["add_on_trades"] = add_on_trades
     return updated, changed

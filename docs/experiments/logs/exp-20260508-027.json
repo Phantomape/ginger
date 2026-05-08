@@ -1,0 +1,70 @@
+{
+  "experiment_id": "exp-20260508-027",
+  "timestamp": "2026-05-08T11:00:21-07:00",
+  "lane": "measurement_repair_supporting_alpha",
+  "alpha_hypothesis_category": "capital_allocation_addon_execution_memory",
+  "hypothesis": "Day-2 follow-through add-ons already have positive marginal expectancy, but production forgets unexecuted ADD advice. If an operator bought conservatively or skipped the add-on, the next advice cycle should keep the prior ADD visible until open_positions shares reconcile.",
+  "why_not_direct_alpha_change": "Recent add-on experiments showed the valid surface is add-on budget/reservation, while raw heat-cap changes, same-day ordering, and volume confirmation were rejected. This experiment changes only execution memory for already code-decided ADD actions.",
+  "historical_experiment_check": {
+    "exp-20260508-017": "Removing add-on heat cap improved EV but was rejected as an unsafe production policy; points to preserving confirmed-winner add-on intent without weakening hard risk caps.",
+    "exp-20260508-018": "Same-day add-on ordering had no effect; the issue is not queue order.",
+    "exp-20260508-026": "Checkpoint volume confirmation rejected; do not add another add-on trigger filter.",
+    "mechanism_insight": "Do not retry heat-cap increases, same-day ordering keys, or volume confirmation. This is an execution-memory repair, not a trigger retune."
+  },
+  "single_causal_variable": "pending_actions ledger now tracks ADD add_on_trades in addition to REDUCE/EXIT position_actions",
+  "change_type": "production_execution_memory_adapter",
+  "parameters": {
+    "strategy_thresholds_changed": false,
+    "addon_trigger_changed": false,
+    "addon_fraction_changed": false,
+    "portfolio_heat_cap_changed": false,
+    "new_fields_added_to_open_positions": false,
+    "tracked_actions_before": ["REDUCE", "EXIT"],
+    "tracked_actions_after": ["ADD", "REDUCE", "EXIT"]
+  },
+  "baseline_metrics": {
+    "latest_backtest_file": "data/backtest_results_20260508.json",
+    "recent_production_replay_add_on_trades": {
+      "llm_prompt_resp_20260501.json": "SNXX ADD 10",
+      "llm_prompt_resp_20260504.json": 0,
+      "llm_prompt_resp_20260505.json": 0,
+      "llm_prompt_resp_20260506.json": 0
+    },
+    "current_pending_add_records_before_change": 0,
+    "recent_quant_addon_audit_pattern": "2026-05-04 through 2026-05-08 addon_actions were empty and addon_audit reasons were all not_checkpoint_day."
+  },
+  "after_metrics": {
+    "unit_tests": {
+      "command": ".\\.venv\\Scripts\\python -m pytest quant/test_pending_actions.py quant/test_production_parity.py -q",
+      "result": "25 passed"
+    },
+    "new_coverage": [
+      "ADD add_on_trades are registered with expected_remaining_shares = original_shares + shares_to_buy.",
+      "Unexecuted ADD advice is reinserted into add_on_trades with decision_mode=pending_unexecuted_action.",
+      "ADD pending records close when open_positions shares reach expected_remaining_shares.",
+      "Existing REDUCE/EXIT pending behavior remains covered."
+    ],
+    "expected_value_score_delta": 0.0,
+    "reason_ev_not_rerun": "No signal generation, ranking, sizing, add-on trigger, heat cap, stop, target, universe, LLM veto, or backtester execution policy changed."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "parity_test_added": true,
+    "replay_only": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": true,
+    "scope": "Only repeats an already code-decided ADD until broker/open_positions share count shows it executed."
+  },
+  "decision": "accepted_measurement_adapter",
+  "risk": "If open_positions is stale, an ADD may be repeated even after execution. The reconciliation guard closes it as soon as shares are updated, so operator discipline around open_positions remains required.",
+  "next_action": "Add an explicit intended/original signal share field to open_positions for conservative-entry top-up analysis, then run a separate replay to test whether top-up-to-intended shares improves EV without changing add-on triggers.",
+  "related_files": [
+    "quant/pending_actions.py",
+    "quant/llm_advisor.py",
+    "quant/test_pending_actions.py"
+  ]
+}
