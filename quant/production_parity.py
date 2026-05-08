@@ -326,7 +326,7 @@ def _position_heat_stop(portfolio_heat, ticker):
     return None
 
 
-def _cap_addon_shares(
+def cap_followthrough_addon_shares(
     ticker,
     requested_shares,
     current_shares,
@@ -342,6 +342,7 @@ def _cap_addon_shares(
     position_cap_shares = math.floor(portfolio_value * addon_position_cap / price)
     position_cap_room = max(0, position_cap_shares - current_shares)
     shares = min(shares, position_cap_room)
+    cap_reason = "position_cap" if position_cap_room <= 0 else None
 
     heat_room_shares = None
     effective_stop = _position_heat_stop(portfolio_heat, ticker)
@@ -353,12 +354,18 @@ def _cap_addon_shares(
         if risk_per_share > 0:
             heat_room_shares = math.floor(heat_room_usd / risk_per_share)
             shares = min(shares, heat_room_shares)
+            if heat_room_shares <= 0:
+                cap_reason = "portfolio_heat_cap"
+
+    if shares <= 0 and cap_reason is None:
+        cap_reason = "no_cap_room"
 
     return max(0, int(shares)), {
         "requested_shares": int(requested_shares),
         "position_cap_room_shares": int(position_cap_room),
         "heat_room_shares": heat_room_shares,
         "effective_stop": effective_stop,
+        "cap_reason": cap_reason,
     }
 
 
@@ -478,7 +485,7 @@ def build_followthrough_addon_actions(
             or max(1, current_shares - int(pos.get("addon_shares") or 0))
         )
         requested = math.floor(original_shares * fraction)
-        shares, cap_detail = _cap_addon_shares(
+        shares, cap_detail = cap_followthrough_addon_shares(
             ticker,
             requested,
             current_shares,

@@ -72,7 +72,6 @@ from constants import (
     BREAKOUT_RANK_BY_52W_HIGH,
     REGIME_AWARE_EXIT,
     MAX_POSITION_PCT,
-    MAX_PORTFOLIO_HEAT,
     ADDON_ENABLED,
     ADDON_CHECKPOINT_DAYS,
     ADDON_MIN_UNREALIZED_PCT,
@@ -95,6 +94,7 @@ from constants import (
 from regime_exit import compute_regime_exit_profile
 from production_parity import (
     TRAILING_PARTIAL_REDUCE_ENABLED,
+    cap_followthrough_addon_shares,
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
     partial_reduce_shares,
@@ -1431,46 +1431,70 @@ class BacktestEngine:
                     return nd
             return None
 
-        def _position_heat(pos, price):
-            if not pos.stop_price or price <= pos.stop_price:
-                return 0.0
-            return pos.shares * (price - pos.stop_price)
+        def _portfolio_heat_for_addon_cap(
+                today,
+                current_prices,
+                include_today_features):
+            features = {}
+            for p in positions:
+                df = ohlcv_all.get(p.ticker)
+                if df is None:
+                    continue
+                data_slice = df.loc[:today] if include_today_features else df.loc[df.index < today]
+                if len(data_slice) < 21:
+                    continue
+                feature_day = today if include_today_features else data_slice.index[-1]
+                earn = self._earnings_dict_for(
+                    feature_day,
+                    earnings_calendar.get(p.ticker, []),
+                    ticker=p.ticker,
+                )
+                features[p.ticker] = compute_features(p.ticker, data_slice, earn)
+
+            return compute_portfolio_heat(
+                _open_positions_payload(),
+                current_prices,
+                equity,
+                features_dict=features,
+            )
 
         def _cap_addon_shares(
                 pos,
                 raw_open,
                 requested_shares,
                 current_prices,
-                addon_position_cap=None):
-            """Respect existing single-position and portfolio heat caps."""
+                addon_position_cap=None,
+                today=None,
+                include_today_features=True):
+            """Respect shared single-position and effective-stop heat caps."""
             if requested_shares <= 0 or raw_open <= 0:
-                return 0, "no_requested_shares"
+                return 0, "no_requested_shares", {
+                    "requested_shares": requested_shares,
+                    "cap_reason": "no_requested_shares",
+                }
 
             if addon_position_cap is None:
                 addon_position_cap = self.config.get("ADDON_MAX_POSITION_PCT")
                 if addon_position_cap is None:
                     addon_position_cap = MAX_POSITION_PCT
-            max_total_shares = math.floor(equity * addon_position_cap / raw_open)
-            cap_room = max_total_shares - pos.shares
-            if cap_room <= 0:
-                return 0, "position_cap"
 
-            shares = min(requested_shares, cap_room)
-            risk_per_share = max(0.0, raw_open - (pos.stop_price or raw_open))
-            if risk_per_share <= 0:
-                return shares, None
-
-            current_heat_usd = 0.0
-            for p in positions:
-                px = current_prices.get(p.ticker)
-                if px is not None:
-                    current_heat_usd += _position_heat(p, px)
-            heat_room_usd = max(0.0, equity * MAX_PORTFOLIO_HEAT - current_heat_usd)
-            max_heat_shares = math.floor(heat_room_usd / risk_per_share)
-            shares = min(shares, max_heat_shares)
-            if shares <= 0:
-                return 0, "portfolio_heat_cap"
-            return shares, None
+            portfolio_heat = None
+            if today is not None:
+                portfolio_heat = _portfolio_heat_for_addon_cap(
+                    today,
+                    current_prices,
+                    include_today_features=include_today_features,
+                )
+            shares, cap_detail = cap_followthrough_addon_shares(
+                pos.ticker,
+                requested_shares,
+                pos.shares,
+                raw_open,
+                equity,
+                addon_position_cap,
+                portfolio_heat=portfolio_heat,
+            )
+            return shares, cap_detail.get("cap_reason"), cap_detail
 
         def _safe_candidate_scalar(value):
             if value is None or isinstance(value, (str, int, float, bool)):
@@ -1870,12 +1894,14 @@ class BacktestEngine:
                         pos.original_shares
                         * self.config.get("ADDON_FRACTION_OF_ORIGINAL_SHARES", 0.25)
                     )
-                addon_shares, skip_reason = _cap_addon_shares(
+                addon_shares, skip_reason, cap_detail = _cap_addon_shares(
                     pos,
                     raw_open,
                     requested,
                     current_prices,
                     addon_position_cap=addon.get("addon_position_cap"),
+                    today=today,
+                    include_today_features=False,
                 )
                 if addon_shares <= 0:
                     addon_skipped_count += 1
@@ -1884,6 +1910,7 @@ class BacktestEngine:
                         "status": "skipped_" + (skip_reason or "zero_shares"),
                         "raw_open": round(raw_open, 4),
                         "requested_shares": requested,
+                        "cap_detail": cap_detail,
                     })
                     continue
 
@@ -1926,6 +1953,7 @@ class BacktestEngine:
                     "addon_number": addon.get("addon_number", pos.addon_count),
                     "new_total_shares": new_shares,
                     "new_avg_entry": pos.entry_price,
+                    "cap_detail": cap_detail,
                 })
 
         def _record_partial_reduce_trade(pos, shares_to_sell, raw_open, today, action):
@@ -2385,12 +2413,14 @@ class BacktestEngine:
                 }
                 if require_checkpoint_cap_room:
                     checkpoint_prices = _current_prices_for_positions(today, "Close")
-                    checkpoint_shares, skip_reason = _cap_addon_shares(
+                    checkpoint_shares, skip_reason, cap_detail = _cap_addon_shares(
                         pos,
                         close,
                         requested,
                         checkpoint_prices,
                         addon_position_cap=active_position_cap,
+                        today=today,
+                        include_today_features=True,
                     )
                     if checkpoint_shares <= 0:
                         addon_checkpoint_rejected_count += 1
@@ -2399,6 +2429,7 @@ class BacktestEngine:
                             "status": "rejected_checkpoint_" + (skip_reason or "no_cap_room"),
                             "checkpoint_close": round(close, 4),
                             "requested_shares": requested,
+                            "cap_detail": cap_detail,
                         })
                         continue
 

@@ -44,7 +44,7 @@ in shared modules such as:
 | Regime risk sizing override | `production_parity.py` | required | required | none |
 | Entry open cancel | `production_parity.py` / signal `entry_note` | simulated next open | instruction for next-session execution | production cannot know next open until execution |
 | Scarce-slot routing | `production_parity.py` / backtester config | required | required | backtester records attribution; production emits plan |
-| Follow-through add-ons | `production_parity.py` / backtester config | schedule/execute in simulation | emit explicit `addon_actions` | fill price timing only |
+| Follow-through add-ons | `production_parity.py` / backtester config | schedule/execute in simulation with shared effective-stop heat cap | emit explicit `addon_actions` with the same cap policy | fill price timing only |
 | Production advisory exit context | `trend_signals.py`, `position_manager.py`, `llm_advisor.py` | disclosed as `known_biases.exit_policy_unreplayed`; not executed except explicit shared replay hooks | required for daily report / LLM prompt / pending action memory | advisory rules require shadow attribution before promotion |
 | Backtest price exits | `backtester.py` execution model | full-position `stop_price` / `target_price` fills | manual/live execution from reported actions | `target_price` semantic gap disclosed |
 | Trailing partial reductions | `production_parity.py` / backtester `REPLAY_PARTIAL_REDUCES` | replay container on by default; pure trailing trims disabled by shared policy unless explicitly enabled for comparison | disabled by shared policy | opt out only for diagnostics |

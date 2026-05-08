@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from production_parity import (  # noqa: E402
     TRAILING_PARTIAL_REDUCE_ENABLED,
     build_followthrough_addon_actions,
+    cap_followthrough_addon_shares,
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
     partial_reduce_shares,
@@ -168,6 +169,57 @@ def test_build_followthrough_addon_actions_uses_spy_leader_addon_cap():
     assert actions[0]["spy_relative_leader_addon_cap"] is True
     assert actions[0]["addon_position_cap_pct"] == 0.60
     assert actions[0]["shares_to_buy"] == 12
+
+
+def test_cap_followthrough_addon_shares_uses_effective_stop_heat_room():
+    portfolio_heat = {
+        "total_at_risk_usd": 7_900.0,
+        "max_heat_pct": 0.08,
+        "position_breakdown": [
+            {
+                "ticker": "NVDA",
+                "effective_stop": 95.0,
+                "effective_stop_source": "trailing",
+            }
+        ],
+    }
+
+    shares, detail = cap_followthrough_addon_shares(
+        "NVDA",
+        requested_shares=50,
+        current_shares=10,
+        price=100.0,
+        portfolio_value=100_000.0,
+        addon_position_cap=0.50,
+        portfolio_heat=portfolio_heat,
+    )
+
+    assert shares == 20
+    assert detail["heat_room_shares"] == 20
+    assert detail["effective_stop"] == 95.0
+    assert detail["cap_reason"] is None
+
+
+def test_cap_followthrough_addon_shares_reports_portfolio_heat_cap():
+    portfolio_heat = {
+        "total_at_risk_usd": 8_000.0,
+        "max_heat_pct": 0.08,
+        "position_breakdown": [{"ticker": "NVDA", "effective_stop": 95.0}],
+    }
+
+    shares, detail = cap_followthrough_addon_shares(
+        "NVDA",
+        requested_shares=50,
+        current_shares=10,
+        price=100.0,
+        portfolio_value=100_000.0,
+        addon_position_cap=0.50,
+        portfolio_heat=portfolio_heat,
+    )
+
+    assert shares == 0
+    assert detail["heat_room_shares"] == 0
+    assert detail["cap_reason"] == "portfolio_heat_cap"
 
 
 def test_classify_entry_open_cancel_uses_shared_gap_rules():
