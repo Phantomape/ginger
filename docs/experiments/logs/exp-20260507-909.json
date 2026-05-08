@@ -1,0 +1,153 @@
+{
+  "experiment_id": "exp-20260507-909",
+  "created_at": "2026-05-07T16:15:00-07:00",
+  "created_by": "codex_automation_alpha_search",
+  "experiment_type": "alpha_search",
+  "hypothesis": "A narrow consumer digital platform basket (HOOD, RBLX, SOFI) may add event-sensitive upside that the core A/B universe misses, but prior static tests were unstable. The next valid alpha step is a bounded pilot sleeve activation that collects forward replacement-value evidence without competing for core slots.",
+  "change_type": "candidate_pool_pilot_activation",
+  "single_causal_variable": "consumer_digital_platform_research_to_pilot_status",
+  "parameters": {
+    "tickers": ["HOOD", "RBLX", "SOFI"],
+    "from_status": "research",
+    "to_status": "pilot",
+    "first_trade_allowed_as_of": "2026-05-08",
+    "status_effective_as_of": "2026-05-08",
+    "theme": "consumer_digital_platform",
+    "max_capital_scalar": 0.35,
+    "max_risk_scalar": 0.2,
+    "requires_event_guard": true,
+    "event_guard_profile": "high_beta_consumer_platform_sensitive",
+    "competes_for_core_slots": false,
+    "pilot_sleeve_max_concurrent_positions": 1
+  },
+  "historical_context": {
+    "related_failed_or_limited_experiments": [
+      {
+        "experiment_id": "exp-20260505-011",
+        "summary": "Consumer digital platform sub-basket was positive but unstable; direct static promotion rejected."
+      },
+      {
+        "experiment_id": "exp-20260505-020",
+        "summary": "Simple governance gates failed to make the basket robust; forward-governed observation was the valid next step."
+      },
+      {
+        "experiment_id": "exp-20260507-904",
+        "summary": "Broad event-sensitive liquidity expansion had positive medians but did not beat core average PnL in any fixed window."
+      }
+    ],
+    "mechanism_insight_check": "This does not repeat rejected threshold, risk multiplier, runner, gap-up, RS20 leader, broad universe, LLM soft-ranking, estimate-revision, or options-quality experiments. It narrows to an already-researched basket and uses the existing pilot sleeve instead of adding noisy core tickers."
+  },
+  "why_not_other_alpha": [
+    "LLM soft-ranking still lacks enough replay or forward decision coverage for a reliable promotion.",
+    "Estimate-revision and options-quality alphas currently have forward ledgers but not enough usable outcome rows.",
+    "Recent risk add-ons around RS20 leader, gap-up entry state, cluster tails, and runner exits failed Gate 4 or showed concentration risk.",
+    "Non-generic event state add-on remains promising but is already waiting on forward report-surface outcomes."
+  ],
+  "date_ranges": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.6257,
+      "total_pnl": 82030.12,
+      "sharpe_daily": 4.42,
+      "max_drawdown_pct": 5.39,
+      "win_rate_pct": 75.0,
+      "total_trades": 20,
+      "survival_rate_pct": 80.4
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "total_pnl": 57542.74,
+      "sharpe_daily": 2.69,
+      "max_drawdown_pct": 8.79,
+      "win_rate_pct": 52.4,
+      "total_trades": 21,
+      "survival_rate_pct": 79.2
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "total_pnl": 26242.68,
+      "sharpe_daily": 1.28,
+      "max_drawdown_pct": 9.05,
+      "win_rate_pct": 40.9,
+      "total_trades": 22,
+      "survival_rate_pct": 91.7
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.6257,
+      "total_pnl": 82030.12,
+      "sharpe_daily": 4.42,
+      "max_drawdown_pct": 5.39,
+      "win_rate_pct": 75.0,
+      "total_trades": 20,
+      "survival_rate_pct": 80.4
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "total_pnl": 57542.74,
+      "sharpe_daily": 2.69,
+      "max_drawdown_pct": 8.79,
+      "win_rate_pct": 52.4,
+      "total_trades": 21,
+      "survival_rate_pct": 79.2
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "total_pnl": 26242.68,
+      "sharpe_daily": 1.28,
+      "max_drawdown_pct": 9.05,
+      "win_rate_pct": 40.9,
+      "total_trades": 22,
+      "survival_rate_pct": 91.7
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "gate_4_assessment": "Core fixed-window metrics are intentionally unchanged because the pilot eligibility starts after all canonical windows. This is not accepted as a historical core alpha improvement; it is accepted as a bounded forward alpha activation with PIT safety.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "core_universe_changed": false,
+    "alters_core_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_pilot_sleeve_orders_after_effective_date": true,
+    "competes_for_core_slots": false,
+    "shared_pilot_sleeve_policy_consumed_by_run_and_backtester": true
+  },
+  "verification": {
+    "backtests": [
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_universe_manager.py quant\\test_universe_adapter.py quant\\test_pilot_sleeve.py quant\\test_backtester_pilot_sleeve.py -q",
+    "test_result": "17 passed"
+  },
+  "decision": "accepted_forward_pilot",
+  "decision_reason": "The change creates a low-complexity, production-aligned forward alpha test using an existing shared pilot sleeve. Historical core metrics did not drift, and the basket remains outside core slot competition.",
+  "next_review_trigger": "Review after 30-60 trading days or enough closed pilot outcomes to compare pilot PnL against the recorded displaced core or cash alternatives.",
+  "main_risk": "A high-beta consumer platform pilot can consume the single pilot sleeve slot during broad risk-off or event-driven drawdowns, potentially missing a better AI-infra pilot opportunity."
+}
