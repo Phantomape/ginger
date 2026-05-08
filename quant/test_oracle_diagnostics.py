@@ -8,7 +8,7 @@ QUANT = ROOT / "quant"
 if str(QUANT) not in sys.path:
     sys.path.insert(0, str(QUANT))
 
-from oracle_diagnostics import build_oracle_diagnostics  # noqa: E402
+from oracle_diagnostics import build_entry_state_oracle, build_oracle_diagnostics  # noqa: E402
 
 
 def test_perfect_exit_oracle_computes_capture_and_regret(tmp_path):
@@ -264,3 +264,84 @@ def test_no_trade_attribution_flags_already_held_candidate(tmp_path):
     assert attribution["largest_no_trade_opportunities"][0][
         "already_holding_candidate_tickers"
     ] == ["AAA"]
+
+
+def test_entry_state_oracle_tags_gap_and_pre_earnings_candidate():
+    backtest = {
+        "trades": [
+            {
+                "ticker": "AAA",
+                "entry_date": "2026-01-05",
+                "entry_price": 106.0,
+                "shares": 1,
+                "pnl": 10.0,
+                "exit_date": "2026-01-06",
+            }
+        ]
+    }
+    snapshot = {
+        "ohlcv": {
+            "AAA": [
+                {
+                    "Date": "2026-01-01",
+                    "Open": 98.0,
+                    "High": 101.0,
+                    "Low": 97.0,
+                    "Close": 100.0,
+                },
+                {
+                    "Date": "2026-01-02",
+                    "Open": 104.0,
+                    "High": 106.0,
+                    "Low": 103.0,
+                    "Close": 105.0,
+                },
+                {
+                    "Date": "2026-01-05",
+                    "Open": 106.0,
+                    "High": 111.0,
+                    "Low": 105.0,
+                    "Close": 110.0,
+                },
+                {
+                    "Date": "2026-01-06",
+                    "Open": 111.0,
+                    "High": 117.0,
+                    "Low": 109.0,
+                    "Close": 116.0,
+                },
+            ]
+        }
+    }
+    candidate_events = {
+        "candidate_events": [
+            {
+                "date": "2026-01-02",
+                "ticker": "AAA",
+                "strategy": "trend_long",
+                "decision": "entered",
+                "candidate_rank": 1,
+                "details": {"fill_date": "2026-01-05"},
+            }
+        ]
+    }
+    earnings_by_date = {
+        "2026-01-02": {
+            "AAA": {"days_to_earnings": 5}
+        }
+    }
+
+    oracle = build_entry_state_oracle(
+        backtest,
+        snapshot,
+        candidate_events=candidate_events,
+        earnings_by_date=earnings_by_date,
+        horizon_days=2,
+    )
+
+    assert oracle["candidate_count"] == 1
+    assert oracle["entered_count"] == 1
+    assert oracle["tag_counts"]["gap_up_3pct"] == 1
+    assert oracle["tag_counts"]["pre_earnings_0_7"] == 1
+    assert oracle["by_tag"]["pre_earnings_0_7"]["avg_forward_return_pct"] > 0.09
+    assert oracle["top_tagged_candidates"][0]["became_actual_trade_same_entry_day"] is True

@@ -62,6 +62,67 @@ def _next_rows_after(rows_by_date, signal_date, horizon_days):
     return [rows_by_date[day] for day in eligible[:horizon_days]]
 
 
+def _as_float(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if number != number:
+        return None
+    return number
+
+
+def _normalize_date(raw_date):
+    if raw_date is None:
+        return None
+    text = str(raw_date)
+    if len(text) == 8 and text.isdigit():
+        return f"{text[:4]}-{text[4:6]}-{text[6:]}"
+    return text[:10]
+
+
+def _median(values):
+    if not values:
+        return None
+    ordered = sorted(values)
+    midpoint = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[midpoint]
+    return (ordered[midpoint - 1] + ordered[midpoint]) / 2
+
+
+def _ticker_rows(snapshot):
+    rows_by_ticker = {}
+    for ticker, rows_by_date in _ohlcv_rows_by_date(snapshot).items():
+        rows_by_ticker[ticker] = [
+            rows_by_date[day]
+            for day in sorted(rows_by_date)
+        ]
+    return rows_by_ticker
+
+
+def _sma(rows, end_idx, period):
+    if end_idx + 1 < period:
+        return None
+    closes = [
+        _as_float(row.get("Close"))
+        for row in rows[end_idx - period + 1:end_idx + 1]
+    ]
+    if any(value is None for value in closes):
+        return None
+    return sum(closes) / len(closes)
+
+
+def _period_return(rows, end_idx, period):
+    if end_idx < period:
+        return None
+    start_close = _as_float(rows[end_idx - period].get("Close"))
+    end_close = _as_float(rows[end_idx].get("Close"))
+    if not start_close or end_close is None:
+        return None
+    return (end_close / start_close) - 1
+
+
 def _oracle_exit_for_trade(trade, rows):
     entry_price = trade.get("entry_price")
     shares = trade.get("shares")
@@ -433,6 +494,392 @@ def build_candidate_selection_oracle(backtest_result, snapshot, horizon_days=20,
     }
 
 
+def _entry_state_candidate_events(backtest_result, candidate_events=None):
+    if candidate_events is None:
+        rows = []
+        for source, tickers_by_date in _candidate_sources(backtest_result):
+            for raw_date, tickers in tickers_by_date.items():
+                signal_date = _normalize_date(raw_date)
+                for ticker in tickers or []:
+                    ticker = (ticker or "").upper()
+                    if signal_date and ticker:
+                        rows.append({
+                            "signal_date": signal_date,
+                            "ticker": ticker,
+                            "strategy": None,
+                            "decision": "unknown",
+                            "candidate_rank": None,
+                            "source": source,
+                            "details": {},
+                            "signal_snapshot": {},
+                        })
+        return rows
+
+    if isinstance(candidate_events, dict):
+        candidate_events = (
+            candidate_events.get("candidate_events")
+            or candidate_events.get("events")
+            or []
+        )
+
+    rows = []
+    for event in candidate_events or []:
+        signal_date = _normalize_date(
+            event.get("date")
+            or event.get("signal_date")
+            or event.get("as_of_date")
+            or event.get("decision_date")
+        )
+        ticker = (event.get("ticker") or "").upper()
+        if not signal_date or not ticker:
+            continue
+        rows.append({
+            "signal_date": signal_date,
+            "ticker": ticker,
+            "strategy": event.get("strategy"),
+            "decision": event.get("decision") or "unknown",
+            "candidate_rank": event.get("candidate_rank"),
+            "source": event.get("source") or "entry_candidate_events",
+            "details": event.get("details") or {},
+            "signal_snapshot": event.get("signal_snapshot") or {},
+        })
+    return rows
+
+
+def _earnings_for_candidate(earnings_by_date, signal_date, ticker):
+    if not earnings_by_date:
+        return {}
+    bucket = (
+        earnings_by_date.get(signal_date)
+        or earnings_by_date.get(signal_date.replace("-", ""))
+        or {}
+    )
+    return bucket.get(ticker) or bucket.get(ticker.upper()) or {}
+
+
+def _entry_row_index(rows, signal_date, details):
+    date_to_index = {
+        row.get("Date"): idx
+        for idx, row in enumerate(rows)
+        if row.get("Date")
+    }
+    fill_date = _normalize_date((details or {}).get("fill_date"))
+    if fill_date and fill_date in date_to_index and fill_date > signal_date:
+        return date_to_index[fill_date]
+    for idx, row in enumerate(rows):
+        row_date = row.get("Date")
+        if row_date and row_date > signal_date:
+            return idx
+    return None
+
+
+def _entry_timing_tags(rows, signal_idx, spy_rows, signal_date, earnings):
+    tags = []
+    metrics = {}
+    if signal_idx is None or signal_idx >= len(rows):
+        return tags, metrics
+
+    row = rows[signal_idx]
+    prev_row = rows[signal_idx - 1] if signal_idx > 0 else None
+    row_open = _as_float(row.get("Open"))
+    row_close = _as_float(row.get("Close"))
+    prev_close = _as_float(prev_row.get("Close")) if prev_row else None
+
+    if row_open is not None and prev_close:
+        gap_pct = (row_open / prev_close) - 1
+        metrics["gap_pct"] = round(gap_pct, 6)
+        if gap_pct >= 0.03:
+            tags.append("gap_up_3pct")
+        elif gap_pct <= -0.03:
+            tags.append("gap_down_3pct")
+
+    dte = earnings.get("days_to_earnings")
+    try:
+        dte = int(dte) if dte is not None else None
+    except (TypeError, ValueError):
+        dte = None
+    if dte is not None:
+        metrics["days_to_earnings"] = dte
+        if 0 <= dte <= 7:
+            tags.append("pre_earnings_0_7")
+        elif 8 <= dte <= 21:
+            tags.append("pre_earnings_8_21")
+        elif 22 <= dte <= 45:
+            tags.append("pre_earnings_22_45")
+        elif dte >= 46:
+            tags.append("pre_earnings_46_plus")
+        elif -10 <= dte <= -1:
+            tags.append("post_earnings_drift_1_10")
+
+    for period in (20, 50):
+        current_sma = _sma(rows, signal_idx, period)
+        prev_sma = _sma(rows, signal_idx - 1, period) if signal_idx > 0 else None
+        if row_close is not None and current_sma:
+            metrics[f"sma{period}"] = round(current_sma, 4)
+            if row_close > current_sma:
+                tags.append(f"above_sma{period}")
+            if prev_close is not None and prev_sma and prev_close <= prev_sma < row_close:
+                tags.append(f"sma{period}_reclaim")
+
+    spy_return_20 = None
+    if spy_rows:
+        spy_index = {
+            row.get("Date"): idx
+            for idx, row in enumerate(spy_rows)
+            if row.get("Date")
+        }
+        spy_idx = spy_index.get(signal_date)
+        if spy_idx is not None:
+            spy_return_20 = _period_return(spy_rows, spy_idx, 20)
+    stock_return_20 = _period_return(rows, signal_idx, 20)
+    if stock_return_20 is not None:
+        metrics["stock_return_20d"] = round(stock_return_20, 6)
+    if spy_return_20 is not None:
+        metrics["spy_return_20d"] = round(spy_return_20, 6)
+    if stock_return_20 is not None and spy_return_20 is not None:
+        excess = stock_return_20 - spy_return_20
+        metrics["excess_spy_return_20d"] = round(excess, 6)
+        if excess >= 0.05:
+            tags.append("rs20_leader")
+        elif excess <= -0.05:
+            tags.append("rs20_laggard")
+
+    if not tags:
+        tags.append("untagged")
+    return sorted(set(tags)), metrics
+
+
+def _summarize_entry_state_tags(candidate_rows):
+    by_tag = {}
+    for row in candidate_rows:
+        for tag in row["tags"]:
+            rec = by_tag.setdefault(tag, {
+                "candidate_count": 0,
+                "entered_count": 0,
+                "decision_counts": {},
+                "strategy_counts": {},
+                "_returns": [],
+                "_mfe": [],
+                "_mae": [],
+            })
+            rec["candidate_count"] += 1
+            if row["decision"] == "entered":
+                rec["entered_count"] += 1
+            rec["decision_counts"][row["decision"]] = (
+                rec["decision_counts"].get(row["decision"], 0) + 1
+            )
+            strategy = row.get("strategy") or "unknown"
+            rec["strategy_counts"][strategy] = rec["strategy_counts"].get(strategy, 0) + 1
+            if row.get("forward_return_pct") is not None:
+                rec["_returns"].append(row["forward_return_pct"])
+            if row.get("mfe_pct") is not None:
+                rec["_mfe"].append(row["mfe_pct"])
+            if row.get("mae_pct") is not None:
+                rec["_mae"].append(row["mae_pct"])
+
+    summary = {}
+    for tag, rec in by_tag.items():
+        returns = rec.pop("_returns")
+        mfe = rec.pop("_mfe")
+        mae = rec.pop("_mae")
+        rec["avg_forward_return_pct"] = (
+            round(sum(returns) / len(returns), 6) if returns else None
+        )
+        rec["median_forward_return_pct"] = (
+            round(_median(returns), 6) if returns else None
+        )
+        rec["win_rate"] = (
+            round(sum(1 for value in returns if value > 0) / len(returns), 4)
+            if returns else None
+        )
+        rec["best_forward_return_pct"] = round(max(returns), 6) if returns else None
+        rec["worst_forward_return_pct"] = round(min(returns), 6) if returns else None
+        rec["avg_mfe_pct"] = round(sum(mfe) / len(mfe), 6) if mfe else None
+        rec["avg_mae_pct"] = round(sum(mae) / len(mae), 6) if mae else None
+        rec["decision_counts"] = dict(sorted(rec["decision_counts"].items()))
+        rec["strategy_counts"] = dict(sorted(rec["strategy_counts"].items()))
+        summary[tag] = rec
+    return dict(sorted(
+        summary.items(),
+        key=lambda item: (
+            item[1]["avg_forward_return_pct"] is not None,
+            item[1]["avg_forward_return_pct"] or -999,
+            item[1]["candidate_count"],
+        ),
+        reverse=True,
+    ))
+
+
+def build_entry_state_oracle(
+    backtest_result,
+    snapshot,
+    candidate_events=None,
+    earnings_by_date=None,
+    horizon_days=20,
+):
+    rows_by_ticker = _ticker_rows(snapshot)
+    spy_rows = rows_by_ticker.get("SPY")
+    events = _entry_state_candidate_events(backtest_result, candidate_events)
+    actual_trade_keys = {
+        (trade.get("entry_date"), (trade.get("ticker") or "").upper())
+        for trade in backtest_result.get("trades") or []
+    }
+    candidate_rows = []
+    missing = []
+    seen = set()
+
+    for event in events:
+        signal_date = event["signal_date"]
+        ticker = event["ticker"]
+        key = (
+            signal_date,
+            ticker,
+            event.get("source"),
+            event.get("candidate_rank"),
+            event.get("decision"),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+
+        rows = rows_by_ticker.get(ticker)
+        if not rows:
+            missing.append({
+                "signal_date": signal_date,
+                "ticker": ticker,
+                "reason": "missing_ohlcv",
+            })
+            continue
+
+        signal_idx = None
+        for idx, row in enumerate(rows):
+            if row.get("Date") == signal_date:
+                signal_idx = idx
+                break
+        entry_idx = _entry_row_index(rows, signal_date, event.get("details"))
+        if signal_idx is None:
+            missing.append({
+                "signal_date": signal_date,
+                "ticker": ticker,
+                "reason": "missing_signal_row",
+            })
+            continue
+        if entry_idx is None:
+            missing.append({
+                "signal_date": signal_date,
+                "ticker": ticker,
+                "reason": "no_entry_row_after_signal",
+            })
+            continue
+
+        forward = rows[entry_idx:entry_idx + horizon_days]
+        entry_open = _as_float(forward[0].get("Open")) if forward else None
+        if not entry_open:
+            missing.append({
+                "signal_date": signal_date,
+                "ticker": ticker,
+                "reason": "invalid_entry_open",
+            })
+            continue
+        closes = [_as_float(row.get("Close")) for row in forward]
+        highs = [_as_float(row.get("High")) for row in forward]
+        lows = [_as_float(row.get("Low")) for row in forward]
+        closes = [value for value in closes if value is not None]
+        highs = [value for value in highs if value is not None]
+        lows = [value for value in lows if value is not None]
+        if not closes:
+            missing.append({
+                "signal_date": signal_date,
+                "ticker": ticker,
+                "reason": "missing_forward_close",
+            })
+            continue
+
+        earnings = _earnings_for_candidate(earnings_by_date, signal_date, ticker)
+        tags, metrics = _entry_timing_tags(
+        rows,
+        signal_idx,
+        spy_rows,
+        signal_date,
+        earnings,
+    )
+        entry_date = forward[0].get("Date")
+        decision = event.get("decision") or "unknown"
+        row = {
+            "signal_date": signal_date,
+            "entry_date": entry_date,
+            "ticker": ticker,
+            "strategy": event.get("strategy"),
+            "decision": decision,
+            "candidate_rank": event.get("candidate_rank"),
+            "source": event.get("source"),
+            "tags": tags,
+            "timing_metrics": metrics,
+            "entry_open": round(entry_open, 4),
+            "horizon_days": horizon_days,
+            "horizon_end_date": forward[-1].get("Date"),
+            "forward_return_pct": round((closes[-1] / entry_open) - 1, 6),
+            "mfe_pct": round((max(highs) / entry_open) - 1, 6) if highs else None,
+            "mae_pct": round((min(lows) / entry_open) - 1, 6) if lows else None,
+            "became_actual_trade_same_entry_day": (
+                (entry_date, ticker) in actual_trade_keys
+            ),
+        }
+        candidate_rows.append(row)
+
+    if not candidate_rows:
+        return {
+            "oracle_type": "entry_state_candidate_oracle",
+            "is_tradable": False,
+            "lookahead_warning": "Uses future returns after candidate entry dates; diagnostic only.",
+            "horizon_days": horizon_days,
+            "candidate_count": 0,
+            "raw_candidate_count": len(events),
+            "missing_candidate_count": len(missing),
+            "missing_candidates": missing,
+        }
+
+    decision_counts = {}
+    for row in candidate_rows:
+        decision_counts[row["decision"]] = decision_counts.get(row["decision"], 0) + 1
+    tag_summary = _summarize_entry_state_tags(candidate_rows)
+    tag_counts = {
+        tag: rec["candidate_count"]
+        for tag, rec in tag_summary.items()
+    }
+
+    returns = [row["forward_return_pct"] for row in candidate_rows]
+    return {
+        "oracle_type": "entry_state_candidate_oracle",
+        "is_tradable": False,
+        "lookahead_warning": (
+            "Tags use only signal-date state, but tag returns use future prices. "
+            "Use this to prioritize hypotheses, not as a live ranking rule."
+        ),
+        "horizon_days": horizon_days,
+        "candidate_count": len(candidate_rows),
+        "raw_candidate_count": len(events),
+        "missing_candidate_count": len(missing),
+        "entered_count": sum(1 for row in candidate_rows if row["decision"] == "entered"),
+        "decision_counts": dict(sorted(decision_counts.items())),
+        "avg_forward_return_pct": round(sum(returns) / len(returns), 6),
+        "median_forward_return_pct": round(_median(returns), 6),
+        "win_rate": round(sum(1 for value in returns if value > 0) / len(returns), 4),
+        "tag_counts": dict(sorted(tag_counts.items())),
+        "by_tag": tag_summary,
+        "top_tagged_candidates": sorted(
+            candidate_rows,
+            key=lambda row: row["forward_return_pct"],
+            reverse=True,
+        )[:10],
+        "weakest_tagged_candidates": sorted(
+            candidate_rows,
+            key=lambda row: row["forward_return_pct"],
+        )[:10],
+        "missing_candidates": missing,
+    }
+
+
 def build_perfect_exit_oracle(backtest_result, snapshot):
     rows_by_ticker = _ohlcv_rows_by_date(snapshot)
     trade_oracles = []
@@ -527,6 +974,11 @@ def build_oracle_diagnostics(backtest_path, snapshot_path=None, candidate_horizo
                 horizon_days=candidate_horizon_days,
             ),
             "no_trade_attribution": build_no_trade_attribution_oracle(
+                backtest,
+                snapshot,
+                horizon_days=candidate_horizon_days,
+            ),
+            "entry_state": build_entry_state_oracle(
                 backtest,
                 snapshot,
                 horizon_days=candidate_horizon_days,
