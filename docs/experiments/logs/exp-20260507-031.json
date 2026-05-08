@@ -1,0 +1,821 @@
+{
+  "experiment_id": "exp-20260507-031",
+  "timestamp": "2026-05-07T17:50:58+00:00",
+  "status": "observed_only",
+  "decision": "shadow_only",
+  "lane": "alpha_discovery",
+  "change_type": "non_ohlcv_data_gap_repair",
+  "mechanism_family": "earnings_sec_filing_shock_event_confirmation_overlay",
+  "hypothesis": "Directional SEC filing-shock fields can be repaired without vendor data if the existing PIT companyfacts selected JSONL is auto-discovered and joined by same accession during non-OHLCV backfill.",
+  "single_causal_variable": "auto_discover_existing_companyfacts_for_same_accession_feature_derivation",
+  "non_ohlcv_data_source": "SEC Companyfacts selected JSONL joined to SEC filings by same accession; accepted_datetime/usable_trade_date remain the only tradability dates.",
+  "date_range": {
+    "smoke": "2026-04-27 -> 2026-05-05",
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "historical_experiment_check": {
+    "exp-20260507-006": "Full candidate rows were persisted; this repair reran the audit after companyfacts auto-discovery and raised directional_financial_shock_rows to 18.",
+    "exp-20260507-004": "Candidate filing-shock tagging showed broad filing recency was not enough; this repair adds directional fields rather than retrying a recency scalar.",
+    "exp-20260507-003": "Recent SEC filing breakout sizing failed Gate 4; do not retry broad filing presence multipliers.",
+    "exp-20260418-004": "P-ERN remains a data-quality blocker; C strategy cannot be rescued by a single generic field."
+  },
+  "baseline_metrics": {
+    "before_directional_financial_shock_rows": 0,
+    "before_same_accession_rows": 0,
+    "source": "pre-repair full-candidate filing-shock audit before same-accession/companyfacts auto-discovery"
+  },
+  "after_metrics": {
+    "feature_rebuild_summary": {
+      "late_strong": {
+        "directional_rows": 9,
+        "end": "2026-04-21",
+        "field_counts": {
+          "fcf_to_net_income_gap": 9,
+          "gross_margin_delta": 0,
+          "inventory_growth": 9,
+          "receivables_growth": 9
+        },
+        "rows": 2766,
+        "same_accession_rows": 16,
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "directional_rows": 0,
+        "end": "2025-10-22",
+        "field_counts": {
+          "fcf_to_net_income_gap": 0,
+          "gross_margin_delta": 0,
+          "inventory_growth": 0,
+          "receivables_growth": 0
+        },
+        "rows": 2465,
+        "same_accession_rows": 0,
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "directional_rows": 9,
+        "end": "2025-04-22",
+        "field_counts": {
+          "fcf_to_net_income_gap": 9,
+          "gross_margin_delta": 9,
+          "inventory_growth": 9,
+          "receivables_growth": 9
+        },
+        "rows": 2304,
+        "same_accession_rows": 9,
+        "start": "2024-10-02"
+      },
+      "smoke": {
+        "directional_rows": 0,
+        "end": "2026-05-05",
+        "field_counts": {
+          "fcf_to_net_income_gap": 0,
+          "gross_margin_delta": 0,
+          "inventory_growth": 0,
+          "receivables_growth": 0
+        },
+        "rows": 222,
+        "same_accession_rows": 0,
+        "start": "2026-04-27"
+      }
+    },
+    "full_candidate_shadow_field_availability": {
+      "sec_feature_rows": 8450,
+      "pit_safe_rows": 8450,
+      "pit_safe_fraction": 1.0,
+      "directional_financial_shock_rows": 18,
+      "field_availability_top": {
+        "accepted_datetime:observed": 8450,
+        "eps_surprise:missing_no_vendor_consensus": 8450,
+        "guidance_raise_cut:missing_no_structured_guidance_source": 8450,
+        "revenue_surprise:missing_no_vendor_consensus": 8450,
+        "usable_trade_date:observed": 8450,
+        "gross_margin_delta:missing": 8441,
+        "fcf_to_net_income_gap:missing": 8432,
+        "inventory_growth:missing": 8432,
+        "receivables_growth:missing": 8432,
+        "same_accession_facts:missing": 8425,
+        "same_accession_facts:derived": 25,
+        "fcf_to_net_income_gap:derived": 18,
+        "inventory_growth:derived": 18,
+        "receivables_growth:derived": 18,
+        "gross_margin_delta:derived": 9
+      },
+      "gap_reasons_top": {
+        "eps_and_revenue_surprise_require_pit_consensus_vendor": 8450,
+        "guidance_raise_cut_requires_structured_guidance_source": 8450,
+        "missing_same_accession_companyfacts": 8425
+      }
+    },
+    "tag_counts_by_window": {
+      "late_strong": {
+        "A_no_recent_filing_event": 22,
+        "D_unclear_or_missing_data": 19
+      },
+      "mid_weak": {
+        "A_no_recent_filing_event": 21,
+        "D_unclear_or_missing_data": 21
+      },
+      "old_thin": {
+        "A_no_recent_filing_event": 24,
+        "D_unclear_or_missing_data": 31
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0,
+  "data_availability": {
+    "status": "partial_repair",
+    "same_accession_rows": 25,
+    "directional_financial_shock_rows": 18,
+    "pit_status": "PIT-safe tradability from accepted_datetime -> usable_trade_date; Companyfacts filed date is public-availability proxy only.",
+    "remaining_gaps": [
+      "mid_weak and smoke windows still have zero same-accession directional rows from the current free Companyfacts source.",
+      "eps_surprise and revenue_surprise still require a PIT consensus source.",
+      "guidance_raise_cut still requires a structured guidance parser/source.",
+      "Directional rows did not create B/C tagged candidate cohorts under the conservative classifier; they remained D/mixed or did not touch candidates."
+    ]
+  },
+  "shadow_metrics_reference": {
+    "field_availability": {
+      "sec_feature_rows": 8450,
+      "pit_safe_rows": 8450,
+      "pit_safe_fraction": 1.0,
+      "directional_financial_shock_rows": 18,
+      "field_availability_top": {
+        "accepted_datetime:observed": 8450,
+        "eps_surprise:missing_no_vendor_consensus": 8450,
+        "guidance_raise_cut:missing_no_structured_guidance_source": 8450,
+        "revenue_surprise:missing_no_vendor_consensus": 8450,
+        "usable_trade_date:observed": 8450,
+        "gross_margin_delta:missing": 8441,
+        "fcf_to_net_income_gap:missing": 8432,
+        "inventory_growth:missing": 8432,
+        "receivables_growth:missing": 8432,
+        "same_accession_facts:missing": 8425,
+        "same_accession_facts:derived": 25,
+        "fcf_to_net_income_gap:derived": 18,
+        "inventory_growth:derived": 18,
+        "receivables_growth:derived": 18,
+        "gross_margin_delta:derived": 9
+      },
+      "gap_reasons_top": {
+        "eps_and_revenue_surprise_require_pit_consensus_vendor": 8450,
+        "guidance_raise_cut_requires_structured_guidance_source": 8450,
+        "missing_same_accession_companyfacts": 8425
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "candidate_count": 41,
+        "entered_count": 20,
+        "candidate_overlap": {
+          "entered_overlap_count": 20,
+          "entered_overlap_rate": 0.4878,
+          "candidates_with_recent_filing": 19,
+          "recent_filing_overlap_rate": 0.4634,
+          "entered_with_recent_filing": 11,
+          "slot_candidates_with_recent_filing": 2
+        },
+        "tag_counts": {
+          "A_no_recent_filing_event": 22,
+          "D_unclear_or_missing_data": 19
+        },
+        "slot_conflict_audit": {
+          "slot_candidate_count": 3,
+          "same_day_comparable_count": 3,
+          "distribution_vs_same_day_entered_avg_20d": {
+            "count": 3,
+            "avg_pct": -16.9412,
+            "median_pct": -22.1741,
+            "win_rate": 0.0,
+            "best_pct": -4.7784,
+            "worst_pct": -23.8711
+          },
+          "examples": [
+            {
+              "date": "2026-01-21",
+              "ticker": "IWM",
+              "decision": "slot_sliced",
+              "tag": "A_no_recent_filing_event",
+              "candidate_20d_return": -0.015412,
+              "same_day_entered_avg_20d_return": 0.032372,
+              "slot_conflict_delta_20d": -0.047784
+            },
+            {
+              "date": "2026-01-21",
+              "ticker": "AMD",
+              "decision": "slot_sliced",
+              "tag": "D_unclear_or_missing_data",
+              "candidate_20d_return": -0.189369,
+              "same_day_entered_avg_20d_return": 0.032372,
+              "slot_conflict_delta_20d": -0.221741
+            },
+            {
+              "date": "2026-01-29",
+              "ticker": "META",
+              "decision": "slot_sliced",
+              "tag": "D_unclear_or_missing_data",
+              "candidate_20d_return": -0.125576,
+              "same_day_entered_avg_20d_return": 0.113135,
+              "slot_conflict_delta_20d": -0.238711
+            }
+          ]
+        },
+        "forward_returns_by_tag": {
+          "A_no_recent_filing_event": {
+            "candidate_count": 22,
+            "by_horizon": {
+              "5d": {
+                "count": 20,
+                "avg_pct": -0.3738,
+                "median_pct": -0.2365,
+                "win_rate": 0.45,
+                "best_pct": 11.1378,
+                "worst_pct": -11.2433
+              },
+              "10d": {
+                "count": 20,
+                "avg_pct": 0.1707,
+                "median_pct": 0.4323,
+                "win_rate": 0.55,
+                "best_pct": 24.4963,
+                "worst_pct": -16.7267
+              },
+              "20d": {
+                "count": 20,
+                "avg_pct": 0.6833,
+                "median_pct": -1.1997,
+                "win_rate": 0.45,
+                "best_pct": 42.4931,
+                "worst_pct": -21.1426
+              },
+              "60d": {
+                "count": 16,
+                "avg_pct": -1.5635,
+                "median_pct": -3.7102,
+                "win_rate": 0.5,
+                "best_pct": 61.4741,
+                "worst_pct": -39.7117
+              }
+            }
+          },
+          "B_positive_filing_shock": {
+            "candidate_count": 0,
+            "by_horizon": {
+              "5d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "10d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "20d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "60d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              }
+            }
+          },
+          "C_negative_filing_shock": {
+            "candidate_count": 0,
+            "by_horizon": {
+              "5d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "10d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "20d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "60d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              }
+            }
+          },
+          "D_unclear_or_missing_data": {
+            "candidate_count": 19,
+            "by_horizon": {
+              "5d": {
+                "count": 19,
+                "avg_pct": 1.6438,
+                "median_pct": 0.8703,
+                "win_rate": 0.5789,
+                "best_pct": 14.5698,
+                "worst_pct": -9.5738
+              },
+              "10d": {
+                "count": 17,
+                "avg_pct": 2.7749,
+                "median_pct": 3.5166,
+                "win_rate": 0.6471,
+                "best_pct": 28.85,
+                "worst_pct": -20.2099
+              },
+              "20d": {
+                "count": 17,
+                "avg_pct": 4.6934,
+                "median_pct": 7.8777,
+                "win_rate": 0.6471,
+                "best_pct": 46.0351,
+                "worst_pct": -19.6399
+              },
+              "60d": {
+                "count": 10,
+                "avg_pct": 16.1012,
+                "median_pct": 16.5856,
+                "win_rate": 0.8,
+                "best_pct": 66.7865,
+                "worst_pct": -24.0963
+              }
+            }
+          }
+        }
+      },
+      "mid_weak": {
+        "candidate_count": 42,
+        "entered_count": 21,
+        "candidate_overlap": {
+          "entered_overlap_count": 21,
+          "entered_overlap_rate": 0.5,
+          "candidates_with_recent_filing": 21,
+          "recent_filing_overlap_rate": 0.5,
+          "entered_with_recent_filing": 11,
+          "slot_candidates_with_recent_filing": 3
+        },
+        "tag_counts": {
+          "A_no_recent_filing_event": 21,
+          "D_unclear_or_missing_data": 21
+        },
+        "slot_conflict_audit": {
+          "slot_candidate_count": 5,
+          "same_day_comparable_count": 1,
+          "distribution_vs_same_day_entered_avg_20d": {
+            "count": 1,
+            "avg_pct": 0.0051,
+            "median_pct": 0.0051,
+            "win_rate": 1.0,
+            "best_pct": 0.0051,
+            "worst_pct": 0.0051
+          },
+          "examples": [
+            {
+              "date": "2025-09-02",
+              "ticker": "IAU",
+              "decision": "scarce_slot_breakout_deferred",
+              "tag": "A_no_recent_filing_event",
+              "candidate_20d_return": 0.088323,
+              "same_day_entered_avg_20d_return": 0.088272,
+              "slot_conflict_delta_20d": 5.1e-05
+            }
+          ]
+        },
+        "forward_returns_by_tag": {
+          "A_no_recent_filing_event": {
+            "candidate_count": 21,
+            "by_horizon": {
+              "5d": {
+                "count": 20,
+                "avg_pct": 1.5261,
+                "median_pct": 0.9521,
+                "win_rate": 0.5,
+                "best_pct": 8.0772,
+                "worst_pct": -4.0869
+              },
+              "10d": {
+                "count": 19,
+                "avg_pct": 4.4679,
+                "median_pct": 3.9499,
+                "win_rate": 0.6842,
+                "best_pct": 17.7394,
+                "worst_pct": -3.7631
+              },
+              "20d": {
+                "count": 15,
+                "avg_pct": 6.199,
+                "median_pct": 4.7384,
+                "win_rate": 0.8667,
+                "best_pct": 17.0858,
+                "worst_pct": -2.223
+              },
+              "60d": {
+                "count": 7,
+                "avg_pct": 6.7441,
+                "median_pct": 6.5088,
+                "win_rate": 0.5714,
+                "best_pct": 22.8921,
+                "worst_pct": -3.9828
+              }
+            }
+          },
+          "B_positive_filing_shock": {
+            "candidate_count": 0,
+            "by_horizon": {
+              "5d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "10d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "20d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "60d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              }
+            }
+          },
+          "C_negative_filing_shock": {
+            "candidate_count": 0,
+            "by_horizon": {
+              "5d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "10d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "20d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "60d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              }
+            }
+          },
+          "D_unclear_or_missing_data": {
+            "candidate_count": 21,
+            "by_horizon": {
+              "5d": {
+                "count": 19,
+                "avg_pct": -0.0621,
+                "median_pct": 0.7413,
+                "win_rate": 0.5263,
+                "best_pct": 9.1761,
+                "worst_pct": -11.8099
+              },
+              "10d": {
+                "count": 19,
+                "avg_pct": -1.8515,
+                "median_pct": -0.9306,
+                "win_rate": 0.3684,
+                "best_pct": 10.4815,
+                "worst_pct": -25.3845
+              },
+              "20d": {
+                "count": 17,
+                "avg_pct": -0.4009,
+                "median_pct": -2.7712,
+                "win_rate": 0.4706,
+                "best_pct": 26.3056,
+                "worst_pct": -24.7032
+              },
+              "60d": {
+                "count": 12,
+                "avg_pct": 9.8464,
+                "median_pct": -1.3298,
+                "win_rate": 0.4167,
+                "best_pct": 82.937,
+                "worst_pct": -15.3078
+              }
+            }
+          }
+        }
+      },
+      "old_thin": {
+        "candidate_count": 55,
+        "entered_count": 22,
+        "candidate_overlap": {
+          "entered_overlap_count": 22,
+          "entered_overlap_rate": 0.4,
+          "candidates_with_recent_filing": 31,
+          "recent_filing_overlap_rate": 0.5636,
+          "entered_with_recent_filing": 12,
+          "slot_candidates_with_recent_filing": 9
+        },
+        "tag_counts": {
+          "A_no_recent_filing_event": 24,
+          "D_unclear_or_missing_data": 31
+        },
+        "slot_conflict_audit": {
+          "slot_candidate_count": 17,
+          "same_day_comparable_count": 5,
+          "distribution_vs_same_day_entered_avg_20d": {
+            "count": 5,
+            "avg_pct": -6.8128,
+            "median_pct": -3.4504,
+            "win_rate": 0.2,
+            "best_pct": 0.5953,
+            "worst_pct": -26.2463
+          },
+          "examples": [
+            {
+              "date": "2024-11-01",
+              "ticker": "CVX",
+              "decision": "scarce_slot_breakout_deferred",
+              "tag": "D_unclear_or_missing_data",
+              "candidate_20d_return": 0.067021,
+              "same_day_entered_avg_20d_return": 0.061068,
+              "slot_conflict_delta_20d": 0.005953
+            },
+            {
+              "date": "2024-11-07",
+              "ticker": "PLTR",
+              "decision": "slot_sliced",
+              "tag": "D_unclear_or_missing_data",
+              "candidate_20d_return": 0.362642,
+              "same_day_entered_avg_20d_return": 0.625105,
+              "slot_conflict_delta_20d": -0.262463
+            },
+            {
+              "date": "2025-01-30",
+              "ticker": "MA",
+              "decision": "slot_sliced",
+              "tag": "A_no_recent_filing_event",
+              "candidate_20d_return": 0.014697,
+              "same_day_entered_avg_20d_return": 0.016729,
+              "slot_conflict_delta_20d": -0.002031
+            },
+            {
+              "date": "2025-01-30",
+              "ticker": "META",
+              "decision": "slot_sliced",
+              "tag": "D_unclear_or_missing_data",
+              "candidate_20d_return": -0.030865,
+              "same_day_entered_avg_20d_return": 0.016729,
+              "slot_conflict_delta_20d": -0.047594
+            },
+            {
+              "date": "2025-01-30",
+              "ticker": "SLV",
+              "decision": "slot_sliced",
+              "tag": "A_no_recent_filing_event",
+              "candidate_20d_return": -0.017776,
+              "same_day_entered_avg_20d_return": 0.016729,
+              "slot_conflict_delta_20d": -0.034504
+            }
+          ]
+        },
+        "forward_returns_by_tag": {
+          "A_no_recent_filing_event": {
+            "candidate_count": 24,
+            "by_horizon": {
+              "5d": {
+                "count": 24,
+                "avg_pct": 0.311,
+                "median_pct": -0.3585,
+                "win_rate": 0.4167,
+                "best_pct": 11.6856,
+                "worst_pct": -8.786
+              },
+              "10d": {
+                "count": 24,
+                "avg_pct": 0.8645,
+                "median_pct": -0.169,
+                "win_rate": 0.4583,
+                "best_pct": 23.719,
+                "worst_pct": -7.783
+              },
+              "20d": {
+                "count": 24,
+                "avg_pct": 2.5501,
+                "median_pct": -0.6194,
+                "win_rate": 0.4583,
+                "best_pct": 87.2484,
+                "worst_pct": -25.7105
+              },
+              "60d": {
+                "count": 20,
+                "avg_pct": 0.9908,
+                "median_pct": -4.0996,
+                "win_rate": 0.45,
+                "best_pct": 115.1615,
+                "worst_pct": -34.7762
+              }
+            }
+          },
+          "B_positive_filing_shock": {
+            "candidate_count": 0,
+            "by_horizon": {
+              "5d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "10d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "20d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "60d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              }
+            }
+          },
+          "C_negative_filing_shock": {
+            "candidate_count": 0,
+            "by_horizon": {
+              "5d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "10d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "20d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              },
+              "60d": {
+                "count": 0,
+                "avg_pct": null,
+                "median_pct": null,
+                "win_rate": null,
+                "best_pct": null,
+                "worst_pct": null
+              }
+            }
+          },
+          "D_unclear_or_missing_data": {
+            "candidate_count": 31,
+            "by_horizon": {
+              "5d": {
+                "count": 31,
+                "avg_pct": 0.8611,
+                "median_pct": -0.1922,
+                "win_rate": 0.4516,
+                "best_pct": 15.0477,
+                "worst_pct": -7.5008
+              },
+              "10d": {
+                "count": 31,
+                "avg_pct": 1.9708,
+                "median_pct": 1.1264,
+                "win_rate": 0.5806,
+                "best_pct": 28.7377,
+                "worst_pct": -9.2734
+              },
+              "20d": {
+                "count": 31,
+                "avg_pct": 3.6489,
+                "median_pct": -0.2686,
+                "win_rate": 0.4516,
+                "best_pct": 62.5105,
+                "worst_pct": -24.047
+              },
+              "60d": {
+                "count": 24,
+                "avg_pct": 9.899,
+                "median_pct": 7.6794,
+                "win_rate": 0.6667,
+                "best_pct": 98.791,
+                "worst_pct": -36.6579
+              }
+            }
+          }
+        }
+      }
+    },
+    "b_positive_candidate_count": 0,
+    "c_negative_candidate_count": 0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "production_signal_path_changed": false
+  },
+  "decision_rationale": "Same-accession Companyfacts auto-discovery partially repairs directional SEC filing-shock fields, but B/C candidate cohorts remain empty and vendor/PIT guidance/consensus gaps remain. Keep as shadow-only data repair.",
+  "next_action": "Improve event-quality classification or source coverage: prioritize same-accession 10-Q/10-K candidate touches, structured guidance raise/cut, or PIT consensus EPS/revenue surprise before another production alpha attempt.",
+  "related_files": [
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_features.py",
+    "data/non_ohlcv/sec_companyfacts_selected_20241002_20260505.jsonl",
+    "data/non_ohlcv/sec_companyfacts_backfill_summary_20241002_20260505.json",
+    "data/experiments/exp-20260507-031/feature_rebuild_summary.json",
+    "data/experiments/exp-20260507-006/full_candidate_filing_shock_shadow.json",
+    "docs/non_ohlcv_data_audit/sec_companyfacts_same_accession_feature_repair_exp-20260507-031_20260507.md",
+    "docs/experiments/tickets/exp-20260507-031.json",
+    "docs/experiments/logs/exp-20260507-031.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

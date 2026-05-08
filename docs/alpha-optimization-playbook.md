@@ -66,6 +66,12 @@ Forward-only accepted support work on 2026-05-01 also matters:
 - `exp-20260501-030` added pilot replacement-value and counterfactual outcome
   rollups so that future pilot promotion decisions can be based on forward
   evidence rather than more static watchlist sweeps.
+- `exp-20260507-910` changed the single pilot sleeve slot from input-order
+  selection to shared `trade_quality_score -> confidence -> risk/reward`
+  priority. This is forward pilot capital-allocation alpha, not a core universe
+  expansion. The three canonical historical windows stayed unchanged because
+  pilot eligibility starts after those windows; future review should compare
+  closed pilot outcomes against the recorded sliced pilot alternatives.
 
 Do not repeat: nearby SPY-relative leader multipliers, nearby SPY-relative
 leader initial-cap levels, nearby SPY-relative leader add-on cap levels above
@@ -5696,3 +5702,26 @@ Do not repeat: nearby SMA20/SMA50 event price-structure tilts, SMA confirmation
 skips, or small scalar variants on the same frozen event-bundle sample without
 closed forward event outcomes or a materially different event-quality
 discriminator that explains the late-window failure.
+
+### 2026-05-07 mechanism update: far-from-earnings entry-state risk
+
+Experiment: `exp-20260507-033`
+
+Decision: `rejected`.
+
+Finding: Rewarding accepted A/B trades tagged `pre_earnings_46_plus` with a
+cap-aware risk add-on was directionally positive, but not stable enough for
+promotion. The best variant, `far_earnings_1_50x_cap_aware`, added `+$8,678.54`
+proxy PnL (`+5.23%`) and `+0.3173` aggregate proxy EV (`+3.91%`), but it
+regressed the `mid_weak` window by `-$245.77` and `-0.0214` EV. It also worsened
+max drawdown by `+1.05pp` in `old_thin`, just beyond the Gate 4 drawdown limit.
+
+Mechanism insight: being far from the next earnings date is a useful descriptive
+entry-state tag, but it is not a standalone sizing alpha. The effect appears to
+mostly reward already-strong mature winners while adding drawdown in the older
+thin window and failing the zero-regression requirement.
+
+Do not repeat: nearby `pre_earnings_46_plus` risk multipliers, cap-only variants,
+or small distance-from-earnings threshold tweaks on the same three frozen
+windows without forward evidence or a materially different event-quality
+discriminator.
