@@ -6611,6 +6611,7 @@ def test_persist_earnings_snapshot_creates_structured_daily_file(tmp_path):
     assert payload["coverage"] == {
         "tickers_total": 2,
         "tickers_persisted": 1,
+        "tickers_with_next_earnings_date": 0,
         "tickers_with_days_to_earnings": 1,
         "tickers_with_eps_estimate": 1,
         "tickers_with_eps_actual_last": 0,

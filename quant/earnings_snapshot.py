@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 SNAPSHOT_FIELDS = (
+    "next_earnings_date",
     "days_to_earnings",
     "eps_estimate",
     "eps_actual_last",
@@ -27,6 +28,10 @@ def _build_snapshot_payload(earnings_by_ticker, as_of):
     coverage = {
         "tickers_total": len(earnings_by_ticker or {}),
         "tickers_persisted": len(earnings),
+        "tickers_with_next_earnings_date": sum(
+            1 for data in earnings.values()
+            if data.get("next_earnings_date") is not None
+        ),
         "tickers_with_days_to_earnings": sum(
             1 for data in earnings.values()
             if data.get("days_to_earnings") is not None

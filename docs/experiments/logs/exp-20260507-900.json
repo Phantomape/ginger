@@ -1,0 +1,150 @@
+{
+  "experiment_id": "exp-20260507-900",
+  "timestamp": "2026-05-07T18:12:00+00:00",
+  "status": "accepted_data_harness",
+  "decision": "shadow_only",
+  "lane": "alpha_discovery",
+  "change_type": "default_off_forward_ledger_harness",
+  "hypothesis": "A forward-only estimate revision ledger with same-event identity and PIT flags can unblock later analyst-revision alpha tests without touching production signal logic.",
+  "alpha_hypothesis_category": "entry_confirmation / slot_quality_overlay",
+  "non_ohlcv_data_source": "data/earnings_snapshot_YYYYMMDD.json forward snapshots",
+  "mechanism_family": "analyst_estimate_revision_earnings_quality_overlay",
+  "single_causal_variable": "forward estimate revision ledger schema and PIT-safe same-event delta construction only",
+  "historical_experiment_check": {
+    "exp-20260507-090": "Data audit found high EPS/surprise coverage but no PIT-safe analyst revision history; next action was a forward-only ledger.",
+    "exp-20260507-011": "Simple earnings_event_long re-enable rejected; this run does not re-enable C or change entry/ranking/sizing.",
+    "mechanism_insight_conflict": false,
+    "why_not_duplicate": "This is not another C-sleeve or earnings threshold test. It creates the forward data substrate required before testing revision alpha."
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    }
+  },
+  "implementation": {
+    "snapshot_schema_change": "quant/earnings_snapshot.py now preserves next_earnings_date already produced by get_earnings_data() and reports tickers_with_next_earnings_date coverage.",
+    "new_helper_module": "quant/estimate_revision_ledger.py",
+    "new_default_off_script": "scripts/run_estimate_revision_forward_ledger.py",
+    "new_tests": "quant/test_estimate_revision_ledger.py plus existing snapshot test update in quant/test_quant.py"
+  },
+  "ledger_smoke_metrics": {
+    "schema_version": 1,
+    "row_count": 48,
+    "tickers_with_eps_estimate": 41,
+    "rows_with_next_earnings_date": 0,
+    "rows_with_prior_same_event": 0,
+    "estimate_revision_usable_rows": 0,
+    "up_revision_rows": 0,
+    "down_revision_rows": 0,
+    "pit_safe_rate": 0.0,
+    "generated_at": "2026-05-07T18:02:33+00:00",
+    "as_of_date": "2026-05-06",
+    "data_dir": "data",
+    "ledger_path": "data/experiments/exp-20260507-092/estimate_revision_ledger_20260506.jsonl",
+    "summary_path": "data/experiments/exp-20260507-092/estimate_revision_ledger_summary_20260506.json",
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "alters_signal_generation": false,
+      "alters_candidate_ranking": false,
+      "alters_sizing": false,
+      "alters_orders": false,
+      "scope": "default_off_forward_estimate_revision_data_ledger"
+    }
+  },
+  "shadow_or_replay_metrics": {
+    "candidate_count": 48,
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null,
+    "overlap_with_existing_signals": null,
+    "scarce_slot_opportunity_cost": null,
+    "forward_return_of_tagged_candidates": null,
+    "reason": "Ledger smoke output has zero usable revision rows because existing snapshots predate the schema addition and lack next_earnings_date. Future snapshots will include the event identity field.",
+    "production_impact": "default_off_data_harness_only"
+  },
+  "expected_value_score_delta": 0.0,
+  "data_availability_pit_status": {
+    "data_exists": true,
+    "pit_status": "forward_ledger_ready_but_no_usable_rows_yet",
+    "current_smoke_rows": 48,
+    "rows_with_next_earnings_date": 0,
+    "estimate_revision_usable_rows": 0,
+    "why_zero_usable_rows": "Existing 2026-05-06 snapshot was written before next_earnings_date was added to the persisted schema; same-event revision deltas require at least two forward snapshots with the new field.",
+    "pit_rule": "A revision row is usable only when current and prior same-event snapshots were written no later than one UTC calendar day after their as_of_date and share the same next_earnings_date."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "data_schema_changed": true,
+    "scope": "earnings_snapshot_output_schema_plus_default_off_forward_ledger"
+  },
+  "verification": {
+    "pytest quant/test_estimate_revision_ledger.py -q": "4 passed",
+    "pytest quant/test_quant.py -k persist_earnings_snapshot -q": "3 passed, 300 deselected",
+    "ledger_smoke_command": "python scripts/run_estimate_revision_forward_ledger.py --as-of 2026-05-06 --output-dir data/experiments/exp-20260507-900 --start 2026-05-04"
+  },
+  "decision_rationale": "Accept the default-off data harness, not the alpha. It records event identity, PIT safety, and same-event EPS estimate deltas needed for future shadow analysis.",
+  "next_minimum_action": "After two or more forward snapshots with next_earnings_date exist, run the ledger daily and begin a 30-60 trading-day observation window before testing candidate forward returns or slot value.",
+  "related_files": [
+    "quant/earnings_snapshot.py",
+    "quant/estimate_revision_ledger.py",
+    "scripts/run_estimate_revision_forward_ledger.py",
+    "quant/test_estimate_revision_ledger.py",
+    "quant/test_quant.py",
+    "data/experiments/exp-20260507-900/estimate_revision_ledger_20260506.jsonl",
+    "data/experiments/exp-20260507-900/estimate_revision_ledger_summary_20260506.json",
+    "docs/non_ohlcv_data_audit/estimate_revision_forward_ledger_exp-20260507-900_20260507.md",
+    "docs/experiments/logs/exp-20260507-900.json",
+    "docs/experiments/tickets/exp-20260507-900.json",
+    "docs/experiment_log.jsonl"
+  ]
+}
