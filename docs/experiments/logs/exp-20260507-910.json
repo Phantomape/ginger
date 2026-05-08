@@ -1,0 +1,154 @@
+{
+  "experiment_id": "exp-20260507-910",
+  "created_at": "2026-05-07T17:16:24-07:00",
+  "created_by": "codex_automation_alpha_search",
+  "experiment_type": "alpha_search",
+  "hypothesis": "The expanded pilot sleeve now has more eligible names than its single concurrent slot can hold. Replacing input-order pilot slot selection with trade-quality priority should improve forward pilot capital allocation without expanding the core universe or adding noisy tickers.",
+  "alpha_hypothesis": {
+    "category": "capital_allocation",
+    "statement": "When multiple pilot candidates are simultaneously tradeable, the single pilot slot should go to the strongest scored signal rather than the first signal produced by the engine."
+  },
+  "change_type": "pilot_sleeve_slot_priority",
+  "single_causal_variable": "pilot_slot_selection_policy",
+  "parameters": {
+    "old_policy": "input_order_first_tradeable_signal",
+    "new_policy": "trade_quality_score_then_confidence_then_risk_reward",
+    "max_concurrent_pilot_positions": 1,
+    "pilot_sleeve": "AI_INFRA_PILOT",
+    "tie_breaker": "original_input_order"
+  },
+  "historical_context": {
+    "related_failed_or_limited_experiments": [
+      {
+        "experiment_id": "exp-20260507-909",
+        "summary": "HOOD/RBLX/SOFI were accepted into the bounded pilot sleeve from 2026-05-08, increasing competition for the single pilot slot without changing core historical metrics."
+      },
+      {
+        "experiment_id": "exp-20260505-011",
+        "summary": "Consumer digital platform basket was positive but unstable; direct core promotion was rejected."
+      },
+      {
+        "experiment_id": "exp-20260505-020",
+        "summary": "Simple governance gates did not stabilize the consumer platform basket enough for core promotion."
+      },
+      {
+        "experiment_id": "exp-20260428 candidate quality ordering family",
+        "summary": "Broad core candidate-quality ordering was rejected; this experiment is narrower because it only ranks already-scaled pilot candidates competing for one pilot slot."
+      }
+    ],
+    "mechanism_insight_check": "This does not repeat rejected LLM soft-ranking, C/earnings re-enable, short-pressure, options, state-surface pruning, event-source pruning, RS20 leader, gap-up, or far-from-earnings sizing experiments. It also avoids broad universe expansion by allocating a pre-existing pilot slot better."
+  },
+  "why_not_other_alpha": [
+    "LLM soft-ranking and veto attribution remain data-limited, so another LLM strategy change would be underpowered.",
+    "C/earnings revalidation recently regressed all windows after snapshot coverage improved.",
+    "Recent event-overlay and state-surface changes are waiting on forward paper outcomes or failed Gate 4.",
+    "Adding more pilot tickers would increase noise; the live bottleneck is now which pilot candidate gets the single slot."
+  ],
+  "date_ranges": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.6257,
+      "total_pnl": 82030.12,
+      "sharpe_daily": 4.42,
+      "max_drawdown_pct": 5.39,
+      "win_rate_pct": 75.0,
+      "total_trades": 20,
+      "survival_rate_pct": 80.4
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "total_pnl": 57542.74,
+      "sharpe_daily": 2.69,
+      "max_drawdown_pct": 8.79,
+      "win_rate_pct": 52.4,
+      "total_trades": 21,
+      "survival_rate_pct": 79.2
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "total_pnl": 26242.68,
+      "sharpe_daily": 1.28,
+      "max_drawdown_pct": 9.05,
+      "win_rate_pct": 40.9,
+      "total_trades": 22,
+      "survival_rate_pct": 91.7
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.6257,
+      "total_pnl": 82030.12,
+      "sharpe_daily": 4.42,
+      "max_drawdown_pct": 5.39,
+      "win_rate_pct": 75.0,
+      "total_trades": 20,
+      "survival_rate_pct": 80.4
+    },
+    "mid_weak": {
+      "expected_value_score": 1.5478,
+      "total_pnl": 57542.74,
+      "sharpe_daily": 2.69,
+      "max_drawdown_pct": 8.79,
+      "win_rate_pct": 52.4,
+      "total_trades": 21,
+      "survival_rate_pct": 79.2
+    },
+    "old_thin": {
+      "expected_value_score": 0.3359,
+      "total_pnl": 26242.68,
+      "sharpe_daily": 1.28,
+      "max_drawdown_pct": 9.05,
+      "win_rate_pct": 40.9,
+      "total_trades": 22,
+      "survival_rate_pct": 91.7
+    }
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "gate_4_assessment": "Core fixed-window metrics are intentionally unchanged because pilot eligibility starts after all canonical windows. The experiment is accepted as a production-aligned forward pilot allocation improvement, not as a historical core-alpha improvement.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "core_universe_changed": false,
+    "alters_core_signal_generation": false,
+    "alters_candidate_ranking": true,
+    "alters_pilot_sleeve_orders_after_effective_date": true,
+    "competes_for_core_slots": false,
+    "shared_pilot_sleeve_policy_consumed_by_run_and_backtester": true
+  },
+  "verification": {
+    "backtests": [
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_pilot_sleeve.py quant\\test_backtester_pilot_sleeve.py -q",
+    "test_result": "10 passed"
+  },
+  "decision": "accepted_forward_pilot",
+  "decision_reason": "The policy is lower complexity than expanding the pilot universe, lives in shared pilot_sleeve.py, is consumed by both production and backtester pilot paths, and leaves canonical core metrics unchanged.",
+  "next_review_trigger": "Review after enough closed pilot outcomes to compare selected pilot candidates against pilot_slot_sliced_signals and cash/core alternatives.",
+  "main_risk": "A high trade_quality_score pilot signal can still be lower quality than a sliced pilot candidate if the score is stale or poorly calibrated for newly added pilot tickers."
+}

@@ -29,6 +29,26 @@ PILOT_TRADEABLE_STATUSES = {"pilot", "limited_production"}
 MAX_CONCURRENT_PILOT_POSITIONS = 1
 
 
+def _as_float(value) -> float:
+    try:
+        if value is None:
+            return 0.0
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _pilot_selection_priority(signal: dict, original_index: int) -> tuple[float, float, float, int, int]:
+    sizing = signal.get("sizing") or {}
+    return (
+        _as_float(signal.get("trade_quality_score")),
+        _as_float(signal.get("confidence_score")),
+        _as_float(signal.get("risk_reward_ratio")),
+        int(sizing.get("shares_to_buy") or 0),
+        -original_index,
+    )
+
+
 def file_hash(path: Path | str) -> str | None:
     file_path = Path(path)
     if not file_path.exists():
@@ -197,23 +217,25 @@ def select_pilot_entry_candidates(
         if pos.get("ticker") in pilot_tickers
     ]
     available_slots = max(0, int(max_concurrent) - len(active_pilot_positions))
-    tradeable = [
-        sig
-        for sig in input_signals
+    ranked_tradeable = [
+        (sig, _pilot_selection_priority(sig, idx))
+        for idx, sig in enumerate(input_signals)
         if (sig.get("sizing") or {}).get("shares_to_buy", 0) > 0
     ]
-    selected = tradeable[:available_slots]
+    ranked_tradeable.sort(key=lambda item: item[1], reverse=True)
+    selected = [sig for sig, _priority in ranked_tradeable[:available_slots]]
     selected_ids = {id(sig) for sig in selected}
     dropped = [sig for sig in input_signals if id(sig) not in selected_ids]
     audit = {
         "sleeve": PILOT_SLEEVE_NAME,
+        "selection_policy": "trade_quality_score_then_confidence_then_risk_reward",
         "max_concurrent_positions": max_concurrent,
         "active_pilot_positions": [
             pos.get("ticker") for pos in active_pilot_positions
         ],
         "available_pilot_slots": available_slots,
         "signals_before_pilot_slotting": len(input_signals),
-        "tradeable_pilot_signals": len(tradeable),
+        "tradeable_pilot_signals": len(ranked_tradeable),
         "signals_after_pilot_slotting": len(selected),
         "pilot_slot_sliced_signals": dropped,
     }

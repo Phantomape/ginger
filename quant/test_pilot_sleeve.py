@@ -120,6 +120,32 @@ def test_select_pilot_entry_candidates_limits_concurrent_slots():
     assert [s["ticker"] for s in audit["pilot_slot_sliced_signals"]] == ["LITE"]
 
 
+def test_select_pilot_entry_candidates_prioritizes_trade_quality():
+    records = {"INTC": {}, "LITE": {}}
+    signals = [
+        {
+            "ticker": "INTC",
+            "trade_quality_score": 0.25,
+            "confidence_score": 0.95,
+            "risk_reward_ratio": 3.0,
+            "sizing": {"shares_to_buy": 1},
+        },
+        {
+            "ticker": "LITE",
+            "trade_quality_score": 0.80,
+            "confidence_score": 0.70,
+            "risk_reward_ratio": 1.5,
+            "sizing": {"shares_to_buy": 1},
+        },
+    ]
+
+    selected, audit = select_pilot_entry_candidates(signals, records)
+
+    assert [s["ticker"] for s in selected] == ["LITE"]
+    assert audit["selection_policy"] == "trade_quality_score_then_confidence_then_risk_reward"
+    assert [s["ticker"] for s in audit["pilot_slot_sliced_signals"]] == ["INTC"]
+
+
 def test_select_pilot_entry_candidates_blocks_when_existing_pilot_is_open():
     records = {"INTC": {}}
     open_positions = {"positions": [{"ticker": "INTC", "shares": 5}]}

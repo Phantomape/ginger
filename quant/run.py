@@ -211,7 +211,7 @@ def main():
             universe_governance_state["mode"] = "production_pilot_sleeve"
             universe_governance_state["production_impact"] = {
                 "alters_signal_generation": True,
-                "alters_candidate_ranking": False,
+                "alters_candidate_ranking": True,
                 "alters_sizing": True,
                 "alters_orders": True,
                 "scope": "pilot_sleeve_only",
