@@ -20,11 +20,14 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-EXPERIMENT_ID = "exp-20260507-029"
+EXPERIMENT_ID = "exp-20260507-091"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 DEFAULT_CHAIN_DIR = REPO_ROOT / "data" / "non_ohlcv"
 DEFAULT_SIGNAL_DIR = REPO_ROOT / "data"
 DEFAULT_HORIZONS = (5, 10, 20, 60)
+DEFAULT_MIN_LIQUIDITY_PASS_RATE = 0.05
+DEFAULT_MIN_LIQUID_TICKERS = 10
+DEFAULT_MIN_MARKET_ROWS_RATE = 0.50
 
 
 def _repo_path(path: str | Path) -> Path:
@@ -604,6 +607,15 @@ def _candidate_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     covered = [row for row in rows if row.get("has_options_coverage")]
     liquid = [row for row in rows if row.get("option_liquidity_filter")]
     safe = [row for row in rows if row.get("pit_candidate_join_safe")]
+    quality_usable = [
+        row for row in rows
+        if row.get("options_collection_quality_status") == "usable_for_shadow"
+    ]
+    quality_quarantined = [
+        row for row in rows
+        if row.get("options_collection_quality_status") == "quarantined"
+    ]
+    scoring_allowed = [row for row in rows if row.get("options_scoring_allowed")]
     squeeze = [row for row in rows if row.get("squeeze_overlay")]
     downside = [row for row in rows if row.get("downside_risk_overlay")]
     outcome_status = Counter(row.get("outcome_status") for row in rows)
@@ -615,10 +627,91 @@ def _candidate_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "option_liquidity_eligible_candidates": len(liquid),
         "pit_join_safe_candidates": len(safe),
         "pit_join_safe_rate": round(len(safe) / len(rows), 6) if rows else 0.0,
+        "quality_usable_candidates": len(quality_usable),
+        "quality_quarantined_candidates": len(quality_quarantined),
+        "options_scoring_allowed_candidates": len(scoring_allowed),
         "squeeze_overlay_candidates": len(squeeze),
         "downside_risk_overlay_candidates": len(downside),
         "earnings_vol_overlay_candidates": sum(1 for row in rows if row.get("earnings_vol_overlay")),
         "outcome_status_counts": dict(outcome_status),
+    }
+
+
+def _quality_ratio(numerator: Any, denominator: Any) -> float:
+    denominator_number = _float(denominator) or 0.0
+    if denominator_number <= 0:
+        return 0.0
+    return round((_float(numerator) or 0.0) / denominator_number, 6)
+
+
+def _collection_quality_gate(
+    option_diagnostics: dict[str, Any],
+    *,
+    min_liquidity_pass_rate: float,
+    min_liquid_tickers: int,
+    min_market_rows_rate: float,
+) -> dict[str, Any]:
+    by_quote_date: dict[str, Any] = {}
+    for quote_date, payload in (option_diagnostics.get("by_quote_date") or {}).items():
+        rows = payload.get("rows") or 0
+        tickers = payload.get("tickers") or 0
+        pass_rate = _quality_ratio(payload.get("option_liquidity_pass_rows"), rows)
+        bid_rate = _quality_ratio(payload.get("bid_gt_0_rows"), rows)
+        ask_rate = _quality_ratio(payload.get("ask_gt_bid_rows"), rows)
+        mid_rate = _quality_ratio(payload.get("mid_gt_0_rows"), rows)
+        oi_rate = _quality_ratio(payload.get("open_interest_gt_0_rows"), rows)
+        delta_rate = _quality_ratio(payload.get("delta_nonzero_rows"), rows)
+        liquid_tickers = int(payload.get("liquid_tickers_ge_10_rows") or 0)
+
+        reasons = []
+        if rows <= 0:
+            reasons.append("no_option_rows")
+        if pass_rate < min_liquidity_pass_rate:
+            reasons.append("liquidity_pass_rate_below_floor")
+        if liquid_tickers < min_liquid_tickers:
+            reasons.append("too_few_tickers_with_10_liquid_rows")
+        if ask_rate < min_market_rows_rate or mid_rate < min_market_rows_rate:
+            reasons.append("bid_ask_mid_market_rows_sparse")
+        if oi_rate < min_market_rows_rate:
+            reasons.append("open_interest_rows_sparse")
+        if delta_rate < min_market_rows_rate:
+            reasons.append("delta_rows_sparse")
+
+        status = "quarantined" if reasons else "usable_for_shadow"
+        by_quote_date[quote_date] = {
+            "status": status,
+            "scoring_allowed": status == "usable_for_shadow",
+            "rows": rows,
+            "tickers": tickers,
+            "option_liquidity_pass_rows": payload.get("option_liquidity_pass_rows") or 0,
+            "option_liquidity_pass_rate": pass_rate,
+            "liquid_tickers_ge_10_rows": liquid_tickers,
+            "bid_gt_0_rate": bid_rate,
+            "ask_gt_bid_rate": ask_rate,
+            "mid_gt_0_rate": mid_rate,
+            "open_interest_gt_0_rate": oi_rate,
+            "delta_nonzero_rate": delta_rate,
+            "usable_trade_dates": payload.get("usable_trade_dates") or [],
+            "reasons": reasons,
+        }
+    usable_dates = [
+        quote_date for quote_date, payload in by_quote_date.items()
+        if payload.get("status") == "usable_for_shadow"
+    ]
+    quarantined_dates = [
+        quote_date for quote_date, payload in by_quote_date.items()
+        if payload.get("status") == "quarantined"
+    ]
+    return {
+        "parameters": {
+            "min_liquidity_pass_rate": min_liquidity_pass_rate,
+            "min_liquid_tickers": min_liquid_tickers,
+            "min_market_rows_rate": min_market_rows_rate,
+        },
+        "by_quote_date": by_quote_date,
+        "usable_quote_dates": usable_dates,
+        "quarantined_quote_dates": quarantined_dates,
+        "overall_status": "needs_more_forward_data" if not usable_dates else "usable_shadow_dates_present",
     }
 
 
@@ -644,25 +737,168 @@ def _liquidity_anomaly_report(option_diagnostics: dict[str, Any]) -> dict[str, A
     return report
 
 
+def _candidate_join_date_for_quote(
+    quote_date: str,
+    option_diagnostics: dict[str, Any],
+    *,
+    mode: str,
+) -> str:
+    if mode == "quote_date":
+        return quote_date
+    payload = (option_diagnostics.get("by_quote_date") or {}).get(quote_date) or {}
+    usable_dates = payload.get("usable_trade_dates") or []
+    return min(usable_dates) if usable_dates else quote_date
+
+
+def _mean(values: list[float | None]) -> float | None:
+    clean = [value for value in values if value is not None]
+    return round(sum(clean) / len(clean), 6) if clean else None
+
+
+def _win_rate(values: list[float | None]) -> float | None:
+    clean = [value for value in values if value is not None]
+    return round(sum(1 for value in clean if value > 0) / len(clean), 6) if clean else None
+
+
+def _bucket_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "count": len(rows),
+        "closed_5d_count": sum(1 for row in rows if row.get("forward_returns", {}).get("5d") is not None),
+        "closed_10d_count": sum(1 for row in rows if row.get("forward_returns", {}).get("10d") is not None),
+        "closed_20d_count": sum(1 for row in rows if row.get("forward_returns", {}).get("20d") is not None),
+        "closed_60d_count": sum(1 for row in rows if row.get("forward_returns", {}).get("60d") is not None),
+        "forward_5d_mean": _mean([row.get("forward_returns", {}).get("5d") for row in rows]),
+        "forward_10d_mean": _mean([row.get("forward_returns", {}).get("10d") for row in rows]),
+        "forward_20d_mean": _mean([row.get("forward_returns", {}).get("20d") for row in rows]),
+        "forward_60d_mean": _mean([row.get("forward_returns", {}).get("60d") for row in rows]),
+        "forward_20d_win_rate": _win_rate([row.get("forward_returns", {}).get("20d") for row in rows]),
+        "future_drawdown_20d_mean": _mean([row.get("future_drawdown_20d") for row in rows]),
+        "future_realized_vol_20d_mean": _mean([row.get("future_realized_vol_20d") for row in rows]),
+    }
+
+
+def _slot_conflict_value(rows: list[dict[str, Any]], tag_key: str) -> dict[str, Any]:
+    by_day: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        if row.get("options_scoring_allowed"):
+            by_day[str(row.get("candidate_action_date"))].append(row)
+
+    diffs = []
+    examples = []
+    for day, day_rows in by_day.items():
+        entered = [
+            row for row in day_rows
+            if row.get("decision") == "entered"
+            and row.get("forward_returns", {}).get("20d") is not None
+        ]
+        tagged_not_entered = [
+            row for row in day_rows
+            if row.get("decision") != "entered"
+            and row.get(tag_key)
+            and row.get("forward_returns", {}).get("20d") is not None
+        ]
+        if not entered or not tagged_not_entered:
+            continue
+        entered_mean = _mean([row["forward_returns"]["20d"] for row in entered])
+        if entered_mean is None:
+            continue
+        for row in tagged_not_entered:
+            diff = round(row["forward_returns"]["20d"] - entered_mean, 6)
+            diffs.append(diff)
+            examples.append({
+                "date": day,
+                "ticker": row.get("ticker"),
+                "tag": tag_key,
+                "candidate_forward_20d": row.get("forward_returns", {}).get("20d"),
+                "same_day_entered_forward_20d_mean": entered_mean,
+                "slot_conflict_value_20d": diff,
+            })
+    return {
+        "conflict_count": len(examples),
+        "avg_slot_conflict_value_20d": _mean(diffs),
+        "positive_conflict_fraction": _win_rate(diffs),
+        "examples": examples[:20],
+    }
+
+
+def _outcome_close_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    scoring_allowed = [row for row in rows if row.get("options_scoring_allowed")]
+    squeeze = [row for row in scoring_allowed if row.get("squeeze_overlay")]
+    no_squeeze = [
+        row for row in scoring_allowed
+        if row.get("has_options_coverage") and not row.get("squeeze_overlay")
+    ]
+    downside = [row for row in scoring_allowed if row.get("downside_risk_overlay")]
+    no_downside = [
+        row for row in scoring_allowed
+        if row.get("has_options_coverage") and not row.get("downside_risk_overlay")
+    ]
+    squeeze_metrics = _bucket_metrics(squeeze)
+    no_squeeze_metrics = _bucket_metrics(no_squeeze)
+    downside_metrics = _bucket_metrics(downside)
+    no_downside_metrics = _bucket_metrics(no_downside)
+    return {
+        "all_scoring_allowed": _bucket_metrics(scoring_allowed),
+        "squeeze_overlay": squeeze_metrics,
+        "no_squeeze_overlay": no_squeeze_metrics,
+        "downside_risk_overlay": downside_metrics,
+        "no_downside_risk_overlay": no_downside_metrics,
+        "squeeze_minus_no_squeeze_forward_20d": (
+            round(squeeze_metrics["forward_20d_mean"] - no_squeeze_metrics["forward_20d_mean"], 6)
+            if squeeze_metrics["forward_20d_mean"] is not None
+            and no_squeeze_metrics["forward_20d_mean"] is not None else None
+        ),
+        "downside_minus_no_downside_forward_20d": (
+            round(downside_metrics["forward_20d_mean"] - no_downside_metrics["forward_20d_mean"], 6)
+            if downside_metrics["forward_20d_mean"] is not None
+            and no_downside_metrics["forward_20d_mean"] is not None else None
+        ),
+        "slot_conflict": {
+            "squeeze_overlay": _slot_conflict_value(rows, "squeeze_overlay"),
+            "downside_risk_overlay": _slot_conflict_value(rows, "downside_risk_overlay"),
+        },
+    }
+
+
 def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
     selected_dates = {date_value for date_value in (args.date or [])}
     chain_files = discover_chain_files(_repo_path(args.chain_dir), selected_dates or None)
     option_rows_by_key, option_diagnostics = load_option_rows(chain_files)
+    collection_quality_gate = _collection_quality_gate(
+        option_diagnostics,
+        min_liquidity_pass_rate=args.min_liquidity_pass_rate,
+        min_liquid_tickers=args.min_liquid_tickers,
+        min_market_rows_rate=args.min_market_rows_rate,
+    )
     quote_dates = sorted({key[0] for key in option_rows_by_key})
     ohlcv = _load_ohlcv_snapshot(args.ohlcv_snapshot)
 
     ledger_rows: list[dict[str, Any]] = []
     candidate_diagnostics: dict[str, Any] = {}
     for quote_date in quote_dates:
-        date_tag = quote_date.replace("-", "")
+        candidate_join_date = _candidate_join_date_for_quote(
+            quote_date,
+            option_diagnostics,
+            mode=args.candidate_join_date_mode,
+        )
+        date_tag = candidate_join_date.replace("-", "")
         signal_file = _repo_path(args.quant_signal_dir) / f"quant_signals_{date_tag}.json"
-        candidates, diagnostics = collect_candidates(signal_file, quote_date)
-        candidate_diagnostics[quote_date] = diagnostics
+        candidates, diagnostics = collect_candidates(signal_file, candidate_join_date)
+        candidate_diagnostics[quote_date] = {
+            **diagnostics,
+            "options_quote_date": quote_date,
+            "candidate_join_date": candidate_join_date,
+            "candidate_join_date_mode": args.candidate_join_date_mode,
+        }
         features = {}
         if signal_file.exists():
             features_payload = _read_json(signal_file).get("features") or {}
             features = features_payload if isinstance(features_payload, dict) else {}
 
+        quality = (
+            collection_quality_gate.get("by_quote_date", {}).get(quote_date)
+            or {"status": "missing_quality_gate", "scoring_allowed": False, "reasons": ["missing_quality_gate"]}
+        )
         for candidate in candidates:
             ticker = candidate["ticker"]
             rows = option_rows_by_key.get((quote_date, ticker), [])
@@ -673,17 +909,32 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
                 option_summary.get("usable_trade_dates") or [],
             )
             stats = forward_stats(ohlcv.get(ticker, []), candidate["candidate_action_date"])
+            options_scoring_allowed = bool(
+                quality.get("scoring_allowed")
+                and pit_status.get("pit_candidate_join_safe")
+                and option_summary.get("option_liquidity_filter")
+            )
             ledger_rows.append({
                 "experiment_id": args.experiment_id,
-                "ledger_schema_version": 1,
+                "ledger_schema_version": 2,
                 "overlay_mode": "default_off_shadow_only",
                 "options_source": "onclickmedia_options",
                 "options_quote_date": quote_date,
+                "candidate_join_date": candidate_join_date,
+                "candidate_join_date_mode": args.candidate_join_date_mode,
+                "options_collection_quality_status": quality.get("status"),
+                "options_collection_quality_reasons": quality.get("reasons") or [],
+                "options_collection_quality_gate": {
+                    "min_liquidity_pass_rate": args.min_liquidity_pass_rate,
+                    "min_liquid_tickers": args.min_liquid_tickers,
+                    "min_market_rows_rate": args.min_market_rows_rate,
+                },
                 "underlying_price_from_quant_features": underlying_price,
                 **candidate,
                 **option_summary,
                 **pit_status,
                 **stats,
+                "options_scoring_allowed": options_scoring_allowed,
                 "production_impact": {
                     "shared_policy_changed": False,
                     "backtester_adapter_changed": False,
@@ -697,7 +948,20 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     ledger_path = output_dir / "options_forward_candidate_ledger.jsonl"
     report_path = output_dir / "options_forward_candidate_ledger_report.json"
+    quality_gate_path = output_dir / "options_collection_quality_gate.json"
+    quarantined_path = output_dir / "options_quarantined_quote_dates.json"
     _write_jsonl(ledger_path, ledger_rows)
+    _write_json(quality_gate_path, collection_quality_gate)
+    _write_json(
+        quarantined_path,
+        {
+            "experiment_id": args.experiment_id,
+            "quarantined_quote_dates": collection_quality_gate.get("quarantined_quote_dates", []),
+            "usable_quote_dates": collection_quality_gate.get("usable_quote_dates", []),
+            "by_quote_date": collection_quality_gate.get("by_quote_date", {}),
+        },
+    )
+    outcome_close_summary = _outcome_close_summary(ledger_rows)
 
     report = {
         "experiment_id": args.experiment_id,
@@ -707,20 +971,29 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
             "Forward PIT-safe EOD options structure tags may explain candidate quality or slot "
             "conflicts only when attached to existing Ginger candidates."
         ),
-        "single_causal_variable": "forward options candidate tag ledger only",
+        "single_causal_variable": "forward options ledger quality gate and usable-date outcome close only",
         "source_files": {
             "chain_files": option_diagnostics.get("chain_files", []),
             "quant_signal_dir": _repo_rel(args.quant_signal_dir),
             "ohlcv_snapshot": _repo_rel(args.ohlcv_snapshot) if args.ohlcv_snapshot else None,
         },
+        "join_policy": {
+            "candidate_join_date_mode": args.candidate_join_date_mode,
+            "note": (
+                "Default joins candidates on option usable_trade_date, not option quote_date, "
+                "because EOD rows are not usable until the next trade date."
+            ),
+        },
         "option_diagnostics": option_diagnostics,
         "candidate_diagnostics": candidate_diagnostics,
+        "collection_quality_gate": collection_quality_gate,
         "liquidity_anomaly_report": _liquidity_anomaly_report(option_diagnostics),
         "candidate_summary": _candidate_summary(ledger_rows),
         "by_options_quote_date": {
             quote_date: _candidate_summary([row for row in ledger_rows if row.get("options_quote_date") == quote_date])
             for quote_date in quote_dates
         },
+        "outcome_close_summary": outcome_close_summary,
         "required_metrics": {
             "expected_value_score": None,
             "total_return": None,
@@ -736,15 +1009,18 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
             "vs_qqq": None,
             "candidate_count": len(ledger_rows),
             "overlap_with_existing_signals": len(ledger_rows),
-            "scarce_slot_opportunity_cost": None,
+            "scarce_slot_opportunity_cost": outcome_close_summary.get("slot_conflict"),
             "forward_return_of_tagged_candidates": {
-                f"{horizon}d": None for horizon in DEFAULT_HORIZONS
+                "squeeze_overlay": outcome_close_summary.get("squeeze_overlay"),
+                "downside_risk_overlay": outcome_close_summary.get("downside_risk_overlay"),
             },
             "production_impact": "none_default_off_shadow_artifact_only",
         },
         "artifacts": {
             "ledger": _repo_rel(ledger_path),
             "report": _repo_rel(report_path),
+            "quality_gate": _repo_rel(quality_gate_path),
+            "quarantined_quote_dates": _repo_rel(quarantined_path),
         },
         "decision": "shadow_only",
         "next_minimum_action": (
@@ -762,6 +1038,33 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--chain-dir", default=str(DEFAULT_CHAIN_DIR))
     parser.add_argument("--quant-signal-dir", default=str(DEFAULT_SIGNAL_DIR))
     parser.add_argument("--ohlcv-snapshot")
+    parser.add_argument(
+        "--candidate-join-date-mode",
+        choices=("usable_trade_date", "quote_date"),
+        default="usable_trade_date",
+        help=(
+            "Join options quote dates to candidate files by option usable_trade_date "
+            "(default, PIT-safe) or quote_date (diagnostic legacy mode)."
+        ),
+    )
+    parser.add_argument(
+        "--min-liquidity-pass-rate",
+        type=float,
+        default=DEFAULT_MIN_LIQUIDITY_PASS_RATE,
+        help="Minimum per-quote-date option_liquidity_pass row fraction before tags may be scored.",
+    )
+    parser.add_argument(
+        "--min-liquid-tickers",
+        type=int,
+        default=DEFAULT_MIN_LIQUID_TICKERS,
+        help="Minimum tickers with at least ten liquid option rows before a quote date may be scored.",
+    )
+    parser.add_argument(
+        "--min-market-rows-rate",
+        type=float,
+        default=DEFAULT_MIN_MARKET_ROWS_RATE,
+        help="Minimum row fraction with market/OI/Greek fields before a quote date may be scored.",
+    )
     parser.add_argument(
         "--date",
         action="append",

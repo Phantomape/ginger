@@ -1,0 +1,402 @@
+{
+  "artifacts": {
+    "audit": "docs/non_ohlcv_data_audit/eod_options_quality_gate_exp-20260507-091_20260507.md",
+    "ledger": "data/experiments/exp-20260507-091/options_forward_candidate_ledger.jsonl",
+    "log": "docs/experiments/logs/exp-20260507-091.json",
+    "quality_gate": "data/experiments/exp-20260507-091/options_collection_quality_gate.json",
+    "quarantined_quote_dates": "data/experiments/exp-20260507-091/options_quarantined_quote_dates.json",
+    "report": "data/experiments/exp-20260507-091/options_forward_candidate_ledger_report.json",
+    "script": "scripts/run_options_forward_ledger.py",
+    "ticket": "docs/experiments/tickets/exp-20260507-091.json"
+  },
+  "baseline_metrics": {
+    "baseline_result_file": "data/backtest_results_20260507.json",
+    "expected_value_score": 0.3359,
+    "max_drawdown": 0.0905,
+    "sharpe_daily": 1.28,
+    "signals_generated": 60,
+    "signals_survived": 55,
+    "survival_rate": 0.9167,
+    "total_pnl": 26242.68,
+    "total_return": 0.2624,
+    "trade_count": 22,
+    "vs_qqq": 0.3373,
+    "vs_spy": 0.3297,
+    "win_rate": 0.4091
+  },
+  "candidate_overlap_and_slot_value": {
+    "candidate_count": 3,
+    "options_scoring_allowed_candidates": 0,
+    "overlap_with_existing_signals": 3,
+    "reason": "5/5 joins 5/6 candidates but is quarantined; 5/6 is usable but needs 5/7 quant_signals, not yet present. No closed forward outcomes.",
+    "scarce_slot_opportunity_cost": {
+      "downside_risk_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      },
+      "squeeze_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      }
+    }
+  },
+  "change_type": "default_off_harness",
+  "data_availability_pit_status": {
+    "chain_files": [
+      "data/non_ohlcv/options_onclickmedia_chain_20260505.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260506.jsonl"
+    ],
+    "collection_quality_gate": {
+      "by_quote_date": {
+        "2026-05-05": {
+          "ask_gt_bid_rate": 0.00021,
+          "bid_gt_0_rate": 0.00021,
+          "delta_nonzero_rate": 0.00021,
+          "liquid_tickers_ge_10_rows": 0,
+          "mid_gt_0_rate": 0.00021,
+          "open_interest_gt_0_rate": 0.00021,
+          "option_liquidity_pass_rate": 0.00021,
+          "option_liquidity_pass_rows": 1,
+          "reasons": [
+            "liquidity_pass_rate_below_floor",
+            "too_few_tickers_with_10_liquid_rows",
+            "bid_ask_mid_market_rows_sparse",
+            "open_interest_rows_sparse",
+            "delta_rows_sparse"
+          ],
+          "rows": 4767,
+          "scoring_allowed": false,
+          "status": "quarantined",
+          "tickers": 48,
+          "usable_trade_dates": [
+            "2026-05-06"
+          ]
+        },
+        "2026-05-06": {
+          "ask_gt_bid_rate": 0.99979,
+          "bid_gt_0_rate": 0.95301,
+          "delta_nonzero_rate": 0.512272,
+          "liquid_tickers_ge_10_rows": 48,
+          "mid_gt_0_rate": 0.99979,
+          "open_interest_gt_0_rate": 0.98154,
+          "option_liquidity_pass_rate": 0.873925,
+          "option_liquidity_pass_rows": 4166,
+          "reasons": [],
+          "rows": 4767,
+          "scoring_allowed": true,
+          "status": "usable_for_shadow",
+          "tickers": 48,
+          "usable_trade_dates": [
+            "2026-05-07"
+          ]
+        }
+      },
+      "overall_status": "usable_shadow_dates_present",
+      "parameters": {
+        "min_liquid_tickers": 10,
+        "min_liquidity_pass_rate": 0.05,
+        "min_market_rows_rate": 0.5
+      },
+      "quarantined_quote_dates": [
+        "2026-05-05"
+      ],
+      "usable_quote_dates": [
+        "2026-05-06"
+      ]
+    },
+    "join_policy": {
+      "candidate_join_date_mode": "usable_trade_date",
+      "note": "Default joins candidates on option usable_trade_date, not option quote_date, because EOD rows are not usable until the next trade date."
+    },
+    "pit_caveat": "Forward EOD rows are only usable from usable_trade_date. 2026-05-06 options rows need 2026-05-07 candidates, which are not present locally yet."
+  },
+  "decision": "shadow_only",
+  "expected_value_score_delta": null,
+  "experiment_id": "exp-20260507-091",
+  "experiment_mode": "default_off_forward_options_quality_gate_and_outcome_close",
+  "forward_return_of_tagged_candidates": {
+    "downside_risk_overlay": {
+      "closed_10d_count": 0,
+      "closed_20d_count": 0,
+      "closed_5d_count": 0,
+      "closed_60d_count": 0,
+      "count": 0,
+      "forward_10d_mean": null,
+      "forward_20d_mean": null,
+      "forward_20d_win_rate": null,
+      "forward_5d_mean": null,
+      "forward_60d_mean": null,
+      "future_drawdown_20d_mean": null,
+      "future_realized_vol_20d_mean": null
+    },
+    "squeeze_overlay": {
+      "closed_10d_count": 0,
+      "closed_20d_count": 0,
+      "closed_5d_count": 0,
+      "closed_60d_count": 0,
+      "count": 0,
+      "forward_10d_mean": null,
+      "forward_20d_mean": null,
+      "forward_20d_win_rate": null,
+      "forward_5d_mean": null,
+      "forward_60d_mean": null,
+      "future_drawdown_20d_mean": null,
+      "future_realized_vol_20d_mean": null
+    }
+  },
+  "historical_experiment_check": {
+    "checked_files": [
+      "AGENTS.md",
+      "docs/alpha-optimization-playbook.md",
+      "docs/experiment_log.jsonl",
+      "docs/experiments/logs",
+      "automation memory universe-scout"
+    ],
+    "finding": "Prior options overlay evidence rejects naive historical call/put/skew threshold promotion. This run only repairs forward measurement: usable-date candidate join, quarantine gate, and closed-outcome summaries.",
+    "prior_experiments": [
+      "exp-20260503-044",
+      "exp-20260504-043",
+      "exp-20260505-021",
+      "exp-20260506-003",
+      "exp-20260506-009",
+      "exp-20260506-022",
+      "exp-20260507-026",
+      "exp-20260507-029"
+    ]
+  },
+  "hypothesis": "A forward options overlay needs a candidate usable-date join, daily collection quarantine, and outcome-closing summaries before any alpha decision is credible.",
+  "lane": "alpha_discovery",
+  "mechanism_family": "options_structure_overlay",
+  "next_minimum_action": "Keep collecting daily options snapshots and quant_signals; rerun this ledger when 2026-05-07+ candidate files and future OHLCV outcomes exist.",
+  "non_ohlcv_data_source": "OnClickMedia EOD options chain snapshots from data/non_ohlcv/options_onclickmedia_chain_YYYYMMDD.jsonl",
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "notes": "Default-off script/report artifacts only; no signal, risk, portfolio, run, or backtester path changed.",
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_or_hold_reason": "Do not promote: scoring_allowed_candidates=0 and closed forward outcomes are unavailable.",
+  "shadow_or_replay_metrics": {
+    "by_options_quote_date": {
+      "2026-05-05": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "ohlcv_snapshot_missing": 3
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.666667,
+        "quality_quarantined_candidates": 3,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "sec_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-06": {
+        "candidate_count": 0,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 0.0,
+        "options_covered_candidates": 0,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {},
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {},
+        "squeeze_overlay_candidates": 0
+      }
+    },
+    "candidate_summary": {
+      "candidate_count": 3,
+      "downside_risk_overlay_candidates": 0,
+      "earnings_vol_overlay_candidates": 0,
+      "option_liquidity_eligible_candidates": 0,
+      "options_candidate_coverage_rate": 1.0,
+      "options_covered_candidates": 3,
+      "options_scoring_allowed_candidates": 0,
+      "outcome_status_counts": {
+        "ohlcv_snapshot_missing": 3
+      },
+      "pit_join_safe_candidates": 2,
+      "pit_join_safe_rate": 0.666667,
+      "quality_quarantined_candidates": 3,
+      "quality_usable_candidates": 0,
+      "source_section_counts": {
+        "event_sleeve_bundle": 2,
+        "sec_event_queue": 1
+      },
+      "squeeze_overlay_candidates": 0
+    },
+    "outcome_close_summary": {
+      "all_scoring_allowed": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 0,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "downside_minus_no_downside_forward_20d": null,
+      "downside_risk_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 0,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "no_downside_risk_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 0,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "no_squeeze_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 0,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "slot_conflict": {
+        "downside_risk_overlay": {
+          "avg_slot_conflict_value_20d": null,
+          "conflict_count": 0,
+          "examples": [],
+          "positive_conflict_fraction": null
+        },
+        "squeeze_overlay": {
+          "avg_slot_conflict_value_20d": null,
+          "conflict_count": 0,
+          "examples": [],
+          "positive_conflict_fraction": null
+        }
+      },
+      "squeeze_minus_no_squeeze_forward_20d": null,
+      "squeeze_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 0,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      }
+    },
+    "required_metrics": {
+      "candidate_count": 3,
+      "expected_value_score": null,
+      "forward_return_of_tagged_candidates": {
+        "downside_risk_overlay": {
+          "closed_10d_count": 0,
+          "closed_20d_count": 0,
+          "closed_5d_count": 0,
+          "closed_60d_count": 0,
+          "count": 0,
+          "forward_10d_mean": null,
+          "forward_20d_mean": null,
+          "forward_20d_win_rate": null,
+          "forward_5d_mean": null,
+          "forward_60d_mean": null,
+          "future_drawdown_20d_mean": null,
+          "future_realized_vol_20d_mean": null
+        },
+        "squeeze_overlay": {
+          "closed_10d_count": 0,
+          "closed_20d_count": 0,
+          "closed_5d_count": 0,
+          "closed_60d_count": 0,
+          "count": 0,
+          "forward_10d_mean": null,
+          "forward_20d_mean": null,
+          "forward_20d_win_rate": null,
+          "forward_5d_mean": null,
+          "forward_60d_mean": null,
+          "future_drawdown_20d_mean": null,
+          "future_realized_vol_20d_mean": null
+        }
+      },
+      "max_drawdown": null,
+      "overlap_with_existing_signals": 3,
+      "production_impact": "none_default_off_shadow_artifact_only",
+      "scarce_slot_opportunity_cost": {
+        "downside_risk_overlay": {
+          "avg_slot_conflict_value_20d": null,
+          "conflict_count": 0,
+          "examples": [],
+          "positive_conflict_fraction": null
+        },
+        "squeeze_overlay": {
+          "avg_slot_conflict_value_20d": null,
+          "conflict_count": 0,
+          "examples": [],
+          "positive_conflict_fraction": null
+        }
+      },
+      "sharpe_daily": null,
+      "signals_generated": null,
+      "signals_survived": null,
+      "survival_rate": null,
+      "total_pnl": null,
+      "total_return": null,
+      "trade_count": null,
+      "vs_qqq": null,
+      "vs_spy": null,
+      "win_rate": null
+    }
+  },
+  "single_causal_variable": "forward options ledger quality gate and usable-date outcome close only",
+  "timestamp": "2026-05-07T17:58:22+00:00",
+  "validation": {
+    "smoke_command": "python scripts/run_options_forward_ledger.py --experiment-id exp-20260507-091 --output-dir data\\experiments\\exp-20260507-091 --date 2026-05-05 --date 2026-05-06",
+    "syntax_check": "ast.parse scripts/run_options_forward_ledger.py passed"
+  }
+}
