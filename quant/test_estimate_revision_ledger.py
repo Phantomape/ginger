@@ -7,8 +7,11 @@ from pathlib import Path
 
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import (
+    annotate_rows_with_signal_matches,
     build_revision_ledger_rows,
+    load_daily_signal_match_records,
     load_snapshot_records,
+    persist_estimate_revision_ledger,
     summarize_ledger_rows,
 )
 
@@ -51,7 +54,70 @@ def test_persist_earnings_snapshot_keeps_next_earnings_date(tmp_path):
 
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     assert payload["earnings"]["ACME"]["next_earnings_date"] == "2026-07-30"
+    assert payload["earnings"]["ACME"]["next_earnings_date_inferred"] is False
     assert "ignored" not in payload["earnings"]["ACME"]
+
+
+def test_persist_earnings_snapshot_infers_next_date_from_dte(tmp_path):
+    path = persist_earnings_snapshot(
+        {
+            "ACME": {
+                "days_to_earnings": 3,
+                "eps_estimate": 1.23,
+            }
+        },
+        as_of=datetime(2026, 5, 7),
+        base_dir=tmp_path,
+    )
+
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    row = payload["earnings"]["ACME"]
+    assert row["next_earnings_date"] == "2026-05-12"
+    assert row["next_earnings_date_source"] == "derived_from_days_to_earnings"
+    assert row["next_earnings_date_inferred"] is True
+    assert payload["coverage"]["tickers_with_next_earnings_date"] == 1
+    assert payload["coverage"]["tickers_with_inferred_next_earnings_date"] == 1
+
+
+def test_persist_earnings_snapshot_rewrites_existing_when_next_date_improves(tmp_path):
+    legacy_path = tmp_path / "earnings_snapshot_20260507.json"
+    legacy_path.write_text(
+        json.dumps(
+            {
+                "date": "20260507",
+                "timestamp": "2026-05-07T00:00:00",
+                "coverage": {
+                    "tickers_total": 1,
+                    "tickers_persisted": 1,
+                    "tickers_with_days_to_earnings": 1,
+                    "tickers_with_eps_estimate": 1,
+                },
+                "earnings": {
+                    "ACME": {
+                        "days_to_earnings": 3,
+                        "eps_estimate": 1.23,
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    path = persist_earnings_snapshot(
+        {
+            "ACME": {
+                "days_to_earnings": 3,
+                "eps_estimate": 1.23,
+            }
+        },
+        as_of=datetime(2026, 5, 7),
+        base_dir=tmp_path,
+    )
+
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    assert payload["schema_version"] == 2
+    assert payload["earnings"]["ACME"]["next_earnings_date"] == "2026-05-12"
+    assert payload["coverage"]["tickers_with_next_earnings_date"] == 1
 
 
 def test_revision_ledger_marks_same_event_forward_delta_pit_safe(tmp_path):
@@ -122,3 +188,124 @@ def test_revision_ledger_flags_backfilled_snapshots_not_pit(tmp_path):
     assert rows[0]["eps_estimate_delta_prev"] == 0.1
     assert rows[0]["estimate_revision_usable"] is False
     assert rows[0]["pit_caveat"] == "current_snapshot_created_after_asof"
+
+
+def test_persist_estimate_revision_ledger_writes_default_off_artifacts(tmp_path):
+    data_dir = tmp_path / "data"
+    output_dir = tmp_path / "non_ohlcv"
+    data_dir.mkdir()
+    _write_snapshot(
+        data_dir,
+        "20260506",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.00}},
+        mtime=datetime(2026, 5, 6, 22, 0, tzinfo=timezone.utc),
+    )
+    _write_snapshot(
+        data_dir,
+        "20260507",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.10}},
+        mtime=datetime(2026, 5, 7, 22, 0, tzinfo=timezone.utc),
+    )
+
+    summary = persist_estimate_revision_ledger(
+        as_of="2026-05-07",
+        data_dir=data_dir,
+        output_dir=output_dir,
+        generated_at=datetime(2026, 5, 7, 23, 0, tzinfo=timezone.utc),
+    )
+
+    assert summary["row_count"] == 1
+    assert summary["estimate_revision_usable_rows"] == 1
+    assert summary["production_impact"]["alters_signal_generation"] is False
+    assert summary["production_impact"]["alters_candidate_ranking"] is False
+    assert summary["production_impact"]["alters_sizing"] is False
+    assert summary["production_impact"]["alters_orders"] is False
+    assert (output_dir / "estimate_revision_ledger_20260507.jsonl").exists()
+    assert (output_dir / "estimate_revision_ledger_summary_20260507.json").exists()
+
+
+def test_revision_ledger_marks_daily_candidate_and_signal_matches(tmp_path):
+    _write_snapshot(
+        tmp_path,
+        "20260506",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.00}},
+        mtime=datetime(2026, 5, 6, 22, 0, tzinfo=timezone.utc),
+    )
+    _write_snapshot(
+        tmp_path,
+        "20260507",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.10}},
+        mtime=datetime(2026, 5, 7, 22, 0, tzinfo=timezone.utc),
+    )
+    (tmp_path / "quant_signals_20260507.json").write_text(
+        json.dumps(
+            {
+                "signals": [
+                    {
+                        "ticker": "ACME",
+                        "strategy": "breakout_long",
+                        "action": "buy",
+                        "trade_enabled": True,
+                    }
+                ],
+                "entry_execution_plan": {"slot_sliced_signals": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "trend_signals_20260507.json").write_text(
+        json.dumps(
+            {
+                "signals": {
+                    "ACME": {
+                        "breakout": True,
+                        "above_200ma": True,
+                        "volume_spike": True,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    rows = build_revision_ledger_rows(load_snapshot_records(tmp_path), as_of="2026-05-07")
+    match_records = load_daily_signal_match_records(tmp_path, "2026-05-07")
+    annotate_rows_with_signal_matches(rows, match_records)
+    summary = summarize_ledger_rows(rows)
+
+    assert rows[0]["matched_feature_row_today"] is True
+    assert rows[0]["matched_candidate_today"] is True
+    assert rows[0]["matched_selected_signal_today"] is True
+    assert rows[0]["matched_candidate_count"] == 1
+    assert rows[0]["matched_selected_signal_count"] == 1
+    assert "breakout_long" in rows[0]["matched_signal_strategies"]
+    assert "breakout_feature" in rows[0]["matched_signal_strategies"]
+    assert rows[0]["candidate_match_gap_reason"] is None
+    assert summary["matched_candidate_rows"] == 1
+    assert summary["matched_selected_signal_rows"] == 1
+    assert summary["estimate_revision_usable_and_matched_candidate_rows"] == 1
+
+
+def test_revision_ledger_keeps_feature_rows_separate_from_candidates(tmp_path):
+    _write_snapshot(
+        tmp_path,
+        "20260507",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.10}},
+        mtime=datetime(2026, 5, 7, 22, 0, tzinfo=timezone.utc),
+    )
+    (tmp_path / "trend_signals_20260507.json").write_text(
+        json.dumps({"signals": {"ACME": {"breakout": True, "above_200ma": True}}}),
+        encoding="utf-8",
+    )
+
+    rows = build_revision_ledger_rows(load_snapshot_records(tmp_path), as_of="2026-05-07")
+    match_records = load_daily_signal_match_records(tmp_path, "2026-05-07")
+    annotate_rows_with_signal_matches(rows, match_records)
+    summary = summarize_ledger_rows(rows)
+
+    assert rows[0]["matched_feature_row_today"] is True
+    assert rows[0]["matched_candidate_today"] is False
+    assert rows[0]["matched_selected_signal_today"] is False
+    assert rows[0]["candidate_match_gap_reason"] == "feature_row_only_no_persisted_candidate_object"
+    assert summary["matched_feature_rows"] == 1
+    assert summary["matched_candidate_rows"] == 0

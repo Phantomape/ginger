@@ -35,6 +35,7 @@ from constants import (
     REGIME_AWARE_EXIT,
 )
 from earnings_snapshot import persist_earnings_snapshot
+from estimate_revision_ledger import persist_estimate_revision_ledger
 from operator_input_paths import open_positions_path, repo_relative
 from regime_exit import compute_regime_exit_profile
 
@@ -185,6 +186,16 @@ def main():
         pilot_records_as_of,
         select_pilot_entry_candidates,
     )
+    from platform_rs20_watch import (
+        build_platform_rs20_forward_watch,
+        empty_platform_rs20_forward_watch,
+        persist_platform_rs20_forward_watch,
+    )
+    from sec_10k_forward_watch import (
+        build_sec_10k_forward_watch,
+        empty_sec_10k_forward_watch,
+        persist_sec_10k_forward_watch,
+    )
 
     open_positions    = _load_open_positions()
     _stored_pv        = (open_positions or {}).get("portfolio_value_usd")
@@ -301,6 +312,40 @@ def main():
     # Without this snapshot, the backtester uses None for both fields, capping
     # C-strategy confidence at 0.83 and preventing quality filtering.
     persist_earnings_snapshot(earnings_dict, as_of=datetime.now(), logger=log)
+    try:
+        estimate_revision_summary = persist_estimate_revision_ledger(
+            as_of=today_iso,
+            data_dir="data",
+            output_dir="data/non_ohlcv",
+            # Current-day quant_signals are written later in the pipeline.
+            # Keep run.py's daily artifact free of stale same-day matches.
+            match_daily_signals=False,
+        )
+        log.info(
+            "Estimate revision ledger: rows=%s usable=%s up=%s down=%s",
+            estimate_revision_summary.get("row_count"),
+            estimate_revision_summary.get("estimate_revision_usable_rows"),
+            estimate_revision_summary.get("up_revision_rows"),
+            estimate_revision_summary.get("down_revision_rows"),
+        )
+    except Exception as e:
+        log.warning(f"Estimate revision ledger unavailable: {e}")
+        estimate_revision_summary = {
+            "status": "failed",
+            "as_of_date": today_iso,
+            "error": str(e),
+            "production_impact": {
+                "shared_policy_changed": False,
+                "backtester_adapter_changed": False,
+                "run_adapter_changed": True,
+                "replay_only": False,
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+                "scope": "default_off_forward_estimate_revision_data_ledger_failed",
+            },
+        }
 
     try:
         non_ohlcv_daily_summary = ensure_non_ohlcv_coverage(
@@ -375,6 +420,7 @@ def main():
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
+    non_ohlcv_snapshot["estimate_revision_ledger"] = estimate_revision_summary
     features_dict = {}
     for ticker in data_universe:
         features_dict[ticker] = compute_features(
@@ -736,6 +782,31 @@ def main():
             entry_execution_plan["signals_before_entry_plan"],
         )
 
+    try:
+        platform_rs20_watch = persist_platform_rs20_forward_watch(
+            build_platform_rs20_forward_watch(
+                as_of=today_iso,
+                entry_execution_plan=entry_execution_plan,
+                ohlcv_by_ticker={**ohlcv_dict, "SPY": spy_ohlcv},
+                features_by_ticker=features_dict,
+                earnings_by_ticker=earnings_dict,
+            )
+        )
+        if platform_rs20_watch.get("candidate_count", 0) > 0:
+            persistence = platform_rs20_watch.get("persistence") or {}
+            log.info(
+                "Platform RS20 no-gap watch: candidates=%d appended=%d ledger_rows=%d",
+                platform_rs20_watch.get("candidate_count", 0),
+                persistence.get("appended_count", 0),
+                persistence.get("ledger_row_count", 0),
+            )
+    except Exception as e:
+        log.warning(f"Platform RS20 no-gap watch unavailable: {e}")
+        platform_rs20_watch = empty_platform_rs20_forward_watch(
+            today_iso,
+            "platform_rs20_watch_build_failed",
+        )
+
     addon_ohlcv_dict = dict(ohlcv_dict)
     addon_ohlcv_dict["SPY"] = spy_ohlcv
     addon_actions, addon_audit = build_followthrough_addon_actions(
@@ -765,6 +836,33 @@ def main():
         )
 
     non_ohlcv_paths = non_ohlcv_snapshot.get("paths") or {}
+
+    try:
+        sec_10k_forward_watch = persist_sec_10k_forward_watch(
+            build_sec_10k_forward_watch(
+                as_of=today_iso,
+                source_path=non_ohlcv_paths.get("sec_filing_events"),
+                ohlcv_by_ticker=ohlcv_dict,
+                current_universe=set(universe) | set(pilot_universe),
+                core_signals=signals,
+                entry_execution_plan=entry_execution_plan,
+            )
+        )
+        if sec_10k_forward_watch.get("ten_k_event_count", 0) > 0:
+            persistence = sec_10k_forward_watch.get("persistence") or {}
+            log.info(
+                "SEC 10-K liquidity watch: 10-K=%d candidates=%d appended=%d ledger_rows=%d",
+                sec_10k_forward_watch.get("ten_k_event_count", 0),
+                sec_10k_forward_watch.get("candidate_count", 0),
+                persistence.get("appended_count", 0),
+                persistence.get("ledger_row_count", 0),
+            )
+    except Exception as e:
+        log.warning(f"SEC 10-K liquidity watch unavailable: {e}")
+        sec_10k_forward_watch = empty_sec_10k_forward_watch(
+            today_iso,
+            "sec_10k_forward_watch_build_failed",
+        )
 
     try:
         form4_event_queue = build_forward_queue_from_transactions(
@@ -1066,6 +1164,8 @@ def main():
     trend_signals_dict["event_sleeve_bundle"] = event_sleeve_bundle
     trend_signals_dict["state_surface_queue"] = state_surface_queue
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
+    trend_signals_dict["platform_rs20_watch"] = platform_rs20_watch
+    trend_signals_dict["sec_10k_forward_watch"] = sec_10k_forward_watch
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
     trend_signals_dict["crypto_sleeve"] = crypto_sleeve
 
@@ -1092,6 +1192,8 @@ def main():
         sec_leadership_event_sleeve = sec_leadership_event_sleeve,
         event_sleeve_bundle = event_sleeve_bundle,
         state_surface_sleeve = state_surface_sleeve,
+        platform_rs20_watch = platform_rs20_watch,
+        sec_10k_forward_watch = sec_10k_forward_watch,
         non_ohlcv_snapshot = non_ohlcv_snapshot,
         crypto_sleeve = crypto_sleeve,
     )
@@ -1124,6 +1226,8 @@ def main():
         "event_sleeve_bundle": event_sleeve_bundle,
         "state_surface_queue": state_surface_queue,
         "state_surface_sleeve": state_surface_sleeve,
+        "platform_rs20_watch": platform_rs20_watch,
+        "sec_10k_forward_watch": sec_10k_forward_watch,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,
         "crypto_sleeve": crypto_sleeve,
         "heat_blocked_signals": heat_blocked_signals,

@@ -49,6 +49,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            sec_leadership_event_sleeve=None,
                            event_sleeve_bundle=None,
                            state_surface_sleeve=None,
+                           platform_rs20_watch=None,
                            non_ohlcv_snapshot=None,
                            crypto_sleeve=None):
     """
@@ -74,6 +75,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         sec_leadership_event_sleeve (dict): Default-off SEC leadership paper sleeve
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
+        platform_rs20_watch (dict):     Default-off platform RS20 no-gap watch ledger
         non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
         crypto_sleeve (dict):           Isolated BTC/USD sleeve advice
 
@@ -131,6 +133,15 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"generated={catchup.get('days_generated')} "
                 f"existing={catchup.get('days_recorded_existing')} "
                 f"failed={catchup.get('days_failed')}"
+            )
+        estimate_revision = non_ohlcv_snapshot.get("estimate_revision_ledger") or {}
+        if estimate_revision:
+            lines.append(
+                "  Estimate revisions: "
+                f"rows={estimate_revision.get('row_count')} "
+                f"usable={estimate_revision.get('estimate_revision_usable_rows')} "
+                f"up={estimate_revision.get('up_revision_rows')} "
+                f"down={estimate_revision.get('down_revision_rows')}"
             )
 
     if portfolio_heat:
@@ -203,6 +214,45 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         if sliced:
             tickers = ", ".join(d.get("ticker", "?") for d in sliced)
             lines.append(f"  Slot-sliced candidate(s): {tickers}")
+
+    if platform_rs20_watch and (
+        platform_rs20_watch.get("candidate_count", 0) > 0
+        or platform_rs20_watch.get("platform_missed_count", 0) > 0
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("PLATFORM RS20 NO-GAP WATCH")
+        lines.append("-" * 60)
+        persistence = platform_rs20_watch.get("persistence") or {}
+        lines.append(
+            f"  Trade enabled: {platform_rs20_watch.get('trade_enabled', False)}  |  "
+            f"Missed platform: {platform_rs20_watch.get('platform_missed_count', 0)}  |  "
+            f"RS20: {platform_rs20_watch.get('platform_rs20_missed_count', 0)}  |  "
+            f"No-gap watch: {platform_rs20_watch.get('candidate_count', 0)}"
+        )
+        if persistence:
+            lines.append(
+                f"  Ledger rows: {persistence.get('ledger_row_count', 0)}  |  "
+                f"Appended today: {persistence.get('appended_count', 0)}"
+            )
+        for candidate in (platform_rs20_watch.get("candidates") or [])[:5]:
+            excess = candidate.get("excess_spy_return_20d")
+            gap = candidate.get("gap_pct")
+            excess_text = (
+                f"{excess * 100:.1f}%"
+                if isinstance(excess, (int, float))
+                else "n/a"
+            )
+            gap_text = (
+                f"{gap * 100:.1f}%"
+                if isinstance(gap, (int, float))
+                else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('decision', '?')} / {candidate.get('strategy', '?')} "
+                f"RS20 excess {excess_text}, gap {gap_text} "
+                "(observe only)"
+            )
 
     addon_actions = addon_actions or []
     if addon_actions:

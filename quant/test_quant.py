@@ -6611,13 +6611,17 @@ def test_persist_earnings_snapshot_creates_structured_daily_file(tmp_path):
     assert payload["coverage"] == {
         "tickers_total": 2,
         "tickers_persisted": 1,
-        "tickers_with_next_earnings_date": 0,
+        "tickers_with_next_earnings_date": 1,
+        "tickers_with_inferred_next_earnings_date": 1,
         "tickers_with_days_to_earnings": 1,
         "tickers_with_eps_estimate": 1,
         "tickers_with_eps_actual_last": 0,
         "tickers_with_surprise_history": 1,
     }
     assert payload["earnings"]["NVDA"] == {
+        "next_earnings_date": "2026-04-24",
+        "next_earnings_date_source": "derived_from_days_to_earnings",
+        "next_earnings_date_inferred": True,
         "days_to_earnings": 5,
         "eps_estimate": 1.23,
         "avg_historical_surprise_pct": 7.8,
