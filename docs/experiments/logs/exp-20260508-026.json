@@ -1,0 +1,95 @@
+{
+  "experiment_id": "exp-20260508-026",
+  "timestamp": "2026-05-08T17:29:49Z",
+  "lane": "alpha_search",
+  "alpha_hypothesis_category": "capital_allocation",
+  "hypothesis": "Day-2 follow-through add-ons with checkpoint-day volume below their 20-session average are weaker capital-allocation candidates; requiring volume confirmation may conserve heat without relaxing the hard portfolio cap.",
+  "why_this_now": "LLM soft-ranking remains data-limited, event overlays remain forward/watch constrained, and add-on heat relaxation was positive but production-unsafe. This tests an orthogonal ex-ante add-on spending discriminator using OHLCV fields available to both backtest and production.",
+  "history_check": {
+    "checked": ["AGENTS.md", "docs/backtesting.md", "docs/alpha-optimization-playbook.md", "docs/experiment_log.jsonl", "docs/experiments/logs/exp-20260508-017.json", "docs/experiments/logs/exp-20260508-018.json", "docs/experiments/logs/exp-20260508-019.json", "docs/experiments/logs/exp-20260508-023.json"],
+    "not_repeated": [
+      "Not a local price/RS add-on trigger retune.",
+      "Not a raw add-on heat-cap relaxation.",
+      "Not same-day add-on execution ordering.",
+      "Not second add-on enablement."
+    ],
+    "mechanism_insight_result": "The tested volume confirmation is an add-on quality discriminator, but it misclassifies profitable confirmed leaders as low quality."
+  },
+  "change_type": "capital_allocation_addon_quality_discriminator",
+  "single_causal_variable": "minimum checkpoint-day volume ratio for follow-through add-ons",
+  "parameters": {
+    "feature": "checkpoint_volume_ratio",
+    "formula": "Volume[checkpoint_day] / average(Volume[checkpoint_day-19:checkpoint_day])",
+    "thresholds_tested": [1.0, 1.2],
+    "baseline_threshold": null,
+    "locked_variables": ["signal generation", "entry gates", "candidate ordering", "position sizing", "hard portfolio heat cap", "add-on checkpoint day", "add-on unrealized/RS triggers", "add-on fraction", "exits", "universe", "LLM/news replay settings"]
+  },
+  "date_range": {
+    "late_strong": {"start": "2025-10-23", "end": "2026-04-21", "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"},
+    "mid_weak": {"start": "2025-04-23", "end": "2025-10-22", "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"},
+    "old_thin": {"start": "2024-10-02", "end": "2025-04-22", "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"}
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "baseline_context": "Metrics are from the current dirty worktree after the pre-existing exp-20260508-023 effective-stop add-on heat parity repair. Historical accepted-stack docs still show the older 3.7435/1.5478/0.3359 EV baseline; this experiment compares against the same current worktree state for all variants.",
+  "metrics": {
+    "late_strong": {
+      "before": {"expected_value_score": 4.0674, "total_pnl": 90788.88, "sharpe_daily": 4.48, "max_drawdown_pct": 0.0539, "win_rate": 0.7895, "total_trades": 19, "survival_rate": 0.8039, "addon_executed": 7},
+      "after_1_0": {"expected_value_score": 4.0239, "total_pnl": 89823.19, "sharpe_daily": 4.48, "max_drawdown_pct": 0.0539, "win_rate": 0.7895, "total_trades": 19, "survival_rate": 0.8039, "addon_executed": 6},
+      "after_1_2": {"expected_value_score": 4.0239, "total_pnl": 89823.19, "sharpe_daily": 4.48, "max_drawdown_pct": 0.0539, "win_rate": 0.7895, "total_trades": 19, "survival_rate": 0.8039, "addon_executed": 6}
+    },
+    "mid_weak": {
+      "before": {"expected_value_score": 1.6195, "total_pnl": 59540.63, "sharpe_daily": 2.72, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "total_trades": 21, "survival_rate": 0.7925, "addon_executed": 7},
+      "after_1_0": {"expected_value_score": 1.5736, "total_pnl": 58281.10, "sharpe_daily": 2.70, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "total_trades": 21, "survival_rate": 0.7925, "addon_executed": 5},
+      "after_1_2": {"expected_value_score": 1.5268, "total_pnl": 56342.92, "sharpe_daily": 2.71, "max_drawdown_pct": 0.0879, "win_rate": 0.5238, "total_trades": 21, "survival_rate": 0.7925, "addon_executed": 2}
+    },
+    "old_thin": {
+      "before": {"expected_value_score": 0.3583, "total_pnl": 27347.42, "sharpe_daily": 1.31, "max_drawdown_pct": 0.0903, "win_rate": 0.4091, "total_trades": 22, "survival_rate": 0.9167, "addon_executed": 4},
+      "after_1_0": {"expected_value_score": 0.3583, "total_pnl": 27347.42, "sharpe_daily": 1.31, "max_drawdown_pct": 0.0903, "win_rate": 0.4091, "total_trades": 22, "survival_rate": 0.9167, "addon_executed": 4},
+      "after_1_2": {"expected_value_score": 0.3583, "total_pnl": 27347.42, "sharpe_daily": 1.31, "max_drawdown_pct": 0.0903, "win_rate": 0.4091, "total_trades": 22, "survival_rate": 0.9167, "addon_executed": 4}
+    }
+  },
+  "aggregate": {
+    "baseline": {"expected_value_score_sum": 6.0452, "total_pnl_sum": 177676.93},
+    "volume_ratio_1_0": {"expected_value_score_sum": 5.9558, "expected_value_score_delta_sum": -0.0894, "expected_value_score_delta_pct": -0.014789, "total_pnl_sum": 175451.71, "total_pnl_delta_sum": -2225.22, "total_pnl_delta_pct": -0.012524, "ev_windows_improved": 0},
+    "volume_ratio_1_2": {"expected_value_score_sum": 5.9090, "expected_value_score_delta_sum": -0.1362, "expected_value_score_delta_pct": -0.022530, "total_pnl_sum": 173513.53, "total_pnl_delta_sum": -4163.40, "total_pnl_delta_pct": -0.023432, "ev_windows_improved": 0}
+  },
+  "gate4": {
+    "passed": false,
+    "reason": "No variant improved EV, PnL, Sharpe, drawdown, or trade count in enough windows. Both thresholds reduced late_strong and mid_weak performance while old_thin was unchanged."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "production_signal_path_changed": false,
+    "temporary_shared_hook_rolled_back": true,
+    "final_code_changed": false
+  },
+  "validation": {
+    "commands": [
+      ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_production_parity.py",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json --no-secondary --sweep ADDON_MIN_CHECKPOINT_VOLUME_RATIO 0 1 1.2",
+      "Direct BacktestEngine three-window run for baseline, 1.0, and 1.2 variants"
+    ],
+    "pytest_result": "19 passed"
+  },
+  "decision": "rejected",
+  "rejection_reason": "Checkpoint volume confirmation misclassified profitable add-ons as low quality. The 1.0 threshold rejected XOM in late_strong and GS/LLY in mid_weak; the 1.2 threshold additionally rejected PLTR/AAPL/APP in mid_weak. This reduced aggregate EV and PnL with no drawdown benefit.",
+  "next_retry_requires": [
+    "Do not retry simple checkpoint volume-ratio floors on the same frozen windows.",
+    "A valid add-on discriminator must explain marginal add-on outcome quality, not just confirm participation.",
+    "Prefer budget reservation or lifecycle-staged heat allocation that preserves the hard portfolio heat cap."
+  ],
+  "related_files": [
+    "data/experiments/exp-20260508-026/addon_volume_confirmation.json",
+    "docs/experiments/logs/exp-20260508-026.json",
+    "docs/experiments/tickets/exp-20260508-026.json",
+    "docs/experiments/artifacts/exp-20260508-026_addon_volume_confirmation.md"
+  ]
+}
