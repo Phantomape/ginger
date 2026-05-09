@@ -39,6 +39,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            dropped_signals=None, addon_actions=None,
                            entry_execution_plan=None,
                            pilot_attribution=None,
+                           ai_infra_aggressive_attribution=None,
                            form4_event_queue=None,
                            form4_event_sleeve=None,
                            sec_event_queue=None,
@@ -66,6 +67,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
         pilot_attribution (dict):       Pilot direct/replacement-value summary
+        ai_infra_aggressive_attribution (dict): AI infra sleeve daily surface
         form4_event_queue (dict):       Default-off Form 4 observation queue
         form4_event_sleeve (dict):      Default-off Form 4 paper event sleeve
         sec_event_queue (dict):         Default-off SEC negative-reaction queue
@@ -346,6 +348,33 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 lines.append(f"  Avg risk-adjusted replacement value: {rav}")
         else:
             lines.append("  No closed pilot outcomes logged yet.")
+
+    if ai_infra_aggressive_attribution:
+        lines.append("\n" + "-" * 60)
+        lines.append("AI INFRA AGGRESSIVE SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            "  Bull booster: "
+            f"{ai_infra_aggressive_attribution.get('bull_booster_active', False)}  |  "
+            "Max slots: "
+            f"{ai_infra_aggressive_attribution.get('max_concurrent_positions', 'n/a')}"
+        )
+        selected = ai_infra_aggressive_attribution.get("selected") or []
+        sliced = ai_infra_aggressive_attribution.get("sliced") or []
+        lines.append(f"  Selected: {len(selected)}  |  Sliced: {len(sliced)}")
+        for item in selected[:5]:
+            lines.append(
+                "  "
+                f"{item.get('ticker', '?')} "
+                f"({item.get('segment', 'unknown')}): "
+                f"TQS={item.get('trade_quality_score', 'n/a')} "
+                f"shares={item.get('shares_to_buy', 'n/a')}"
+            )
+        repl_value = ai_infra_aggressive_attribution.get("core_replacement_value")
+        if isinstance(repl_value, (int, float)):
+            lines.append(f"  Core replacement value: ${repl_value:,.2f}")
+        else:
+            lines.append("  Core replacement value: pending")
 
     if form4_event_queue and (
         form4_event_queue.get("candidate_count", 0) > 0

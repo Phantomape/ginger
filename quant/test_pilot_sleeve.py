@@ -6,6 +6,8 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from pilot_sleeve import (  # noqa: E402
+    AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+    CONSUMER_PLATFORM_SLEEVE_NAME,
     apply_pilot_sizing_policy,
     build_counterfactual_snapshots,
     mark_pilot_signals,
@@ -142,7 +144,10 @@ def test_select_pilot_entry_candidates_prioritizes_trade_quality():
     selected, audit = select_pilot_entry_candidates(signals, records)
 
     assert [s["ticker"] for s in selected] == ["LITE"]
-    assert audit["selection_policy"] == "trade_quality_score_then_confidence_then_risk_reward"
+    assert (
+        audit["selection_policy"]
+        == "trade_quality_score_then_confidence_then_risk_reward_with_segment_cap"
+    )
     assert [s["ticker"] for s in audit["pilot_slot_sliced_signals"]] == ["INTC"]
 
 
@@ -160,6 +165,171 @@ def test_select_pilot_entry_candidates_blocks_when_existing_pilot_is_open():
     assert selected == []
     assert audit["available_pilot_slots"] == 0
     assert audit["active_pilot_positions"] == ["INTC"]
+
+
+def test_ai_infra_bull_booster_opens_second_segment_slot():
+    records = {
+        "INTC": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "compute_memory_semis",
+        },
+        "LITE": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "optical_connectivity",
+        },
+    }
+    signals = [
+        {
+            "ticker": "INTC",
+            "trade_quality_score": 0.9,
+            "sizing": {"shares_to_buy": 1, "position_pct_of_portfolio": 0.08},
+        },
+        {
+            "ticker": "LITE",
+            "trade_quality_score": 0.8,
+            "sizing": {"shares_to_buy": 1, "position_pct_of_portfolio": 0.08},
+        },
+    ]
+
+    selected, audit = select_pilot_entry_candidates(
+        signals,
+        records,
+        market_context={
+            "market_regime": "BULL",
+            "qqq_10d_return": 0.06,
+            "spy_10d_return": 0.03,
+        },
+    )
+
+    assert [s["ticker"] for s in selected] == ["INTC", "LITE"]
+    sleeve_audit = audit["by_sleeve"][AI_INFRA_AGGRESSIVE_SLEEVE_NAME]
+    assert sleeve_audit["bull_booster_active"] is True
+    assert sleeve_audit["max_concurrent_positions"] == 2
+
+
+def test_ai_infra_segment_cap_blocks_second_same_segment_candidate():
+    records = {
+        "INTC": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "compute_memory_semis",
+        },
+        "WDC": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "compute_memory_semis",
+        },
+    }
+    signals = [
+        {
+            "ticker": "INTC",
+            "trade_quality_score": 0.9,
+            "sizing": {"shares_to_buy": 1, "position_pct_of_portfolio": 0.08},
+        },
+        {
+            "ticker": "WDC",
+            "trade_quality_score": 0.8,
+            "sizing": {"shares_to_buy": 1, "position_pct_of_portfolio": 0.08},
+        },
+    ]
+
+    selected, audit = select_pilot_entry_candidates(
+        signals,
+        records,
+        market_context={
+            "market_regime": "BULL",
+            "qqq_10d_return": 0.06,
+            "spy_10d_return": 0.03,
+        },
+    )
+
+    assert [s["ticker"] for s in selected] == ["INTC"]
+    sliced = audit["by_sleeve"][AI_INFRA_AGGRESSIVE_SLEEVE_NAME][
+        "pilot_slot_sliced_signals"
+    ]
+    assert sliced[0]["ticker"] == "WDC"
+    assert sliced[0]["pilot_sleeve"]["slot_decision"] == "sleeve_segment_limit"
+
+
+def test_ai_infra_sleeve_risk_cap_blocks_extra_candidate():
+    records = {
+        "INTC": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "compute_memory_semis",
+        },
+        "LITE": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "optical_connectivity",
+        },
+    }
+    signals = [
+        {
+            "ticker": "INTC",
+            "trade_quality_score": 0.9,
+            "sizing": {
+                "shares_to_buy": 1,
+                "risk_pct": 0.09,
+                "position_pct_of_portfolio": 0.04,
+            },
+        },
+        {
+            "ticker": "LITE",
+            "trade_quality_score": 0.8,
+            "sizing": {
+                "shares_to_buy": 1,
+                "risk_pct": 0.02,
+                "position_pct_of_portfolio": 0.04,
+            },
+        },
+    ]
+
+    selected, audit = select_pilot_entry_candidates(
+        signals,
+        records,
+        market_context={
+            "market_regime": "BULL",
+            "qqq_10d_return": 0.06,
+            "spy_10d_return": 0.03,
+        },
+    )
+
+    assert [s["ticker"] for s in selected] == ["INTC"]
+    sleeve_audit = audit["by_sleeve"][AI_INFRA_AGGRESSIVE_SLEEVE_NAME]
+    assert sleeve_audit["selected_risk_pct"] == 0.09
+    sliced = sleeve_audit["pilot_slot_sliced_signals"]
+    assert sliced[0]["ticker"] == "LITE"
+    assert sliced[0]["pilot_sleeve"]["slot_decision"] == "sleeve_risk_limit"
+
+
+def test_independent_consumer_sleeve_does_not_consume_ai_slot():
+    records = {
+        "INTC": {
+            "pilot_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+            "theme_segment": "compute_memory_semis",
+        },
+        "HOOD": {
+            "pilot_sleeve": CONSUMER_PLATFORM_SLEEVE_NAME,
+            "theme_segment": "consumer_digital_platform",
+        },
+    }
+    signals = [
+        {
+            "ticker": "INTC",
+            "trade_quality_score": 0.9,
+            "sizing": {"shares_to_buy": 1, "position_pct_of_portfolio": 0.08},
+        },
+        {
+            "ticker": "HOOD",
+            "trade_quality_score": 0.95,
+            "sizing": {"shares_to_buy": 1, "position_pct_of_portfolio": 0.05},
+        },
+    ]
+
+    selected, audit = select_pilot_entry_candidates(signals, records)
+
+    assert sorted(s["ticker"] for s in selected) == ["HOOD", "INTC"]
+    assert set(audit["by_sleeve"]) == {
+        AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+        CONSUMER_PLATFORM_SLEEVE_NAME,
+    }
 
 
 def test_counterfactual_snapshot_uses_core_displaced_candidate():

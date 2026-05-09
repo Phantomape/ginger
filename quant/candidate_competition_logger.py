@@ -292,6 +292,7 @@ def summarize_pilot_competition(
         record.get("decision_id"): record
         for record in records
         if record.get("record_type") == "decision_snapshot"
+        and (not sleeve or record.get("sleeve") == sleeve)
     }
     outcome_records = [
         record for record in records if record.get("record_type") == "decision_outcome"

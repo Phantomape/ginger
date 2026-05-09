@@ -178,8 +178,10 @@ def main():
         empty_state_surface_sleeve_snapshot,
     )
     from pilot_sleeve       import (
+        AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
         append_pilot_decision_snapshots,
         apply_pilot_sizing_policy,
+        build_ai_infra_aggressive_attribution,
         build_counterfactual_snapshots,
         mark_pilot_signals,
         pilot_governance_metadata,
@@ -742,6 +744,7 @@ def main():
         pilot_signals,
         pilot_records,
         open_positions=open_positions,
+        market_context=market_context,
     )
     pilot_decision_snapshots = build_counterfactual_snapshots(
         pilot_signals,
@@ -825,7 +828,15 @@ def main():
         )
 
     metrics = compute_metrics()
-    pilot_attribution = summarize_pilot_competition(sleeve="AI_INFRA_PILOT")
+    pilot_attribution = summarize_pilot_competition()
+    ai_infra_aggressive_attribution = summarize_pilot_competition(
+        sleeve=AI_INFRA_AGGRESSIVE_SLEEVE_NAME
+    )
+    ai_infra_aggressive_attribution = build_ai_infra_aggressive_attribution(
+        pilot_signals=pilot_signals,
+        pilot_entry_execution_plan=pilot_entry_execution_plan,
+        pilot_attribution=ai_infra_aggressive_attribution,
+    )
     if pilot_attribution.get("outcome_records"):
         log.info(
             "Pilot attribution: outcomes=%s direct_pnl=$%s replacement_value=%s pending=%s",
@@ -1153,6 +1164,7 @@ def main():
     trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
     trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
     trend_signals_dict["pilot_attribution"] = pilot_attribution
+    trend_signals_dict["ai_infra_aggressive_attribution"] = ai_infra_aggressive_attribution
     trend_signals_dict["form4_event_queue"] = form4_event_queue
     trend_signals_dict["form4_event_sleeve"] = form4_event_sleeve
     trend_signals_dict["sec_event_queue"] = sec_event_queue
@@ -1182,6 +1194,7 @@ def main():
         addon_actions    = addon_actions,
         entry_execution_plan = entry_execution_plan,
         pilot_attribution = pilot_attribution,
+        ai_infra_aggressive_attribution = ai_infra_aggressive_attribution,
         form4_event_queue = form4_event_queue,
         form4_event_sleeve = form4_event_sleeve,
         sec_event_queue = sec_event_queue,
@@ -1215,6 +1228,7 @@ def main():
         "pilot_decision_snapshots": pilot_decision_snapshots,
         "pilot_decision_hashes": pilot_decision_hashes,
         "pilot_attribution": pilot_attribution,
+        "ai_infra_aggressive_attribution": ai_infra_aggressive_attribution,
         "form4_event_queue": form4_event_queue,
         "form4_event_sleeve": form4_event_sleeve,
         "sec_event_queue": sec_event_queue,

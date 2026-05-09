@@ -107,12 +107,14 @@ from production_parity import (
 from position_manager import compute_exit_levels, evaluate_exit_signals
 from yfinance_bootstrap import configure_yfinance_runtime
 from pilot_sleeve import (
+    AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
     PILOT_SLEEVE_NAME,
     apply_pilot_sizing_policy,
     build_counterfactual_snapshots,
     mark_pilot_signals,
     pilot_governance_metadata,
     pilot_records_as_of,
+    pilot_sleeve_name_for_record,
     select_pilot_entry_candidates,
 )
 from candidate_competition_logger import compute_decision_outcome_attribution
@@ -1322,8 +1324,10 @@ class BacktestEngine:
         entry_decision_events = []
         pilot_replay_state = {
             "enabled": self.include_pilot_sleeve,
-            "sleeve": PILOT_SLEEVE_NAME,
+            "sleeve": "multi_pilot_sleeve",
+            "primary_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
             "eligible_tickers": [],
+            "eligible_tickers_by_sleeve": {},
             "eligible_days": 0,
             "signals_generated": 0,
             "signals_survived": 0,
@@ -1342,6 +1346,7 @@ class BacktestEngine:
             ],
         }
         pilot_eligible_tickers_seen = set()
+        pilot_eligible_tickers_by_sleeve_seen = {}
         pilot_decision_snapshots_by_id = {}
         pilot_outcome_attributions = []
 
@@ -1706,11 +1711,12 @@ class BacktestEngine:
             }
 
         def _attach_pilot_attribution(pos, trade_record, pnl, exit_day):
-            if getattr(pos, "sleeve", "core") != PILOT_SLEEVE_NAME:
+            if getattr(pos, "sleeve", "core") == "core":
                 return
             snapshot = pos.pilot_snapshot
             if not snapshot:
                 return
+            sleeve_name = getattr(pos, "sleeve", None) or snapshot.get("sleeve") or PILOT_SLEEVE_NAME
             counterfactual_outcomes = [
                 _simulate_counterfactual_trade(
                     cf,
@@ -1725,7 +1731,7 @@ class BacktestEngine:
                 pilot_risk = round((pos.entry_price - pos.stop_price) * pos.original_shares, 6)
             outcome = {
                 "decision_id": pos.pilot_decision_id,
-                "sleeve": PILOT_SLEEVE_NAME,
+                "sleeve": sleeve_name,
                 "pilot_ticker": pos.ticker,
                 "pilot_pnl": round(pnl, 2),
                 "pilot_risk": pilot_risk,
@@ -1758,6 +1764,10 @@ class BacktestEngine:
 
         def _finalize_pilot_replay_state():
             pilot_replay_state["eligible_tickers"] = sorted(pilot_eligible_tickers_seen)
+            pilot_replay_state["eligible_tickers_by_sleeve"] = {
+                sleeve: sorted(tickers)
+                for sleeve, tickers in sorted(pilot_eligible_tickers_by_sleeve_seen.items())
+            }
             pilot_replay_state["closed_trades"] = len(pilot_outcome_attributions)
 
             direct_pnl = round(
@@ -2598,6 +2608,12 @@ class BacktestEngine:
                 if pilot_records_today:
                     pilot_replay_state["eligible_days"] += 1
                     pilot_eligible_tickers_seen.update(pilot_records_today)
+                    for ticker, record in pilot_records_today.items():
+                        sleeve_name = pilot_sleeve_name_for_record(record)
+                        pilot_eligible_tickers_by_sleeve_seen.setdefault(
+                            sleeve_name,
+                            set(),
+                        ).add(ticker)
                 for ticker in sorted(pilot_records_today):
                     if ticker in features_dict:
                         pilot_features_dict[ticker] = features_dict[ticker]
@@ -2855,6 +2871,7 @@ class BacktestEngine:
                     pilot_signals,
                     pilot_records_today,
                     open_positions=_open_positions_payload(),
+                    market_context=market_context,
                 )
                 pilot_decision_snapshots = build_counterfactual_snapshots(
                     pilot_signals,
@@ -3072,7 +3089,7 @@ class BacktestEngine:
                 decision_id = (snapshot or {}).get("decision_id")
                 sizing = sig.get("sizing")
                 if any(
-                    p.ticker == ticker and getattr(p, "sleeve", "core") == PILOT_SLEEVE_NAME
+                    p.ticker == ticker and getattr(p, "sleeve", "core") != "core"
                     for p in positions
                 ):
                     pilot_replay_state["decisions"].append({
@@ -3157,6 +3174,7 @@ class BacktestEngine:
                     continue
 
                 entry_fill = apply_entry_fill(fill_price)
+                sleeve_name = (sig.get("pilot_sleeve") or {}).get("name") or PILOT_SLEEVE_NAME
                 positions.append(Position(
                     ticker=ticker,
                     entry_price=round(entry_fill, 2),
@@ -3173,7 +3191,7 @@ class BacktestEngine:
                     sizing_multipliers=_extract_sizing_multipliers(sizing),
                     base_risk_pct=sizing.get("base_risk_pct"),
                     actual_risk_pct=sizing.get("risk_pct"),
-                    sleeve=PILOT_SLEEVE_NAME,
+                    sleeve=sleeve_name,
                     pilot_decision_id=decision_id,
                     pilot_snapshot=snapshot,
                     pilot_signal_date=today,
@@ -3491,7 +3509,8 @@ class BacktestEngine:
                 "mode": "point_in_time_in_memory",
                 "default_core_only": not self.include_pilot_sleeve,
                 "decision_log_written": False,
-                "sleeve": PILOT_SLEEVE_NAME,
+                "sleeve": "multi_pilot_sleeve",
+                "primary_sleeve": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
                 "note": (
                     "Pilot sleeve replay uses universe_registry plus "
                     "universe_events for daily PIT eligibility and keeps "
@@ -3559,7 +3578,7 @@ class BacktestEngine:
             )
         known_biases["notes"].append(
             "Pilot sleeve replay: default backtests are core-only; "
-            "--include-pilot-sleeve enables PIT AI_INFRA_PILOT replay with "
+            "--include-pilot-sleeve enables PIT multi-sleeve pilot replay with "
             "in-memory counterfactual attribution and no production log writes"
         )
         known_biases["notes"].append(
@@ -3918,7 +3937,7 @@ class BacktestEngine:
             ]
             + (
                 [
-                    "pilot_sleeve_replay_enabled: PIT AI_INFRA_PILOT replay "
+                    "pilot_sleeve_replay_enabled: PIT multi-sleeve pilot replay "
                     "ran in memory; it did not write "
                     "data/pilot_competition_decisions.jsonl."
                 ]
@@ -4331,7 +4350,7 @@ def main():
     parser.add_argument("--save-ohlcv-snapshot", type=str, default=None,
                         help="Save downloaded OHLCV to a snapshot JSON for deterministic reruns.")
     parser.add_argument("--include-pilot-sleeve", action="store_true",
-                        help="Enable point-in-time AI_INFRA_PILOT sleeve replay. "
+                        help="Enable point-in-time multi-sleeve pilot replay. "
                              "Default backtests remain core-only.")
     parser.add_argument("--require-non-ohlcv", action="store_true",
                         help="Fail the run when non-OHLCV replay artifacts are incomplete.")
