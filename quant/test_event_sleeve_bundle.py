@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from event_sleeve_bundle import (
+    build_event_sleeve_bundle_trade_plan,
     build_event_sleeve_bundle_snapshot,
     evaluate_event_bundle_kill_switch,
     evaluate_forward_paper_gate,
@@ -91,6 +92,9 @@ def test_event_sleeve_bundle_aggregates_sources_without_trade_authority() -> Non
     assert snapshot["closed_positions_today"][0]["source"] == "sec_negative_reaction"
     assert snapshot["production_impact"]["alters_orders"] is False
     assert snapshot["production_impact"]["alters_sizing"] is False
+    assert snapshot["trade_plan"]["status"] == "blocked"
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+    assert "trade_adapter_disabled" in snapshot["trade_plan"]["block_reasons"]
 
 
 def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> None:
@@ -214,6 +218,86 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
     assert snapshot["state_surface_addon"]["eligible_candidate_count"] == 1
     assert snapshot["state_surface_addon"]["incremental_notional_usd"] == 10000.0
     assert snapshot["state_surface_addon"]["production_impact"]["alters_orders"] is False
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
+def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "EVT",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+    )
+
+    trade_plan = build_event_sleeve_bundle_trade_plan(snapshot)
+
+    assert trade_plan["status"] == "blocked"
+    assert trade_plan["trade_enabled"] is False
+    assert trade_plan["actions"] == []
+    assert "trade_adapter_disabled" in trade_plan["block_reasons"]
+    assert "forward_paper_gate_blocked" in trade_plan["block_reasons"]
+    assert trade_plan["production_impact"]["alters_orders"] is False
+
+
+def test_event_bundle_trade_plan_emits_same_gated_action_when_gate_passes() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-04",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "EVT",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 1,
+            "scored_candidates": [
+                {
+                    "ticker": "EVT",
+                    "score": 1.24,
+                    "surface": "rotation_breakout_leadership",
+                    "decision_date": "2026-05-04",
+                }
+            ],
+        },
+    )
+    snapshot["forward_paper_gate"] = {
+        "passed": True,
+        "status": "passed",
+        "reasons": [],
+    }
+    snapshot["kill_switch"] = {"triggered": False, "status": "clear", "reasons": []}
+
+    trade_plan = build_event_sleeve_bundle_trade_plan(
+        snapshot,
+        config={"trade_enabled": True, "micro_live_notional_usd": 2500.0},
+        portfolio_value=200_000.0,
+    )
+
+    assert trade_plan["status"] == "ready"
+    assert trade_plan["trade_enabled"] is True
+    assert trade_plan["block_reasons"] == []
+    assert trade_plan["action_count"] == 1
+    action = trade_plan["actions"][0]
+    assert action["ticker"] == "EVT"
+    assert action["action"] == "BUY"
+    assert action["notional_usd"] == 2500.0
+    assert action["entry_timing"] == "next_session_open"
+    assert action["state_surface_addon"]["trade_enabled"] is True
+    assert action["state_surface_addon"]["scalar"] == 2.0
+    assert trade_plan["production_impact"]["alters_orders"] is True
 
 
 def test_forward_paper_gate_passes_after_sufficient_source_diverse_outcomes() -> None:

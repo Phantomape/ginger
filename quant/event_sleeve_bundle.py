@@ -30,6 +30,7 @@ SOURCE_PRIORITY = {
 
 STATE_SURFACE_ADDON_RULE_VERSION = "non_generic_positive_state_surface_addon_v1"
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
+TRADE_PLAN_RULE_VERSION = "event_bundle_forward_gated_trade_plan_v1"
 
 DEFAULT_SOURCE_RULE_VERSIONS = {
     "form4_meaningful_purchase": "form4_meaningful_purchase_ge_500k_v1",
@@ -61,6 +62,7 @@ DEFAULT_CONFIG = {
     "micro_live_notional_usd": 2_500.0,
     "micro_live_max_portfolio_pct": 0.025,
     "micro_live_max_positions": 1,
+    "trade_adapter_requires_forward_gate": True,
     "forward_gate_min_closed_trades": 15,
     "forward_gate_min_sources": 2,
     "forward_gate_min_win_rate": 0.55,
@@ -162,7 +164,7 @@ def build_event_sleeve_bundle_snapshot(
         schema_audit=schema_audit,
         config=cfg,
     )
-    return {
+    bundle_snapshot = {
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
         "asof_date": str(as_of)[:10],
@@ -233,6 +235,11 @@ def build_event_sleeve_bundle_snapshot(
             "accumulate_closed_forward_paper_outcomes_before_trade_enabled_adapter"
         ),
     }
+    bundle_snapshot["trade_plan"] = build_event_sleeve_bundle_trade_plan(
+        bundle_snapshot,
+        config=cfg,
+    )
+    return bundle_snapshot
 
 
 def empty_event_sleeve_bundle_snapshot(as_of: str, reason: str) -> dict[str, Any]:
@@ -393,6 +400,168 @@ def evaluate_event_bundle_kill_switch(
             "recent_source_trades": int(cfg["kill_recent_source_trades"]),
             "recent_source_min_win_rate": float(cfg["kill_recent_source_min_win_rate"]),
         },
+    }
+
+
+def build_event_sleeve_bundle_trade_plan(
+    snapshot: dict[str, Any] | None,
+    *,
+    config: dict[str, Any] | None = None,
+    portfolio_value: float | None = None,
+) -> dict[str, Any]:
+    """Build the shared executable plan for the default-off event bundle.
+
+    The helper is intentionally inert unless the caller explicitly enables
+    trading and the forward paper gate is already passed.
+    """
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    bundle = snapshot if isinstance(snapshot, dict) else {}
+    schema_audit = (bundle.get("candidate_schema") or {}).get("audit") or {}
+    forward_gate = bundle.get("forward_paper_gate") or {}
+    kill_switch = bundle.get("kill_switch") or {}
+
+    block_reasons = []
+    if not bool(cfg.get("trade_enabled", False)):
+        block_reasons.append("trade_adapter_disabled")
+    if bool(cfg.get("trade_adapter_requires_forward_gate", True)) and not bool(
+        forward_gate.get("passed", False)
+    ):
+        block_reasons.append("forward_paper_gate_blocked")
+    if bool(kill_switch.get("triggered", False)):
+        block_reasons.append("kill_switch_triggered")
+    if not bool(schema_audit.get("valid", False)):
+        block_reasons.append("candidate_schema_invalid")
+    if not bool(bundle.get("paper_enabled", False)):
+        block_reasons.append("paper_snapshot_disabled")
+
+    actions: list[dict[str, Any]] = []
+    if not block_reasons:
+        candidates = _trade_plan_candidate_rows(bundle.get("candidates") or [])
+        max_positions = max(0, int(cfg.get("micro_live_max_positions") or 0))
+        actions = [
+            _event_trade_action_from_candidate(
+                row,
+                config=cfg,
+                portfolio_value=portfolio_value,
+            )
+            for row in candidates[:max_positions]
+        ]
+
+    if actions:
+        status = "ready"
+    elif block_reasons:
+        status = "blocked"
+    else:
+        status = "no_candidates"
+
+    return {
+        "rule_version": TRADE_PLAN_RULE_VERSION,
+        "status": status,
+        "trade_enabled": bool(actions),
+        "alters_orders": bool(actions),
+        "block_reasons": block_reasons,
+        "actions": actions,
+        "action_count": len(actions),
+        "max_positions": int(cfg.get("micro_live_max_positions") or 0),
+        "event_notional_usd": float(cfg.get("micro_live_notional_usd") or 0.0),
+        "max_portfolio_pct": float(cfg.get("micro_live_max_portfolio_pct") or 0.0),
+        "requires_forward_gate": bool(
+            cfg.get("trade_adapter_requires_forward_gate", True)
+        ),
+        "forward_paper_gate": {
+            "passed": bool(forward_gate.get("passed", False)),
+            "status": forward_gate.get("status"),
+            "reasons": list(forward_gate.get("reasons") or []),
+        },
+        "kill_switch": {
+            "triggered": bool(kill_switch.get("triggered", False)),
+            "status": kill_switch.get("status"),
+            "reasons": list(kill_switch.get("reasons") or []),
+        },
+        "candidate_schema": {
+            "valid": bool(schema_audit.get("valid", False)),
+            "missing_required_field_count": int(
+                schema_audit.get("missing_required_field_count") or 0
+            ),
+        },
+        "production_impact": {
+            "shared_policy_changed": True,
+            "run_adapter_changed": True,
+            "backtester_adapter_changed": False,
+            "parity_test_added": True,
+            "replay_only": False,
+            "production_signal_path_changed": False,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": bool(actions),
+            "alters_orders": bool(actions),
+            "scope": "default_off_event_overlay_bundle_trade_adapter",
+        },
+    }
+
+
+def _trade_plan_candidate_rows(candidates: list[Any]) -> list[dict[str, Any]]:
+    rows = [
+        row
+        for row in candidates
+        if isinstance(row, dict)
+        and str(row.get("candidate_status") or "") in {"candidate", "pending"}
+        and bool(row.get("ticker"))
+    ]
+    return sorted(
+        rows,
+        key=lambda row: (
+            row.get("usable_trade_date") or "",
+            row.get("source_priority", 99),
+            row.get("ticker") or "",
+        ),
+    )
+
+
+def _event_trade_action_from_candidate(
+    candidate: dict[str, Any],
+    *,
+    config: dict[str, Any],
+    portfolio_value: float | None,
+) -> dict[str, Any]:
+    micro_notional = float(config.get("micro_live_notional_usd") or 0.0)
+    max_portfolio_pct = float(config.get("micro_live_max_portfolio_pct") or 0.0)
+    paper_notional = _float_or_none(candidate.get("paper_event_notional_usd"))
+    base_notional = _float_or_none(candidate.get("event_notional_usd"))
+    notional = micro_notional or paper_notional or base_notional or 0.0
+    if paper_notional is not None:
+        notional = min(notional, paper_notional)
+    if portfolio_value is not None and max_portfolio_pct > 0:
+        notional = min(notional, float(portfolio_value) * max_portfolio_pct)
+    notional = round(max(0.0, notional), 2)
+
+    state_surface_addon = deepcopy(candidate.get("state_surface_addon") or {})
+    if state_surface_addon:
+        state_surface_addon["trade_enabled"] = True
+        state_surface_addon["alters_orders"] = True
+
+    return {
+        "sleeve": SLEEVE_NAME,
+        "rule_version": TRADE_PLAN_RULE_VERSION,
+        "action": "BUY",
+        "ticker": str(candidate.get("ticker") or "").upper(),
+        "source": candidate.get("source"),
+        "source_label": candidate.get("source_label"),
+        "source_rule_version": candidate.get("rule_version"),
+        "decision_id": candidate.get("decision_id"),
+        "usable_trade_date": candidate.get("usable_trade_date"),
+        "entry_date": candidate.get("entry_date"),
+        "entry_timing": "next_session_open",
+        "notional_usd": notional,
+        "max_portfolio_pct": max_portfolio_pct,
+        "hold_days": _int(candidate.get("hold_days")),
+        "paper_event_notional_usd": paper_notional,
+        "base_event_notional_usd": base_notional,
+        "paper_notional_scalar": _float_or_none(candidate.get("paper_notional_scalar")),
+        "state_surface_addon": state_surface_addon,
+        "counterfactuals": deepcopy(candidate.get("counterfactuals") or {}),
+        "trade_enabled": True,
+        "alters_orders": True,
     }
 
 
