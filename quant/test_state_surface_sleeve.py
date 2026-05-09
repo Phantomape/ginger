@@ -41,6 +41,17 @@ def _ohlcv():
     }
 
 
+def _ohlcv_negative_benchmarks():
+    return {
+        "SPY": _rows(100.0, -0.0005),
+        "QQQ": _rows(100.0, -0.0006),
+        "IWM": _rows(100.0, -0.0004),
+        "AAA": _rows(50.0, 0.0020),
+        "BBB": _rows(50.0, 0.0016),
+        "CCC": _rows(50.0, 0.0012),
+    }
+
+
 def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
@@ -54,10 +65,44 @@ def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
     assert queue["trade_enabled"] is False
     assert queue["scored_candidate_count"] == 3
     assert {row["ticker"] for row in queue["scored_candidates"]} == {"AAA", "BBB", "CCC"}
+    assert queue["benchmark_momentum_gate"]["allowed"] is True
     assert queue["candidate_count"] == 2
     assert {row["ticker"] for row in queue["candidates"]} == {"BBB", "CCC"}
+    assert all(row["benchmark_momentum_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["candidates"][0]["counterfactuals"]["alternatives"][-1]["type"] == "cash"
     assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_benchmark_momentum_gate_blocks_paper_candidates_without_orders():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_negative_benchmarks(),
+        universe=["AAA", "BBB", "CCC"],
+        config={"max_candidates": 2},
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["scored_candidate_count"] == 3
+    assert queue["candidate_count"] == 0
+    assert queue["blocked_candidate_count"] == 2
+    assert queue["benchmark_momentum_gate"]["allowed"] is False
+    assert queue["benchmark_momentum_gate"]["reasons"] == ["benchmark_momentum_nonpositive"]
+    assert queue["benchmark_momentum_gate"]["trade_enabled_after_gate"] is False
+    assert queue["production_impact"]["alters_orders"] is False
+
+    snapshot = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=empty_state_surface_sleeve_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["blocked_candidate_count"] == 2
+    assert snapshot["benchmark_momentum_gate"]["allowed"] is False
+    assert snapshot["production_impact"]["alters_orders"] is False
 
 
 def test_state_surface_sleeve_tracks_paper_entries_without_orders():

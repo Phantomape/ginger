@@ -26,6 +26,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "STATE_SURFACE_SATELLITE_PAPER"
 QUEUE_NAME = "STATE_SURFACE_SATELLITE_QUEUE"
 RULE_VERSION = "state_surface_full_v1"
+BENCHMARK_MOMENTUM_GATE_RULE_VERSION = "state_surface_benchmark_momentum_gate_v1"
 STATE_SCHEMA_VERSION = 1
 INDEX_TICKERS = {"SPY", "QQQ", "IWM"}
 
@@ -45,6 +46,8 @@ DEFAULT_CONFIG = {
     "forward_gate_min_closed_trades": 15,
     "forward_gate_min_win_rate": 0.55,
     "forward_gate_positive_net_pnl": True,
+    "benchmark_momentum_gate_enabled": True,
+    "benchmark_momentum_gate_min_return": 0.0,
 }
 
 
@@ -63,6 +66,11 @@ def empty_state_surface_queue(as_of: str, reason: str) -> dict[str, Any]:
         "trade_enabled": False,
         "candidate_count": 0,
         "candidates": [],
+        "scored_candidate_count": 0,
+        "scored_candidates": [],
+        "blocked_candidate_count": 0,
+        "blocked_candidates": [],
+        "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
         "state": {},
         "data_source": {"status": reason},
         "production_impact": _production_impact(),
@@ -118,17 +126,36 @@ def build_state_surface_queue(
         )
         for idx, row in enumerate(ranked)
     ]
+    benchmark_momentum_gate = evaluate_benchmark_momentum_gate(state, cfg)
+    for row in scored_candidates:
+        row["benchmark_momentum_gate"] = deepcopy(benchmark_momentum_gate)
 
     candidates = []
-    for row in scored_candidates:
-        ticker = str(row.get("ticker") or "").upper()
-        if ticker in core_tickers:
-            continue
-        candidate = deepcopy(row)
-        candidate["queue_rank"] = len(candidates) + 1
-        candidates.append(candidate)
-        if len(candidates) >= int(cfg["max_candidates"]):
-            break
+    blocked_candidates = []
+    if benchmark_momentum_gate["allowed"]:
+        for row in scored_candidates:
+            ticker = str(row.get("ticker") or "").upper()
+            if ticker in core_tickers:
+                continue
+            candidate = deepcopy(row)
+            candidate["queue_rank"] = len(candidates) + 1
+            candidates.append(candidate)
+            if len(candidates) >= int(cfg["max_candidates"]):
+                break
+    else:
+        for row in scored_candidates[: int(cfg["max_candidates"])]:
+            blocked_candidates.append(
+                {
+                    "ticker": str(row.get("ticker") or "").upper(),
+                    "rank": row.get("rank"),
+                    "score": row.get("score"),
+                    "surface": row.get("surface"),
+                    "reason": "benchmark_momentum_gate_blocked",
+                    "benchmark_momentum_gate": deepcopy(benchmark_momentum_gate),
+                    "trade_enabled": False,
+                    "alters_orders": False,
+                }
+            )
 
     return {
         "queue_name": QUEUE_NAME,
@@ -143,6 +170,9 @@ def build_state_surface_queue(
         "scored_candidates": scored_candidates,
         "candidate_count": len(candidates),
         "candidates": candidates,
+        "blocked_candidate_count": len(blocked_candidates),
+        "blocked_candidates": blocked_candidates,
+        "benchmark_momentum_gate": benchmark_momentum_gate,
         "excluded_core_tickers": sorted(core_tickers),
         "state": state,
         "parameters": dict(cfg),
@@ -278,10 +308,64 @@ def empty_state_surface_sleeve_snapshot(as_of: str, reason: str) -> dict[str, An
         "closed_position_count": 0,
         "realized_pnl_to_date": 0.0,
         "unrealized_pnl": 0.0,
+        "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "data_source": {"status": reason},
         "production_impact": _production_impact(),
         "error": reason,
+    }
+
+
+def evaluate_benchmark_momentum_gate(
+    state: dict[str, Any],
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    enabled = bool(cfg.get("benchmark_momentum_gate_enabled", True))
+    threshold = float(cfg.get("benchmark_momentum_gate_min_return", 0.0))
+    returns = {
+        "SPY": _float_or_none(state.get("spy_ret20")),
+        "QQQ": _float_or_none(state.get("qqq_ret20")),
+    }
+    available_returns = [value for value in returns.values() if value is not None]
+    benchmark_return_max = max(available_returns) if available_returns else None
+
+    reasons: list[str] = []
+    if enabled:
+        if benchmark_return_max is None:
+            reasons.append("benchmark_momentum_unavailable")
+        elif benchmark_return_max <= threshold:
+            reasons.append("benchmark_momentum_nonpositive")
+
+    allowed = (not enabled) or not reasons
+    return {
+        "rule_version": BENCHMARK_MOMENTUM_GATE_RULE_VERSION,
+        "enabled": enabled,
+        "allowed": allowed,
+        "status": "allowed" if allowed else "blocked",
+        "reasons": reasons,
+        "benchmark_returns_20d": {key: _round(value, 6) for key, value in returns.items()},
+        "benchmark_return_max_20d": _round(benchmark_return_max, 6),
+        "threshold": _round(threshold, 6),
+        "scope": "default_off_state_surface_paper_candidate_queue",
+        "trade_enabled_after_gate": False,
+        "production_impact": _production_impact(),
+    }
+
+
+def _blocked_benchmark_momentum_gate(reason: str) -> dict[str, Any]:
+    return {
+        "rule_version": BENCHMARK_MOMENTUM_GATE_RULE_VERSION,
+        "enabled": True,
+        "allowed": False,
+        "status": "blocked",
+        "reasons": [reason],
+        "benchmark_returns_20d": {"SPY": None, "QQQ": None},
+        "benchmark_return_max_20d": None,
+        "threshold": _round(DEFAULT_CONFIG["benchmark_momentum_gate_min_return"], 6),
+        "scope": "default_off_state_surface_paper_candidate_queue",
+        "trade_enabled_after_gate": False,
+        "production_impact": _production_impact(),
     }
 
 
@@ -777,6 +861,7 @@ def _snapshot_payload(
         "paper_enabled": bool(config.get("paper_enabled", True)),
         "trade_enabled": False,
         "candidate_count": int(queue.get("candidate_count") or 0),
+        "blocked_candidate_count": int(queue.get("blocked_candidate_count") or 0),
         "new_pending_count": len(new_pending),
         "filled_count": len(filled_today),
         "closed_count_today": len(closed_today),
@@ -791,6 +876,11 @@ def _snapshot_payload(
         "parameters": dict(config),
         "data_source": queue.get("data_source") or {},
         "candidates": deepcopy(queue.get("candidates") or []),
+        "blocked_candidates": deepcopy(queue.get("blocked_candidates") or []),
+        "benchmark_momentum_gate": deepcopy(
+            queue.get("benchmark_momentum_gate")
+            or _blocked_benchmark_momentum_gate("missing_state_surface_queue")
+        ),
         "new_pending_entries": deepcopy(new_pending),
         "filled_entries": deepcopy(filled_today),
         "closed_positions_today": deepcopy(closed_today),
