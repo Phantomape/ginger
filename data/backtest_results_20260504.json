@@ -453,8 +453,8 @@
   },
   "known_biases": {
     "ohlcv_source": {
-      "snapshot_loaded": true,
-      "snapshot_path": "D:\\Github\\ginger\\data\\ohlcv_snapshot_20241002_20250422.json",
+      "snapshot_loaded": false,
+      "snapshot_path": null,
       "snapshot_written": false,
       "snapshot_write_path": null
     },
@@ -498,7 +498,6 @@
         "implemented shared partial-reduce replay hooks only"
       ],
       "production_advisory_actions_not_replayed": [
-        "SIGNAL_TARGET",
         "PROFIT_TARGET",
         "PROFIT_LADDER_30",
         "PROFIT_LADDER_50",
@@ -506,9 +505,10 @@
         "PENDING_REDUCE_EXIT_OVERRIDE"
       ],
       "target_price_semantic_gap": {
+        "resolved": true,
         "backtester": "Position.target_price is simulated as a hard full-position target exit when the intraday high reaches the level.",
-        "production": "open_positions.target_price is read as signal_target_price and surfaces SIGNAL_TARGET as advisory reduce/review context for the LLM and daily workflow.",
-        "impact": "Backtest target exits are not proof that production advisory SIGNAL_TARGET trims, ladders, or time stops add alpha."
+        "production": "open_positions.target_price is read as signal_target_price and surfaces SIGNAL_TARGET as TARGET_EXIT full-position code action when daily_high, or close fallback, reaches it.",
+        "impact": "Backtest target exits now match production target-exit semantics; close-only production fallback is conservative when daily_high is unavailable."
       },
       "partial_reduce_replay_scope": {
         "replay_container_enabled": true,
@@ -554,14 +554,14 @@
     "earnings_event_long_data_quality": {
       "days_to_earnings_source": "yfinance calendar plus walk-forward simulation date",
       "snapshot_archive_present": true,
-      "snapshot_count": 138,
+      "snapshot_count": 139,
       "first_snapshot_date": "20251023",
-      "last_snapshot_date": "20260503",
+      "last_snapshot_date": "20260504",
       "exact_snapshot_coverage_fraction": 0.0,
       "walk_forward_snapshot_coverage_fraction": 0.0,
-      "snapshot_rows_total": 6081,
-      "snapshot_rows_with_eps_estimate": 5239,
-      "snapshot_rows_with_surprise_history": 5239,
+      "snapshot_rows_total": 6129,
+      "snapshot_rows_with_eps_estimate": 5280,
+      "snapshot_rows_with_surprise_history": 5280,
       "eps_estimate": "snapshot-backed when available; None before first snapshot or for uncovered tickers",
       "positive_surprise_history": "derived from avg_historical_surprise_pct when snapshot-backed; None before first snapshot or for uncovered tickers",
       "confidence_cap_when_missing_snapshot": 0.83,
@@ -572,7 +572,7 @@
     "notes": [
       "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
       "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
-      "Exit policy: production advisory SIGNAL_TARGET/ladder/time-stop actions are disclosed under exit_policy_unreplayed and are not executed by default backtests",
+      "Exit policy: production target_price uses TARGET_EXIT full-position parity; profit-ladder/time-stop actions remain disclosed under exit_policy_unreplayed",
       "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
       "data_layer.get_universe() reads current watchlist, not point-in-time",
       "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
@@ -995,15 +995,15 @@
         "checkpoint_days": 2,
         "addon_number": 1,
         "unrealized_pct": 0.040051,
-        "rs_vs_spy": 0.016197,
+        "rs_vs_spy": 0.016196,
         "original_shares": 80,
         "spy_relative_leader_addon_cap": true,
         "addon_position_cap": 0.6,
         "requested_shares": 40,
         "scheduled_fill_date": "2025-01-22",
         "status": "executed",
-        "raw_open": 617.5214,
-        "entry_fill": 617.8302,
+        "raw_open": 617.5213,
+        "entry_fill": 617.8301,
         "addon_shares": 30,
         "new_total_shares": 110,
         "new_avg_entry": 601.2
@@ -1023,7 +1023,7 @@
         "requested_shares": 121,
         "scheduled_fill_date": "2025-01-22",
         "status": "executed",
-        "raw_open": 256.3059,
+        "raw_open": 256.306,
         "entry_fill": 256.4341,
         "addon_shares": 1,
         "new_total_shares": 243,
@@ -1054,167 +1054,9 @@
   "exit_advisory_shadow_attribution": {
     "enabled": true,
     "mode": "shadow_only_no_trade_execution",
-    "rules_observed": [
-      "PROFIT_TARGET",
-      "SIGNAL_TARGET"
-    ],
-    "total_daily_triggers": 8,
-    "by_rule": {
-      "PROFIT_TARGET": {
-        "daily_triggers": 1,
-        "unique_trades": 1,
-        "first_trigger_trades": 1,
-        "outcome": {
-          "closed_trades": 1,
-          "wins": 1,
-          "win_rate": 1.0,
-          "pnl": 6754.45,
-          "avg_pnl": 6754.45,
-          "exit_reasons": {
-            "target": 1
-          }
-        },
-        "sample_events": [
-          {
-            "date": "2024-11-19",
-            "ticker": "APP",
-            "strategy": "trend_long",
-            "sector": "Technology",
-            "trade_key": "APP:2024-11-08:249.2100",
-            "rule": "PROFIT_TARGET",
-            "urgency": "MEDIUM",
-            "is_first_for_trade": true,
-            "close": 321.19,
-            "entry_price": 249.21,
-            "unrealized_pct": 0.288833,
-            "days_held": 7,
-            "high_since_entry": 323.59
-          }
-        ]
-      },
-      "SIGNAL_TARGET": {
-        "daily_triggers": 7,
-        "unique_trades": 7,
-        "first_trigger_trades": 7,
-        "outcome": {
-          "closed_trades": 7,
-          "wins": 7,
-          "win_rate": 1.0,
-          "pnl": 26559.52,
-          "avg_pnl": 3794.22,
-          "exit_reasons": {
-            "target": 7
-          }
-        },
-        "sample_events": [
-          {
-            "date": "2024-11-06",
-            "ticker": "JPM",
-            "strategy": "trend_long",
-            "sector": "Financials",
-            "trade_key": "JPM:2024-10-14:216.5900",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 239.6256,
-            "entry_price": 216.59,
-            "unrealized_pct": 0.106356,
-            "days_held": 17,
-            "high_since_entry": 240.5374
-          },
-          {
-            "date": "2024-11-19",
-            "ticker": "NFLX",
-            "strategy": "trend_long",
-            "sector": "Communication Services",
-            "trade_key": "NFLX:2024-10-21:76.6100",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 87.132,
-            "entry_price": 76.61,
-            "unrealized_pct": 0.137345,
-            "days_held": 21,
-            "high_since_entry": 87.449
-          },
-          {
-            "date": "2024-11-21",
-            "ticker": "BKNG",
-            "strategy": "trend_long",
-            "sector": "Consumer Discretionary",
-            "trade_key": "BKNG:2024-11-01:184.7500",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 206.087,
-            "entry_price": 184.75,
-            "unrealized_pct": 0.115491,
-            "days_held": 14,
-            "high_since_entry": 206.1163
-          },
-          {
-            "date": "2024-12-04",
-            "ticker": "NOW",
-            "strategy": "trend_long",
-            "sector": "Technology",
-            "trade_key": "NOW:2024-10-25:191.5500",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 224.626,
-            "entry_price": 191.55,
-            "unrealized_pct": 0.172676,
-            "days_held": 27,
-            "high_since_entry": 225.326
-          },
-          {
-            "date": "2025-02-06",
-            "ticker": "JPM",
-            "strategy": "breakout_long",
-            "sector": "Financials",
-            "trade_key": "JPM:2025-01-16:247.7900",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 269.9548,
-            "entry_price": 247.79,
-            "unrealized_pct": 0.08945,
-            "days_held": 14,
-            "high_since_entry": 270.0328
-          },
-          {
-            "date": "2025-02-18",
-            "ticker": "GS",
-            "strategy": "trend_long",
-            "sector": "Financials",
-            "trade_key": "GS:2025-01-16:601.2000",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 655.2975,
-            "entry_price": 601.2,
-            "unrealized_pct": 0.089983,
-            "days_held": 21,
-            "high_since_entry": 655.2975
-          },
-          {
-            "date": "2025-03-18",
-            "ticker": "GLD",
-            "strategy": "trend_long",
-            "sector": "Commodities",
-            "trade_key": "GLD:2025-01-31:259.2100",
-            "rule": "SIGNAL_TARGET",
-            "urgency": "LOW",
-            "is_first_for_trade": true,
-            "close": 279.96,
-            "entry_price": 259.21,
-            "unrealized_pct": 0.080051,
-            "days_held": 31,
-            "high_since_entry": 280.21
-          }
-        ]
-      }
-    },
+    "rules_observed": [],
+    "total_daily_triggers": 0,
+    "by_rule": {},
     "notes": [
       "Computed from production position_manager advisory rules using backtest positions and daily close.",
       "No fills, position sizes, stops, targets, or metrics are changed by this attribution.",
@@ -1530,7 +1372,7 @@
         "available_slots_at_entry_loop": 1,
         "details": {
           "fill_date": "2024-10-31",
-          "fill_price": 187.2252,
+          "fill_price": 187.2253,
           "signal_entry": 176.54,
           "cancel_gap_pct": 0.015,
           "adverse_gap_cancel_pct": 0.02
@@ -1752,7 +1594,7 @@
         "available_slots_at_entry_loop": 2,
         "details": {
           "fill_date": "2024-12-17",
-          "fill_price": 237.3596,
+          "fill_price": 237.3597,
           "signal_entry": 246.58,
           "cancel_gap_pct": 0.015,
           "adverse_gap_cancel_pct": 0.02
@@ -1870,7 +1712,7 @@
     ]
   },
   "equity_curve_integrity": {
-    "cash_field_present_in_open_positions": true,
+    "cash_field_present_in_open_positions": false,
     "risk_rules_enforced_in_backtest": true,
     "equity_curve_len": 138,
     "trading_days": 138,
@@ -1880,7 +1722,7 @@
   },
   "caveats": [
     "news_veto_not_replayed: production filter.py T1-negative-news veto has no historical archive; signals rejected by news in live runs are still accepted here. Treat metrics as an OPTIMISTIC upper bound.",
-    "exit_policy_unreplayed: production advisory SIGNAL_TARGET, profit-ladder, time-stop, and pending REDUCE/EXIT actions are disclosed but not executed by default backtests; target_price is a full-position simulated target exit in backtest."
+    "exit_policy_unreplayed: production profit-ladder, time-stop, and pending REDUCE/EXIT actions are disclosed but not executed by default backtests; target_price now maps to full-position TARGET_EXIT in production and backtest."
   ],
   "trades": [
     {
@@ -2009,12 +1851,8 @@
       "addon_shares": 0,
       "addon_cost": 0.0,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2024-11-06"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2024-10-14",
       "exit_date": "2024-11-06"
     },
@@ -2046,12 +1884,8 @@
       "addon_shares": 0,
       "addon_cost": 0.0,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2024-11-19"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2024-10-21",
       "exit_date": "2024-11-19"
     },
@@ -2083,12 +1917,8 @@
       "addon_shares": 0,
       "addon_cost": 0.0,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "PROFIT_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "PROFIT_TARGET": "2024-11-19"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2024-11-08",
       "exit_date": "2024-11-19"
     },
@@ -2098,7 +1928,7 @@
       "strategy": "trend_long",
       "sector": "Consumer Discretionary",
       "entry_price": 184.75,
-      "entry_open_price": 184.6546,
+      "entry_open_price": 184.6545,
       "stop_price": 179.28,
       "exit_price": 201.55,
       "exit_raw_price": 201.65,
@@ -2106,7 +1936,7 @@
       "pnl": 4184.38,
       "pnl_pct_net": 0.087429,
       "initial_risk_pct": 0.029608,
-      "slippage_cost": 51.01,
+      "slippage_cost": 51.04,
       "target_mult_used": 4.43,
       "regime_exit_bucket": "risk_on",
       "regime_exit_score": 0.0546,
@@ -2120,12 +1950,8 @@
       "addon_shares": 0,
       "addon_cost": 0.0,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2024-11-21"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2024-11-01",
       "exit_date": "2024-11-21"
     },
@@ -2189,12 +2015,8 @@
       "addon_shares": 0,
       "addon_cost": 0.0,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2024-12-04"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2024-10-25",
       "exit_date": "2024-12-04"
     },
@@ -2390,12 +2212,8 @@
       "addon_shares": 1,
       "addon_cost": 256.43,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2025-02-06"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2025-01-16",
       "exit_date": "2025-02-06"
     },
@@ -2425,14 +2243,10 @@
       "actual_risk_pct": 0.025,
       "addon_count": 1,
       "addon_shares": 30,
-      "addon_cost": 18534.91,
+      "addon_cost": 18534.9,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2025-02-18"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2025-01-16",
       "exit_date": "2025-02-18"
     },
@@ -2442,7 +2256,7 @@
       "strategy": "trend_long",
       "sector": "Consumer Discretionary",
       "entry_price": 298.84,
-      "entry_open_price": 298.6955,
+      "entry_open_price": 298.6956,
       "stop_price": 291.89,
       "exit_price": 291.6,
       "exit_raw_price": 291.89,
@@ -2450,7 +2264,7 @@
       "pnl": -1702.07,
       "pnl_pct_net": -0.027733,
       "initial_risk_pct": 0.023257,
-      "slippage_cost": 89.9,
+      "slippage_cost": 89.88,
       "target_mult_used": 4.5,
       "regime_exit_bucket": "risk_on",
       "regime_exit_score": 0.094,
@@ -2508,7 +2322,7 @@
       "strategy": "trend_long",
       "sector": "Financials",
       "entry_price": 360.48,
-      "entry_open_price": 360.3034,
+      "entry_open_price": 360.3035,
       "stop_price": 351.87,
       "exit_price": 351.52,
       "exit_raw_price": 351.87,
@@ -2516,7 +2330,7 @@
       "pnl": -1416.72,
       "pnl_pct_net": -0.028361,
       "initial_risk_pct": 0.023885,
-      "slippage_cost": 73.46,
+      "slippage_cost": 73.45,
       "target_mult_used": 4.02,
       "regime_exit_bucket": "balanced",
       "regime_exit_score": 0.0215,
@@ -2595,12 +2409,8 @@
       "addon_shares": 0,
       "addon_cost": 0.0,
       "exit_reason": "target",
-      "exit_advisory_rules_seen": [
-        "SIGNAL_TARGET"
-      ],
-      "exit_advisory_first_seen": {
-        "SIGNAL_TARGET": "2025-03-18"
-      },
+      "exit_advisory_rules_seen": [],
+      "exit_advisory_first_seen": {},
       "entry_date": "2025-01-31",
       "exit_date": "2025-03-18"
     },
@@ -3156,8 +2966,8 @@
     },
     "known_biases": {
       "ohlcv_source": {
-        "snapshot_loaded": true,
-        "snapshot_path": "D:\\Github\\ginger\\data\\ohlcv_snapshot_20241002_20250422.json",
+        "snapshot_loaded": false,
+        "snapshot_path": null,
         "snapshot_written": false,
         "snapshot_write_path": null
       },
@@ -3201,7 +3011,6 @@
           "implemented shared partial-reduce replay hooks only"
         ],
         "production_advisory_actions_not_replayed": [
-          "SIGNAL_TARGET",
           "PROFIT_TARGET",
           "PROFIT_LADDER_30",
           "PROFIT_LADDER_50",
@@ -3209,9 +3018,10 @@
           "PENDING_REDUCE_EXIT_OVERRIDE"
         ],
         "target_price_semantic_gap": {
+          "resolved": true,
           "backtester": "Position.target_price is simulated as a hard full-position target exit when the intraday high reaches the level.",
-          "production": "open_positions.target_price is read as signal_target_price and surfaces SIGNAL_TARGET as advisory reduce/review context for the LLM and daily workflow.",
-          "impact": "Backtest target exits are not proof that production advisory SIGNAL_TARGET trims, ladders, or time stops add alpha."
+          "production": "open_positions.target_price is read as signal_target_price and surfaces SIGNAL_TARGET as TARGET_EXIT full-position code action when daily_high, or close fallback, reaches it.",
+          "impact": "Backtest target exits now match production target-exit semantics; close-only production fallback is conservative when daily_high is unavailable."
         },
         "partial_reduce_replay_scope": {
           "replay_container_enabled": true,
@@ -3257,14 +3067,14 @@
       "earnings_event_long_data_quality": {
         "days_to_earnings_source": "yfinance calendar plus walk-forward simulation date",
         "snapshot_archive_present": true,
-        "snapshot_count": 138,
+        "snapshot_count": 139,
         "first_snapshot_date": "20251023",
-        "last_snapshot_date": "20260503",
+        "last_snapshot_date": "20260504",
         "exact_snapshot_coverage_fraction": 0.0,
         "walk_forward_snapshot_coverage_fraction": 0.0,
-        "snapshot_rows_total": 6081,
-        "snapshot_rows_with_eps_estimate": 5239,
-        "snapshot_rows_with_surprise_history": 5239,
+        "snapshot_rows_total": 6129,
+        "snapshot_rows_with_eps_estimate": 5280,
+        "snapshot_rows_with_surprise_history": 5280,
         "eps_estimate": "snapshot-backed when available; None before first snapshot or for uncovered tickers",
         "positive_surprise_history": "derived from avg_historical_surprise_pct when snapshot-backed; None before first snapshot or for uncovered tickers",
         "confidence_cap_when_missing_snapshot": 0.83,
@@ -3275,7 +3085,7 @@
       "notes": [
         "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
         "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
-        "Exit policy: production advisory SIGNAL_TARGET/ladder/time-stop actions are disclosed under exit_policy_unreplayed and are not executed by default backtests",
+        "Exit policy: production target_price uses TARGET_EXIT full-position parity; profit-ladder/time-stop actions remain disclosed under exit_policy_unreplayed",
         "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
         "data_layer.get_universe() reads current watchlist, not point-in-time",
         "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
@@ -3698,15 +3508,15 @@
           "checkpoint_days": 2,
           "addon_number": 1,
           "unrealized_pct": 0.040051,
-          "rs_vs_spy": 0.016197,
+          "rs_vs_spy": 0.016196,
           "original_shares": 80,
           "spy_relative_leader_addon_cap": true,
           "addon_position_cap": 0.6,
           "requested_shares": 40,
           "scheduled_fill_date": "2025-01-22",
           "status": "executed",
-          "raw_open": 617.5214,
-          "entry_fill": 617.8302,
+          "raw_open": 617.5213,
+          "entry_fill": 617.8301,
           "addon_shares": 30,
           "new_total_shares": 110,
           "new_avg_entry": 601.2
@@ -3726,7 +3536,7 @@
           "requested_shares": 121,
           "scheduled_fill_date": "2025-01-22",
           "status": "executed",
-          "raw_open": 256.3059,
+          "raw_open": 256.306,
           "entry_fill": 256.4341,
           "addon_shares": 1,
           "new_total_shares": 243,
@@ -3757,167 +3567,9 @@
     "exit_advisory_shadow_attribution": {
       "enabled": true,
       "mode": "shadow_only_no_trade_execution",
-      "rules_observed": [
-        "PROFIT_TARGET",
-        "SIGNAL_TARGET"
-      ],
-      "total_daily_triggers": 8,
-      "by_rule": {
-        "PROFIT_TARGET": {
-          "daily_triggers": 1,
-          "unique_trades": 1,
-          "first_trigger_trades": 1,
-          "outcome": {
-            "closed_trades": 1,
-            "wins": 1,
-            "win_rate": 1.0,
-            "pnl": 6754.45,
-            "avg_pnl": 6754.45,
-            "exit_reasons": {
-              "target": 1
-            }
-          },
-          "sample_events": [
-            {
-              "date": "2024-11-19",
-              "ticker": "APP",
-              "strategy": "trend_long",
-              "sector": "Technology",
-              "trade_key": "APP:2024-11-08:249.2100",
-              "rule": "PROFIT_TARGET",
-              "urgency": "MEDIUM",
-              "is_first_for_trade": true,
-              "close": 321.19,
-              "entry_price": 249.21,
-              "unrealized_pct": 0.288833,
-              "days_held": 7,
-              "high_since_entry": 323.59
-            }
-          ]
-        },
-        "SIGNAL_TARGET": {
-          "daily_triggers": 7,
-          "unique_trades": 7,
-          "first_trigger_trades": 7,
-          "outcome": {
-            "closed_trades": 7,
-            "wins": 7,
-            "win_rate": 1.0,
-            "pnl": 26559.52,
-            "avg_pnl": 3794.22,
-            "exit_reasons": {
-              "target": 7
-            }
-          },
-          "sample_events": [
-            {
-              "date": "2024-11-06",
-              "ticker": "JPM",
-              "strategy": "trend_long",
-              "sector": "Financials",
-              "trade_key": "JPM:2024-10-14:216.5900",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 239.6256,
-              "entry_price": 216.59,
-              "unrealized_pct": 0.106356,
-              "days_held": 17,
-              "high_since_entry": 240.5374
-            },
-            {
-              "date": "2024-11-19",
-              "ticker": "NFLX",
-              "strategy": "trend_long",
-              "sector": "Communication Services",
-              "trade_key": "NFLX:2024-10-21:76.6100",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 87.132,
-              "entry_price": 76.61,
-              "unrealized_pct": 0.137345,
-              "days_held": 21,
-              "high_since_entry": 87.449
-            },
-            {
-              "date": "2024-11-21",
-              "ticker": "BKNG",
-              "strategy": "trend_long",
-              "sector": "Consumer Discretionary",
-              "trade_key": "BKNG:2024-11-01:184.7500",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 206.087,
-              "entry_price": 184.75,
-              "unrealized_pct": 0.115491,
-              "days_held": 14,
-              "high_since_entry": 206.1163
-            },
-            {
-              "date": "2024-12-04",
-              "ticker": "NOW",
-              "strategy": "trend_long",
-              "sector": "Technology",
-              "trade_key": "NOW:2024-10-25:191.5500",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 224.626,
-              "entry_price": 191.55,
-              "unrealized_pct": 0.172676,
-              "days_held": 27,
-              "high_since_entry": 225.326
-            },
-            {
-              "date": "2025-02-06",
-              "ticker": "JPM",
-              "strategy": "breakout_long",
-              "sector": "Financials",
-              "trade_key": "JPM:2025-01-16:247.7900",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 269.9548,
-              "entry_price": 247.79,
-              "unrealized_pct": 0.08945,
-              "days_held": 14,
-              "high_since_entry": 270.0328
-            },
-            {
-              "date": "2025-02-18",
-              "ticker": "GS",
-              "strategy": "trend_long",
-              "sector": "Financials",
-              "trade_key": "GS:2025-01-16:601.2000",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 655.2975,
-              "entry_price": 601.2,
-              "unrealized_pct": 0.089983,
-              "days_held": 21,
-              "high_since_entry": 655.2975
-            },
-            {
-              "date": "2025-03-18",
-              "ticker": "GLD",
-              "strategy": "trend_long",
-              "sector": "Commodities",
-              "trade_key": "GLD:2025-01-31:259.2100",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
-              "is_first_for_trade": true,
-              "close": 279.96,
-              "entry_price": 259.21,
-              "unrealized_pct": 0.080051,
-              "days_held": 31,
-              "high_since_entry": 280.21
-            }
-          ]
-        }
-      },
+      "rules_observed": [],
+      "total_daily_triggers": 0,
+      "by_rule": {},
       "notes": [
         "Computed from production position_manager advisory rules using backtest positions and daily close.",
         "No fills, position sizes, stops, targets, or metrics are changed by this attribution.",
@@ -4233,7 +3885,7 @@
           "available_slots_at_entry_loop": 1,
           "details": {
             "fill_date": "2024-10-31",
-            "fill_price": 187.2252,
+            "fill_price": 187.2253,
             "signal_entry": 176.54,
             "cancel_gap_pct": 0.015,
             "adverse_gap_cancel_pct": 0.02
@@ -4455,7 +4107,7 @@
           "available_slots_at_entry_loop": 2,
           "details": {
             "fill_date": "2024-12-17",
-            "fill_price": 237.3596,
+            "fill_price": 237.3597,
             "signal_entry": 246.58,
             "cancel_gap_pct": 0.015,
             "adverse_gap_cancel_pct": 0.02
@@ -4573,7 +4225,7 @@
       ]
     },
     "equity_curve_integrity": {
-      "cash_field_present_in_open_positions": true,
+      "cash_field_present_in_open_positions": false,
       "risk_rules_enforced_in_backtest": true,
       "equity_curve_len": 138,
       "trading_days": 138,
@@ -4583,7 +4235,7 @@
     },
     "caveats": [
       "news_veto_not_replayed: production filter.py T1-negative-news veto has no historical archive; signals rejected by news in live runs are still accepted here. Treat metrics as an OPTIMISTIC upper bound.",
-      "exit_policy_unreplayed: production advisory SIGNAL_TARGET, profit-ladder, time-stop, and pending REDUCE/EXIT actions are disclosed but not executed by default backtests; target_price is a full-position simulated target exit in backtest."
+      "exit_policy_unreplayed: production profit-ladder, time-stop, and pending REDUCE/EXIT actions are disclosed but not executed by default backtests; target_price now maps to full-position TARGET_EXIT in production and backtest."
     ],
     "trades": [
       {
@@ -4712,12 +4364,8 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2024-11-06"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2024-10-14",
         "exit_date": "2024-11-06"
       },
@@ -4749,12 +4397,8 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2024-11-19"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2024-10-21",
         "exit_date": "2024-11-19"
       },
@@ -4786,12 +4430,8 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "PROFIT_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "PROFIT_TARGET": "2024-11-19"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2024-11-08",
         "exit_date": "2024-11-19"
       },
@@ -4801,7 +4441,7 @@
         "strategy": "trend_long",
         "sector": "Consumer Discretionary",
         "entry_price": 184.75,
-        "entry_open_price": 184.6546,
+        "entry_open_price": 184.6545,
         "stop_price": 179.28,
         "exit_price": 201.55,
         "exit_raw_price": 201.65,
@@ -4809,7 +4449,7 @@
         "pnl": 4184.38,
         "pnl_pct_net": 0.087429,
         "initial_risk_pct": 0.029608,
-        "slippage_cost": 51.01,
+        "slippage_cost": 51.04,
         "target_mult_used": 4.43,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.0546,
@@ -4823,12 +4463,8 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2024-11-21"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2024-11-01",
         "exit_date": "2024-11-21"
       },
@@ -4892,12 +4528,8 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2024-12-04"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2024-10-25",
         "exit_date": "2024-12-04"
       },
@@ -5093,12 +4725,8 @@
         "addon_shares": 1,
         "addon_cost": 256.43,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2025-02-06"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2025-01-16",
         "exit_date": "2025-02-06"
       },
@@ -5128,14 +4756,10 @@
         "actual_risk_pct": 0.025,
         "addon_count": 1,
         "addon_shares": 30,
-        "addon_cost": 18534.91,
+        "addon_cost": 18534.9,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2025-02-18"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2025-01-16",
         "exit_date": "2025-02-18"
       },
@@ -5145,7 +4769,7 @@
         "strategy": "trend_long",
         "sector": "Consumer Discretionary",
         "entry_price": 298.84,
-        "entry_open_price": 298.6955,
+        "entry_open_price": 298.6956,
         "stop_price": 291.89,
         "exit_price": 291.6,
         "exit_raw_price": 291.89,
@@ -5153,7 +4777,7 @@
         "pnl": -1702.07,
         "pnl_pct_net": -0.027733,
         "initial_risk_pct": 0.023257,
-        "slippage_cost": 89.9,
+        "slippage_cost": 89.88,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.094,
@@ -5211,7 +4835,7 @@
         "strategy": "trend_long",
         "sector": "Financials",
         "entry_price": 360.48,
-        "entry_open_price": 360.3034,
+        "entry_open_price": 360.3035,
         "stop_price": 351.87,
         "exit_price": 351.52,
         "exit_raw_price": 351.87,
@@ -5219,7 +4843,7 @@
         "pnl": -1416.72,
         "pnl_pct_net": -0.028361,
         "initial_risk_pct": 0.023885,
-        "slippage_cost": 73.46,
+        "slippage_cost": 73.45,
         "target_mult_used": 4.02,
         "regime_exit_bucket": "balanced",
         "regime_exit_score": 0.0215,
@@ -5298,12 +4922,8 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2025-03-18"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2025-01-31",
         "exit_date": "2025-03-18"
       },
@@ -5408,31 +5028,73 @@
   "secondary": {
     "period": "2024-04-02 → 2024-10-01",
     "trading_days": 127,
-    "total_trades": 20,
-    "wins": 6,
-    "losses": 14,
-    "win_rate": 0.3,
-    "total_pnl": 664.81,
-    "sharpe": 0.08,
-    "sharpe_daily": 0.2,
+    "total_trades": 32,
+    "wins": 8,
+    "losses": 24,
+    "win_rate": 0.25,
+    "total_pnl": -13058.96,
+    "sharpe": -1.15,
+    "sharpe_daily": -0.52,
     "sharpe_method": "per_trade_sqrt30_legacy",
-    "max_drawdown_pct": 0.0813,
-    "worst_trade_pct": -0.099614,
-    "max_consecutive_losses": 8,
-    "tail_loss_share": 0.5082,
+    "max_drawdown_pct": 0.2052,
+    "worst_trade_pct": -0.127533,
+    "max_consecutive_losses": 9,
+    "tail_loss_share": 0.5829,
     "capital_efficiency": {
-      "return_per_trade": 0.000332,
-      "pnl_per_trade_usd": 33.24,
-      "calendar_slot_days": 198,
-      "avg_calendar_days_held": 9.9,
-      "return_per_calendar_slot_day": 3.358e-05,
-      "pnl_per_calendar_slot_day_usd": 3.36,
-      "trade_count_per_100_trading_days": 15.75,
-      "gross_slot_day_fraction": 0.3118,
+      "return_per_trade": -0.004081,
+      "pnl_per_trade_usd": -408.09,
+      "calendar_slot_days": 496,
+      "avg_calendar_days_held": 15.5,
+      "return_per_calendar_slot_day": -0.00026329,
+      "pnl_per_calendar_slot_day_usd": -26.33,
+      "trade_count_per_100_trading_days": 25.2,
+      "gross_slot_day_fraction": 0.7811,
       "initial_capital": 100000.0,
       "note": "calendar_slot_days use inclusive calendar days, not trading days."
     },
     "sizing_rule_signal_attribution": {
+      "breakout_comms_gap_risk_multiplier_applied": {
+        "signals_seen": 1,
+        "zero_risk_signals": 1,
+        "reduced_risk_signals": 0,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.0,
+        "risk_pct_reduced_sum": 0.01,
+        "strategies": {
+          "breakout_long": 1
+        },
+        "sectors": {
+          "Communication Services": 1
+        }
+      },
+      "breakout_comms_near_high_risk_multiplier_applied": {
+        "signals_seen": 1,
+        "zero_risk_signals": 1,
+        "reduced_risk_signals": 0,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.0,
+        "risk_pct_reduced_sum": 0.01,
+        "strategies": {
+          "breakout_long": 1
+        },
+        "sectors": {
+          "Communication Services": 1
+        }
+      },
+      "breakout_financials_dte_risk_multiplier_applied": {
+        "signals_seen": 1,
+        "zero_risk_signals": 0,
+        "reduced_risk_signals": 1,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.0025,
+        "risk_pct_reduced_sum": 0.0075,
+        "strategies": {
+          "breakout_long": 1
+        },
+        "sectors": {
+          "Financials": 1
+        }
+      },
       "breakout_industrials_gap_risk_multiplier_applied": {
         "signals_seen": 1,
         "zero_risk_signals": 1,
@@ -5447,91 +5109,7 @@
           "Industrials": 1
         }
       },
-      "risk_on_unmodified_risk_multiplier_applied": {
-        "signals_seen": 10,
-        "zero_risk_signals": 0,
-        "reduced_risk_signals": 0,
-        "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.02,
-        "risk_pct_reduced_sum": 0.0,
-        "strategies": {
-          "trend_long": 10
-        },
-        "sectors": {
-          "Commodities": 1,
-          "Communication Services": 2,
-          "Consumer Discretionary": 3,
-          "ETF": 2,
-          "Healthcare": 1,
-          "Technology": 1
-        }
-      },
-      "spy_relative_leader_risk_on_multiplier_applied": {
-        "signals_seen": 10,
-        "zero_risk_signals": 0,
-        "reduced_risk_signals": 0,
-        "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.02,
-        "risk_pct_reduced_sum": 0.0,
-        "strategies": {
-          "trend_long": 10
-        },
-        "sectors": {
-          "Commodities": 1,
-          "Communication Services": 2,
-          "Consumer Discretionary": 3,
-          "ETF": 2,
-          "Healthcare": 1,
-          "Technology": 1
-        }
-      },
-      "tqs_risk_multiplier_applied": {
-        "signals_seen": 5,
-        "zero_risk_signals": 2,
-        "reduced_risk_signals": 3,
-        "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.0015,
-        "risk_pct_reduced_sum": 0.0425,
-        "strategies": {
-          "breakout_long": 1,
-          "trend_long": 4
-        },
-        "sectors": {
-          "Consumer Discretionary": 1,
-          "Healthcare": 2,
-          "Industrials": 1,
-          "Technology": 1
-        }
-      },
-      "trend_commodities_near_high_risk_multiplier_applied": {
-        "signals_seen": 1,
-        "zero_risk_signals": 0,
-        "reduced_risk_signals": 0,
-        "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.015,
-        "risk_pct_reduced_sum": 0.0,
-        "strategies": {
-          "trend_long": 1
-        },
-        "sectors": {
-          "Commodities": 1
-        }
-      },
-      "trend_healthcare_dte_risk_multiplier_applied": {
-        "signals_seen": 1,
-        "zero_risk_signals": 1,
-        "reduced_risk_signals": 0,
-        "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.0,
-        "risk_pct_reduced_sum": 0.01,
-        "strategies": {
-          "trend_long": 1
-        },
-        "sectors": {
-          "Healthcare": 1
-        }
-      },
-      "trend_industrials_risk_multiplier_applied": {
+      "breakout_tech_dte_risk_multiplier_applied": {
         "signals_seen": 2,
         "zero_risk_signals": 2,
         "reduced_risk_signals": 0,
@@ -5539,167 +5117,278 @@
         "avg_risk_pct_after": 0.0,
         "risk_pct_reduced_sum": 0.02,
         "strategies": {
-          "trend_long": 2
+          "breakout_long": 2
         },
         "sectors": {
-          "Industrials": 2
+          "Technology": 2
         }
       },
-      "trend_tech_dte_risk_multiplier_applied": {
-        "signals_seen": 3,
+      "risk_on_unmodified_risk_multiplier_applied": {
+        "signals_seen": 17,
         "zero_risk_signals": 0,
-        "reduced_risk_signals": 3,
+        "reduced_risk_signals": 0,
         "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.00125,
-        "risk_pct_reduced_sum": 0.02625,
+        "avg_risk_pct_after": 0.02,
+        "risk_pct_reduced_sum": 0.0,
         "strategies": {
-          "trend_long": 3
+          "breakout_long": 4,
+          "trend_long": 13
         },
         "sectors": {
-          "Technology": 3
+          "Commodities": 2,
+          "Communication Services": 4,
+          "Consumer Discretionary": 4,
+          "ETF": 2,
+          "Financials": 1,
+          "Healthcare": 2,
+          "Technology": 2
         }
       },
-      "trend_tech_gap_risk_multiplier_applied": {
-        "signals_seen": 3,
+      "spy_relative_leader_risk_on_multiplier_applied": {
+        "signals_seen": 17,
         "zero_risk_signals": 0,
-        "reduced_risk_signals": 3,
+        "reduced_risk_signals": 0,
         "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.00125,
-        "risk_pct_reduced_sum": 0.02625,
+        "avg_risk_pct_after": 0.02,
+        "risk_pct_reduced_sum": 0.0,
         "strategies": {
-          "trend_long": 3
+          "breakout_long": 4,
+          "trend_long": 13
         },
         "sectors": {
-          "Technology": 3
+          "Commodities": 2,
+          "Communication Services": 4,
+          "Consumer Discretionary": 4,
+          "ETF": 2,
+          "Financials": 1,
+          "Healthcare": 2,
+          "Technology": 2
         }
       },
-      "trend_tech_near_high_risk_multiplier_applied": {
+      "tqs_risk_multiplier_applied": {
+        "signals_seen": 7,
+        "zero_risk_signals": 6,
+        "reduced_risk_signals": 1,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.000357,
+        "risk_pct_reduced_sum": 0.0675,
+        "strategies": {
+          "breakout_long": 6,
+          "trend_long": 1
+        },
+        "sectors": {
+          "Communication Services": 1,
+          "Consumer Discretionary": 1,
+          "Financials": 1,
+          "Healthcare": 1,
+          "Industrials": 3
+        }
+      },
+      "trend_commodities_near_high_risk_multiplier_applied": {
         "signals_seen": 4,
         "zero_risk_signals": 0,
-        "reduced_risk_signals": 4,
+        "reduced_risk_signals": 0,
         "avg_risk_pct_before": 0.01,
-        "avg_risk_pct_after": 0.0025,
-        "risk_pct_reduced_sum": 0.03,
+        "avg_risk_pct_after": 0.015,
+        "risk_pct_reduced_sum": 0.0,
         "strategies": {
           "trend_long": 4
         },
         "sectors": {
-          "Technology": 4
+          "Commodities": 4
+        }
+      },
+      "trend_industrials_risk_multiplier_applied": {
+        "signals_seen": 3,
+        "zero_risk_signals": 3,
+        "reduced_risk_signals": 0,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.0,
+        "risk_pct_reduced_sum": 0.03,
+        "strategies": {
+          "trend_long": 3
+        },
+        "sectors": {
+          "Industrials": 3
+        }
+      },
+      "trend_tech_dte_risk_multiplier_applied": {
+        "signals_seen": 7,
+        "zero_risk_signals": 0,
+        "reduced_risk_signals": 7,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.001295,
+        "risk_pct_reduced_sum": 0.060937,
+        "strategies": {
+          "trend_long": 7
+        },
+        "sectors": {
+          "Technology": 7
+        }
+      },
+      "trend_tech_gap_risk_multiplier_applied": {
+        "signals_seen": 6,
+        "zero_risk_signals": 0,
+        "reduced_risk_signals": 6,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.000781,
+        "risk_pct_reduced_sum": 0.055313,
+        "strategies": {
+          "trend_long": 6
+        },
+        "sectors": {
+          "Technology": 6
+        }
+      },
+      "trend_tech_near_high_risk_multiplier_applied": {
+        "signals_seen": 11,
+        "zero_risk_signals": 0,
+        "reduced_risk_signals": 11,
+        "avg_risk_pct_before": 0.01,
+        "avg_risk_pct_after": 0.001563,
+        "risk_pct_reduced_sum": 0.092813,
+        "strategies": {
+          "trend_long": 11
+        },
+        "sectors": {
+          "Technology": 11
         }
       }
     },
     "sizing_rule_trade_attribution": {
-      "risk_on_unmodified_risk_multiplier_applied": {
-        "trade_count": 10,
-        "wins": 4,
-        "losses": 6,
-        "win_rate": 0.4,
-        "total_pnl_usd": 2262.57,
-        "avg_pnl_usd": 226.26,
-        "multipliers": {
-          "2.0": 10
-        },
-        "note": "Observed outcomes only; zero-risk signals do not become trades."
-      },
-      "spy_relative_leader_risk_on_multiplier_applied": {
-        "trade_count": 10,
-        "wins": 4,
-        "losses": 6,
-        "win_rate": 0.4,
-        "total_pnl_usd": 2262.57,
-        "avg_pnl_usd": 226.26,
-        "multipliers": {
-          "2.0": 10
-        },
-        "note": "Observed outcomes only; zero-risk signals do not become trades."
-      },
-      "tqs_risk_multiplier_applied": {
-        "trade_count": 2,
-        "wins": 0,
-        "losses": 2,
-        "win_rate": 0.0,
-        "total_pnl_usd": -701.67,
-        "avg_pnl_usd": -350.84,
-        "multipliers": {
-          "0.25": 2
-        },
-        "note": "Observed outcomes only; zero-risk signals do not become trades."
-      },
-      "trend_commodities_near_high_risk_multiplier_applied": {
+      "breakout_financials_dte_risk_multiplier_applied": {
         "trade_count": 1,
         "wins": 0,
         "losses": 1,
         "win_rate": 0.0,
-        "total_pnl_usd": -1108.6,
-        "avg_pnl_usd": -1108.6,
+        "total_pnl_usd": -238.75,
+        "avg_pnl_usd": -238.75,
         "multipliers": {
-          "1.5": 1
+          "0.25": 1
         },
         "note": "Observed outcomes only; zero-risk signals do not become trades."
       },
-      "trend_tech_dte_risk_multiplier_applied": {
+      "risk_on_unmodified_risk_multiplier_applied": {
+        "trade_count": 13,
+        "wins": 4,
+        "losses": 9,
+        "win_rate": 0.3077,
+        "total_pnl_usd": -9436.82,
+        "avg_pnl_usd": -725.91,
+        "multipliers": {
+          "2.0": 13
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades."
+      },
+      "spy_relative_leader_risk_on_multiplier_applied": {
+        "trade_count": 13,
+        "wins": 4,
+        "losses": 9,
+        "win_rate": 0.3077,
+        "total_pnl_usd": -9436.82,
+        "avg_pnl_usd": -725.91,
+        "multipliers": {
+          "2.0": 13
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades."
+      },
+      "tqs_risk_multiplier_applied": {
+        "trade_count": 1,
+        "wins": 0,
+        "losses": 1,
+        "win_rate": 0.0,
+        "total_pnl_usd": -210.76,
+        "avg_pnl_usd": -210.76,
+        "multipliers": {
+          "0.25": 1
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades."
+      },
+      "trend_commodities_near_high_risk_multiplier_applied": {
         "trade_count": 3,
         "wins": 0,
         "losses": 3,
         "win_rate": 0.0,
-        "total_pnl_usd": -433.37,
-        "avg_pnl_usd": -144.46,
+        "total_pnl_usd": -3574.28,
+        "avg_pnl_usd": -1191.43,
         "multipliers": {
-          "0.25": 3
+          "1.5": 3
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades."
+      },
+      "trend_tech_dte_risk_multiplier_applied": {
+        "trade_count": 6,
+        "wins": 1,
+        "losses": 5,
+        "win_rate": 0.1667,
+        "total_pnl_usd": 181.39,
+        "avg_pnl_usd": 30.23,
+        "multipliers": {
+          "0.25": 6
         },
         "note": "Observed outcomes only; zero-risk signals do not become trades."
       },
       "trend_tech_gap_risk_multiplier_applied": {
-        "trade_count": 2,
-        "wins": 0,
-        "losses": 2,
-        "win_rate": 0.0,
-        "total_pnl_usd": -172.4,
-        "avg_pnl_usd": -86.2,
-        "multipliers": {
-          "0.25": 2
-        },
-        "note": "Observed outcomes only; zero-risk signals do not become trades."
-      },
-      "trend_tech_near_high_risk_multiplier_applied": {
         "trade_count": 4,
-        "wins": 2,
-        "losses": 2,
-        "win_rate": 0.5,
-        "total_pnl_usd": 645.88,
-        "avg_pnl_usd": 161.47,
+        "wins": 1,
+        "losses": 3,
+        "win_rate": 0.25,
+        "total_pnl_usd": -23.46,
+        "avg_pnl_usd": -5.87,
         "multipliers": {
           "0.25": 4
         },
         "note": "Observed outcomes only; zero-risk signals do not become trades."
+      },
+      "trend_tech_near_high_risk_multiplier_applied": {
+        "trade_count": 9,
+        "wins": 3,
+        "losses": 6,
+        "win_rate": 0.3333,
+        "total_pnl_usd": 349.11,
+        "avg_pnl_usd": 38.79,
+        "multipliers": {
+          "0.25": 9
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades."
       }
     },
-    "signals_generated": 33,
-    "signals_survived": 27,
-    "survival_rate": 0.8182,
+    "signals_generated": 62,
+    "signals_survived": 51,
+    "survival_rate": 0.8226,
     "by_strategy": {
       "trend_long": {
-        "trade_count": 20,
-        "wins": 6,
-        "losses": 14,
-        "win_rate": 0.3,
-        "avg_pnl_pct_net": -0.0114,
-        "profit_factor": 0.696,
-        "avg_R": -0.486,
-        "total_pnl_usd": 664.81
+        "trade_count": 28,
+        "wins": 8,
+        "losses": 20,
+        "win_rate": 0.2857,
+        "avg_pnl_pct_net": -0.0065,
+        "profit_factor": 0.827,
+        "avg_R": -0.264,
+        "total_pnl_usd": -4352.99
+      },
+      "breakout_long": {
+        "trade_count": 4,
+        "wins": 0,
+        "losses": 4,
+        "win_rate": 0.0,
+        "avg_pnl_pct_net": -0.0747,
+        "profit_factor": 0.0,
+        "avg_R": -1.663,
+        "total_pnl_usd": -8705.97
       }
     },
     "benchmarks": {
       "spy_buy_hold_return_pct": 0.1029,
       "qqq_buy_hold_return_pct": 0.0943,
-      "strategy_total_return_pct": 0.0066,
-      "strategy_vs_spy_pct": -0.0962,
-      "strategy_vs_qqq_pct": -0.0877
+      "strategy_total_return_pct": -0.1306,
+      "strategy_vs_spy_pct": -0.2334,
+      "strategy_vs_qqq_pct": -0.2249
     },
     "known_biases": {
       "ohlcv_source": {
-        "snapshot_loaded": true,
-        "snapshot_path": "D:\\Github\\ginger\\data\\ohlcv_snapshot_20241002_20250422.json",
+        "snapshot_loaded": false,
+        "snapshot_path": null,
         "snapshot_written": false,
         "snapshot_write_path": null
       },
@@ -5725,7 +5414,7 @@
         "candidate_tickers_by_date": {},
         "candidate_signal_coverage_fraction": 0.0,
         "candidate_signals_covered": 0,
-        "candidate_signals_total": 27,
+        "candidate_signals_total": 51,
         "production_aligned_candidate_day_fraction": 0.0,
         "production_aligned_candidate_signal_fraction": 0.0
       },
@@ -5743,7 +5432,6 @@
           "implemented shared partial-reduce replay hooks only"
         ],
         "production_advisory_actions_not_replayed": [
-          "SIGNAL_TARGET",
           "PROFIT_TARGET",
           "PROFIT_LADDER_30",
           "PROFIT_LADDER_50",
@@ -5751,9 +5439,10 @@
           "PENDING_REDUCE_EXIT_OVERRIDE"
         ],
         "target_price_semantic_gap": {
+          "resolved": true,
           "backtester": "Position.target_price is simulated as a hard full-position target exit when the intraday high reaches the level.",
-          "production": "open_positions.target_price is read as signal_target_price and surfaces SIGNAL_TARGET as advisory reduce/review context for the LLM and daily workflow.",
-          "impact": "Backtest target exits are not proof that production advisory SIGNAL_TARGET trims, ladders, or time stops add alpha."
+          "production": "open_positions.target_price is read as signal_target_price and surfaces SIGNAL_TARGET as TARGET_EXIT full-position code action when daily_high, or close fallback, reaches it.",
+          "impact": "Backtest target exits now match production target-exit semantics; close-only production fallback is conservative when daily_high is unavailable."
         },
         "partial_reduce_replay_scope": {
           "replay_container_enabled": true,
@@ -5799,14 +5488,14 @@
       "earnings_event_long_data_quality": {
         "days_to_earnings_source": "yfinance calendar plus walk-forward simulation date",
         "snapshot_archive_present": true,
-        "snapshot_count": 138,
+        "snapshot_count": 139,
         "first_snapshot_date": "20251023",
-        "last_snapshot_date": "20260503",
+        "last_snapshot_date": "20260504",
         "exact_snapshot_coverage_fraction": 0.0,
         "walk_forward_snapshot_coverage_fraction": 0.0,
-        "snapshot_rows_total": 6081,
-        "snapshot_rows_with_eps_estimate": 5239,
-        "snapshot_rows_with_surprise_history": 5239,
+        "snapshot_rows_total": 6129,
+        "snapshot_rows_with_eps_estimate": 5280,
+        "snapshot_rows_with_surprise_history": 5280,
         "eps_estimate": "snapshot-backed when available; None before first snapshot or for uncovered tickers",
         "positive_surprise_history": "derived from avg_historical_surprise_pct when snapshot-backed; None before first snapshot or for uncovered tickers",
         "confidence_cap_when_missing_snapshot": 0.83,
@@ -5817,7 +5506,7 @@
       "notes": [
         "news veto lives in filter.py (EVENT_KEYWORDS + T1_TITLE_KEYWORDS); T1-negative replay via --replay-news (news_replay.py)",
         "LLM gate: production gates new_trade via llm_advisor; backtest replays only when --replay-llm is on AND llm_prompt_resp_YYYYMMDD.json exists",
-        "Exit policy: production advisory SIGNAL_TARGET/ladder/time-stop actions are disclosed under exit_policy_unreplayed and are not executed by default backtests",
+        "Exit policy: production target_price uses TARGET_EXIT full-position parity; profit-ladder/time-stop actions remain disclosed under exit_policy_unreplayed",
         "Trailing partial reduces: replay container is on by default, while pure trailing trims remain disabled by shared production policy",
         "data_layer.get_universe() reads current watchlist, not point-in-time",
         "OHLCV is live-downloaded unless --ohlcv-snapshot is provided; small alpha deltas should not be promoted from non-deterministic vendor downloads",
@@ -5840,7 +5529,7 @@
       "candidate_tickers_by_date": {},
       "candidate_day_coverage_fraction": 0.0,
       "candidate_signals_covered": 0,
-      "candidate_signals_total": 27,
+      "candidate_signals_total": 51,
       "candidate_signal_coverage_fraction": 0.0,
       "context_alignment": {
         "covered_candidate_days": 0,
@@ -5930,20 +5619,38 @@
       "archive_dates_covered": 0,
       "archive_dates_missing": 127,
       "candidate_days_covered": 0,
-      "candidate_days_total": 21,
+      "candidate_days_total": 39,
       "candidate_dates_covered": [],
       "candidate_dates_missing": [
+        "20240402",
+        "20240403",
+        "20240405",
+        "20240411",
+        "20240423",
+        "20240426",
+        "20240503",
+        "20240506",
+        "20240509",
+        "20240517",
+        "20240523",
+        "20240530",
+        "20240531",
+        "20240604",
+        "20240605",
+        "20240612",
         "20240613",
+        "20240614",
+        "20240617",
         "20240618",
         "20240621",
         "20240628",
         "20240702",
         "20240711",
-        "20240715",
         "20240716",
         "20240719",
         "20240723",
         "20240725",
+        "20240731",
         "20240802",
         "20240821",
         "20240830",
@@ -5956,17 +5663,35 @@
         "20240926"
       ],
       "candidate_signal_counts_by_date": {
+        "20240402": 1,
+        "20240403": 3,
+        "20240405": 1,
+        "20240411": 2,
+        "20240423": 1,
+        "20240426": 1,
+        "20240503": 1,
+        "20240506": 1,
+        "20240509": 2,
+        "20240517": 1,
+        "20240523": 1,
+        "20240530": 1,
+        "20240531": 1,
+        "20240604": 1,
+        "20240605": 1,
+        "20240612": 2,
         "20240613": 1,
+        "20240614": 1,
+        "20240617": 1,
         "20240618": 1,
         "20240621": 1,
         "20240628": 1,
         "20240702": 1,
         "20240711": 1,
-        "20240715": 1,
-        "20240716": 3,
+        "20240716": 4,
         "20240719": 1,
         "20240723": 2,
         "20240725": 2,
+        "20240731": 1,
         "20240802": 1,
         "20240821": 1,
         "20240830": 1,
@@ -5979,8 +5704,67 @@
         "20240926": 1
       },
       "candidate_tickers_by_date": {
+        "20240402": [
+          "SLV"
+        ],
+        "20240403": [
+          "GE",
+          "SLV",
+          "SPOT"
+        ],
+        "20240405": [
+          "GLD"
+        ],
+        "20240411": [
+          "CRDO",
+          "DDOG"
+        ],
+        "20240423": [
+          "GE"
+        ],
+        "20240426": [
+          "GOOG"
+        ],
+        "20240503": [
+          "AAPL"
+        ],
+        "20240506": [
+          "PLTR"
+        ],
+        "20240509": [
+          "APP",
+          "BKNG"
+        ],
+        "20240517": [
+          "SLV"
+        ],
+        "20240523": [
+          "NVDA"
+        ],
+        "20240530": [
+          "CRDO"
+        ],
+        "20240531": [
+          "RTX"
+        ],
+        "20240604": [
+          "SPOT"
+        ],
+        "20240605": [
+          "ISRG"
+        ],
+        "20240612": [
+          "AAPL",
+          "AVGO"
+        ],
         "20240613": [
           "AVGO"
+        ],
+        "20240614": [
+          "NFLX"
+        ],
+        "20240617": [
+          "PLTR"
         ],
         "20240618": [
           "MU"
@@ -5997,16 +5781,14 @@
         "20240711": [
           "IWM"
         ],
-        "20240715": [
-          "CRDO"
-        ],
         "20240716": [
           "GLD",
+          "GS",
           "IWM",
           "UNH"
         ],
         "20240719": [
-          "ISRG"
+          "COIN"
         ],
         "20240723": [
           "GE",
@@ -6015,6 +5797,9 @@
         "20240725": [
           "NOW",
           "RTX"
+        ],
+        "20240731": [
+          "MA"
         ],
         "20240802": [
           "MCD"
@@ -6051,7 +5836,7 @@
       },
       "candidate_day_coverage_fraction": 0.0,
       "candidate_signals_covered": 0,
-      "candidate_signals_total": 27,
+      "candidate_signals_total": 51,
       "candidate_signal_coverage_fraction": 0.0,
       "context_alignment": {
         "covered_candidate_days": 0,
@@ -6113,11 +5898,66 @@
       "second_addon_min_rs_vs_spy": 0.0,
       "second_addon_fraction_of_original_shares": 0.15,
       "second_addon_max_position_pct": 0.45,
-      "scheduled": 5,
-      "executed": 5,
-      "skipped": 0,
+      "scheduled": 8,
+      "executed": 3,
+      "skipped": 5,
       "checkpoint_rejected": 0,
       "events": [
+        {
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "sector": "Commodities",
+          "checkpoint_date": "2024-04-08",
+          "checkpoint_days": 2,
+          "addon_number": 1,
+          "unrealized_pct": 0.03336,
+          "rs_vs_spy": 0.026146,
+          "original_shares": 1595,
+          "spy_relative_leader_addon_cap": true,
+          "addon_position_cap": 0.6,
+          "requested_shares": 797,
+          "scheduled_fill_date": "2024-04-09",
+          "status": "skipped_portfolio_heat_cap",
+          "raw_open": 25.75
+        },
+        {
+          "ticker": "SPOT",
+          "strategy": "trend_long",
+          "sector": "Communication Services",
+          "checkpoint_date": "2024-04-08",
+          "checkpoint_days": 2,
+          "addon_number": 1,
+          "unrealized_pct": 0.054307,
+          "rs_vs_spy": 0.033285,
+          "original_shares": 127,
+          "spy_relative_leader_addon_cap": true,
+          "addon_position_cap": 0.6,
+          "requested_shares": 63,
+          "scheduled_fill_date": "2024-04-09",
+          "status": "skipped_portfolio_heat_cap",
+          "raw_open": 308.6
+        },
+        {
+          "ticker": "NVDA",
+          "strategy": "trend_long",
+          "sector": "Technology",
+          "checkpoint_date": "2024-05-29",
+          "checkpoint_days": 2,
+          "addon_number": 1,
+          "unrealized_pct": 0.098815,
+          "rs_vs_spy": 0.084791,
+          "original_shares": 8,
+          "spy_relative_leader_addon_cap": true,
+          "addon_position_cap": 0.6,
+          "requested_shares": 4,
+          "scheduled_fill_date": "2024-05-30",
+          "status": "executed",
+          "raw_open": 114.5853,
+          "entry_fill": 114.6426,
+          "addon_shares": 4,
+          "new_total_shares": 12,
+          "new_avg_entry": 107.84
+        },
         {
           "ticker": "AVGO",
           "strategy": "trend_long",
@@ -6132,12 +5972,8 @@
           "addon_position_cap": 0.6,
           "requested_shares": 3,
           "scheduled_fill_date": "2024-06-20",
-          "status": "executed",
-          "raw_open": 176.7359,
-          "entry_fill": 176.8242,
-          "addon_shares": 3,
-          "new_total_shares": 9,
-          "new_avg_entry": 169.2
+          "status": "skipped_portfolio_heat_cap",
+          "raw_open": 176.7359
         },
         {
           "ticker": "AMZN",
@@ -6148,17 +5984,13 @@
           "addon_number": 1,
           "unrealized_pct": 0.02212,
           "rs_vs_spy": 0.038222,
-          "original_shares": 36,
+          "original_shares": 33,
           "spy_relative_leader_addon_cap": false,
           "addon_position_cap": 0.35,
-          "requested_shares": 18,
+          "requested_shares": 16,
           "scheduled_fill_date": "2024-06-27",
-          "status": "executed",
-          "raw_open": 195.01,
-          "entry_fill": 195.1075,
-          "addon_shares": 18,
-          "new_total_shares": 54,
-          "new_avg_entry": 191.32
+          "status": "skipped_portfolio_heat_cap",
+          "raw_open": 195.01
         },
         {
           "ticker": "TSLA",
@@ -6169,17 +6001,13 @@
           "addon_number": 1,
           "unrealized_pct": 0.077808,
           "rs_vs_spy": 0.019657,
-          "original_shares": 131,
+          "original_shares": 121,
           "spy_relative_leader_addon_cap": true,
           "addon_position_cap": 0.6,
-          "requested_shares": 65,
+          "requested_shares": 60,
           "scheduled_fill_date": "2024-07-09",
-          "status": "executed",
-          "raw_open": 251.0,
-          "entry_fill": 251.1255,
-          "addon_shares": 65,
-          "new_total_shares": 196,
-          "new_avg_entry": 240.13
+          "status": "skipped_portfolio_heat_cap",
+          "raw_open": 251.0
         },
         {
           "ticker": "APP",
@@ -6190,16 +6018,16 @@
           "addon_number": 1,
           "unrealized_pct": 0.193532,
           "rs_vs_spy": 0.094041,
-          "original_shares": 32,
+          "original_shares": 28,
           "spy_relative_leader_addon_cap": true,
           "addon_position_cap": 0.6,
-          "requested_shares": 16,
+          "requested_shares": 14,
           "scheduled_fill_date": "2024-09-17",
           "status": "executed",
           "raw_open": 118.16,
           "entry_fill": 118.2191,
-          "addon_shares": 16,
-          "new_total_shares": 48,
+          "addon_shares": 14,
+          "new_total_shares": 42,
           "new_avg_entry": 104.34
         },
         {
@@ -6211,17 +6039,17 @@
           "addon_number": 1,
           "unrealized_pct": 0.044945,
           "rs_vs_spy": 0.03623,
-          "original_shares": 115,
+          "original_shares": 99,
           "spy_relative_leader_addon_cap": true,
           "addon_position_cap": 0.6,
-          "requested_shares": 57,
+          "requested_shares": 49,
           "scheduled_fill_date": "2024-09-25",
           "status": "executed",
           "raw_open": 377.8,
           "entry_fill": 377.9889,
-          "addon_shares": 28,
-          "new_total_shares": 143,
-          "new_avg_entry": 366.74
+          "addon_shares": 25,
+          "new_total_shares": 124,
+          "new_avg_entry": 366.82
         }
       ],
       "notes": [
@@ -6249,39 +6077,174 @@
       "enabled": true,
       "mode": "shadow_only_no_trade_execution",
       "rules_observed": [
-        "SIGNAL_TARGET"
+        "TIME_STOP"
       ],
-      "total_daily_triggers": 1,
+      "total_daily_triggers": 13,
       "by_rule": {
-        "SIGNAL_TARGET": {
-          "daily_triggers": 1,
+        "TIME_STOP": {
+          "daily_triggers": 13,
           "unique_trades": 1,
           "first_trigger_trades": 1,
           "outcome": {
             "closed_trades": 1,
-            "wins": 1,
-            "win_rate": 1.0,
-            "pnl": 2489.31,
-            "avg_pnl": 2489.31,
+            "wins": 0,
+            "win_rate": 0.0,
+            "pnl": -5265.4,
+            "avg_pnl": -5265.4,
             "exit_reasons": {
-              "target": 1
+              "stop": 1
             }
           },
           "sample_events": [
             {
-              "date": "2024-07-16",
-              "ticker": "IWM",
-              "strategy": "trend_long",
-              "sector": "ETF",
-              "trade_key": "IWM:2024-07-12:208.9500",
-              "rule": "SIGNAL_TARGET",
-              "urgency": "LOW",
+              "date": "2024-07-17",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
               "is_first_for_trade": true,
-              "close": 220.2998,
-              "entry_price": 208.95,
-              "unrealized_pct": 0.054318,
-              "days_held": 2,
-              "high_since_entry": 220.5549
+              "close": 157.4214,
+              "entry_price": 149.02,
+              "unrealized_pct": 0.056378,
+              "days_held": 45,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-18",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 155.0903,
+              "entry_price": 149.02,
+              "unrealized_pct": 0.040735,
+              "days_held": 46,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-19",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 156.538,
+              "entry_price": 149.02,
+              "unrealized_pct": 0.05045,
+              "days_held": 47,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-22",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 154.2554,
+              "entry_price": 149.02,
+              "unrealized_pct": 0.035132,
+              "days_held": 48,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-23",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 154.6421,
+              "entry_price": 149.02,
+              "unrealized_pct": 0.037727,
+              "days_held": 49,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-24",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 150.1668,
+              "entry_price": 149.02,
+              "unrealized_pct": 0.007696,
+              "days_held": 50,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-25",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 144.4099,
+              "entry_price": 149.02,
+              "unrealized_pct": -0.030936,
+              "days_held": 51,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-26",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 146.032,
+              "entry_price": 149.02,
+              "unrealized_pct": -0.020051,
+              "days_held": 52,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-29",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 148.1682,
+              "entry_price": 149.02,
+              "unrealized_pct": -0.005716,
+              "days_held": 53,
+              "high_since_entry": 163.5247
+            },
+            {
+              "date": "2024-07-30",
+              "ticker": "BKNG",
+              "strategy": "breakout_long",
+              "sector": "Consumer Discretionary",
+              "trade_key": "BKNG:2024-05-10:149.0200",
+              "rule": "TIME_STOP",
+              "urgency": "REVIEW",
+              "is_first_for_trade": false,
+              "close": 146.8212,
+              "entry_price": 149.02,
+              "unrealized_pct": -0.014755,
+              "days_held": 54,
+              "high_since_entry": 163.5247
             }
           ]
         }
@@ -6295,8 +6258,79 @@
     "scarce_slot_attribution": {
       "defer_breakout_when_slots_lte": 1,
       "defer_breakout_max_min_index_pct_from_ma": null,
-      "breakout_deferred": 0,
-      "deferred_events": [],
+      "breakout_deferred": 5,
+      "deferred_events": [
+        {
+          "ticker": "RTX",
+          "strategy": "breakout_long",
+          "sector": "Industrials",
+          "available_slots": 1,
+          "trade_quality_score": 0.83,
+          "confidence_score": 1.0,
+          "pct_from_52w_high": null,
+          "entry_price": 104.37,
+          "stop_price": 102.39,
+          "target_price": 110.3,
+          "min_index_pct_from_ma": null,
+          "date": "2024-05-31"
+        },
+        {
+          "ticker": "NFLX",
+          "strategy": "breakout_long",
+          "sector": "Communication Services",
+          "available_slots": 1,
+          "trade_quality_score": 0.83,
+          "confidence_score": 1.0,
+          "pct_from_52w_high": null,
+          "entry_price": 66.94,
+          "stop_price": 64.71,
+          "target_price": 73.64,
+          "min_index_pct_from_ma": null,
+          "date": "2024-06-14"
+        },
+        {
+          "ticker": "PLTR",
+          "strategy": "breakout_long",
+          "sector": "Technology",
+          "available_slots": 1,
+          "trade_quality_score": 0.88,
+          "confidence_score": 0.93,
+          "pct_from_52w_high": null,
+          "entry_price": 25.02,
+          "stop_price": 23.66,
+          "target_price": 29.11,
+          "min_index_pct_from_ma": null,
+          "date": "2024-06-17"
+        },
+        {
+          "ticker": "UNH",
+          "strategy": "breakout_long",
+          "sector": "Healthcare",
+          "available_slots": 1,
+          "trade_quality_score": 0.815,
+          "confidence_score": 0.93,
+          "pct_from_52w_high": null,
+          "entry_price": 489.57,
+          "stop_price": 474.74,
+          "target_price": 534.07,
+          "min_index_pct_from_ma": null,
+          "date": "2024-06-28"
+        },
+        {
+          "ticker": "GS",
+          "strategy": "breakout_long",
+          "sector": "Financials",
+          "available_slots": 1,
+          "trade_quality_score": 0.9,
+          "confidence_score": 1.0,
+          "pct_from_52w_high": null,
+          "entry_price": 485.09,
+          "stop_price": 471.01,
+          "target_price": 527.32,
+          "min_index_pct_from_ma": null,
+          "date": "2024-07-16"
+        }
+      ],
       "notes": [
         "Conditional sleeve routing: defer breakout_long entries when only scarce slots remain.",
         "Optional market-state cap limits deferral to non-extended SPY/QQQ tapes.",
@@ -6304,17 +6338,77 @@
       ]
     },
     "entry_execution_attribution": {
-      "candidate_events": 27,
-      "entered_count": 20,
-      "skipped_count": 7,
+      "candidate_events": 51,
+      "entered_count": 32,
+      "skipped_count": 19,
       "reason_counts": {
-        "entered": 20,
-        "gap_cancel": 2,
-        "no_shares": 5
+        "adverse_gap_down_cancel": 1,
+        "entered": 32,
+        "gap_cancel": 3,
+        "no_shares": 8,
+        "scarce_slot_breakout_deferred": 5,
+        "slot_sliced": 2
       },
       "by_date": {
+        "2024-04-02": {
+          "gap_cancel": 1
+        },
+        "2024-04-03": {
+          "no_shares": 1,
+          "entered": 2
+        },
+        "2024-04-05": {
+          "entered": 1
+        },
+        "2024-04-11": {
+          "no_shares": 1,
+          "entered": 1
+        },
+        "2024-04-23": {
+          "no_shares": 1
+        },
+        "2024-04-26": {
+          "entered": 1
+        },
+        "2024-05-03": {
+          "entered": 1
+        },
+        "2024-05-06": {
+          "adverse_gap_down_cancel": 1
+        },
+        "2024-05-09": {
+          "entered": 2
+        },
+        "2024-05-17": {
+          "entered": 1
+        },
+        "2024-05-23": {
+          "entered": 1
+        },
+        "2024-05-30": {
+          "entered": 1
+        },
+        "2024-05-31": {
+          "scarce_slot_breakout_deferred": 1
+        },
+        "2024-06-04": {
+          "entered": 1
+        },
+        "2024-06-05": {
+          "entered": 1
+        },
+        "2024-06-12": {
+          "entered": 1,
+          "gap_cancel": 1
+        },
         "2024-06-13": {
           "entered": 1
+        },
+        "2024-06-14": {
+          "scarce_slot_breakout_deferred": 1
+        },
+        "2024-06-17": {
+          "scarce_slot_breakout_deferred": 1
         },
         "2024-06-18": {
           "gap_cancel": 1
@@ -6323,7 +6417,7 @@
           "entered": 1
         },
         "2024-06-28": {
-          "no_shares": 1
+          "scarce_slot_breakout_deferred": 1
         },
         "2024-07-02": {
           "entered": 1
@@ -6331,14 +6425,13 @@
         "2024-07-11": {
           "entered": 1
         },
-        "2024-07-15": {
+        "2024-07-16": {
+          "scarce_slot_breakout_deferred": 1,
+          "slot_sliced": 2,
           "entered": 1
         },
-        "2024-07-16": {
-          "entered": 3
-        },
         "2024-07-19": {
-          "gap_cancel": 1
+          "entered": 1
         },
         "2024-07-23": {
           "no_shares": 1,
@@ -6346,6 +6439,9 @@
         },
         "2024-07-25": {
           "entered": 1,
+          "no_shares": 1
+        },
+        "2024-07-31": {
           "no_shares": 1
         },
         "2024-08-02": {
@@ -6382,12 +6478,150 @@
       },
       "sample_skips": [
         {
+          "date": "2024-04-02",
+          "ticker": "SLV",
+          "strategy": "trend_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 5,
+          "details": {
+            "fill_date": "2024-04-03",
+            "fill_price": 24.27,
+            "signal_entry": 23.84,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          }
+        },
+        {
+          "date": "2024-04-03",
+          "ticker": "GE",
+          "strategy": "breakout_long",
+          "decision": "no_shares",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 5,
+          "details": {
+            "has_sizing": true,
+            "shares_to_buy": 0,
+            "risk_pct_before": null,
+            "risk_pct_after": null,
+            "risk_multipliers": {
+              "tqs_risk_multiplier_applied": 0.0
+            }
+          }
+        },
+        {
+          "date": "2024-04-11",
+          "ticker": "CRDO",
+          "strategy": "breakout_long",
+          "decision": "no_shares",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 2,
+          "details": {
+            "has_sizing": true,
+            "shares_to_buy": 0,
+            "risk_pct_before": null,
+            "risk_pct_after": null,
+            "risk_multipliers": {
+              "breakout_tech_dte_risk_multiplier_applied": 0.0
+            }
+          }
+        },
+        {
+          "date": "2024-04-23",
+          "ticker": "GE",
+          "strategy": "trend_long",
+          "decision": "no_shares",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 3,
+          "details": {
+            "has_sizing": true,
+            "shares_to_buy": 0,
+            "risk_pct_before": null,
+            "risk_pct_after": null,
+            "risk_multipliers": {
+              "trend_industrials_risk_multiplier_applied": 0.0
+            }
+          }
+        },
+        {
+          "date": "2024-05-06",
+          "ticker": "PLTR",
+          "strategy": "trend_long",
+          "decision": "adverse_gap_down_cancel",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 4,
+          "details": {
+            "fill_date": "2024-05-07",
+            "fill_price": 21.99,
+            "signal_entry": 25.21,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          }
+        },
+        {
+          "date": "2024-05-31",
+          "ticker": "RTX",
+          "strategy": "breakout_long",
+          "decision": "scarce_slot_breakout_deferred",
+          "candidate_rank": null,
+          "available_slots_at_entry_loop": 1,
+          "details": {
+            "active_positions": 4,
+            "defer_breakout_slots_lte": 1,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "min_index_pct_from_ma": null
+          }
+        },
+        {
+          "date": "2024-06-12",
+          "ticker": "AVGO",
+          "strategy": "trend_long",
+          "decision": "gap_cancel",
+          "candidate_rank": 2,
+          "available_slots_at_entry_loop": 3,
+          "details": {
+            "fill_date": "2024-06-13",
+            "fill_price": 167.5769,
+            "signal_entry": 146.56,
+            "cancel_gap_pct": 0.015,
+            "adverse_gap_cancel_pct": 0.02
+          }
+        },
+        {
+          "date": "2024-06-14",
+          "ticker": "NFLX",
+          "strategy": "breakout_long",
+          "decision": "scarce_slot_breakout_deferred",
+          "candidate_rank": null,
+          "available_slots_at_entry_loop": 1,
+          "details": {
+            "active_positions": 4,
+            "defer_breakout_slots_lte": 1,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "min_index_pct_from_ma": null
+          }
+        },
+        {
+          "date": "2024-06-17",
+          "ticker": "PLTR",
+          "strategy": "breakout_long",
+          "decision": "scarce_slot_breakout_deferred",
+          "candidate_rank": null,
+          "available_slots_at_entry_loop": 1,
+          "details": {
+            "active_positions": 4,
+            "defer_breakout_slots_lte": 1,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "min_index_pct_from_ma": null
+          }
+        },
+        {
           "date": "2024-06-18",
           "ticker": "MU",
           "strategy": "trend_long",
           "decision": "gap_cancel",
           "candidate_rank": 1,
-          "available_slots_at_entry_loop": 4,
+          "available_slots_at_entry_loop": 1,
           "details": {
             "fill_date": "2024-06-20",
             "fill_price": 155.9163,
@@ -6399,34 +6633,51 @@
         {
           "date": "2024-06-28",
           "ticker": "UNH",
-          "strategy": "trend_long",
-          "decision": "no_shares",
-          "candidate_rank": 1,
-          "available_slots_at_entry_loop": 4,
+          "strategy": "breakout_long",
+          "decision": "scarce_slot_breakout_deferred",
+          "candidate_rank": null,
+          "available_slots_at_entry_loop": 1,
           "details": {
-            "has_sizing": true,
-            "shares_to_buy": 0,
-            "risk_pct_before": null,
-            "risk_pct_after": null,
-            "risk_multipliers": {
-              "tqs_risk_multiplier_applied": 0.25,
-              "trend_healthcare_dte_risk_multiplier_applied": 0.0
-            }
+            "active_positions": 4,
+            "defer_breakout_slots_lte": 1,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "min_index_pct_from_ma": null
           }
         },
         {
-          "date": "2024-07-19",
-          "ticker": "ISRG",
+          "date": "2024-07-16",
+          "ticker": "IWM",
           "strategy": "trend_long",
-          "decision": "gap_cancel",
-          "candidate_rank": 1,
-          "available_slots_at_entry_loop": 4,
+          "decision": "slot_sliced",
+          "candidate_rank": 2,
+          "available_slots_at_entry_loop": 1,
           "details": {
-            "fill_date": "2024-07-22",
-            "fill_price": 462.33,
-            "signal_entry": 455.01,
-            "cancel_gap_pct": 0.015,
-            "adverse_gap_cancel_pct": 0.02
+            "signal_count": 3
+          }
+        },
+        {
+          "date": "2024-07-16",
+          "ticker": "UNH",
+          "strategy": "trend_long",
+          "decision": "slot_sliced",
+          "candidate_rank": 3,
+          "available_slots_at_entry_loop": 1,
+          "details": {
+            "signal_count": 3
+          }
+        },
+        {
+          "date": "2024-07-16",
+          "ticker": "GS",
+          "strategy": "breakout_long",
+          "decision": "scarce_slot_breakout_deferred",
+          "candidate_rank": null,
+          "available_slots_at_entry_loop": 1,
+          "details": {
+            "active_positions": 4,
+            "defer_breakout_slots_lte": 1,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "min_index_pct_from_ma": null
           }
         },
         {
@@ -6435,7 +6686,7 @@
           "strategy": "trend_long",
           "decision": "no_shares",
           "candidate_rank": 1,
-          "available_slots_at_entry_loop": 4,
+          "available_slots_at_entry_loop": 2,
           "details": {
             "has_sizing": true,
             "shares_to_buy": 0,
@@ -6452,7 +6703,7 @@
           "strategy": "trend_long",
           "decision": "no_shares",
           "candidate_rank": 2,
-          "available_slots_at_entry_loop": 3,
+          "available_slots_at_entry_loop": 2,
           "details": {
             "has_sizing": true,
             "shares_to_buy": 0,
@@ -6460,6 +6711,23 @@
             "risk_pct_after": null,
             "risk_multipliers": {
               "trend_industrials_risk_multiplier_applied": 0.0
+            }
+          }
+        },
+        {
+          "date": "2024-07-31",
+          "ticker": "MA",
+          "strategy": "breakout_long",
+          "decision": "no_shares",
+          "candidate_rank": 1,
+          "available_slots_at_entry_loop": 2,
+          "details": {
+            "has_sizing": true,
+            "shares_to_buy": 0,
+            "risk_pct_before": null,
+            "risk_pct_after": null,
+            "risk_multipliers": {
+              "tqs_risk_multiplier_applied": 0.0
             }
           }
         },
@@ -6530,30 +6798,388 @@
       "risk_rules_enforced_in_backtest": true,
       "equity_curve_len": 127,
       "trading_days": 127,
-      "equity_flat_days": 52,
-      "equity_flat_fraction": 0.4127,
+      "equity_flat_days": 19,
+      "equity_flat_fraction": 0.1508,
       "daily_returns_count": 126
     },
     "caveats": [
       "news_veto_not_replayed: production filter.py T1-negative-news veto has no historical archive; signals rejected by news in live runs are still accepted here. Treat metrics as an OPTIMISTIC upper bound.",
-      "exit_policy_unreplayed: production advisory SIGNAL_TARGET, profit-ladder, time-stop, and pending REDUCE/EXIT actions are disclosed but not executed by default backtests; target_price is a full-position simulated target exit in backtest."
+      "exit_policy_unreplayed: production profit-ladder, time-stop, and pending REDUCE/EXIT actions are disclosed but not executed by default backtests; target_price now maps to full-position TARGET_EXIT in production and backtest."
     ],
     "trades": [
       {
-        "trade_key": "AVGO:2024-06-14:169.2000",
+        "trade_key": "DDOG:2024-04-12:129.1500",
+        "ticker": "DDOG",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 129.15,
+        "entry_open_price": 129.09,
+        "stop_price": 124.54,
+        "exit_price": 124.42,
+        "exit_raw_price": 124.54,
+        "shares": 33,
+        "pnl": -170.61,
+        "pnl_pct_net": -0.040159,
+        "initial_risk_pct": 0.035695,
+        "slippage_cost": 6.09,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1254,
+        "sizing_multipliers": {
+          "trend_tech_gap_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.0025,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-04-12",
+        "exit_date": "2024-04-17"
+      },
+      {
+        "trade_key": "SPOT:2024-04-04:293.1500",
+        "ticker": "SPOT",
+        "strategy": "trend_long",
+        "sector": "Communication Services",
+        "entry_price": 293.15,
+        "entry_open_price": 293.0,
+        "stop_price": 278.54,
+        "exit_price": 278.26,
+        "exit_raw_price": 278.54,
+        "shares": 127,
+        "pnl": -2014.53,
+        "pnl_pct_net": -0.054288,
+        "initial_risk_pct": 0.049838,
+        "slippage_cost": 54.42,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1353,
+        "sizing_multipliers": {
+          "risk_on_unmodified_risk_multiplier_applied": 2.0,
+          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.02,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-04-04",
+        "exit_date": "2024-04-19"
+      },
+      {
+        "trade_key": "GOOG:2024-04-29:169.4600",
+        "ticker": "GOOG",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 169.46,
+        "entry_open_price": 169.3794,
+        "stop_price": 165.45,
+        "exit_price": 165.28,
+        "exit_raw_price": 165.45,
+        "shares": 7,
+        "pnl": -33.28,
+        "pnl_pct_net": -0.02814,
+        "initial_risk_pct": 0.023663,
+        "slippage_cost": 1.72,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.0843,
+        "sizing_multipliers": {
+          "trend_tech_near_high_risk_multiplier_applied": 0.25,
+          "trend_tech_dte_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.000625,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-04-29",
+        "exit_date": "2024-04-30"
+      },
+      {
+        "trade_key": "SLV:2024-04-04:24.5800",
+        "ticker": "SLV",
+        "strategy": "trend_long",
+        "sector": "Commodities",
+        "entry_price": 24.58,
+        "entry_open_price": 24.57,
+        "stop_price": 24.0,
+        "exit_price": 23.93,
+        "exit_raw_price": 23.95,
+        "shares": 1595,
+        "pnl": -1176.54,
+        "pnl_pct_net": -0.030103,
+        "initial_risk_pct": 0.023596,
+        "slippage_cost": 54.07,
+        "target_mult_used": 7.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1353,
+        "sizing_multipliers": {
+          "trend_commodities_near_high_risk_multiplier_applied": 1.5
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.015,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-04-04",
+        "exit_date": "2024-05-02"
+      },
+      {
+        "trade_key": "GLD:2024-04-08:216.0900",
+        "ticker": "GLD",
+        "strategy": "breakout_long",
+        "sector": "Commodities",
+        "entry_price": 216.09,
+        "entry_open_price": 215.98,
+        "stop_price": 211.66,
+        "exit_price": 211.45,
+        "exit_raw_price": 211.66,
+        "shares": 232,
+        "pnl": -1248.57,
+        "pnl_pct_net": -0.02498,
+        "initial_risk_pct": 0.020501,
+        "slippage_cost": 74.63,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1215,
+        "sizing_multipliers": {
+          "risk_on_unmodified_risk_multiplier_applied": 2.0,
+          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.02,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-04-08",
+        "exit_date": "2024-05-02"
+      },
+      {
+        "trade_key": "APP:2024-05-10:85.7800",
+        "ticker": "APP",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 85.78,
+        "entry_open_price": 85.74,
+        "stop_price": 78.58,
+        "exit_price": 78.5,
+        "exit_raw_price": 78.58,
+        "shares": 34,
+        "pnl": -256.81,
+        "pnl_pct_net": -0.088352,
+        "initial_risk_pct": 0.083936,
+        "slippage_cost": 4.03,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1263,
+        "sizing_multipliers": {
+          "trend_tech_dte_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.0025,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-05-10",
+        "exit_date": "2024-05-23"
+      },
+      {
+        "trade_key": "SLV:2024-05-20:28.9400",
+        "ticker": "SLV",
+        "strategy": "breakout_long",
+        "sector": "Commodities",
+        "entry_price": 28.94,
+        "entry_open_price": 28.93,
+        "stop_price": 27.79,
+        "exit_price": 27.76,
+        "exit_raw_price": 27.79,
+        "shares": 1532,
+        "pnl": -1953.25,
+        "pnl_pct_net": -0.044198,
+        "initial_risk_pct": 0.039737,
+        "slippage_cost": 57.91,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1442,
+        "sizing_multipliers": {
+          "risk_on_unmodified_risk_multiplier_applied": 2.0,
+          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.02,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-05-20",
+        "exit_date": "2024-05-23"
+      },
+      {
+        "trade_key": "CRDO:2024-05-31:25.3200",
+        "ticker": "CRDO",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 25.32,
+        "entry_open_price": 25.31,
+        "stop_price": 23.95,
+        "exit_price": 23.93,
+        "exit_raw_price": 23.95,
+        "shares": 118,
+        "pnl": -174.36,
+        "pnl_pct_net": -0.058551,
+        "initial_risk_pct": 0.054107,
+        "slippage_cost": 4.0,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1055,
+        "sizing_multipliers": {
+          "trend_tech_near_high_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.0025,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-05-31",
+        "exit_date": "2024-06-04"
+      },
+      {
+        "trade_key": "SPOT:2024-06-05:326.7100",
+        "ticker": "SPOT",
+        "strategy": "trend_long",
+        "sector": "Communication Services",
+        "entry_price": 326.71,
+        "entry_open_price": 326.55,
+        "stop_price": 311.04,
+        "exit_price": 310.73,
+        "exit_raw_price": 311.04,
+        "shares": 100,
+        "pnl": -1706.86,
+        "pnl_pct_net": -0.052415,
+        "initial_risk_pct": 0.047963,
+        "slippage_cost": 47.1,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1145,
+        "sizing_multipliers": {
+          "risk_on_unmodified_risk_multiplier_applied": 2.0,
+          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.02,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-06-05",
+        "exit_date": "2024-06-07"
+      },
+      {
+        "trade_key": "AAPL:2024-05-06:180.8000",
+        "ticker": "AAPL",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 180.8,
+        "entry_open_price": 180.7054,
+        "stop_price": 175.45,
+        "exit_price": 206.76,
+        "exit_raw_price": 206.86,
+        "shares": 30,
+        "pnl": 756.99,
+        "pnl_pct_net": 0.140065,
+        "initial_risk_pct": 0.029591,
+        "slippage_cost": 5.94,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.116,
+        "sizing_multipliers": {
+          "trend_tech_dte_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.0025,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "target",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-05-06",
+        "exit_date": "2024-06-12"
+      },
+      {
+        "trade_key": "NVDA:2024-05-24:107.8400",
+        "ticker": "NVDA",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 107.84,
+        "entry_open_price": 107.7885,
+        "stop_price": 98.13,
+        "exit_price": 126.1,
+        "exit_raw_price": 126.16,
+        "shares": 12,
+        "pnl": 213.79,
+        "pnl_pct_net": 0.165796,
+        "initial_risk_pct": 0.090041,
+        "slippage_cost": 1.38,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1302,
+        "sizing_multipliers": {
+          "trend_tech_gap_risk_multiplier_applied": 0.25,
+          "trend_tech_near_high_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.000625,
+        "addon_count": 1,
+        "addon_shares": 4,
+        "addon_cost": 458.57,
+        "exit_reason": "target",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-05-24",
+        "exit_date": "2024-06-12"
+      },
+      {
+        "trade_key": "AVGO:2024-06-14:165.3900",
         "ticker": "AVGO",
         "strategy": "trend_long",
         "sector": "Technology",
-        "entry_price": 169.2,
-        "entry_open_price": 169.1182,
+        "entry_price": 165.39,
+        "entry_open_price": 165.3093,
         "stop_price": 156.4,
         "exit_price": 156.24,
         "exit_raw_price": 156.4,
-        "shares": 9,
-        "pnl": -121.53,
-        "pnl_pct_net": -0.080074,
-        "initial_risk_pct": 0.07565,
-        "slippage_cost": 2.14,
+        "shares": 6,
+        "pnl": -58.16,
+        "pnl_pct_net": -0.058802,
+        "initial_risk_pct": 0.054356,
+        "slippage_cost": 1.42,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1718,
@@ -6563,9 +7189,9 @@
         },
         "base_risk_pct": 0.01,
         "actual_risk_pct": 0.000625,
-        "addon_count": 1,
-        "addon_shares": 3,
-        "addon_cost": 530.47,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
         "exit_reason": "stop",
         "exit_advisory_rules_seen": [],
         "exit_advisory_first_seen": {},
@@ -6573,20 +7199,20 @@
         "exit_date": "2024-06-24"
       },
       {
-        "trade_key": "TSLA:2024-07-03:240.1300",
+        "trade_key": "TSLA:2024-07-03:234.6800",
         "ticker": "TSLA",
         "strategy": "trend_long",
         "sector": "Consumer Discretionary",
-        "entry_price": 240.13,
-        "entry_open_price": 240.012,
+        "entry_price": 234.68,
+        "entry_open_price": 234.56,
         "stop_price": 218.06,
         "exit_price": 270.72,
         "exit_raw_price": 270.86,
-        "shares": 196,
-        "pnl": 5810.82,
-        "pnl_pct_net": 0.123908,
-        "initial_risk_pct": 0.091909,
-        "slippage_cost": 49.67,
+        "shares": 121,
+        "pnl": 4246.74,
+        "pnl_pct_net": 0.15009,
+        "initial_risk_pct": 0.07082,
+        "slippage_cost": 30.9,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.157,
@@ -6596,9 +7222,9 @@
         },
         "base_risk_pct": 0.01,
         "actual_risk_pct": 0.02,
-        "addon_count": 1,
-        "addon_shares": 65,
-        "addon_cost": 16323.16,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
         "exit_reason": "target",
         "exit_advisory_rules_seen": [],
         "exit_advisory_first_seen": {},
@@ -6615,11 +7241,11 @@
         "stop_price": 202.34,
         "exit_price": 219.48,
         "exit_raw_price": 219.59,
-        "shares": 255,
-        "pnl": 2489.31,
+        "shares": 233,
+        "pnl": 2274.55,
         "pnl_pct_net": 0.046896,
         "initial_risk_pct": 0.031634,
-        "slippage_cost": 55.16,
+        "slippage_cost": 50.4,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1687,
@@ -6633,62 +7259,26 @@
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "target",
-        "exit_advisory_rules_seen": [
-          "SIGNAL_TARGET"
-        ],
-        "exit_advisory_first_seen": {
-          "SIGNAL_TARGET": "2024-07-16"
-        },
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
         "entry_date": "2024-07-12",
         "exit_date": "2024-07-16"
       },
       {
-        "trade_key": "CRDO:2024-07-16:33.1600",
-        "ticker": "CRDO",
-        "strategy": "trend_long",
-        "sector": "Technology",
-        "entry_price": 33.16,
-        "entry_open_price": 33.14,
-        "stop_price": 31.03,
-        "exit_price": 31.0,
-        "exit_raw_price": 31.03,
-        "shares": 112,
-        "pnl": -254.18,
-        "pnl_pct_net": -0.068669,
-        "initial_risk_pct": 0.064234,
-        "slippage_cost": 5.71,
-        "target_mult_used": 6.0,
-        "regime_exit_bucket": "risk_on",
-        "regime_exit_score": 0.1812,
-        "sizing_multipliers": {
-          "tqs_risk_multiplier_applied": 0.25
-        },
-        "base_risk_pct": 0.01,
-        "actual_risk_pct": 0.0025,
-        "addon_count": 0,
-        "addon_shares": 0,
-        "addon_cost": 0.0,
-        "exit_reason": "stop",
-        "exit_advisory_rules_seen": [],
-        "exit_advisory_first_seen": {},
-        "entry_date": "2024-07-16",
-        "exit_date": "2024-07-17"
-      },
-      {
-        "trade_key": "AMZN:2024-06-24:191.3200",
+        "trade_key": "AMZN:2024-06-24:189.4200",
         "ticker": "AMZN",
         "strategy": "trend_long",
         "sector": "Consumer Discretionary",
-        "entry_price": 191.32,
-        "entry_open_price": 191.2233,
+        "entry_price": 189.42,
+        "entry_open_price": 189.33,
         "stop_price": 183.86,
         "exit_price": 183.68,
         "exit_raw_price": 183.86,
-        "shares": 54,
-        "pnl": -447.49,
-        "pnl_pct_net": -0.043453,
-        "initial_risk_pct": 0.038992,
-        "slippage_cost": 15.15,
+        "shares": 33,
+        "pnl": -210.76,
+        "pnl_pct_net": -0.033824,
+        "initial_risk_pct": 0.029353,
+        "slippage_cost": 9.04,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1643,
@@ -6697,46 +7287,13 @@
         },
         "base_risk_pct": 0.01,
         "actual_risk_pct": 0.0025,
-        "addon_count": 1,
-        "addon_shares": 18,
-        "addon_cost": 3511.93,
-        "exit_reason": "stop",
-        "exit_advisory_rules_seen": [],
-        "exit_advisory_first_seen": {},
-        "entry_date": "2024-06-24",
-        "exit_date": "2024-07-18"
-      },
-      {
-        "trade_key": "IWM:2024-07-17:218.2100",
-        "ticker": "IWM",
-        "strategy": "trend_long",
-        "sector": "ETF",
-        "entry_price": 218.21,
-        "entry_open_price": 218.1027,
-        "stop_price": 215.16,
-        "exit_price": 214.94,
-        "exit_raw_price": 215.16,
-        "shares": 245,
-        "pnl": -984.29,
-        "pnl_pct_net": -0.018464,
-        "initial_risk_pct": 0.013977,
-        "slippage_cost": 79.01,
-        "target_mult_used": 4.5,
-        "regime_exit_bucket": "risk_on",
-        "regime_exit_score": 0.1825,
-        "sizing_multipliers": {
-          "risk_on_unmodified_risk_multiplier_applied": 2.0,
-          "spy_relative_leader_risk_on_multiplier_applied": 2.0
-        },
-        "base_risk_pct": 0.01,
-        "actual_risk_pct": 0.02,
         "addon_count": 0,
         "addon_shares": 0,
         "addon_cost": 0.0,
         "exit_reason": "stop",
         "exit_advisory_rules_seen": [],
         "exit_advisory_first_seen": {},
-        "entry_date": "2024-07-17",
+        "entry_date": "2024-06-24",
         "exit_date": "2024-07-18"
       },
       {
@@ -6749,14 +7306,182 @@
         "stop_price": 224.19,
         "exit_price": 221.3,
         "exit_raw_price": 221.52,
-        "shares": 236,
-        "pnl": -1976.75,
+        "shares": 172,
+        "pnl": -1440.68,
         "pnl_pct_net": -0.036709,
         "initial_risk_pct": 0.020577,
-        "slippage_cost": 78.24,
+        "slippage_cost": 57.02,
         "target_mult_used": 8.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1825,
+        "sizing_multipliers": {
+          "trend_commodities_near_high_risk_multiplier_applied": 1.5
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.015,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-07-17",
+        "exit_date": "2024-07-19"
+      },
+      {
+        "trade_key": "ISRG:2024-06-06:414.1300",
+        "ticker": "ISRG",
+        "strategy": "trend_long",
+        "sector": "Healthcare",
+        "entry_price": 414.13,
+        "entry_open_price": 413.92,
+        "stop_price": 403.83,
+        "exit_price": 462.1,
+        "exit_raw_price": 462.33,
+        "shares": 109,
+        "pnl": 5052.31,
+        "pnl_pct_net": 0.11233,
+        "initial_risk_pct": 0.024871,
+        "slippage_cost": 48.09,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.138,
+        "sizing_multipliers": {
+          "risk_on_unmodified_risk_multiplier_applied": 2.0,
+          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.02,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "target",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-06-06",
+        "exit_date": "2024-07-22"
+      },
+      {
+        "trade_key": "COIN:2024-07-22:260.6000",
+        "ticker": "COIN",
+        "strategy": "breakout_long",
+        "sector": "Financials",
+        "entry_price": 260.6,
+        "entry_open_price": 260.47,
+        "stop_price": 235.13,
+        "exit_price": 234.89,
+        "exit_raw_price": 235.13,
+        "shares": 9,
+        "pnl": -238.75,
+        "pnl_pct_net": -0.102138,
+        "initial_risk_pct": 0.097736,
+        "slippage_cost": 3.29,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1071,
+        "sizing_multipliers": {
+          "breakout_financials_dte_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.0025,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-07-22",
+        "exit_date": "2024-07-25"
+      },
+      {
+        "trade_key": "NOW:2024-07-26:165.2500",
+        "ticker": "NOW",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 165.25,
+        "entry_open_price": 165.17,
+        "stop_price": 157.48,
+        "exit_price": 157.32,
+        "exit_raw_price": 157.48,
+        "shares": 1,
+        "pnl": -8.48,
+        "pnl_pct_net": -0.051473,
+        "initial_risk_pct": 0.04702,
+        "slippage_cost": 0.24,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.0585,
+        "sizing_multipliers": {
+          "trend_tech_gap_risk_multiplier_applied": 0.25,
+          "trend_tech_near_high_risk_multiplier_applied": 0.25,
+          "trend_tech_dte_risk_multiplier_applied": 0.25
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.00015625,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [],
+        "exit_advisory_first_seen": {},
+        "entry_date": "2024-07-26",
+        "exit_date": "2024-07-30"
+      },
+      {
+        "trade_key": "BKNG:2024-05-10:149.0200",
+        "ticker": "BKNG",
+        "strategy": "breakout_long",
+        "sector": "Consumer Discretionary",
+        "entry_price": 149.02,
+        "entry_open_price": 148.9429,
+        "stop_price": 143.22,
+        "exit_price": 130.54,
+        "exit_raw_price": 130.6673,
+        "shares": 278,
+        "pnl": -5265.4,
+        "pnl_pct_net": -0.127533,
+        "initial_risk_pct": 0.038921,
+        "slippage_cost": 57.75,
+        "target_mult_used": 4.5,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1263,
+        "sizing_multipliers": {
+          "risk_on_unmodified_risk_multiplier_applied": 2.0,
+          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+        },
+        "base_risk_pct": 0.01,
+        "actual_risk_pct": 0.02,
+        "addon_count": 0,
+        "addon_shares": 0,
+        "addon_cost": 0.0,
+        "exit_reason": "stop",
+        "exit_advisory_rules_seen": [
+          "TIME_STOP"
+        ],
+        "exit_advisory_first_seen": {
+          "TIME_STOP": "2024-07-17"
+        },
+        "entry_date": "2024-05-10",
+        "exit_date": "2024-08-02"
+      },
+      {
+        "trade_key": "AAPL:2024-06-13:213.2000",
+        "ticker": "AAPL",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 213.2,
+        "entry_open_price": 213.0919,
+        "stop_price": 204.62,
+        "exit_price": 197.36,
+        "exit_raw_price": 197.562,
+        "shares": 214,
+        "pnl": -3536.62,
+        "pnl_pct_net": -0.077775,
+        "initial_risk_pct": 0.040244,
+        "slippage_cost": 65.41,
+        "target_mult_used": 6.0,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1625,
         "sizing_multipliers": {
           "risk_on_unmodified_risk_multiplier_applied": 2.0,
           "spy_relative_leader_risk_on_multiplier_applied": 2.0
@@ -6769,41 +7494,8 @@
         "exit_reason": "stop",
         "exit_advisory_rules_seen": [],
         "exit_advisory_first_seen": {},
-        "entry_date": "2024-07-17",
-        "exit_date": "2024-07-19"
-      },
-      {
-        "trade_key": "NOW:2024-07-26:165.2500",
-        "ticker": "NOW",
-        "strategy": "trend_long",
-        "sector": "Technology",
-        "entry_price": 165.25,
-        "entry_open_price": 165.17,
-        "stop_price": 157.48,
-        "exit_price": 157.32,
-        "exit_raw_price": 157.48,
-        "shares": 6,
-        "pnl": -50.87,
-        "pnl_pct_net": -0.051473,
-        "initial_risk_pct": 0.04702,
-        "slippage_cost": 1.43,
-        "target_mult_used": 6.0,
-        "regime_exit_bucket": "risk_on",
-        "regime_exit_score": 0.0585,
-        "sizing_multipliers": {
-          "trend_tech_gap_risk_multiplier_applied": 0.25,
-          "trend_tech_dte_risk_multiplier_applied": 0.25
-        },
-        "base_risk_pct": 0.01,
-        "actual_risk_pct": 0.000625,
-        "addon_count": 0,
-        "addon_shares": 0,
-        "addon_cost": 0.0,
-        "exit_reason": "stop",
-        "exit_advisory_rules_seen": [],
-        "exit_advisory_first_seen": {},
-        "entry_date": "2024-07-26",
-        "exit_date": "2024-07-30"
+        "entry_date": "2024-06-13",
+        "exit_date": "2024-08-05"
       },
       {
         "trade_key": "SPOT:2024-07-24:333.7900",
@@ -6815,11 +7507,11 @@
         "stop_price": 312.86,
         "exit_price": 301.71,
         "exit_raw_price": 302.01,
-        "shares": 100,
-        "pnl": -3313.8,
+        "shares": 98,
+        "pnl": -3247.52,
         "pnl_pct_net": -0.099614,
         "initial_risk_pct": 0.062704,
-        "slippage_cost": 47.2,
+        "slippage_cost": 46.26,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1187,
@@ -6848,11 +7540,11 @@
         "stop_price": 257.41,
         "exit_price": 257.15,
         "exit_raw_price": 257.41,
-        "shares": 196,
-        "pnl": -1383.26,
+        "shares": 181,
+        "pnl": -1277.4,
         "pnl_pct_net": -0.026885,
         "initial_risk_pct": 0.022407,
-        "slippage_cost": 75.48,
+        "slippage_cost": 69.7,
         "target_mult_used": 4.23,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.0385,
@@ -6881,20 +7573,19 @@
         "stop_price": 33.5,
         "exit_price": 33.47,
         "exit_raw_price": 33.5,
-        "shares": 691,
-        "pnl": -1955.97,
+        "shares": 76,
+        "pnl": -215.13,
         "pnl_pct_net": -0.0785,
         "initial_risk_pct": 0.074074,
-        "slippage_cost": 36.97,
+        "slippage_cost": 4.07,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1568,
         "sizing_multipliers": {
-          "risk_on_unmodified_risk_multiplier_applied": 2.0,
-          "spy_relative_leader_risk_on_multiplier_applied": 2.0
+          "trend_tech_near_high_risk_multiplier_applied": 0.25
         },
         "base_risk_pct": 0.01,
-        "actual_risk_pct": 0.02,
+        "actual_risk_pct": 0.0025,
         "addon_count": 0,
         "addon_shares": 0,
         "addon_cost": 0.0,
@@ -6903,39 +7594,6 @@
         "exit_advisory_first_seen": {},
         "entry_date": "2024-08-22",
         "exit_date": "2024-08-28"
-      },
-      {
-        "trade_key": "UNH:2024-07-17:532.8400",
-        "ticker": "UNH",
-        "strategy": "trend_long",
-        "sector": "Healthcare",
-        "entry_price": 532.84,
-        "entry_open_price": 532.5753,
-        "stop_price": 509.66,
-        "exit_price": 581.29,
-        "exit_raw_price": 581.58,
-        "shares": 96,
-        "pnl": 4455.81,
-        "pnl_pct_net": 0.087426,
-        "initial_risk_pct": 0.043503,
-        "slippage_cost": 53.33,
-        "target_mult_used": 4.5,
-        "regime_exit_bucket": "risk_on",
-        "regime_exit_score": 0.1825,
-        "sizing_multipliers": {
-          "risk_on_unmodified_risk_multiplier_applied": 2.0,
-          "spy_relative_leader_risk_on_multiplier_applied": 2.0
-        },
-        "base_risk_pct": 0.01,
-        "actual_risk_pct": 0.02,
-        "addon_count": 0,
-        "addon_shares": 0,
-        "addon_cost": 0.0,
-        "exit_reason": "target",
-        "exit_advisory_rules_seen": [],
-        "exit_advisory_first_seen": {},
-        "entry_date": "2024-07-17",
-        "exit_date": "2024-09-04"
       },
       {
         "trade_key": "NOW:2024-09-03:171.3700",
@@ -6947,11 +7605,11 @@
         "stop_price": 164.35,
         "exit_price": 164.19,
         "exit_raw_price": 164.35,
-        "shares": 30,
-        "pnl": -232.77,
+        "shares": 27,
+        "pnl": -209.49,
         "pnl_pct_net": -0.045423,
         "initial_risk_pct": 0.040964,
-        "slippage_cost": 7.63,
+        "slippage_cost": 6.87,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1004,
@@ -6979,11 +7637,11 @@
         "stop_price": 90.55,
         "exit_price": 125.57,
         "exit_raw_price": 125.63,
-        "shares": 48,
-        "pnl": 997.81,
+        "shares": 42,
+        "pnl": 873.08,
         "pnl_pct_net": 0.199943,
         "initial_risk_pct": 0.132164,
-        "slippage_cost": 5.57,
+        "slippage_cost": 4.88,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.0634,
@@ -6993,8 +7651,8 @@
         "base_risk_pct": 0.01,
         "actual_risk_pct": 0.0025,
         "addon_count": 1,
-        "addon_shares": 16,
-        "addon_cost": 1891.51,
+        "addon_shares": 14,
+        "addon_cost": 1655.07,
         "exit_reason": "target",
         "exit_advisory_rules_seen": [],
         "exit_advisory_first_seen": {},
@@ -7011,11 +7669,11 @@
         "stop_price": 180.76,
         "exit_price": 179.51,
         "exit_raw_price": 179.694,
-        "shares": 31,
-        "pnl": -266.1,
+        "shares": 26,
+        "pnl": -223.18,
         "pnl_pct_net": -0.045937,
         "initial_risk_pct": 0.035792,
-        "slippage_cost": 8.48,
+        "slippage_cost": 7.12,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1261,
@@ -7043,11 +7701,11 @@
         "stop_price": 28.24,
         "exit_price": 28.21,
         "exit_raw_price": 28.24,
-        "shares": 1112,
-        "pnl": -1108.6,
+        "shares": 960,
+        "pnl": -957.06,
         "pnl_pct_net": -0.034355,
         "initial_risk_pct": 0.029887,
-        "slippage_cost": 42.48,
+        "slippage_cost": 36.67,
         "target_mult_used": 7.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1241,
@@ -7075,11 +7733,11 @@
         "stop_price": 101.92,
         "exit_price": 101.82,
         "exit_raw_price": 101.92,
-        "shares": 31,
-        "pnl": -260.97,
+        "shares": 26,
+        "pnl": -218.87,
         "pnl_pct_net": -0.07687,
         "initial_risk_pct": 0.072443,
-        "slippage_cost": 4.82,
+        "slippage_cost": 4.05,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1169,
@@ -7107,11 +7765,11 @@
         "stop_price": 184.54,
         "exit_price": 184.36,
         "exit_raw_price": 184.54,
-        "shares": 237,
-        "pnl": -1903.05,
+        "shares": 204,
+        "pnl": -1638.07,
         "pnl_pct_net": -0.042013,
         "initial_risk_pct": 0.037551,
-        "slippage_cost": 67.43,
+        "slippage_cost": 58.04,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1261,
@@ -7140,11 +7798,11 @@
         "stop_price": 32.33,
         "exit_price": 36.44,
         "exit_raw_price": 36.46,
-        "shares": 99,
-        "pnl": 146.94,
+        "shares": 85,
+        "pnl": 126.16,
         "pnl_pct_net": 0.042776,
         "initial_risk_pct": 0.071777,
-        "slippage_cost": 3.78,
+        "slippage_cost": 3.25,
         "target_mult_used": 6.0,
         "regime_exit_bucket": "balanced",
         "regime_exit_score": 0.0287,
@@ -7163,20 +7821,20 @@
         "exit_date": "2024-10-01"
       },
       {
-        "trade_key": "SPOT:2024-09-20:366.7400",
+        "trade_key": "SPOT:2024-09-20:366.8200",
         "ticker": "SPOT",
         "strategy": "trend_long",
         "sector": "Communication Services",
-        "entry_price": 366.74,
-        "entry_open_price": 366.5573,
+        "entry_price": 366.82,
+        "entry_open_price": 366.6385,
         "stop_price": 345.46,
         "exit_price": 375.21,
         "exit_raw_price": 375.4,
-        "shares": 143,
-        "pnl": 1023.75,
-        "pnl_pct_net": 0.019602,
-        "initial_risk_pct": 0.058025,
-        "slippage_cost": 52.97,
+        "shares": 124,
+        "pnl": 877.8,
+        "pnl_pct_net": 0.019379,
+        "initial_risk_pct": 0.05823,
+        "slippage_cost": 45.78,
         "target_mult_used": 4.5,
         "regime_exit_bucket": "risk_on",
         "regime_exit_score": 0.1187,
@@ -7187,8 +7845,8 @@
         "base_risk_pct": 0.01,
         "actual_risk_pct": 0.02,
         "addon_count": 1,
-        "addon_shares": 28,
-        "addon_cost": 10583.69,
+        "addon_shares": 25,
+        "addon_cost": 9449.72,
         "exit_reason": "end_of_backtest",
         "exit_advisory_rules_seen": [],
         "exit_advisory_first_seen": {},
@@ -7196,32 +7854,32 @@
         "exit_date": "2024-10-01"
       }
     ],
-    "expected_value_score": 0.0013,
+    "expected_value_score": 0.0679,
     "convergence": {
       "converged": false,
       "criteria": {
         "sharpe_above_min": {
-          "value": 0.08,
+          "value": -1.15,
           "pass": false,
           "threshold": 0.5
         },
         "max_drawdown_under_cap": {
-          "value": 0.0813,
-          "pass": true,
+          "value": 0.2052,
+          "pass": false,
           "threshold": 0.2
         },
         "trade_count_above_min": {
-          "value": 20,
+          "value": 32,
           "pass": true,
           "threshold": 15
         },
         "win_rate_above_min": {
-          "value": 0.3,
+          "value": 0.25,
           "pass": false,
           "threshold": 0.4
         },
         "survival_rate_above_min": {
-          "value": 0.8182,
+          "value": 0.8226,
           "pass": true,
           "threshold": 0.05
         },
@@ -7231,65 +7889,65 @@
           "pass": true
         },
         "beats_spy_buy_hold": {
-          "value": 0.0066,
+          "value": -0.1306,
           "threshold": 0.1029,
           "pass": false
         },
         "beats_qqq_buy_hold": {
-          "value": 0.0066,
+          "value": -0.1306,
           "threshold": 0.0943,
           "pass": false
         }
       },
-      "summary": "4/8 criteria pass"
+      "summary": "3/8 criteria pass"
     },
     "single_window_quality": {
       "windows": 1,
       "expected_value_score_positive_windows": 1,
-      "return_positive_windows": 1,
-      "sharpe_daily_positive_windows": 1,
-      "drawdown_guardrail_break_windows": 0,
-      "expected_value_score_min": 0.0013,
-      "expected_value_score_median": 0.0013,
-      "expected_value_score_max": 0.0013,
+      "return_positive_windows": 0,
+      "sharpe_daily_positive_windows": 0,
+      "drawdown_guardrail_break_windows": 1,
+      "expected_value_score_min": 0.0679,
+      "expected_value_score_median": 0.0679,
+      "expected_value_score_max": 0.0679,
       "expected_value_score_spread": null,
-      "worst_max_drawdown_pct": 0.0813,
-      "robustness_score": 3,
+      "worst_max_drawdown_pct": 0.2052,
+      "robustness_score": 0,
       "note": "Higher score means more windows with positive EV/return/daily Sharpe; no gating verdict."
     },
     "converged_v2_shadow": {
-      "sharpe_daily": 0.2,
+      "sharpe_daily": -0.52,
       "sharpe_daily_would_pass": false,
       "converged_if_sharpe_daily": false
     }
   },
   "diagnostics": {
     "stable_across_windows": {
-      "expected_value_score_delta": 0.3166,
-      "sharpe_legacy_delta": 2.03,
-      "sharpe_daily_delta": 1.09,
-      "max_drawdown_delta": -0.0008,
-      "drawdown_consistent": true,
-      "directionally_profitable_both": true,
+      "expected_value_score_delta": 0.25,
+      "sharpe_legacy_delta": 3.26,
+      "sharpe_daily_delta": 1.81,
+      "max_drawdown_delta": -0.1247,
+      "drawdown_consistent": false,
+      "directionally_profitable_both": false,
       "primary_expected_value_score": 0.3179,
-      "secondary_expected_value_score": 0.0013,
+      "secondary_expected_value_score": 0.0679,
       "primary_sharpe_daily": 1.29,
-      "secondary_sharpe_daily": 0.2,
+      "secondary_sharpe_daily": -0.52,
       "primary_return_pct": 0.2464,
-      "secondary_return_pct": 0.0066
+      "secondary_return_pct": -0.1306
     },
     "multi_window_robustness": {
       "windows": 2,
       "expected_value_score_positive_windows": 2,
-      "return_positive_windows": 2,
-      "sharpe_daily_positive_windows": 2,
-      "drawdown_guardrail_break_windows": 0,
-      "expected_value_score_min": 0.0013,
-      "expected_value_score_median": 0.1596,
+      "return_positive_windows": 1,
+      "sharpe_daily_positive_windows": 1,
+      "drawdown_guardrail_break_windows": 1,
+      "expected_value_score_min": 0.0679,
+      "expected_value_score_median": 0.1929,
       "expected_value_score_max": 0.3179,
-      "expected_value_score_spread": 0.3166,
-      "worst_max_drawdown_pct": 0.0813,
-      "robustness_score": 6,
+      "expected_value_score_spread": 0.25,
+      "worst_max_drawdown_pct": 0.2052,
+      "robustness_score": 3,
       "note": "Higher score means more windows with positive EV/return/daily Sharpe; no gating verdict."
     }
   }
