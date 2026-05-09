@@ -31,6 +31,7 @@ from constants import (
     SECOND_ADDON_MIN_UNREALIZED_PCT,
     TRAILING_STOP_PCT,
 )
+from position_intent import resolve_intended_shares
 
 TRAILING_PARTIAL_REDUCE_ENABLED = False
 
@@ -480,10 +481,13 @@ def build_followthrough_addon_actions(
             continue
 
         current_shares = int(pos.get("shares") or 0)
-        original_shares = int(
-            pos.get("original_shares")
-            or max(1, current_shares - int(pos.get("addon_shares") or 0))
-        )
+        intended_shares, intended_source = resolve_intended_shares(pos)
+        if intended_shares is not None:
+            original_shares = intended_shares
+            original_shares_source = intended_source
+        else:
+            original_shares = int(max(1, current_shares - int(pos.get("addon_shares") or 0)))
+            original_shares_source = "current_shares_fallback"
         requested = math.floor(original_shares * fraction)
         shares, cap_detail = cap_followthrough_addon_shares(
             ticker,
@@ -515,6 +519,7 @@ def build_followthrough_addon_actions(
             "requested_shares": requested,
             "current_shares": current_shares,
             "original_shares": original_shares,
+            "original_shares_source": original_shares_source,
             "estimated_price": round(close, 2),
             "estimated_position_value_usd": round(shares * close, 2),
             "unrealized_pct": round(unrealized, 4),

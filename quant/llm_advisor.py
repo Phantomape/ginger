@@ -415,6 +415,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     from preflight_validator import enrich_positions_with_breach_status, compute_account_state
     from manual_trades import load_manual_trades
     from pending_actions import get_open_pending_actions
+    from position_intent import audit_position_intent_coverage
     if trend_signals:
         enrich_positions_with_breach_status(trend_signals)
     preflight = compute_account_state(
@@ -434,6 +435,22 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         + (accounting_warnings or [])
         + (_data_warnings or [])
     )
+    entry_intent_audit = audit_position_intent_coverage(open_positions)
+    missing_intent = entry_intent_audit.get("missing_intended_share_tickers") or []
+    if missing_intent:
+        fields = ", ".join(entry_intent_audit["accepted_intended_share_fields"])
+        combined_warnings.append(
+            f"ENTRY_TOP_UP blind for {missing_intent}: add one intended-share field "
+            f"({fields}) to open_positions.json so conservative initial buys can be "
+            "audited against the original signal size."
+        )
+    underfilled = entry_intent_audit.get("underfilled_positions") or []
+    if underfilled:
+        combined_warnings.append(
+            "ENTRY_TOP_UP underfilled positions detected: "
+            f"{underfilled}. This is audit context only; hard add-on rules still "
+            "control whether an ADD is allowed."
+        )
     pending_actions = get_open_pending_actions(open_positions, data_dir="data")
 
     pos_mgmt_data = {
@@ -444,6 +461,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | TARGET_EXIT | HIGH_REDUCE | HOLD}
         "manual_trade_conflicts": preflight.get("manual_trade_conflicts", {}),
         "pending_unexecuted_actions": pending_actions,
+        "entry_intent_audit": entry_intent_audit,
         # Pre-computed reduce % for HIGH_REDUCE positions — LLM reads directly, no table lookup needed.
         "suggested_reduce_pct": preflight["suggested_reduce_pct"],  # {ticker: int}
         # Pre-computed BEAR emergency stops — LLM uses directly if regime=BEAR.

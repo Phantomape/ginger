@@ -136,7 +136,40 @@ def test_build_followthrough_addon_actions_emits_day_two_add():
     assert actions[0]["ticker"] == "NVDA"
     assert actions[0]["shares_to_buy"] == 5
     assert actions[0]["fill_timing"] == "next_session_open"
+    assert actions[0]["original_shares_source"] == "original_shares"
     assert any(row["status"] == "eligible" for row in audit)
+
+
+def test_build_followthrough_addon_actions_uses_intended_shares_for_conservative_entry():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 6,
+                "intended_shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 101.0, 104.0]),
+        "SPY": _ohlcv([100.0, 100.0, 101.0]),
+    }
+
+    actions, audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        portfolio_value=10_000,
+        current_prices={"NVDA": 104.0},
+    )
+
+    assert len(actions) == 1
+    assert actions[0]["shares_to_buy"] == 5
+    assert actions[0]["requested_shares"] == 5
+    assert actions[0]["original_shares"] == 10
+    assert actions[0]["original_shares_source"] == "intended_shares"
+    assert any(row["original_shares_source"] == "intended_shares" for row in audit)
 
 
 def test_build_followthrough_addon_actions_uses_spy_leader_addon_cap():
