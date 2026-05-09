@@ -1,0 +1,122 @@
+{
+  "experiment_id": "exp-20260508-036",
+  "created_at": "2026-05-08T15:11:08-07:00",
+  "type": "alpha_search",
+  "change_type": "capital_allocation_addon_lifecycle",
+  "hypothesis": "Requiring follow-through add-ons to have position/heat cap room at the checkpoint close will remove lower-quality delayed add-ons while preserving production-realistic winners.",
+  "mechanism_checks": {
+    "not_repeating_recent_failures": [
+      "Not a raw add-on heat ceiling relaxation from exp-20260508-017.",
+      "Not add-on execution ordering from exp-20260508-018.",
+      "Not checkpoint volume ratio from exp-20260508-026.",
+      "Not improving-followthrough day1/day2 gating from exp-20260426-034 or exp-20260427-010.",
+      "Not blanket staged entry from exp-20260508-034."
+    ],
+    "data_prerequisites_verified": [
+      "entry_date exists in simulated positions.",
+      "target_price/cash_usd are not new dependencies.",
+      "checkpoint close, position cap, and effective heat stop are available in backtester and production add-on code."
+    ]
+  },
+  "parameters": {
+    "tested_param": "ADDON_REQUIRE_CHECKPOINT_CAP_ROOM",
+    "baseline_value": 0,
+    "candidate_value": 1
+  },
+  "windows": [
+    {
+      "name": "late_strong",
+      "date_range": {"start": "2025-10-23", "end": "2026-04-21"},
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "before_metrics": {
+        "expected_value_score": 4.0674,
+        "total_pnl": 90788.88,
+        "return_pct": 90.79,
+        "sharpe_daily": 4.48,
+        "max_drawdown_pct": 5.39,
+        "win_rate_pct": 78.95,
+        "trade_count": 19,
+        "survival_rate_pct": 80.39
+      },
+      "after_metrics": {
+        "expected_value_score": 4.0674,
+        "total_pnl": 90788.88,
+        "return_pct": 90.79,
+        "sharpe_daily": 4.48,
+        "max_drawdown_pct": 5.39,
+        "win_rate_pct": 78.95,
+        "trade_count": 19,
+        "survival_rate_pct": 80.39
+      },
+      "expected_value_score_delta": 0.0
+    },
+    {
+      "name": "mid_weak",
+      "date_range": {"start": "2025-04-23", "end": "2025-10-22"},
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "before_metrics": {
+        "expected_value_score": 1.6195,
+        "total_pnl": 59540.63,
+        "return_pct": 59.54,
+        "sharpe_daily": 2.72,
+        "max_drawdown_pct": 8.79,
+        "win_rate_pct": 52.38,
+        "trade_count": 21,
+        "survival_rate_pct": 79.25
+      },
+      "after_metrics": {
+        "expected_value_score": 1.6195,
+        "total_pnl": 59540.63,
+        "return_pct": 59.54,
+        "sharpe_daily": 2.72,
+        "max_drawdown_pct": 8.79,
+        "win_rate_pct": 52.38,
+        "trade_count": 21,
+        "survival_rate_pct": 79.25
+      },
+      "expected_value_score_delta": 0.0
+    },
+    {
+      "name": "old_thin",
+      "date_range": {"start": "2024-10-02", "end": "2025-04-22"},
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "before_metrics": {
+        "expected_value_score": 0.3583,
+        "total_pnl": 27347.42,
+        "return_pct": 27.35,
+        "sharpe_daily": 1.31,
+        "max_drawdown_pct": 9.03,
+        "win_rate_pct": 40.91,
+        "trade_count": 22,
+        "survival_rate_pct": 91.67
+      },
+      "after_metrics": {
+        "expected_value_score": 0.3583,
+        "total_pnl": 27347.42,
+        "return_pct": 27.35,
+        "sharpe_daily": 1.31,
+        "max_drawdown_pct": 9.03,
+        "win_rate_pct": 40.91,
+        "trade_count": 22,
+        "survival_rate_pct": 91.67
+      },
+      "expected_value_score_delta": 0.0
+    }
+  ],
+  "aggregate_result": {
+    "windows_improved": 0,
+    "windows_unchanged": 3,
+    "windows_worsened": 0,
+    "mean_expected_value_delta": 0.0
+  },
+  "decision": "rejected",
+  "rejection_reason": "The variable was inert across all three canonical windows; no trades, PnL, Sharpe, drawdown, or survival metrics changed.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "next_do_not_repeat": "Do not spend another iteration on checkpoint cap-room gating unless add-on attribution first shows rejected_checkpoint_no_cap_room events in a new window or after a material portfolio-heat implementation change."
+}

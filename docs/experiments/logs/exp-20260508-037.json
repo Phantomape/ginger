@@ -1,0 +1,171 @@
+{
+  "experiment_id": "exp-20260508-037",
+  "created_at": "2026-05-08T15:17:10-07:00",
+  "type": "alpha_search",
+  "change_type": "capital_allocation_addon_position_cap",
+  "hypothesis": "After the effective-stop heat parity repair, raising the follow-through add-on-only position cap from 35% to 40% or 45% may unlock confirmed-winner exposure while preserving the hard portfolio heat cap.",
+  "why_this_was_allowed_after_prior_rejections": "Prior nearby add-on cap sweeps were rejected before the current effective-stop heat replay baseline. This run tested whether the changed heat semantics made the add-on position cap newly binding. It did not change triggers, fractions, entry sizing, exits, universe, LLM/news replay, or portfolio heat limits.",
+  "mechanism_checks": {
+    "not_repeating_recent_failures": [
+      "Not a raw add-on heat ceiling relaxation from exp-20260508-017.",
+      "Not same-day add-on execution ordering from exp-20260508-018.",
+      "Not checkpoint volume confirmation from exp-20260508-026.",
+      "Not add-on trigger threshold tuning or fraction tuning."
+    ],
+    "data_prerequisites_verified": [
+      "original_shares are present in backtest positions.",
+      "current shares, prices, portfolio value, and effective-stop portfolio heat are available to the shared cap helper.",
+      "ADDON_MAX_POSITION_PCT is a shared constant consumed by backtest and production add-on sizing."
+    ]
+  },
+  "parameters": {
+    "tested_param": "ADDON_MAX_POSITION_PCT",
+    "baseline_value": 0.35,
+    "candidate_values": [0.40, 0.45],
+    "locked_variables": [
+      "ADDON_CHECKPOINT_DAYS=2",
+      "ADDON_MIN_UNREALIZED_PCT=0.02",
+      "ADDON_MIN_RS_VS_SPY=0.0",
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES=0.50",
+      "ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT=0.60",
+      "MAX_PORTFOLIO_HEAT=0.08",
+      "entry ranking",
+      "entry/exit thresholds",
+      "universe",
+      "LLM/news replay settings"
+    ]
+  },
+  "windows": [
+    {
+      "name": "late_strong",
+      "date_range": {"start": "2025-10-23", "end": "2026-04-21"},
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "baseline_metrics": {
+        "expected_value_score": 4.0674,
+        "total_pnl": 90788.88,
+        "return_pct": 90.79,
+        "sharpe_daily": 4.48,
+        "max_drawdown_pct": 5.39,
+        "win_rate_pct": 78.95,
+        "trade_count": 19,
+        "survival_rate_pct": 80.39
+      },
+      "candidate_metrics": {
+        "0.40": {
+          "expected_value_score": 4.0674,
+          "total_pnl": 90788.88,
+          "return_pct": 90.79,
+          "sharpe_daily": 4.48,
+          "max_drawdown_pct": 5.39,
+          "win_rate_pct": 78.95,
+          "trade_count": 19,
+          "survival_rate_pct": 80.39
+        },
+        "0.45": {
+          "expected_value_score": 4.0674,
+          "total_pnl": 90788.88,
+          "return_pct": 90.79,
+          "sharpe_daily": 4.48,
+          "max_drawdown_pct": 5.39,
+          "win_rate_pct": 78.95,
+          "trade_count": 19,
+          "survival_rate_pct": 80.39
+        }
+      },
+      "best_delta": 0.0
+    },
+    {
+      "name": "mid_weak",
+      "date_range": {"start": "2025-04-23", "end": "2025-10-22"},
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "baseline_metrics": {
+        "expected_value_score": 1.6195,
+        "total_pnl": 59540.63,
+        "return_pct": 59.54,
+        "sharpe_daily": 2.72,
+        "max_drawdown_pct": 8.79,
+        "win_rate_pct": 52.38,
+        "trade_count": 21,
+        "survival_rate_pct": 79.25
+      },
+      "candidate_metrics": {
+        "0.40": {
+          "expected_value_score": 1.6195,
+          "total_pnl": 59540.63,
+          "return_pct": 59.54,
+          "sharpe_daily": 2.72,
+          "max_drawdown_pct": 8.79,
+          "win_rate_pct": 52.38,
+          "trade_count": 21,
+          "survival_rate_pct": 79.25
+        },
+        "0.45": {
+          "expected_value_score": 1.6195,
+          "total_pnl": 59540.63,
+          "return_pct": 59.54,
+          "sharpe_daily": 2.72,
+          "max_drawdown_pct": 8.79,
+          "win_rate_pct": 52.38,
+          "trade_count": 21,
+          "survival_rate_pct": 79.25
+        }
+      },
+      "best_delta": 0.0
+    },
+    {
+      "name": "old_thin",
+      "date_range": {"start": "2024-10-02", "end": "2025-04-22"},
+      "ohlcv_snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "baseline_metrics": {
+        "expected_value_score": 0.3583,
+        "total_pnl": 27347.42,
+        "return_pct": 27.35,
+        "sharpe_daily": 1.31,
+        "max_drawdown_pct": 9.03,
+        "win_rate_pct": 40.91,
+        "trade_count": 22,
+        "survival_rate_pct": 91.67
+      },
+      "candidate_metrics": {
+        "0.40": {
+          "expected_value_score": 0.3583,
+          "total_pnl": 27347.42,
+          "return_pct": 27.35,
+          "sharpe_daily": 1.31,
+          "max_drawdown_pct": 9.03,
+          "win_rate_pct": 40.91,
+          "trade_count": 22,
+          "survival_rate_pct": 91.67
+        },
+        "0.45": {
+          "expected_value_score": 0.3583,
+          "total_pnl": 27347.42,
+          "return_pct": 27.35,
+          "sharpe_daily": 1.31,
+          "max_drawdown_pct": 9.03,
+          "win_rate_pct": 40.91,
+          "trade_count": 22,
+          "survival_rate_pct": 91.67
+        }
+      },
+      "best_delta": 0.0
+    }
+  ],
+  "aggregate_result": {
+    "windows_improved": 0,
+    "windows_unchanged": 3,
+    "windows_worsened": 0,
+    "mean_expected_value_delta": 0.0,
+    "best_variant": null
+  },
+  "decision": "rejected",
+  "rejection_reason": "Both candidate caps were inert across all three canonical windows. After the effective-stop heat repair, add-on exposure is not position-cap constrained at 35%; the remaining bottleneck is hard heat/capital timing, not ADDON_MAX_POSITION_PCT.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "next_do_not_repeat": "Do not retry nearby add-on position-cap values around 40-45% on the same snapshots unless add-on attribution first shows position_cap as the binding cap reason after heat-cap room exists."
+}

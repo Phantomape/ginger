@@ -1,0 +1,172 @@
+{
+  "experiment_id": "exp-20260509-016",
+  "timestamp": "2026-05-09T10:13:26-07:00",
+  "lane": "alpha_search_support",
+  "status": "accepted",
+  "decision": "accepted_production_alignment_default_off",
+  "alpha_hypothesis": "The state-surface satellite should only contribute paper candidates when broad benchmark tape confirms participation: max(SPY_20d_return, QQQ_20d_return) > 0.",
+  "why_not_direct_alpha_test": "The alpha test was already positive in exp-20260509-014, but it was replay-only. Promoting or continuing variants before a shared production-visible adapter would violate production/backtest parity.",
+  "change_type": "shared_default_off_alpha_adapter",
+  "component": "quant/state_surface_sleeve.py",
+  "single_causal_variable": "Add the accepted benchmark-momentum participation gate to the shared default-off state-surface paper queue and expose allow/block reasons.",
+  "parameters": {
+    "benchmark_momentum_gate_enabled": {
+      "old": false,
+      "new": true
+    },
+    "benchmark_momentum_gate_min_return": {
+      "old": null,
+      "new": 0.0
+    },
+    "benchmarks": ["SPY", "QQQ"],
+    "lookback_trading_days": 20,
+    "order_impact": "none_default_off_paper_only"
+  },
+  "windows": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 4.0674,
+      "sharpe": 6.57,
+      "sharpe_daily": 4.48,
+      "total_return_pct": 0.9079,
+      "max_drawdown_pct": 0.0539,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.6195,
+      "sharpe": 4.36,
+      "sharpe_daily": 2.72,
+      "total_return_pct": 0.5954,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3583,
+      "sharpe": 2.09,
+      "sharpe_daily": 1.31,
+      "total_return_pct": 0.2735,
+      "max_drawdown_pct": 0.0903,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 4.0674,
+      "sharpe": 6.57,
+      "sharpe_daily": 4.48,
+      "total_return_pct": 0.9079,
+      "max_drawdown_pct": 0.0539,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.6195,
+      "sharpe": 4.36,
+      "sharpe_daily": 2.72,
+      "total_return_pct": 0.5954,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3583,
+      "sharpe": 2.09,
+      "sharpe_daily": 1.31,
+      "total_return_pct": 0.2735,
+      "max_drawdown_pct": 0.0903,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0
+    },
+    "aggregate_expected_value_score": 0.0
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "run_adapter_changed": true,
+    "backtester_adapter_changed": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_role_changed": false,
+    "why_no_llm_change": "LLM soft-ranking remains data-limited; this run chose a fully replayable benchmark-price alpha gate."
+  },
+  "gate4": {
+    "passed": true,
+    "rationale": "Default core backtest metrics are unchanged by design because this is a default-off paper adapter. The accepted improvement is removal of the production-parity blocker for the prior positive alpha lead."
+  },
+  "tests": [
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_state_surface_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_event_sleeve_bundle.py quant\\test_state_surface_sleeve.py"
+  ],
+  "backtests": [
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "related_files": [
+    "quant/state_surface_sleeve.py",
+    "quant/test_state_surface_sleeve.py",
+    "docs/production_backtest_parity.md"
+  ],
+  "next_action": "Keep live orders disabled; collect forward paper outcomes with benchmark-momentum allow/block attribution before any trade-enabled adapter."
+}

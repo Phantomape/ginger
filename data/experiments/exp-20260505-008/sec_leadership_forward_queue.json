@@ -1,0 +1,121 @@
+{
+  "experiment_id": "exp-20260505-008",
+  "lane": "alpha_search",
+  "change_type": "event_alpha_forward_harness",
+  "status": "accepted_observation_harness",
+  "hypothesis": "8-K Item 5.02 leadership-change filings with first-day SPY-relative selloff <= -2% may mean-revert after uncertainty absorption; production should freeze same-day candidates and alternatives so forward replacement value can be measured before any trade promotion.",
+  "alpha_hypothesis_category": "entry",
+  "implementation": {
+    "queue": "SEC_LEADERSHIP_CHANGE_FORWARD_QUEUE",
+    "paper_sleeve": "SEC_LEADERSHIP_CHANGE_EVENT_SLEEVE_PAPER",
+    "rule_version": "sec_leadership_change_negative_reaction_v1",
+    "trade_enabled": false,
+    "enabled": false,
+    "entry_timing": "next_trading_day_open_after_reaction_close",
+    "hold_days": 10,
+    "candidate_rule": "8-K Item 5.02 AND first-day SPY-relative reaction <= -2%"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "total_pnl": 78600.33,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "total_pnl": 55015.08,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "total_pnl": 24642.07,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "total_pnl": 78600.33,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "total_pnl": 55015.08,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "total_pnl": 24642.07,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167
+    }
+  },
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_delta_sum": 0.0,
+      "total_pnl_delta_sum": 0.0,
+      "trade_count_delta_sum": 0,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 0,
+      "no_drift_confirmed": true
+    }
+  },
+  "gate4_basis": "Order-path Gate 4 is intentionally no-drift because this is a default-off forward alpha harness, not a promoted trading rule. Three canonical production-equivalent windows matched the documented baseline exactly.",
+  "production_impact": {
+    "shared_policy_changed": true,
+    "run_adapter_changed": true,
+    "backtester_adapter_changed": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false
+  },
+  "tests": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_sec_event_queue.py quant\\test_sec_leadership_event_sleeve.py",
+    ".\\.venv\\Scripts\\python.exe -B -c \"ast parse syntax check\"",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+    ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+  ],
+  "decision": "accepted_observation_harness",
+  "next_promotion_gate": "Promote only after closed forward paper outcomes show positive replacement value versus frozen alternatives across a non-trivial sample.",
+  "timestamp": "2026-05-05T06:27:30Z"
+}

@@ -1,0 +1,511 @@
+{
+  "alpha_hypothesis": {
+    "category": "exit / lifecycle winner capture",
+    "why_not_repeat_of_exp_20260506_010": "The prior OHLCV-only event proxy was rejected. This run keeps the same runner exit mechanics and changes only the event qualifier to require SEC results-8K context, EPS surprise, excess reaction, post-event drift confirmation, and retained event gain."
+  },
+  "change_type": "exit_lifecycle_shadow_replay",
+  "coverage": {
+    "canonical_window_gap": "The SEC/earnings event packet source covers the late_strong canonical window only. mid_weak and old_thin remain blocked for semantic event replay, so this cannot be promoted even if the covered-window shadow looks good.",
+    "event_packet_source": "data\\experiments\\exp-20260504-002\\earnings_sec_price_reaction_packet.json"
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "shadow_only_not_production_promoted",
+  "experiment_id": "exp-20260506-023",
+  "gate4_shadow": {
+    "basis": "Fixed-entry shadow requires positive proxy EV in at least two canonical windows and at least three touched trades. Coverage gaps also block production promotion.",
+    "passed": false
+  },
+  "generated_at": "2026-05-06T17:52:42+00:00",
+  "historical_experiment_check": {
+    "mechanism_insight_check": "This avoids nearby target/trailing sweeps by changing the cohort definition, not the exit parameters.",
+    "similar_failures_checked": {
+      "exp-20260506-006": "Broad SPY-leader target width rejected.",
+      "exp-20260506-010": "OHLCV proxy + simple profit ladder rejected.",
+      "simple_profit_protection": "Playbook blocks broad profit floors."
+    }
+  },
+  "hypothesis": "Large-cap leaders after auditable earnings/SEC re-rating should enter a runner lifecycle only when the event has positive financial quality, positive excess reaction, post-event drift, and no full retracement.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "note": "This is not a judgment against LLM semantics. It uses structured SEC/earnings packets because full historical LLM event replay is still sparse.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "event_quality_leader_runner",
+  "next_action": "Do not promote unless multi-window event semantics are available and the qualified cohort creates enough touched-trade evidence.",
+  "parameters": {
+    "cohort_confirm_days": 5,
+    "locked_runner_variant_from_exp_20260506_010": {
+      "profit_floor_r": null,
+      "profit_floor_trigger_r": null,
+      "target_partial_fraction": 0.5,
+      "trail_after_target_r": 1.5
+    },
+    "locked_variables": [
+      "candidate universe",
+      "signal generation",
+      "entry filters",
+      "entry ordering",
+      "risk sizing",
+      "position slots",
+      "add-ons",
+      "LLM/news gates",
+      "runner exit parameters"
+    ],
+    "qualifier": {
+      "max_event_entry_lag_trading_days": 20,
+      "min_eps_surprise_pct": 8.0,
+      "min_event_entry_lag_trading_days": 3,
+      "min_event_gain_retained": 0.5,
+      "min_post_event_to_entry_excess": 0.02,
+      "min_reaction_excess_return": 0.02,
+      "sec_packet_type": "results_8k"
+    },
+    "single_causal_variable": "event-quality plus post-event drift qualifier"
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "promotion_requirement": "Promotion would require shared event-quality state and runner policy in run.py/backtester.py, plus historical event packets in all canonical windows.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "results": {
+    "aggregate": {
+      "ev_windows_improved": 0,
+      "expected_value_score_delta_sum": -0.0748,
+      "pnl_windows_improved": 1,
+      "total_pnl_delta_sum": 272.22,
+      "touched_pnl_delta_sum": 272.22,
+      "touched_trade_count": 1
+    },
+    "by_window": {
+      "late_strong": {
+        "after_proxy_metrics": {
+          "expected_value_score": 4.4601,
+          "max_drawdown_pct": 0.0541,
+          "sharpe_daily": 5.6548,
+          "total_pnl": 78872.55,
+          "total_return_pct": 0.7887,
+          "trade_count": 19,
+          "win_rate": 0.7895
+        },
+        "before_proxy_metrics": {
+          "expected_value_score": 4.5349,
+          "max_drawdown_pct": 0.0541,
+          "sharpe_daily": 5.7695,
+          "total_pnl": 78600.33,
+          "total_return_pct": 0.786,
+          "trade_count": 19,
+          "win_rate": 0.7895
+        },
+        "coverage_note": "event packet coverage available",
+        "delta_proxy_metrics": {
+          "expected_value_score": -0.0748,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": -0.1147,
+          "total_pnl": 272.22,
+          "total_return_pct": 0.0027,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "official_baseline_metrics": {
+          "expected_value_score": 3.4191,
+          "max_drawdown_pct": 0.0541,
+          "sharpe_daily": 4.35,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 78600.33,
+          "total_return_pct": 0.786,
+          "trade_count": 19,
+          "win_rate": 0.7895
+        },
+        "touched_pnl_delta": 272.22,
+        "touched_trade_count": 1,
+        "touched_trades": [
+          {
+            "baseline_exit_date": "2026-01-27",
+            "baseline_exit_reason": "target",
+            "baseline_pnl": 6185.47,
+            "entry_date": "2026-01-07",
+            "partial_events": [
+              {
+                "date": "2026-01-27",
+                "exit_price": 415.83,
+                "pnl": 3092.74,
+                "raw_exit": 416.04,
+                "reason": "event_leader_target_partial",
+                "shares_sold": 42
+              }
+            ],
+            "pnl_delta": 272.22,
+            "qualifier": {
+              "event_date": "2025-12-17",
+              "event_entry_date": "2025-12-19",
+              "event_gain_retained": 5.007713318793099,
+              "event_gain_retained_ok": true,
+              "event_to_trade_lag": 11,
+              "post_event_to_entry_excess": 0.3308563343199442,
+              "post_event_to_entry_excess_ok": true,
+              "qualified": true,
+              "quality": {
+                "eps_ok": true,
+                "eps_surprise_pct": 20.7071,
+                "reaction_excess_return": 0.094568,
+                "reaction_ok": true,
+                "sec_ok": true
+              },
+              "ticker": "MU",
+              "trade_entry_date": "2026-01-07"
+            },
+            "sector": "Technology",
+            "strategy": "breakout_long",
+            "ticker": "MU",
+            "variant_exit_date": "2026-01-30",
+            "variant_exit_reason": "event_leader_trailing_stop",
+            "variant_pnl": 6457.69
+          }
+        ]
+      },
+      "mid_weak": {
+        "after_proxy_metrics": {
+          "expected_value_score": 2.5524,
+          "max_drawdown_pct": 0.0387,
+          "sharpe_daily": 4.6394,
+          "total_pnl": 55015.08,
+          "total_return_pct": 0.5502,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "before_proxy_metrics": {
+          "expected_value_score": 2.5524,
+          "max_drawdown_pct": 0.0387,
+          "sharpe_daily": 4.6394,
+          "total_pnl": 55015.08,
+          "total_return_pct": 0.5502,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "coverage_note": "blocked_no_historical_event_packets",
+        "delta_proxy_metrics": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "official_baseline_metrics": {
+          "expected_value_score": 1.4415,
+          "max_drawdown_pct": 0.0879,
+          "sharpe_daily": 2.62,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 55015.08,
+          "total_return_pct": 0.5502,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "touched_pnl_delta": 0,
+        "touched_trade_count": 0,
+        "touched_trades": []
+      },
+      "old_thin": {
+        "after_proxy_metrics": {
+          "expected_value_score": 0.6126,
+          "max_drawdown_pct": 0.0833,
+          "sharpe_daily": 2.486,
+          "total_pnl": 24642.07,
+          "total_return_pct": 0.2464,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        },
+        "before_proxy_metrics": {
+          "expected_value_score": 0.6126,
+          "max_drawdown_pct": 0.0833,
+          "sharpe_daily": 2.486,
+          "total_pnl": 24642.07,
+          "total_return_pct": 0.2464,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        },
+        "coverage_note": "blocked_no_historical_event_packets",
+        "delta_proxy_metrics": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0,
+          "total_return_pct": 0.0,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "official_baseline_metrics": {
+          "expected_value_score": 0.3179,
+          "max_drawdown_pct": 0.0805,
+          "sharpe_daily": 1.29,
+          "signals_generated": 60,
+          "signals_survived": 55,
+          "survival_rate": 0.9167,
+          "total_pnl": 24642.07,
+          "total_return_pct": 0.2464,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        },
+        "touched_pnl_delta": 0,
+        "touched_trade_count": 0,
+        "touched_trades": []
+      }
+    },
+    "cohort_diagnostics": {
+      "candidate_count": 72,
+      "forward_summary": {
+        "10d": {
+          "avg_excess_vs_spy": 0.086797,
+          "avg_return": 0.079408,
+          "count": 3,
+          "excess_win_rate": 1.0,
+          "win_rate": 0.6667
+        },
+        "20d": {
+          "avg_excess_vs_spy": 0.143998,
+          "avg_return": 0.147362,
+          "count": 3,
+          "excess_win_rate": 0.6667,
+          "win_rate": 0.6667
+        },
+        "5d": {
+          "avg_excess_vs_spy": 0.051733,
+          "avg_return": 0.048391,
+          "count": 3,
+          "excess_win_rate": 0.6667,
+          "win_rate": 0.6667
+        }
+      },
+      "meta_nflx_rows": [
+        {
+          "confirm_date": "2025-11-07",
+          "event_date": "2025-10-29",
+          "event_entry_date": "2025-10-31",
+          "event_gain_retained": null,
+          "horizons_from_confirm_plus_1": {},
+          "post_event_to_confirm_excess": -0.06101218150276799,
+          "qualified": false,
+          "quality": {
+            "eps_ok": false,
+            "eps_surprise_pct": -84.3517,
+            "reaction_excess_return": -0.102349,
+            "reaction_ok": false,
+            "sec_ok": true
+          },
+          "rejection_reason": "event_quality_failed",
+          "ticker": "META",
+          "window": "late_strong"
+        },
+        {
+          "confirm_date": "2026-01-29",
+          "event_date": "2026-01-21",
+          "event_entry_date": "2026-01-22",
+          "event_gain_retained": null,
+          "horizons_from_confirm_plus_1": {},
+          "post_event_to_confirm_excess": -0.01783132584863667,
+          "qualified": false,
+          "quality": {
+            "eps_ok": false,
+            "eps_surprise_pct": 1.8182,
+            "reaction_excess_return": -0.033315,
+            "reaction_ok": false,
+            "sec_ok": true
+          },
+          "rejection_reason": "event_quality_failed",
+          "ticker": "NFLX",
+          "window": "late_strong"
+        },
+        {
+          "confirm_date": "2026-02-06",
+          "event_date": "2026-01-28",
+          "event_entry_date": "2026-01-30",
+          "event_gain_retained": -0.04656485191792107,
+          "horizons_from_confirm_plus_1": {},
+          "post_event_to_confirm_excess": -0.0703049259419608,
+          "qualified": false,
+          "quality": {
+            "eps_ok": true,
+            "eps_surprise_pct": 8.0292,
+            "reaction_excess_return": 0.106032,
+            "reaction_ok": true,
+            "sec_ok": true
+          },
+          "rejection_reason": "full_or_major_retracement",
+          "ticker": "META",
+          "window": "late_strong"
+        },
+        {
+          "confirm_date": null,
+          "event_date": "2026-04-16",
+          "event_entry_date": "2026-04-20",
+          "event_gain_retained": null,
+          "horizons_from_confirm_plus_1": {},
+          "post_event_to_confirm_excess": null,
+          "qualified": false,
+          "quality": {
+            "eps_ok": false,
+            "eps_surprise_pct": -1.6,
+            "reaction_excess_return": -0.109312,
+            "reaction_ok": false,
+            "sec_ok": true
+          },
+          "rejection_reason": "event_quality_failed",
+          "ticker": "NFLX",
+          "window": "late_strong"
+        }
+      ],
+      "qualified_count": 3,
+      "qualified_rows": [
+        {
+          "confirm_date": "2025-11-07",
+          "event_date": "2025-10-29",
+          "event_entry_date": "2025-10-31",
+          "event_gain_retained": 1.3432412223122974,
+          "horizons_from_confirm_plus_1": {
+            "10d": {
+              "entry_date": "2025-11-10",
+              "excess_vs_spy": 0.128966,
+              "exit_date": "2025-11-24",
+              "return": 0.1164,
+              "status": "valid"
+            },
+            "20d": {
+              "entry_date": "2025-11-10",
+              "excess_vs_spy": 0.106039,
+              "exit_date": "2025-12-09",
+              "return": 0.114603,
+              "status": "valid"
+            },
+            "5d": {
+              "entry_date": "2025-11-10",
+              "excess_vs_spy": 0.018258,
+              "exit_date": "2025-11-17",
+              "return": 0.001174,
+              "status": "valid"
+            }
+          },
+          "post_event_to_confirm_excess": 0.028554577307342344,
+          "qualified": true,
+          "quality": {
+            "eps_ok": true,
+            "eps_surprise_pct": 26.9912,
+            "reaction_excess_return": 0.035456,
+            "reaction_ok": true,
+            "sec_ok": true
+          },
+          "rejection_reason": null,
+          "ticker": "GOOG",
+          "window": "late_strong"
+        },
+        {
+          "confirm_date": "2025-12-29",
+          "event_date": "2025-12-17",
+          "event_entry_date": "2025-12-19",
+          "event_gain_retained": 2.384856566767493,
+          "horizons_from_confirm_plus_1": {
+            "10d": {
+              "entry_date": "2025-12-30",
+              "excess_vs_spy": 0.126917,
+              "exit_date": "2026-01-14",
+              "return": 0.13115,
+              "status": "valid"
+            },
+            "20d": {
+              "entry_date": "2025-12-30",
+              "excess_vs_spy": 0.469172,
+              "exit_date": "2026-01-29",
+              "return": 0.478758,
+              "status": "valid"
+            },
+            "5d": {
+              "entry_date": "2025-12-30",
+              "excess_vs_spy": 0.149091,
+              "exit_date": "2026-01-07",
+              "return": 0.152189,
+              "status": "valid"
+            }
+          },
+          "post_event_to_confirm_excess": 0.09779111002083862,
+          "qualified": true,
+          "quality": {
+            "eps_ok": true,
+            "eps_surprise_pct": 20.7071,
+            "reaction_excess_return": 0.094568,
+            "reaction_ok": true,
+            "sec_ok": true
+          },
+          "rejection_reason": null,
+          "ticker": "MU",
+          "window": "late_strong"
+        },
+        {
+          "confirm_date": "2026-03-06",
+          "event_date": "2026-02-25",
+          "event_entry_date": "2026-02-27",
+          "event_gain_retained": 1.3714315156175068,
+          "horizons_from_confirm_plus_1": {
+            "10d": {
+              "entry_date": "2026-03-09",
+              "excess_vs_spy": 0.004509,
+              "exit_date": "2026-03-23",
+              "return": -0.009327,
+              "status": "valid"
+            },
+            "20d": {
+              "entry_date": "2026-03-09",
+              "excess_vs_spy": -0.143216,
+              "exit_date": "2026-04-07",
+              "return": -0.151274,
+              "status": "valid"
+            },
+            "5d": {
+              "entry_date": "2026-03-09",
+              "excess_vs_spy": -0.012151,
+              "exit_date": "2026-03-16",
+              "return": -0.008189,
+              "status": "valid"
+            }
+          },
+          "post_event_to_confirm_excess": 0.043914344713123166,
+          "qualified": true,
+          "quality": {
+            "eps_ok": true,
+            "eps_surprise_pct": 18.5185,
+            "reaction_excess_return": 0.028307,
+            "reaction_ok": true,
+            "sec_ok": true
+          },
+          "rejection_reason": null,
+          "ticker": "SNOW",
+          "window": "late_strong"
+        }
+      ],
+      "rejection_counts": {
+        "event_quality_failed": 64,
+        "full_or_major_retracement": 4,
+        "post_event_drift_failed": 1
+      }
+    }
+  },
+  "risk_of_change": "A runner can keep capital tied up after target. Fixed-entry replay does not measure slot reuse or opportunity cost.",
+  "status": "rejected_shadow"
+}

@@ -1,0 +1,1951 @@
+{
+  "alpha_hypothesis": {
+    "blocked_direct_event_semantics": "Full historical LLM/news semantic coverage is still sparse, so this first replay uses a price/volume event-repricing proxy and records that limitation explicitly.",
+    "category": "exit / lifecycle winner capture"
+  },
+  "change_type": "exit_lifecycle_shadow_replay",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "shadow_only_not_production_promoted",
+  "experiment_id": "exp-20260506-010",
+  "gate4_shadow": {
+    "basis": "Fixed-entry shadow must improve proxy EV in at least two windows, avoid win-rate deterioration, and improve aggregate EV or PnL. Promotion still requires a real shared backtester/run adapter.",
+    "passed": false
+  },
+  "generated_at": "2026-05-06T06:22:20+00:00",
+  "historical_experiment_check": {
+    "mechanism_insight_check": "Does not repeat static baskets, broad target width, global trailing exits, or same-sample event threshold retuning.",
+    "similar_failures_checked": {
+      "broad_trailing_full_exit": "Rejected broadly; this is selected-trade lifecycle shadow only.",
+      "llm_soft_ranking": "Still sample-limited; no LLM decision boundary is changed.",
+      "simple_profit_protection": "Rejected broadly in the playbook; this narrows it to event repricing plus accepted SPY-relative leaders.",
+      "spy_leader_target_width": "exp-20260506-006 rejected wider full targets; this preserves profit via floors/partials instead of only moving the target."
+    }
+  },
+  "hypothesis": "SPY-relative leaders that enter immediately after an auditable price/volume re-rating event may need a lifecycle mode that protects early profits and lets the remaining position drift instead of forcing ordinary all-or-nothing target/stop exits.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_attribution_note": "This does not judge LLM value; sparse historical semantics are the reason for using an OHLCV event proxy.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "event_leader_profit_ladder",
+  "next_action": "Promote only to a real replay adapter if the shadow is strong enough; otherwise keep as a logged non-repeat.",
+  "parameters": {
+    "best_variant": "target_half_trail_1_5r",
+    "event_leader_definition": {
+      "event_lookback_trading_days": 3,
+      "event_min_abs_close_or_gap_move": 0.04,
+      "event_min_volume_ratio_vs_prior_20d": 1.3,
+      "spy_relative_leader": true
+    },
+    "locked_variables": [
+      "candidate universe",
+      "signal generation",
+      "entry filters",
+      "entry ordering",
+      "risk sizing",
+      "position slots",
+      "add-ons",
+      "LLM/news gates"
+    ],
+    "single_causal_variable": "event-leader profit-ladder exit mode on fixed accepted entries",
+    "variants": {
+      "profit_floor_1r_0_25r": {
+        "profit_floor_r": 0.25,
+        "profit_floor_trigger_r": 1.0,
+        "target_partial_fraction": 0.0,
+        "trail_after_target_r": null
+      },
+      "profit_floor_plus_target_half_trail": {
+        "profit_floor_r": 0.25,
+        "profit_floor_trigger_r": 1.0,
+        "target_partial_fraction": 0.5,
+        "trail_after_target_r": 1.5
+      },
+      "target_half_trail_1_5r": {
+        "profit_floor_r": null,
+        "profit_floor_trigger_r": null,
+        "target_partial_fraction": 0.5,
+        "trail_after_target_r": 1.5
+      }
+    }
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If pursued, implement as a shared exit policy so run.py and backtester.py both surface the same event-leader state, partial, floor, and trailing semantics.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "results": {
+    "best_variant": "target_half_trail_1_5r",
+    "by_window": {
+      "late_strong": {
+        "before_proxy_touched_count": 0,
+        "official_baseline_metrics": {
+          "expected_value_score": 3.4191,
+          "max_drawdown_pct": 0.0541,
+          "sharpe_daily": 4.35,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "survival_rate": 0.8039,
+          "total_pnl": 78600.33,
+          "total_return_pct": 0.786,
+          "trade_count": 19,
+          "win_rate": 0.7895
+        },
+        "variants": {
+          "profit_floor_1r_0_25r": {
+            "after_proxy_metrics": {
+              "expected_value_score": 4.5349,
+              "max_drawdown_pct": 0.0541,
+              "sharpe_daily": 5.7695,
+              "total_pnl": 78600.33,
+              "total_return_pct": 0.786,
+              "trade_count": 19,
+              "win_rate": 0.7895
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 4.5349,
+              "max_drawdown_pct": 0.0541,
+              "sharpe_daily": 5.7695,
+              "total_pnl": 78600.33,
+              "total_return_pct": 0.786,
+              "trade_count": 19,
+              "win_rate": 0.7895
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": 0.0,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": 0.0,
+              "total_pnl": 0.0,
+              "total_return_pct": 0.0,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": 0.0,
+            "touched_trade_count": 5,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2025-11-25",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6355.91,
+                "entry_date": "2025-10-31",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06014458418074331,
+                    "close_return": 0.0244575296838887,
+                    "event_date": "2025-10-30",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06014458418074331,
+                    "qualified": true,
+                    "volume_ratio": 2.5991595141171766
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "trend_long",
+                "ticker": "GOOG",
+                "variant_exit_date": "2025-11-25",
+                "variant_exit_reason": "target",
+                "variant_pnl": 6355.91
+              },
+              {
+                "baseline_exit_date": "2026-01-06",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -2194.98,
+                "entry_date": "2026-01-06",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06318160479059531,
+                    "close_return": 0.050994343493723004,
+                    "event_date": "2026-01-05",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06318160479059531,
+                    "qualified": true,
+                    "volume_ratio": 4.335310242083821
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Energy",
+                "strategy": "trend_long",
+                "ticker": "CVX",
+                "variant_exit_date": "2026-01-06",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -2194.98
+              },
+              {
+                "baseline_exit_date": "2026-01-27",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6185.47,
+                "entry_date": "2026-01-07",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.10514700502375374,
+                    "close_return": 0.10514700502375374,
+                    "event_date": "2026-01-02",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.0340562649922429,
+                    "qualified": true,
+                    "volume_ratio": 1.5692188638639293
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "MU",
+                "variant_exit_date": "2026-01-27",
+                "variant_exit_reason": "target",
+                "variant_pnl": 6185.47
+              },
+              {
+                "baseline_exit_date": "2026-04-21",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": 3850.93,
+                "entry_date": "2026-04-10",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.056045170153601775,
+                    "close_return": 0.056045170153601775,
+                    "event_date": "2026-04-09",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.017988681254413885,
+                    "qualified": true,
+                    "volume_ratio": 1.561226673028568
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "breakout_long",
+                "ticker": "AMZN",
+                "variant_exit_date": "2026-04-21",
+                "variant_exit_reason": "event_leader_end_mark",
+                "variant_pnl": 3850.93
+              },
+              {
+                "baseline_exit_date": "2026-04-21",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": 427.01,
+                "entry_date": "2026-04-17",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.07802578269573357,
+                    "close_return": 0.07802578269573357,
+                    "event_date": "2026-04-16",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.02661550924820255,
+                    "qualified": true,
+                    "volume_ratio": 1.9175714648779016
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "AMD",
+                "variant_exit_date": "2026-04-21",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": 427.01
+              }
+            ]
+          },
+          "profit_floor_plus_target_half_trail": {
+            "after_proxy_metrics": {
+              "expected_value_score": 4.4019,
+              "max_drawdown_pct": 0.0543,
+              "sharpe_daily": 5.6143,
+              "total_pnl": 78405.35,
+              "total_return_pct": 0.7841,
+              "trade_count": 19,
+              "win_rate": 0.7895
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 4.5349,
+              "max_drawdown_pct": 0.0541,
+              "sharpe_daily": 5.7695,
+              "total_pnl": 78600.33,
+              "total_return_pct": 0.786,
+              "trade_count": 19,
+              "win_rate": 0.7895
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.133,
+              "max_drawdown_pct": 0.0002,
+              "sharpe_daily": -0.1552,
+              "total_pnl": -194.98,
+              "total_return_pct": -0.0019,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -194.98,
+            "touched_trade_count": 5,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2025-11-25",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6355.91,
+                "entry_date": "2025-10-31",
+                "partial_events": [
+                  {
+                    "date": "2025-11-25",
+                    "exit_price": 326.19,
+                    "pnl": 3156.91,
+                    "raw_exit": 326.357,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 75
+                  }
+                ],
+                "pnl_delta": -467.2,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06014458418074331,
+                    "close_return": 0.0244575296838887,
+                    "event_date": "2025-10-30",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06014458418074331,
+                    "qualified": true,
+                    "volume_ratio": 2.5991595141171766
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "trend_long",
+                "ticker": "GOOG",
+                "variant_exit_date": "2025-11-26",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 5888.71
+              },
+              {
+                "baseline_exit_date": "2026-01-06",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -2194.98,
+                "entry_date": "2026-01-06",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06318160479059531,
+                    "close_return": 0.050994343493723004,
+                    "event_date": "2026-01-05",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06318160479059531,
+                    "qualified": true,
+                    "volume_ratio": 4.335310242083821
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Energy",
+                "strategy": "trend_long",
+                "ticker": "CVX",
+                "variant_exit_date": "2026-01-06",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -2194.98
+              },
+              {
+                "baseline_exit_date": "2026-01-27",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6185.47,
+                "entry_date": "2026-01-07",
+                "partial_events": [
+                  {
+                    "date": "2026-01-27",
+                    "exit_price": 415.83,
+                    "pnl": 3092.74,
+                    "raw_exit": 416.04,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 42
+                  }
+                ],
+                "pnl_delta": 272.22,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.10514700502375374,
+                    "close_return": 0.10514700502375374,
+                    "event_date": "2026-01-02",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.0340562649922429,
+                    "qualified": true,
+                    "volume_ratio": 1.5692188638639293
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "MU",
+                "variant_exit_date": "2026-01-30",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 6457.69
+              },
+              {
+                "baseline_exit_date": "2026-04-21",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": 3850.93,
+                "entry_date": "2026-04-10",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.056045170153601775,
+                    "close_return": 0.056045170153601775,
+                    "event_date": "2026-04-09",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.017988681254413885,
+                    "qualified": true,
+                    "volume_ratio": 1.561226673028568
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "breakout_long",
+                "ticker": "AMZN",
+                "variant_exit_date": "2026-04-21",
+                "variant_exit_reason": "event_leader_end_mark",
+                "variant_pnl": 3850.93
+              },
+              {
+                "baseline_exit_date": "2026-04-21",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": 427.01,
+                "entry_date": "2026-04-17",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.07802578269573357,
+                    "close_return": 0.07802578269573357,
+                    "event_date": "2026-04-16",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.02661550924820255,
+                    "qualified": true,
+                    "volume_ratio": 1.9175714648779016
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "AMD",
+                "variant_exit_date": "2026-04-21",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": 427.01
+              }
+            ]
+          },
+          "target_half_trail_1_5r": {
+            "after_proxy_metrics": {
+              "expected_value_score": 4.4019,
+              "max_drawdown_pct": 0.0543,
+              "sharpe_daily": 5.6143,
+              "total_pnl": 78405.35,
+              "total_return_pct": 0.7841,
+              "trade_count": 19,
+              "win_rate": 0.7895
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 4.5349,
+              "max_drawdown_pct": 0.0541,
+              "sharpe_daily": 5.7695,
+              "total_pnl": 78600.33,
+              "total_return_pct": 0.786,
+              "trade_count": 19,
+              "win_rate": 0.7895
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.133,
+              "max_drawdown_pct": 0.0002,
+              "sharpe_daily": -0.1552,
+              "total_pnl": -194.98,
+              "total_return_pct": -0.0019,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -194.98,
+            "touched_trade_count": 5,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2025-11-25",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6355.91,
+                "entry_date": "2025-10-31",
+                "partial_events": [
+                  {
+                    "date": "2025-11-25",
+                    "exit_price": 326.19,
+                    "pnl": 3156.91,
+                    "raw_exit": 326.357,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 75
+                  }
+                ],
+                "pnl_delta": -467.2,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06014458418074331,
+                    "close_return": 0.0244575296838887,
+                    "event_date": "2025-10-30",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06014458418074331,
+                    "qualified": true,
+                    "volume_ratio": 2.5991595141171766
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "trend_long",
+                "ticker": "GOOG",
+                "variant_exit_date": "2025-11-26",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 5888.71
+              },
+              {
+                "baseline_exit_date": "2026-01-06",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -2194.98,
+                "entry_date": "2026-01-06",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06318160479059531,
+                    "close_return": 0.050994343493723004,
+                    "event_date": "2026-01-05",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06318160479059531,
+                    "qualified": true,
+                    "volume_ratio": 4.335310242083821
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Energy",
+                "strategy": "trend_long",
+                "ticker": "CVX",
+                "variant_exit_date": "2026-01-06",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -2194.98
+              },
+              {
+                "baseline_exit_date": "2026-01-27",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6185.47,
+                "entry_date": "2026-01-07",
+                "partial_events": [
+                  {
+                    "date": "2026-01-27",
+                    "exit_price": 415.83,
+                    "pnl": 3092.74,
+                    "raw_exit": 416.04,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 42
+                  }
+                ],
+                "pnl_delta": 272.22,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.10514700502375374,
+                    "close_return": 0.10514700502375374,
+                    "event_date": "2026-01-02",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.0340562649922429,
+                    "qualified": true,
+                    "volume_ratio": 1.5692188638639293
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "MU",
+                "variant_exit_date": "2026-01-30",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 6457.69
+              },
+              {
+                "baseline_exit_date": "2026-04-21",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": 3850.93,
+                "entry_date": "2026-04-10",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.056045170153601775,
+                    "close_return": 0.056045170153601775,
+                    "event_date": "2026-04-09",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.017988681254413885,
+                    "qualified": true,
+                    "volume_ratio": 1.561226673028568
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "breakout_long",
+                "ticker": "AMZN",
+                "variant_exit_date": "2026-04-21",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": 3850.93
+              },
+              {
+                "baseline_exit_date": "2026-04-21",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": 427.01,
+                "entry_date": "2026-04-17",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.07802578269573357,
+                    "close_return": 0.07802578269573357,
+                    "event_date": "2026-04-16",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.02661550924820255,
+                    "qualified": true,
+                    "volume_ratio": 1.9175714648779016
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "AMD",
+                "variant_exit_date": "2026-04-21",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": 427.01
+              }
+            ]
+          }
+        }
+      },
+      "mid_weak": {
+        "before_proxy_touched_count": 0,
+        "official_baseline_metrics": {
+          "expected_value_score": 1.4415,
+          "max_drawdown_pct": 0.0879,
+          "sharpe_daily": 2.62,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "survival_rate": 0.7925,
+          "total_pnl": 55015.08,
+          "total_return_pct": 0.5502,
+          "trade_count": 21,
+          "win_rate": 0.5238
+        },
+        "variants": {
+          "profit_floor_1r_0_25r": {
+            "after_proxy_metrics": {
+              "expected_value_score": 2.0752,
+              "max_drawdown_pct": 0.0387,
+              "sharpe_daily": 4.3449,
+              "total_pnl": 47762.53,
+              "total_return_pct": 0.4776,
+              "trade_count": 21,
+              "win_rate": 0.5238
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 2.5524,
+              "max_drawdown_pct": 0.0387,
+              "sharpe_daily": 4.6394,
+              "total_pnl": 55015.08,
+              "total_return_pct": 0.5502,
+              "trade_count": 21,
+              "win_rate": 0.5238
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.4772,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": -0.2945,
+              "total_pnl": -7252.55,
+              "total_return_pct": -0.0726,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -7252.55,
+            "touched_trade_count": 2,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2025-09-22",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 7609.22,
+                "entry_date": "2025-08-11",
+                "partial_events": [],
+                "pnl_delta": -7252.55,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.050906762062084,
+                    "close_return": 0.050906762062084,
+                    "event_date": "2025-08-06",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.01335504156720746,
+                    "qualified": true,
+                    "volume_ratio": 2.1087812737487464
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "AAPL",
+                "variant_exit_date": "2025-09-10",
+                "variant_exit_reason": "event_leader_profit_floor_stop",
+                "variant_pnl": 356.67
+              },
+              {
+                "baseline_exit_date": "2025-10-22",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": -74.96,
+                "entry_date": "2025-10-23",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.1734451559394592,
+                    "close_return": 0.13893339762992496,
+                    "event_date": "2025-10-22",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.1734451559394592,
+                    "qualified": true,
+                    "volume_ratio": 3.4765460686604834
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Healthcare",
+                "strategy": "breakout_long",
+                "ticker": "ISRG",
+                "variant_exit_date": "2025-10-22",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": -74.96
+              }
+            ]
+          },
+          "profit_floor_plus_target_half_trail": {
+            "after_proxy_metrics": {
+              "expected_value_score": 2.0752,
+              "max_drawdown_pct": 0.0387,
+              "sharpe_daily": 4.3449,
+              "total_pnl": 47762.53,
+              "total_return_pct": 0.4776,
+              "trade_count": 21,
+              "win_rate": 0.5238
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 2.5524,
+              "max_drawdown_pct": 0.0387,
+              "sharpe_daily": 4.6394,
+              "total_pnl": 55015.08,
+              "total_return_pct": 0.5502,
+              "trade_count": 21,
+              "win_rate": 0.5238
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.4772,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": -0.2945,
+              "total_pnl": -7252.55,
+              "total_return_pct": -0.0726,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -7252.55,
+            "touched_trade_count": 2,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2025-09-22",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 7609.22,
+                "entry_date": "2025-08-11",
+                "partial_events": [],
+                "pnl_delta": -7252.55,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.050906762062084,
+                    "close_return": 0.050906762062084,
+                    "event_date": "2025-08-06",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.01335504156720746,
+                    "qualified": true,
+                    "volume_ratio": 2.1087812737487464
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "AAPL",
+                "variant_exit_date": "2025-09-10",
+                "variant_exit_reason": "event_leader_profit_floor_stop",
+                "variant_pnl": 356.67
+              },
+              {
+                "baseline_exit_date": "2025-10-22",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": -74.96,
+                "entry_date": "2025-10-23",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.1734451559394592,
+                    "close_return": 0.13893339762992496,
+                    "event_date": "2025-10-22",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.1734451559394592,
+                    "qualified": true,
+                    "volume_ratio": 3.4765460686604834
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Healthcare",
+                "strategy": "breakout_long",
+                "ticker": "ISRG",
+                "variant_exit_date": "2025-10-22",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": -74.96
+              }
+            ]
+          },
+          "target_half_trail_1_5r": {
+            "after_proxy_metrics": {
+              "expected_value_score": 2.5056,
+              "max_drawdown_pct": 0.0387,
+              "sharpe_daily": 4.5561,
+              "total_pnl": 54994.26,
+              "total_return_pct": 0.5499,
+              "trade_count": 21,
+              "win_rate": 0.5238
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 2.5524,
+              "max_drawdown_pct": 0.0387,
+              "sharpe_daily": 4.6394,
+              "total_pnl": 55015.08,
+              "total_return_pct": 0.5502,
+              "trade_count": 21,
+              "win_rate": 0.5238
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.0468,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": -0.0833,
+              "total_pnl": -20.82,
+              "total_return_pct": -0.0003,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -20.82,
+            "touched_trade_count": 2,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2025-09-22",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 7609.22,
+                "entry_date": "2025-08-11",
+                "partial_events": [
+                  {
+                    "date": "2025-09-22",
+                    "exit_price": 252.93,
+                    "pnl": 3804.61,
+                    "raw_exit": 253.06,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 165
+                  }
+                ],
+                "pnl_delta": -20.82,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.050906762062084,
+                    "close_return": 0.050906762062084,
+                    "event_date": "2025-08-06",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.01335504156720746,
+                    "qualified": true,
+                    "volume_ratio": 2.1087812737487464
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "breakout_long",
+                "ticker": "AAPL",
+                "variant_exit_date": "2025-09-24",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 7588.4
+              },
+              {
+                "baseline_exit_date": "2025-10-22",
+                "baseline_exit_reason": "end_of_backtest",
+                "baseline_pnl": -74.96,
+                "entry_date": "2025-10-23",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.1734451559394592,
+                    "close_return": 0.13893339762992496,
+                    "event_date": "2025-10-22",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.1734451559394592,
+                    "qualified": true,
+                    "volume_ratio": 3.4765460686604834
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Healthcare",
+                "strategy": "breakout_long",
+                "ticker": "ISRG",
+                "variant_exit_date": "2025-10-22",
+                "variant_exit_reason": "end_of_backtest",
+                "variant_pnl": -74.96
+              }
+            ]
+          }
+        }
+      },
+      "old_thin": {
+        "before_proxy_touched_count": 0,
+        "official_baseline_metrics": {
+          "expected_value_score": 0.3179,
+          "max_drawdown_pct": 0.0805,
+          "sharpe_daily": 1.29,
+          "signals_generated": 60,
+          "signals_survived": 55,
+          "survival_rate": 0.9167,
+          "total_pnl": 24642.07,
+          "total_return_pct": 0.2464,
+          "trade_count": 22,
+          "win_rate": 0.4091
+        },
+        "variants": {
+          "profit_floor_1r_0_25r": {
+            "after_proxy_metrics": {
+              "expected_value_score": 0.5432,
+              "max_drawdown_pct": 0.065,
+              "sharpe_daily": 2.3908,
+              "total_pnl": 22721.69,
+              "total_return_pct": 0.2272,
+              "trade_count": 22,
+              "win_rate": 0.4545
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 0.6126,
+              "max_drawdown_pct": 0.0833,
+              "sharpe_daily": 2.486,
+              "total_pnl": 24642.07,
+              "total_return_pct": 0.2464,
+              "trade_count": 22,
+              "win_rate": 0.4091
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.0694,
+              "max_drawdown_pct": -0.0183,
+              "sharpe_daily": -0.0952,
+              "total_pnl": -1920.38,
+              "total_return_pct": -0.0192,
+              "trade_count": 0,
+              "win_rate": 0.0454
+            },
+            "touched_pnl_delta": -1920.38,
+            "touched_trade_count": 8,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2024-10-31",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1598.42,
+                "entry_date": "2024-10-21",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.10009923865495396,
+                    "close_return": 0.10009923865495396,
+                    "event_date": "2024-10-18",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.04700987587276706,
+                    "qualified": true,
+                    "volume_ratio": 3.470781122411899
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Healthcare",
+                "strategy": "trend_long",
+                "ticker": "ISRG",
+                "variant_exit_date": "2024-10-31",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1598.42
+              },
+              {
+                "baseline_exit_date": "2024-11-19",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4550.88,
+                "entry_date": "2024-10-21",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.11087036453117594,
+                    "close_return": 0.11087036453117594,
+                    "event_date": "2024-10-18",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.07269687477186149,
+                    "qualified": true,
+                    "volume_ratio": 5.343330412036634
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Communication Services",
+                "strategy": "trend_long",
+                "ticker": "NFLX",
+                "variant_exit_date": "2024-11-19",
+                "variant_exit_reason": "target",
+                "variant_pnl": 4550.88
+              },
+              {
+                "baseline_exit_date": "2024-11-19",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6754.45,
+                "entry_date": "2024-11-08",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.4626519983128876,
+                    "close_return": 0.4626519983128876,
+                    "event_date": "2024-11-07",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.36458021854423994,
+                    "qualified": true,
+                    "volume_ratio": 4.99901190951511
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "trend_long",
+                "ticker": "APP",
+                "variant_exit_date": "2024-11-19",
+                "variant_exit_reason": "target",
+                "variant_pnl": 6754.45
+              },
+              {
+                "baseline_exit_date": "2024-11-21",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4184.38,
+                "entry_date": "2024-11-01",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06050035235529938,
+                    "close_return": 0.04756333705675475,
+                    "event_date": "2024-10-31",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06050035235529938,
+                    "qualified": true,
+                    "volume_ratio": 3.1534709653670356
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "BKNG",
+                "variant_exit_date": "2024-11-21",
+                "variant_exit_reason": "target",
+                "variant_pnl": 4184.38
+              },
+              {
+                "baseline_exit_date": "2024-12-04",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4805.52,
+                "entry_date": "2024-11-04",
+                "partial_events": [],
+                "pnl_delta": -4679.83,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06759660148118307,
+                    "close_return": 0.06185621865256041,
+                    "event_date": "2024-11-01",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06759660148118307,
+                    "qualified": true,
+                    "volume_ratio": 3.0962525944383317
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "AMZN",
+                "variant_exit_date": "2024-11-21",
+                "variant_exit_reason": "event_leader_profit_floor_stop",
+                "variant_pnl": 125.69
+              },
+              {
+                "baseline_exit_date": "2025-02-19",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1702.07,
+                "entry_date": "2025-02-11",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.04797830435262784,
+                    "close_return": 0.04797830435262784,
+                    "event_date": "2025-02-10",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.027081177458861516,
+                    "qualified": true,
+                    "volume_ratio": 2.6449951383596564
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "MCD",
+                "variant_exit_date": "2025-02-19",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1702.07
+              },
+              {
+                "baseline_exit_date": "2025-02-20",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1965.65,
+                "entry_date": "2025-01-24",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.13913599529246,
+                    "close_return": 0.13913599529246,
+                    "event_date": "2025-01-23",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.007623881023129053,
+                    "qualified": true,
+                    "volume_ratio": 2.8068337909060292
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Unknown",
+                "strategy": "trend_long",
+                "ticker": "TRIP",
+                "variant_exit_date": "2025-02-20",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1965.65
+              },
+              {
+                "baseline_exit_date": "2025-03-06",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -2390.25,
+                "entry_date": "2025-01-23",
+                "partial_events": [],
+                "pnl_delta": 2759.45,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.14758300457844364,
+                    "close_return": 0.0969436980385241,
+                    "event_date": "2025-01-22",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.14758300457844364,
+                    "qualified": true,
+                    "volume_ratio": 4.265080942171357
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Communication Services",
+                "strategy": "trend_long",
+                "ticker": "NFLX",
+                "variant_exit_date": "2025-02-25",
+                "variant_exit_reason": "event_leader_profit_floor_stop",
+                "variant_pnl": 369.2
+              }
+            ]
+          },
+          "profit_floor_plus_target_half_trail": {
+            "after_proxy_metrics": {
+              "expected_value_score": 0.5239,
+              "max_drawdown_pct": 0.0649,
+              "sharpe_daily": 2.2972,
+              "total_pnl": 22805.07,
+              "total_return_pct": 0.2281,
+              "trade_count": 22,
+              "win_rate": 0.4545
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 0.6126,
+              "max_drawdown_pct": 0.0833,
+              "sharpe_daily": 2.486,
+              "total_pnl": 24642.07,
+              "total_return_pct": 0.2464,
+              "trade_count": 22,
+              "win_rate": 0.4091
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.0887,
+              "max_drawdown_pct": -0.0184,
+              "sharpe_daily": -0.1888,
+              "total_pnl": -1837.0,
+              "total_return_pct": -0.0183,
+              "trade_count": 0,
+              "win_rate": 0.0454
+            },
+            "touched_pnl_delta": -1837.0,
+            "touched_trade_count": 8,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2024-10-31",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1598.42,
+                "entry_date": "2024-10-21",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.10009923865495396,
+                    "close_return": 0.10009923865495396,
+                    "event_date": "2024-10-18",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.04700987587276706,
+                    "qualified": true,
+                    "volume_ratio": 3.470781122411899
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Healthcare",
+                "strategy": "trend_long",
+                "ticker": "ISRG",
+                "variant_exit_date": "2024-10-31",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1598.42
+              },
+              {
+                "baseline_exit_date": "2024-11-19",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4550.88,
+                "entry_date": "2024-10-21",
+                "partial_events": [
+                  {
+                    "date": "2024-11-19",
+                    "exit_price": 85.45,
+                    "pnl": 2271.17,
+                    "raw_exit": 85.49,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 266
+                  }
+                ],
+                "pnl_delta": 104.24,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.11087036453117594,
+                    "close_return": 0.11087036453117594,
+                    "event_date": "2024-10-18",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.07269687477186149,
+                    "qualified": true,
+                    "volume_ratio": 5.343330412036634
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Communication Services",
+                "strategy": "trend_long",
+                "ticker": "NFLX",
+                "variant_exit_date": "2024-11-27",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 4655.12
+              },
+              {
+                "baseline_exit_date": "2024-11-19",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6754.45,
+                "entry_date": "2024-11-08",
+                "partial_events": [
+                  {
+                    "date": "2024-11-19",
+                    "exit_price": 319.25,
+                    "pnl": 3377.22,
+                    "raw_exit": 319.41,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 49
+                  }
+                ],
+                "pnl_delta": -7.8,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.4626519983128876,
+                    "close_return": 0.4626519983128876,
+                    "event_date": "2024-11-07",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.36458021854423994,
+                    "qualified": true,
+                    "volume_ratio": 4.99901190951511
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "trend_long",
+                "ticker": "APP",
+                "variant_exit_date": "2024-11-21",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 6746.65
+              },
+              {
+                "baseline_exit_date": "2024-11-21",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4184.38,
+                "entry_date": "2024-11-01",
+                "partial_events": [
+                  {
+                    "date": "2024-11-21",
+                    "exit_price": 201.55,
+                    "pnl": 2092.19,
+                    "raw_exit": 201.65,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 130
+                  }
+                ],
+                "pnl_delta": -13.06,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06050035235529938,
+                    "close_return": 0.04756333705675475,
+                    "event_date": "2024-10-31",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06050035235529938,
+                    "qualified": true,
+                    "volume_ratio": 3.1534709653670356
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "BKNG",
+                "variant_exit_date": "2024-11-25",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 4171.32
+              },
+              {
+                "baseline_exit_date": "2024-12-04",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4805.52,
+                "entry_date": "2024-11-04",
+                "partial_events": [],
+                "pnl_delta": -4679.83,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06759660148118307,
+                    "close_return": 0.06185621865256041,
+                    "event_date": "2024-11-01",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06759660148118307,
+                    "qualified": true,
+                    "volume_ratio": 3.0962525944383317
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "AMZN",
+                "variant_exit_date": "2024-11-21",
+                "variant_exit_reason": "event_leader_profit_floor_stop",
+                "variant_pnl": 125.69
+              },
+              {
+                "baseline_exit_date": "2025-02-19",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1702.07,
+                "entry_date": "2025-02-11",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.04797830435262784,
+                    "close_return": 0.04797830435262784,
+                    "event_date": "2025-02-10",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.027081177458861516,
+                    "qualified": true,
+                    "volume_ratio": 2.6449951383596564
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "MCD",
+                "variant_exit_date": "2025-02-19",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1702.07
+              },
+              {
+                "baseline_exit_date": "2025-02-20",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1965.65,
+                "entry_date": "2025-01-24",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.13913599529246,
+                    "close_return": 0.13913599529246,
+                    "event_date": "2025-01-23",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.007623881023129053,
+                    "qualified": true,
+                    "volume_ratio": 2.8068337909060292
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Unknown",
+                "strategy": "trend_long",
+                "ticker": "TRIP",
+                "variant_exit_date": "2025-02-20",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1965.65
+              },
+              {
+                "baseline_exit_date": "2025-03-06",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -2390.25,
+                "entry_date": "2025-01-23",
+                "partial_events": [],
+                "pnl_delta": 2759.45,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.14758300457844364,
+                    "close_return": 0.0969436980385241,
+                    "event_date": "2025-01-22",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.14758300457844364,
+                    "qualified": true,
+                    "volume_ratio": 4.265080942171357
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Communication Services",
+                "strategy": "trend_long",
+                "ticker": "NFLX",
+                "variant_exit_date": "2025-02-25",
+                "variant_exit_reason": "event_leader_profit_floor_stop",
+                "variant_pnl": 369.2
+              }
+            ]
+          },
+          "target_half_trail_1_5r": {
+            "after_proxy_metrics": {
+              "expected_value_score": 0.5856,
+              "max_drawdown_pct": 0.0834,
+              "sharpe_daily": 2.3879,
+              "total_pnl": 24525.48,
+              "total_return_pct": 0.2453,
+              "trade_count": 22,
+              "win_rate": 0.4091
+            },
+            "before_proxy_metrics": {
+              "expected_value_score": 0.6126,
+              "max_drawdown_pct": 0.0833,
+              "sharpe_daily": 2.486,
+              "total_pnl": 24642.07,
+              "total_return_pct": 0.2464,
+              "trade_count": 22,
+              "win_rate": 0.4091
+            },
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.027,
+              "max_drawdown_pct": 0.0001,
+              "sharpe_daily": -0.0981,
+              "total_pnl": -116.59,
+              "total_return_pct": -0.0011,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -116.59,
+            "touched_trade_count": 8,
+            "touched_trades": [
+              {
+                "baseline_exit_date": "2024-10-31",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1598.42,
+                "entry_date": "2024-10-21",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.10009923865495396,
+                    "close_return": 0.10009923865495396,
+                    "event_date": "2024-10-18",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.04700987587276706,
+                    "qualified": true,
+                    "volume_ratio": 3.470781122411899
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Healthcare",
+                "strategy": "trend_long",
+                "ticker": "ISRG",
+                "variant_exit_date": "2024-10-31",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1598.42
+              },
+              {
+                "baseline_exit_date": "2024-11-19",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4550.88,
+                "entry_date": "2024-10-21",
+                "partial_events": [
+                  {
+                    "date": "2024-11-19",
+                    "exit_price": 85.45,
+                    "pnl": 2271.17,
+                    "raw_exit": 85.49,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 266
+                  }
+                ],
+                "pnl_delta": 104.24,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.11087036453117594,
+                    "close_return": 0.11087036453117594,
+                    "event_date": "2024-10-18",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.07269687477186149,
+                    "qualified": true,
+                    "volume_ratio": 5.343330412036634
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Communication Services",
+                "strategy": "trend_long",
+                "ticker": "NFLX",
+                "variant_exit_date": "2024-11-27",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 4655.12
+              },
+              {
+                "baseline_exit_date": "2024-11-19",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 6754.45,
+                "entry_date": "2024-11-08",
+                "partial_events": [
+                  {
+                    "date": "2024-11-19",
+                    "exit_price": 319.25,
+                    "pnl": 3377.22,
+                    "raw_exit": 319.41,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 49
+                  }
+                ],
+                "pnl_delta": -7.8,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.4626519983128876,
+                    "close_return": 0.4626519983128876,
+                    "event_date": "2024-11-07",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.36458021854423994,
+                    "qualified": true,
+                    "volume_ratio": 4.99901190951511
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Technology",
+                "strategy": "trend_long",
+                "ticker": "APP",
+                "variant_exit_date": "2024-11-21",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 6746.65
+              },
+              {
+                "baseline_exit_date": "2024-11-21",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4184.38,
+                "entry_date": "2024-11-01",
+                "partial_events": [
+                  {
+                    "date": "2024-11-21",
+                    "exit_price": 201.55,
+                    "pnl": 2092.19,
+                    "raw_exit": 201.65,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 130
+                  }
+                ],
+                "pnl_delta": -13.06,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06050035235529938,
+                    "close_return": 0.04756333705675475,
+                    "event_date": "2024-10-31",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06050035235529938,
+                    "qualified": true,
+                    "volume_ratio": 3.1534709653670356
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "BKNG",
+                "variant_exit_date": "2024-11-25",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 4171.32
+              },
+              {
+                "baseline_exit_date": "2024-12-04",
+                "baseline_exit_reason": "target",
+                "baseline_pnl": 4805.52,
+                "entry_date": "2024-11-04",
+                "partial_events": [
+                  {
+                    "date": "2024-12-04",
+                    "exit_price": 219.67,
+                    "pnl": 2391.58,
+                    "raw_exit": 219.78,
+                    "reason": "event_leader_target_partial",
+                    "shares_sold": 107
+                  }
+                ],
+                "pnl_delta": -199.97,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.06759660148118307,
+                    "close_return": 0.06185621865256041,
+                    "event_date": "2024-11-01",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.06759660148118307,
+                    "qualified": true,
+                    "volume_ratio": 3.0962525944383317
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "AMZN",
+                "variant_exit_date": "2024-12-05",
+                "variant_exit_reason": "event_leader_trailing_stop",
+                "variant_pnl": 4605.55
+              },
+              {
+                "baseline_exit_date": "2025-02-19",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1702.07,
+                "entry_date": "2025-02-11",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.04797830435262784,
+                    "close_return": 0.04797830435262784,
+                    "event_date": "2025-02-10",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.027081177458861516,
+                    "qualified": true,
+                    "volume_ratio": 2.6449951383596564
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Consumer Discretionary",
+                "strategy": "trend_long",
+                "ticker": "MCD",
+                "variant_exit_date": "2025-02-19",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1702.07
+              },
+              {
+                "baseline_exit_date": "2025-02-20",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -1965.65,
+                "entry_date": "2025-01-24",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.13913599529246,
+                    "close_return": 0.13913599529246,
+                    "event_date": "2025-01-23",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.007623881023129053,
+                    "qualified": true,
+                    "volume_ratio": 2.8068337909060292
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Unknown",
+                "strategy": "trend_long",
+                "ticker": "TRIP",
+                "variant_exit_date": "2025-02-20",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -1965.65
+              },
+              {
+                "baseline_exit_date": "2025-03-06",
+                "baseline_exit_reason": "stop",
+                "baseline_pnl": -2390.25,
+                "entry_date": "2025-01-23",
+                "partial_events": [],
+                "pnl_delta": 0.0,
+                "qualifier": {
+                  "event_repricing_proxy": {
+                    "abs_move": 0.14758300457844364,
+                    "close_return": 0.0969436980385241,
+                    "event_date": "2025-01-22",
+                    "min_abs_move": 0.04,
+                    "min_volume_ratio": 1.3,
+                    "open_gap": 0.14758300457844364,
+                    "qualified": true,
+                    "volume_ratio": 4.265080942171357
+                  },
+                  "spy_relative_leader": true
+                },
+                "sector": "Communication Services",
+                "strategy": "trend_long",
+                "ticker": "NFLX",
+                "variant_exit_date": "2025-03-06",
+                "variant_exit_reason": "stop",
+                "variant_pnl": -2390.25
+              }
+            ]
+          }
+        }
+      }
+    },
+    "summaries": {
+      "profit_floor_1r_0_25r": {
+        "aggregate": {
+          "ev_windows_improved": 0,
+          "expected_value_score_delta_sum": -0.5466,
+          "max_drawdown_delta_max": 0.0,
+          "max_sharpe_daily_delta": 0.0,
+          "pnl_windows_improved": 0,
+          "total_pnl_delta_sum": -9172.93,
+          "touched_pnl_delta_sum": -9172.93,
+          "touched_trade_count": 15,
+          "win_rate_delta_min": 0.0
+        },
+        "by_window": {
+          "late_strong": {
+            "delta_proxy_metrics": {
+              "expected_value_score": 0.0,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": 0.0,
+              "total_pnl": 0.0,
+              "total_return_pct": 0.0,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": 0.0,
+            "touched_trade_count": 5
+          },
+          "mid_weak": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.4772,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": -0.2945,
+              "total_pnl": -7252.55,
+              "total_return_pct": -0.0726,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -7252.55,
+            "touched_trade_count": 2
+          },
+          "old_thin": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.0694,
+              "max_drawdown_pct": -0.0183,
+              "sharpe_daily": -0.0952,
+              "total_pnl": -1920.38,
+              "total_return_pct": -0.0192,
+              "trade_count": 0,
+              "win_rate": 0.0454
+            },
+            "touched_pnl_delta": -1920.38,
+            "touched_trade_count": 8
+          }
+        },
+        "variant_config": {
+          "profit_floor_r": 0.25,
+          "profit_floor_trigger_r": 1.0,
+          "target_partial_fraction": 0.0,
+          "trail_after_target_r": null
+        }
+      },
+      "profit_floor_plus_target_half_trail": {
+        "aggregate": {
+          "ev_windows_improved": 0,
+          "expected_value_score_delta_sum": -0.6989,
+          "max_drawdown_delta_max": 0.0002,
+          "max_sharpe_daily_delta": -0.1552,
+          "pnl_windows_improved": 0,
+          "total_pnl_delta_sum": -9284.53,
+          "touched_pnl_delta_sum": -9284.53,
+          "touched_trade_count": 15,
+          "win_rate_delta_min": 0.0
+        },
+        "by_window": {
+          "late_strong": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.133,
+              "max_drawdown_pct": 0.0002,
+              "sharpe_daily": -0.1552,
+              "total_pnl": -194.98,
+              "total_return_pct": -0.0019,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -194.98,
+            "touched_trade_count": 5
+          },
+          "mid_weak": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.4772,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": -0.2945,
+              "total_pnl": -7252.55,
+              "total_return_pct": -0.0726,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -7252.55,
+            "touched_trade_count": 2
+          },
+          "old_thin": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.0887,
+              "max_drawdown_pct": -0.0184,
+              "sharpe_daily": -0.1888,
+              "total_pnl": -1837.0,
+              "total_return_pct": -0.0183,
+              "trade_count": 0,
+              "win_rate": 0.0454
+            },
+            "touched_pnl_delta": -1837.0,
+            "touched_trade_count": 8
+          }
+        },
+        "variant_config": {
+          "profit_floor_r": 0.25,
+          "profit_floor_trigger_r": 1.0,
+          "target_partial_fraction": 0.5,
+          "trail_after_target_r": 1.5
+        }
+      },
+      "target_half_trail_1_5r": {
+        "aggregate": {
+          "ev_windows_improved": 0,
+          "expected_value_score_delta_sum": -0.2068,
+          "max_drawdown_delta_max": 0.0002,
+          "max_sharpe_daily_delta": -0.0833,
+          "pnl_windows_improved": 0,
+          "total_pnl_delta_sum": -332.39,
+          "touched_pnl_delta_sum": -332.39,
+          "touched_trade_count": 15,
+          "win_rate_delta_min": 0.0
+        },
+        "by_window": {
+          "late_strong": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.133,
+              "max_drawdown_pct": 0.0002,
+              "sharpe_daily": -0.1552,
+              "total_pnl": -194.98,
+              "total_return_pct": -0.0019,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -194.98,
+            "touched_trade_count": 5
+          },
+          "mid_weak": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.0468,
+              "max_drawdown_pct": 0.0,
+              "sharpe_daily": -0.0833,
+              "total_pnl": -20.82,
+              "total_return_pct": -0.0003,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -20.82,
+            "touched_trade_count": 2
+          },
+          "old_thin": {
+            "delta_proxy_metrics": {
+              "expected_value_score": -0.027,
+              "max_drawdown_pct": 0.0001,
+              "sharpe_daily": -0.0981,
+              "total_pnl": -116.59,
+              "total_return_pct": -0.0011,
+              "trade_count": 0,
+              "win_rate": 0.0
+            },
+            "touched_pnl_delta": -116.59,
+            "touched_trade_count": 8
+          }
+        },
+        "variant_config": {
+          "profit_floor_r": null,
+          "profit_floor_trigger_r": null,
+          "target_partial_fraction": 0.5,
+          "trail_after_target_r": 1.5
+        }
+      }
+    }
+  },
+  "risk_of_change": "The shadow holds some winners longer and may occupy slots in a full implementation; fixed-entry replay does not measure that opportunity cost.",
+  "status": "rejected_shadow"
+}

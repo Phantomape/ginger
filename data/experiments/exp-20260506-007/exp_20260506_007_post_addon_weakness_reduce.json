@@ -1,0 +1,264 @@
+{
+  "aggregate": {
+    "after_expected_value_score_sum": 5.1769,
+    "after_total_pnl_sum": 157066.28,
+    "before_expected_value_score_sum": 5.1785,
+    "before_total_pnl_sum": 158257.48,
+    "ev_improved_windows": 1,
+    "expected_value_score_delta": -0.0016,
+    "expected_value_score_delta_pct": -0.000309,
+    "pnl_improved_windows": 1,
+    "post_addon_weakness_reduce_events_executed": 2,
+    "total_pnl_delta": -1191.2
+  },
+  "alpha_category": "exit/capital_allocation",
+  "alpha_hypothesis": "After an accepted follow-through add-on, day-3 loss of SPY-relative follow-through plus negative post-add-on return identifies capital that should be trimmed from the add-on sleeve only.",
+  "change_type": "exit_lifecycle_rule",
+  "created_at": "2026-05-06T07:07:05+00:00",
+  "date_ranges": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  },
+  "experiment_id": "exp-20260506-007",
+  "gate_4_verdict": {
+    "accepted": false,
+    "decision": "rejected",
+    "rejection_reason": "Did not clear +10% aggregate EV with majority-window improvement and positive aggregate PnL."
+  },
+  "history_guardrails": {
+    "not_addon_cap_or_checkpoint_gate": true,
+    "not_llm_soft_ranking": true,
+    "not_sector_cap": true,
+    "not_slot_ranking": true,
+    "not_static_universe_expansion": true,
+    "not_target_width": true,
+    "prior_support": "exp-20260505-025 observed post-add-on deterioration family",
+    "why_not_simple_repeat": "This tests post-add-on lifecycle de-risking after capital is added; it does not retune the accepted day-2 add-on trigger/cap."
+  },
+  "lane": "alpha_search",
+  "parameters": {
+    "POST_ADDON_WEAKNESS_DAYS": 3,
+    "POST_ADDON_WEAKNESS_MIN_RS_VS_SPY": 0.0,
+    "POST_ADDON_WEAKNESS_REDUCE_ENABLED": true,
+    "POST_ADDON_WEAKNESS_REQUIRE_NEGATIVE_ADDON_RETURN": true
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "promotion_condition": "If accepted, move the trigger into production_parity.py and surface the same fields in production position-action generation before commit.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "single_causal_variable": "post_addon_day3_weakness_reduce_addon_shares",
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "window_results": {
+    "late_strong": {
+      "after": {
+        "expected_value_score": 3.4553,
+        "max_drawdown_pct": 0.0541,
+        "sharpe_daily": 4.36,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.7925,
+        "survival_rate": 0.8039,
+        "total_pnl": 79249.48,
+        "total_trades": 20,
+        "vs_qqq_pct": 0.7345,
+        "vs_spy_pct": 0.7384,
+        "win_rate": 0.8
+      },
+      "before": {
+        "expected_value_score": 3.4191,
+        "max_drawdown_pct": 0.0541,
+        "sharpe_daily": 4.35,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": 0.786,
+        "survival_rate": 0.8039,
+        "total_pnl": 78600.33,
+        "total_trades": 19,
+        "vs_qqq_pct": 0.728,
+        "vs_spy_pct": 0.7319,
+        "win_rate": 0.7895
+      },
+      "delta": {
+        "expected_value_score": 0.0362,
+        "expected_value_score_pct": 0.010588,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.01,
+        "survival_rate": 0.0,
+        "total_pnl": 649.15,
+        "total_trades": 1,
+        "win_rate": 0.0105
+      },
+      "post_addon_weakness_reduce": {
+        "events": [
+          {
+            "addon_fill_date": "2026-04-15",
+            "addon_fill_price": 249.3746,
+            "addon_shares_before": 129,
+            "decision_mode": "code_post_addon_weakness_reduce",
+            "exit_price": 254.8349,
+            "exit_reason": "partial_reduce_post_addon_weakness",
+            "min_rs_vs_spy": 0.0,
+            "post_addon_return_pct": -0.004389,
+            "post_addon_rs_vs_spy": -0.016933,
+            "post_addon_spy_return_pct": 0.012544,
+            "raw_open": 255.09,
+            "realized_pnl": 1834.76,
+            "remaining_shares": 290,
+            "require_negative_addon_return": true,
+            "scheduled_fill_date": "2026-04-21",
+            "sector": "Consumer Discretionary",
+            "shares_before": 419,
+            "shares_sold": 129,
+            "shares_to_sell": 129,
+            "status": "executed",
+            "strategy": "breakout_long",
+            "ticker": "AMZN",
+            "trigger_close": 248.28,
+            "trigger_date": "2026-04-20",
+            "triggered_rule": "POST_ADDON_WEAKNESS",
+            "weakness_days": 3
+          }
+        ],
+        "executed_events": 1,
+        "scheduled_events": 1
+      }
+    },
+    "mid_weak": {
+      "after": {
+        "expected_value_score": 1.4037,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.64,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.5317,
+        "survival_rate": 0.7925,
+        "total_pnl": 53174.73,
+        "total_trades": 22,
+        "vs_qqq_pct": 0.1967,
+        "vs_spy_pct": 0.2773,
+        "win_rate": 0.5
+      },
+      "before": {
+        "expected_value_score": 1.4415,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.62,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": 0.5502,
+        "survival_rate": 0.7925,
+        "total_pnl": 55015.08,
+        "total_trades": 21,
+        "vs_qqq_pct": 0.2151,
+        "vs_spy_pct": 0.2958,
+        "win_rate": 0.5238
+      },
+      "delta": {
+        "expected_value_score": -0.0378,
+        "expected_value_score_pct": -0.026223,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.02,
+        "survival_rate": 0.0,
+        "total_pnl": -1840.35,
+        "total_trades": 1,
+        "win_rate": -0.0238
+      },
+      "post_addon_weakness_reduce": {
+        "events": [
+          {
+            "addon_fill_date": "2025-08-14",
+            "addon_fill_price": 233.7315,
+            "addon_shares_before": 75,
+            "decision_mode": "code_post_addon_weakness_reduce",
+            "exit_price": 229.3129,
+            "exit_reason": "partial_reduce_post_addon_weakness",
+            "min_rs_vs_spy": 0.0,
+            "post_addon_return_pct": -0.015446,
+            "post_addon_rs_vs_spy": -0.007476,
+            "post_addon_spy_return_pct": -0.00797,
+            "raw_open": 229.5425,
+            "realized_pnl": -35.98,
+            "remaining_shares": 255,
+            "require_negative_addon_return": true,
+            "scheduled_fill_date": "2025-08-20",
+            "sector": "Technology",
+            "shares_before": 330,
+            "shares_sold": 75,
+            "shares_to_sell": 75,
+            "status": "executed",
+            "strategy": "breakout_long",
+            "ticker": "AAPL",
+            "trigger_close": 230.1214,
+            "trigger_date": "2025-08-19",
+            "triggered_rule": "POST_ADDON_WEAKNESS",
+            "weakness_days": 3
+          }
+        ],
+        "executed_events": 1,
+        "scheduled_events": 1
+      }
+    },
+    "old_thin": {
+      "after": {
+        "expected_value_score": 0.3179,
+        "max_drawdown_pct": 0.0805,
+        "sharpe_daily": 1.29,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "strategy_total_return_pct": 0.2464,
+        "survival_rate": 0.9167,
+        "total_pnl": 24642.07,
+        "total_trades": 22,
+        "vs_qqq_pct": 0.3213,
+        "vs_spy_pct": 0.3137,
+        "win_rate": 0.4091
+      },
+      "before": {
+        "expected_value_score": 0.3179,
+        "max_drawdown_pct": 0.0805,
+        "sharpe_daily": 1.29,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "strategy_total_return_pct": 0.2464,
+        "survival_rate": 0.9167,
+        "total_pnl": 24642.07,
+        "total_trades": 22,
+        "vs_qqq_pct": 0.3213,
+        "vs_spy_pct": 0.3137,
+        "win_rate": 0.4091
+      },
+      "delta": {
+        "expected_value_score": 0.0,
+        "expected_value_score_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "survival_rate": 0.0,
+        "total_pnl": 0.0,
+        "total_trades": 0,
+        "win_rate": 0.0
+      },
+      "post_addon_weakness_reduce": {
+        "events": [],
+        "executed_events": 0,
+        "scheduled_events": 0
+      }
+    }
+  }
+}
