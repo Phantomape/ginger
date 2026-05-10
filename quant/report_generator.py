@@ -50,6 +50,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            sec_leadership_event_sleeve=None,
                            event_sleeve_bundle=None,
                            state_surface_sleeve=None,
+                           low_deployment_etf_overlay=None,
                            platform_rs20_watch=None,
                            sec_10k_forward_watch=None,
                            non_ohlcv_snapshot=None,
@@ -651,6 +652,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"eligible={state_surface_addon.get('eligible_candidate_count', 0)}/"
                 f"{state_surface_addon.get('candidate_count', 0)} "
                 f"incremental=${state_surface_addon.get('incremental_notional_usd', 0.0):,.2f} "
+                f"rotation={state_surface_addon.get('rotation_tilt_candidate_count', 0)} "
                 f"surfaces={surface_text}"
             )
         gate = event_sleeve_bundle.get("forward_paper_gate") or {}
@@ -743,6 +745,49 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{candidate.get('surface', 'surface')} "
                 f"rank={candidate.get('rank', '?')} score={score_text} "
                 "(paper only)"
+            )
+
+    if low_deployment_etf_overlay and (
+        low_deployment_etf_overlay.get("candidate_count", 0) > 0
+        or low_deployment_etf_overlay.get("closed_count_today", 0) > 0
+        or low_deployment_etf_overlay.get("closed_position_count", 0) > 0
+        or low_deployment_etf_overlay.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("LOW-DEPLOYMENT ETF OVERLAY PAPER")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {low_deployment_etf_overlay.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {low_deployment_etf_overlay.get('trade_enabled', False)}"
+        )
+        if low_deployment_etf_overlay.get("error"):
+            lines.append(f"  Source status: {low_deployment_etf_overlay.get('error')}")
+        lines.append(
+            f"  Active core positions: {low_deployment_etf_overlay.get('active_core_positions')}  |  "
+            f"Closed today: {low_deployment_etf_overlay.get('closed_count_today', 0)}  |  "
+            f"Closed total: {low_deployment_etf_overlay.get('closed_position_count', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${low_deployment_etf_overlay.get('realized_pnl_to_date', 0.0):,.2f}"
+        )
+        gate = low_deployment_etf_overlay.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"WR={metrics.get('win_rate')}  |  blocked_by={reason_text}"
+            )
+        candidate = low_deployment_etf_overlay.get("candidate") or {}
+        if candidate:
+            lines.append(
+                f"  Candidate: {candidate.get('ticker', '?')} "
+                f"mom20={candidate.get('prior_momentum20')} "
+                f"decision={candidate.get('decision_date')} "
+                f"trade_date={candidate.get('trade_date')} (paper only)"
             )
 
     lines.append("\n" + "-" * 60)

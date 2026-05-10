@@ -177,6 +177,10 @@ def main():
         empty_state_surface_queue,
         empty_state_surface_sleeve_snapshot,
     )
+    from low_deployment_etf_overlay import (
+        build_low_deployment_etf_overlay_snapshot,
+        empty_low_deployment_etf_overlay_snapshot,
+    )
     from pilot_sleeve       import (
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
         append_pilot_decision_snapshots,
@@ -831,6 +835,34 @@ def main():
             ),
         )
 
+    try:
+        low_deployment_etf_overlay = build_low_deployment_etf_overlay_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=ohlcv_dict,
+            open_positions=open_positions,
+            portfolio_value=portfolio_value,
+        )
+        if (
+            low_deployment_etf_overlay.get("candidate_count", 0) > 0
+            or low_deployment_etf_overlay.get("closed_count_today", 0) > 0
+            or low_deployment_etf_overlay.get("closed_position_count", 0) > 0
+        ):
+            log.info(
+                "Low-deployment ETF overlay paper: candidate=%s closed_today=%d pnl=$%s",
+                (
+                    (low_deployment_etf_overlay.get("candidate") or {}).get("ticker")
+                    or "none"
+                ),
+                low_deployment_etf_overlay.get("closed_count_today", 0),
+                low_deployment_etf_overlay.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Low-deployment ETF overlay unavailable: {e}")
+        low_deployment_etf_overlay = empty_low_deployment_etf_overlay_snapshot(
+            today_iso,
+            "low_deployment_etf_overlay_build_failed",
+        )
+
     metrics = compute_metrics()
     pilot_attribution = summarize_pilot_competition()
     ai_infra_aggressive_attribution = summarize_pilot_competition(
@@ -1180,6 +1212,7 @@ def main():
     trend_signals_dict["event_sleeve_bundle"] = event_sleeve_bundle
     trend_signals_dict["state_surface_queue"] = state_surface_queue
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
+    trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
     trend_signals_dict["platform_rs20_watch"] = platform_rs20_watch
     trend_signals_dict["sec_10k_forward_watch"] = sec_10k_forward_watch
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
@@ -1209,6 +1242,7 @@ def main():
         sec_leadership_event_sleeve = sec_leadership_event_sleeve,
         event_sleeve_bundle = event_sleeve_bundle,
         state_surface_sleeve = state_surface_sleeve,
+        low_deployment_etf_overlay = low_deployment_etf_overlay,
         platform_rs20_watch = platform_rs20_watch,
         sec_10k_forward_watch = sec_10k_forward_watch,
         non_ohlcv_snapshot = non_ohlcv_snapshot,
@@ -1244,6 +1278,7 @@ def main():
         "event_sleeve_bundle": event_sleeve_bundle,
         "state_surface_queue": state_surface_queue,
         "state_surface_sleeve": state_surface_sleeve,
+        "low_deployment_etf_overlay": low_deployment_etf_overlay,
         "platform_rs20_watch": platform_rs20_watch,
         "sec_10k_forward_watch": sec_10k_forward_watch,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,
