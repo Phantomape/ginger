@@ -165,6 +165,11 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
                     "counterfactual": counterfactual,
                 },
                 {
+                    "ticker": "BREAD",
+                    "usable_trade_date": "2026-05-04",
+                    "counterfactual": counterfactual,
+                },
+                {
                     "ticker": "BAL",
                     "usable_trade_date": "2026-05-04",
                     "counterfactual": counterfactual,
@@ -192,6 +197,12 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
                     "decision_date": "2026-05-04",
                 },
                 {
+                    "ticker": "BREAD",
+                    "score": 0.33,
+                    "surface": "broad_breadth_trend_persistence",
+                    "decision_date": "2026-05-04",
+                },
+                {
                     "ticker": "NEG",
                     "score": -0.22,
                     "surface": "broad_breadth_trend_persistence",
@@ -204,19 +215,29 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
     by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
     addon = by_ticker["EVT"]["state_surface_addon"]
     assert addon["eligible"] is True
-    assert addon["reason"] == "eligible_non_generic_positive_state_surface"
-    assert addon["scalar"] == 2.0
+    assert addon["reason"] == "eligible_rotation_breakout_positive_state_surface"
+    assert addon["scalar"] == 3.0
     assert addon["base_event_notional_usd"] == 10000.0
-    assert addon["adjusted_event_notional_usd"] == 20000.0
-    assert addon["incremental_notional_usd"] == 10000.0
-    assert by_ticker["EVT"]["paper_event_notional_usd"] == 20000.0
+    assert addon["adjusted_event_notional_usd"] == 30000.0
+    assert addon["incremental_notional_usd"] == 20000.0
+    assert addon["rotation_tilt"] is True
+    assert by_ticker["EVT"]["paper_event_notional_usd"] == 30000.0
     assert by_ticker["EVT"]["event_notional_usd"] == 10000.0
     assert by_ticker["EVT"]["trade_enabled"] is False
     assert by_ticker["EVT"]["alters_orders"] is False
+    bread = by_ticker["BREAD"]["state_surface_addon"]
+    assert bread["reason"] == "eligible_non_generic_positive_state_surface"
+    assert bread["scalar"] == 2.0
+    assert bread["rotation_tilt"] is False
     assert by_ticker["BAL"]["state_surface_addon"]["reason"] == "generic_state_surface"
     assert by_ticker["NEG"]["state_surface_addon"]["reason"] == "nonpositive_state_surface_score"
-    assert snapshot["state_surface_addon"]["eligible_candidate_count"] == 1
-    assert snapshot["state_surface_addon"]["incremental_notional_usd"] == 10000.0
+    assert snapshot["state_surface_addon"]["eligible_candidate_count"] == 2
+    assert snapshot["state_surface_addon"]["rotation_tilt_candidate_count"] == 1
+    assert snapshot["state_surface_addon"]["incremental_notional_usd"] == 30000.0
+    assert (
+        snapshot["state_surface_addon"]["rotation_tilt_incremental_notional_usd"]
+        == 20000.0
+    )
     assert snapshot["state_surface_addon"]["production_impact"]["alters_orders"] is False
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
@@ -296,7 +317,7 @@ def test_event_bundle_trade_plan_emits_same_gated_action_when_gate_passes() -> N
     assert action["notional_usd"] == 2500.0
     assert action["entry_timing"] == "next_session_open"
     assert action["state_surface_addon"]["trade_enabled"] is True
-    assert action["state_surface_addon"]["scalar"] == 2.0
+    assert action["state_surface_addon"]["scalar"] == 3.0
     assert trade_plan["production_impact"]["alters_orders"] is True
 
 
@@ -414,5 +435,6 @@ def test_report_generator_renders_event_state_surface_addon_attribution() -> Non
 
     assert "State-surface add-on:" in report
     assert "eligible=1/1" in report
-    assert "incremental=$10,000.00" in report
+    assert "incremental=$20,000.00" in report
+    assert "rotation=1" in report
     assert "surfaces=rotation_breakout_leadership" in report

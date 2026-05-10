@@ -28,8 +28,11 @@ SOURCE_PRIORITY = {
     "form4_meaningful_purchase": 2,
 }
 
-STATE_SURFACE_ADDON_RULE_VERSION = "non_generic_positive_state_surface_addon_v1"
+STATE_SURFACE_ADDON_RULE_VERSION = (
+    "non_generic_positive_state_surface_rotation_tilt_v1"
+)
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
+STATE_SURFACE_ROTATION_TILT_SURFACE = "rotation_breakout_leadership"
 TRADE_PLAN_RULE_VERSION = "event_bundle_forward_gated_trade_plan_v1"
 
 DEFAULT_SOURCE_RULE_VERSIONS = {
@@ -74,6 +77,8 @@ DEFAULT_CONFIG = {
     "kill_drawdown_notional_fraction": 0.50,
     "state_surface_addon_paper_enabled": True,
     "state_surface_addon_scalar": 2.0,
+    "state_surface_rotation_tilt_surface": STATE_SURFACE_ROTATION_TILT_SURFACE,
+    "state_surface_rotation_tilt_scalar": 3.0,
     "state_surface_addon_generic_surface": STATE_SURFACE_GENERIC_SURFACE,
 }
 
@@ -820,6 +825,7 @@ def _with_state_surface_addon(
     surface = None
     score = None
     decision_date = None
+    rotation_tilt = False
 
     if not bool(config.get("state_surface_addon_paper_enabled", True)):
         reason = "state_surface_addon_disabled"
@@ -838,8 +844,17 @@ def _with_state_surface_addon(
             reason = "generic_state_surface"
         else:
             eligible = True
-            scalar = float(config["state_surface_addon_scalar"])
-            reason = "eligible_non_generic_positive_state_surface"
+            rotation_surface = str(
+                config.get("state_surface_rotation_tilt_surface")
+                or STATE_SURFACE_ROTATION_TILT_SURFACE
+            )
+            rotation_tilt = str(surface or "") == rotation_surface
+            if rotation_tilt:
+                scalar = float(config["state_surface_rotation_tilt_scalar"])
+                reason = "eligible_rotation_breakout_positive_state_surface"
+            else:
+                scalar = float(config["state_surface_addon_scalar"])
+                reason = "eligible_non_generic_positive_state_surface"
 
     adjusted_notional = base_notional * scalar
     out["state_surface_addon"] = {
@@ -855,6 +870,7 @@ def _with_state_surface_addon(
         "state_score": score,
         "state_surface": surface,
         "state_decision_date": decision_date,
+        "rotation_tilt": rotation_tilt,
         "alters_orders": False,
     }
     out["paper_event_notional_usd"] = round(adjusted_notional, 2)
@@ -870,7 +886,11 @@ def _state_surface_addon_summary(
 ) -> dict[str, Any]:
     rows = [row.get("state_surface_addon") or {} for row in candidates]
     eligible = [row for row in rows if row.get("eligible")]
+    rotation_eligible = [row for row in eligible if row.get("rotation_tilt")]
     incremental = sum(_money(row.get("incremental_notional_usd")) for row in eligible)
+    rotation_incremental = sum(
+        _money(row.get("incremental_notional_usd")) for row in rotation_eligible
+    )
     scored_count = 0
     if isinstance(state_surface_queue, dict):
         scored_count = _int(
@@ -884,9 +904,11 @@ def _state_surface_addon_summary(
         "trade_enabled": False,
         "candidate_count": len(candidates),
         "eligible_candidate_count": len(eligible),
+        "rotation_tilt_candidate_count": len(rotation_eligible),
         "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
         "scored_candidate_count": scored_count,
         "incremental_notional_usd": round(incremental, 2),
+        "rotation_tilt_incremental_notional_usd": round(rotation_incremental, 2),
         "eligible_surfaces": sorted(
             {
                 str(row.get("state_surface"))
@@ -896,10 +918,20 @@ def _state_surface_addon_summary(
         ),
         "parameters": {
             "eligible_scalar": float(config["state_surface_addon_scalar"]),
+            "rotation_tilt_surface": str(
+                config.get("state_surface_rotation_tilt_surface")
+                or STATE_SURFACE_ROTATION_TILT_SURFACE
+            ),
+            "rotation_tilt_scalar": float(
+                config["state_surface_rotation_tilt_scalar"]
+            ),
             "generic_surface_not_eligible": str(
                 config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
             ),
-            "eligibility_rule": "score > 0 and state_surface != generic_surface",
+            "eligibility_rule": (
+                "score > 0 and state_surface != generic_surface; "
+                "rotation_breakout_leadership uses rotation_tilt_scalar"
+            ),
         },
         "production_impact": {
             "alters_orders": False,
@@ -917,9 +949,11 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "trade_enabled": False,
         "candidate_count": 0,
         "eligible_candidate_count": 0,
+        "rotation_tilt_candidate_count": 0,
         "eligible_fraction": None,
         "scored_candidate_count": 0,
         "incremental_notional_usd": 0.0,
+        "rotation_tilt_incremental_notional_usd": 0.0,
         "eligible_surfaces": [],
         "status": "blocked",
         "reason": reason,

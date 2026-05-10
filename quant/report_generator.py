@@ -78,6 +78,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         sec_leadership_event_sleeve (dict): Default-off SEC leadership paper sleeve
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
+        low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
         platform_rs20_watch (dict):     Default-off platform RS20 no-gap watch ledger
         sec_10k_forward_watch (dict):   Default-off SEC 10-K liquidity watch ledger
         non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
