@@ -163,6 +163,55 @@ def _pilot_selection_priority(
     )
 
 
+def _signal_sleeve_name(signal: dict | None) -> str:
+    sleeve = (signal or {}).get("pilot_sleeve") or {}
+    return sleeve.get("name") or PILOT_SLEEVE_NAME
+
+
+def _same_sleeve_alternative_counterfactual(
+    pilot: dict,
+    alternative_signals: list[dict],
+) -> dict | None:
+    pilot_ticker = pilot.get("ticker")
+    pilot_sleeve = _signal_sleeve_name(pilot)
+    ranked = []
+    for original_index, signal in enumerate(alternative_signals or []):
+        if signal.get("ticker") == pilot_ticker:
+            continue
+        if _signal_sleeve_name(signal) != pilot_sleeve:
+            continue
+        sizing = signal.get("sizing") or {}
+        if _as_float(sizing.get("shares_to_buy")) <= 0:
+            continue
+        ranked.append((_pilot_selection_priority(signal, original_index), signal))
+
+    if not ranked:
+        return None
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    signal = ranked[0][1]
+    sizing = signal.get("sizing") or {}
+    sleeve = signal.get("pilot_sleeve") or {}
+    return {
+        "type": "same_sleeve_alternative_candidate",
+        "ticker": signal.get("ticker"),
+        "shadow_weight": 0.0,
+        "evaluation_only": True,
+        "sleeve": sleeve.get("name") or pilot_sleeve,
+        "segment": sleeve.get("segment"),
+        "slot_decision": sleeve.get("slot_decision"),
+        "strategy": signal.get("strategy"),
+        "trade_quality_score": signal.get("trade_quality_score"),
+        "confidence_score": signal.get("confidence_score"),
+        "risk_reward_ratio": signal.get("risk_reward_ratio"),
+        "entry_price": signal.get("entry_price"),
+        "stop_price": signal.get("stop_price"),
+        "target_price": signal.get("target_price"),
+        "shares_to_buy": sizing.get("shares_to_buy"),
+        "planned_risk": sizing.get("risk_amount_usd"),
+    }
+
+
 def file_hash(path: Path | str) -> str | None:
     file_path = Path(path)
     if not file_path.exists():
@@ -551,6 +600,7 @@ def build_counterfactual_snapshots(
     pilot_signals: list[dict],
     *,
     core_signals: list[dict] | None = None,
+    pilot_alternative_signals: list[dict] | None = None,
     as_of: str | None = None,
     market_context: dict | None = None,
     portfolio_heat: dict | None = None,
@@ -560,13 +610,19 @@ def build_counterfactual_snapshots(
     metadata = metadata or {}
     market_context = market_context or {}
     core_signals = list(core_signals or [])
+    pilot_alternative_signals = list(pilot_alternative_signals or [])
     timestamp = datetime.now(timezone.utc).isoformat()
     as_of_str = str(as_of or datetime.now(timezone.utc).date().isoformat())
 
     ranking_snapshot = []
-    for status, signals in (("pilot", pilot_signals), ("core", core_signals)):
+    for status, signals in (
+        ("pilot", pilot_signals),
+        ("pilot_sliced", pilot_alternative_signals),
+        ("core", core_signals),
+    ):
         for rank, signal in enumerate(signals or [], start=1):
             sizing = signal.get("sizing") or {}
+            sleeve = signal.get("pilot_sleeve") or {}
             ranking_snapshot.append(
                 {
                     "rank": rank,
@@ -582,6 +638,9 @@ def build_counterfactual_snapshots(
                     "shares_to_buy": sizing.get("shares_to_buy"),
                     "risk_amount_usd": sizing.get("risk_amount_usd"),
                     "position_value_usd": sizing.get("position_value_usd"),
+                    "pilot_sleeve": sleeve.get("name"),
+                    "pilot_segment": sleeve.get("segment"),
+                    "slot_decision": sleeve.get("slot_decision"),
                 }
             )
     if not ranking_snapshot:
@@ -629,6 +688,13 @@ def build_counterfactual_snapshots(
                     "shadow_weight": 1.0,
                 }
             ]
+
+        same_sleeve_alternative = _same_sleeve_alternative_counterfactual(
+            pilot,
+            pilot_alternative_signals,
+        )
+        if same_sleeve_alternative:
+            counterfactuals.append(same_sleeve_alternative)
 
         snapshots.append(
             {
@@ -726,8 +792,13 @@ def build_ai_infra_aggressive_attribution(
         "segments_observed": segments,
         "cash_relative_pnl": attribution.get("cash_relative_pnl"),
         "core_replacement_value": attribution.get("replacement_value"),
-        "same_theme_replacement_value": None,
-        "same_theme_replacement_value_status": "pending_forward_outcomes",
+        "same_theme_replacement_value": attribution.get(
+            "same_sleeve_replacement_value"
+        ),
+        "same_theme_replacement_value_status": attribution.get(
+            "same_sleeve_replacement_value_status",
+            "pending_forward_outcomes",
+        ),
         "risk_adjusted_replacement_value_avg": attribution.get(
             "risk_adjusted_replacement_value_avg"
         ),

@@ -749,6 +749,10 @@ def main():
     pilot_decision_snapshots = build_counterfactual_snapshots(
         pilot_signals,
         core_signals=signals,
+        pilot_alternative_signals=pilot_entry_execution_plan.get(
+            "pilot_slot_sliced_signals",
+            [],
+        ),
         as_of=datetime.now().date().isoformat(),
         market_context=market_context,
         portfolio_heat=portfolio_heat,

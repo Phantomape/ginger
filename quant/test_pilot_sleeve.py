@@ -357,3 +357,77 @@ def test_counterfactual_snapshot_uses_core_displaced_candidate():
     assert snapshots[0]["pilot_ticker"] == "BE"
     assert snapshots[0]["counterfactuals"][0]["ticker"] == "AMD"
     assert snapshots[0]["counterfactuals"][1]["ticker"] == "CASH"
+
+
+def test_counterfactual_snapshot_freezes_same_sleeve_sliced_candidate():
+    snapshots = build_counterfactual_snapshots(
+        [
+            {
+                "ticker": "LITE",
+                "strategy": "trend_long",
+                "trade_quality_score": 0.9,
+                "pilot_sleeve": {
+                    "name": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+                    "segment": "optical_connectivity",
+                },
+                "sizing": {"shares_to_buy": 2},
+            }
+        ],
+        core_signals=[
+            {
+                "ticker": "AMD",
+                "strategy": "breakout_long",
+                "trade_quality_score": 0.8,
+                "sizing": {"shares_to_buy": 3},
+            }
+        ],
+        pilot_alternative_signals=[
+            {
+                "ticker": "COHR",
+                "strategy": "trend_long",
+                "trade_quality_score": 0.85,
+                "confidence_score": 0.7,
+                "risk_reward_ratio": 2.1,
+                "entry_price": 98.0,
+                "stop_price": 91.0,
+                "target_price": 112.0,
+                "pilot_sleeve": {
+                    "name": AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
+                    "segment": "optical_connectivity",
+                    "slot_decision": "sleeve_segment_limit",
+                },
+                "sizing": {
+                    "shares_to_buy": 4,
+                    "risk_amount_usd": 28.0,
+                },
+            },
+            {
+                "ticker": "HOOD",
+                "strategy": "trend_long",
+                "trade_quality_score": 0.99,
+                "pilot_sleeve": {
+                    "name": CONSUMER_PLATFORM_SLEEVE_NAME,
+                    "segment": "consumer_digital_platform",
+                },
+                "sizing": {"shares_to_buy": 5},
+            },
+        ],
+        as_of="2026-05-01",
+        metadata={"protocol_version": "universe_protocol_v1.0"},
+    )
+
+    counterfactuals = snapshots[0]["counterfactuals"]
+    assert [item["shadow_weight"] for item in counterfactuals[:2]] == [0.5, 0.5]
+    same_sleeve = [
+        item
+        for item in counterfactuals
+        if item["type"] == "same_sleeve_alternative_candidate"
+    ]
+    assert len(same_sleeve) == 1
+    assert same_sleeve[0]["ticker"] == "COHR"
+    assert same_sleeve[0]["shadow_weight"] == 0.0
+    assert same_sleeve[0]["evaluation_only"] is True
+    assert same_sleeve[0]["slot_decision"] == "sleeve_segment_limit"
+    assert "pilot_sliced" in {
+        item["status"] for item in snapshots[0]["ranking_snapshot"]
+    }

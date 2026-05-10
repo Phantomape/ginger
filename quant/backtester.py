@@ -2876,6 +2876,10 @@ class BacktestEngine:
                 pilot_decision_snapshots = build_counterfactual_snapshots(
                     pilot_signals,
                     core_signals=signals,
+                    pilot_alternative_signals=pilot_entry_plan.get(
+                        "pilot_slot_sliced_signals",
+                        [],
+                    ),
                     as_of=str(today.date()),
                     market_context=market_context,
                     portfolio_heat=portfolio_heat,

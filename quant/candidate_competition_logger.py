@@ -196,14 +196,17 @@ def compute_decision_outcome_attribution(
     known_weight = 0.0
     required_weight = 0.0
     counterfactual_details = []
+    evaluation_counterfactuals = []
+    same_sleeve_required = 0
+    same_sleeve_known = 0
+    same_sleeve_values = []
 
     for cf in counterfactuals:
         if not isinstance(cf, dict):
             continue
         weight = _num(cf.get("shadow_weight"))
-        if weight is None or weight <= 0:
+        if weight is None or weight < 0:
             continue
-        required_weight += weight
         detail = dict(cf)
         explicit = explicit_by_key.get(_counterfactual_key(cf), {})
 
@@ -220,12 +223,6 @@ def compute_decision_outcome_attribution(
                 cf_risk = _planned_risk(explicit)
             status = "known" if cf_pnl is not None else "missing_outcome"
 
-        if cf_pnl is not None:
-            weighted_replacement_pnl += weight * cf_pnl
-            known_weight += weight
-        if cf_risk is not None:
-            weighted_replacement_risk += weight * cf_risk
-
         detail.update(
             {
                 "known_status": status,
@@ -233,6 +230,26 @@ def compute_decision_outcome_attribution(
                 "planned_risk": cf_risk,
             }
         )
+
+        if cf.get("type") == "same_sleeve_alternative_candidate":
+            same_sleeve_required += 1
+            if cf_pnl is not None:
+                same_sleeve_known += 1
+                same_sleeve_value = round(pilot_pnl - cf_pnl, 2)
+                same_sleeve_values.append(same_sleeve_value)
+                detail["same_sleeve_replacement_value"] = same_sleeve_value
+
+        if weight <= 0 or cf.get("evaluation_only"):
+            evaluation_counterfactuals.append(detail)
+            continue
+
+        required_weight += weight
+        if cf_pnl is not None:
+            weighted_replacement_pnl += weight * cf_pnl
+            known_weight += weight
+        if cf_risk is not None:
+            weighted_replacement_risk += weight * cf_risk
+
         counterfactual_details.append(detail)
 
     coverage = (known_weight / required_weight) if required_weight > 0 else 0.0
@@ -257,6 +274,18 @@ def compute_decision_outcome_attribution(
             weighted_replacement_risk,
         )
 
+    same_sleeve_coverage = (
+        same_sleeve_known / same_sleeve_required if same_sleeve_required else 0.0
+    )
+    same_sleeve_complete = (
+        same_sleeve_required > 0 and round(same_sleeve_coverage, 6) >= 1.0
+    )
+    same_sleeve_replacement_value = (
+        round(sum(same_sleeve_values) / len(same_sleeve_values), 2)
+        if same_sleeve_complete and same_sleeve_values
+        else None
+    )
+
     return {
         "decision_id": outcome.get("decision_id"),
         "pilot_ticker": (
@@ -278,6 +307,18 @@ def compute_decision_outcome_attribution(
             "complete" if replacement_complete else "pending_counterfactual_outcomes"
         ),
         "counterfactuals": counterfactual_details,
+        "evaluation_counterfactuals": evaluation_counterfactuals,
+        "same_sleeve_replacement_value": same_sleeve_replacement_value,
+        "same_sleeve_replacement_value_status": (
+            "complete"
+            if same_sleeve_complete
+            else (
+                "pending_same_sleeve_outcomes"
+                if same_sleeve_required
+                else "not_available"
+            )
+        ),
+        "same_sleeve_counterfactual_coverage": round(same_sleeve_coverage, 4),
     }
 
 
@@ -315,6 +356,10 @@ def summarize_pilot_competition(
         item for item in attributions
         if item.get("replacement_value_status") == "complete"
     ]
+    same_sleeve_complete = [
+        item for item in attributions
+        if item.get("same_sleeve_replacement_value_status") == "complete"
+    ]
     risk_adjusted = [
         item["risk_adjusted_replacement_value"]
         for item in complete
@@ -332,6 +377,8 @@ def summarize_pilot_competition(
                 "cash_relative_pnl": 0.0,
                 "complete_replacement_outcomes": 0,
                 "replacement_value": 0.0,
+                "complete_same_sleeve_outcomes": 0,
+                "same_sleeve_replacement_value": 0.0,
                 "risk_adjusted_replacement_value_sum": 0.0,
                 "risk_adjusted_replacement_value_count": 0,
             },
@@ -342,6 +389,11 @@ def summarize_pilot_competition(
         if item.get("replacement_value_status") == "complete":
             bucket["complete_replacement_outcomes"] += 1
             bucket["replacement_value"] += item.get("replacement_value") or 0.0
+        if item.get("same_sleeve_replacement_value_status") == "complete":
+            bucket["complete_same_sleeve_outcomes"] += 1
+            bucket["same_sleeve_replacement_value"] += (
+                item.get("same_sleeve_replacement_value") or 0.0
+            )
         if item.get("risk_adjusted_replacement_value") is not None:
             bucket["risk_adjusted_replacement_value_sum"] += item[
                 "risk_adjusted_replacement_value"
@@ -352,6 +404,10 @@ def summarize_pilot_competition(
         bucket["direct_pilot_pnl"] = round(bucket["direct_pilot_pnl"], 2)
         bucket["cash_relative_pnl"] = round(bucket["cash_relative_pnl"], 2)
         bucket["replacement_value"] = round(bucket["replacement_value"], 2)
+        bucket["same_sleeve_replacement_value"] = round(
+            bucket["same_sleeve_replacement_value"],
+            2,
+        )
         count = bucket["risk_adjusted_replacement_value_count"]
         bucket["risk_adjusted_replacement_value_avg"] = (
             round(bucket["risk_adjusted_replacement_value_sum"] / count, 6)
@@ -364,6 +420,13 @@ def summarize_pilot_competition(
         sum(item.get("replacement_value") or 0.0 for item in complete),
         2,
     )
+    same_sleeve_value_sum = round(
+        sum(
+            item.get("same_sleeve_replacement_value") or 0.0
+            for item in same_sleeve_complete
+        ),
+        2,
+    )
     direct_pnl_sum = round(sum(item.get("pilot_pnl") or 0.0 for item in attributions), 2)
 
     return {
@@ -374,6 +437,31 @@ def summarize_pilot_competition(
         "complete_replacement_outcomes": len(complete),
         "pending_replacement_outcomes": len(attributions) - len(complete),
         "replacement_value": replacement_value_sum if complete else None,
+        "complete_same_sleeve_outcomes": len(same_sleeve_complete),
+        "pending_same_sleeve_outcomes": (
+            sum(
+                1
+                for item in attributions
+                if item.get("same_sleeve_replacement_value_status")
+                == "pending_same_sleeve_outcomes"
+            )
+        ),
+        "same_sleeve_replacement_value": (
+            same_sleeve_value_sum if same_sleeve_complete else None
+        ),
+        "same_sleeve_replacement_value_status": (
+            "complete"
+            if same_sleeve_complete
+            else (
+                "pending_forward_outcomes"
+                if any(
+                    item.get("same_sleeve_replacement_value_status")
+                    == "pending_same_sleeve_outcomes"
+                    for item in attributions
+                )
+                else "not_available"
+            )
+        ),
         "risk_adjusted_replacement_value_avg": (
             round(sum(risk_adjusted) / len(risk_adjusted), 6)
             if risk_adjusted

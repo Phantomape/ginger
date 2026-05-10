@@ -78,6 +78,48 @@ def test_decision_outcome_attribution_computes_replacement_value():
     assert attribution["replacement_value_status"] == "complete"
 
 
+def test_same_sleeve_evaluation_counterfactual_does_not_change_core_replacement():
+    snapshot = _snapshot()
+    snapshot["counterfactuals"].append(
+        {
+            "type": "same_sleeve_alternative_candidate",
+            "ticker": "COHR",
+            "shadow_weight": 0.0,
+            "evaluation_only": True,
+            "planned_risk": 250.0,
+        }
+    )
+
+    attribution = compute_decision_outcome_attribution(
+        snapshot,
+        {
+            "decision_id": "2026-05-01-AI_INFRA_PILOT-LITE-trend_long-1",
+            "pilot_pnl": 1200.0,
+            "pilot_risk": 300.0,
+            "counterfactual_outcomes": [
+                {
+                    "type": "primary_displaced_candidate",
+                    "ticker": "AMD",
+                    "profit_loss": 800.0,
+                    "planned_risk": 400.0,
+                },
+                {
+                    "type": "same_sleeve_alternative_candidate",
+                    "ticker": "COHR",
+                    "profit_loss": 500.0,
+                    "planned_risk": 250.0,
+                },
+            ],
+        },
+    )
+
+    assert attribution["replacement_pnl"] == 400.0
+    assert attribution["replacement_value"] == 800.0
+    assert attribution["same_sleeve_replacement_value"] == 700.0
+    assert attribution["same_sleeve_replacement_value_status"] == "complete"
+    assert attribution["evaluation_counterfactuals"][0]["ticker"] == "COHR"
+
+
 def test_pilot_competition_summary_marks_missing_counterfactuals_pending(tmp_path):
     path = tmp_path / "pilot_competition_decisions.jsonl"
     append_decision_snapshot(_snapshot(), path=path)
