@@ -1,0 +1,94 @@
+{
+  "experiment_id": "exp-20260510-entry-intent-reconstruction",
+  "timestamp": "2026-05-10T11:20:00-07:00",
+  "status": "accepted_measurement_repair",
+  "lane": "measurement_repair",
+  "mechanism_family": "addon_intent_attribution",
+  "recovery_note": "The original audit commit is 0f9c304c. A later parallel experiment reused the numeric exp-20260509-017 log slot, so this semantic log preserves the entry-intent audit record in the current tree without overwriting that later experiment.",
+  "alpha_hypothesis": "Conservative initial fills can suppress later add-on prompts when production lacks a trustworthy intended/original share base. Reconstructing entry intent from archived advice and signal files should restore auditability before changing add-on alpha logic.",
+  "why_not_direct_alpha_now": "Recent exp-20260508-034 rejected blanket staged entry top-ups, and exp-20260509-004 rejected add-on heat reserve replay. This round avoids a repeated blanket add-on rule and fixes the data prerequisite needed to test narrower add-on hypotheses.",
+  "change_type": "read_only_audit_tool",
+  "single_causal_variable": "Entry-intent reconstruction audit from archived LLM advice, quant signal archives, add-on audit fields, and manual trades.",
+  "history_guardrails": {
+    "checked_iteration_analysis": true,
+    "checked_experiment_logs": true,
+    "checked_mechanism_insights": true,
+    "recent_no_go_items_respected": [
+      "No blanket 50%/75% staged-entry top-up replay after exp-20260508-034 failure",
+      "No add-on heat reserve replay after exp-20260509-004 failure",
+      "No strategy threshold or filter changes",
+      "No automatic writes to operator_inputs/open_positions.json"
+    ]
+  },
+  "parameters": {
+    "open_positions_path": "operator_inputs/open_positions.json",
+    "archive_globs": [
+      "data/llm_prompt_resp_*.json",
+      "data/investment_advice_*.json",
+      "data/quant_signals_*.json"
+    ],
+    "manual_trade_log": "operator_inputs/manual_trades.jsonl",
+    "write_policy": "read_only; requires user confirmation before writing original_shares or intended_shares"
+  },
+  "before_metrics": {
+    "live_nonlegacy_positions_with_intended_share_metadata": "0/4",
+    "addon_base_for_missing_metadata": "falls back to current shares"
+  },
+  "after_metrics": {
+    "positions_audited": 4,
+    "high_confidence_candidates": 3,
+    "candidate_ready_for_user_confirmation_count": 2,
+    "candidate_ready_for_user_confirmation": [
+      {"ticker": "UNH", "current_shares": 3, "candidate_original_shares": 15, "shortfall": 12, "source": "data/llm_prompt_resp_20260413.json"},
+      {"ticker": "AMZN", "current_shares": 4, "candidate_original_shares": 38, "shortfall": 34, "source": "data/llm_prompt_resp_20260414.json"}
+    ],
+    "conflict_or_low_confidence": [
+      {"ticker": "SNXX", "current_shares": 12, "candidate_original_shares": 20, "shortfall": 8, "source": "data/quant_signals_20260503.json", "reason": "post-entry reduce/exit actions and manual trades require operator confirmation"}
+    ],
+    "missing_candidate": [
+      {"ticker": "MSFT", "current_shares": 3}
+    ],
+    "strategy_metric_delta": {
+      "expected_value_score": 0.0,
+      "sharpe_daily": 0.0,
+      "max_drawdown_pct": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0
+    }
+  },
+  "llm_metrics": {
+    "used_llm_archive": true,
+    "llm_role_changed": false,
+    "llm_attribution_improved": true
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "production_orders_changed": false,
+    "operator_inputs_changed": false
+  },
+  "gate_results": {
+    "gate1_baseline": "Existing baselines are present. Full backtest not rerun because the change is a read-only audit CLI and does not alter signal, sizing, fill, risk, entry, exit, or add-on policy.",
+    "gate2_field_check": "The audit explicitly reports missing intended/original share fields instead of relying on hidden assumptions.",
+    "gate3_survival_audit": "No filter or signal survivorship logic changed.",
+    "gate4_measurement": "Accepted as measurement repair with zero strategy metric drift; produced auditable candidates for two of four live non-legacy positions."
+  },
+  "verification": {
+    "focused_tests": ".venv/Scripts/python -m pytest quant/test_position_intent.py quant/test_position_intent_reconstruction.py -q",
+    "focused_tests_result": "7 passed",
+    "import_sanity": ".venv/Scripts/python -B -c \"import sys; sys.path.insert(0, 'quant'); import position_intent_reconstruction; print('imports_ok')\"",
+    "import_sanity_result": "imports_ok"
+  },
+  "decision": "accepted_measurement_repair",
+  "next_action": "Ask the operator to confirm UNH original_shares=15 and AMZN original_shares=38; do not auto-fill SNXX or MSFT without external broker/order evidence.",
+  "related_commit": "0f9c304c",
+  "related_files": [
+    "quant/position_intent_reconstruction.py",
+    "quant/test_position_intent_reconstruction.py",
+    "data/experiments/exp-20260509-017/entry_intent_reconstruction.json",
+    "docs/experiments/artifacts/exp-20260509-017_entry_intent_reconstruction.md",
+    "docs/experiments/logs/exp-20260510-entry-intent-reconstruction.json"
+  ]
+}
