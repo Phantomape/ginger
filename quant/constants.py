@@ -63,6 +63,8 @@ RISK_ON_UNMODIFIED_MID_SCORE_MAX = 0.20
 RISK_ON_UNMODIFIED_MID_SCORE_RISK_MULTIPLIER = 1.6
 RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER = 2.0
 RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT = 0.50
+RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN = 0.05
+RS20_ENTRY_STATE_RISK_MULTIPLIER = 1.10
 TREND_MID_SECTOR_DISPERSION_MIN = 0.035
 TREND_MID_SECTOR_DISPERSION_MAX = 0.08
 TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
@@ -154,6 +156,8 @@ TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # position-cap constrained. Allowing only this accepted leader sleeve to size up
 # to 50% of equity improved EV in all fixed windows while keeping drawdown within
 # the policy cap; broader cap changes remain rejected.
+# exp-20260510-010: broad RS20 entry-state leadership was positive replay-only.
+# Test it as a shared cap-aware post-sizing top-up, not as a new entry source.
 MAX_POSITION_PCT        = 0.40       # Initial position cap; exp-20260428-025
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap

@@ -230,6 +230,29 @@ def test_enrich_signals_marks_mid_sector_dispersion():
     assert enriched[0]["mid_sector_dispersion"] is True
 
 
+def test_enrich_signals_classifies_trip_consumer_discretionary():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "TRIP",
+            "strategy": "breakout_long",
+            "entry_price": 20.0,
+            "stop_price": 18.5,
+            "confidence_score": 0.8,
+        }
+    ]
+    features = {
+        "TRIP": {"atr": 1.0, "momentum_20d_pct": 0.04},
+        "SPY": {"momentum_20d_pct": 0.0},
+    }
+
+    enriched = enrich_signals(signals, features)
+
+    assert len(enriched) == 1
+    assert enriched[0]["sector"] == "Consumer Discretionary"
+
+
 def test_trade_quality_score_range():
     """TQS must be within [0, 1]."""
     from risk_engine import _trade_quality_score
@@ -836,8 +859,10 @@ def test_enrich_signals_marks_spy_relative_leader():
     assert cvx["spy_ret20_pct"] == 0.03
     assert cvx["ticker_ret20_minus_spy_pct"] == 0.05
     assert cvx["spy_relative_leader"] is True
+    assert cvx["rs20_entry_state_leader"] is True
     assert xom["ticker_ret20_minus_spy_pct"] == -0.02
     assert xom["spy_relative_leader"] is False
+    assert xom["rs20_entry_state_leader"] is False
 
 
 def test_backtester_addon_cap_defaults_to_production_cap():

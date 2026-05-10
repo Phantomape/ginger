@@ -24,6 +24,7 @@ from constants import (
     TREND_GOLD_TARGET_TICKERS,
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
+    RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN,
     TREND_MID_SECTOR_DISPERSION_MIN,
     TREND_MID_SECTOR_DISPERSION_MAX,
 )
@@ -48,7 +49,7 @@ SECTOR_MAP = {
     # Consumer Discretionary
     "TSLA": "Consumer Discretionary", "AMZN": "Consumer Discretionary",
     "MCD":  "Consumer Discretionary", "SBUX": "Consumer Discretionary",
-    "BKNG": "Consumer Discretionary",
+    "BKNG": "Consumer Discretionary", "TRIP": "Consumer Discretionary",
     # Communication Services
     "NFLX": "Communication Services", "DIS":  "Communication Services",
     "SPOT": "Communication Services",
@@ -348,6 +349,9 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
             enriched_sig["spy_ret20_pct"] = round(spy_ret20, 4)
             enriched_sig["ticker_ret20_minus_spy_pct"] = round(rel_spy_ret20, 4)
             enriched_sig["spy_relative_leader"] = rel_spy_ret20 > 0
+            enriched_sig["rs20_entry_state_leader"] = (
+                rel_spy_ret20 >= RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN
+            )
         if enriched_sig["sector"] == "Financials":
             if (
                 isinstance(ticker_ret20, (int, float))
