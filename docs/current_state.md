@@ -14,7 +14,7 @@ fixed-window core metrics are:
 | `mid_weak` | 1.6689 | 61.81% | 2.70 | 9.41% | 21 | 79.25% |
 | `old_thin` | 0.3853 | 28.54% | 1.35 | 8.15% | 22 | 91.67% |
 
-Latest alpha-search result: `exp-20260510-015` maps TRIP to Consumer
+Latest accepted alpha result: `exp-20260510-015` maps TRIP to Consumer
 Discretionary in shared `risk_engine.SECTOR_MAP` instead of leaving it in the
 `Unknown` sector path. Aggregate EV improved `+0.0171` (`+0.27%`) and aggregate
 PnL improved `+$403.46` (`+0.22%`) across the three canonical windows, with
@@ -22,9 +22,17 @@ unchanged trade count and survival. The effect flows through shared sector
 enrichment / sector-dispersion allocation, so this is production-visible and
 not a replay-only branch.
 
+Latest alpha-search scout: `exp-20260510-018` rejected effective core slot
+accounting from observed-only slot-missed replacement value. All blocked rows
+were positive in aggregate (`25` rows, `+$8,330.63`), but failed the gate because
+win rate was only `40%` and only `1/3` windows was positive. Pure one-extra-slot
+rows were positive but too concentrated in PLTR; breakout rows need
+`available_slots > 1` because the accepted scarce-slot breakout deferral is
+still active.
+
 Current priority: do not retune local add-on trigger, cap, heat, reserve,
-strategy-cohort variants, ETF overlay parameters, nearby RS20 risk scalars, or
-single-ticker sector taxonomy on the same frozen samples. Future taxonomy work
-needs a real production universe classification gap plus three-window
-no-regression evidence; future RS20 work needs forward attribution or a new
-discriminator, not local scalar tuning.
+strategy-cohort variants, ETF overlay parameters, nearby RS20 risk scalars,
+single-ticker sector taxonomy, global `MAX_POSITIONS`, or scarce-slot breakout
+thresholds on the same frozen samples. Future slot work needs a shared
+exposure/risk-based effective-slot accounting design with full portfolio replay
+and production visibility, not another global slot-count sweep.
