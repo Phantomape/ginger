@@ -51,22 +51,54 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after exp-20260501-006:
+Current accepted fixed-window metrics after `exp-20260510-015` classified TRIP
+as Consumer Discretionary in shared sector enrichment:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 2.7000 | 4.30 | $62,788.03 | 62.79% | 4.39% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.2036 | 2.58 | $46,654.10 | 46.65% | 7.99% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.2563 | 1.27 | $20,181.65 | 20.18% | 6.88% | 40.91% | 22 | 91.67% |
+| `late_strong` | 4.2340 | 4.50 | $94,086.91 | 94.09% | 5.48% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.6689 | 2.70 | $61,813.40 | 61.81% | 9.41% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.3853 | 1.35 | $28,544.11 | 28.54% | 8.15% | 40.91% | 22 | 91.67% |
 
-Latest accepted result: `trend_long` Financials signals whose 20-day return is
-above the equal-weight Financials sector 20-day return now size at a total
-2.5x risk budget. Non-leader Financials remain at the accepted 1.5x budget.
-This improved PnL in 2/3 fixed windows with no trade-count or win-rate
-regression: aggregate PnL `+$7,834.20` / `+6.43%`, aggregate EV `+0.1974`.
-The main cost is `mid_weak` max drawdown rising from 6.16% to 7.99%, still
-inside the drawdown cap. Do not retry nearby Financials leader multipliers
-without forward evidence or a materially different sector-relative feature.
+Artifact note: `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`
+records the latest accepted three-window comparison. `data/backtest_results_20260509.json`
+remains the latest standalone CLI artifact before the current accepted shared
+policy stack.
+
+Latest accepted taxonomy result: `exp-20260510-015` maps TRIP through shared
+sector enrichment as Consumer Discretionary instead of `Unknown`. This is a
+small alpha/data-quality improvement, not a new threshold: aggregate EV
+improved `+0.0171` / `+0.27%`, aggregate PnL improved `+$403.46` / `+0.22%`,
+trade count and survival stayed unchanged, and max drawdown did not worsen.
+Do not repeat single-ticker taxonomy mining on frozen samples; valid follow-up
+taxonomy work needs a real production universe classification gap and the same
+three-window no-regression evidence.
+
+Previous accepted core-sizing result: `exp-20260510-012` promoted a shared
+RS20 entry-state leader top-up. Signals whose ticker 20-day return beats SPY
+20-day return by at least 5 percentage points are tagged in `risk_engine.py`;
+`portfolio_engine.py` then applies a cap-aware 1.10x post-sizing share top-up
+inside the existing position cap for that signal. The change improved EV and
+PnL in all three fixed windows with unchanged trade count and survival:
+aggregate EV `+0.2259` / `+3.74%`, aggregate PnL `+$6,364.03` / `+3.58%`.
+The stronger 1.25x and 1.50x variants were rejected because `mid_weak` max
+drawdown worsened too much. Do not retry nearby RS20 scalars on these frozen
+windows without forward evidence or a materially different discriminator.
+
+Previous accepted production-visible result: `exp-20260510-003` promoted the
+`rotation_breakout_leadership` 3.0x event tilt into a shared default-off paper
+adapter. This changed no core backtest metrics, no live/default orders, and no
+canonical fixed-window baseline values at the time.
+
+Latest accepted core-sizing result before that: `trend_long` Financials signals
+whose 20-day return is above the equal-weight Financials sector 20-day return
+now size at a total 2.5x risk budget. Non-leader Financials remain at the
+accepted 1.5x budget. This improved PnL in 2/3 fixed windows with no
+trade-count or win-rate regression: aggregate PnL `+$7,834.20` / `+6.43%`,
+aggregate EV `+0.1974`. The main cost is `mid_weak` max drawdown rising from
+6.16% to 7.99%, still inside the drawdown cap. Do not retry nearby Financials
+leader multipliers without forward evidence or a materially different
+sector-relative feature.
 
 Previous accepted result: GLD/IAU `trend_long` targets now use 8 ATR while SLV
 and other Commodity trend targets remain on the accepted 7 ATR path. This

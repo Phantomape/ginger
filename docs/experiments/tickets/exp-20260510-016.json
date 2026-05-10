@@ -1,0 +1,59 @@
+{
+  "acceptance_rule": "shadow/data-audit only: no production promotion; report coverage, PIT risk, candidate counts, overlap, slot value, and forward-return readiness",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "data/experiments",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260510-012/rs20_entry_state_shared_sizing.json",
+  "change_type": "form4_non_ohlcv_shadow_audit",
+  "claimed_at": null,
+  "completed_at": "2026-05-10T17:28:21+00:00",
+  "created_at": "2026-05-10T17:18:13+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260510-016",
+  "hypothesis": "Public-market Form 4 insider buying may confirm existing Ginger long candidates, but this run only refreshes PIT-safe local data availability and shadow overlay coverage using the latest local Form 4 archive without changing production.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "core entries",
+    "core exits",
+    "candidate ranking",
+    "position sizing",
+    "portfolio heat",
+    "LLM/news prompts",
+    "production orders",
+    "Form 4 thresholds"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "owner": "codex-automation",
+  "result": {
+    "artifact": "data/experiments/exp-20260510-016/form4_insider_overlay_fresh_shadow.json",
+    "decision": "shadow_only",
+    "log": "docs/experiments/logs/exp-20260510-016.json",
+    "report": "docs/non_ohlcv_data_audit/form4_insider_overlay_fresh_shadow_exp-20260510-016_20260510.md",
+    "summary": "The latest Form 4 data is present and PIT-dateable, but it produced zero >=$500k forward-queue candidates and zero production-core overlaps. The one meaningful fresh CAT purchase overlaps only a default-off state-surface paper candidate with no mature forward outcome, so production/default-off promotion is not justified."
+  },
+  "single_causal_variable": "latest local Form 4 data availability and overlay coverage as of 2026-05-09",
+  "status": "completed"
+}

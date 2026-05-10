@@ -1,0 +1,332 @@
+{
+  "after_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 6.2711,
+      "total_pnl_sum": 184040.96
+    },
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 4.234,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0548,
+        "rs20_touched_trades": 7,
+        "rs20_trade_pnl": 45497.69,
+        "rs20_trade_win_rate": 1.0,
+        "sharpe_daily": 4.5,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.516,
+        "total_pnl": 94086.91,
+        "total_return_pct": 0.9409,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.060734
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6678,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.0941,
+        "rs20_touched_trades": 7,
+        "rs20_trade_pnl": 28750.07,
+        "rs20_trade_win_rate": 0.5714,
+        "sharpe_daily": 2.7,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4773,
+        "total_pnl": 61768.95,
+        "total_return_pct": 0.6177,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.089651
+      },
+      "old_thin": {
+        "expected_value_score": 0.3693,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0915,
+        "rs20_touched_trades": 9,
+        "rs20_trade_pnl": 9407.41,
+        "rs20_trade_win_rate": 0.3333,
+        "sharpe_daily": 1.31,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.482,
+        "total_pnl": 28185.1,
+        "total_return_pct": 0.2819,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.063499
+      }
+    }
+  },
+  "alpha_hypothesis": {
+    "category": "capital_allocation",
+    "playbook_alignment": "Implements the only valid follow-up from exp-20260510-010: a shared production/backtest policy with parity coverage instead of another replay-only RS20 scalar sweep."
+  },
+  "backtest_protocol": "Three fixed windows from docs/backtesting.md using canonical snapshots and production-equivalent shared sizing path.",
+  "before_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 6.0452,
+      "total_pnl_sum": 177676.93
+    },
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 4.0674,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.48,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5154,
+        "total_pnl": 90788.88,
+        "total_return_pct": 0.9079,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.0607
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6195,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.72,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4744,
+        "total_pnl": 59540.63,
+        "total_return_pct": 0.5954,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "old_thin": {
+        "expected_value_score": 0.3583,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 1.31,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4726,
+        "total_pnl": 27347.42,
+        "total_return_pct": 0.2735,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      }
+    }
+  },
+  "change_summary": "Added rs20_entry_state_leader in shared risk enrichment and a cap-aware 1.10x post-sizing top-up in shared portfolio sizing, with backtest attribution.",
+  "change_type": "shared_policy_sizing_alpha",
+  "changed_variable": "RS20_ENTRY_STATE_RISK_MULTIPLIER",
+  "component": "quant/risk_engine.py; quant/portfolio_engine.py; quant/backtester.py",
+  "date_range": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_after_sum": 6.2711,
+      "expected_value_score_before_sum": 6.0452,
+      "expected_value_score_delta_pct": 0.037368,
+      "expected_value_score_delta_sum": 0.2259,
+      "max_drawdown_worsening_max": 0.0062,
+      "survival_rate_delta_min": 0.0,
+      "total_pnl_after_sum": 184040.96,
+      "total_pnl_before_sum": 177676.93,
+      "total_pnl_delta_pct": 0.035818,
+      "total_pnl_delta_sum": 6364.03,
+      "trade_count_delta_sum": 0,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 0.1666,
+        "max_drawdown_pct": 0.0009,
+        "sharpe_daily": 0.02,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0006,
+        "total_pnl": 3298.03,
+        "total_return_pct": 0.033,
+        "trade_count": 0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0483,
+        "max_drawdown_pct": 0.0062,
+        "sharpe_daily": -0.02,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0029,
+        "total_pnl": 2228.32,
+        "total_return_pct": 0.0223,
+        "trade_count": 0
+      },
+      "old_thin": {
+        "expected_value_score": 0.011,
+        "max_drawdown_pct": 0.0012,
+        "sharpe_daily": 0.0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0094,
+        "total_pnl": 837.68,
+        "total_return_pct": 0.0084,
+        "trade_count": 0
+      }
+    }
+  },
+  "experiment_id": "exp-20260510-012",
+  "gate1_baseline": {
+    "expected_value_score_sum": 6.0452,
+    "source": "docs/backtesting.md accepted fixed-window baseline before exp-20260510-012",
+    "total_pnl_sum": 177676.93
+  },
+  "gate2_field_audit": {
+    "all_positions_have_entry_date": true,
+    "all_positions_have_target_price": true,
+    "exists": true,
+    "missing_entry_date": [],
+    "missing_target_price": [],
+    "path": "operator_inputs/open_positions.json",
+    "position_rows_checked": 10
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "note": "No entry filter was added; survival and trade count are unchanged in all windows.",
+    "survival_rates_after": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.9167
+    }
+  },
+  "gate4": {
+    "accepted_as": "small_stable_shared_policy_improvement",
+    "basis": "EV and PnL improved in 3/3 fixed windows; trade count and survival unchanged; drawdown worsening <= 0.62pp.",
+    "passed": true,
+    "strong_accept_signal": false
+  },
+  "hypothesis": "Already-entered A/B trades whose signal-date 20-day return beats SPY by at least 5 percentage points deserve a small cap-aware post-sizing top-up because broad relative-strength leadership identifies continuation without adding noisy tickers.",
+  "known_risks": [
+    "The policy is a small same-sample fixed-window improvement, not a >10% strong EV acceptance.",
+    "It increases exposure to momentum leaders and should be watched for mid_weak drawdown drift.",
+    "The accepted production semantics are post-sizing and cap-aware; do not retry nearby RS20 scalars without forward evidence."
+  ],
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this deterministic sizing alpha does not depend on LLM replay.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "rs20_entry_state_shared_sizing",
+  "next_evidence_needed": "Forward/paper monitoring of rs20_entry_state attribution, especially mid_weak-like drawdown and concentration behavior.",
+  "parameters": {
+    "accepted_risk_multiplier": 1.1,
+    "locked_variables": [
+      "core universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "exits",
+      "add-ons",
+      "event sleeves",
+      "LLM/news replay"
+    ],
+    "position_cap_policy": "Use the already-selected max_position_pct for the signal; do not create a new cap exception.",
+    "rejected_trial_multipliers": [
+      1.25,
+      1.5
+    ],
+    "rs20_entry_state_leader_min_rel_return": 0.05
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "production_impact_detail": {
+    "backtester_adapter_reason": "quant/backtester.py already calls the same shared modules and now includes the multiplier in sizing attribution.",
+    "run_adapter_reason": "quant/run.py already calls risk_engine.enrich_signals() and portfolio_engine.size_signals().",
+    "shared_policy": [
+      "quant/risk_engine.py",
+      "quant/portfolio_engine.py"
+    ]
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/constants.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/test_low_score_risk_on_sizing.py",
+    "quant/test_quant.py",
+    "docs/experiments/logs/exp-20260510-012.json",
+    "docs/experiments/artifacts/exp-20260510-012_rs20_entry_state_shared_sizing.md",
+    "data/experiments/exp-20260510-012/rs20_entry_state_shared_sizing.json"
+  ],
+  "run_at": "2026-05-10T14:29:57.059627+00:00",
+  "single_causal_variable": "rs20_entry_state_leader_post_sizing_top_up_multiplier",
+  "status": "accepted",
+  "timestamp": "2026-05-10T14:29:57.059627+00:00",
+  "variant_trials": {
+    "rs20_1_10x_shared_policy": {
+      "aggregate_expected_value_score_sum": 6.2711,
+      "decision": "accepted",
+      "expected_value_score_delta_pct": 0.037368,
+      "expected_value_score_delta_sum": 0.2259,
+      "max_drawdown_worsening_max": 0.0062,
+      "reason": "EV and PnL improved in all windows with unchanged trade count and survival.",
+      "total_pnl_delta_pct": 0.035818,
+      "total_pnl_delta_sum": 6364.03
+    },
+    "rs20_1_25x_shared_policy": {
+      "aggregate_expected_value_score_sum": 6.4142,
+      "decision": "rejected_risk_tradeoff_not_clean",
+      "expected_value_score_delta_pct": 0.061,
+      "expected_value_score_delta_sum": 0.369,
+      "max_drawdown_worsening_max": 0.0161,
+      "reason": "EV improved in all windows, but mid_weak drawdown rose from 8.79% to 10.40%.",
+      "total_pnl_delta_pct": 0.0737,
+      "total_pnl_delta_sum": 13088.96
+    },
+    "rs20_1_50x_shared_policy": {
+      "aggregate_expected_value_score_sum": 6.4105,
+      "decision": "rejected_risk_too_high",
+      "expected_value_score_delta_pct": 0.0604,
+      "expected_value_score_delta_sum": 0.3653,
+      "max_drawdown_worsening_max": 0.0301,
+      "reason": "mid_weak max drawdown rose from 8.79% to 11.80% despite positive EV.",
+      "total_pnl_delta_pct": 0.1121,
+      "total_pnl_delta_sum": 19924.0
+    }
+  },
+  "why_not_other_changes": {
+    "ETF_or_event_surfaces": "Already default-off and awaiting forward paper outcomes.",
+    "LLM_soft_ranking": "Still data-limited; do not block alpha search on it.",
+    "add_on_retunes": "Recent add-on cap/heat materiality tests were too small.",
+    "candidate_pool_expansion": "MRVL-only static expansion was just rejected; broad basket expansion remains noise-prone."
+  }
+}

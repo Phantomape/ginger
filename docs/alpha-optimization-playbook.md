@@ -21,39 +21,336 @@
 
 鑻ユ湰鏂囨。涓?`AGENTS.md` 鍐茬獊锛屼互 `AGENTS.md` 涓哄噯銆傝嫢闇€瑕佸鐜板疄楠岋紝鍏堟煡鏈枃妗ｇ殑瀹為獙绱㈠紩锛屽啀鏌ョ粨鏋勫寲鏃ュ織銆?
 
-## 2026-05-09 accepted state
+## 2026-05-10 accepted state
 
 Latest refreshed accepted-stack checkpoint: keep the accepted lifecycle
-allocation core from `exp-20260502-022` and treat
-`data/backtest_results_20260508.json` plus the embedded baseline blocks in
-`exp-20260509-006` and `exp-20260509-007` as the current source of truth for
-the replayable A+B stack. The stack remains a capital-allocation /
-event-quality baseline, not a new entry filter, universe expansion, or sector
-priority rule.
+allocation core from `exp-20260502-022` and treat the 2026-05-09 refresh as
+the current source of truth for the replayable A+B stack. Use
+`data/backtest_results_20260509.json` as the latest standalone canonical
+artifact for `old_thin`, and use the unchanged carried-forward baseline blocks
+in `exp-20260509-006`, `exp-20260509-007`, `exp-20260510-002`, and
+`exp-20260510-003` for `late_strong` / `mid_weak`. The stack remains a
+capital-allocation / event-quality baseline, not a new entry filter, universe
+expansion, or sector priority rule.
 
 Accepted fixed-window metrics after the current core stack:
 
 | Window | EV | Return | Sharpe daily | Max DD | Win rate | Trades |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.0674 | +90.79% | 4.48 | 5.39% | 78.95% | 19 |
-| `mid_weak` | 1.6195 | +59.54% | 2.72 | 8.79% | 52.38% | 21 |
-| `old_thin` | 0.3583 | +27.35% | 1.31 | 9.03% | 40.91% | 22 |
+| `late_strong` | 4.2340 | +94.09% | 4.50 | 5.48% | 78.95% | 19 |
+| `mid_weak` | 1.6678 | +61.77% | 2.70 | 9.41% | 52.38% | 21 |
+| `old_thin` | 0.3693 | +28.19% | 1.31 | 9.15% | 40.91% | 22 |
 
-Evidence: this refreshed checkpoint is the shared baseline reused by
-`exp-20260509-004`, `exp-20260509-006`, and `exp-20260509-007` after the
-latest backtest refresh. Across those logs, the three canonical windows stayed
-unchanged whenever the run was replay-only or blocked before promotion.
-Aggregate accepted-stack EV is `6.0452` with aggregate PnL `+$177,676.93`, and
-convergence remains `8/8`.
+Evidence: this refreshed checkpoint is the shared baseline after
+`exp-20260510-012`. Earlier logs `exp-20260509-004`, `exp-20260509-006`,
+`exp-20260509-007`, `exp-20260510-002`, and `exp-20260510-003` preserve the
+pre-RS20 accepted-stack baseline for replay-only, data-gap-only, or blocked
+comparisons. Aggregate accepted-stack EV is now `6.2711` with aggregate PnL
+`+$184,040.96`, and convergence remains `8/8`.
 
-Latest unchanged validation point: the 2026-05-03 through 2026-05-09
+Latest unchanged validation point: the 2026-05-03 through 2026-05-10
 observed-only SEC/Form 4 queue, shadow-universe, event-harness, short-pressure,
 options-overlay, entry-state oracle, earnings-estimate readiness, 10-K
 forward-watch, add-on reserve, and event-bundle allocation experiments all
 reused the same canonical three-window core metrics whenever no executable
-policy was promoted. Treat `data/backtest_results_20260508.json` as the latest
-refreshed core-only checkpoint and the 2026-05-09 experiment logs as the
-latest no-drift verification of the accepted stack.
+policy was promoted into the core stack. Treat the `exp-20260510-012` shared
+RS20 sizing record plus `data/experiments/exp-20260510-012/rs20_entry_state_shared_sizing.json`
+as the latest checkpoint; `data/backtest_results_20260509.json` remains the
+latest standalone CLI artifact before that promotion.
+
+### 2026-05-10 mechanism update: RS20 entry-state shared sizing
+
+Status: accepted shared core-sizing alpha.
+
+Core conclusion: `exp-20260510-010` first found a broad RS20 entry-state
+allocation lead in replay-only form. `exp-20260510-012` implemented the valid
+follow-up as shared production/backtest policy: `risk_engine.py` tags signals
+whose ticker 20-day return beats SPY by at least 5 percentage points, and
+`portfolio_engine.py` applies a cap-aware 1.10x post-sizing share top-up inside
+the already-selected position cap. Core entries, ranking, exits, add-ons, event
+sleeves, LLM/news, and universe membership stayed locked.
+
+Evidence: the accepted 1.10x variant improved EV and PnL in all three
+canonical windows: `late_strong +0.1666` EV / `+$3,298.03`, `mid_weak +0.0483`
+EV / `+$2,228.32`, and `old_thin +0.0110` EV / `+$837.68`. Aggregate EV
+improved `+0.2259` (`+3.74%`) and aggregate PnL improved `+$6,364.03`
+(`+3.58%`), with unchanged trade count and survival. Max drawdown drift stayed
+bounded at `+0.62 pp`.
+
+Mechanism insight: broad 20-day relative-strength leadership is a real but
+small allocation edge when expressed as a modest shared sizing top-up, not as a
+new entry source or a large scalar. The stronger shared-policy variants were
+rejected: 1.25x improved aggregate EV more but pushed `mid_weak` drawdown from
+8.79% to 10.40%, and 1.50x pushed it to 11.80%.
+
+Do not repeat: nearby RS20 scalar sweeps, platform-RS20 threshold variants,
+missed-candidate RS20 sleeves, or platform no-gap same-sample retries on the
+same frozen windows. Future RS20 work needs forward attribution, concentration
+evidence, or an orthogonal event/news/state discriminator.
+
+### 2026-05-10 mechanism update: SEC / earnings filing-shock refreshed audit
+
+Status: data-gap, no-alpha-change.
+
+Core conclusion: `exp-20260510-002` rechecked the refreshed 2026-05-08 SEC
+event/text/feature files to see whether the filing-shock branch finally gained
+same-accession Companyfacts joins or directional shock fields that could grade
+`earnings_event_long` or confirm A/B candidates. It did not. The refreshed rows
+remain `D_unclear_or_missing_data`, so the bottleneck is still feature
+availability, not PIT timestamp coverage.
+
+Evidence: all three canonical core windows were intentionally carried forward
+unchanged (`late_strong EV 4.0674`, `mid_weak EV 1.6195`, `old_thin EV 0.3583`)
+because this was a pure data audit. Fresh SEC rows showed `0` same-accession
+feature joins, `0` EPS/revenue surprise rows, `0` guidance raise/cut rows, and
+`0` directional numeric filing-shock rows. Fresh 5/10/20/60-day outcomes are
+also not mature, so there is still no basis for a new replay.
+
+Mechanism insight: the SEC / earnings branch is blocked by directional event
+fields, not by accepted-at / usable-trade-date plumbing. Do not spend another
+loop on raw filing recency, C-sleeve re-enable, or Companyfacts score-weight
+tuning until same-accession financial surprise or guidance fields exist.
+
+Next valid step: build an accession-level join audit and directional field
+extraction for 8-K / 10-Q / 10-K rows, or ingest PIT-safe consensus/guidance
+data before retrying any filing-shock alpha search.
+
+### 2026-05-10 mechanism update: Event rotation-surface tilt adapter
+
+Status: accepted default-off paper adapter.
+
+Core conclusion: `exp-20260510-001` found that the
+`rotation_breakout_leadership` subset inside the default-off event bundle
+deserves a higher paper-notional tilt than other positive non-generic
+state-surface event rows. `exp-20260510-003` moved that exact lead into the
+shared production-visible default-off event bundle adapter without enabling
+live/default orders.
+
+Evidence: versus the prior 2.0x non-generic state-surface event add-on, the
+3.0x rotation-surface tilt improved EV in all three canonical windows:
+`late_strong +0.3094`, `mid_weak +0.2209`, and `old_thin +0.0064`. Aggregate
+event-paper EV improved `+0.5367` and PnL improved `+$7,987.90`. The canonical
+core no-drift check stayed unchanged after adapter implementation:
+`late_strong EV 4.0674`, `mid_weak EV 1.6195`, `old_thin EV 0.3583`.
+
+Mechanism insight: event-overlay alpha is currently best expressed as
+event-specific state-surface allocation, not broad benchmark gating, source
+pruning, or more core A/B threshold work. Rotation-breakout leadership is the
+first event-state subset strong enough to warrant a separate shared paper
+allocation annotation.
+
+Do not repeat: nearby 2.5x/3.0x/3.5x scalar sweeps, broader positive
+state-score tilts, broad event benchmark gates, or event-source pruning on this
+same frozen sample. The adapter now defines the exact forward paper hypothesis.
+
+Next valid step: collect closed forward replacement-value outcomes under this
+shared annotation. Live/default order routing remains blocked until the forward
+gate and explicit trade adapter pass.
+
+### 2026-05-10 mechanism update: Rotation event plus benchmark-gated state surface stack
+
+Status: promising replay-only paper stack.
+
+Core conclusion: `exp-20260510-005` revalidated the current paper stack after
+the rotation-surface event tilt became the new event-bundle baseline. Adding
+the frozen benchmark-momentum-gated state-surface satellite on top of the
+rotation-tilted event bundle remains strongly additive versus the current
+rotation-event baseline.
+
+Evidence: versus the rotation-event baseline, EV improved in all three
+canonical windows: `late_strong +0.9967`, `mid_weak +0.6846`, and
+`old_thin +0.3729`. Aggregate EV improved `+2.0542` (`+25.02%`) and aggregate
+PnL improved `+$39,729.22` (`+18.74%`). Versus core-only, the combined paper
+stack improved aggregate EV by `+4.2201` and PnL by `+$74,060.98`. The
+single-ticker positive PnL share was `29.84%`, inside the concentration guard.
+
+Mechanism insight: the best current paper alpha is not another local event
+scalar, state-score floor, source subset, or broad benchmark gate on the event
+bundle. It is the combination of two already-frozen default-off surfaces:
+event-specific rotation tilt plus benchmark-gated state-surface replacement
+value. The benchmark gate remains a state-surface participation rule, not an
+event-bundle gate.
+
+Do not repeat: nearby state-surface top-N/hold/notional retunes, benchmark
+threshold sweeps, event-source pruning, event state-score floor variants, or
+ungated sleeve stacking on this frozen sample. This stack should now be
+evaluated through forward paper replacement value rather than more same-sample
+parameter search.
+
+Next valid step: collect closed forward paper outcomes under the existing
+default-off event bundle and state-surface adapters. Live/default order routing
+still requires explicit shared trade adapters, parity tests, and a passed
+forward gate.
+
+### 2026-05-10 mechanism update: Low-deployment ETF overlay paper adapter
+
+Status: accepted default-off paper adapter.
+
+Core conclusion: `exp-20260510-007` is the strongest current non-LLM,
+non-retune alpha direction, so `exp-20260510-008` moved it into a
+production-visible paper attribution surface instead of retuning the same
+frozen sample. The overlay remains default-off and cannot submit orders.
+
+Evidence: the replay alpha from `exp-20260510-007` improved EV in all three
+canonical windows and improved aggregate EV by `+0.3141` (`+5.20%`) with PnL
+`+$10,376.82` (`+5.84%`). The adapter implementation kept the accepted core
+three-window metrics unchanged: `late_strong EV 4.0674`, `mid_weak EV 1.6195`,
+and `old_thin EV 0.3583`.
+
+Mechanism insight: when the A/B core is materially under-deployed, a tiny
+liquid ETF selector can be tracked as replacement-value alpha without adding
+noisy core tickers or consuming scarce stock slots. This is a candidate-pool /
+capital-allocation surface, not a broad universe expansion.
+
+Do not repeat: same-sample ETF notional, nearby momentum/SMA, or candidate-list
+retunes without forward paper outcomes. The next evidence must come from the
+shared production paper ledger with actual daily deployment and cash context.
+
+Next valid step: collect closed forward paper ETF overlay outcomes. Live/default
+order routing remains blocked until cash semantics, an explicit trade adapter,
+and run/backtest parity tests pass.
+
+### 2026-05-10 mechanism update: Breakout add-on upper bound
+
+Status: rejected upper bound.
+
+Core conclusion: `exp-20260510-004` tested the current top lifecycle-alpha
+question from the playbook: whether a state-specific follow-through add-on
+discriminator could unlock enough materiality without repeating raw heat-cap
+relaxation, generic entry reserve, same-day add-on ordering, second add-ons, or
+local trigger retunes. The tested discriminator was existing `breakout_long`
+positions that had already passed the accepted day-2 add-on checkpoint.
+
+Evidence: even under the optimistic upper-bound assumption that every unfilled
+requested breakout add-on share fills at the scheduled add-on price and exits
+with the parent trade, the three canonical windows did not clear Gate 4.
+Aggregate EV improved only `+0.3017` (`+4.99%`) and aggregate PnL improved
+`+$5,843.77` (`+3.29%`). Window EV improved in all three windows, but no single
+window passed Gate 4: `late_strong +0.2590` EV / `+$3,880.90`, `mid_weak
++0.0221` EV / `+$1,036.72`, and `old_thin +0.0206` EV / `+$926.15`.
+
+Mechanism insight: the remaining add-on materiality ceiling is real but too
+small even when measured with an optimistic breakout-specific fill assumption.
+This rules out building a shared production adapter for breakout add-on cap or
+heat relief from the current fixed-window evidence.
+
+Do not repeat: breakout-specific follow-through add-on cap, heat, or full-fill
+variants on the same accepted-stack windows without new forward evidence or an
+orthogonal event/news discriminator attached to the add-on decision.
+
+### 2026-05-10 mechanism update: Trend add-on upper bound
+
+Status: rejected upper bound.
+
+Core conclusion: `exp-20260510-009` tested the next lifecycle add-on cohort
+after the breakout-only upper bound failed: existing `trend_long` positions
+that had already passed the accepted day-2 add-on checkpoint. The test kept
+entry logic, add-on trigger thresholds, add-on fraction, position caps, global
+heat, exits, LLM/news, and universe membership locked.
+
+Evidence: even under the optimistic assumption that every unfilled trend
+add-on share fills at the scheduled add-on price and exits with the parent
+trade, the three canonical windows did not clear Gate 4. Aggregate EV improved
+only `+0.0796` (`+1.32%`) and aggregate PnL improved only `+$2,144.24`
+(`+1.21%`). EV improved slightly in all three windows, but no window passed a
+per-window Gate 4 test: `late_strong +0.0359` EV / `+$597.57`, `mid_weak
++0.0120` EV / `+$219.72`, and `old_thin +0.0317` EV / `+$1,326.95`.
+
+Mechanism insight: the add-on materiality ceiling is not unlocked by switching
+the extra budget from breakout follow-through to trend follow-through. The
+remaining add-on alpha is too small without a genuinely new event/news,
+replacement-value, or capital-routing discriminator.
+
+Do not repeat: trend-only follow-through add-on cap, heat, reserve, or
+full-fill variants on the same accepted-stack windows without new forward
+evidence or an orthogonal event/news discriminator attached to the add-on
+decision.
+
+### 2026-05-09 mechanism update: Event-bundle benchmark momentum gate
+
+Status: rejected.
+
+Core conclusion: `exp-20260509-024` tested whether the broad benchmark
+momentum gate that helped the separate state-surface satellite should also gate
+the frozen event-bundle overlay. It should not. The gate preserved positive
+edge versus core, but regressed the stronger full event bundle in all three
+canonical windows because the blocked event trades were net winners.
+
+Evidence: versus full event bundle, gated EV fell `7.0539 -> 6.7882`
+(`-0.2657`, `-3.77%`) and PnL fell `$193,980.77 -> $190,205.06`
+(`-$3,775.71`, `-1.95%`). Window EV deltas were `late_strong -0.2350`,
+`mid_weak -0.0251`, and `old_thin -0.0056`; blocked trade PnL was positive in
+all three windows.
+
+Mechanism insight: event-bundle alpha is not simply a broad-risk-on satellite.
+The broad tape gate that controls state-surface risk removes useful event
+trades when applied to the SEC/event overlay family.
+
+Do not repeat: direct `max(SPY, QQQ) 20d return > 0` participation gates on the
+frozen event bundle, or simple benchmark-state migrations from state-surface to
+event overlays, unless new event-specific forward replacement-value evidence
+shows blocked trades have become negative.
+
+Next valid retry requires: event-specific source/structure evidence or closed
+forward paper replacement value, not another broad benchmark tape filter.
+
+### 2026-05-09 mechanism update: State-surface self-leadership exception
+
+Status: rejected.
+
+Core conclusion: `exp-20260509-025` tested whether the current state-surface
+benchmark-momentum gate should allow a blocked candidate when that candidate's
+own 20-day return is positive and above `max(SPY, QQQ)` 20-day return. It
+should not. The exception recovered some old-window exposure, but it damaged
+the stronger `exp-20260509-014` benchmark-gated stack and reopened the
+late-window risk that the benchmark gate had fixed.
+
+Evidence: versus `exp-20260509-014`, aggregate EV fell `9.7092 -> 9.0506`
+(`-0.6586`, `-6.78%`) and PnL fell `$243,750.01 -> $239,883.43`
+(`-$3,866.58`, `-1.59%`). Window EV deltas were `late_strong -0.7886`,
+`mid_weak +0.0000`, and `old_thin +0.1300`; late Sharpe fell `-0.36` and late
+drawdown worsened `+0.71 pp`.
+
+Mechanism insight: candidate-level short-term self-leadership is too blunt as
+an exception to the state-surface benchmark gate. It mostly re-admits high-beta
+late-window exposure rather than selectively rescuing the early leaders the
+state-surface sleeve is meant to find.
+
+Do not repeat: state-surface self-leadership exceptions, nearby ticker-vs-SPY
+or ticker-vs-QQQ 20-day relative-return exceptions, or relative-return rescue
+thresholds on this same frozen state-surface sample.
+
+Next valid retry requires: a genuinely orthogonal event/news/lifecycle
+discriminator or closed forward paper replacement-value evidence showing that
+blocked candidates under the exact benchmark gate have become positive.
+
+### 2026-05-09 mechanism update: Post-news continuation PEAD entry
+
+Status: rejected positive but immaterial.
+
+Core conclusion: `exp-20260509-020` tested a shadow-only PEAD-like entry pattern:
+high-confidence `8k_item_2_02` earnings/results event, event-day close-to-close
+reaction above `+1%`, event-day volume at least `1.5x` the prior 20-day average,
+enter next open, and exit on the 10th trading day after the event. The pattern
+was directionally positive, but not strong enough to justify a shared adapter or
+production work.
+
+Evidence: aggregate EV rose `6.0452 -> 6.2932` (`+0.2480`, `+4.10%`) and PnL
+rose `$177,676.93 -> $185,806.72` (`+$8,129.79`, `+4.58%`). That missed Gate 4
+materiality. Window EV deltas were `late_strong -0.0508`, `mid_weak +0.2408`,
+and `old_thin +0.0580`; PnL was positive in all three windows, but late EV
+regressed and aggregate PnL stayed below the `+5%` threshold.
+
+Mechanism insight: price/volume-confirmed earnings-news continuation is real
+enough to monitor, but it behaves like a mid/old-window repair sleeve rather
+than a robust improvement over the accepted core stack. In the strongest
+late-window tape, the same pattern adds trades while diluting quality.
+
+Do not repeat: nearby PEAD thresholds around `+1%` event reaction, `1.5x`
+volume confirmation, or 10-day event holds on this same sample.
+
+Next valid retry requires: fresh forward paper outcomes or an orthogonal
+semantic earnings-quality field, not another price/volume threshold variant.
 
 Current alpha lead on top of that stack: `exp-20260509-006` confirmed the
 frozen default-off event bundle as the strongest paper-only candidate-pool
@@ -5383,6 +5680,10 @@ why those names should win scarce slots against the accepted core universe.
 
 - `exp-20260505-011` (rejected): Narrow consumer digital platform sub-basket `HOOD, RBLX, SOFI` was replayed after the broad historical-watchlist expansion failed. Aggregate EV delta 0.0557 (1.09%), PnL delta $8024.56. Do not promote directly to the core universe; a valid next step is universe-governance or default-off pilot treatment with forward replacement-value attribution.
 
+- `exp-20260510-012` (accepted): RS20 entry-state shared sizing promoted the replay-only `exp-20260510-010` lead into shared `risk_engine.py` / `portfolio_engine.py` policy. The accepted 1.10x cap-aware post-sizing top-up improved aggregate EV `+0.2259` (`+3.74%`) and PnL `+$6,364.03` (`+3.58%`) with 3/3 EV-positive windows, unchanged trade count, unchanged survival, and max drawdown worsening capped at `+0.62 pp`. Stronger 1.25x and 1.50x variants were rejected for mid-window drawdown. Do not retry nearby RS20 scalars without forward attribution or a new discriminator.
+
+- `exp-20260510-011` (rejected): Single-name AI connectivity candidate `MRVL` was replayed as the narrowest possible follow-up to the broad attention-list failure, using the three fixed windows and the existing `exp-20260505-009` fresh OHLCV snapshots because canonical snapshots do not contain MRVL. Aggregate EV delta was `-0.1356` (`-2.28%`) and PnL delta was `$-1,499.77`, with all three windows regressing despite `5` MRVL trades adding `$789.88` standalone PnL. Do not retry MRVL-only static universe promotion; any valid AI-infra candidate-pool retry needs point-in-time selection or live pilot replacement-value evidence.
+
 
 - `exp-20260505-010` (rejected): Form 4 sale-pressure de-risk was tested on the three canonical windows. Best `sale_pressure_0_25x` aggregate EV delta -0.1203 (-2.32%), PnL delta $-8321.39. Do not retry simple sale-pressure veto/de-risk variants without a larger touched cohort or a new discriminator such as cluster selling, CEO/CFO-only selling, or adverse post-sale price reaction.
 
@@ -6474,3 +6775,34 @@ Do not repeat: benchmark threshold tuning, core-equity momentum confirmation,
 or live-order promotion from replay-only evidence. A valid next step is forward
 paper attribution on this exact shared gate, or a separate alpha source that
 does not depend on the state-surface data bottleneck.
+
+### 2026-05-10 mechanism update: TRIP sector taxonomy
+
+Experiment: `exp-20260510-015`
+
+Decision: `accepted_shared_policy_small`.
+
+Finding: TRIP was falling through shared sector enrichment as `Unknown`. Mapping
+it to Consumer Discretionary improved aggregate EV from `6.2711` to `6.2882`
+(`+0.0171`, `+0.27%`) and aggregate PnL from `$184,040.96` to `$184,444.42`
+(`+$403.46`, `+0.22%`) across the three canonical windows. Trade count,
+signals generated, and signals survived were unchanged; max drawdown did not
+worsen, and `old_thin` drawdown improved by `1.00 pp`.
+
+History check: this deliberately revisits the rejected `exp-20260501-018`
+TRIP mapping only because the rejection's retry condition is now satisfied.
+That older stack showed no metric movement. The current accepted stack has
+shared sector-dispersion enrichment / allocation behavior that consumes sector
+metadata, and the new artifact records `12` changed existing trades.
+
+Mechanism insight: real taxonomy gaps can leak alpha through shared
+sector-aware allocation and sector-dispersion enrichment even when no new
+threshold or ticker is added. The effect is small and valid only because the
+classification is production-real and the policy is shared by production and
+backtest paths.
+
+Do not repeat: single-ticker sector-label mining, especially from losing trades,
+on the same frozen samples. A valid taxonomy follow-up must start from a real
+production universe classification gap and pass the same three-window
+no-regression check. Any new sector-aware allocation rule remains a separate
+single-variable alpha experiment.

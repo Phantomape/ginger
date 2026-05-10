@@ -1,0 +1,223 @@
+{
+  "experiment_id": "exp-20260510-008",
+  "timestamp": "2026-05-10T10:20:12.9798387Z",
+  "lane": "alpha_search",
+  "status": "accepted_default_off_paper_adapter",
+  "decision": "accepted_default_off_paper_adapter",
+  "hypothesis": "The low-deployment dynamic ETF overlay is the strongest current non-LLM, non-retune alpha direction; making it production-visible as paper-only attribution will collect forward replacement-value evidence without changing orders.",
+  "alpha_hypothesis": {
+    "category": "capital_allocation/candidate_pool_extension",
+    "playbook_alignment": "Continues exp-20260510-007, avoids blocked LLM soft-ranking and SEC filing-shock data gaps, and does not add noisy core tickers or retune exhausted A/B/event thresholds."
+  },
+  "historical_experiment_check": {
+    "exp-20260510-007": "Promising replay-only low-deployment dynamic ETF overlay improved EV in all three canonical windows with aggregate EV +0.3141 and PnL +$10376.82.",
+    "exp-20260510-006": "Zero-position QQQ overlay was positive but too narrow; exp-007 generalized it to a tiny liquid ETF selector.",
+    "blocked_routes": "LLM soft-ranking remains sample-limited, SEC filing-shock lacks directional joined fields, and local event/state retunes are already exhausted on this sample."
+  },
+  "single_causal_variable": "Add a default-off production paper attribution adapter for the already-tested low-deployment dynamic ETF overlay; no live/default orders, core signals, ranking, sizing, exits, filters, add-ons, LLM, or universe membership change.",
+  "change_type": "default_off_low_deployment_etf_overlay_paper_adapter",
+  "changed_variable": "production-visible paper ledger/report surface for low-deployment dynamic ETF overlay",
+  "parameters": {
+    "candidate_tickers": ["QQQ", "SPY", "IWM", "GLD", "SLV"],
+    "max_active_core_positions": 1,
+    "momentum_days": 20,
+    "sma_days": 200,
+    "selector": "highest prior-close 20-day momentum among candidates with prior close above prior 200-day SMA and positive prior 20-day momentum",
+    "trade_enabled": false,
+    "alters_orders": false
+  },
+  "date_range": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "backtest_protocol": "backtesting.md canonical three-window no-drift check after adapter implementation",
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 4.0674,
+      "strategy_total_return_pct": 0.9079,
+      "sharpe_daily": 4.48,
+      "max_drawdown_pct": 0.0539,
+      "total_pnl": 90788.88,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "worst_trade_pct": -0.0607,
+      "max_consecutive_losses": 2,
+      "tail_loss_share": 0.5154
+    },
+    "mid_weak": {
+      "expected_value_score": 1.6195,
+      "strategy_total_return_pct": 0.5954,
+      "sharpe_daily": 2.72,
+      "max_drawdown_pct": 0.0879,
+      "total_pnl": 59540.63,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "worst_trade_pct": -0.0897,
+      "max_consecutive_losses": 6,
+      "tail_loss_share": 0.4744
+    },
+    "old_thin": {
+      "expected_value_score": 0.3583,
+      "strategy_total_return_pct": 0.2735,
+      "sharpe_daily": 1.31,
+      "max_drawdown_pct": 0.0903,
+      "total_pnl": 27347.42,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "worst_trade_pct": -0.0635,
+      "max_consecutive_losses": 4,
+      "tail_loss_share": 0.4726
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 4.0674,
+      "strategy_total_return_pct": 0.9079,
+      "sharpe_daily": 4.48,
+      "max_drawdown_pct": 0.0539,
+      "total_pnl": 90788.88,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "worst_trade_pct": -0.0607,
+      "max_consecutive_losses": 2,
+      "tail_loss_share": 0.5154
+    },
+    "mid_weak": {
+      "expected_value_score": 1.6195,
+      "strategy_total_return_pct": 0.5954,
+      "sharpe_daily": 2.72,
+      "max_drawdown_pct": 0.0879,
+      "total_pnl": 59540.63,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "worst_trade_pct": -0.0897,
+      "max_consecutive_losses": 6,
+      "tail_loss_share": 0.4744
+    },
+    "old_thin": {
+      "expected_value_score": 0.3583,
+      "strategy_total_return_pct": 0.2735,
+      "sharpe_daily": 1.31,
+      "max_drawdown_pct": 0.0903,
+      "total_pnl": 27347.42,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "worst_trade_pct": -0.0635,
+      "max_consecutive_losses": 4,
+      "tail_loss_share": 0.4726
+    }
+  },
+  "expected_value_score_delta": 0.0,
+  "gate1": {
+    "baseline_source": "backtesting.md accepted canonical metrics confirmed by direct three-window rerun",
+    "baseline_available": true
+  },
+  "gate2_field_audit": {
+    "path": "operator_inputs/open_positions.json",
+    "exists": true,
+    "position_rows_checked": 13,
+    "all_positions_have_entry_date": true,
+    "all_positions_have_target_price": true,
+    "cash_usd_populated": false,
+    "cash_usd_note": "Cash is not populated, so the adapter remains paper-only and does not size or submit live ETF orders."
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "survival_rates": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.9167
+    },
+    "note": "No entry filter or candidate filter was added; core survival is unchanged."
+  },
+  "gate4": {
+    "core_no_drift": true,
+    "basis": "Three canonical backtesting.md windows using unchanged snapshots after implementing the default-off production paper adapter.",
+    "decision_rule": "Adapter can be accepted only if core metrics stay unchanged and the surface does not alter orders; live promotion remains blocked until forward paper outcomes and cash semantics pass.",
+    "passed": true
+  },
+  "replay_evidence_from_exp_20260510_007": {
+    "aggregate_expected_value_score_delta": 0.3141,
+    "aggregate_expected_value_score_delta_pct": 0.051959,
+    "aggregate_total_pnl_delta": 10376.82,
+    "aggregate_total_pnl_delta_pct": 0.058403,
+    "windows_ev_improved": 3,
+    "windows_pnl_improved": 3,
+    "single_ticker_positive_share": 0.5024,
+    "max_drawdown_delta_max": 0.0037
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "shared_policy_note": "New shared paper attribution module only; core trading policy is unchanged.",
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false
+  },
+  "related_files": [
+    "quant/low_deployment_etf_overlay.py",
+    "quant/test_low_deployment_etf_overlay.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "docs/production_backtest_parity.md",
+    "docs/experiments/logs/exp-20260510-008.json",
+    "docs/experiments/artifacts/exp-20260510-008_low_deployment_etf_overlay_paper_adapter.md",
+    "docs/experiments/tickets/exp-20260510-008.json",
+    "docs/experiment_log.jsonl"
+  ],
+  "validation": {
+    "tests": [
+      ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_low_deployment_etf_overlay.py -q -> 3 passed",
+      ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_low_deployment_etf_overlay.py quant\\test_event_sleeve_bundle.py quant\\test_state_surface_sleeve.py quant\\test_platform_rs20_watch.py quant\\test_sec_10k_forward_watch.py -q -> 26 passed",
+      ".\\.venv\\Scripts\\python.exe -B -c ast.parse touched runtime files -> ast-ok"
+    ],
+    "backtests": [
+      "late_strong 2025-10-23..2026-04-21 snapshot data\\ohlcv_snapshot_20251023_20260421.json -> EV 4.0674, PnL 90788.88, survival 0.8039, converged 8/8",
+      "mid_weak 2025-04-23..2025-10-22 snapshot data\\ohlcv_snapshot_20250423_20251022.json -> EV 1.6195, PnL 59540.63, survival 0.7925, converged 8/8",
+      "old_thin 2024-10-02..2025-04-22 snapshot data\\ohlcv_snapshot_20241002_20250422.json -> EV 0.3583, PnL 27347.42, survival 0.9167, converged 8/8"
+    ]
+  },
+  "commit_status": {
+    "required_commit_attempted": true,
+    "committed": false,
+    "failure": "Git filesystem permissions prevented commit: normal index failed to create .git/index.lock; alternate index failed to write new index file."
+  },
+  "rejection_reason": null,
+  "next_evidence_needed": "Collect closed forward paper ETF overlay outcomes with same-day cash/deployment context. Do not enable live/default ETF overlay orders until cash semantics, explicit trade adapter, and run/backtest parity tests pass.",
+  "decision_rationale": "Accepted as a default-off production-visible paper adapter. The prior replay showed material three-window replacement value, and this implementation creates the forward audit surface without changing the accepted core backtest or production order path."
+}
