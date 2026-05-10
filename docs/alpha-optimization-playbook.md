@@ -6806,3 +6806,41 @@ on the same frozen samples. A valid taxonomy follow-up must start from a real
 production universe classification gap and pass the same three-window
 no-regression check. Any new sector-aware allocation rule remains a separate
 single-variable alpha experiment.
+
+### 2026-05-10 mechanism update: Effective slot accounting scout
+
+Experiment: `exp-20260510-018`
+
+Decision: `rejected`.
+
+Finding: raw slot scarcity is a real execution bottleneck, but the historical
+replacement-value evidence is not clean enough to justify changing core slot
+accounting yet. The tested single variable was observed-only fixed-notional
+20-trading-day replacement value for candidates that already survived the
+current entry path but were blocked by `slot_sliced` or
+`scarce_slot_breakout_deferred`. Global `MAX_POSITIONS`, heat, sizing, ranking,
+signals, exits, LLM/news, add-ons, and production orders stayed unchanged.
+
+All slot-missed rows: count `25`, PnL
+`$8330.63`, win rate `0.4`, positive windows
+`1`, single-ticker positive share
+`0.4652`. First missed row per day:
+count `16`, PnL `$6934.96`. Pure one-extra
+slot rows (`slot_sliced` only): count `6`, PnL
+`$2568.43`. Breakout rows that require effective slots above
+the one-slot defer threshold: count `10`, PnL
+`$4366.53`.
+
+Mechanism insight: the user's 2026-05-08 MU case is structurally important
+because heat allowed new risk while raw slot count blocked the core entry plan.
+However, because `DEFER_BREAKOUT_WHEN_SLOTS_LTE=1` is active, a breakout does
+not become executable merely by creating one nominal slot; the effective slot
+accounting policy would need to release enough capacity for `available_slots >
+1` or explicitly change scarce-slot breakout routing, which is a separate
+causal variable.
+
+Do not repeat: global `MAX_POSITIONS` sweeps, simple sixth-slot gates, or
+nearby scarce-slot threshold retunes. A valid retry needs a shared effective
+slot accounting design that is exposure/risk based, production-visible in
+`run.py`, and evaluated by full portfolio replay with drawdown and tail-risk
+impact.
