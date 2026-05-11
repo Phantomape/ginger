@@ -7196,3 +7196,13 @@ Decision: `accepted_default_off_forward_hypothesis`.
 Finding: the locked official-catalyst Space subpool becomes a positive default-off forward hypothesis when carried at `0.75x` risk. Aggregate EV improved `+1.5598` and aggregate PnL improved `$32,256.34`; EV improved in all three windows and max drawdown damage was `1.97%`.
 
 Mechanism insight: optimize Space around a bounded official-catalyst specialist sleeve, not broad static promotion, mature satcom breadth, adjacent ticker mining, or attention-only/LLM headline ranking. The production path should collect forward outcomes under this exact `0.75x` default-off hypothesis before any live slot promotion.
+
+### 2026-05-11 mechanism update: Space official-catalyst strategy family
+
+Experiment: `exp-20260511-012`
+
+Decision: `rejected_trend_only_refinement`.
+
+Finding: filtering the accepted official-catalyst Space sleeve to `trend_long` only changed the accepted 0.75x forward hypothesis by aggregate EV `-0.3072` and PnL `$-1,909.20` versus exp-20260511-011.
+
+Mechanism insight: strategy-family labels are not enough by themselves to override the accepted Space official-catalyst 0.75x sleeve. Future refinement needs a more specific ex-ante discriminator or forward replacement-value evidence by strategy family.
