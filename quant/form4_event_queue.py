@@ -184,11 +184,22 @@ def build_form4_event_queue(
     source_path: str | Path | None = None,
     source_status: str = "loaded",
 ) -> dict[str, Any]:
+    same_day_events = [
+        event for event in events
+        if str(event.get("usable_trade_date") or "")[:10] == as_of
+    ]
+    meaningful_purchase_events = [
+        event for event in same_day_events
+        if qualifies_meaningful_purchase(event)
+    ]
+    below_forward_threshold_events = [
+        event for event in meaningful_purchase_events
+        if not qualifies_forward_queue_event(event)
+    ]
     candidates = [
         _candidate_payload(event, core_signals=core_signals)
-        for event in events
-        if str(event.get("usable_trade_date") or "")[:10] == as_of
-        and qualifies_forward_queue_event(event)
+        for event in same_day_events
+        if qualifies_forward_queue_event(event)
     ]
     return {
         "queue_name": QUEUE_NAME,
@@ -206,6 +217,19 @@ def build_form4_event_queue(
             "base_meaningful_purchase_min_total_value": BASE_MEANINGFUL_PURCHASE_VALUE,
             "forward_queue_min_total_purchase_value": FORWARD_QUEUE_MIN_PURCHASE_VALUE,
             "primary_horizon_trading_days": PRIMARY_HORIZON_TRADING_DAYS,
+        },
+        "shadow_attribution": {
+            "base_meaningful_purchase_event_count": len(meaningful_purchase_events),
+            "below_forward_threshold_event_count": len(below_forward_threshold_events),
+            "forward_queue_candidate_count": len(candidates),
+            "below_forward_threshold_events": [
+                _shadow_event_payload(event)
+                for event in sorted(
+                    below_forward_threshold_events,
+                    key=lambda row: _float_or_zero(row.get("total_purchase_value")),
+                    reverse=True,
+                )
+            ],
         },
         "production_impact": {
             "alters_signal_generation": False,
@@ -276,6 +300,31 @@ def _candidate_payload(
         "trade_enabled": False,
         "action": "observe_only",
         "counterfactual": _counterfactual_payload(core_signals or []),
+    }
+
+
+def _shadow_event_payload(event: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ticker": event.get("ticker"),
+        "usable_trade_date": event.get("usable_trade_date"),
+        "total_purchase_value": event.get("total_purchase_value"),
+        "purchase_transaction_count": event.get("purchase_transaction_count"),
+        "filing_count": event.get("filing_count"),
+        "owner_count": event.get("owner_count"),
+        "sample_owner_names": event.get("sample_owner_names") or [],
+        "sample_officer_titles": event.get("sample_officer_titles") or [],
+        "accessions": event.get("accessions") or [],
+        "sample_archive_urls": event.get("sample_archive_urls") or [],
+        "event_flags": {
+            "meaningful_purchase_v1": event.get("meaningful_purchase_v1"),
+            "form4_forward_queue_candidate": event.get("form4_forward_queue_candidate"),
+            "any_ceo_cfo_or_president": event.get("any_ceo_cfo_or_president"),
+            "any_officer": event.get("any_officer"),
+            "any_director": event.get("any_director"),
+            "any_10pct_owner": event.get("any_10pct_owner"),
+        },
+        "trade_enabled": False,
+        "action": "observe_only_below_forward_threshold",
     }
 
 

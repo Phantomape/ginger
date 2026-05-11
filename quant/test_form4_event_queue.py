@@ -78,6 +78,25 @@ def test_build_form4_event_queue_is_default_off_and_same_day_only():
     assert alternatives[1]["type"] == "cash"
 
 
+def test_build_form4_event_queue_tracks_below_threshold_meaningful_purchases():
+    events = aggregate_purchase_events([
+        _row(transaction_value=219_000.0, ticker="CAT", usable_trade_date="2026-05-04"),
+        _row(transaction_value=600_000.0, ticker="INTC", usable_trade_date="2026-05-04"),
+    ])
+    queue = build_form4_event_queue(events, as_of="2026-05-04")
+
+    assert queue["candidate_count"] == 1
+    assert queue["shadow_attribution"]["base_meaningful_purchase_event_count"] == 2
+    assert queue["shadow_attribution"]["below_forward_threshold_event_count"] == 1
+    assert queue["shadow_attribution"]["forward_queue_candidate_count"] == 1
+    shadow = queue["shadow_attribution"]["below_forward_threshold_events"][0]
+    assert shadow["ticker"] == "CAT"
+    assert shadow["total_purchase_value"] == 219_000.0
+    assert shadow["event_flags"]["meaningful_purchase_v1"] is True
+    assert shadow["event_flags"]["form4_forward_queue_candidate"] is False
+    assert shadow["trade_enabled"] is False
+
+
 def test_build_forward_queue_from_transactions_handles_missing_source(tmp_path: Path):
     queue = build_forward_queue_from_transactions(
         data_dir=tmp_path,
