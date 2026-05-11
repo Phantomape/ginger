@@ -261,3 +261,18 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Wider targets for official-catalyst Space trend entries improved the accepted default-off Space stack. Promotion must remain default-off metadata/helper only because live Space slots are zero.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260511-032\space_trend_target_extension.json`
+
+
+## exp-20260511-037 Space breakout target extension
+
+- timestamp: 2026-05-11T18:07:37+00:00
+- lane: alpha_search
+- decision: rejected_space_breakout_target_extension
+- changed_variable: space_official_breakout_target_atr_mult
+- best_space_breakout_target_atr_mult: 6.0
+- expected_value_score_delta_vs_before: 0.0179
+- before_aggregate: {'expected_value_score_sum': 8.956, 'total_pnl_sum': 237013.66, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 8.9739, 'total_pnl_sum': 237817.62, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- interpretation: Space breakout convexity is not the next supported same-sample refinement. Keep the accepted trend target extension, PL/BKSY breakout haircut, and RKLB/ASTS trend top-up unchanged.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-037\space_breakout_target_extension.json`

@@ -7404,3 +7404,13 @@ Mechanism insight: remaining PL/RDW-style trend continuation is a forward attrib
 - Aggregate EV delta vs exp031 stack: `0.4081`.
 - Interpretation: Wider targets for official-catalyst Space trend entries improved the accepted default-off Space stack. Promotion must remain default-off metadata/helper only because live Space slots are zero.
 - Anti-repeat: do not retry nearby Space trend target widths on the same frozen windows without forward Space trend replacement-value evidence.
+
+
+### exp-20260511-037 Space breakout target extension
+
+- Decision: rejected_space_breakout_target_extension.
+- Tested variable: `space_official_breakout_target_atr_mult` on top of the accepted exp032 Space stack.
+- Best breakout target ATR multiple: `6.0`.
+- Aggregate EV delta vs exp032 stack: `0.0179`.
+- Interpretation: Space breakout convexity is not the next supported same-sample refinement. Keep the accepted trend target extension, PL/BKSY breakout haircut, and RKLB/ASTS trend top-up unchanged.
+- Anti-repeat: do not retry nearby Space breakout target widths on the same frozen windows without forward Space breakout replacement-value evidence.
