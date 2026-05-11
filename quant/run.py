@@ -188,8 +188,12 @@ def main():
         empty_low_deployment_etf_overlay_snapshot,
     )
     from space_catalyst_sleeve import (
+        build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_shadow_snapshot,
+        empty_space_catalyst_event_ledger,
         empty_space_catalyst_shadow_snapshot,
+        persist_space_catalyst_event_ledger,
+        space_catalyst_event_tickers,
     )
     from pilot_sleeve       import (
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
@@ -224,6 +228,7 @@ def main():
     pilot_metadata = {}
     universe_governance_state = None
     space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(today_iso)
+    space_catalyst_event_ledger = empty_space_catalyst_event_ledger(today_iso)
     try:
         universe_governance_state = universe_segments_as_of(
             today_iso,
@@ -916,6 +921,51 @@ def main():
             pilot_attribution.get("pending_replacement_outcomes"),
         )
 
+    try:
+        space_event_ohlcv = {}
+        for ticker in space_catalyst_event_tickers(
+            today_iso,
+            space_catalyst_shadow=space_catalyst_shadow,
+        ):
+            if ticker in ohlcv_dict:
+                space_event_ohlcv[ticker] = ohlcv_dict[ticker]
+                continue
+            if ticker == "SPY" and spy_ohlcv is not None:
+                space_event_ohlcv[ticker] = spy_ohlcv
+                continue
+            try:
+                space_event_ohlcv[ticker] = get_ohlcv(ticker)
+            except Exception as ticker_error:
+                log.warning(
+                    "Space catalyst event OHLCV unavailable for %s: %s",
+                    ticker,
+                    ticker_error,
+                )
+        space_catalyst_event_ledger = persist_space_catalyst_event_ledger(
+            build_space_catalyst_event_ledger_snapshot(
+                as_of=today_iso,
+                ohlcv_by_ticker=space_event_ohlcv,
+                space_catalyst_shadow=space_catalyst_shadow,
+                core_signals=signals,
+                entry_execution_plan=entry_execution_plan,
+            )
+        )
+        if space_catalyst_event_ledger.get("active_event_count", 0) > 0:
+            persistence = space_catalyst_event_ledger.get("persistence") or {}
+            log.info(
+                "Space catalyst event ledger: events=%d rows=%d closed_10d=%d appended=%d",
+                space_catalyst_event_ledger.get("active_event_count", 0),
+                space_catalyst_event_ledger.get("event_row_count", 0),
+                space_catalyst_event_ledger.get("closed_decision_count", 0),
+                persistence.get("appended_count", 0),
+            )
+    except Exception as e:
+        log.warning(f"Space catalyst event ledger unavailable: {e}")
+        space_catalyst_event_ledger = empty_space_catalyst_event_ledger(
+            today_iso,
+            "space_catalyst_event_ledger_build_failed",
+        )
+
     non_ohlcv_paths = non_ohlcv_snapshot.get("paths") or {}
 
     try:
@@ -1303,6 +1353,7 @@ def main():
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
     trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
+    trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
     trend_signals_dict["platform_rs20_watch"] = platform_rs20_watch
     trend_signals_dict["sec_10k_forward_watch"] = sec_10k_forward_watch
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
@@ -1336,6 +1387,7 @@ def main():
         state_surface_sleeve = state_surface_sleeve,
         low_deployment_etf_overlay = low_deployment_etf_overlay,
         space_catalyst_shadow = space_catalyst_shadow,
+        space_catalyst_event_ledger = space_catalyst_event_ledger,
         platform_rs20_watch = platform_rs20_watch,
         sec_10k_forward_watch = sec_10k_forward_watch,
         non_ohlcv_snapshot = non_ohlcv_snapshot,
@@ -1375,6 +1427,7 @@ def main():
         "state_surface_sleeve": state_surface_sleeve,
         "low_deployment_etf_overlay": low_deployment_etf_overlay,
         "space_catalyst_shadow": space_catalyst_shadow,
+        "space_catalyst_event_ledger": space_catalyst_event_ledger,
         "platform_rs20_watch": platform_rs20_watch,
         "sec_10k_forward_watch": sec_10k_forward_watch,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,
