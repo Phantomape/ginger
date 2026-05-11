@@ -165,3 +165,16 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space alpha should stay focused on the official-catalyst operating sleeve and the already accepted PL/BKSY and RKLB/ASTS risk refinements. Mature-satcom breadth is not strong enough to add without a future PIT event trigger.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260511-026\space_satcom_breadth_low_risk.json`
+## exp-20260511-028 Space launch/connectivity breakout risk
+
+- timestamp: 2026-05-11T15:17:38+00:00
+- lane: alpha_search
+- decision: rejected_launch_connectivity_breakout_risk_haircut
+- changed_variable: space_launch_connectivity_breakout_risk_scalar
+- best_launch_connectivity_breakout_scalar: 0.25
+- expected_value_score_delta_vs_before: 0.2184
+- before_aggregate: {'expected_value_score_sum': 8.4907, 'total_pnl_sum': 227137.08, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 8.7091, 'total_pnl_sum': 227092.33, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1016}
+- interpretation: The RKLB/ASTS trend top-up remains the supported launch/connectivity refinement. Do not add a separate breakout haircut for RKLB/ASTS on this frozen replay sample.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-028\space_launch_connectivity_breakout_risk.json`

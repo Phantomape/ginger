@@ -7324,3 +7324,11 @@ Mechanism insight: remaining PL/RDW-style trend continuation is a forward attrib
 - Aggregate EV delta vs exp021 stack: `0.9043`.
 - Interpretation: Space alpha should stay focused on the official-catalyst operating sleeve and the already accepted PL/BKSY and RKLB/ASTS risk refinements. Mature-satcom breadth is not strong enough to add without a future PIT event trigger.
 - Do not retry mature-satcom breadth without PIT official event-state evidence or forward shadow-ledger support.
+### exp-20260511-028 Space launch/connectivity breakout risk
+
+- Decision: rejected_launch_connectivity_breakout_risk_haircut.
+- Tested variable: `space_launch_connectivity_breakout_risk_scalar` for RKLB/ASTS `breakout_long`.
+- Best scalar: `0.25`.
+- Aggregate EV delta vs exp021 stack: `0.2184`.
+- Interpretation: The RKLB/ASTS trend top-up remains the supported launch/connectivity refinement. Do not add a separate breakout haircut for RKLB/ASTS on this frozen replay sample.
+- Keep launch/connectivity trend and breakout cohorts separate; current evidence supports the RKLB/ASTS trend top-up, not a separate RKLB/ASTS breakout haircut.
