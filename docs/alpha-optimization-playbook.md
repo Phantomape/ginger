@@ -1,4 +1,4 @@
-﻿# Alpha Optimization Playbook
+# Alpha Optimization Playbook
 
 ## 鏂囨。鑱岃矗
 
@@ -7216,3 +7216,50 @@ Decision: `rejected_replay_only`.
 Finding: broadening the relative-TQS same-day same-sector follower haircut from the risk-on-only scout to all core A/B entries produced aggregate EV `+0.0740`, but aggregate PnL `$-529.66`; only `late_strong` improved, `mid_weak` was unchanged, and `old_thin` regressed by EV `-0.0404` / PnL `$-2,011.30`.
 
 Mechanism insight: same-day same-sector relative-TQS follower weakness is not a stable all-core risk-allocation alpha on the frozen three-window sample. Do not repeat nearby all-core TQS follower haircuts without forward cluster-quality evidence or a different orthogonal discriminator.
+
+### 2026-05-11 mechanism update: Space breakout risk-distance gate
+
+Experiment: `exp-20260511-015`
+
+Decision: `rejected_breakout_risk_distance_refinement`.
+
+Finding: capping Space official-catalyst `breakout_long` entry-to-stop risk distance changed the accepted 0.75x forward hypothesis by aggregate EV `+0.0000` and PnL `$+0.00` at the best tested cap `10%`.
+
+Mechanism insight: Space breakout risk needs a more precise ex-ante quality discriminator than strategy-family labels. Do not repeat all-breakout removal; future Space refinement should use forward catalyst quality or risk-distance bucket evidence.
+
+### Space Add-On Refinement Guardrail
+
+Latest Space add-on refinement: `exp-20260511-014`: a blanket no-add-on lifecycle for the accepted 0.75x official-catalyst Space sleeve is not enough evidence to replace `exp-20260511-011`. Future Space lifecycle work needs a more precise ex-ante discriminator, not a global add-on ban.
+
+### 2026-05-11 mechanism update: Space RS20 leader refinement
+
+Experiment: `exp-20260511-016`
+
+Decision: `rejected_rs20_leader_refinement`.
+
+Finding: requiring the accepted shared `rs20_entry_state_leader` flag inside the accepted Space official-catalyst 0.75x sleeve changed the forward hypothesis by aggregate EV `+0.0000` and PnL `$+0.00` versus exp-20260511-011.
+
+Mechanism insight: do not retune RS20 thresholds or scalars on the frozen Space sleeve. Treat RS20 as a forward attribution bucket for official catalysts unless this exact deterministic gate passes and is implemented as shared production-visible policy.
+
+### 2026-05-11 mechanism update: broad-rotation breakout risk
+
+Experiment: `exp-20260511-017`
+
+Decision: `rejected`.
+
+Finding: sweeping `breakout_long` risk only when `IWM` 20-day return beat `SPY`
+by more than 2pp did not clear the canonical three-window Gate 4 standard. The
+best variant was `broad_rotation_breakout_1_50x`: aggregate EV delta
+`+0.1269` and PnL delta `$+1,740.56`, but the improvement was concentrated in
+`late_strong` (`+0.1272` EV), `mid_weak` was unchanged, and `old_thin` regressed
+slightly (`-0.0003` EV).
+
+Mechanism insight: broad small-cap participation is not enough by itself to
+expand core breakout risk. It can amplify strong-tape winners, but the current
+frozen sample does not show stable multi-window replacement value.
+
+Do not repeat: nearby broad-rotation breakout risk multipliers using the same
+`IWM 20d - SPY 20d > 2pp` threshold. A valid retry needs event/news context,
+candidate-level replacement value, or a richer breadth discriminator, and any
+positive result must be promoted through shared enrichment/sizing rather than a
+backtest-only hook.
