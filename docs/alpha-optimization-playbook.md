@@ -7206,3 +7206,13 @@ Decision: `rejected_trend_only_refinement`.
 Finding: filtering the accepted official-catalyst Space sleeve to `trend_long` only changed the accepted 0.75x forward hypothesis by aggregate EV `-0.3072` and PnL `$-1,909.20` versus exp-20260511-011.
 
 Mechanism insight: strategy-family labels are not enough by themselves to override the accepted Space official-catalyst 0.75x sleeve. Future refinement needs a more specific ex-ante discriminator or forward replacement-value evidence by strategy family.
+
+### 2026-05-11 mechanism update: same-sector core cluster TQS follower risk
+
+Experiment: `exp-20260511-013`
+
+Decision: `rejected_replay_only`.
+
+Finding: broadening the relative-TQS same-day same-sector follower haircut from the risk-on-only scout to all core A/B entries produced aggregate EV `+0.0740`, but aggregate PnL `$-529.66`; only `late_strong` improved, `mid_weak` was unchanged, and `old_thin` regressed by EV `-0.0404` / PnL `$-2,011.30`.
+
+Mechanism insight: same-day same-sector relative-TQS follower weakness is not a stable all-core risk-allocation alpha on the frozen three-window sample. Do not repeat nearby all-core TQS follower haircuts without forward cluster-quality evidence or a different orthogonal discriminator.
