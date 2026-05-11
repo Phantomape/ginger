@@ -7263,3 +7263,13 @@ Do not repeat: nearby broad-rotation breakout risk multipliers using the same
 candidate-level replacement value, or a richer breadth discriminator, and any
 positive result must be promoted through shared enrichment/sizing rather than a
 backtest-only hook.
+
+### 2026-05-11 mechanism update: Space data-vendor trend gate
+
+Experiment: `exp-20260511-018`
+
+Decision: `rejected_data_vendor_trend_gate`.
+
+Finding: requiring PL/BKSY, the earth-observation/data-vendor part of the accepted official-catalyst Space sleeve, to be `trend_long` only changed the accepted 0.75x forward hypothesis by aggregate EV `-0.4195` and PnL `$-1,137.22` versus exp-20260511-011.
+
+Mechanism insight: Space refinement should be by catalyst/economic bucket, not blanket strategy family. Pure data-vendor breakouts are a different mechanism from launch, network, lunar, and manufacturing convexity; future forward attribution should keep those buckets separate.
