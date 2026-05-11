@@ -75,6 +75,19 @@ candidate pool. The canonical three-window core metrics stayed unchanged:
 The next evidence is closed forward direct PnL and replacement value, not a
 static space-pool promotion.
 
+Latest space catalyst attribution step: `exp-20260511-008` started an
+event-state shadow ledger for the space theme instead of re-mining a static
+space basket. It seeded six official/attention events across
+`fundamental_contract_regulatory`, `defense_budget_theme`, and `attention_only`
+buckets, then tracked cash-relative, core/benchmark-relative, and same-theme
+replacement value. Only the `LUNR` NASA CLPS event is mature so far: on a
+`$10k` notional it was `-6.42%` after 1 trading day, `-1.51%` after 5 trading
+days, and `+6.91%` after 10 trading days, with positive 10d same-theme value
+and positive 10d `UFO`-relative value. The gate remains failed because only
+`1/10` required closed decisions is mature. Keep the sleeve observe-only until
+official catalyst buckets, not attention-only rows, prove positive forward
+replacement value.
+
 Current priority: do not retune local add-on trigger, cap, heat, reserve,
 strategy-cohort variants, ETF overlay parameters, nearby RS20 risk scalars,
 single-ticker sector taxonomy, global `MAX_POSITIONS`, or scarce-slot breakout
