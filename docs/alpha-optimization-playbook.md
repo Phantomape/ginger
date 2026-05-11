@@ -7273,3 +7273,33 @@ Decision: `rejected_data_vendor_trend_gate`.
 Finding: requiring PL/BKSY, the earth-observation/data-vendor part of the accepted official-catalyst Space sleeve, to be `trend_long` only changed the accepted 0.75x forward hypothesis by aggregate EV `-0.4195` and PnL `$-1,137.22` versus exp-20260511-011.
 
 Mechanism insight: Space refinement should be by catalyst/economic bucket, not blanket strategy family. Pure data-vendor breakouts are a different mechanism from launch, network, lunar, and manufacturing convexity; future forward attribution should keep those buckets separate.
+
+### 2026-05-11 mechanism update: Space data-vendor breakout risk
+
+Experiment: `exp-20260511-019`
+
+Decision: `accepted_default_off_data_vendor_breakout_risk_haircut`.
+
+Finding: sweeping an extra PL/BKSY `breakout_long` risk scalar inside the accepted official-catalyst Space 0.75x sleeve produced best scalar `0.25` with aggregate EV delta `+0.2741` and PnL `$+3,774.55` versus exp-20260511-011.
+
+Mechanism insight: do not solve Space data-vendor fragility by deleting the signal; exp-20260511-018 showed that path damage can dominate. A risk haircut is the cleaner expression, and `0.25x` is now the shared default-off Space forward hypothesis for PL/BKSY breakouts. Live Space slots remain zero; collect forward replacement value before any trade-enabled adapter.
+
+### 2026-05-11 mechanism update: Space launch/connectivity trend risk
+
+Experiment: `exp-20260511-021`
+
+Decision: `accepted_default_off_launch_connectivity_trend_risk_topup`.
+
+Finding: testing an extra bounded RKLB/ASTS `trend_long` scalar inside the accepted official-catalyst Space sleeve produced best scalar `1.25` with aggregate EV delta `+0.3686` and PnL `$+6,661.77` versus exp-20260511-019.
+
+Mechanism insight: Space should be refined by catalyst/economic bucket and lifecycle state. This test does not reopen broad static-pool promotion, mature satcom breadth, or attention-only headline ranking.
+
+### 2026-05-11 mechanism update: Space non-data-vendor breakout risk
+
+Experiment: `exp-20260511-022`
+
+Decision: `rejected_non_data_vendor_breakout_risk_haircut`.
+
+Finding: after fixing the accepted PL/BKSY breakout haircut at `0.25x` and RKLB/ASTS trend top-up at `1.25x`, sweeping a separate RKLB/ASTS/RDW/LUNR-style breakout scalar produced best scalar `0.25` with aggregate EV delta `+0.2184` and PnL `$-44.75` versus the accepted before state.
+
+Mechanism insight: do not transfer the data-vendor breakout haircut to non-data-vendor Space breakouts unless the cohort clears the same three-window EV/risk gate. Keep these cohorts separate in future risk-allocation searches.
