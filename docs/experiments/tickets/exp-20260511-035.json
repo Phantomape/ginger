@@ -1,0 +1,59 @@
+{
+  "acceptance_rule": "data audit/shadow only: report coverage, PIT risk, CIK mapping gaps, existing-signal overlap, scarce-slot value, and forward return availability; no production change allowed",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "data/experiments",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260510-015/trip_sector_taxonomy.json",
+  "change_type": "data_audit_shadow_overlay",
+  "completed_at": "2026-05-11T17:29:00+00:00",
+  "created_at": "2026-05-11T17:16:35+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260511-035",
+  "hypothesis": "Public-market insider Form 4 buying, especially large CEO/CFO or clustered open-market purchases, may confirm existing trend_long/breakout_long candidates; this run only checks the latest local PIT-safe data and shadow overlap without changing production.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "entries",
+    "exits",
+    "ranking",
+    "sizing",
+    "portfolio heat",
+    "LLM/news",
+    "production orders",
+    "Form 4 thresholds"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "notes": "scripts/create_experiment_ticket.py was invoked first but reused occupied ids during a busy automation run; exp-20260511-035 is the collision-free authoritative Form 4 audit.",
+  "owner": "non_ohlcv_alpha_discovery",
+  "result": {
+    "artifact": "data/experiments/exp-20260511-035/form4_insider_overlay_latest_audit.json",
+    "decision": "shadow_only",
+    "log": "docs/experiments/logs/exp-20260511-035.json",
+    "report": "docs/non_ohlcv_data_audit/form4_insider_overlay_exp-20260511-035_20260511.md",
+    "summary": "The latest Form 4 data exists and is PIT-dateable, but it adds no production-core overlap, no >=$500k forward-queue candidate, no closed paper outcome, and no measurable scarce-slot value beyond prior historical reference."
+  },
+  "single_causal_variable": "latest local Form 4 availability and overlay coverage as of 2026-05-10",
+  "status": "completed"
+}
