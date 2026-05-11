@@ -54,6 +54,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            state_surface_sleeve=None,
                            low_deployment_etf_overlay=None,
                            space_catalyst_shadow=None,
+                           space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
                            platform_rs20_watch=None,
                            sec_10k_forward_watch=None,
@@ -87,6 +88,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
+        space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
         platform_rs20_watch (dict):     Default-off platform RS20 no-gap watch ledger
         sec_10k_forward_watch (dict):   Default-off SEC 10-K liquidity watch ledger
@@ -360,6 +362,43 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 "  Promotion gate: "
                 f"{gates.get('minimum_closed_decisions', 'n/a')} closed decisions, "
                 "positive direct and replacement value"
+            )
+    if space_catalyst_observation_slot and (
+        space_catalyst_observation_slot.get("candidate_count", 0) > 0
+        or space_catalyst_observation_slot.get("selected_count", 0) > 0
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SPACE CATALYST PRODUCTION OBSERVATION SLOT")
+        lines.append("-" * 60)
+        persistence = space_catalyst_observation_slot.get("persistence") or {}
+        lines.append(
+            f"  Mode: {space_catalyst_observation_slot.get('mode', 'production_observe_only')}  |  "
+            f"Trade enabled: {space_catalyst_observation_slot.get('trade_enabled', False)}  |  "
+            f"Live slots: {space_catalyst_observation_slot.get('live_slots', 0)}"
+        )
+        lines.append(
+            f"  Candidates: {space_catalyst_observation_slot.get('candidate_count', 0)}  |  "
+            f"Selected blocked plans: {space_catalyst_observation_slot.get('selected_count', 0)}"
+        )
+        if persistence:
+            lines.append(
+                f"  Ledger rows: {persistence.get('ledger_row_count', 0)}  |  "
+                f"Appended today: {persistence.get('appended_count', 0)}"
+            )
+        for plan in (space_catalyst_observation_slot.get("blocked_trade_plans") or [])[:3]:
+            target = plan.get("forward_target_price")
+            target_text = f"${target:.2f}" if isinstance(target, (int, float)) else "n/a"
+            entry = plan.get("entry_price")
+            entry_text = f"${entry:.2f}" if isinstance(entry, (int, float)) else "n/a"
+            risk_scalar = plan.get("effective_risk_scalar")
+            risk_text = (
+                f"{risk_scalar}x" if isinstance(risk_scalar, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {plan.get('ticker', '?')}: {plan.get('strategy', '?')} "
+                f"entry {entry_text} target {target_text} "
+                f"TQS={plan.get('trade_quality_score', 'n/a')} "
+                f"risk={risk_text} ({plan.get('blocked_reason', 'observe_only')})"
             )
     if space_catalyst_event_ledger and (
         space_catalyst_event_ledger.get("active_event_count", 0) > 0

@@ -189,11 +189,15 @@ def main():
     )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
+        build_space_catalyst_observation_slot,
         build_space_catalyst_shadow_snapshot,
         empty_space_catalyst_event_ledger,
+        empty_space_catalyst_observation_slot,
         empty_space_catalyst_shadow_snapshot,
+        persist_space_catalyst_observation_slot,
         persist_space_catalyst_event_ledger,
         space_catalyst_event_tickers,
+        space_catalyst_observation_tickers,
     )
     from pilot_sleeve       import (
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
@@ -229,6 +233,7 @@ def main():
     universe_governance_state = None
     space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(today_iso)
     space_catalyst_event_ledger = empty_space_catalyst_event_ledger(today_iso)
+    space_catalyst_observation_slot = empty_space_catalyst_observation_slot(today_iso)
     try:
         universe_governance_state = universe_segments_as_of(
             today_iso,
@@ -833,6 +838,110 @@ def main():
         )
 
     try:
+        space_observation_tickers = space_catalyst_observation_tickers(
+            space_catalyst_shadow
+        )
+        space_observation_features = {}
+        for ticker in space_observation_tickers:
+            if features_dict.get(ticker):
+                space_observation_features[ticker] = features_dict[ticker]
+                continue
+            try:
+                ticker_ohlcv = get_ohlcv(ticker)
+                ticker_earnings = get_earnings_data(ticker)
+                ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
+                if ticker_features:
+                    space_observation_features[ticker] = ticker_features
+            except Exception as ticker_error:
+                log.warning(
+                    "Space catalyst observation data unavailable for %s: %s",
+                    ticker,
+                    ticker_error,
+                )
+
+        space_observation_signals = []
+        space_observation_raw_count = 0
+        space_observation_enriched_count = 0
+        space_observation_filter_audit = {}
+        if space_observation_features:
+            space_observation_feature_context = {
+                **features_dict,
+                **space_observation_features,
+            }
+            space_observation_signals = generate_signals(
+                space_observation_features,
+                market_context=market_context,
+                enabled_strategies=ENABLED_STRATEGIES,
+                breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+            )
+            space_observation_raw_count = len(space_observation_signals)
+            if BREAKOUT_RANK_BY_52W_HIGH:
+                space_observation_signals = rank_signals_for_allocation(
+                    space_observation_signals
+                )
+            _pre_space_dropped_signals = list(last_dropped_signals)
+            space_observation_signals = enrich_signals(
+                space_observation_signals,
+                space_observation_feature_context,
+                atr_target_mult=atr_target_mult,
+            )
+            space_observation_enriched_count = len(space_observation_signals)
+            last_dropped_signals.clear()
+            last_dropped_signals.extend(_pre_space_dropped_signals)
+            if REGIME_AWARE_EXIT:
+                for s in space_observation_signals:
+                    s["target_mult_used"] = exit_profile["target_mult"]
+                    s["regime_exit_bucket"] = exit_profile["bucket"]
+                    s["regime_exit_score"] = exit_profile["score"]
+            space_observation_signals, space_observation_filter_audit = (
+                filter_entry_signal_candidates(
+                    space_observation_signals,
+                    open_positions=open_positions,
+                    market_regime=market_regime.get("regime", "").upper(),
+                    spy_pct_from_ma=spy_pct_from_ma,
+                    qqq_pct_from_ma=qqq_pct_from_ma,
+                )
+            )
+            if portfolio_value and (
+                not portfolio_heat
+                or portfolio_heat.get("can_add_new_positions", True)
+            ):
+                space_observation_signals = size_signals(
+                    space_observation_signals,
+                    portfolio_value,
+                    risk_pct=_trade_risk_pct,
+                )
+
+        space_catalyst_observation_slot = persist_space_catalyst_observation_slot(
+            build_space_catalyst_observation_slot(
+                as_of=today_iso,
+                candidate_signals=space_observation_signals,
+                features_by_ticker={**features_dict, **space_observation_features},
+                space_catalyst_shadow=space_catalyst_shadow,
+                core_signals=signals,
+                entry_execution_plan=entry_execution_plan,
+                portfolio_heat=portfolio_heat,
+                entry_filter_audit=space_observation_filter_audit,
+                raw_signal_count=space_observation_raw_count,
+                enriched_signal_count=space_observation_enriched_count,
+            )
+        )
+        if space_catalyst_observation_slot.get("candidate_count", 0) > 0:
+            persistence = space_catalyst_observation_slot.get("persistence") or {}
+            log.info(
+                "Space catalyst observation slot: candidates=%d selected=%d appended=%d",
+                space_catalyst_observation_slot.get("candidate_count", 0),
+                space_catalyst_observation_slot.get("selected_count", 0),
+                persistence.get("appended_count", 0),
+            )
+    except Exception as e:
+        log.warning(f"Space catalyst observation slot unavailable: {e}")
+        space_catalyst_observation_slot = empty_space_catalyst_observation_slot(
+            today_iso,
+            "space_catalyst_observation_slot_build_failed",
+        )
+
+    try:
         platform_rs20_watch = persist_platform_rs20_forward_watch(
             build_platform_rs20_forward_watch(
                 as_of=today_iso,
@@ -1353,6 +1462,7 @@ def main():
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
     trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
+    trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
     trend_signals_dict["platform_rs20_watch"] = platform_rs20_watch
     trend_signals_dict["sec_10k_forward_watch"] = sec_10k_forward_watch
@@ -1387,6 +1497,7 @@ def main():
         state_surface_sleeve = state_surface_sleeve,
         low_deployment_etf_overlay = low_deployment_etf_overlay,
         space_catalyst_shadow = space_catalyst_shadow,
+        space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
         platform_rs20_watch = platform_rs20_watch,
         sec_10k_forward_watch = sec_10k_forward_watch,
@@ -1427,6 +1538,7 @@ def main():
         "state_surface_sleeve": state_surface_sleeve,
         "low_deployment_etf_overlay": low_deployment_etf_overlay,
         "space_catalyst_shadow": space_catalyst_shadow,
+        "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
         "platform_rs20_watch": platform_rs20_watch,
         "sec_10k_forward_watch": sec_10k_forward_watch,

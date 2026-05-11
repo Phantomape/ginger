@@ -9,11 +9,15 @@ from space_catalyst_sleeve import (  # noqa: E402
     SPACE_CATALYST_FORWARD_HYPOTHESIS,
     SPACE_CATALYST_LLM_EVENT_FIELDS,
     build_space_catalyst_event_ledger_snapshot,
+    build_space_catalyst_observation_slot,
     build_space_catalyst_shadow_snapshot,
+    empty_space_catalyst_observation_slot,
     empty_space_catalyst_shadow_snapshot,
+    persist_space_catalyst_observation_slot,
     persist_space_catalyst_event_ledger,
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
+    space_catalyst_observation_tickers,
     space_catalyst_records_as_of,
 )
 from report_generator import generate_daily_report  # noqa: E402
@@ -182,6 +186,131 @@ def test_space_catalyst_forward_target_atr_mult_official_trends_only():
     assert space_catalyst_forward_target_atr_mult("IRDM", "trend_long", 4.5) == 4.5
 
 
+def test_space_catalyst_observation_tickers_use_official_forward_pool():
+    assert space_catalyst_observation_tickers({}) == [
+        "ASTS",
+        "BKSY",
+        "LUNR",
+        "PL",
+        "RDW",
+        "RKLB",
+    ]
+
+
+def test_empty_space_catalyst_observation_slot_is_blocked_by_default():
+    snapshot = empty_space_catalyst_observation_slot("2026-05-11", "unit_test")
+
+    assert snapshot["enabled"] is True
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["live_slots"] == 0
+    assert snapshot["slot_count"] == 1
+    assert snapshot["reason"] == "unit_test"
+    assert snapshot["production_impact"]["alters_orders"] is False
+
+
+def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "RKLB",
+                "strategy": "trend_long",
+                "entry_price": 100.0,
+                "stop_price": 92.5,
+                "target_price": 117.5,
+                "target_mult_used": 3.5,
+                "risk_reward_ratio": 2.33,
+                "net_risk_reward_ratio": 1.9,
+                "exec_lag_adj_net_rr": 1.6,
+                "confidence_score": 0.9,
+                "trade_quality_score": 0.82,
+                "sizing": {
+                    "shares_to_buy": 10,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            },
+            {
+                "ticker": "IRDM",
+                "strategy": "trend_long",
+                "entry_price": 25.0,
+                "stop_price": 23.0,
+                "target_price": 32.0,
+                "confidence_score": 0.95,
+                "trade_quality_score": 0.9,
+            },
+        ],
+        features_by_ticker={"RKLB": {"atr": 5.0}, "IRDM": {"atr": 1.0}},
+        space_catalyst_shadow={
+            "tickers_by_segment": {"launch_lunar": ["RKLB"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        core_signals=[{"ticker": "AMD", "strategy": "trend_long"}],
+        entry_execution_plan={"available_slots": 1, "slot_sliced_signals": []},
+        portfolio_heat={"portfolio_heat_pct": 0.03, "can_add_new_positions": True},
+        entry_filter_audit={
+            "signals_before_entry_filters": 1,
+            "signals_after_entry_filters": 1,
+        },
+        raw_signal_count=1,
+        enriched_signal_count=1,
+    )
+
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["selected_count"] == 1
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "RKLB"
+    assert plan["forward_target_price"] == 125.0
+    assert plan["target_atr_mult"] == 5.0
+    assert plan["effective_risk_scalar"] == 0.9375
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 937.5
+    assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
+    assert plan["same_day_core_alternative_count"] == 1
+    assert snapshot["production_impact"]["alters_orders"] is False
+
+
+def test_space_catalyst_observation_slot_persistence_dedupes_daily_plan(tmp_path):
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "LUNR",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+            }
+        ],
+        features_by_ticker={"LUNR": {"atr": 1.0}},
+        space_catalyst_shadow={
+            "tickers_by_segment": {"launch_lunar": ["LUNR"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+    )
+    ledger_path = tmp_path / "observation.jsonl"
+    summary_path = tmp_path / "observation_summary.json"
+
+    first = persist_space_catalyst_observation_slot(
+        snapshot,
+        ledger_path=ledger_path,
+        summary_path=summary_path,
+    )
+    second = persist_space_catalyst_observation_slot(
+        snapshot,
+        ledger_path=ledger_path,
+        summary_path=summary_path,
+    )
+
+    assert first["persistence"]["appended_count"] == 1
+    assert second["persistence"]["appended_count"] == 0
+    assert second["persistence"]["ledger_row_count"] == 1
+
+
 def test_space_catalyst_event_ledger_tracks_closed_10d_outcome(tmp_path):
     seed_path = tmp_path / "space_events.jsonl"
     _write_events(
@@ -299,6 +428,25 @@ def test_report_generator_renders_space_catalyst_without_orders():
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
+        space_catalyst_observation_slot={
+            "mode": "production_observe_only",
+            "trade_enabled": False,
+            "live_slots": 0,
+            "candidate_count": 1,
+            "selected_count": 1,
+            "persistence": {"ledger_row_count": 1, "appended_count": 1},
+            "blocked_trade_plans": [
+                {
+                    "ticker": "RKLB",
+                    "strategy": "trend_long",
+                    "entry_price": 100.0,
+                    "forward_target_price": 125.0,
+                    "trade_quality_score": 0.82,
+                    "effective_risk_scalar": 0.9375,
+                    "blocked_reason": "live_slots_zero_forward_gate_pending",
+                }
+            ],
+        },
         space_catalyst_event_ledger={
             "mode": "observe_only",
             "active_event_count": 1,
@@ -333,5 +481,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "official trend target @ 5.0 ATR)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
+    assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
+    assert "Live slots: 0" in report
+    assert "RKLB: trend_long entry $100.00 target $125.00" in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

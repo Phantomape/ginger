@@ -105,6 +105,16 @@ DEFAULT_SPACE_CATALYST_EVENT_LEDGER_PATH = Path(
 DEFAULT_SPACE_CATALYST_EVENT_SUMMARY_PATH = Path(
     "data/space_catalyst_event_state_shadow_summary.json"
 )
+SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION = 1
+SPACE_CATALYST_OBSERVATION_SLOT_NAME = "SPACE_CATALYST_PRODUCTION_OBSERVATION_SLOT"
+SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION = "space_catalyst_observation_slot_v1"
+SPACE_CATALYST_OBSERVATION_SLOT_COUNT = 1
+DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_LEDGER_PATH = Path(
+    "data/space_catalyst_observation_slot_ledger.jsonl"
+)
+DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_SUMMARY_PATH = Path(
+    "data/space_catalyst_observation_slot_summary.json"
+)
 
 
 def space_catalyst_forward_risk_scalar(ticker: str, strategy: str) -> float:
@@ -188,6 +198,39 @@ def empty_space_catalyst_event_ledger(as_of, reason: str = "not_built") -> dict:
     }
 
 
+def empty_space_catalyst_observation_slot(
+    as_of,
+    reason: str = "not_built",
+) -> dict:
+    """Return an empty observe-only production slot snapshot."""
+    return {
+        "schema_version": SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION,
+        "slot_name": SPACE_CATALYST_OBSERVATION_SLOT_NAME,
+        "rule_version": SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION,
+        "asof_date": str(as_of)[:10],
+        "generated_at": _utc_now_iso(),
+        "enabled": True,
+        "trade_enabled": False,
+        "mode": "production_observe_only",
+        "slot_count": SPACE_CATALYST_OBSERVATION_SLOT_COUNT,
+        "live_slots": 0,
+        "candidate_count": 0,
+        "selected_count": 0,
+        "blocked_trade_plans": [],
+        "candidates": [],
+        "reason": reason,
+        "forward_hypothesis": deepcopy(SPACE_CATALYST_FORWARD_HYPOTHESIS),
+        "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
+        "parameters": {
+            "slot_selection": "top_ranked_official_space_signal",
+            "trade_block": "live_slots_zero_forward_gate_pending",
+            "included_tickers": list(SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]),
+            "live_slots": 0,
+        },
+        "production_impact": _observation_slot_production_impact(),
+    }
+
+
 def load_space_catalyst_event_seeds(
     source_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH,
 ) -> list[dict[str, Any]]:
@@ -225,6 +268,22 @@ def space_catalyst_event_tickers(
         if str(event.get("event_date") or "")[:10] <= asof_date:
             tickers.update(str(ticker).upper() for ticker in event.get("tickers") or [])
     tickers.update(_same_theme_tickers(space_catalyst_shadow))
+    return sorted(ticker for ticker in tickers if ticker)
+
+
+def space_catalyst_observation_tickers(
+    space_catalyst_shadow: dict[str, Any] | None = None,
+) -> list[str]:
+    """Return the official Space tickers needed for the production observation slot."""
+    shadow = space_catalyst_shadow or {}
+    forward = shadow.get("forward_hypothesis") or SPACE_CATALYST_FORWARD_HYPOTHESIS
+    tickers = {
+        str(ticker).upper()
+        for ticker in forward.get("included_tickers") or []
+        if ticker
+    }
+    if not tickers:
+        tickers.update(_same_theme_tickers(shadow))
     return sorted(ticker for ticker in tickers if ticker)
 
 
@@ -374,6 +433,148 @@ def persist_space_catalyst_event_ledger(
         "promotion_gate": snapshot.get("promotion_gate") or {},
         "aggregate": snapshot.get("aggregate") or {},
         "production_impact": _event_ledger_production_impact(),
+    }
+    with summary.open("w", encoding="utf-8") as handle:
+        json.dump(out, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+    return {**snapshot, "persistence": out}
+
+
+def build_space_catalyst_observation_slot(
+    *,
+    as_of,
+    candidate_signals: list[dict[str, Any]] | None = None,
+    features_by_ticker: dict[str, dict[str, Any]] | None = None,
+    space_catalyst_shadow: dict[str, Any] | None = None,
+    core_signals: list[dict[str, Any]] | None = None,
+    entry_execution_plan: dict[str, Any] | None = None,
+    portfolio_heat: dict[str, Any] | None = None,
+    entry_filter_audit: dict[str, Any] | None = None,
+    raw_signal_count: int | None = None,
+    enriched_signal_count: int | None = None,
+    generated_at: datetime | None = None,
+) -> dict[str, Any]:
+    """Build the one-slot blocked trade plan used for Space forward evidence."""
+    asof_date = str(as_of)[:10]
+    generated_at = generated_at or datetime.now(timezone.utc)
+    shadow = space_catalyst_shadow or {}
+    official_tickers = set(space_catalyst_observation_tickers(shadow))
+    features_by_ticker = features_by_ticker or {}
+    entry_execution_plan = entry_execution_plan or {}
+    core_alternatives = _same_day_core_alternatives(
+        core_signals or [],
+        entry_execution_plan,
+    )
+
+    candidates = []
+    for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
+        ticker = str((signal or {}).get("ticker") or "").upper()
+        if not ticker or ticker not in official_tickers:
+            continue
+        candidates.append(
+            _observation_slot_row(
+                asof_date=asof_date,
+                rank=rank,
+                signal=signal,
+                features=features_by_ticker.get(ticker) or {},
+                space_catalyst_shadow=shadow,
+                same_day_core_alternatives=core_alternatives,
+                entry_execution_plan=entry_execution_plan,
+                portfolio_heat=portfolio_heat or {},
+            )
+        )
+
+    selected = candidates[:SPACE_CATALYST_OBSERVATION_SLOT_COUNT]
+    reason = "candidate_selected_but_live_slots_zero" if selected else "no_official_space_signal"
+    return {
+        "schema_version": SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION,
+        "slot_name": SPACE_CATALYST_OBSERVATION_SLOT_NAME,
+        "rule_version": SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION,
+        "asof_date": asof_date,
+        "generated_at": generated_at.isoformat(timespec="seconds"),
+        "enabled": True,
+        "trade_enabled": False,
+        "mode": "production_observe_only",
+        "slot_count": SPACE_CATALYST_OBSERVATION_SLOT_COUNT,
+        "live_slots": 0,
+        "candidate_count": len(candidates),
+        "selected_count": len(selected),
+        "blocked_trade_plans": selected,
+        "candidates": candidates,
+        "reason": reason,
+        "official_tickers": sorted(official_tickers),
+        "forward_hypothesis": deepcopy(
+            shadow.get("forward_hypothesis") or SPACE_CATALYST_FORWARD_HYPOTHESIS
+        ),
+        "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
+        "same_day_core_alternative_count": len(core_alternatives),
+        "same_day_core_alternatives": core_alternatives[:10],
+        "entry_plan_context": _entry_plan_context(entry_execution_plan),
+        "portfolio_heat_context": _portfolio_heat_context(portfolio_heat or {}),
+        "entry_filter_audit": _entry_filter_audit_summary(entry_filter_audit or {}),
+        "raw_signal_count": raw_signal_count,
+        "enriched_signal_count": enriched_signal_count,
+        "parameters": {
+            "slot_selection": "top_ranked_official_space_signal",
+            "trade_block": "live_slots_zero_forward_gate_pending",
+            "risk_budget_scalar": SPACE_CATALYST_FORWARD_HYPOTHESIS[
+                "risk_budget_scalar"
+            ],
+            "official_trend_target_atr_mult": (
+                SPACE_CATALYST_OFFICIAL_TREND_TARGET_ATR_MULT
+            ),
+            "live_slots": 0,
+        },
+        "production_impact": _observation_slot_production_impact(),
+    }
+
+
+def persist_space_catalyst_observation_slot(
+    snapshot: dict[str, Any],
+    *,
+    ledger_path: Path | str = DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_LEDGER_PATH,
+    summary_path: Path | str = DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_SUMMARY_PATH,
+) -> dict[str, Any]:
+    """Append selected blocked Space trade plans and write the latest summary."""
+    ledger = Path(ledger_path)
+    summary = Path(summary_path)
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    summary.parent.mkdir(parents=True, exist_ok=True)
+
+    seen = _observation_slot_keys(ledger)
+    appended = 0
+    with ledger.open("a", encoding="utf-8") as handle:
+        for plan in snapshot.get("blocked_trade_plans") or []:
+            key = _observation_slot_key(plan)
+            if key in seen:
+                continue
+            row = deepcopy(plan)
+            row["schema_version"] = SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION
+            row["slot_name"] = SPACE_CATALYST_OBSERVATION_SLOT_NAME
+            row["rule_version"] = SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION
+            row["logged_at"] = _utc_now_iso()
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+            seen.add(key)
+            appended += 1
+
+    history = _read_jsonl_rows(ledger)
+    history_by_ticker = Counter(str(row.get("ticker") or "") for row in history)
+    history_by_strategy = Counter(str(row.get("strategy") or "") for row in history)
+    out = {
+        "schema_version": SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION,
+        "slot_name": SPACE_CATALYST_OBSERVATION_SLOT_NAME,
+        "rule_version": SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION,
+        "updated_at": _utc_now_iso(),
+        "asof_date": snapshot.get("asof_date"),
+        "candidate_count": snapshot.get("candidate_count", 0),
+        "selected_count": snapshot.get("selected_count", 0),
+        "appended_count": appended,
+        "ledger_row_count": len(history),
+        "ledger_path": str(ledger),
+        "summary_path": str(summary),
+        "history_by_ticker": dict(sorted(history_by_ticker.items())),
+        "history_by_strategy": dict(sorted(history_by_strategy.items())),
+        "production_impact": _observation_slot_production_impact(),
     }
     with summary.open("w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, sort_keys=True)
@@ -791,6 +992,142 @@ def _compact_signal(signal: dict[str, Any], *, rank: Any, source: str) -> dict[s
     }
 
 
+def _rank_observation_signals(
+    signals: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    def _score(signal: dict[str, Any]) -> tuple[float, float, float, str]:
+        tqs = _as_float(signal.get("trade_quality_score"))
+        confidence = _as_float(signal.get("confidence_score"))
+        rr = _as_float(signal.get("risk_reward_ratio"))
+        return (
+            tqs if tqs is not None else -1.0,
+            confidence if confidence is not None else -1.0,
+            rr if rr is not None else -1.0,
+            str(signal.get("ticker") or ""),
+        )
+
+    return sorted(
+        [signal for signal in signals or [] if isinstance(signal, dict)],
+        key=_score,
+        reverse=True,
+    )
+
+
+def _observation_slot_row(
+    *,
+    asof_date: str,
+    rank: int,
+    signal: dict[str, Any],
+    features: dict[str, Any],
+    space_catalyst_shadow: dict[str, Any],
+    same_day_core_alternatives: list[dict[str, Any]],
+    entry_execution_plan: dict[str, Any],
+    portfolio_heat: dict[str, Any],
+) -> dict[str, Any]:
+    ticker = str(signal.get("ticker") or "").upper()
+    strategy = str(signal.get("strategy") or "")
+    target_atr_mult = space_catalyst_forward_target_atr_mult(
+        ticker,
+        strategy,
+        signal.get("target_mult_used"),
+    )
+    entry = _as_float(signal.get("entry_price"))
+    atr = _as_float(features.get("atr"))
+    forward_target_price = signal.get("target_price")
+    if entry is not None and atr is not None and target_atr_mult is not None:
+        forward_target_price = round(entry + float(target_atr_mult) * atr, 2)
+
+    risk_budget_scalar = _as_float(
+        SPACE_CATALYST_FORWARD_HYPOTHESIS.get("risk_budget_scalar")
+    )
+    sleeve_risk_scalar = space_catalyst_forward_risk_scalar(ticker, strategy)
+    effective_risk_scalar = (
+        _round(risk_budget_scalar * sleeve_risk_scalar, 6)
+        if risk_budget_scalar is not None
+        else _round(sleeve_risk_scalar, 6)
+    )
+    sizing = signal.get("sizing") or {}
+    paper_shares = sizing.get("shares_to_buy")
+    paper_notional = _as_float(sizing.get("position_value_usd"))
+    scaled_paper_notional = None
+    if paper_notional is not None and effective_risk_scalar is not None:
+        scaled_paper_notional = _round(paper_notional * effective_risk_scalar, 2)
+
+    return {
+        "asof_date": asof_date,
+        "slot_name": SPACE_CATALYST_OBSERVATION_SLOT_NAME,
+        "rule_version": SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION,
+        "slot_rank": rank,
+        "ticker": ticker,
+        "strategy": strategy,
+        "action": signal.get("action"),
+        "theme_segment": _theme_segment_for_ticker(space_catalyst_shadow, ticker),
+        "sector": signal.get("sector"),
+        "entry_price": _round(signal.get("entry_price"), 4),
+        "stop_price": _round(signal.get("stop_price"), 4),
+        "production_target_price": _round(signal.get("target_price"), 4),
+        "forward_target_price": _round(forward_target_price, 4),
+        "target_atr_mult": _round(target_atr_mult, 4),
+        "risk_reward_ratio": _round(signal.get("risk_reward_ratio"), 4),
+        "net_risk_reward_ratio": _round(signal.get("net_risk_reward_ratio"), 4),
+        "exec_lag_adj_net_rr": _round(signal.get("exec_lag_adj_net_rr"), 4),
+        "confidence_score": _round(signal.get("confidence_score"), 4),
+        "trade_quality_score": _round(signal.get("trade_quality_score"), 4),
+        "conditions_met": deepcopy(signal.get("conditions_met") or {}),
+        "entry_note": signal.get("entry_note"),
+        "risk_budget_scalar": _round(risk_budget_scalar, 6),
+        "sleeve_risk_scalar": _round(sleeve_risk_scalar, 6),
+        "effective_risk_scalar": effective_risk_scalar,
+        "paper_sizing": {
+            "shares_to_buy": paper_shares,
+            "position_value_usd": _round(paper_notional, 2),
+            "scaled_position_value_usd": scaled_paper_notional,
+            "base_risk_pct": sizing.get("base_risk_pct"),
+            "risk_pct": sizing.get("risk_pct"),
+        },
+        "trade_enabled": False,
+        "blocked_reason": "live_slots_zero_forward_gate_pending",
+        "same_day_core_alternative_count": len(same_day_core_alternatives),
+        "same_day_core_alternatives": same_day_core_alternatives[:5],
+        "entry_plan_context": _entry_plan_context(entry_execution_plan),
+        "portfolio_heat_context": _portfolio_heat_context(portfolio_heat),
+        "production_impact": _observation_slot_production_impact(),
+    }
+
+
+def _entry_plan_context(entry_execution_plan: dict[str, Any]) -> dict[str, Any]:
+    plan = entry_execution_plan or {}
+    return {
+        "available_slots": plan.get("available_slots"),
+        "active_positions": plan.get("active_positions"),
+        "signals_before_entry_plan": plan.get("signals_before_entry_plan"),
+        "signals_after_entry_plan": plan.get("signals_after_entry_plan"),
+        "deferred_breakout_count": len(plan.get("deferred_breakout_signals") or []),
+        "slot_sliced_count": len(plan.get("slot_sliced_signals") or []),
+    }
+
+
+def _portfolio_heat_context(portfolio_heat: dict[str, Any]) -> dict[str, Any]:
+    heat = portfolio_heat or {}
+    return {
+        "portfolio_heat_pct": heat.get("portfolio_heat_pct"),
+        "can_add_new_positions": heat.get("can_add_new_positions"),
+        "heat_note": heat.get("heat_note"),
+    }
+
+
+def _entry_filter_audit_summary(entry_filter_audit: dict[str, Any]) -> dict[str, Any]:
+    audit = entry_filter_audit or {}
+    return {
+        "signals_before_entry_filters": audit.get("signals_before_entry_filters", 0),
+        "signals_after_entry_filters": audit.get("signals_after_entry_filters", 0),
+        "already_held_dropped_count": len(audit.get("already_held_dropped") or []),
+        "sector_cap_dropped_count": len(audit.get("sector_cap_dropped") or []),
+        "bear_shallow_dropped_count": len(audit.get("bear_shallow_dropped") or []),
+        "bear_shallow_active": bool(audit.get("bear_shallow_active", False)),
+    }
+
+
 def _ticker_return(
     rows_by_ticker: dict[str, list[dict[str, Any]]],
     ticker: str,
@@ -955,6 +1292,19 @@ def _event_ledger_keys(path: Path) -> set[tuple[str, str, str, str]]:
     return {_event_ledger_key(row) for row in _read_jsonl_rows(path)}
 
 
+def _observation_slot_key(row: dict[str, Any]) -> tuple[str, str, str, str]:
+    return (
+        str(row.get("asof_date") or ""),
+        str(row.get("ticker") or ""),
+        str(row.get("strategy") or ""),
+        SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION,
+    )
+
+
+def _observation_slot_keys(path: Path) -> set[tuple[str, str, str, str]]:
+    return {_observation_slot_key(row) for row in _read_jsonl_rows(path)}
+
+
 def _read_jsonl_rows(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
@@ -977,6 +1327,21 @@ def _utc_now_iso() -> str:
 
 
 def _event_ledger_production_impact() -> dict[str, bool]:
+    return {
+        "shared_policy_changed": False,
+        "backtester_adapter_changed": False,
+        "run_adapter_changed": True,
+        "parity_test_added": False,
+        "replay_only": False,
+        "alters_signal_generation": False,
+        "alters_candidate_ranking": False,
+        "alters_sizing": False,
+        "alters_exits": False,
+        "alters_orders": False,
+    }
+
+
+def _observation_slot_production_impact() -> dict[str, bool]:
     return {
         "shared_policy_changed": False,
         "backtester_adapter_changed": False,
