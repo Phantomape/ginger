@@ -276,3 +276,17 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space breakout convexity is not the next supported same-sample refinement. Keep the accepted trend target extension, PL/BKSY breakout haircut, and RKLB/ASTS trend top-up unchanged.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260511-037\space_breakout_target_extension.json`
+
+## exp-20260511-038 Space trend target bucket scope
+
+- timestamp: 2026-05-11T18:15:03+00:00
+- lane: alpha_search
+- decision: rejected_space_trend_target_scope
+- changed_variable: space_official_trend_target_bucket_scope
+- best_variant: exclude_data_vendor_trend
+- expected_value_score_delta_vs_before: -0.0270
+- before_aggregate: {'expected_value_score_sum': 8.9564, 'total_pnl_sum': 237030.87, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 8.9294, 'total_pnl_sum': 235932.28, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- interpretation: Keep the accepted official-catalyst Space 5 ATR trend target broad across the full official bucket. Narrowing it away from PL/BKSY data-vendor trend or toward launch/connectivity did not add alpha on the frozen three-window sample.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-038\space_trend_target_bucket_scope.json`

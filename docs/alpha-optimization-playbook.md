@@ -7414,3 +7414,12 @@ Mechanism insight: remaining PL/RDW-style trend continuation is a forward attrib
 - Aggregate EV delta vs exp032 stack: `0.0179`.
 - Interpretation: Space breakout convexity is not the next supported same-sample refinement. Keep the accepted trend target extension, PL/BKSY breakout haircut, and RKLB/ASTS trend top-up unchanged.
 - Anti-repeat: do not retry nearby Space breakout target widths on the same frozen windows without forward Space breakout replacement-value evidence.
+
+### exp-20260511-038 Space trend target bucket scope
+
+- Decision: rejected_space_trend_target_scope.
+- Tested variable: `space_official_trend_target_bucket_scope` on top of the accepted exp032 Space stack.
+- Best variant: `exclude_data_vendor_trend`.
+- Aggregate EV delta vs exp032 stack: `-0.0270`; PnL delta `$-1,098.59`.
+- Interpretation: the accepted 5 ATR Space trend target should remain broad across official-catalyst trend signals. Narrowing by economic bucket did not improve the frozen three-window sample.
+- Anti-repeat: do not retry nearby Space trend-target bucket narrowing on the same snapshots. A valid retry needs closed forward replacement value by catalyst bucket or a genuinely new ex-ante catalyst-quality field.
