@@ -14,6 +14,12 @@ fixed-window core metrics are:
 | `mid_weak` | 1.6689 | 61.81% | 2.70 | 9.41% | 21 | 79.25% |
 | `old_thin` | 0.3853 | 28.54% | 1.35 | 8.15% | 22 | 91.67% |
 
+Latest standalone backtest datapoint: `data/backtest_results_20260510.json`
+refreshes the accepted `late_strong` window at the same canonical values
+(`EV 4.2340`, `PnL $94,086.91`, `survival 80.39%`). `mid_weak` and `old_thin`
+still rely on the accepted three-window artifact from
+`data/experiments/exp-20260510-015/trip_sector_taxonomy.json`.
+
 Latest accepted alpha result: `exp-20260510-015` maps TRIP to Consumer
 Discretionary in shared `risk_engine.SECTOR_MAP` instead of leaving it in the
 `Unknown` sector path. Aggregate EV improved `+0.0171` (`+0.27%`) and aggregate
@@ -54,6 +60,14 @@ to non-platform candidates. On the same three fixed windows, excluding
 `157` valid 10d non-platform rows, while the excluded platform slice averaged
 `-0.008507`. This changes only the shared observe-only queue policy and still
 requires closed forward paper outcomes before any trade-enabled promotion.
+
+Latest SEC blocking audit: `exp-20260511-001` confirms the older filing-shock
+branch is still blocked by missing directional event fields, not by PIT
+timestamp plumbing. Same-accession repair checks found only sparse directional
+rows and still no usable B/C candidate cohort, so do not spend another loop on
+filing-recency retunes, Companyfacts weighting, or adjacent filing-shock
+threshold work until PIT-safe EPS/revenue surprise or guidance fields exist on
+actual candidate dates.
 
 Latest candidate-pool alpha search: `exp-20260511-002` tested the
 `SPACE_CATALYST_SHADOW` operating equities in deterministic snapshot copies.
@@ -101,3 +115,11 @@ not mine adjacent tickers or enable live slots without closed forward
 replacement-value evidence.
 
 Latest Space risk-allocation alpha search: `exp-20260511-009` swept a sleeve-level risk scalar on the rejected static Space catalyst pool. The highest-EV variant was `1.0x`: aggregate EV delta `+2.3036`, aggregate PnL delta `$64,577.73`, max drawdown damage `3.56%`, and Gate passed `False`. The closest risk-controlled variant was `0.75x`, but it still regressed `late_strong` EV. Conclusion: simple static-pool risk discount is not enough; Space should remain official-catalyst forward paper, not broad static universe enablement or attention-headline ranking.
+
+### 2026-05-11 alpha search note: TQS-conditioned sector follower risk
+
+`exp-20260511-010` tested a relative-TQS discriminator on the rejected same-day
+sector follower haircut. It improved aggregate EV by
+`+0.1144` and PnL by
+`$+1,481.64`, but touched only the late window, so no
+shared production/backtest sizing policy was promoted.

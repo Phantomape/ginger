@@ -21,42 +21,45 @@
 
 鑻ユ湰鏂囨。涓?`AGENTS.md` 鍐茬獊锛屼互 `AGENTS.md` 涓哄噯銆傝嫢闇€瑕佸鐜板疄楠岋紝鍏堟煡鏈枃妗ｇ殑瀹為獙绱㈠紩锛屽啀鏌ョ粨鏋勫寲鏃ュ織銆?
 
-## 2026-05-10 accepted state
+## 2026-05-11 accepted state
 
-Latest refreshed accepted-stack checkpoint: keep the accepted lifecycle
-allocation core from `exp-20260502-022` and treat the 2026-05-09 refresh as
-the current source of truth for the replayable A+B stack. Use
-`data/backtest_results_20260509.json` as the latest standalone canonical
-artifact for `old_thin`, and use the unchanged carried-forward baseline blocks
-in `exp-20260509-006`, `exp-20260509-007`, `exp-20260510-002`, and
-`exp-20260510-003` for `late_strong` / `mid_weak`. The stack remains a
-capital-allocation / event-quality baseline, not a new entry filter, universe
-expansion, or sector priority rule.
+Latest accepted-stack checkpoint: keep the accepted lifecycle allocation core
+from `exp-20260502-022`, then layer the shared RS20 entry-state sizing
+promotion from `exp-20260510-012` and the shared TRIP sector taxonomy repair
+from `exp-20260510-015`. Treat
+`data/experiments/exp-20260510-015/trip_sector_taxonomy.json` as the current
+three-window source of truth for the accepted core stack. The latest standalone
+CLI datapoint is `data/backtest_results_20260510.json` for `late_strong`; the
+accepted `mid_weak` / `old_thin` baseline still comes from the shared
+three-window artifact because no newer accepted standalone CLI refresh exists
+for those windows. The stack remains a capital-allocation / event-quality
+baseline, not a new entry filter, universe expansion, or sector priority rule.
 
 Accepted fixed-window metrics after the current core stack:
 
 | Window | EV | Return | Sharpe daily | Max DD | Win rate | Trades |
 |---|---:|---:|---:|---:|---:|---:|
 | `late_strong` | 4.2340 | +94.09% | 4.50 | 5.48% | 78.95% | 19 |
-| `mid_weak` | 1.6678 | +61.77% | 2.70 | 9.41% | 52.38% | 21 |
-| `old_thin` | 0.3693 | +28.19% | 1.31 | 9.15% | 40.91% | 22 |
+| `mid_weak` | 1.6689 | +61.81% | 2.70 | 9.41% | 52.38% | 21 |
+| `old_thin` | 0.3853 | +28.54% | 1.35 | 8.15% | 40.91% | 22 |
 
 Evidence: this refreshed checkpoint is the shared baseline after
-`exp-20260510-012`. Earlier logs `exp-20260509-004`, `exp-20260509-006`,
-`exp-20260509-007`, `exp-20260510-002`, and `exp-20260510-003` preserve the
-pre-RS20 accepted-stack baseline for replay-only, data-gap-only, or blocked
-comparisons. Aggregate accepted-stack EV is now `6.2711` with aggregate PnL
-`+$184,040.96`, and convergence remains `8/8`.
+`exp-20260510-015`. Earlier logs `exp-20260509-004`, `exp-20260509-006`,
+`exp-20260509-007`, `exp-20260510-002`, `exp-20260510-003`, and
+`exp-20260510-012` preserve earlier accepted-stack baselines for replay-only,
+data-gap-only, or blocked comparisons. Aggregate accepted-stack EV is now
+`6.2882` with aggregate PnL `+$184,444.42`, and convergence remains `8/8`.
 
-Latest unchanged validation point: the 2026-05-03 through 2026-05-10
+Latest unchanged validation point: the 2026-05-03 through 2026-05-11
 observed-only SEC/Form 4 queue, shadow-universe, event-harness, short-pressure,
 options-overlay, entry-state oracle, earnings-estimate readiness, 10-K
-forward-watch, add-on reserve, and event-bundle allocation experiments all
-reused the same canonical three-window core metrics whenever no executable
-policy was promoted into the core stack. Treat the `exp-20260510-012` shared
-RS20 sizing record plus `data/experiments/exp-20260510-012/rs20_entry_state_shared_sizing.json`
-as the latest checkpoint; `data/backtest_results_20260509.json` remains the
-latest standalone CLI artifact before that promotion.
+forward-watch, add-on reserve, queue-refinement, and space forward-observation
+experiments all reused the same canonical three-window core metrics whenever no
+executable policy was promoted into the core stack. Treat the
+`exp-20260510-015` shared taxonomy record plus
+`data/experiments/exp-20260510-015/trip_sector_taxonomy.json` as the latest
+accepted checkpoint; `data/backtest_results_20260510.json` is the latest
+standalone `late_strong` CLI datapoint after that promotion.
 
 ### 2026-05-10 mechanism update: RS20 entry-state shared sizing
 
@@ -6947,6 +6950,31 @@ Mechanism insight: keep collecting this SEC queue as default-off paper, but
 freeze the deterministic candidate pool to non-platform financial-report events
 before spending forward observation budget on closed replacement value.
 
+### 2026-05-11 mechanism update: SEC / earnings filing-shock current audit
+
+Experiment: `exp-20260511-001`
+
+Decision: `data_gap`.
+
+Finding: the filing-shock branch is still blocked even after the refreshed
+same-accession Companyfacts repair checks. Candidate-touch tagging still found
+only sparse directional rows, no usable B/C candidate cohort, and no evidence
+that the current SEC filing-shock fields can grade `earnings_event_long` or
+improve A/B slot decisions on real candidate dates.
+
+Evidence: this was a pure current-state audit, so the canonical accepted core
+baseline stayed unchanged at aggregate EV `6.2882` and aggregate PnL
+`+$184,444.42`. The audit found only `2` directional unique events,
+`3` same-accession unique events, and slot-conflict opportunity-cost outcomes
+that were net negative on average despite a few isolated positive rows.
+
+Mechanism insight: the SEC filing-shock bottleneck remains directional feature
+availability, not PIT event timestamp coverage and not another queue retune. Do
+not spend another loop on raw filing recency, C-sleeve re-enable, Companyfacts
+weight sweeps, or adjacent T+1 cohort tuning until a PIT-safe source can attach
+EPS/revenue surprise, guidance raise/cut, or equivalent same-accession
+financial fields to actual candidate dates.
+
 ### 2026-05-11 mechanism update: Space catalyst static-pool replay
 
 Experiment: `exp-20260511-002`
@@ -6997,6 +7025,31 @@ Do not repeat: static space catalyst pool promotion, adjacent space ticker
 mining, or SpaceX/UAP headline-only entry rules on these frozen samples. A
 trade-enabled retry requires closed forward evidence, explicit nonzero pilot
 slots, shared run/backtest policy, and parity tests.
+
+### 2026-05-11 mechanism update: Space catalyst event-state shadow ledger
+
+Experiment: `exp-20260511-008`
+
+Decision: `observed_only_forward_collection_started`.
+
+Finding: the space branch now has the right forward-observation harness. Rather
+than re-mining a hindsight static ticker basket, the system seeds official and
+attention event rows into semantic buckets, then tracks direct PnL,
+cash-relative PnL, same-theme replacement value, and `UFO` / `ARKX` relative
+value over 1/5/10/20 trading-day horizons.
+
+Evidence: only `1` of the seeded `6` events is mature so far, so the promotion
+gate is still clearly unpassed. The lone mature row, the `LUNR` NASA CLPS
+event, was negative after 1 day and 5 days but positive after 10 days
+(`+6.91%`, `+$200.19` same-theme replacement value, `+$222.51`
+`UFO`-relative value). That is enough to justify continued observation, not
+enough to justify any specialist promotion.
+
+Mechanism insight: this is the valid next form of space alpha research. Keep
+the space theme in default-off forward observation until at least 10 mature
+closed decisions or 30 active signal days show positive direct PnL and positive
+replacement value, with official contract/regulatory/customer buckets carrying
+the evidence rather than attention-only rows.
 
 ### 2026-05-11 mechanism update: All-signal 52-week proximity ranking
 
@@ -7113,3 +7166,23 @@ Decision: `rejected_static_pool_risk_scalar`.
 Finding: sweeping one Space sleeve risk scalar did not clear Gate 4. The highest-EV variant was `1.0x`, with aggregate EV delta `+2.3036` and aggregate PnL delta `$64,577.73`, but max drawdown damage was `3.56%` and Gate passed `False`. The `0.75x` scalar brought drawdown damage under 2 pp, but it regressed `late_strong` EV.
 
 Mechanism insight: static Space pool risk discount alone is not enough. Space alpha should be researched as a small, risk-budgeted specialist sleeve only after official contract/regulatory/customer catalyst forward evidence exists. Do not retry broad static Space universe promotion, adjacent ticker mining, or LLM/attention-only headline ranking on the frozen sample.
+
+### 2026-05-11 mechanism update: TQS-conditioned sector follower risk
+
+Experiment: `exp-20260511-010`
+
+Decision: `promising_replay_only_underpowered`.
+
+Finding: adding a relative-TQS discriminator to the rejected same-day sector follower haircut preserved the higher-TQS GLD commodity follower and only reduced the lower-TQS XOM energy follower. Aggregate EV improved by `+0.1144` and aggregate PnL improved by `$+1,481.64`, but the rule touched only one canonical window, so it is not strong enough for shared-policy promotion.
+
+Mechanism insight: the quality-conditioned form is materially better than the
+blunt follower haircut from `exp-20260511-006`, because the existing TQS field
+correctly keeps the crowded GLD winner and cuts the weaker XOM follower in the
+late window. However, the fixed windows contain too few same-day same-sector
+`risk_on` clusters for a production rule. Treat this as an alpha lead for
+forward attribution or a broader pre-registered cluster-quality design, not as
+a live sizing change.
+
+Do not promote: shared `portfolio_engine` sizing should not change until the
+same quality-conditioned cluster surface shows multi-window or forward closed
+evidence. Do not retry nearby TQS thresholds on the same frozen sample.
