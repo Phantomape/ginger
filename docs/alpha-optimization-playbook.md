@@ -7103,3 +7103,13 @@ Mechanism insight: the stronger-looking same-sample slice is not clean enough
 to become a new rule. Keep RS20 as an attribution dimension on the default-off
 SEC queue and wait for closed forward replacement value before any further
 SEC cohort slicing.
+
+### 2026-05-11 mechanism update: Space static-pool risk scalar
+
+Experiment: `exp-20260511-009`
+
+Decision: `rejected_static_pool_risk_scalar`.
+
+Finding: sweeping one Space sleeve risk scalar did not clear Gate 4. The highest-EV variant was `1.0x`, with aggregate EV delta `+2.3036` and aggregate PnL delta `$64,577.73`, but max drawdown damage was `3.56%` and Gate passed `False`. The `0.75x` scalar brought drawdown damage under 2 pp, but it regressed `late_strong` EV.
+
+Mechanism insight: static Space pool risk discount alone is not enough. Space alpha should be researched as a small, risk-budgeted specialist sleeve only after official contract/regulatory/customer catalyst forward evidence exists. Do not retry broad static Space universe promotion, adjacent ticker mining, or LLM/attention-only headline ranking on the frozen sample.

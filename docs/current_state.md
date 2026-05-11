@@ -99,3 +99,5 @@ same frozen sample; after the non-platform queue freeze, the next evidence for
 that branch is closed forward paper replacement value. For space catalyst, do
 not mine adjacent tickers or enable live slots without closed forward
 replacement-value evidence.
+
+Latest Space risk-allocation alpha search: `exp-20260511-009` swept a sleeve-level risk scalar on the rejected static Space catalyst pool. The highest-EV variant was `1.0x`: aggregate EV delta `+2.3036`, aggregate PnL delta `$64,577.73`, max drawdown damage `3.56%`, and Gate passed `False`. The closest risk-controlled variant was `0.75x`, but it still regressed `late_strong` EV. Conclusion: simple static-pool risk discount is not enough; Space should remain official-catalyst forward paper, not broad static universe enablement or attention-headline ranking.
