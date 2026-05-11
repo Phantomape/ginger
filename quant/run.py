@@ -148,10 +148,12 @@ def main():
         empty_form4_event_sleeve_snapshot,
     )
     from sec_event_queue import (
+        build_forward_financial_report_t1_queue_from_sec_filing_events,
         build_forward_leadership_queue_from_sec_filing_text,
         build_forward_queue_from_sec_filing_text,
         build_forward_governance_queue_from_sec_filing_text,
         empty_sec_event_queue,
+        empty_sec_financial_report_t1_queue,
         empty_sec_governance_queue,
         empty_sec_leadership_queue,
     )
@@ -166,6 +168,10 @@ def main():
     from sec_leadership_event_sleeve import (
         build_sec_leadership_event_sleeve_snapshot,
         empty_sec_leadership_event_sleeve_snapshot,
+    )
+    from sec_financial_report_event_sleeve import (
+        build_sec_financial_report_event_sleeve_snapshot,
+        empty_sec_financial_report_event_sleeve_snapshot,
     )
     from event_sleeve_bundle import (
         build_event_sleeve_bundle_snapshot,
@@ -410,6 +416,7 @@ def main():
             "error": str(e),
             "paths": {
                 "form4_transactions": f"data/non_ohlcv/form4_transactions_{today}.jsonl",
+                "sec_filing_events": f"data/non_ohlcv/sec_filing_events_{today}.jsonl",
                 "sec_filing_text": f"data/non_ohlcv/sec_filing_text_{today}.jsonl",
             },
             "production_impact": {
@@ -1098,6 +1105,59 @@ def main():
         )
 
     try:
+        sec_financial_report_t1_queue = (
+            build_forward_financial_report_t1_queue_from_sec_filing_events(
+                data_dir="data/non_ohlcv",
+                as_of=today_iso,
+                ohlcv_by_ticker=ohlcv_dict,
+                spy_ohlcv=spy_ohlcv,
+                core_signals=signals,
+                source_path=non_ohlcv_paths.get("sec_filing_events"),
+            )
+        )
+        if sec_financial_report_t1_queue.get("candidate_count", 0) > 0:
+            log.info(
+                "SEC financial-report T+1 drift queue candidates: %d",
+                sec_financial_report_t1_queue["candidate_count"],
+            )
+    except Exception as e:
+        log.warning(f"SEC financial-report T+1 drift queue unavailable: {e}")
+        sec_financial_report_t1_queue = empty_sec_financial_report_t1_queue(
+            today_iso,
+            "sec_financial_report_t1_queue_build_failed",
+        )
+
+    try:
+        sec_financial_report_event_sleeve = (
+            build_sec_financial_report_event_sleeve_snapshot(
+                sec_financial_report_t1_queue=sec_financial_report_t1_queue,
+                as_of=today_iso,
+                open_prices=current_open_prices,
+                current_prices=current_prices,
+            )
+        )
+        if (
+            sec_financial_report_event_sleeve.get("new_pending_count", 0) > 0
+            or sec_financial_report_event_sleeve.get("open_position_count", 0) > 0
+            or sec_financial_report_event_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "SEC financial-report paper sleeve: pending=%d open=%d closed_today=%d pnl=$%s",
+                sec_financial_report_event_sleeve.get("pending_count", 0),
+                sec_financial_report_event_sleeve.get("open_position_count", 0),
+                sec_financial_report_event_sleeve.get("closed_count_today", 0),
+                sec_financial_report_event_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"SEC financial-report paper sleeve unavailable: {e}")
+        sec_financial_report_event_sleeve = (
+            empty_sec_financial_report_event_sleeve_snapshot(
+                today_iso,
+                "sec_financial_report_event_sleeve_build_failed",
+            )
+        )
+
+    try:
         state_surface_queue = build_state_surface_queue(
             as_of=today_iso,
             ohlcv_by_ticker=ohlcv_dict,
@@ -1209,6 +1269,8 @@ def main():
     trend_signals_dict["sec_governance_event_sleeve"] = sec_governance_event_sleeve
     trend_signals_dict["sec_leadership_event_queue"] = sec_leadership_event_queue
     trend_signals_dict["sec_leadership_event_sleeve"] = sec_leadership_event_sleeve
+    trend_signals_dict["sec_financial_report_t1_queue"] = sec_financial_report_t1_queue
+    trend_signals_dict["sec_financial_report_event_sleeve"] = sec_financial_report_event_sleeve
     trend_signals_dict["event_sleeve_bundle"] = event_sleeve_bundle
     trend_signals_dict["state_surface_queue"] = state_surface_queue
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
@@ -1240,6 +1302,8 @@ def main():
         sec_governance_event_sleeve = sec_governance_event_sleeve,
         sec_leadership_event_queue = sec_leadership_event_queue,
         sec_leadership_event_sleeve = sec_leadership_event_sleeve,
+        sec_financial_report_t1_queue = sec_financial_report_t1_queue,
+        sec_financial_report_event_sleeve = sec_financial_report_event_sleeve,
         event_sleeve_bundle = event_sleeve_bundle,
         state_surface_sleeve = state_surface_sleeve,
         low_deployment_etf_overlay = low_deployment_etf_overlay,
@@ -1275,6 +1339,8 @@ def main():
         "sec_governance_event_sleeve": sec_governance_event_sleeve,
         "sec_leadership_event_queue": sec_leadership_event_queue,
         "sec_leadership_event_sleeve": sec_leadership_event_sleeve,
+        "sec_financial_report_t1_queue": sec_financial_report_t1_queue,
+        "sec_financial_report_event_sleeve": sec_financial_report_event_sleeve,
         "event_sleeve_bundle": event_sleeve_bundle,
         "state_surface_queue": state_surface_queue,
         "state_surface_sleeve": state_surface_sleeve,

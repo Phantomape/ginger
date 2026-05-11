@@ -48,6 +48,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            sec_governance_event_sleeve=None,
                            sec_leadership_event_queue=None,
                            sec_leadership_event_sleeve=None,
+                           sec_financial_report_t1_queue=None,
+                           sec_financial_report_event_sleeve=None,
                            event_sleeve_bundle=None,
                            state_surface_sleeve=None,
                            low_deployment_etf_overlay=None,
@@ -77,6 +79,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         sec_governance_event_sleeve (dict): Default-off SEC governance paper sleeve
         sec_leadership_event_queue (dict): Default-off SEC leadership-change queue
         sec_leadership_event_sleeve (dict): Default-off SEC leadership paper sleeve
+        sec_financial_report_t1_queue (dict): Default-off SEC financial-report T+1 queue
+        sec_financial_report_event_sleeve (dict): Default-off SEC financial-report paper sleeve
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
@@ -602,6 +606,64 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"Unrealized: ${sec_leadership_event_sleeve.get('unrealized_pnl', 0.0):,.2f}"
         )
         for position in (sec_leadership_event_sleeve.get("open_positions") or [])[:5]:
+            lines.append(
+                f"  {position.get('ticker', '?')}: paper open "
+                f"since {position.get('entry_date', '?')} "
+                f"({position.get('observed_trading_days', 0)}/"
+                f"{position.get('hold_days', '?')} days)"
+            )
+
+    if sec_financial_report_t1_queue and (
+        sec_financial_report_t1_queue.get("candidate_count", 0) > 0
+        or sec_financial_report_t1_queue.get("data_source", {}).get("status") != "loaded"
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC FINANCIAL-REPORT T+1 DRIFT QUEUE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Enabled: {sec_financial_report_t1_queue.get('enabled', False)}  |  "
+            f"Candidates: {sec_financial_report_t1_queue.get('candidate_count', 0)}"
+        )
+        source = sec_financial_report_t1_queue.get("data_source") or {}
+        if source.get("status") != "loaded":
+            lines.append(f"  Source status: {source.get('status')}")
+        for candidate in (sec_financial_report_t1_queue.get("candidates") or [])[:5]:
+            excess = candidate.get("t1_excess_return_vs_spy")
+            excess_text = f"{excess * 100:.2f}%" if isinstance(excess, (int, float)) else "n/a"
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('event_family', 'financial_report')} / "
+                f"T+1 excess {excess_text} "
+                f"on {candidate.get('t1_date', candidate.get('usable_trade_date', '?'))} "
+                "(paper only)"
+            )
+
+    if sec_financial_report_event_sleeve and (
+        sec_financial_report_event_sleeve.get("pending_count", 0) > 0
+        or sec_financial_report_event_sleeve.get("open_position_count", 0) > 0
+        or sec_financial_report_event_sleeve.get("closed_count_today", 0) > 0
+        or sec_financial_report_event_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SEC FINANCIAL-REPORT PAPER EVENT SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {sec_financial_report_event_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {sec_financial_report_event_sleeve.get('trade_enabled', False)}"
+        )
+        if sec_financial_report_event_sleeve.get("error"):
+            lines.append(f"  Source status: {sec_financial_report_event_sleeve.get('error')}")
+        lines.append(
+            f"  Pending: {sec_financial_report_event_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {sec_financial_report_event_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {sec_financial_report_event_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${sec_financial_report_event_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${sec_financial_report_event_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        for position in (sec_financial_report_event_sleeve.get("open_positions") or [])[:5]:
             lines.append(
                 f"  {position.get('ticker', '?')}: paper open "
                 f"since {position.get('entry_date', '?')} "

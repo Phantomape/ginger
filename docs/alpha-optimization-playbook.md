@@ -6844,3 +6844,105 @@ nearby scarce-slot threshold retunes. A valid retry needs a shared effective
 slot accounting design that is exposure/risk based, production-visible in
 `run.py`, and evaluated by full portfolio replay with drawdown and tail-risk
 impact.
+
+### 2026-05-10 mechanism update: Dust slot pre-plan filter
+
+Experiment: `exp-20260510-022`
+
+Decision: `rejected`.
+
+Finding: dust-sized whole-share signals were removed before scarce slot planning to test whether accepted risk haircuts should also imply lower slot priority. The best variant `drop_one_or_two_share_sized_signals` produced aggregate EV delta `-0.0510` and PnL delta `$-2,173.70` across the canonical windows. EV improved/regressed windows: `2` / `1`.
+
+Mechanism insight: whole-share dust status alone is not enough to promote a new slot-routing rule unless it clears Gate 4. Do not retry nearby 1-3 share dust filters on this frozen sample without replacement-value evidence or a distinct execution-cost model.
+
+### 2026-05-10 mechanism update: SEC T+1 event drift surface
+
+Experiment: `exp-20260510-023`
+
+Decision: `observed_only_paper_watch_candidate`.
+
+Finding: the new non-OHLCV SEC backtest snapshots are complete enough to run a
+three-window shadow event-surface audit, but the simple positive T+1
+excess-drift label is not yet production alpha by itself. Aggregate shadow
+candidates: `393`; valid 10d forward rows:
+`363`; positive 10d-average windows:
+`2/3`; aggregate 10d average return:
+`0.012219` with win rate `0.5179`.
+
+Mechanism insight: this is the right shape for the next event/oracle work:
+start from public-PIT event availability, measure post-event continuation, and
+only then decide whether an event candidate deserves forward paper routing.
+Do not turn this into another PEAD threshold sweep; the current run changed no
+reaction-magnitude threshold, volume rule, hold length, ranking rule, or live
+adapter.
+
+### 2026-05-10 mechanism update: SEC financial-report T+1 drift slice
+
+Experiment: `exp-20260510-024`
+
+Decision: `observed_only_forward_paper_queue_candidate`.
+
+Finding: narrowing the broader SEC T+1 event-drift surface to financial-report
+events (`earnings_8k` plus `periodic_report`) materially cleaned up stability:
+`184` valid 10d rows, 10d average return
+`0.022332`, 10d win rate
+`0.538`, and positive
+10d average return in `3/3` windows.
+
+Mechanism insight: for the event/oracle stack, the next production-visible work
+should be a default-off forward paper queue for this exact deterministic label.
+Do not promote same-sample SEC event trades directly, and do not retry broad
+PEAD reaction-magnitude, volume, or fixed-hold sweeps.
+
+### 2026-05-10 mechanism update: SEC financial-report T+1 forward queue
+
+Experiment: `exp-20260510-025`
+
+Decision: `accepted_for_forward_observation`.
+
+Finding: the strongest open SEC event/oracle lead from `exp-20260510-024` was
+moved into a production-visible, default-off paper queue and sleeve:
+`SEC_FINANCIAL_REPORT_T1_DRIFT_FORWARD_QUEUE` and
+`SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER`. The frozen qualification
+rule is financial-report event family (`earnings_8k` or `periodic_report`) plus
+positive ticker T+1 close-to-close return that also beats SPY on T+1. The queue
+freezes next-session paper entries, tracks open/closed paper state, and reports
+P&L attribution without emitting orders, changing core ranking, changing core
+sizing, or consuming core slots.
+
+Evidence: the focused queue/sleeve/report tests passed (`22 passed`). The
+canonical three-window core backtests stayed unchanged versus the accepted
+baseline: `late_strong` EV `4.2340`, `mid_weak` EV `1.6689`, and `old_thin` EV
+`0.3853`; aggregate EV and PnL deltas were both `0`. Survival stayed
+`80.39%`, `79.25%`, and `91.67%`.
+
+Mechanism insight: this is the correct production-safe expression of the SEC
+financial-report T+1 drift alpha for now: collect forward replacement-value
+outcomes before any live/default trade adapter. It deliberately bypasses the
+LLM soft-ranking bottleneck because the deterministic event/price-response
+surface already has a cleaner same-sample lead.
+
+Do not repeat: same-sample SEC financial-report T+1 threshold retunes,
+event-family micro-slices, hold-day retunes, or live promotion from the frozen
+historical sample. The next evidence must be closed forward paper outcomes:
+direct P&L, cash-relative P&L, core replacement value, and same-theme
+replacement value.
+
+### 2026-05-10 mechanism update: SEC financial-report non-platform queue
+
+Experiment: `exp-20260510-027`
+
+Decision: `accepted_default_off_forward_queue_refinement`.
+
+Finding: the accepted financial-report positive T+1 excess drift queue improves
+when `platform_pool` is excluded: source 10d average return
+`0.022332` across
+`184` valid rows versus non-platform
+10d average return `0.027636`
+across `157` valid rows. The
+excluded platform_pool slice averaged
+`-0.008507` over 10d.
+
+Mechanism insight: keep collecting this SEC queue as default-off paper, but
+freeze the deterministic candidate pool to non-platform financial-report events
+before spending forward observation budget on closed replacement value.

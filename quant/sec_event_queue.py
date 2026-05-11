@@ -13,11 +13,15 @@ GOVERNANCE_QUEUE_NAME = "SEC_GOVERNANCE_PROCEDURAL_FORWARD_QUEUE"
 GOVERNANCE_RULE_VERSION = "sec_governance_procedural_mild_reaction_v1"
 LEADERSHIP_QUEUE_NAME = "SEC_LEADERSHIP_CHANGE_FORWARD_QUEUE"
 LEADERSHIP_RULE_VERSION = "sec_leadership_change_negative_reaction_v1"
+FINANCIAL_REPORT_T1_QUEUE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_FORWARD_QUEUE"
+FINANCIAL_REPORT_T1_RULE_VERSION = "sec_financial_report_positive_t1_excess_non_platform_v2"
 PRIMARY_HORIZON_TRADING_DAYS = 10
 MAX_COUNTERFACTUAL_SIGNALS = 3
 REQUIRED_ITEM_CODE = "2.02"
 LEADERSHIP_REQUIRED_ITEM_CODE = "5.02"
 LEADERSHIP_MAX_EXCESS_REACTION = -0.02
+FINANCIAL_REPORT_EVENT_FAMILIES = ("earnings_8k", "periodic_report")
+FINANCIAL_REPORT_T1_EXCLUDED_COHORTS = ("platform_pool",)
 GOVERNANCE_TARGET_CELLS = {
     ("shareholder_vote", "negative_excess_0_to_minus_2pct"),
     ("charter_or_securities_change", "positive_excess_0_to_2pct"),
@@ -98,7 +102,27 @@ def latest_sec_filing_text_path(data_dir: str | Path) -> Path | None:
     return candidates[-1] if candidates else None
 
 
+def latest_sec_filing_events_path(data_dir: str | Path) -> Path | None:
+    root = Path(data_dir)
+    candidates = sorted(root.glob("sec_filing_events_*.jsonl"))
+    return candidates[-1] if candidates else None
+
+
 def load_sec_filing_text_rows(path: str | Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    source = Path(path)
+    with source.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            text = line.strip()
+            if not text:
+                continue
+            row = json.loads(text)
+            if isinstance(row, dict):
+                rows.append(row)
+    return rows
+
+
+def load_sec_filing_event_rows(path: str | Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     source = Path(path)
     with source.open("r", encoding="utf-8") as handle:
@@ -285,6 +309,34 @@ def leadership_semantic_subcategory(row: dict[str, Any]) -> str:
     )
 
 
+def sec_event_item_codes(row: dict[str, Any]) -> tuple[str, ...]:
+    raw = row.get("eight_k_item_codes")
+    if isinstance(raw, list):
+        return tuple(str(item) for item in raw if str(item))
+    raw = row.get("items_raw")
+    if isinstance(raw, str):
+        return tuple(item.strip() for item in raw.split(",") if item.strip())
+    return ()
+
+
+def sec_event_family(row: dict[str, Any]) -> str:
+    form_base = str(row.get("form_base") or row.get("form_type") or "").upper()
+    codes = set(sec_event_item_codes(row))
+    if form_base in {"10-K", "10-Q"}:
+        return "periodic_report"
+    if form_base == "8-K":
+        if REQUIRED_ITEM_CODE in codes:
+            return "earnings_8k"
+        if codes & {"1.01", "2.03", "3.02"}:
+            return "capital_contract_8k"
+        if codes & {"5.02", "5.03", "5.07"}:
+            return "governance_8k"
+        if codes & {"7.01", "8.01"}:
+            return "fd_other_8k"
+        return "other_8k"
+    return "other_sec"
+
+
 def evaluate_first_reaction(
     row: dict[str, Any],
     ohlcv_by_ticker: dict[str, Any],
@@ -332,6 +384,85 @@ def evaluate_first_reaction(
     }
 
 
+def _close_return_between(
+    rows: list[dict[str, Any]],
+    start_idx: int,
+    end_idx: int,
+) -> float | None:
+    if start_idx < 0 or end_idx >= len(rows):
+        return None
+    start_close = rows[start_idx].get("close")
+    end_close = rows[end_idx].get("close")
+    if not start_close or not end_close:
+        return None
+    return end_close / start_close - 1.0
+
+
+def financial_report_drift_bucket(
+    t1_return: float | None,
+    spy_t1_return: float | None,
+) -> str:
+    if t1_return is None or spy_t1_return is None:
+        return "immature_or_missing_t1"
+    if t1_return > 0 and t1_return > spy_t1_return:
+        return "positive_t1_excess_drift"
+    if t1_return > 0:
+        return "positive_t1_absolute_only"
+    return "negative_or_zero_t1_drift"
+
+
+def evaluate_t1_excess_drift(
+    row: dict[str, Any],
+    ohlcv_by_ticker: dict[str, Any],
+    spy_ohlcv: Any,
+) -> dict[str, Any]:
+    ticker = str(row.get("ticker") or "").upper()
+    usable = str(row.get("usable_trade_date") or "")[:10]
+    ticker_rows = _normalize_ohlcv_rows(ohlcv_by_ticker.get(ticker))
+    spy_rows = _normalize_ohlcv_rows(spy_ohlcv)
+    if not ticker or not usable or not ticker_rows or not spy_rows:
+        return {
+            "price_status": "missing_ticker_spy_or_usable_date",
+            "drift_bucket": "immature_or_missing_t1",
+        }
+
+    event_idx = _idx_on_or_after(ticker_rows, usable)
+    spy_idx = _idx_on_or_after(spy_rows, usable)
+    if event_idx is None or spy_idx is None:
+        return {
+            "price_status": "missing_event_trading_date",
+            "drift_bucket": "immature_or_missing_t1",
+        }
+
+    t1_idx = event_idx + 1
+    spy_t1_idx = spy_idx + 1
+    t1_return = _close_return_between(ticker_rows, event_idx, t1_idx)
+    spy_t1_return = _close_return_between(spy_rows, spy_idx, spy_t1_idx)
+    bucket = financial_report_drift_bucket(t1_return, spy_t1_return)
+    event_day = ticker_rows[event_idx]
+    t1_day = ticker_rows[t1_idx] if t1_idx < len(ticker_rows) else None
+    entry_idx = event_idx + 2
+    entry_day = ticker_rows[entry_idx] if entry_idx < len(ticker_rows) else None
+    excess = (
+        t1_return - spy_t1_return
+        if isinstance(t1_return, (int, float))
+        and isinstance(spy_t1_return, (int, float))
+        else None
+    )
+    return {
+        "price_status": "covered" if t1_day else "missing_t1_close",
+        "event_trading_date": event_day["date"],
+        "t1_date": t1_day["date"] if t1_day else None,
+        "shadow_entry_date": entry_day["date"] if entry_day else None,
+        "t1_return": round(t1_return, 6) if t1_return is not None else None,
+        "spy_t1_return": (
+            round(spy_t1_return, 6) if spy_t1_return is not None else None
+        ),
+        "t1_excess_return_vs_spy": round(excess, 6) if excess is not None else None,
+        "drift_bucket": bucket,
+    }
+
+
 def qualifies_sec_negative_reaction_event(event: dict[str, Any]) -> bool:
     item_codes = {str(item) for item in event.get("eight_k_item_codes") or []}
     reaction = event.get("reaction_excess_return")
@@ -366,6 +497,19 @@ def qualifies_sec_leadership_change_event(event: dict[str, Any]) -> bool:
         and event.get("price_status") == "covered"
         and isinstance(reaction, (int, float))
         and reaction <= LEADERSHIP_MAX_EXCESS_REACTION
+    )
+
+
+def qualifies_sec_financial_report_t1_event(event: dict[str, Any]) -> bool:
+    cohort = str(event.get("cohort") or "")
+    return (
+        event.get("status") == "ok"
+        and event.get("event_family") in FINANCIAL_REPORT_EVENT_FAMILIES
+        and bool(cohort)
+        and cohort not in FINANCIAL_REPORT_T1_EXCLUDED_COHORTS
+        and event.get("price_status") == "covered"
+        and event.get("drift_bucket") == "positive_t1_excess_drift"
+        and isinstance(event.get("t1_excess_return_vs_spy"), (int, float))
     )
 
 
@@ -557,6 +701,101 @@ def build_sec_leadership_change_queue(
     }
 
 
+def build_sec_financial_report_t1_queue(
+    rows: list[dict[str, Any]],
+    *,
+    as_of: str,
+    ohlcv_by_ticker: dict[str, Any] | None = None,
+    spy_ohlcv: Any = None,
+    core_signals: list[dict[str, Any]] | None = None,
+    source_path: str | Path | None = None,
+    source_status: str = "loaded",
+) -> dict[str, Any]:
+    ohlcv_by_ticker = ohlcv_by_ticker or {}
+    candidates: list[dict[str, Any]] = []
+    evaluated_count = 0
+    skipped_not_pit_safe = 0
+    as_of_date = str(as_of)[:10]
+    seen_shadow_keys: set[tuple[str, str, str]] = set()
+
+    for row in rows:
+        if row.get("pit_safe_flag") is False:
+            skipped_not_pit_safe += 1
+            continue
+        ticker = str(row.get("ticker") or "").upper()
+        if not ticker:
+            continue
+        family = sec_event_family(row)
+        event = {
+            **row,
+            "status": row.get("status") or "ok",
+            "ticker": ticker,
+            "event_family": family,
+            "item_codes": list(sec_event_item_codes(row)),
+            **evaluate_t1_excess_drift(row, ohlcv_by_ticker, spy_ohlcv),
+        }
+        if event.get("t1_date") != as_of_date:
+            continue
+        evaluated_count += 1
+        shadow_key = (
+            ticker,
+            str(event.get("event_trading_date") or ""),
+            family,
+        )
+        if shadow_key in seen_shadow_keys:
+            continue
+        seen_shadow_keys.add(shadow_key)
+        if qualifies_sec_financial_report_t1_event(event):
+            candidates.append(
+                _financial_report_t1_candidate_payload(
+                    event,
+                    core_signals=core_signals or [],
+                )
+            )
+
+    return {
+        "queue_name": FINANCIAL_REPORT_T1_QUEUE_NAME,
+        "rule_version": FINANCIAL_REPORT_T1_RULE_VERSION,
+        "enabled": False,
+        "asof_date": as_of_date,
+        "candidate_count": len(candidates),
+        "candidates": sorted(
+            candidates,
+            key=lambda candidate: (
+                -float(candidate.get("t1_excess_return_vs_spy") or 0.0),
+                str(candidate.get("ticker") or ""),
+            ),
+        ),
+        "data_source": {
+            "status": source_status,
+            "path": str(source_path) if source_path else None,
+            "loaded_row_count": len(rows),
+            "t1_evaluated_count": evaluated_count,
+            "skipped_not_pit_safe_count": skipped_not_pit_safe,
+        },
+        "parameters": {
+            "packet_rule": (
+                "event_family in earnings_8k, periodic_report AND "
+                "cohort not in platform_pool AND ticker T+1 close-to-close "
+                "return > 0 AND > SPY T+1 return"
+            ),
+            "included_event_families": list(FINANCIAL_REPORT_EVENT_FAMILIES),
+            "excluded_cohorts": list(FINANCIAL_REPORT_T1_EXCLUDED_COHORTS),
+            "primary_horizon_trading_days": PRIMARY_HORIZON_TRADING_DAYS,
+            "entry_timing": "next_trading_day_open_after_t1_close",
+            "source_experiment": "exp-20260510-027",
+        },
+        "production_impact": {
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+            "scope": "observe_only_forward_sec_financial_report_t1_queue",
+        },
+        "next_action": "freeze_paper_entries_and_measure_forward_replacement_value",
+    }
+
+
 def build_forward_queue_from_sec_filing_text(
     *,
     data_dir: str | Path,
@@ -626,6 +865,32 @@ def build_forward_leadership_queue_from_sec_filing_text(
     )
 
 
+def build_forward_financial_report_t1_queue_from_sec_filing_events(
+    *,
+    data_dir: str | Path,
+    as_of: str,
+    ohlcv_by_ticker: dict[str, Any] | None = None,
+    spy_ohlcv: Any = None,
+    core_signals: list[dict[str, Any]] | None = None,
+    source_path: str | Path | None = None,
+) -> dict[str, Any]:
+    path = Path(source_path) if source_path else latest_sec_filing_events_path(data_dir)
+    if path is None or not path.exists():
+        return empty_sec_financial_report_t1_queue(
+            as_of,
+            "missing_sec_filing_events_jsonl",
+        )
+    rows = load_sec_filing_event_rows(path)
+    return build_sec_financial_report_t1_queue(
+        rows,
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv_by_ticker,
+        spy_ohlcv=spy_ohlcv,
+        core_signals=core_signals,
+        source_path=path,
+    )
+
+
 def empty_sec_event_queue(as_of: str, reason: str) -> dict[str, Any]:
     queue = build_sec_event_queue([], as_of=as_of, source_status=reason)
     queue["error"] = reason
@@ -644,6 +909,16 @@ def empty_sec_governance_queue(as_of: str, reason: str) -> dict[str, Any]:
 
 def empty_sec_leadership_queue(as_of: str, reason: str) -> dict[str, Any]:
     queue = build_sec_leadership_change_queue(
+        [],
+        as_of=as_of,
+        source_status=reason,
+    )
+    queue["error"] = reason
+    return queue
+
+
+def empty_sec_financial_report_t1_queue(as_of: str, reason: str) -> dict[str, Any]:
+    queue = build_sec_financial_report_t1_queue(
         [],
         as_of=as_of,
         source_status=reason,
@@ -732,6 +1007,38 @@ def _leadership_candidate_payload(
         "reaction_return": event.get("reaction_return"),
         "spy_reaction_return": event.get("spy_reaction_return"),
         "reaction_excess_return": event.get("reaction_excess_return"),
+        "trade_enabled": False,
+        "action": "observe_only",
+        "counterfactual": _counterfactual_payload(core_signals),
+    }
+
+
+def _financial_report_t1_candidate_payload(
+    event: dict[str, Any],
+    *,
+    core_signals: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "ticker": event.get("ticker"),
+        "usable_trade_date": event.get("usable_trade_date"),
+        "event_trading_date": event.get("event_trading_date"),
+        "t1_date": event.get("t1_date"),
+        "shadow_entry_date": event.get("shadow_entry_date"),
+        "filing_date": event.get("filing_date"),
+        "accepted_at": event.get("accepted_at"),
+        "accession_number": event.get("accession_number"),
+        "form_type": event.get("form_type"),
+        "form_base": event.get("form_base"),
+        "event_family": event.get("event_family"),
+        "cohort": event.get("cohort"),
+        "item_codes": event.get("item_codes"),
+        "primary_document": event.get("primary_document"),
+        "index_url": event.get("index_url"),
+        "archive_url": event.get("archive_url"),
+        "t1_return": event.get("t1_return"),
+        "spy_t1_return": event.get("spy_t1_return"),
+        "t1_excess_return_vs_spy": event.get("t1_excess_return_vs_spy"),
+        "drift_bucket": event.get("drift_bucket"),
         "trade_enabled": False,
         "action": "observe_only",
         "counterfactual": _counterfactual_payload(core_signals),

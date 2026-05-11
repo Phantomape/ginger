@@ -4,11 +4,14 @@ from pathlib import Path
 
 from sec_event_queue import (
     GOVERNANCE_QUEUE_NAME,
+    FINANCIAL_REPORT_T1_QUEUE_NAME,
     LEADERSHIP_QUEUE_NAME,
     QUEUE_NAME,
+    build_forward_financial_report_t1_queue_from_sec_filing_events,
     build_sec_governance_procedural_queue,
     build_forward_leadership_queue_from_sec_filing_text,
     build_forward_queue_from_sec_filing_text,
+    build_sec_financial_report_t1_queue,
     build_sec_leadership_change_queue,
     build_sec_event_queue,
     governance_reaction_bucket,
@@ -16,6 +19,7 @@ from sec_event_queue import (
     leadership_semantic_subcategory,
     language_features,
     load_sec_filing_text_rows,
+    qualifies_sec_financial_report_t1_event,
     qualifies_sec_governance_procedural_event,
     qualifies_sec_leadership_change_event,
     qualifies_sec_negative_reaction_event,
@@ -26,6 +30,7 @@ def _row(**overrides):
     row = {
         "status": "ok",
         "ticker": "LITE",
+        "cohort": "other_equity",
         "accession_number": "0001",
         "form_type": "8-K",
         "filing_date": "2026-05-04",
@@ -45,6 +50,14 @@ def _row(**overrides):
 
 def _ohlcv(open_price: float, close_price: float):
     return [{"date": "2026-05-04", "open": open_price, "close": close_price}]
+
+
+def _ohlcv_rows(closes: list[float]):
+    dates = ["2026-05-04", "2026-05-05", "2026-05-06"]
+    return [
+        {"date": date, "open": close_price, "close": close_price}
+        for date, close_price in zip(dates, closes)
+    ]
 
 
 def test_language_features_match_negative_packet_threshold():
@@ -136,6 +149,119 @@ def test_leadership_queue_is_default_off_and_freezes_counterfactuals():
     assert candidate["counterfactual"]["alternatives"][0]["ticker"] == "NVDA"
     assert candidate["counterfactual"]["alternatives"][-1]["type"] == "cash"
     assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_financial_report_t1_queue_is_default_off_and_uses_positive_excess_drift():
+    row = _row(
+        ticker="FRPT",
+        accession_number="0004",
+        eight_k_item_codes=["2.02", "9.01"],
+        combined_text="Quarterly financial results.",
+    )
+    queue = build_sec_financial_report_t1_queue(
+        [row],
+        as_of="2026-05-05",
+        ohlcv_by_ticker={"FRPT": _ohlcv_rows([100.0, 103.0, 104.0])},
+        spy_ohlcv=_ohlcv_rows([100.0, 101.0, 101.5]),
+        core_signals=[{"ticker": "NVDA", "strategy": "trend_long", "confidence_score": 0.91}],
+        source_path="data/non_ohlcv/sec_filing_events_sample.jsonl",
+    )
+
+    assert queue["queue_name"] == FINANCIAL_REPORT_T1_QUEUE_NAME
+    assert queue["enabled"] is False
+    assert queue["candidate_count"] == 1
+    candidate = queue["candidates"][0]
+    assert candidate["ticker"] == "FRPT"
+    assert candidate["event_family"] == "earnings_8k"
+    assert candidate["cohort"] == "other_equity"
+    assert candidate["t1_date"] == "2026-05-05"
+    assert candidate["shadow_entry_date"] == "2026-05-06"
+    assert candidate["t1_excess_return_vs_spy"] == 0.02
+    assert candidate["trade_enabled"] is False
+    assert candidate["counterfactual"]["alternatives"][0]["ticker"] == "NVDA"
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_financial_report_t1_queue_rejects_nonfinancial_or_nonexcess_rows():
+    good_periodic = _row(
+        ticker="PER",
+        accession_number="0005",
+        form_type="10-Q",
+        form_base="10-Q",
+        eight_k_item_codes=[],
+    )
+    governance = _row(
+        ticker="GOV",
+        accession_number="0006",
+        eight_k_item_codes=["5.02"],
+    )
+
+    queue = build_sec_financial_report_t1_queue(
+        [good_periodic, governance],
+        as_of="2026-05-05",
+        ohlcv_by_ticker={
+            "PER": _ohlcv_rows([100.0, 100.5, 101.0]),
+            "GOV": _ohlcv_rows([100.0, 110.0, 111.0]),
+        },
+        spy_ohlcv=_ohlcv_rows([100.0, 101.0, 102.0]),
+    )
+
+    assert queue["candidate_count"] == 0
+    event = {
+        "status": "ok",
+        "event_family": "periodic_report",
+        "cohort": "other_equity",
+        "price_status": "covered",
+        "drift_bucket": "positive_t1_excess_drift",
+        "t1_excess_return_vs_spy": 0.01,
+    }
+    assert qualifies_sec_financial_report_t1_event(event) is True
+
+
+def test_financial_report_t1_queue_excludes_platform_pool_and_missing_cohort():
+    platform = _row(
+        ticker="PLAT",
+        accession_number="0007",
+        cohort="platform_pool",
+        eight_k_item_codes=["2.02", "9.01"],
+    )
+    missing = _row(
+        ticker="MISS",
+        accession_number="0008",
+        eight_k_item_codes=["2.02", "9.01"],
+    )
+    missing.pop("cohort")
+    allowed = _row(
+        ticker="KEEP",
+        accession_number="0009",
+        cohort="other_equity",
+        eight_k_item_codes=["2.02", "9.01"],
+    )
+
+    queue = build_sec_financial_report_t1_queue(
+        [platform, missing, allowed],
+        as_of="2026-05-05",
+        ohlcv_by_ticker={
+            "PLAT": _ohlcv_rows([100.0, 103.0, 104.0]),
+            "MISS": _ohlcv_rows([100.0, 103.0, 104.0]),
+            "KEEP": _ohlcv_rows([100.0, 103.0, 104.0]),
+        },
+        spy_ohlcv=_ohlcv_rows([100.0, 101.0, 101.5]),
+    )
+
+    assert queue["candidate_count"] == 1
+    assert queue["candidates"][0]["ticker"] == "KEEP"
+    assert queue["candidates"][0]["cohort"] == "other_equity"
+
+    base_event = {
+        "status": "ok",
+        "event_family": "earnings_8k",
+        "price_status": "covered",
+        "drift_bucket": "positive_t1_excess_drift",
+        "t1_excess_return_vs_spy": 0.02,
+    }
+    assert qualifies_sec_financial_report_t1_event({**base_event, "cohort": "platform_pool"}) is False
+    assert qualifies_sec_financial_report_t1_event(base_event) is False
 
 
 def test_governance_semantics_and_reaction_buckets_match_frozen_cells():
@@ -241,6 +367,19 @@ def test_build_forward_leadership_queue_handles_missing_source(tmp_path: Path):
     assert queue["data_source"]["status"] == "missing_sec_filing_text_jsonl"
 
 
+def test_build_forward_financial_report_t1_queue_handles_missing_source(tmp_path: Path):
+    queue = build_forward_financial_report_t1_queue_from_sec_filing_events(
+        data_dir=tmp_path,
+        as_of="2026-05-05",
+        ohlcv_by_ticker={},
+        spy_ohlcv=[],
+    )
+
+    assert queue["enabled"] is False
+    assert queue["candidate_count"] == 0
+    assert queue["data_source"]["status"] == "missing_sec_filing_events_jsonl"
+
+
 def test_shared_queue_policy_replays_exp010_primary_packet():
     from experiments.exp_20260504_010_sec_event_sleeve_backtest import TEXT_PATH, build_primary_candidates
 
@@ -327,4 +466,25 @@ def test_report_generator_renders_sec_leadership_queue_without_orders():
     assert "SEC LEADERSHIP-CHANGE EVENT QUEUE" in report
     assert "Enabled: False" in report
     assert "CEOX" in report
+    assert "paper only" in report
+
+
+def test_report_generator_renders_sec_financial_report_t1_queue_without_orders():
+    from report_generator import generate_daily_report
+
+    queue = build_sec_financial_report_t1_queue(
+        [_row(ticker="FRPT", accession_number="0004")],
+        as_of="2026-05-05",
+        ohlcv_by_ticker={"FRPT": _ohlcv_rows([100.0, 103.0, 104.0])},
+        spy_ohlcv=_ohlcv_rows([100.0, 101.0, 101.5]),
+    )
+    report = generate_daily_report(
+        signals=[],
+        market_regime={"regime": "BULL"},
+        sec_financial_report_t1_queue=queue,
+    )
+
+    assert "SEC FINANCIAL-REPORT T+1 DRIFT QUEUE" in report
+    assert "Enabled: False" in report
+    assert "FRPT" in report
     assert "paper only" in report
