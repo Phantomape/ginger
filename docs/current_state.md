@@ -147,3 +147,21 @@ Latest Space data-vendor breakout risk refinement: `exp-20260511-019` swept an e
 Latest Space launch/connectivity trend risk refinement: `exp-20260511-021` tested an extra bounded scalar for RKLB/ASTS `trend_long` entries on top of the accepted official-catalyst Space 0.75x hypothesis and PL/BKSY breakout 0.25x haircut. The best scalar was `1.25` with decision `accepted_default_off_launch_connectivity_trend_risk_topup`: aggregate EV delta versus exp019 `+0.3686`, aggregate PnL delta `$+6,661.77`.
 
 Latest Space non-data-vendor breakout risk refinement: `exp-20260511-022` swept an extra scalar for RKLB/ASTS/RDW/LUNR-style `breakout_long` entries while keeping the accepted PL/BKSY breakout haircut and RKLB/ASTS trend top-up fixed. The best scalar was `0.25` with decision `rejected_non_data_vendor_breakout_risk_haircut`: aggregate EV delta versus the accepted Space + PL/BKSY haircut + RKLB/ASTS trend before state `+0.2184`, aggregate PnL delta `$-44.75`.
+
+Latest Space remaining trend risk refinement: `exp-20260511-023` tested extending the accepted trend top-up beyond RKLB/ASTS to remaining official-catalyst `trend_long` entries. The best scalar was `1.5` with decision `rejected_remaining_trend_risk_topup`: aggregate EV delta versus exp021 `+0.2263`, aggregate PnL delta `$+10,047.75`. The result was positive but underpowered because it improved fewer than two canonical windows.
+
+
+
+## exp-20260511-026 Space satcom breadth low-risk
+
+- timestamp: 2026-05-11T14:18:24+00:00
+- lane: alpha_search
+- decision: rejected_satcom_breadth_low_risk_extension
+- changed_variable: space_satcom_breadth_risk_scalar
+- best_satcom_breadth_risk_scalar: 0.75
+- expected_value_score_delta_vs_before: 0.9043
+- before_aggregate: {'expected_value_score_sum': 8.4907, 'total_pnl_sum': 227137.08, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 9.395, 'total_pnl_sum': 242349.79, 'trade_count_sum': 83, 'min_survival_rate': 0.8462, 'max_drawdown_pct_max': 0.1013}
+- interpretation: Space alpha should stay focused on the official-catalyst operating sleeve and the already accepted PL/BKSY and RKLB/ASTS risk refinements. Mature-satcom breadth is not strong enough to add without a future PIT event trigger.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-026\space_satcom_breadth_low_risk.json`

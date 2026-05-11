@@ -7303,3 +7303,24 @@ Decision: `rejected_non_data_vendor_breakout_risk_haircut`.
 Finding: after fixing the accepted PL/BKSY breakout haircut at `0.25x` and RKLB/ASTS trend top-up at `1.25x`, sweeping a separate RKLB/ASTS/RDW/LUNR-style breakout scalar produced best scalar `0.25` with aggregate EV delta `+0.2184` and PnL `$-44.75` versus the accepted before state.
 
 Mechanism insight: do not transfer the data-vendor breakout haircut to non-data-vendor Space breakouts unless the cohort clears the same three-window EV/risk gate. Keep these cohorts separate in future risk-allocation searches.
+
+### 2026-05-11 mechanism update: Space remaining official trend risk
+
+Experiment: `exp-20260511-023`
+
+Decision: `rejected_remaining_trend_risk_topup`.
+
+Finding: extending the accepted Space trend risk top-up from RKLB/ASTS to remaining official-catalyst `trend_long` entries produced best scalar `1.5` with aggregate EV delta `+0.2263` and PnL `$+10,047.75` versus exp-20260511-021, but the improvement was not cross-window enough to clear Gate 4.
+
+Mechanism insight: remaining PL/RDW-style trend continuation is a forward attribution bucket, not a new same-sample risk scalar. Do not broaden Space trend risk again on the frozen windows without forward replacement value or independent multi-window evidence.
+
+
+
+### exp-20260511-026 Space mature-satcom breadth low-risk
+
+- Decision: rejected_satcom_breadth_low_risk_extension.
+- Tested variable: `space_satcom_breadth_risk_scalar` for IRDM/VSAT/SATS, with GSAT excluded.
+- Best scalar: `0.75`.
+- Aggregate EV delta vs exp021 stack: `0.9043`.
+- Interpretation: Space alpha should stay focused on the official-catalyst operating sleeve and the already accepted PL/BKSY and RKLB/ASTS risk refinements. Mature-satcom breadth is not strong enough to add without a future PIT event trigger.
+- Do not retry mature-satcom breadth without PIT official event-state evidence or forward shadow-ledger support.
