@@ -187,6 +187,10 @@ def main():
         build_low_deployment_etf_overlay_snapshot,
         empty_low_deployment_etf_overlay_snapshot,
     )
+    from space_catalyst_sleeve import (
+        build_space_catalyst_shadow_snapshot,
+        empty_space_catalyst_shadow_snapshot,
+    )
     from pilot_sleeve       import (
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
         append_pilot_decision_snapshots,
@@ -218,6 +222,8 @@ def main():
     pilot_records = {}
     pilot_universe = []
     pilot_metadata = {}
+    universe_governance_state = None
+    space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(today_iso)
     try:
         universe_governance_state = universe_segments_as_of(
             today_iso,
@@ -257,6 +263,27 @@ def main():
             log.info("Pilot sleeve trade-enabled tickers: %s", pilot_universe)
     except Exception as e:
         log.warning(f"Universe governance adapter unavailable: {e}")
+    try:
+        space_catalyst_shadow = build_space_catalyst_shadow_snapshot(today_iso)
+        if universe_governance_state is not None:
+            universe_governance_state["space_catalyst_shadow"] = space_catalyst_shadow
+            save_universe_state_report(
+                universe_governance_state,
+                f"data/universe_state_{today}.json",
+            )
+        if space_catalyst_shadow.get("candidate_count", 0) > 0:
+            log.info(
+                "Space catalyst shadow: candidates=%d trade_enabled=%d mode=%s",
+                space_catalyst_shadow.get("candidate_count", 0),
+                len(space_catalyst_shadow.get("trade_enabled_tickers") or []),
+                space_catalyst_shadow.get("mode"),
+            )
+    except Exception as e:
+        log.warning(f"Space catalyst shadow snapshot unavailable: {e}")
+        space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(
+            today_iso,
+            "space_catalyst_shadow_build_failed",
+        )
 
     data_universe = sorted(set(universe) | set(pilot_universe))
     try:
@@ -1275,6 +1302,7 @@ def main():
     trend_signals_dict["state_surface_queue"] = state_surface_queue
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
     trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
+    trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["platform_rs20_watch"] = platform_rs20_watch
     trend_signals_dict["sec_10k_forward_watch"] = sec_10k_forward_watch
     trend_signals_dict["non_ohlcv_snapshot"] = non_ohlcv_snapshot
@@ -1307,6 +1335,7 @@ def main():
         event_sleeve_bundle = event_sleeve_bundle,
         state_surface_sleeve = state_surface_sleeve,
         low_deployment_etf_overlay = low_deployment_etf_overlay,
+        space_catalyst_shadow = space_catalyst_shadow,
         platform_rs20_watch = platform_rs20_watch,
         sec_10k_forward_watch = sec_10k_forward_watch,
         non_ohlcv_snapshot = non_ohlcv_snapshot,
@@ -1345,6 +1374,7 @@ def main():
         "state_surface_queue": state_surface_queue,
         "state_surface_sleeve": state_surface_sleeve,
         "low_deployment_etf_overlay": low_deployment_etf_overlay,
+        "space_catalyst_shadow": space_catalyst_shadow,
         "platform_rs20_watch": platform_rs20_watch,
         "sec_10k_forward_watch": sec_10k_forward_watch,
         "non_ohlcv_snapshot": non_ohlcv_snapshot,

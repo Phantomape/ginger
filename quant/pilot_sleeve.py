@@ -27,6 +27,7 @@ from universe_manager import (
 AI_INFRA_AGGRESSIVE_SLEEVE_NAME = "AI_INFRA_AGGRESSIVE"
 LEGACY_AI_INFRA_PILOT_SLEEVE_NAME = "AI_INFRA_PILOT"
 CONSUMER_PLATFORM_SLEEVE_NAME = "CONSUMER_PLATFORM_PILOT"
+SPACE_CATALYST_SHADOW_SLEEVE_NAME = "SPACE_CATALYST_SHADOW"
 
 # Backward-compatible import name used by older tests and replay records. New
 # snapshots use the explicit aggressive AI infrastructure sleeve.
@@ -43,6 +44,17 @@ AI_INFRA_THEME_SEGMENTS = {
     "ai_datacenter_infra": "power_datacenter_infra",
     "ai_gpu_cloud": "specialist_compute_cloud",
     "btc_miner_hpc": "specialist_compute_cloud",
+}
+
+SPACE_CATALYST_THEME_SEGMENTS = {
+    "space_launch_systems": "launch_lunar",
+    "space_lunar_infrastructure": "launch_lunar",
+    "space_satellite_connectivity": "satellite_connectivity",
+    "space_mature_satcom": "satellite_connectivity",
+    "space_data_defense": "space_data_defense",
+    "space_manufacturing_infrastructure": "space_data_defense",
+    "space_theme_etf": "theme_beta_benchmark",
+    "space_tourism_meme": "quarantine_meme",
 }
 
 SLEEVE_POLICIES = {
@@ -64,6 +76,14 @@ SLEEVE_POLICIES = {
         "segment_limit_per_sleeve": None,
         "selection_policy": "trade_quality_score_then_confidence_then_risk_reward",
     },
+    SPACE_CATALYST_SHADOW_SLEEVE_NAME: {
+        "base_max_concurrent_positions": 0,
+        "bull_max_concurrent_positions": 0,
+        "sleeve_max_capital_pct": 0.06,
+        "sleeve_max_risk_pct": 0.03,
+        "segment_limit_per_sleeve": 1,
+        "selection_policy": "observe_only_no_live_slots",
+    },
 }
 
 
@@ -82,6 +102,8 @@ def _theme_segment(record: dict | None) -> str:
     if explicit:
         return str(explicit)
     theme = str(record.get("theme") or "").lower()
+    if theme in SPACE_CATALYST_THEME_SEGMENTS:
+        return SPACE_CATALYST_THEME_SEGMENTS[theme]
     return AI_INFRA_THEME_SEGMENTS.get(theme, theme or "unknown")
 
 
@@ -95,6 +117,8 @@ def pilot_sleeve_name_for_record(record: dict | None) -> str:
         return str(explicit)
     if theme == "consumer_digital_platform":
         return CONSUMER_PLATFORM_SLEEVE_NAME
+    if theme in SPACE_CATALYST_THEME_SEGMENTS or theme.startswith("space_"):
+        return SPACE_CATALYST_SHADOW_SLEEVE_NAME
     if theme.startswith("ai_") or theme == "btc_miner_hpc":
         return AI_INFRA_AGGRESSIVE_SLEEVE_NAME
     return AI_INFRA_AGGRESSIVE_SLEEVE_NAME
@@ -146,7 +170,10 @@ def max_concurrent_for_sleeve(
         and ai_infra_bull_booster_active(market_context)
     )
     key = "bull_max_concurrent_positions" if bull_booster else "base_max_concurrent_positions"
-    return int(policy.get(key) or MAX_CONCURRENT_PILOT_POSITIONS), bull_booster
+    value = policy.get(key)
+    if value is None:
+        value = MAX_CONCURRENT_PILOT_POSITIONS
+    return int(value), bull_booster
 
 
 def _pilot_selection_priority(

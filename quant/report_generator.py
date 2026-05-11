@@ -53,6 +53,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            event_sleeve_bundle=None,
                            state_surface_sleeve=None,
                            low_deployment_etf_overlay=None,
+                           space_catalyst_shadow=None,
                            platform_rs20_watch=None,
                            sec_10k_forward_watch=None,
                            non_ohlcv_snapshot=None,
@@ -84,6 +85,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
+        space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         platform_rs20_watch (dict):     Default-off platform RS20 no-gap watch ledger
         sec_10k_forward_watch (dict):   Default-off SEC 10-K liquidity watch ledger
         non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
@@ -302,6 +304,30 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"ADV20={adv_text} {candidate.get('liquidity_bucket', 'adv_unknown')} "
                 f"alts={candidate.get('same_day_core_alternative_count', 0)} "
                 "(observe only)"
+            )
+
+    if space_catalyst_shadow and space_catalyst_shadow.get("candidate_count", 0) > 0:
+        lines.append("\n" + "-" * 60)
+        lines.append("SPACE CATALYST SHADOW UNIVERSE")
+        lines.append("-" * 60)
+        trade_enabled = space_catalyst_shadow.get("trade_enabled_tickers") or []
+        lines.append(
+            f"  Mode: {space_catalyst_shadow.get('mode', 'observe_only')}  |  "
+            f"Candidates: {space_catalyst_shadow.get('candidate_count', 0)}  |  "
+            f"Trade-enabled: {len(trade_enabled)}"
+        )
+        segments = space_catalyst_shadow.get("tickers_by_segment") or {}
+        for segment, tickers in list(sorted(segments.items()))[:6]:
+            lines.append(f"  {segment}: {', '.join(tickers)}")
+        fields = space_catalyst_shadow.get("llm_event_fields") or []
+        if fields:
+            lines.append("  LLM fields: " + ", ".join(fields[:8]))
+        gates = space_catalyst_shadow.get("promotion_gates") or {}
+        if gates:
+            lines.append(
+                "  Promotion gate: "
+                f"{gates.get('minimum_closed_decisions', 'n/a')} closed decisions, "
+                "positive direct and replacement value"
             )
 
     addon_actions = addon_actions or []

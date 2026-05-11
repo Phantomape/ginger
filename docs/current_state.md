@@ -65,6 +65,16 @@ drawdown worsened from `8.15%` to `11.71%`. Keep the space theme observe-only;
 the next valid evidence is forward shadow replacement value, not live slot
 enablement or core universe promotion.
 
+Latest forward-observation alpha surface: `exp-20260511-003` accepted the
+space catalyst theme as a production-visible, default-off shadow surface. The
+daily run now exposes `SPACE_CATALYST_SHADOW` records, event fields, and
+promotion gates in the universe state, report, and `quant_signals` output, but
+keeps live slots at `0` and changes no orders, ranking, sizing, filters, or core
+candidate pool. The canonical three-window core metrics stayed unchanged:
+`late_strong` EV `4.2340`, `mid_weak` EV `1.6689`, and `old_thin` EV `0.3853`.
+The next evidence is closed forward direct PnL and replacement value, not a
+static space-pool promotion.
+
 Current priority: do not retune local add-on trigger, cap, heat, reserve,
 strategy-cohort variants, ETF overlay parameters, nearby RS20 risk scalars,
 single-ticker sector taxonomy, global `MAX_POSITIONS`, or scarce-slot breakout

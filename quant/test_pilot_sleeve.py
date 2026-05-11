@@ -8,9 +8,11 @@ sys.path.insert(0, os.path.dirname(__file__))
 from pilot_sleeve import (  # noqa: E402
     AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
     CONSUMER_PLATFORM_SLEEVE_NAME,
+    SPACE_CATALYST_SHADOW_SLEEVE_NAME,
     apply_pilot_sizing_policy,
     build_counterfactual_snapshots,
     mark_pilot_signals,
+    pilot_sleeve_name_for_record,
     pilot_records_as_of,
     select_pilot_entry_candidates,
 )
@@ -330,6 +332,51 @@ def test_independent_consumer_sleeve_does_not_consume_ai_slot():
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
         CONSUMER_PLATFORM_SLEEVE_NAME,
     }
+
+
+def test_space_theme_defaults_to_shadow_sleeve_and_segment():
+    record = {
+        "ticker": "RKLB",
+        "status": "research",
+        "theme": "space_launch_systems",
+        "max_capital_scalar": 0.0,
+        "max_risk_scalar": 0.0,
+    }
+    signal = {"ticker": "RKLB", "sizing": {"shares_to_buy": 10}}
+
+    marked = mark_pilot_signals([signal], {"RKLB": record})
+
+    assert pilot_sleeve_name_for_record(record) == SPACE_CATALYST_SHADOW_SLEEVE_NAME
+    assert marked[0]["pilot_sleeve"]["name"] == SPACE_CATALYST_SHADOW_SLEEVE_NAME
+    assert marked[0]["pilot_sleeve"]["segment"] == "launch_lunar"
+
+
+def test_space_catalyst_shadow_policy_has_no_live_slots_even_if_promoted():
+    records = {
+        "RKLB": {
+            "pilot_sleeve": SPACE_CATALYST_SHADOW_SLEEVE_NAME,
+            "theme": "space_launch_systems",
+            "theme_segment": "launch_lunar",
+        }
+    }
+    signals = [
+        {
+            "ticker": "RKLB",
+            "trade_quality_score": 0.99,
+            "sizing": {"shares_to_buy": 10, "position_pct_of_portfolio": 0.03},
+        }
+    ]
+
+    selected, audit = select_pilot_entry_candidates(signals, records)
+
+    assert selected == []
+    sleeve_audit = audit["by_sleeve"][SPACE_CATALYST_SHADOW_SLEEVE_NAME]
+    assert sleeve_audit["max_concurrent_positions"] == 0
+    assert sleeve_audit["pilot_slot_sliced_signals"][0]["ticker"] == "RKLB"
+    assert (
+        sleeve_audit["pilot_slot_sliced_signals"][0]["pilot_sleeve"]["slot_decision"]
+        == "sleeve_slot_limit"
+    )
 
 
 def test_counterfactual_snapshot_uses_core_displaced_candidate():

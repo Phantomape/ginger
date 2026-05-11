@@ -6970,3 +6970,30 @@ stay in observe-only / forward-shadow mode. The right next evidence is
 event-dated replacement value under the existing zero-live-slot sleeve, not a
 static core universe promotion, live slot enablement, nearby ticker mining, or
 SpaceX/UAP headline-only trade rule.
+
+### 2026-05-11 mechanism update: Space catalyst shadow surface
+
+Experiment: `exp-20260511-003`
+
+Decision: `accepted_default_off_forward_observation_surface`.
+
+Finding: the rejected static-pool lead from `exp-20260511-002` is now expressed
+as a shared, production-visible shadow surface instead of a trading rule. The
+daily path exposes `SPACE_CATALYST_SHADOW` records, theme segments, LLM event
+fields, stop rules, and promotion gates in universe/report outputs while
+keeping live slots at `0`.
+
+Evidence: focused tests passed (`17 passed`) and the canonical core metrics
+stayed unchanged in all three windows: `late_strong EV 4.2340`, `mid_weak EV
+1.6689`, and `old_thin EV 0.3853`. Orders, signal generation, ranking, sizing,
+filters, exits, add-ons, and LLM hard-risk boundaries did not change.
+
+Mechanism insight: this is the valid next form of space catalyst alpha
+research: collect forward direct PnL, cash-relative PnL, core replacement
+value, same-theme replacement value, and risk-adjusted replacement value before
+any pilot/live promotion.
+
+Do not repeat: static space catalyst pool promotion, adjacent space ticker
+mining, or SpaceX/UAP headline-only entry rules on these frozen samples. A
+trade-enabled retry requires closed forward evidence, explicit nonzero pilot
+slots, shared run/backtest policy, and parity tests.
