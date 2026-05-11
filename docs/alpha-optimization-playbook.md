@@ -6946,3 +6946,27 @@ excluded platform_pool slice averaged
 Mechanism insight: keep collecting this SEC queue as default-off paper, but
 freeze the deterministic candidate pool to non-platform financial-report events
 before spending forward observation budget on closed replacement value.
+
+### 2026-05-11 mechanism update: Space catalyst static-pool replay
+
+Experiment: `exp-20260511-002`
+
+Decision: `rejected_static_pool_alpha`.
+
+Finding: adding the `SPACE_CATALYST_SHADOW` operating equities (`RKLB`, `ASTS`,
+`LUNR`, `PL`, `RDW`, `BKSY`, `IRDM`, `VSAT`, `GSAT`, `SATS`) to deterministic
+snapshot copies was strongly positive in raw static replay but not acceptable as
+production alpha. Aggregate EV improved `+2.3036` and aggregate PnL improved
+`+$64,577.73`, with EV up in all three canonical windows. The added space
+trades themselves contributed `25` trades, `+$79,995.67`, and `52%` win rate.
+
+Rejection basis: the result is selected with 2026-05-10 knowledge, not
+point-in-time trade permission, and it worsened old-window drawdown from
+`8.15%` to `11.71%` (`+3.56 pp`). Late-window Sharpe also fell despite positive
+PnL. This is too much tail-risk drift for direct core or live-pilot promotion.
+
+Mechanism insight: the space catalyst pool is a real alpha lead, but it should
+stay in observe-only / forward-shadow mode. The right next evidence is
+event-dated replacement value under the existing zero-live-slot sleeve, not a
+static core universe promotion, live slot enablement, nearby ticker mining, or
+SpaceX/UAP headline-only trade rule.

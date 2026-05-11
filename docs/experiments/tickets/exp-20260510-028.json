@@ -1,0 +1,35 @@
+{
+  "experiment_id": "exp-20260510-028",
+  "title": "SPACE_CATALYST_SHADOW OHLCV coverage and basket replay",
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "owner": "codex",
+  "created_at": "2026-05-10T18:39:34-07:00",
+  "problem": "Canonical three-window OHLCV snapshots do not contain the space catalyst tickers, so the shadow sleeve cannot be replayed directly.",
+  "scope": [
+    "Create experiment-local augmented OHLCV snapshot copies.",
+    "Do not mutate canonical snapshots.",
+    "Do not enable live slots or change trading policy.",
+    "Run core no-drift and simple shadow basket diagnostics."
+  ],
+  "acceptance": [
+    "Augmented snapshots include all available SPACE_CATALYST_SHADOW tickers.",
+    "Backtester can load the augmented snapshots.",
+    "Core metrics stay unchanged with pilot entries at zero.",
+    "Replay output records look-ahead caveat and drawdown risk."
+  ],
+  "result": {
+    "added_tickers_per_window": 13,
+    "failed_tickers": [
+      "HAWK"
+    ],
+    "core_no_drift": true,
+    "pilot_entries": 0,
+    "decision": "observed_only_continue"
+  },
+  "next_steps": [
+    "Use augmented snapshots for event-dated shadow decisions.",
+    "Do not promote SPACE_CATALYST_SHADOW to live slots from static-basket replay alone.",
+    "Resolve HAWK symbol/data mapping only if it becomes a live forward candidate."
+  ]
+}

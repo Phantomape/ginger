@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-05-10.
+Last updated: 2026-05-11.
 
 The current accepted core stack includes the 2026-05-10 TRIP sector taxonomy
 completion from `exp-20260510-015`, layered on top of the RS20 entry-state
@@ -55,6 +55,16 @@ to non-platform candidates. On the same three fixed windows, excluding
 `-0.008507`. This changes only the shared observe-only queue policy and still
 requires closed forward paper outcomes before any trade-enabled promotion.
 
+Latest candidate-pool alpha search: `exp-20260511-002` tested the
+`SPACE_CATALYST_SHADOW` operating equities in deterministic snapshot copies.
+The static replay was raw-positive in all three canonical windows: aggregate EV
+`+2.3036`, aggregate PnL `+$64,577.73`, and added space trades contributed
+`+$79,995.67` across `25` trades. It is still rejected for production alpha
+because the pool is selected with 2026-05-10 knowledge and old-window max
+drawdown worsened from `8.15%` to `11.71%`. Keep the space theme observe-only;
+the next valid evidence is forward shadow replacement value, not live slot
+enablement or core universe promotion.
+
 Current priority: do not retune local add-on trigger, cap, heat, reserve,
 strategy-cohort variants, ETF overlay parameters, nearby RS20 risk scalars,
 single-ticker sector taxonomy, global `MAX_POSITIONS`, or scarce-slot breakout
@@ -63,4 +73,6 @@ exposure/risk-based effective-slot accounting design with full portfolio replay
 and production visibility, not another global slot-count sweep. Do not keep
 retuning the SEC financial-report T+1 label or adjacent cohort slices on the
 same frozen sample; after the non-platform queue freeze, the next evidence for
-that branch is closed forward paper replacement value.
+that branch is closed forward paper replacement value. For space catalyst, do
+not mine adjacent tickers or enable live slots without closed forward
+replacement-value evidence.
