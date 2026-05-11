@@ -59,7 +59,7 @@ expected_value_score = strategy_total_return_pct × sharpe_daily
 开始任何改动前，先读取以下信息；若文件不存在，记录缺失并优先补齐最小可用版本。
 
 ```text
-backtesting.md
+docs/backtesting.md
 docs/current_state.md
 docs/iteration_analysis.md
 docs/experiment_log.jsonl
@@ -69,7 +69,7 @@ docs/alpha-optimization-playbook.md
 data/backtest_results_*.json
 ```
 
-其中，`backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
+其中，`docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
 
 `docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
 
@@ -78,7 +78,7 @@ data/backtest_results_*.json
 1. 本轮最值得测试的赚钱假设是什么？它属于 entry、exit、ranking、capital allocation、LLM event scoring 还是 risk allocation？它是否符合 `docs/alpha-optimization-playbook.md` 的当前高价值方向；若偏离，理由是什么？
 2. 过去是否做过相同或近似实验？上次参数、窗口、失败原因是什么？
 3. 这次只改变哪一个独立因果变量？
-4. 本次成功 / 失败的验收标准是什么？验收标准是否符合 `backtesting.md`？
+4. 本次成功 / 失败的验收标准是什么？验收标准是否符合 `docs/backtesting.md`？
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
 
 若无法回答第 2、3、4、5 点，禁止开始策略逻辑改动。
@@ -91,7 +91,7 @@ data/backtest_results_*.json
 
 ### Gate 1：基线测量
 
-按照 `backtesting.md` 的标准回测协议读取或创建基线。不要在本文件重复维护回测命令、日期窗口、指标表或基线数值。
+按照 `docs/backtesting.md` 的标准回测协议读取或创建基线。不要在本文件重复维护回测命令、日期窗口、指标表或基线数值。
 
 一个有效基线至少应能回答：
 
@@ -100,7 +100,7 @@ data/backtest_results_*.json
 - 主目标 `expected_value_score` 和关键风险约束是否可读；
 - 是否存在会影响结论的已知测量偏差、数据缺口或生产 / 回测不一致。
 
-若不存在可用基线，第一项任务是按 `backtesting.md` 创建基线；不要在无基线状态下改策略逻辑。
+若不存在可用基线，第一项任务是按 `docs/backtesting.md` 创建基线；不要在无基线状态下改策略逻辑。
 
 ### Gate 2：前置字段检查
 
@@ -119,7 +119,7 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 ### Gate 3：过滤存活率审计
 
-按照 `backtesting.md` 的回测输出检查 `signals_generated` 与 `signals_survived`。
+按照 `docs/backtesting.md` 的回测输出检查 `signals_generated` 与 `signals_survived`。
 
 硬规则：
 
@@ -130,7 +130,7 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 ### Gate 4：改后测量与保留标准
 
-按照 `backtesting.md` 的同一标准回测协议重跑改后结果。策略逻辑改动必须使用 `backtesting.md` 定义的标准多窗口流程；当前标准若为“3 个非重叠半年窗口”，就以该标准为准，不在本文件另写一套多窗口规则。
+按照 `docs/backtesting.md` 的同一标准回测协议重跑改后结果。策略逻辑改动必须使用 `docs/backtesting.md` 定义的标准多窗口流程；当前标准若为“3 个非重叠半年窗口”，就以该标准为准，不在本文件另写一套多窗口规则。
 
 `expected_value_score` 提升 > 10% 可以作为**强接受信号**，但不作为硬性最低门槛。小幅但稳定的边际提升在策略系统中可能有价值，尤其当它同时降低复杂度、降低尾部风险、改善生产一致性或提升可归因性。
 
@@ -151,7 +151,7 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 ### 5.1 禁止无回测数据的阈值调整
 
-修改 ATR multiplier、confidence 门槛、volume ratio、时间窗口等数值阈值前，必须有 sweep 结果证明新值优于旧值。sweep 协议以 `backtesting.md` 为准。
+修改 ATR multiplier、confidence 门槛、volume ratio、时间窗口等数值阈值前，必须有 sweep 结果证明新值优于旧值。sweep 协议以 `docs/backtesting.md` 为准。
 
 ### 5.2 禁止多目标漂移
 
@@ -224,7 +224,7 @@ LLM 负责：新闻理解、事件分类、语义强弱、灾难 veto、模糊�
 
 ### 5.10 禁止只靠 pytest 验证策略改动
 
-`pytest` 只验证代码正确性，不验证策略有效性。策略提交必须包含符合 `backtesting.md` 的回测指标对比。
+`pytest` 只验证代码正确性，不验证策略有效性。策略提交必须包含符合 `docs/backtesting.md` 的回测指标对比。
 
 ### 5.11 禁止回测专属策略逻辑
 
@@ -265,7 +265,7 @@ production_impact:
 - 系统已经最优；
 - 可以停止寻找新 alpha；
 - 当前参数是长期真理；
-- 可以跳过 `backtesting.md` 规定的标准多窗口实验和失败记录。
+- 可以跳过 `docs/backtesting.md` 规定的标准多窗口实验和失败记录。
 
 新增或修改 criterion 时，只改 `quant/convergence.py` 并同步加测试，不要只在本文件写文字标准。
 
@@ -330,12 +330,12 @@ production_impact:
 
 按以下顺序执行：
 
-1. 读取 `backtesting.md`、`docs/alpha-optimization-playbook.md`、当前状态、历史实验、失败记录和最新 backtest；
+1. 读取 `docs/backtesting.md`、`docs/alpha-optimization-playbook.md`、当前状态、历史实验、失败记录和最新 backtest；
 2. 写出本轮最值得测试的 `alpha_hypothesis`；
 3. 若本轮不做 alpha，说明被哪个测量缺陷阻断，以及修完后要测试哪个 alpha；
 4. 确认本轮只改变一个独立因果变量；
 5. 执行 Gate 1-4；
-6. 策略逻辑改动必须按 `backtesting.md` 执行标准多窗口回测；
+6. 策略逻辑改动必须按 `docs/backtesting.md` 执行标准多窗口回测；
 7. 记录成功或失败实验；
 8. 提交时写清前后指标、未改模块、主要风险和生产影响。
 
@@ -363,7 +363,7 @@ decision:
 
 ```text
 AGENTS.md                          # 代理入口、硬规则、流程、长期策略原则
-backtesting.md                     # 回测命令、标准窗口、指标字段、多窗口协议
+docs/backtesting.md                     # 回测命令、标准窗口、指标字段、多窗口协议
 docs/alpha-optimization-playbook.md # 默认高价值优化方向、机制级启发、已证伪思路
 docs/experiment_log.jsonl          # 成功 / 失败实验结构化记录
 docs/experiment_log_format.md      # 实验日志字段规范
