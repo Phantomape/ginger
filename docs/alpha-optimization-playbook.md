@@ -7051,6 +7051,29 @@ closed decisions or 30 active signal days show positive direct PnL and positive
 replacement value, with official contract/regulatory/customer buckets carrying
 the evidence rather than attention-only rows.
 
+### 2026-05-11 mechanism update: Space catalyst daily event ledger adapter
+
+Experiment: `exp-20260511-032`
+
+Decision: `accepted_observe_only_daily_event_ledger_adapter`.
+
+Finding: the event-state harness from `exp-20260511-008` is now a daily
+production-visible observation surface. The daily run builds and persists a
+`SPACE_CATALYST_EVENT_STATE_SHADOW_LEDGER`, includes it in `trend_signals` /
+`quant_signals`, and renders a report section with active events, event rows,
+closed 10d decisions, bucket counts, and promotion-gate status.
+
+Evidence: focused tests passed (`20 passed`). A snapshot probe on the augmented
+late window at `2026-04-21` produced `2` active seed events, `2` event/ticker
+rows, `1` closed 10d decision, and a blocked promotion gate. No orders, live
+slots, signal generation, ranking, sizing, exits, or core universe behavior
+changed.
+
+Mechanism insight: Space evidence collection has graduated from ad hoc replay
+to a forward ledger. Future Space work should consume this closed event ledger
+before any `SPACE_CATALYST_SPECIALIST` promotion; do not use UAP/SpaceX
+attention-only rows or another static ticker basket as promotion evidence.
+
 ### 2026-05-11 mechanism update: All-signal 52-week proximity ranking
 
 Experiment: `exp-20260511-004`
@@ -7324,6 +7347,17 @@ Mechanism insight: remaining PL/RDW-style trend continuation is a forward attrib
 - Aggregate EV delta vs exp021 stack: `0.9043`.
 - Interpretation: Space alpha should stay focused on the official-catalyst operating sleeve and the already accepted PL/BKSY and RKLB/ASTS risk refinements. Mature-satcom breadth is not strong enough to add without a future PIT event trigger.
 - Do not retry mature-satcom breadth without PIT official event-state evidence or forward shadow-ledger support.
+
+### exp-20260511-027 Post-news item-composition gate
+
+- Decision: rejected_item_composition_gate.
+- Tested variable: `post_news_8k_item_composition_gate` inside the locked PEAD-like post-news continuation surface from `exp-20260509-020`.
+- Best variant: `exclude_auxiliary_items`.
+- Finding: the best gate improved aggregate EV by `+0.2028` versus raw post-news, but that came only from `late_strong`; it regressed `mid_weak` and `old_thin` versus the raw surface. Versus accepted core, the gated post-news stack was positive in all three windows (`aggregate EV +0.4491`, PnL `+$8,407.30`) but missed materiality and worsened old-window drawdown.
+- Mechanism insight: post-news continuation remains a viable forward candidate-pool research surface, but clean Item 2.02 / auxiliary-item exclusion is not a robust same-sample discriminator. The useful next evidence is closed forward post-news replacement value or a richer semantic earnings-quality field, not nearby Item 7.01/8.01/5.02 exclusion variants.
+- Do not repeat: nearby post-news 8-K item-composition gates on the frozen sample without new forward outcomes or a genuinely new semantic earnings-quality field.
+
+
 ### exp-20260511-028 Space launch/connectivity breakout risk
 
 - Decision: rejected_launch_connectivity_breakout_risk_haircut.
@@ -7332,3 +7366,41 @@ Mechanism insight: remaining PL/RDW-style trend continuation is a forward attrib
 - Aggregate EV delta vs exp021 stack: `0.2184`.
 - Interpretation: The RKLB/ASTS trend top-up remains the supported launch/connectivity refinement. Do not add a separate breakout haircut for RKLB/ASTS on this frozen replay sample.
 - Keep launch/connectivity trend and breakout cohorts separate; current evidence supports the RKLB/ASTS trend top-up, not a separate RKLB/ASTS breakout haircut.
+### exp-20260511-029 Post-news surprise-direction gate
+
+- Decision: rejected_surprise_direction_gate.
+- Tested variable: `post_news_surprise_direction_gate` inside the locked PEAD-like post-news continuation surface.
+- Best variant: `unknown_only`.
+- Aggregate EV delta vs raw post-news: `0.0012`.
+- Interpretation: The PIT surprise_direction semantic label did not improve the locked post-news continuation surface enough to justify promotion. Explicit positive/negative labels were sparse and did not rescue the raw PEAD-like sleeve from the materiality problem.
+- Do not repeat nearby `surprise_direction` bucket gates on the frozen sample without forward outcomes or a richer same-accession earnings-quality field.
+
+
+### exp-20260511-030 Space theme momentum risk
+
+- Decision: rejected_theme_weak_space_risk_scalar.
+- Tested variable: `space_theme_weak_risk_scalar` using max(UFO, ARKX) `momentum_20d_pct` < `0.0`.
+- Best scalar: `0.0`.
+- Aggregate EV delta vs exp021 stack: `0.0`.
+- Interpretation: Do not add a theme ETF momentum risk gate to the Space sleeve. The accepted Space stack should stay focused on catalyst bucket and ticker/strategy lifecycle scalars, not theme ETF timing.
+- If rejected, avoid Space ETF timing gates and move to a different alpha variable such as official-catalyst bucket decay or carefully evidenced pool extension.
+
+
+### exp-20260511-031 Space data-vendor breakout zero sweep
+
+- Decision: accepted_default_off_data_vendor_breakout_0_1_scalar.
+- Tested variable: `space_data_vendor_breakout_risk_scalar` below the accepted `0.25x` PL/BKSY breakout haircut.
+- Best scalar: `0.1`.
+- Aggregate EV delta vs exp021 stack: `0.0572`.
+- Interpretation: A lower PL/BKSY breakout scalar improved the accepted Space stack under the three-window gate. Promote only as default-off forward metadata because Space live slots remain zero.
+- Promotion rule: only change this if the shared policy constant, daily report metadata, and focused parity tests move together.
+
+
+### exp-20260511-032 Space trend target extension
+
+- Decision: accepted_default_off_space_trend_target_extension.
+- Tested variable: `space_official_trend_target_atr_mult` on top of the accepted exp031 Space stack.
+- Best target ATR multiple: `5.0`.
+- Aggregate EV delta vs exp031 stack: `0.4081`.
+- Interpretation: Wider targets for official-catalyst Space trend entries improved the accepted default-off Space stack. Promotion must remain default-off metadata/helper only because live Space slots are zero.
+- Anti-repeat: do not retry nearby Space trend target widths on the same frozen windows without forward Space trend replacement-value evidence.

@@ -54,6 +54,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            state_surface_sleeve=None,
                            low_deployment_etf_overlay=None,
                            space_catalyst_shadow=None,
+                           space_catalyst_event_ledger=None,
                            platform_rs20_watch=None,
                            sec_10k_forward_watch=None,
                            non_ohlcv_snapshot=None,
@@ -86,6 +87,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
+        space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
         platform_rs20_watch (dict):     Default-off platform RS20 no-gap watch ledger
         sec_10k_forward_watch (dict):   Default-off SEC 10-K liquidity watch ledger
         non_ohlcv_snapshot (dict):      Daily non-OHLCV coverage/catch-up status
@@ -324,11 +326,33 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             lines.append("  LLM fields: " + ", ".join(fields[:8]))
         forward = space_catalyst_shadow.get("forward_hypothesis") or {}
         if forward:
+            extra_policies = []
+            data_vendor_breakout_scalar = forward.get("data_vendor_breakout_risk_scalar")
+            if data_vendor_breakout_scalar is not None:
+                extra_policies.append(
+                    f"data-vendor breakout @ {data_vendor_breakout_scalar}x"
+                )
+            launch_connectivity_trend_scalar = forward.get(
+                "launch_connectivity_trend_risk_scalar"
+            )
+            if launch_connectivity_trend_scalar is not None:
+                extra_policies.append(
+                    "launch/connectivity trend @ "
+                    f"{launch_connectivity_trend_scalar}x"
+                )
+            official_trend_target = forward.get("official_trend_target_atr_mult")
+            if official_trend_target is not None:
+                extra_policies.append(
+                    f"official trend target @ {official_trend_target} ATR"
+                )
+            extra_policy = ""
+            if extra_policies:
+                extra_policy = "; " + "; ".join(extra_policies)
             lines.append(
                 "  Forward hypothesis: "
                 f"{forward.get('candidate_pool', 'n/a')} "
                 f"@ {forward.get('risk_budget_scalar', 'n/a')}x risk "
-                "(default off)"
+                f"(default off{extra_policy})"
             )
         gates = space_catalyst_shadow.get("promotion_gates") or {}
         if gates:
@@ -336,6 +360,53 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 "  Promotion gate: "
                 f"{gates.get('minimum_closed_decisions', 'n/a')} closed decisions, "
                 "positive direct and replacement value"
+            )
+    if space_catalyst_event_ledger and (
+        space_catalyst_event_ledger.get("active_event_count", 0) > 0
+        or space_catalyst_event_ledger.get("event_row_count", 0) > 0
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("SPACE CATALYST EVENT LEDGER")
+        lines.append("-" * 60)
+        persistence = space_catalyst_event_ledger.get("persistence") or {}
+        gate = space_catalyst_event_ledger.get("promotion_gate") or {}
+        lines.append(
+            f"  Mode: {space_catalyst_event_ledger.get('mode', 'observe_only')}  |  "
+            f"Events: {space_catalyst_event_ledger.get('active_event_count', 0)}  |  "
+            f"Rows: {space_catalyst_event_ledger.get('event_row_count', 0)}  |  "
+            f"Closed 10d: {space_catalyst_event_ledger.get('closed_decision_count', 0)}"
+        )
+        if persistence:
+            lines.append(
+                f"  Ledger rows: {persistence.get('ledger_row_count', 0)}  |  "
+                f"Appended today: {persistence.get('appended_count', 0)}"
+            )
+        lines.append(
+            f"  Promotion gate: {'PASS' if gate.get('passed') else 'BLOCKED'} "
+            f"({gate.get('reason', 'observe_only')})"
+        )
+        by_bucket = (
+            (space_catalyst_event_ledger.get("aggregate") or {})
+            .get("by_semantic_bucket_count")
+            or {}
+        )
+        if by_bucket:
+            bucket_text = ", ".join(
+                f"{bucket}={count}" for bucket, count in sorted(by_bucket.items())
+            )
+            lines.append(f"  Buckets: {bucket_text}")
+        for row in (space_catalyst_event_ledger.get("event_rows") or [])[:6]:
+            h10 = (row.get("horizons") or {}).get("10d") or {}
+            ret = h10.get("event_return")
+            ret_text = (
+                f"{ret * 100:.2f}%"
+                if isinstance(ret, (int, float))
+                else h10.get("status", "pending")
+            )
+            lines.append(
+                f"  {row.get('ticker', '?')}: {row.get('semantic_bucket', 'unknown')} "
+                f"{row.get('event_date')} 10d={ret_text} "
+                f"closed={row.get('closed_decision', False)}"
             )
 
     addon_actions = addon_actions or []

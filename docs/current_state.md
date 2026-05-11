@@ -165,6 +165,21 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space alpha should stay focused on the official-catalyst operating sleeve and the already accepted PL/BKSY and RKLB/ASTS risk refinements. Mature-satcom breadth is not strong enough to add without a future PIT event trigger.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260511-026\space_satcom_breadth_low_risk.json`
+
+## exp-20260511-027 Post-news item-composition gate
+
+- timestamp: 2026-05-11T15:06:44+00:00
+- lane: alpha_search
+- decision: rejected_item_composition_gate
+- changed_variable: post_news_8k_item_composition_gate
+- best_variant: exclude_auxiliary_items
+- result: versus raw post-news, aggregate EV improved `+0.2028` but only `late_strong` improved; `mid_weak` and `old_thin` regressed versus the raw post-news surface.
+- core comparison: the best gated stack was still positive versus accepted core in all three windows (`aggregate EV +0.4491`, PnL `+$8,407.30`), but missed the materiality gate and worsened old-window drawdown.
+- interpretation: post-news continuation remains a forward candidate-pool lead, but 8-K auxiliary-item exclusion is not a stable discriminator on the frozen sample.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False}
+- artifact: `data\experiments\exp-20260511-027\post_news_item_composition.json`
+
+
 ## exp-20260511-028 Space launch/connectivity breakout risk
 
 - timestamp: 2026-05-11T15:17:38+00:00
@@ -178,3 +193,71 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: The RKLB/ASTS trend top-up remains the supported launch/connectivity refinement. Do not add a separate breakout haircut for RKLB/ASTS on this frozen replay sample.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260511-028\space_launch_connectivity_breakout_risk.json`
+## exp-20260511-029 Post-news surprise-direction gate
+
+- timestamp: 2026-05-11T16:10:40+00:00
+- lane: alpha_search
+- decision: rejected_surprise_direction_gate
+- changed_variable: post_news_surprise_direction_gate
+- best_variant: unknown_only
+- expected_value_score_delta_vs_raw: 0.0012
+- gate4_passed: False
+- interpretation: The PIT surprise_direction semantic label did not improve the locked post-news continuation surface enough to justify promotion. Explicit positive/negative labels were sparse and did not rescue the raw PEAD-like sleeve from the materiality problem.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'alters_signal_generation': False, 'alters_candidate_ranking': False, 'alters_sizing': False, 'alters_orders': False, 'live_slots_changed': False}
+- artifact: `data\experiments\exp-20260511-029\post_news_surprise_direction.json`
+
+
+## exp-20260511-030 Space theme momentum risk
+
+- timestamp: 2026-05-11T16:26:26+00:00
+- lane: alpha_search
+- decision: rejected_theme_weak_space_risk_scalar
+- changed_variable: space_theme_weak_risk_scalar
+- best_theme_weak_risk_scalar: 0.0
+- expected_value_score_delta_vs_before: 0.0
+- before_aggregate: {'expected_value_score_sum': 8.4907, 'total_pnl_sum': 227137.08, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 8.4907, 'total_pnl_sum': 227137.08, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- interpretation: Do not add a theme ETF momentum risk gate to the Space sleeve. The accepted Space stack should stay focused on catalyst bucket and ticker/strategy lifecycle scalars, not theme ETF timing.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-030\space_theme_momentum_risk.json`
+
+
+## exp-20260511-031 Space data-vendor breakout zero sweep
+
+- timestamp: 2026-05-11T16:52:12+00:00
+- lane: alpha_search
+- decision: accepted_default_off_data_vendor_breakout_0_1_scalar
+- changed_variable: space_data_vendor_breakout_risk_scalar
+- best_data_vendor_breakout_risk_scalar: 0.1
+- expected_value_score_delta_vs_before: 0.0572
+- before_aggregate: {'expected_value_score_sum': 8.4907, 'total_pnl_sum': 227137.08, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 8.5479, 'total_pnl_sum': 227864.06, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- interpretation: A lower PL/BKSY breakout scalar improved the accepted Space stack under the three-window gate. Promote only as default-off forward metadata because Space live slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-031\space_data_vendor_breakout_zero_sweep.json`
+
+## exp-20260511-032 Space event ledger adapter
+
+- timestamp: 2026-05-11
+- lane: measurement_repair
+- decision: accepted_observe_only_daily_event_ledger_adapter
+- changed_variable: space_event_ledger_daily_adapter
+- result: the daily path now builds and persists a `SPACE_CATALYST_EVENT_STATE_SHADOW_LEDGER`, includes it in `trend_signals` / `quant_signals`, and renders it in the report without enabling Space live slots.
+- validation: focused tests `20 passed`; snapshot probe on the augmented late window at `2026-04-21` produced `2` active seed events, `2` event rows, `1` closed 10d decision, and a blocked promotion gate.
+- interpretation: Space should now collect forward event-state evidence daily. Do not promote `SPACE_CATALYST_SPECIALIST` until official catalyst buckets produce at least `10` mature closed decisions with positive direct and replacement value.
+- production_impact: {'shared_policy_changed': False, 'shared_observation_helper_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'live_slots_changed': False, 'live_slots': 0}
+
+
+## exp-20260511-032 Space trend target extension
+
+- timestamp: 2026-05-11T17:14:31+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_trend_target_extension
+- changed_variable: space_official_trend_target_atr_mult
+- best_space_trend_target_atr_mult: 5.0
+- expected_value_score_delta_vs_before: 0.4081
+- before_aggregate: {'expected_value_score_sum': 8.5479, 'total_pnl_sum': 227864.06, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 8.956, 'total_pnl_sum': 237013.66, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- interpretation: Wider targets for official-catalyst Space trend entries improved the accepted default-off Space stack. Promotion must remain default-off metadata/helper only because live Space slots are zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-032\space_trend_target_extension.json`
