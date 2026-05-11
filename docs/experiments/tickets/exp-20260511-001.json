@@ -1,0 +1,77 @@
+{
+  "acceptance_rule": "Data audit/shadow only: report coverage, PIT risk, candidate tags, overlap, slot value, and no production metric change.",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260511-001/sec_earnings_filing_shock_current_audit.json",
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260511-001.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_current_exp-20260511-001.md",
+    "docs/experiments/tickets/exp-20260511-001.json",
+    "docs/experiments/logs/exp-20260511-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtest_results_20260510.json",
+  "change_type": "non_ohlcv_data_audit_shadow_tagging",
+  "claimed_at": null,
+  "completed_at": "2026-05-11T01:40:54+00:00",
+  "created_at": "2026-05-11T01:29:00+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260511-001",
+  "hypothesis": "SEC / earnings filing shock may improve C-strategy grading or A/B event confirmation only if same-accession directional financial fields actually touch candidates; this run audits current availability and shadow tags without production change.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "production signal path",
+    "OHLCV thresholds",
+    "technical entries",
+    "ranking",
+    "sizing",
+    "exits",
+    "SEC event thresholds",
+    "LLM prompts"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "owner": "alpha-discovery",
+  "result": {
+    "b_positive_candidate_count": 0,
+    "c_negative_candidate_count": 0,
+    "candidate_count": 138,
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "default_off_harness_changed": false,
+      "must_not_touch_respected": [
+        "quant/signal_engine.py",
+        "quant/risk_engine.py",
+        "quant/portfolio_engine.py"
+      ],
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    }
+  },
+  "single_causal_variable": "current SEC filing-shock field availability and candidate-touch status only",
+  "status": "observed_only"
+}

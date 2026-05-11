@@ -6997,3 +6997,109 @@ Do not repeat: static space catalyst pool promotion, adjacent space ticker
 mining, or SpaceX/UAP headline-only entry rules on these frozen samples. A
 trade-enabled retry requires closed forward evidence, explicit nonzero pilot
 slots, shared run/backtest policy, and parity tests.
+
+### 2026-05-11 mechanism update: All-signal 52-week proximity ranking
+
+Experiment: `exp-20260511-004`
+
+Decision: `rejected`.
+
+Finding: extending the existing breakout-only `pct_from_52w_high` re-ranking
+to all same-day entry candidates degraded the canonical three-window result.
+Aggregate EV fell from `6.2882` to `5.5140` (`-0.7742`) and aggregate PnL fell
+from `$184,444.42` to `$157,746.80` (`-$26,697.62`). No window improved EV.
+
+Mechanism insight: 52-week-high proximity remains useful as a breakout
+subsequence ordering feature, but it should not become a global scarce-slot
+ranking key. The broader stack appears to need strategy-specific ordering
+because all-signal proximity over-prioritizes near-high candidates that the
+current filter/risk mix intentionally balances against other entry types.
+
+Do not repeat: global all-signal 52-week proximity ordering or nearby global
+near-high slot retunes. A valid retry needs a narrower event-conditioned or
+replacement-value-backed ranking feature implemented in shared production and
+backtest policy if positive.
+
+### 2026-05-11 mechanism update: SEC financial-report core priority
+
+Experiment: `exp-20260511-005`
+
+Decision: `rejected`.
+
+Finding: prioritizing already-survived core A/B candidates that carried the
+frozen non-platform SEC financial-report positive T+1 excess-drift label did
+not improve the canonical three-window stack. Aggregate EV delta was
+`-0.1340` and aggregate PnL delta
+was `$-7,773.91`.
+
+Mechanism insight: the SEC financial-report T+1 surface remains a useful
+default-off forward queue, but the current same-sample event tag is not enough
+to override native core entry-planning order. Keep collecting closed forward
+replacement value before promoting the tag into core ranking, sizing, or live
+orders.
+
+Do not repeat: SEC financial-report T+1 core-priority ranking, nearby active
+hold-day priority variants, or promotion of the frozen SEC queue tag into core
+slot ordering on these same windows without closed forward replacement-value
+evidence or a genuinely new semantic event-quality field.
+
+### 2026-05-11 mechanism update: same-day sector cluster risk
+
+Experiment: `exp-20260511-006`
+
+Decision: `rejected_replay_only`.
+
+Finding: applying a 0.5x initial-risk follower haircut to the second and later
+same-day, same-sector `risk_on` core entry did not clear the canonical
+three-window gate. Aggregate EV delta was
+`-0.0089` and aggregate PnL delta was
+`$-817.86`.
+
+Mechanism insight: same-day sector clustering is a real risk-allocation
+surface, but this simple follower haircut is too blunt for the accepted stack.
+Do not promote or repeat this exact 0.5x same-sector risk-on follower rule
+without a new ex-ante quality discriminator that separates crowded winners
+from crowded tail-loss clusters.
+
+### 2026-05-10 mechanism update: SEC financial-report RS20 slice
+
+Experiment: `exp-20260510-029`
+
+Decision: `observed_only_stronger_oracle_feature_candidate`.
+
+Finding: adding the already accepted RS20 leader state to the SEC
+financial-report + positive T+1 excess-drift label lifted 10d average return
+from `0.022332` to
+`0.034878` with
+`83` valid rows, win rate
+`0.5904`, and positive
+10d-average return in
+`3/3`
+windows. The diagnostic non-platform intersection was stronger at
+`0.045087`, but it is a second
+variable and needs its own pre-registered follow-up before becoming a rule.
+
+Mechanism insight: the stronger event/oracle candidate is not platform-specific
+and not a new RS20 sizing scalar; it is a public-PIT financial-report event
+whose price already confirms RS20 leadership. The next production-visible step
+should collect forward paper outcomes for this exact deterministic label.
+
+### 2026-05-11 mechanism update: SEC non-platform RS20 slice
+
+Experiment: `exp-20260511-007`
+
+Decision: `observed_only_rejected_concentration`.
+
+Finding: excluding `platform_pool` from the SEC financial-report T+1 drift plus
+RS20 leader label lifted 10d average return from
+`0.034878` to
+`0.045087` with
+`67` valid rows and win rate
+`0.5821`. However the
+slice failed the concentration guard: max single-ticker positive PnL share was
+`0.375` versus the 0.35 cap.
+
+Mechanism insight: the stronger-looking same-sample slice is not clean enough
+to become a new rule. Keep RS20 as an attribution dimension on the default-off
+SEC queue and wait for closed forward replacement value before any further
+SEC cohort slicing.
