@@ -7186,3 +7186,13 @@ a live sizing change.
 Do not promote: shared `portfolio_engine` sizing should not change until the
 same quality-conditioned cluster surface shows multi-window or forward closed
 evidence. Do not retry nearby TQS thresholds on the same frozen sample.
+
+### 2026-05-11 mechanism update: Space official-catalyst risk budget
+
+Experiment: `exp-20260511-011`
+
+Decision: `accepted_default_off_forward_hypothesis`.
+
+Finding: the locked official-catalyst Space subpool becomes a positive default-off forward hypothesis when carried at `0.75x` risk. Aggregate EV improved `+1.5598` and aggregate PnL improved `$32,256.34`; EV improved in all three windows and max drawdown damage was `1.97%`.
+
+Mechanism insight: optimize Space around a bounded official-catalyst specialist sleeve, not broad static promotion, mature satcom breadth, adjacent ticker mining, or attention-only/LLM headline ranking. The production path should collect forward outcomes under this exact `0.75x` default-off hypothesis before any live slot promotion.

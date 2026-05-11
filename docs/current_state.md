@@ -123,3 +123,5 @@ sector follower haircut. It improved aggregate EV by
 `+0.1144` and PnL by
 `$+1,481.64`, but touched only the late window, so no
 shared production/backtest sizing policy was promoted.
+
+Latest accepted Space forward hypothesis: `exp-20260511-011` locked the official-catalyst Space subpool from `exp-20260511-010` and swept only the risk budget. The best passing scalar was `0.75x`: aggregate EV delta `+1.5598`, aggregate PnL delta `$32,256.34`, and max drawdown damage `1.97%`. This is production-visible but default-off: live Space slots remain zero until forward replacement-value evidence matures.

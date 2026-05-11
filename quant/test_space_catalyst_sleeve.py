@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from space_catalyst_sleeve import (  # noqa: E402
+    SPACE_CATALYST_FORWARD_HYPOTHESIS,
     SPACE_CATALYST_LLM_EVENT_FIELDS,
     build_space_catalyst_shadow_snapshot,
     empty_space_catalyst_shadow_snapshot,
@@ -135,6 +136,9 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert snapshot["tickers_by_segment"] == {"satellite_connectivity": ["ASTS"]}
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
+    assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
+    assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
+    assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
 
 def test_empty_space_catalyst_shadow_snapshot_keeps_governance_fields():
@@ -145,6 +149,7 @@ def test_empty_space_catalyst_shadow_snapshot_keeps_governance_fields():
     assert snapshot["trade_enabled_tickers"] == []
     assert snapshot["reason"] == "unit_test"
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
+    assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
 
 
 def test_report_generator_renders_space_catalyst_without_orders():
@@ -159,6 +164,10 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "satellite_connectivity": ["ASTS"],
             },
             "llm_event_fields": ["launch_success", "dilution_risk"],
+            "forward_hypothesis": {
+                "candidate_pool": "official_catalyst_operating_growth",
+                "risk_budget_scalar": 0.75,
+            },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
     )
@@ -166,3 +175,4 @@ def test_report_generator_renders_space_catalyst_without_orders():
     assert "SPACE CATALYST SHADOW UNIVERSE" in report
     assert "Trade-enabled: 0" in report
     assert "launch_lunar: RKLB" in report
+    assert "official_catalyst_operating_growth @ 0.75x risk" in report

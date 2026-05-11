@@ -42,6 +42,22 @@ SPACE_CATALYST_PROMOTION_GATES = {
     "max_single_ticker_positive_contribution": 0.70,
 }
 
+SPACE_CATALYST_FORWARD_HYPOTHESIS = {
+    "experiment_id": "exp-20260511-011",
+    "mode": "default_off_forward_observation",
+    "candidate_pool": "official_catalyst_operating_growth",
+    "risk_budget_scalar": 0.75,
+    "live_slots": 0,
+    "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
+    "excluded_buckets": [
+        "attention_only",
+        "theme_beta_benchmark",
+        "quarantine_meme",
+        "mature_satcom_breadth",
+    ],
+    "requires_forward_replacement_value": True,
+}
+
 SPACE_CATALYST_STOP_RULES = (
     "Do not trade from UAP/disclosure headlines alone.",
     "Do not trade until a separate pilot promotion creates explicit live slots.",
@@ -61,6 +77,7 @@ def empty_space_catalyst_shadow_snapshot(as_of, reason: str = "not_built") -> di
         "trade_enabled_tickers": [],
         "llm_event_fields": list(SPACE_CATALYST_LLM_EVENT_FIELDS),
         "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
+        "forward_hypothesis": deepcopy(SPACE_CATALYST_FORWARD_HYPOTHESIS),
         "stop_rules": list(SPACE_CATALYST_STOP_RULES),
         "reason": reason,
     }
@@ -152,5 +169,6 @@ def build_space_catalyst_shadow_snapshot(
         "trade_enabled_tickers": sorted(trade_enabled),
         "llm_event_fields": list(SPACE_CATALYST_LLM_EVENT_FIELDS),
         "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
+        "forward_hypothesis": deepcopy(SPACE_CATALYST_FORWARD_HYPOTHESIS),
         "stop_rules": list(SPACE_CATALYST_STOP_RULES),
     }

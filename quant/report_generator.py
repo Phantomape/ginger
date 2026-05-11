@@ -322,6 +322,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         fields = space_catalyst_shadow.get("llm_event_fields") or []
         if fields:
             lines.append("  LLM fields: " + ", ".join(fields[:8]))
+        forward = space_catalyst_shadow.get("forward_hypothesis") or {}
+        if forward:
+            lines.append(
+                "  Forward hypothesis: "
+                f"{forward.get('candidate_pool', 'n/a')} "
+                f"@ {forward.get('risk_budget_scalar', 'n/a')}x risk "
+                "(default off)"
+            )
         gates = space_catalyst_shadow.get("promotion_gates") or {}
         if gates:
             lines.append(

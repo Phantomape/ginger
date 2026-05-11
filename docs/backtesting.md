@@ -61,9 +61,11 @@ as Consumer Discretionary in shared sector enrichment:
 | `old_thin` | 0.3853 | 1.35 | $28,544.11 | 28.54% | 8.15% | 40.91% | 22 | 91.67% |
 
 Artifact note: `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`
-records the latest accepted three-window comparison. `data/backtest_results_20260509.json`
-remains the latest standalone CLI artifact before the current accepted shared
-policy stack.
+records the latest accepted three-window comparison. The latest standalone CLI
+datapoint is `data/backtest_results_20260510.json` for `late_strong`; accepted
+`mid_weak` / `old_thin` baseline values still come from the shared
+three-window artifact because there is no newer accepted standalone refresh for
+those windows.
 
 Latest accepted taxonomy result: `exp-20260510-015` maps TRIP through shared
 sector enrichment as Consumer Discretionary instead of `Unknown`. This is a
