@@ -71,9 +71,16 @@ SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT = "launch_lunar"
 SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR = 1.1
 SPACE_CATALYST_LIQUIDITY_TIER = "ok"
 SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR = 1.1
+SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD = "customer_win"
+SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES = (
+    "official_or_primary_release",
+    "official_regulatory_release",
+    "company_release",
+)
+SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-037",
+    "experiment_id": "exp-20260512-038",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -145,6 +152,16 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
     "space_liquidity_tier_risk_scalar": (
         SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
+    ),
+    "space_official_customer_source_experiment_id": "exp-20260512-038",
+    "space_official_customer_source_event_field": (
+        SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD
+    ),
+    "space_official_customer_source_types": list(
+        SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES
+    ),
+    "space_official_customer_source_risk_scalar": (
+        SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -296,6 +313,7 @@ def space_catalyst_forward_risk_scalar(
     iwm_relative_momentum_state: dict[str, Any] | None = None,
     theme_segment: str | None = None,
     liquidity_tier: str | None = None,
+    official_customer_source_profile: dict[str, Any] | None = None,
     trade_quality_score: Any = None,
 ) -> float:
     """Return the extra default-off forward scalar for Space sleeve attribution."""
@@ -349,6 +367,11 @@ def space_catalyst_forward_risk_scalar(
         and str(liquidity_tier or "") == SPACE_CATALYST_LIQUIDITY_TIER
     ):
         scalar *= SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and official_customer_source_profile
+    ):
+        scalar *= SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
     return scalar
 
 
@@ -464,6 +487,15 @@ def empty_space_catalyst_observation_slot(
             "space_liquidity_tier_risk_scalar": (
                 SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
             ),
+            "space_official_customer_source_event_field": (
+                SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD
+            ),
+            "space_official_customer_source_types": list(
+                SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES
+            ),
+            "space_official_customer_source_risk_scalar": (
+                SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -490,6 +522,62 @@ def load_space_catalyst_event_seeds(
             if row:
                 rows.append(row)
     return sorted(rows, key=lambda row: (row["event_date"], row["event_id"]))
+
+
+def space_catalyst_official_customer_source_profiles(
+    events: list[dict[str, Any]] | None = None,
+    *,
+    source_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH,
+    included_tickers: list[str] | tuple[str, ...] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return production-visible Space source profiles for customer-win events."""
+    seeds = events if events is not None else load_space_catalyst_event_seeds(source_path)
+    allowed_tickers = {
+        str(ticker).upper()
+        for ticker in (
+            included_tickers
+            or SPACE_CATALYST_FORWARD_HYPOTHESIS.get("included_tickers")
+            or []
+        )
+        if ticker
+    }
+    profiles: dict[str, dict[str, Any]] = {}
+    for event in (_normalise_event_seed(row) for row in seeds):
+        if not event:
+            continue
+        source_type = str(event.get("source_type") or "")
+        fields = [str(field) for field in event.get("event_fields") or []]
+        if (
+            source_type not in SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES
+            or SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD not in fields
+        ):
+            continue
+        for ticker in event.get("tickers") or []:
+            ticker_upper = str(ticker or "").upper()
+            if allowed_tickers and ticker_upper not in allowed_tickers:
+                continue
+            profile = profiles.setdefault(
+                ticker_upper,
+                {
+                    "event_ids": set(),
+                    "event_fields": set(),
+                    "semantic_buckets": set(),
+                    "source_types": set(),
+                },
+            )
+            profile["event_ids"].add(event["event_id"])
+            profile["event_fields"].update(fields)
+            profile["semantic_buckets"].add(event.get("semantic_bucket"))
+            profile["source_types"].add(source_type)
+    return {
+        ticker: {
+            "event_ids": sorted(profile["event_ids"]),
+            "event_fields": sorted(profile["event_fields"]),
+            "semantic_buckets": sorted(profile["semantic_buckets"]),
+            "source_types": sorted(profile["source_types"]),
+        }
+        for ticker, profile in sorted(profiles.items())
+    }
 
 
 def space_catalyst_event_tickers(
@@ -701,6 +789,7 @@ def build_space_catalyst_observation_slot(
     entry_filter_audit: dict[str, Any] | None = None,
     raw_signal_count: int | None = None,
     enriched_signal_count: int | None = None,
+    space_event_source_profiles: dict[str, dict[str, Any]] | None = None,
     generated_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Build the one-slot blocked trade plan used for Space forward evidence."""
@@ -718,6 +807,13 @@ def build_space_catalyst_observation_slot(
     iwm_relative_momentum = space_catalyst_iwm_relative_momentum_state(
         features_by_ticker
     )
+    source_profiles = (
+        space_event_source_profiles
+        if space_event_source_profiles is not None
+        else space_catalyst_official_customer_source_profiles(
+            included_tickers=list(official_tickers)
+        )
+    )
 
     candidates = []
     for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
@@ -733,6 +829,7 @@ def build_space_catalyst_observation_slot(
                 basket_momentum_state=basket_momentum,
                 iwm_relative_momentum_state=iwm_relative_momentum,
                 space_catalyst_shadow=shadow,
+                space_event_source_profiles=source_profiles,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
                 portfolio_heat=portfolio_heat or {},
@@ -1256,6 +1353,15 @@ def _liquidity_tier_for_ticker(space_catalyst_shadow: dict[str, Any], ticker: st
     return None
 
 
+def _official_customer_source_profile_for_ticker(
+    source_profiles: dict[str, dict[str, Any]] | None,
+    ticker: str,
+) -> dict[str, Any] | None:
+    ticker_upper = str(ticker or "").upper()
+    profile = (source_profiles or {}).get(ticker_upper)
+    return deepcopy(profile) if isinstance(profile, dict) else None
+
+
 def _same_day_core_alternatives(
     core_signals: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
@@ -1329,6 +1435,7 @@ def _observation_slot_row(
     basket_momentum_state: dict[str, Any],
     iwm_relative_momentum_state: dict[str, Any],
     space_catalyst_shadow: dict[str, Any],
+    space_event_source_profiles: dict[str, dict[str, Any]],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
     portfolio_heat: dict[str, Any],
@@ -1337,6 +1444,10 @@ def _observation_slot_row(
     strategy = str(signal.get("strategy") or "")
     theme_segment = _theme_segment_for_ticker(space_catalyst_shadow, ticker)
     liquidity_tier = _liquidity_tier_for_ticker(space_catalyst_shadow, ticker)
+    official_customer_source_profile = _official_customer_source_profile_for_ticker(
+        space_event_source_profiles,
+        ticker,
+    )
     target_atr_mult = space_catalyst_forward_target_atr_mult(
         ticker,
         strategy,
@@ -1363,6 +1474,7 @@ def _observation_slot_row(
         iwm_relative_momentum_state=iwm_relative_momentum_state,
         theme_segment=theme_segment,
         liquidity_tier=liquidity_tier,
+        official_customer_source_profile=official_customer_source_profile,
         trade_quality_score=signal.get("trade_quality_score"),
     )
     basket_risk_scalar = (
@@ -1411,6 +1523,12 @@ def _observation_slot_row(
         if liquidity_tier_bucket
         else 1.0
     )
+    official_customer_source_bucket = official_customer_source_profile is not None
+    official_customer_source_risk_scalar = (
+        SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+        if official_customer_source_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -1433,6 +1551,7 @@ def _observation_slot_row(
         "action": signal.get("action"),
         "theme_segment": theme_segment,
         "liquidity_tier": liquidity_tier,
+        "space_event_source_profile": official_customer_source_profile,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
         "stop_price": _round(signal.get("stop_price"), 4),
@@ -1506,6 +1625,11 @@ def _observation_slot_row(
         "space_liquidity_tier_bucket": liquidity_tier_bucket,
         "space_liquidity_tier_risk_scalar": _round(
             liquidity_tier_risk_scalar,
+            6,
+        ),
+        "space_official_customer_source_bucket": official_customer_source_bucket,
+        "space_official_customer_source_risk_scalar": _round(
+            official_customer_source_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,

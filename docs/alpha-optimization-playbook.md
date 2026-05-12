@@ -66,17 +66,19 @@ Latest accepted default-off Space checkpoint: the official-catalyst Space
 forward stack from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `exp-20260512-008`,
 `exp-20260512-013`, `exp-20260512-031`, `exp-20260512-032`, and
-`exp-20260512-037`. The supported mechanism is signal-quality-conditioned risk
-allocation plus peer-relative breakout leadership plus small-cap risk-appetite
-scaling plus production-visible catalyst-quality fields: perfect-TQS official
-Space signals get a `1.5x` top-up, near-perfect official Space `trend_long`
-gets a `1.10x` top-up, peer-nonleader official Space `breakout_long` gets
-`0.00x` extra risk, official Space signals get a `1.10x` top-up when IWM 20d
-momentum is above SPY 20d momentum, launch/lunar theme-segment signals get a
-`1.10x` top-up, and official Space signals with production registry
-`liquidity_tier=ok` get a `1.10x` top-up. This remains default-off
-metadata/helper only, with live Space slots still zero and forward replacement
-value still the blocking evidence gate.
+`exp-20260512-037` and `exp-20260512-038`. The supported mechanism is
+signal-quality-conditioned risk allocation plus peer-relative breakout
+leadership plus small-cap risk-appetite scaling plus production-visible
+catalyst-quality fields: perfect-TQS official Space signals get a `1.5x`
+top-up, near-perfect official Space `trend_long` gets a `1.10x` top-up,
+peer-nonleader official Space `breakout_long` gets `0.00x` extra risk,
+official Space signals get a `1.10x` top-up when IWM 20d momentum is above SPY
+20d momentum, launch/lunar theme-segment signals get a `1.10x` top-up,
+official Space signals with production registry `liquidity_tier=ok` get a
+`1.10x` top-up, and official Space signals tied to `customer_win` event seeds
+from official/regulatory/company primary sources get a `1.10x` top-up. This
+remains default-off metadata/helper only, with live Space slots still zero and
+forward replacement value still the blocking evidence gate.
 
 Latest unchanged core validation point: the 2026-05-03 through 2026-05-12
 observed-only SEC/Form 4 queue, shadow-universe, event-harness, short-pressure,

@@ -19,6 +19,7 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
     space_catalyst_iwm_relative_momentum_state,
+    space_catalyst_official_customer_source_profiles,
     space_catalyst_observation_feature_tickers,
     space_catalyst_observation_tickers,
     space_catalyst_peer_momentum_state,
@@ -151,7 +152,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-037"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-038"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -245,6 +246,24 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert snapshot["forward_hypothesis"]["space_liquidity_tier"] == "ok"
     assert (
         snapshot["forward_hypothesis"]["space_liquidity_tier_risk_scalar"]
+        == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_official_customer_source_experiment_id"
+        ]
+        == "exp-20260512-038"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_official_customer_source_event_field"
+        ]
+        == "customer_win"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_official_customer_source_risk_scalar"
+        ]
         == 1.1
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
@@ -381,6 +400,15 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         space_catalyst_forward_risk_scalar(
             "RKLB",
             "trend_long",
+            liquidity_tier="ok",
+            official_customer_source_profile={"event_ids": ["rklb_customer_win"]},
+        ),
+        6,
+    ) == 1.5125
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "trend_long",
             basket_momentum_state={"state": "positive"},
             iwm_relative_momentum_state={"state": "smallcap_leader"},
             trade_quality_score=0.956,
@@ -428,6 +456,39 @@ def test_space_catalyst_basket_momentum_state_uses_official_pool():
     assert state["average"] == 0.1
     assert state["available_count"] == 6
     assert state["missing_tickers"] == []
+
+
+def test_space_catalyst_official_customer_source_profiles_filters_attention_only():
+    profiles = space_catalyst_official_customer_source_profiles(
+        [
+            {
+                "event_id": "rklb_customer",
+                "event_date": "2026-05-01",
+                "tickers": ["RKLB"],
+                "event_fields": ["customer_win"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "company_release",
+            },
+            {
+                "event_id": "uap_attention",
+                "event_date": "2026-05-01",
+                "tickers": ["RKLB"],
+                "event_fields": ["uap_attention_spike"],
+                "semantic_bucket": "attention_only",
+                "source_type": "official_attention_release",
+            },
+        ],
+        included_tickers=["RKLB", "ASTS"],
+    )
+
+    assert profiles == {
+        "RKLB": {
+            "event_ids": ["rklb_customer"],
+            "event_fields": ["customer_win"],
+            "semantic_buckets": ["fundamental_contract_regulatory"],
+            "source_types": ["company_release"],
+        }
+    }
 
 
 def test_space_catalyst_peer_momentum_state_compares_to_official_average():
@@ -556,6 +617,14 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
             "tickers_by_liquidity_tier": {"ok": ["RKLB"]},
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
+        space_event_source_profiles={
+            "RKLB": {
+                "event_ids": ["rklb_record_backlog_launch_deal_20260507"],
+                "event_fields": ["customer_win"],
+                "semantic_buckets": ["fundamental_contract_regulatory"],
+                "source_types": ["company_release"],
+            }
+        },
         core_signals=[{"ticker": "AMD", "strategy": "trend_long"}],
         entry_execution_plan={"available_slots": 1, "slot_sliced_signals": []},
         portfolio_heat={"portfolio_heat_pct": 0.03, "can_add_new_positions": True},
@@ -591,8 +660,11 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["liquidity_tier"] == "ok"
     assert plan["space_liquidity_tier_bucket"] is True
     assert plan["space_liquidity_tier_risk_scalar"] == 1.1
-    assert plan["effective_risk_scalar"] == 1.509853
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1509.85
+    assert plan["space_official_customer_source_bucket"] is True
+    assert plan["space_official_customer_source_risk_scalar"] == 1.1
+    assert plan["space_event_source_profile"]["event_fields"] == ["customer_win"]
+    assert plan["effective_risk_scalar"] == 1.660838
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1660.84
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -633,6 +705,7 @@ def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
             "tickers_by_liquidity_tier": {"ok": ["RKLB"]},
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
+        space_event_source_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]
@@ -668,6 +741,7 @@ def test_space_catalyst_observation_slot_persistence_dedupes_daily_plan(tmp_path
             "tickers_by_segment": {"launch_lunar": ["LUNR"]},
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
+        space_event_source_profiles={},
     )
     ledger_path = tmp_path / "observation.jsonl"
     summary_path = tmp_path / "observation_summary.json"
@@ -811,6 +885,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_launch_lunar_theme_risk_scalar": 1.1,
                 "space_liquidity_tier": "ok",
                 "space_liquidity_tier_risk_scalar": 1.1,
+                "space_official_customer_source_event_field": "customer_win",
+                "space_official_customer_source_risk_scalar": 1.1,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -834,6 +910,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_iwm_relative_state": "smallcap_leader",
                     "theme_segment": "launch_lunar",
                     "liquidity_tier": "ok",
+                    "space_official_customer_source_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -879,7 +956,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "peer-nonleader Space breakout @ 0.0x; "
         "IWM>SPY Space risk @ 1.1x; "
         "launch/lunar theme risk @ 1.1x; "
-        "liquidity tier ok @ 1.1x)"
+        "liquidity tier ok @ 1.1x; "
+        "official customer source customer_win @ 1.1x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -887,7 +965,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
     assert "RKLB: trend_long entry $100.00 target $125.00" in report
     assert (
         "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
-        "theme=launch_lunar liquidity=ok"
+        "theme=launch_lunar liquidity=ok customer_source=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

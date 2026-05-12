@@ -43,7 +43,8 @@ same-sample lifecycle sweep.
 
 Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
-now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, and `037`.
+now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, and
+`038`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -52,14 +53,17 @@ peer-nonleader official Space `breakout_long` gets `0.00x` extra risk, official
 Space signals get `1.10x` extra default-off risk when IWM 20d momentum is above
 SPY 20d momentum, `launch_lunar` theme-segment signals get `1.10x` extra
 default-off risk, and official Space signals with production registry
-`liquidity_tier=ok` get `1.10x` extra default-off risk. This remains
+`liquidity_tier=ok` get `1.10x` extra default-off risk, and official Space
+signals tied to `customer_win` event seeds from official/regulatory/company
+primary sources get `1.10x` extra default-off risk. This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
 theme risk only at `1.10x`, `exp-20260512-035` rejected data/defense theme
-scaling, and `exp-20260512-037` accepted liquidity-tier anchor risk only at
-`1.10x`; the next valid Space step is forward replacement value or a genuinely
-new catalyst-quality field, not another frozen-window local scalar retune.
+scaling, `exp-20260512-037` accepted liquidity-tier anchor risk only at
+`1.10x`, and `exp-20260512-038` accepted customer-source risk only at `1.10x`;
+the next valid Space step is forward replacement value or a genuinely new
+catalyst-quality field, not another frozen-window local scalar retune.
 
 Latest rejected core entry alpha search: `exp-20260512-024` tested a
 deterministic OHLCV `pullback_reclaim_long` entry shape for leadership
