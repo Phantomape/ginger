@@ -377,6 +377,21 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': True, 'alters_sizing': False}
 - artifact: `data\experiments\exp-20260512-001\exp_20260512_001_sec_financial_report_t1_excess_floor.json`
 
+## exp-20260512-004 Space perfect-TQS risk
+
+- timestamp: 2026-05-12T01:31:38+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_perfect_tqs_risk
+- changed_variable: space_perfect_trade_quality_score_risk_scalar
+- best_space_perfect_tqs_risk_scalar: 1.5
+- expected_value_score_delta_vs_before: +1.2496
+- total_pnl_delta_vs_before: +$26,296.52
+- before_aggregate: {'expected_value_score_sum': 10.2590, 'total_pnl_sum': 261960.17, 'trade_count_sum': 73, 'min_survival_rate': 0.8070, 'max_drawdown_pct_max': 0.1056}
+- after_aggregate: {'expected_value_score_sum': 11.5086, 'total_pnl_sum': 288256.69, 'trade_count_sum': 72, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1056}
+- interpretation: Space optimization should now prioritize signal-quality-conditioned risk allocation. The accepted perfect-TQS 1.5x top-up remains default-off metadata/helper only; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-004\space_perfect_tqs_risk.json`
+
 ## exp-20260512-002 SEC financial-report hold days
 
 - timestamp: 2026-05-12T01:06:19+00:00

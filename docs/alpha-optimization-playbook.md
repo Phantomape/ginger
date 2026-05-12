@@ -7515,3 +7515,13 @@ or forward replacement value, not another deterministic RS20 gate.
 Do not repeat: nearby post-news pre-event RS20 sign, laggard-exclusion, or 5pp
 leader gates on this frozen sample without new forward outcomes or a richer
 same-accession earnings-quality field.
+
+### exp-20260512-004 Space perfect-TQS risk
+
+- Decision: accepted_default_off_space_perfect_tqs_risk.
+- Tested variable: `space_perfect_trade_quality_score_risk_scalar` on top of the accepted exp-115 Space stack.
+- Best scalar: `1.5` for official Space signals whose existing `trade_quality_score` is capped at `1.0`.
+- Aggregate EV delta vs exp-115 stack: `+1.2496`; PnL delta `$+26,296.52`.
+- Window evidence: `mid_weak +1.0058` EV / `$+17,294.12`, `old_thin +0.2438` EV / `$+9,002.40`, `late_strong unchanged`; no window regressed and max drawdown did not worsen.
+- Interpretation: the next supported Space optimization direction is signal-quality-conditioned risk allocation, not broader ticker expansion, LLM soft-ranking, or another stop/target geometry retry. The accepted rule remains default-off metadata/helper only because Space live slots remain zero.
+- Anti-repeat: do not retry nearby perfect-TQS Space risk scalars on the same frozen snapshots. Future Space work should require forward catalyst replacement value or a genuinely new catalyst-quality field.

@@ -52,9 +52,16 @@ SPACE_CATALYST_DATA_VENDOR_BREAKOUT_RISK_SCALAR = 0.1
 SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_TICKERS = ("RKLB", "ASTS")
 SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_RISK_SCALAR = 1.25
 SPACE_CATALYST_OFFICIAL_TREND_TARGET_ATR_MULT = 5.0
+SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_TARGET_ATR_MULT = 7.0
+SPACE_CATALYST_BASKET_MOMENTUM_TICKERS = ("ASTS", "BKSY", "LUNR", "PL", "RDW", "RKLB")
+SPACE_CATALYST_BASKET_MOMENTUM_FIELD = "momentum_20d_pct"
+SPACE_CATALYST_BASKET_MOMENTUM_THRESHOLD = 0.0
+SPACE_CATALYST_BASKET_POSITIVE_RISK_SCALAR = 1.1
+SPACE_CATALYST_PERFECT_TQS_SCORE_FLOOR = 1.0
+SPACE_CATALYST_PERFECT_TQS_RISK_SCALAR = 1.5
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260511-032",
+    "experiment_id": "exp-20260512-004",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -71,6 +78,17 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "official_trend_target_atr_mult": (
         SPACE_CATALYST_OFFICIAL_TREND_TARGET_ATR_MULT
     ),
+    "launch_connectivity_trend_target_atr_mult": (
+        SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_TARGET_ATR_MULT
+    ),
+    "space_basket_momentum_experiment_id": "exp-20260511-115",
+    "space_basket_momentum_field": SPACE_CATALYST_BASKET_MOMENTUM_FIELD,
+    "space_basket_momentum_threshold": SPACE_CATALYST_BASKET_MOMENTUM_THRESHOLD,
+    "space_basket_positive_risk_scalar": SPACE_CATALYST_BASKET_POSITIVE_RISK_SCALAR,
+    "space_basket_momentum_tickers": list(SPACE_CATALYST_BASKET_MOMENTUM_TICKERS),
+    "space_perfect_tqs_experiment_id": "exp-20260512-004",
+    "space_perfect_tqs_score_floor": SPACE_CATALYST_PERFECT_TQS_SCORE_FLOOR,
+    "space_perfect_tqs_risk_scalar": SPACE_CATALYST_PERFECT_TQS_RISK_SCALAR,
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -117,7 +135,45 @@ DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_SUMMARY_PATH = Path(
 )
 
 
-def space_catalyst_forward_risk_scalar(ticker: str, strategy: str) -> float:
+def space_catalyst_basket_momentum_state(
+    features_by_ticker: dict[str, dict[str, Any]] | None,
+    *,
+    tickers: tuple[str, ...] = SPACE_CATALYST_BASKET_MOMENTUM_TICKERS,
+    field: str = SPACE_CATALYST_BASKET_MOMENTUM_FIELD,
+    threshold: float = SPACE_CATALYST_BASKET_MOMENTUM_THRESHOLD,
+) -> dict[str, Any]:
+    """Summarize the official Space basket momentum used for forward attribution."""
+    features_by_ticker = features_by_ticker or {}
+    values = {}
+    missing = []
+    for ticker in tickers:
+        value = _as_float((features_by_ticker.get(ticker) or {}).get(field))
+        if value is None:
+            missing.append(ticker)
+        else:
+            values[ticker] = value
+    average = mean(values.values()) if values else None
+    state = "insufficient_data"
+    if average is not None:
+        state = "positive" if average > threshold else "nonpositive"
+    return {
+        "field": field,
+        "threshold": threshold,
+        "state": state,
+        "average": _round(average, 6),
+        "values": {ticker: _round(value, 6) for ticker, value in sorted(values.items())},
+        "available_count": len(values),
+        "missing_tickers": missing,
+    }
+
+
+def space_catalyst_forward_risk_scalar(
+    ticker: str,
+    strategy: str,
+    *,
+    basket_momentum_state: dict[str, Any] | None = None,
+    trade_quality_score: Any = None,
+) -> float:
     """Return the extra default-off forward scalar for Space sleeve attribution."""
     ticker_upper = str(ticker or "").upper()
     strategy_key = str(strategy or "").lower()
@@ -132,6 +188,16 @@ def space_catalyst_forward_risk_scalar(ticker: str, strategy: str) -> float:
         and strategy_key == "trend_long"
     ):
         scalar *= SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and (basket_momentum_state or {}).get("state") == "positive"
+    ):
+        scalar *= SPACE_CATALYST_BASKET_POSITIVE_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_perfect_tqs(trade_quality_score)
+    ):
+        scalar *= SPACE_CATALYST_PERFECT_TQS_RISK_SCALAR
     return scalar
 
 
@@ -147,6 +213,8 @@ def space_catalyst_forward_target_atr_mult(
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and strategy_key == "trend_long"
     ):
+        if ticker_upper in SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_TICKERS:
+            return SPACE_CATALYST_LAUNCH_CONNECTIVITY_TREND_TARGET_ATR_MULT
         return SPACE_CATALYST_OFFICIAL_TREND_TARGET_ATR_MULT
     return current_target_atr_mult
 
@@ -465,6 +533,7 @@ def build_space_catalyst_observation_slot(
         core_signals or [],
         entry_execution_plan,
     )
+    basket_momentum = space_catalyst_basket_momentum_state(features_by_ticker)
 
     candidates = []
     for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
@@ -477,6 +546,7 @@ def build_space_catalyst_observation_slot(
                 rank=rank,
                 signal=signal,
                 features=features_by_ticker.get(ticker) or {},
+                basket_momentum_state=basket_momentum,
                 space_catalyst_shadow=shadow,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
@@ -509,6 +579,7 @@ def build_space_catalyst_observation_slot(
         "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
         "same_day_core_alternative_count": len(core_alternatives),
         "same_day_core_alternatives": core_alternatives[:10],
+        "space_basket_momentum": basket_momentum,
         "entry_plan_context": _entry_plan_context(entry_execution_plan),
         "portfolio_heat_context": _portfolio_heat_context(portfolio_heat or {}),
         "entry_filter_audit": _entry_filter_audit_summary(entry_filter_audit or {}),
@@ -523,6 +594,15 @@ def build_space_catalyst_observation_slot(
             "official_trend_target_atr_mult": (
                 SPACE_CATALYST_OFFICIAL_TREND_TARGET_ATR_MULT
             ),
+            "space_basket_momentum_field": SPACE_CATALYST_BASKET_MOMENTUM_FIELD,
+            "space_basket_momentum_threshold": (
+                SPACE_CATALYST_BASKET_MOMENTUM_THRESHOLD
+            ),
+            "space_basket_positive_risk_scalar": (
+                SPACE_CATALYST_BASKET_POSITIVE_RISK_SCALAR
+            ),
+            "space_perfect_tqs_score_floor": SPACE_CATALYST_PERFECT_TQS_SCORE_FLOOR,
+            "space_perfect_tqs_risk_scalar": SPACE_CATALYST_PERFECT_TQS_RISK_SCALAR,
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -1019,6 +1099,7 @@ def _observation_slot_row(
     rank: int,
     signal: dict[str, Any],
     features: dict[str, Any],
+    basket_momentum_state: dict[str, Any],
     space_catalyst_shadow: dict[str, Any],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
@@ -1040,7 +1121,21 @@ def _observation_slot_row(
     risk_budget_scalar = _as_float(
         SPACE_CATALYST_FORWARD_HYPOTHESIS.get("risk_budget_scalar")
     )
-    sleeve_risk_scalar = space_catalyst_forward_risk_scalar(ticker, strategy)
+    sleeve_risk_scalar = space_catalyst_forward_risk_scalar(
+        ticker,
+        strategy,
+        basket_momentum_state=basket_momentum_state,
+        trade_quality_score=signal.get("trade_quality_score"),
+    )
+    basket_risk_scalar = (
+        SPACE_CATALYST_BASKET_POSITIVE_RISK_SCALAR
+        if (basket_momentum_state or {}).get("state") == "positive"
+        else 1.0
+    )
+    perfect_tqs_bucket = _is_space_perfect_tqs(signal.get("trade_quality_score"))
+    perfect_tqs_risk_scalar = (
+        SPACE_CATALYST_PERFECT_TQS_RISK_SCALAR if perfect_tqs_bucket else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -1077,6 +1172,14 @@ def _observation_slot_row(
         "entry_note": signal.get("entry_note"),
         "risk_budget_scalar": _round(risk_budget_scalar, 6),
         "sleeve_risk_scalar": _round(sleeve_risk_scalar, 6),
+        "space_basket_momentum_state": (basket_momentum_state or {}).get("state"),
+        "space_basket_momentum_20d_pct": _round(
+            (basket_momentum_state or {}).get("average"),
+            6,
+        ),
+        "space_basket_positive_risk_scalar": _round(basket_risk_scalar, 6),
+        "space_perfect_tqs_bucket": perfect_tqs_bucket,
+        "space_perfect_tqs_risk_scalar": _round(perfect_tqs_risk_scalar, 6),
         "effective_risk_scalar": effective_risk_scalar,
         "paper_sizing": {
             "shares_to_buy": paper_shares,
@@ -1258,6 +1361,11 @@ def _as_float(value: Any) -> float | None:
     return out if math.isfinite(out) else None
 
 
+def _is_space_perfect_tqs(value: Any) -> bool:
+    score = _as_float(value)
+    return score is not None and score >= SPACE_CATALYST_PERFECT_TQS_SCORE_FLOOR
+
+
 def _round(value: Any, digits: int = 6) -> Any:
     out = _as_float(value)
     return round(out, digits) if out is not None else None
@@ -1343,11 +1451,11 @@ def _event_ledger_production_impact() -> dict[str, bool]:
 
 def _observation_slot_production_impact() -> dict[str, bool]:
     return {
-        "shared_policy_changed": False,
+        "shared_policy_changed": True,
         "backtester_adapter_changed": False,
         "run_adapter_changed": True,
-        "parity_test_added": False,
-        "replay_only": False,
+        "parity_test_added": True,
+        "replay_only": True,
         "alters_signal_generation": False,
         "alters_candidate_ranking": False,
         "alters_sizing": False,

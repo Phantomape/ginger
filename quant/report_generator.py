@@ -342,10 +342,29 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "launch/connectivity trend @ "
                     f"{launch_connectivity_trend_scalar}x"
                 )
+            launch_connectivity_trend_target = forward.get(
+                "launch_connectivity_trend_target_atr_mult"
+            )
+            if launch_connectivity_trend_target is not None:
+                extra_policies.append(
+                    "launch/connectivity trend target @ "
+                    f"{launch_connectivity_trend_target} ATR"
+                )
             official_trend_target = forward.get("official_trend_target_atr_mult")
             if official_trend_target is not None:
                 extra_policies.append(
                     f"official trend target @ {official_trend_target} ATR"
+                )
+            basket_positive_scalar = forward.get("space_basket_positive_risk_scalar")
+            if basket_positive_scalar is not None:
+                extra_policies.append(
+                    "Space basket positive 20d momentum @ "
+                    f"{basket_positive_scalar}x"
+                )
+            perfect_tqs_scalar = forward.get("space_perfect_tqs_risk_scalar")
+            if perfect_tqs_scalar is not None:
+                extra_policies.append(
+                    f"perfect Space TQS @ {perfect_tqs_scalar}x"
                 )
             extra_policy = ""
             if extra_policies:
@@ -394,11 +413,17 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             risk_text = (
                 f"{risk_scalar}x" if isinstance(risk_scalar, (int, float)) else "n/a"
             )
+            basket_state = plan.get("space_basket_momentum_state")
+            basket_text = f" basket={basket_state}" if basket_state else ""
+            perfect_tqs_text = (
+                " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
+            )
             lines.append(
                 f"  {plan.get('ticker', '?')}: {plan.get('strategy', '?')} "
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
-                f"risk={risk_text} ({plan.get('blocked_reason', 'observe_only')})"
+                f"risk={risk_text}{basket_text}{perfect_tqs_text} "
+                f"({plan.get('blocked_reason', 'observe_only')})"
             )
     if space_catalyst_event_ledger and (
         space_catalyst_event_ledger.get("active_event_count", 0) > 0
