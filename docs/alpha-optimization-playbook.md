@@ -7525,3 +7525,13 @@ same-accession earnings-quality field.
 - Window evidence: `mid_weak +1.0058` EV / `$+17,294.12`, `old_thin +0.2438` EV / `$+9,002.40`, `late_strong unchanged`; no window regressed and max drawdown did not worsen.
 - Interpretation: the next supported Space optimization direction is signal-quality-conditioned risk allocation, not broader ticker expansion, LLM soft-ranking, or another stop/target geometry retry. The accepted rule remains default-off metadata/helper only because Space live slots remain zero.
 - Anti-repeat: do not retry nearby perfect-TQS Space risk scalars on the same frozen snapshots. Future Space work should require forward catalyst replacement value or a genuinely new catalyst-quality field.
+
+### exp-20260512-006 SEC financial-report event notional
+
+- Decision: accepted_default_off_event_notional_15000.
+- Tested variable: `sec_financial_report_event_sleeve_event_notional_usd`, with max-3 capacity, T+1 excess >= 1%, and the 10-trading-day hold fixed.
+- Promoted default: `$15,000` per default-off paper event.
+- Aggregate delta versus the accepted $10k setup: EV `+0.505389`, total PnL `+$12,237.07`, sleeve PnL `+$12,002.28`, closed sleeve trades unchanged at `52`, and max drawdown max `+0.2954 pp`.
+- Window evidence: EV and PnL improved in all three canonical windows: `late_strong +0.043490` EV / `+$1,657.81`, `mid_weak +0.329677` EV / `+$5,440.73`, and `old_thin +0.132222` EV / `+$5,138.53`.
+- Interpretation: after the accepted T+1 excess quality floor, the SEC financial-report paper sleeve supports a modestly larger risk budget. This is a default-off paper risk-allocation improvement, not a new filter, ticker expansion, hold-period retry, or live-order change.
+- Anti-repeat: do not retry nearby $12.5k/$20k/$25k event-notional variants on the frozen sample. The next SEC step should be forward replacement-value evidence or a genuinely new semantic earnings-quality field.

@@ -407,3 +407,18 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Keep the accepted 10-trading-day SEC financial-report paper sleeve hold. Shorter/later fixed holds did not beat the accepted max-3 plus 1% T+1 excess setup across the three canonical windows.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_sizing': False, 'alters_exit_lifecycle': True}
 - artifact: `data\experiments\exp-20260512-002\exp_20260512_002_sec_financial_report_hold_days.json`
+
+## exp-20260512-006 SEC financial-report event notional
+
+- timestamp: 2026-05-12T02:24:05Z
+- lane: alpha_search
+- decision: accepted_default_off_event_notional_15000
+- changed_variable: sec_financial_report_event_sleeve_event_notional_usd
+- promoted default: $15,000 per default-off paper event, with max_positions=3, T+1 excess >= 1%, and 10-trading-day hold unchanged.
+- expected_value_score_delta: +0.505389
+- total_pnl_delta: +$12,237.07
+- before_aggregate: {'expected_value_score_sum': 7.409199, 'total_pnl_sum': 209889.79, 'trade_count_sum': 114, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.090703, 'sleeve_total_pnl_sum': 24004.57, 'sleeve_closed_trade_count_sum': 52}
+- after_aggregate: {'expected_value_score_sum': 7.914588, 'total_pnl_sum': 222126.86, 'trade_count_sum': 114, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.093657, 'sleeve_total_pnl_sum': 36006.85, 'sleeve_closed_trade_count_sum': 52}
+- interpretation: After the accepted event-quality floor, the SEC financial-report T+1 sleeve can carry a larger default-off paper budget. This is risk allocation, not candidate expansion: no live orders, candidate ranking, hold period, or queue filter changed.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_candidate_ranking': False, 'alters_sizing': True}
+- artifact: `data\experiments\exp-20260512-006\exp_20260512_006_sec_financial_report_event_notional.json`

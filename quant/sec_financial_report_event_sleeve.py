@@ -29,8 +29,8 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 SLEEVE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER"
 STATE_SCHEMA_VERSION = 1
-DEFAULT_EVENT_NOTIONAL_USD = 10_000.0
-DEFAULT_MAX_POSITIONS = 1
+DEFAULT_EVENT_NOTIONAL_USD = 15_000.0
+DEFAULT_MAX_POSITIONS = 3
 DEFAULT_STATE_PATH = Path("data/sec_financial_report_event_sleeve_paper_state.json")
 DEFAULT_SNAPSHOT_LOG_PATH = Path(
     "data/sec_financial_report_event_sleeve_paper_snapshots.jsonl"

@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from sec_event_queue import (
+    FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
     GOVERNANCE_QUEUE_NAME,
     FINANCIAL_REPORT_T1_QUEUE_NAME,
     LEADERSHIP_QUEUE_NAME,
@@ -216,6 +217,56 @@ def test_financial_report_t1_queue_rejects_nonfinancial_or_nonexcess_rows():
         "t1_excess_return_vs_spy": 0.01,
     }
     assert qualifies_sec_financial_report_t1_event(event) is True
+
+
+def test_financial_report_t1_queue_requires_accepted_excess_floor():
+    weak = _row(
+        ticker="WEAK",
+        accession_number="0010",
+        eight_k_item_codes=["2.02", "9.01"],
+    )
+    strong = _row(
+        ticker="STRONG",
+        accession_number="0011",
+        eight_k_item_codes=["2.02", "9.01"],
+    )
+
+    queue = build_sec_financial_report_t1_queue(
+        [weak, strong],
+        as_of="2026-05-05",
+        ohlcv_by_ticker={
+            "WEAK": _ohlcv_rows([100.0, 102.0, 103.0]),
+            "STRONG": _ohlcv_rows([100.0, 103.0, 104.0]),
+        },
+        spy_ohlcv=_ohlcv_rows([100.0, 101.5, 102.0]),
+    )
+
+    assert FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY == 0.01
+    assert queue["parameters"]["min_t1_excess_return_vs_spy"] == 0.01
+    assert queue["candidate_count"] == 1
+    assert queue["candidates"][0]["ticker"] == "STRONG"
+
+    base_event = {
+        "status": "ok",
+        "event_family": "earnings_8k",
+        "cohort": "other_equity",
+        "price_status": "covered",
+        "drift_bucket": "positive_t1_excess_drift",
+    }
+    assert qualifies_sec_financial_report_t1_event(
+        {
+            **base_event,
+            "t1_excess_return_vs_spy": (
+                FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY - 0.0001
+            ),
+        }
+    ) is False
+    assert qualifies_sec_financial_report_t1_event(
+        {
+            **base_event,
+            "t1_excess_return_vs_spy": FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
+        }
+    ) is True
 
 
 def test_financial_report_t1_queue_excludes_platform_pool_and_missing_cohort():

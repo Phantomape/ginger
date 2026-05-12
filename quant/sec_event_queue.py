@@ -14,7 +14,7 @@ GOVERNANCE_RULE_VERSION = "sec_governance_procedural_mild_reaction_v1"
 LEADERSHIP_QUEUE_NAME = "SEC_LEADERSHIP_CHANGE_FORWARD_QUEUE"
 LEADERSHIP_RULE_VERSION = "sec_leadership_change_negative_reaction_v1"
 FINANCIAL_REPORT_T1_QUEUE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_FORWARD_QUEUE"
-FINANCIAL_REPORT_T1_RULE_VERSION = "sec_financial_report_positive_t1_excess_non_platform_v2"
+FINANCIAL_REPORT_T1_RULE_VERSION = "sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3"
 PRIMARY_HORIZON_TRADING_DAYS = 10
 MAX_COUNTERFACTUAL_SIGNALS = 3
 REQUIRED_ITEM_CODE = "2.02"
@@ -22,6 +22,7 @@ LEADERSHIP_REQUIRED_ITEM_CODE = "5.02"
 LEADERSHIP_MAX_EXCESS_REACTION = -0.02
 FINANCIAL_REPORT_EVENT_FAMILIES = ("earnings_8k", "periodic_report")
 FINANCIAL_REPORT_T1_EXCLUDED_COHORTS = ("platform_pool",)
+FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY = 0.01
 GOVERNANCE_TARGET_CELLS = {
     ("shareholder_vote", "negative_excess_0_to_minus_2pct"),
     ("charter_or_securities_change", "positive_excess_0_to_2pct"),
@@ -502,6 +503,7 @@ def qualifies_sec_leadership_change_event(event: dict[str, Any]) -> bool:
 
 def qualifies_sec_financial_report_t1_event(event: dict[str, Any]) -> bool:
     cohort = str(event.get("cohort") or "")
+    t1_excess = event.get("t1_excess_return_vs_spy")
     return (
         event.get("status") == "ok"
         and event.get("event_family") in FINANCIAL_REPORT_EVENT_FAMILIES
@@ -509,7 +511,8 @@ def qualifies_sec_financial_report_t1_event(event: dict[str, Any]) -> bool:
         and cohort not in FINANCIAL_REPORT_T1_EXCLUDED_COHORTS
         and event.get("price_status") == "covered"
         and event.get("drift_bucket") == "positive_t1_excess_drift"
-        and isinstance(event.get("t1_excess_return_vs_spy"), (int, float))
+        and isinstance(t1_excess, (int, float))
+        and t1_excess >= FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY
     )
 
 
@@ -781,6 +784,7 @@ def build_sec_financial_report_t1_queue(
             ),
             "included_event_families": list(FINANCIAL_REPORT_EVENT_FAMILIES),
             "excluded_cohorts": list(FINANCIAL_REPORT_T1_EXCLUDED_COHORTS),
+            "min_t1_excess_return_vs_spy": FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
             "primary_horizon_trading_days": PRIMARY_HORIZON_TRADING_DAYS,
             "entry_timing": "next_trading_day_open_after_t1_close",
             "source_experiment": "exp-20260510-027",
