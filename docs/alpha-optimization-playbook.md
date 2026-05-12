@@ -64,16 +64,19 @@ same frozen sample.
 
 Latest accepted default-off Space checkpoint: the official-catalyst Space
 forward stack from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
-now extends through `exp-20260512-004`, `exp-20260512-008`, and
-`exp-20260512-013` and `exp-20260512-031`. The supported mechanism is
-signal-quality-conditioned risk allocation plus peer-relative breakout
-leadership plus small-cap risk-appetite scaling: perfect-TQS official Space
-signals get a `1.5x` top-up, near-perfect official Space `trend_long` gets a
-`1.10x` top-up, peer-nonleader official Space `breakout_long` gets `0.00x`
-extra risk, and official Space signals get a `1.10x` top-up when IWM 20d
-momentum is above SPY 20d momentum. This remains default-off metadata/helper
-only, with live Space slots still zero and forward replacement value still the
-blocking evidence gate.
+now extends through `exp-20260512-004`, `exp-20260512-008`,
+`exp-20260512-013`, `exp-20260512-031`, `exp-20260512-032`, and
+`exp-20260512-037`. The supported mechanism is signal-quality-conditioned risk
+allocation plus peer-relative breakout leadership plus small-cap risk-appetite
+scaling plus production-visible catalyst-quality fields: perfect-TQS official
+Space signals get a `1.5x` top-up, near-perfect official Space `trend_long`
+gets a `1.10x` top-up, peer-nonleader official Space `breakout_long` gets
+`0.00x` extra risk, official Space signals get a `1.10x` top-up when IWM 20d
+momentum is above SPY 20d momentum, launch/lunar theme-segment signals get a
+`1.10x` top-up, and official Space signals with production registry
+`liquidity_tier=ok` get a `1.10x` top-up. This remains default-off
+metadata/helper only, with live Space slots still zero and forward replacement
+value still the blocking evidence gate.
 
 Latest unchanged core validation point: the 2026-05-03 through 2026-05-12
 observed-only SEC/Form 4 queue, shadow-universe, event-harness, short-pressure,
@@ -7656,6 +7659,16 @@ same-accession earnings-quality field.
 - Window evidence: `late_strong +0.0000` EV / `+$0.00`, `mid_weak -0.0065` EV / `$-145.96`, and `old_thin +0.2051` EV / `+$8,350.90`; max drawdown worsened by `0.63` percentage points.
 - Interpretation: Space data/defense theme risk is an old-window concentration, not a robust same-sample catalyst-bucket edge. The accepted Space stack should keep the launch/lunar theme scalar and avoid adding a BKSY/PL/RDW theme top-up without forward replacement value.
 - Anti-repeat: do not retry adjacent Space data/defense theme scalars on these frozen snapshots. Future Space work should use forward catalyst replacement value or a genuinely new production-observable catalyst-quality field, not another local bucket scalar.
+
+### exp-20260512-037 Space liquidity-tier risk
+
+- Decision: accepted_default_off_space_liquidity_tier_risk.
+- Tested variable: `space_liquidity_tier_ok_risk_scalar` for official Space signals whose production universe-registry `liquidity_tier` is `ok`, with the accepted exp-20260512-032 Space stack fixed.
+- Promoted default-off metadata/helper: `1.10x` extra scalar for the official Space liquidity anchor bucket. In the current registry this applies to `RKLB` only.
+- Aggregate delta versus exp-20260512-032: EV `+0.2390`, total PnL `+$5,789.02`, trade count unchanged at `70`, and no regressed canonical window.
+- Window evidence: `late_strong +0.1083` EV / `+$2,776.14`, `mid_weak +0.1160` EV / `+$2,214.25`, and `old_thin +0.0147` EV / `+$798.63`.
+- Interpretation: Space risk allocation has a modest production-visible liquidity-quality edge in the official operating pool. This is not support for live slots, noisy ticker expansion, LLM soft-ranking, or larger RKLB concentration.
+- Anti-repeat: do not retry nearby liquidity-tier Space scalars on these frozen snapshots. The `1.25x` and `1.50x` variants had higher EV but failed the drawdown guard; future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.
 
 ### exp-20260512-033 SEC financial-report paired-filing dedupe
 

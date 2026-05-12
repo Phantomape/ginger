@@ -398,6 +398,15 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "launch/lunar theme risk @ "
                     f"{launch_lunar_theme_scalar}x"
                 )
+            liquidity_tier_scalar = forward.get(
+                "space_liquidity_tier_risk_scalar"
+            )
+            liquidity_tier = forward.get("space_liquidity_tier")
+            if liquidity_tier_scalar is not None:
+                extra_policies.append(
+                    f"liquidity tier {liquidity_tier} @ "
+                    f"{liquidity_tier_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -453,6 +462,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             iwm_text = f" iwm={iwm_state}" if iwm_state else ""
             theme_segment = plan.get("theme_segment")
             theme_text = f" theme={theme_segment}" if theme_segment else ""
+            liquidity_tier = plan.get("liquidity_tier")
+            liquidity_text = f" liquidity={liquidity_tier}" if liquidity_tier else ""
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -470,7 +481,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {plan.get('ticker', '?')}: {plan.get('strategy', '?')} "
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
-                f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}{perfect_tqs_text}"
+                f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
+                f"{liquidity_text}{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )

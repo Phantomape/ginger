@@ -69,9 +69,11 @@ SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD = "momentum_20d_pct"
 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR = 1.1
 SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT = "launch_lunar"
 SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR = 1.1
+SPACE_CATALYST_LIQUIDITY_TIER = "ok"
+SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR = 1.1
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-032",
+    "experiment_id": "exp-20260512-037",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -138,6 +140,11 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_launch_lunar_theme_risk_scalar": (
         SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR
+    ),
+    "space_liquidity_tier_experiment_id": "exp-20260512-037",
+    "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
+    "space_liquidity_tier_risk_scalar": (
+        SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -288,6 +295,7 @@ def space_catalyst_forward_risk_scalar(
     peer_momentum_state: dict[str, Any] | None = None,
     iwm_relative_momentum_state: dict[str, Any] | None = None,
     theme_segment: str | None = None,
+    liquidity_tier: str | None = None,
     trade_quality_score: Any = None,
 ) -> float:
     """Return the extra default-off forward scalar for Space sleeve attribution."""
@@ -336,6 +344,11 @@ def space_catalyst_forward_risk_scalar(
         and str(theme_segment or "") == SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT
     ):
         scalar *= SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and str(liquidity_tier or "") == SPACE_CATALYST_LIQUIDITY_TIER
+    ):
+        scalar *= SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
     return scalar
 
 
@@ -366,6 +379,7 @@ def empty_space_catalyst_shadow_snapshot(as_of, reason: str = "not_built") -> di
         "status_counts": {},
         "segment_counts": {},
         "tickers_by_segment": {},
+        "tickers_by_liquidity_tier": {},
         "trade_enabled_tickers": [],
         "llm_event_fields": list(SPACE_CATALYST_LLM_EVENT_FIELDS),
         "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
@@ -445,6 +459,10 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_iwm_relative_leader_risk_scalar": (
                 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+            ),
+            "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
+            "space_liquidity_tier_risk_scalar": (
+                SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -914,9 +932,11 @@ def build_space_catalyst_shadow_snapshot(
     status_counts = Counter(record.get("status") for record in records.values())
     segment_counts = Counter(record.get("theme_segment") for record in records.values())
     tickers_by_segment = defaultdict(list)
+    tickers_by_liquidity_tier = defaultdict(list)
     trade_enabled = []
     for ticker, record in records.items():
         tickers_by_segment[record.get("theme_segment")].append(ticker)
+        tickers_by_liquidity_tier[record.get("liquidity_tier") or "unknown"].append(ticker)
         if record.get("first_trade_allowed_as_of") and (
             float(record.get("max_capital_scalar") or 0.0) > 0
             or float(record.get("max_risk_scalar") or 0.0) > 0
@@ -934,6 +954,13 @@ def build_space_catalyst_shadow_snapshot(
             segment: sorted(tickers)
             for segment, tickers in sorted(
                 tickers_by_segment.items(),
+                key=lambda item: str(item[0]),
+            )
+        },
+        "tickers_by_liquidity_tier": {
+            tier: sorted(tickers)
+            for tier, tickers in sorted(
+                tickers_by_liquidity_tier.items(),
                 key=lambda item: str(item[0]),
             )
         },
@@ -1221,6 +1248,14 @@ def _theme_segment_for_ticker(space_catalyst_shadow: dict[str, Any], ticker: str
     return None
 
 
+def _liquidity_tier_for_ticker(space_catalyst_shadow: dict[str, Any], ticker: str) -> str | None:
+    ticker_upper = str(ticker or "").upper()
+    for tier, tickers in (space_catalyst_shadow.get("tickers_by_liquidity_tier") or {}).items():
+        if ticker_upper in {str(item).upper() for item in tickers or []}:
+            return str(tier)
+    return None
+
+
 def _same_day_core_alternatives(
     core_signals: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
@@ -1301,6 +1336,7 @@ def _observation_slot_row(
     ticker = str(signal.get("ticker") or "").upper()
     strategy = str(signal.get("strategy") or "")
     theme_segment = _theme_segment_for_ticker(space_catalyst_shadow, ticker)
+    liquidity_tier = _liquidity_tier_for_ticker(space_catalyst_shadow, ticker)
     target_atr_mult = space_catalyst_forward_target_atr_mult(
         ticker,
         strategy,
@@ -1326,6 +1362,7 @@ def _observation_slot_row(
         peer_momentum_state=peer_momentum_state,
         iwm_relative_momentum_state=iwm_relative_momentum_state,
         theme_segment=theme_segment,
+        liquidity_tier=liquidity_tier,
         trade_quality_score=signal.get("trade_quality_score"),
     )
     basket_risk_scalar = (
@@ -1368,6 +1405,12 @@ def _observation_slot_row(
         if launch_lunar_theme_segment_bucket
         else 1.0
     )
+    liquidity_tier_bucket = liquidity_tier == SPACE_CATALYST_LIQUIDITY_TIER
+    liquidity_tier_risk_scalar = (
+        SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
+        if liquidity_tier_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -1389,6 +1432,7 @@ def _observation_slot_row(
         "strategy": strategy,
         "action": signal.get("action"),
         "theme_segment": theme_segment,
+        "liquidity_tier": liquidity_tier,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
         "stop_price": _round(signal.get("stop_price"), 4),
@@ -1457,6 +1501,11 @@ def _observation_slot_row(
         ),
         "space_launch_lunar_theme_segment_risk_scalar": _round(
             launch_lunar_theme_segment_risk_scalar,
+            6,
+        ),
+        "space_liquidity_tier_bucket": liquidity_tier_bucket,
+        "space_liquidity_tier_risk_scalar": _round(
+            liquidity_tier_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
