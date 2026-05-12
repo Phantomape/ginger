@@ -19,6 +19,7 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
     space_catalyst_observation_tickers,
+    space_catalyst_peer_momentum_state,
     space_catalyst_records_as_of,
 )
 from report_generator import generate_daily_report  # noqa: E402
@@ -146,7 +147,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-004"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-013"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -175,6 +176,32 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         == 1.5
     )
     assert snapshot["forward_hypothesis"]["space_perfect_tqs_score_floor"] == 1.0
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_near_perfect_tqs_trend_risk_scalar"
+        ]
+        == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_near_perfect_tqs_score_floor"]
+        == 0.95
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_near_perfect_tqs_score_ceiling"]
+        == 1.0
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_peer_nonleader_breakout_experiment_id"
+        ]
+        == "exp-20260512-013"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_peer_nonleader_breakout_risk_scalar"
+        ]
+        == 0.0
+    )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
 
@@ -204,6 +231,20 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
     assert space_catalyst_forward_risk_scalar(
         "RKLB",
         "trend_long",
+        trade_quality_score=0.956,
+    ) == 1.375
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "trend_long",
+            basket_momentum_state={"state": "positive"},
+            trade_quality_score=0.956,
+        ),
+        6,
+    ) == 1.5125
+    assert space_catalyst_forward_risk_scalar(
+        "RKLB",
+        "trend_long",
         basket_momentum_state={"state": "positive"},
         trade_quality_score=1.0,
     ) == 2.0625
@@ -225,6 +266,32 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         ),
         6,
     ) == 0.11
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "breakout_long",
+            peer_momentum_state={"state": "nonleader"},
+        )
+        == 0.0
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "breakout_long",
+            peer_momentum_state={"state": "leader"},
+        )
+        == 1.0
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "PL",
+            "breakout_long",
+            basket_momentum_state={"state": "positive"},
+            peer_momentum_state={"state": "nonleader"},
+            trade_quality_score=1.0,
+        )
+        == 0.0
+    )
 
 
 def test_space_catalyst_basket_momentum_state_uses_official_pool():
@@ -243,6 +310,27 @@ def test_space_catalyst_basket_momentum_state_uses_official_pool():
     assert state["average"] == 0.1
     assert state["available_count"] == 6
     assert state["missing_tickers"] == []
+
+
+def test_space_catalyst_peer_momentum_state_compares_to_official_average():
+    basket = space_catalyst_basket_momentum_state(
+        {
+            "ASTS": {"momentum_20d_pct": 0.15},
+            "BKSY": {"momentum_20d_pct": 0.05},
+            "LUNR": {"momentum_20d_pct": 0.1},
+            "PL": {"momentum_20d_pct": 0.1},
+            "RDW": {"momentum_20d_pct": 0.1},
+            "RKLB": {"momentum_20d_pct": 0.1},
+        }
+    )
+
+    leader = space_catalyst_peer_momentum_state("ASTS", basket)
+    nonleader = space_catalyst_peer_momentum_state("BKSY", basket)
+
+    assert leader["state"] == "leader"
+    assert leader["excess_momentum_20d_pct"] == 0.05
+    assert nonleader["state"] == "nonleader"
+    assert nonleader["excess_momentum_20d_pct"] == -0.05
 
 
 def test_space_catalyst_forward_target_atr_mult_official_trends_only():
@@ -290,7 +378,7 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
                 "net_risk_reward_ratio": 1.9,
                 "exec_lag_adj_net_rr": 1.6,
                 "confidence_score": 0.9,
-                "trade_quality_score": 0.82,
+                "trade_quality_score": 0.956,
                 "sizing": {
                     "shares_to_buy": 10,
                     "position_value_usd": 1000.0,
@@ -343,11 +431,61 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_basket_momentum_20d_pct"] == 0.1
     assert plan["space_perfect_tqs_bucket"] is False
     assert plan["space_perfect_tqs_risk_scalar"] == 1.0
-    assert plan["effective_risk_scalar"] == 1.03125
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1031.25
+    assert plan["space_near_perfect_tqs_trend_bucket"] is True
+    assert plan["space_near_perfect_tqs_trend_risk_scalar"] == 1.1
+    assert plan["space_peer_momentum_state"] == "nonleader"
+    assert plan["space_peer_nonleader_breakout_bucket"] is False
+    assert plan["space_peer_nonleader_breakout_risk_scalar"] == 1.0
+    assert plan["effective_risk_scalar"] == 1.134375
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1134.38
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
+
+
+def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "RKLB",
+                "strategy": "breakout_long",
+                "entry_price": 100.0,
+                "stop_price": 92.5,
+                "target_price": 117.5,
+                "target_mult_used": 3.5,
+                "risk_reward_ratio": 2.33,
+                "confidence_score": 0.9,
+                "trade_quality_score": 0.9,
+                "sizing": {
+                    "shares_to_buy": 10,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.12},
+            "BKSY": {"momentum_20d_pct": 0.12},
+            "LUNR": {"momentum_20d_pct": 0.12},
+            "PL": {"momentum_20d_pct": 0.12},
+            "RDW": {"momentum_20d_pct": 0.12},
+            "RKLB": {"atr": 5.0, "momentum_20d_pct": 0.0},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {"launch_lunar": ["RKLB"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "RKLB"
+    assert plan["space_peer_momentum_state"] == "nonleader"
+    assert plan["space_peer_nonleader_breakout_bucket"] is True
+    assert plan["space_peer_nonleader_breakout_risk_scalar"] == 0.0
+    assert plan["effective_risk_scalar"] == 0.0
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 0.0
 
 
 def test_space_catalyst_observation_slot_persistence_dedupes_daily_plan(tmp_path):
@@ -507,6 +645,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "official_trend_target_atr_mult": 5.0,
                 "space_basket_positive_risk_scalar": 1.1,
                 "space_perfect_tqs_risk_scalar": 1.5,
+                "space_near_perfect_tqs_trend_risk_scalar": 1.1,
+                "space_peer_nonleader_breakout_risk_scalar": 0.0,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -526,7 +666,9 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "trade_quality_score": 0.82,
                     "effective_risk_scalar": 1.03125,
                     "space_basket_momentum_state": "positive",
+                    "space_peer_momentum_state": "leader",
                     "space_perfect_tqs_bucket": False,
+                    "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
                 }
             ],
@@ -565,12 +707,14 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "launch/connectivity trend target @ 7.0 ATR; "
         "official trend target @ 5.0 ATR; "
         "Space basket positive 20d momentum @ 1.1x; "
-        "perfect Space TQS @ 1.5x)"
+        "perfect Space TQS @ 1.5x; "
+        "near-perfect Space trend TQS @ 1.1x; "
+        "peer-nonleader Space breakout @ 0.0x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
     assert "Live slots: 0" in report
     assert "RKLB: trend_long entry $100.00 target $125.00" in report
-    assert "risk=1.03125x basket=positive" in report
+    assert "risk=1.03125x basket=positive peer=leader" in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

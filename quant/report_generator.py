@@ -366,6 +366,22 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 extra_policies.append(
                     f"perfect Space TQS @ {perfect_tqs_scalar}x"
                 )
+            near_perfect_tqs_scalar = forward.get(
+                "space_near_perfect_tqs_trend_risk_scalar"
+            )
+            if near_perfect_tqs_scalar is not None:
+                extra_policies.append(
+                    "near-perfect Space trend TQS @ "
+                    f"{near_perfect_tqs_scalar}x"
+                )
+            peer_nonleader_breakout_scalar = forward.get(
+                "space_peer_nonleader_breakout_risk_scalar"
+            )
+            if peer_nonleader_breakout_scalar is not None:
+                extra_policies.append(
+                    "peer-nonleader Space breakout @ "
+                    f"{peer_nonleader_breakout_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -415,14 +431,27 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             )
             basket_state = plan.get("space_basket_momentum_state")
             basket_text = f" basket={basket_state}" if basket_state else ""
+            peer_state = plan.get("space_peer_momentum_state")
+            peer_text = f" peer={peer_state}" if peer_state else ""
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
+            )
+            near_perfect_tqs_text = (
+                " near_perfect_tqs_trend=True"
+                if plan.get("space_near_perfect_tqs_trend_bucket")
+                else ""
+            )
+            peer_nonleader_breakout_text = (
+                " peer_nonleader_breakout=True"
+                if plan.get("space_peer_nonleader_breakout_bucket")
+                else ""
             )
             lines.append(
                 f"  {plan.get('ticker', '?')}: {plan.get('strategy', '?')} "
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
-                f"risk={risk_text}{basket_text}{perfect_tqs_text} "
+                f"risk={risk_text}{basket_text}{peer_text}{perfect_tqs_text}"
+                f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )
     if space_catalyst_event_ledger and (

@@ -423,6 +423,34 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_candidate_ranking': False, 'alters_sizing': True}
 - artifact: `data\experiments\exp-20260512-006\exp_20260512_006_sec_financial_report_event_notional.json`
 
+## exp-20260512-008 Space near-perfect TQS trend risk
+
+- timestamp: 2026-05-12T03:24:26Z
+- lane: alpha_search
+- decision: accepted_default_off_space_near_perfect_tqs_trend_risk
+- changed_variable: space_near_perfect_tqs_trend_risk_scalar
+- best scalar: 1.10 for official Space `trend_long` signals with `0.95 <= trade_quality_score < 1.0`, on top of the accepted exp-20260512-004 Space stack.
+- expected_value_score_delta: +0.2392
+- total_pnl_delta: +$5,210.37
+- window evidence: EV and PnL improved in all three canonical Space augmented windows: `late_strong +0.0971` EV / `+$2,048.33`, `mid_weak +0.1270` EV / `+$2,317.91`, and `old_thin +0.0151` EV / `+$844.13`.
+- interpretation: Space optimization should stay in signal-quality-conditioned risk allocation. The accepted near-perfect TQS trend top-up remains default-off metadata/helper only; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-008\space_near_perfect_tqs_trend_risk.json`
+
+## exp-20260512-010 Space near-perfect TQS breakout risk
+
+- timestamp: 2026-05-12T05:44:12Z
+- lane: alpha_search
+- decision: rejected_space_near_perfect_tqs_breakout_risk
+- changed_variable: space_near_perfect_tqs_breakout_risk_scalar
+- best scalar: 0.25 for official Space `breakout_long` signals with `0.95 <= trade_quality_score < 1.0`, on top of the accepted exp-20260512-008 Space stack.
+- expected_value_score_delta: +0.2498
+- total_pnl_delta: +$3,033.22
+- window evidence: only `mid_weak` improved (`+0.2498` EV / `+$3,033.22`); `late_strong` and `old_thin` were unchanged, so Gate 4 failed with only one improved window.
+- interpretation: near-perfect TQS is useful for Space trend risk, but it is not a robust Space breakout discriminator. Do not add a separate high-TQS breakout scalar on these frozen snapshots.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-010\space_near_perfect_tqs_breakout_risk.json`
+
 ## exp-20260512-007 SEC financial-report periodic-report notional
 
 - timestamp: 2026-05-12T03:15:31Z
@@ -437,3 +465,17 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Semantic event-family risk allocation improved the default-off SEC financial-report T+1 sleeve after the accepted $15k base budget. This changes no live orders, queue qualification, ranking, capacity, or hold period.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_candidate_ranking': False, 'alters_sizing': True}
 - artifact: `data\experiments\exp-20260512-007\exp_20260512_007_sec_financial_report_periodic_notional.json`
+
+## exp-20260512-013 Space peer-nonleader breakout risk
+
+- timestamp: 2026-05-12T06:37:30+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_peer_nonleader_breakout_risk
+- changed_variable: space_peer_nonleader_breakout_risk_scalar
+- best scalar: 0.00 for official Space `breakout_long` signals whose own 20d momentum is not above the official Space basket average, on top of the accepted exp-20260512-008 Space stack.
+- expected_value_score_delta: +0.3297
+- total_pnl_delta: +$4,209.46
+- window evidence: `late_strong +0.0180` EV / `+$375.38`, `mid_weak +0.3117` EV / `+$3,834.08`, and `old_thin unchanged`; no window regressed.
+- interpretation: Space breakout work has a stronger ex-ante peer-leadership discriminator than the rejected near-perfect TQS breakout scalar. Nonleader breakouts should be zero-risk in the default-off Space forward stack; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-013\space_peer_nonleader_breakout_risk.json`

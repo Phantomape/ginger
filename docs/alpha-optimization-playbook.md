@@ -7545,3 +7545,33 @@ same-accession earnings-quality field.
 - Window evidence: EV and PnL improved in all three canonical windows: `late_strong +0.066803` EV / `+$1,051.01`, `mid_weak +0.108916` EV / `+$1,766.40`, and `old_thin +0.015137` EV / `+$591.16`.
 - Interpretation: the useful SEC financial-report refinement after the global $15k notional is semantic risk allocation by event family, not another form exclusion, hold-period change, raw capacity expansion, or nearby global notional sweep.
 - Anti-repeat: do not retry nearby periodic-report scalars, 10-Q/10-K exclusion variants, or adjacent SEC global notional values on the same frozen sample. The next SEC step should be forward replacement-value evidence or a genuinely new semantic earnings-quality field.
+
+### exp-20260512-008 Space near-perfect TQS trend risk
+
+- Decision: accepted_default_off_space_near_perfect_tqs_trend_risk.
+- Tested variable: `space_near_perfect_tqs_trend_risk_scalar` for official Space `trend_long` signals with `0.95 <= trade_quality_score < 1.0`, with the accepted exp-20260512-004 Space stack fixed.
+- Promoted default: `1.10x` extra default-off risk scalar for the near-perfect uncapped TQS trend bucket.
+- Aggregate delta versus exp-20260512-004: EV `+0.2392`, total PnL `+$5,210.37`, trade count unchanged at `72`, and max drawdown max `+0.21 pp`.
+- Window evidence: EV and PnL improved in all three Space augmented windows: `late_strong +0.0971` EV / `+$2,048.33`, `mid_weak +0.1270` EV / `+$2,317.91`, and `old_thin +0.0151` EV / `+$844.13`.
+- Interpretation: the supported Space direction is now a quality ladder for trend risk allocation: capped TQS gets the accepted stronger top-up, and near-perfect uncapped trend TQS gets a smaller 1.10x default-off top-up. This is not support for broader ticker expansion, LLM soft-ranking, or another stop/target geometry retry.
+- Anti-repeat: do not retry nearby near-perfect TQS scalars or threshold variants on the frozen snapshots. Future Space work should use forward catalyst replacement value or a genuinely new catalyst-quality field.
+
+### exp-20260512-010 Space near-perfect TQS breakout risk
+
+- Decision: rejected_space_near_perfect_tqs_breakout_risk.
+- Tested variable: `space_near_perfect_tqs_breakout_risk_scalar` for official Space `breakout_long` signals with `0.95 <= trade_quality_score < 1.0`, with the accepted exp-20260512-008 Space stack fixed.
+- Best variant: `0.25x` haircut.
+- Aggregate delta versus exp-20260512-008: EV `+0.2498`, total PnL `+$3,033.22`, trade count unchanged at `72`, and max drawdown unchanged.
+- Window evidence: only `mid_weak` improved (`+0.2498` EV / `+$3,033.22`); `late_strong` and `old_thin` were unchanged, so the three-window Gate 4 failed.
+- Interpretation: TQS quality ladders are supported for Space trend risk allocation, but the same near-perfect TQS band does not identify a robust breakout allocation edge. Space breakout work should not be solved by another nearby TQS scalar.
+- Anti-repeat: do not retry nearby near-perfect Space breakout TQS scalars on these frozen snapshots. Future Space breakout work needs forward event replacement value or a genuinely new catalyst-quality field.
+
+### exp-20260512-013 Space peer-nonleader breakout risk
+
+- Decision: accepted_default_off_space_peer_nonleader_breakout_risk.
+- Tested variable: `space_peer_nonleader_breakout_risk_scalar` for official Space `breakout_long` signals whose own 20d momentum is not above the official Space basket average, with the accepted exp-20260512-008 Space stack fixed.
+- Promoted default-off metadata/helper: `0.00x` extra scalar for peer-nonleader Space breakouts.
+- Aggregate delta versus exp-20260512-008: EV `+0.3297`, total PnL `+$4,209.46`, and no regressed canonical window.
+- Window evidence: `late_strong +0.0180` EV / `+$375.38`, `mid_weak +0.3117` EV / `+$3,834.08`, and `old_thin unchanged`.
+- Interpretation: Space breakout quality is better separated by relative peer leadership than by the rejected near-perfect TQS breakout bucket. The useful mechanism is a risk-allocation veto on breakout laggards, not ticker expansion, stop geometry, or a broader TQS threshold.
+- Anti-repeat: do not retry nearby peer-nonleader breakout scalars on the same frozen snapshots. Future Space breakout work should add a genuinely new catalyst-quality field or collect forward replacement value for leader versus nonleader breakouts.
