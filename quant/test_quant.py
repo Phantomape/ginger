@@ -8157,3 +8157,55 @@ def test_backfill_earnings_snapshots_writes_trading_day_files(tmp_path, monkeypa
     assert len(written) == 2
     assert (tmp_path / "earnings_snapshot_20260121.json").exists()
     assert (tmp_path / "earnings_snapshot_20260122.json").exists()
+
+
+def test_space_catalyst_forward_target_atr_mult_launch_connectivity_override():
+    """RKLB/ASTS trend targets use the accepted launch/connectivity width."""
+    from space_catalyst_sleeve import space_catalyst_forward_target_atr_mult
+
+    assert space_catalyst_forward_target_atr_mult("RKLB", "trend_long", 3.5) == 7.0
+    assert space_catalyst_forward_target_atr_mult("ASTS", "trend_long", 3.5) == 7.0
+    assert space_catalyst_forward_target_atr_mult("RDW", "trend_long", 3.5) == 5.0
+    assert space_catalyst_forward_target_atr_mult("PL", "trend_long", 3.5) == 5.0
+    assert space_catalyst_forward_target_atr_mult("RKLB", "breakout_long", 3.5) == 3.5
+
+
+def test_space_catalyst_observation_slot_uses_launch_connectivity_target():
+    """The production-visible blocked Space plan should surface the 7 ATR target."""
+    from space_catalyst_sleeve import (
+        build_space_catalyst_observation_slot,
+        empty_space_catalyst_shadow_snapshot,
+    )
+
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        space_catalyst_shadow=empty_space_catalyst_shadow_snapshot("2026-05-11"),
+        candidate_signals=[
+            {
+                "ticker": "RKLB",
+                "strategy": "trend_long",
+                "action": "BUY",
+                "entry_price": 50.0,
+                "stop_price": 45.0,
+                "target_price": 57.0,
+                "target_mult_used": 3.5,
+                "trade_quality_score": 0.9,
+                "confidence_score": 0.8,
+                "risk_reward_ratio": 2.0,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 5000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={"RKLB": {"atr": 2.0}},
+        space_event_source_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["target_atr_mult"] == 7.0
+    assert plan["forward_target_price"] == 64.0
+    assert plan["effective_risk_scalar"] == 0.9375
+    assert plan["trade_enabled"] is False
