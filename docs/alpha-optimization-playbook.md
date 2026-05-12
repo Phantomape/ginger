@@ -7656,3 +7656,13 @@ same-accession earnings-quality field.
 - Window evidence: `late_strong -0.4205` EV / `$-5,229.28`, `mid_weak -0.1373` EV / `$-2,249.61`, and `old_thin +0.2253` EV / `+$8,750.01`.
 - Interpretation: paired SEC filings are not just duplicate noise on this frozen sample; collapsing them reduces expected-value score and weakens two of three windows despite slightly raising total PnL.
 - Anti-repeat: do not retry same-ticker same-event-date SEC paired-filing dedupe variants on these snapshots. Future SEC work should use forward replacement value or a genuinely new earnings-quality field.
+
+### exp-20260512-034 SEC auxiliary earnings 8-K notional
+
+- Decision: rejected_auxiliary_earnings8k_notional_scalar.
+- Tested variable: paper notional scalar for SEC financial-report `earnings_8k` rows whose `item_codes` contain any item outside `{2.02, 9.01}`, with accepted max-3 capacity, T+1 excess floor, 10-day hold, $15k base notional, periodic-report scalar, 10-Q scalar, and queue order fixed.
+- Best tested variant: `auxiliary_earnings8k_scalar_1.50`.
+- Aggregate delta versus accepted exp-20260512-020 SEC stack: EV `+0.011188`, total PnL `+$375.44`, sleeve PnL `+$375.44`, closed trades unchanged at `52`.
+- Window evidence: `late_strong +0.054547` EV / `+$1,139.48`, `mid_weak -0.024809` EV / `$-241.44`, and `old_thin -0.018550` EV / `$-522.60`.
+- Interpretation: auxiliary SEC earnings 8-K item semantics are not a robust notional-allocation edge on the frozen sample. The tiny aggregate gain comes from late_strong only and fails the three-window gate.
+- Anti-repeat: do not retry auxiliary earnings 8-K notional scalars on this frozen sample. Future SEC work needs forward outcomes or a genuinely new earnings-quality field, not another local item-code notional retune.
