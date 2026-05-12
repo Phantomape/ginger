@@ -1,0 +1,488 @@
+{
+  "experiment_id": "exp-20260512-101",
+  "hypothesis": "Multi-owner open-market Form 4 buy clusters may provide a cleaner default-off event interpretation surface than prior single-owner queues.",
+  "single_causal_variable": "owner_count >= 2 within a 10-calendar-day open-market buy cluster",
+  "change_type": "event_interpretation",
+  "mode": "observed_only_shadow_analysis",
+  "data_sources": {
+    "form4_transactions": "data\\non_ohlcv\\form4_transactions_20241002_20260502.jsonl",
+    "ohlcv_snapshots": {
+      "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+      "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+      "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "parameters": {
+    "cluster_lookback_calendar_days": 10,
+    "min_distinct_owners": 2,
+    "min_cluster_total_purchase_value": 500000.0,
+    "open_market_purchase_flag_required": true,
+    "pit_safe_flag_required": true,
+    "excluded_10b5_1": true,
+    "excluded_option_exercise": true,
+    "note": "The value floor is inherited from the existing Form 4 forward queue; the tested variable is multi-owner clustering."
+  },
+  "by_window": {
+    "late_strong": {
+      "window": "late_strong",
+      "date_range": {
+        "start": "2025-10-23",
+        "end": "2026-04-21"
+      },
+      "baseline_metrics": {
+        "expected_value_score": 4.234,
+        "total_pnl": 94086.91,
+        "sharpe_daily": 4.5,
+        "max_drawdown_pct": 0.0548,
+        "trade_count": 19,
+        "survival_rate": 0.8039
+      },
+      "candidate_count": 1,
+      "unique_tickers": [
+        "TSM"
+      ],
+      "overlap_same_ticker_date_count": 0,
+      "same_day_core_alternative_count": 0,
+      "core_trade_count_available": 19,
+      "forward_return_distribution": {
+        "5d": {
+          "count": 1,
+          "mean": 0.133888,
+          "median": 0.133888,
+          "win_rate": 1.0,
+          "min": 0.133888,
+          "max": 0.133888
+        },
+        "10d": {
+          "count": 1,
+          "mean": 0.133582,
+          "median": 0.133582,
+          "win_rate": 1.0,
+          "min": 0.133582,
+          "max": 0.133582
+        },
+        "20d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "spy_excess_distribution": {
+        "5d": {
+          "count": 1,
+          "mean": 0.082776,
+          "median": 0.082776,
+          "win_rate": 1.0,
+          "min": 0.082776,
+          "max": 0.082776
+        },
+        "10d": {
+          "count": 1,
+          "mean": 0.035008,
+          "median": 0.035008,
+          "win_rate": 1.0,
+          "min": 0.035008,
+          "max": 0.035008
+        },
+        "20d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "scarce_slot_replacement_value": {
+        "method": "10d event return minus average pnl_pct_net of same-day executed core trades, when any existed",
+        "count": 0,
+        "distribution": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "sample_candidates": [
+        {
+          "ticker": "TSM",
+          "cluster_end_date": "2026-04-02",
+          "cluster_start_date": "2026-03-24",
+          "event_count": 4,
+          "owner_count": 4,
+          "total_purchase_value": 709180.0,
+          "max_single_day_purchase_value": 322050.0,
+          "source_event_dates": [
+            "2026-03-25",
+            "2026-03-31",
+            "2026-04-01",
+            "2026-04-02"
+          ],
+          "sample_owner_names": [
+            "BURNS URSULA M",
+            "Lin Shyue-Shyh",
+            "Tien Bor-Zen",
+            "Yeap Choh Fei"
+          ],
+          "sample_accessions": [
+            "0001046179-26-000122",
+            "0001046179-26-000128",
+            "0002113762-26-000002",
+            "0002114025-26-000002",
+            "0001046179-26-000132"
+          ],
+          "overlap_same_ticker_date": false,
+          "same_day_core_trade_count": 0,
+          "forward_5d_return": 0.133888,
+          "forward_5d_spy_excess": 0.082776,
+          "forward_10d_return": 0.133582,
+          "forward_10d_spy_excess": 0.035008,
+          "forward_20d_return": null,
+          "forward_20d_spy_excess": null,
+          "forward_10d_vs_same_day_core_trade_avg": null
+        }
+      ]
+    },
+    "mid_weak": {
+      "window": "mid_weak",
+      "date_range": {
+        "start": "2025-04-23",
+        "end": "2025-10-22"
+      },
+      "baseline_metrics": {
+        "expected_value_score": 1.6689,
+        "total_pnl": 61813.4,
+        "sharpe_daily": 2.7,
+        "max_drawdown_pct": 0.0941,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "candidate_count": 2,
+      "unique_tickers": [
+        "LLY",
+        "UNH"
+      ],
+      "overlap_same_ticker_date_count": 0,
+      "same_day_core_alternative_count": 0,
+      "core_trade_count_available": 21,
+      "forward_return_distribution": {
+        "5d": {
+          "count": 2,
+          "mean": 0.027475,
+          "median": 0.027475,
+          "win_rate": 0.5,
+          "min": -0.032057,
+          "max": 0.087007
+        },
+        "10d": {
+          "count": 2,
+          "mean": 0.059815,
+          "median": 0.059815,
+          "win_rate": 0.5,
+          "min": -0.011648,
+          "max": 0.131277
+        },
+        "20d": {
+          "count": 2,
+          "mean": 0.092997,
+          "median": 0.092997,
+          "win_rate": 1.0,
+          "min": 0.020647,
+          "max": 0.165346
+        }
+      },
+      "spy_excess_distribution": {
+        "5d": {
+          "count": 2,
+          "mean": 0.030154,
+          "median": 0.030154,
+          "win_rate": 0.5,
+          "min": -0.037243,
+          "max": 0.097551
+        },
+        "10d": {
+          "count": 2,
+          "mean": 0.051688,
+          "median": 0.051688,
+          "win_rate": 0.5,
+          "min": -0.025234,
+          "max": 0.12861
+        },
+        "20d": {
+          "count": 2,
+          "mean": 0.075117,
+          "median": 0.075117,
+          "win_rate": 1.0,
+          "min": 0.004613,
+          "max": 0.145622
+        }
+      },
+      "scarce_slot_replacement_value": {
+        "method": "10d event return minus average pnl_pct_net of same-day executed core trades, when any existed",
+        "count": 0,
+        "distribution": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "sample_candidates": [
+        {
+          "ticker": "UNH",
+          "cluster_end_date": "2025-05-19",
+          "cluster_start_date": "2025-05-10",
+          "event_count": 1,
+          "owner_count": 4,
+          "total_purchase_value": 31607700.31,
+          "max_single_day_purchase_value": 25019019.0,
+          "source_event_dates": [
+            "2025-05-19"
+          ],
+          "sample_owner_names": [
+            "FLYNN TIMOTHY PATRICK",
+            "Gil Kristen",
+            "HEMSLEY STEPHEN J",
+            "Noseworthy John H"
+          ],
+          "sample_accessions": [
+            "0000731766-25-000140",
+            "0000731766-25-000141",
+            "0000731766-25-000142",
+            "0000731766-25-000145"
+          ],
+          "overlap_same_ticker_date": false,
+          "same_day_core_trade_count": 0,
+          "forward_5d_return": -0.032057,
+          "forward_5d_spy_excess": -0.037243,
+          "forward_10d_return": -0.011648,
+          "forward_10d_spy_excess": -0.025234,
+          "forward_20d_return": 0.020647,
+          "forward_20d_spy_excess": 0.004613,
+          "forward_10d_vs_same_day_core_trade_avg": null
+        },
+        {
+          "ticker": "LLY",
+          "cluster_end_date": "2025-08-13",
+          "cluster_start_date": "2025-08-04",
+          "event_count": 2,
+          "owner_count": 5,
+          "total_purchase_value": 2894841.25,
+          "max_single_day_purchase_value": 1052263.01,
+          "source_event_dates": [
+            "2025-08-11",
+            "2025-08-13"
+          ],
+          "sample_owner_names": [
+            "Fyrwald J Erik",
+            "JACKSON JAMERE",
+            "Ricks David A",
+            "Skovronsky Daniel",
+            "Sulzberger Gabrielle"
+          ],
+          "sample_accessions": [
+            "0000059478-25-000206",
+            "0000059478-25-000210",
+            "0000059478-25-000212",
+            "0000059478-25-000214",
+            "0000059478-25-000216"
+          ],
+          "overlap_same_ticker_date": false,
+          "same_day_core_trade_count": 0,
+          "forward_5d_return": 0.087007,
+          "forward_5d_spy_excess": 0.097551,
+          "forward_10d_return": 0.131277,
+          "forward_10d_spy_excess": 0.12861,
+          "forward_20d_return": 0.165346,
+          "forward_20d_spy_excess": 0.145622,
+          "forward_10d_vs_same_day_core_trade_avg": null
+        }
+      ]
+    },
+    "old_thin": {
+      "window": "old_thin",
+      "date_range": {
+        "start": "2024-10-02",
+        "end": "2025-04-22"
+      },
+      "baseline_metrics": {
+        "expected_value_score": 0.3853,
+        "total_pnl": 28544.11,
+        "sharpe_daily": 1.35,
+        "max_drawdown_pct": 0.0815,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      },
+      "candidate_count": 1,
+      "unique_tickers": [
+        "CORZ"
+      ],
+      "overlap_same_ticker_date_count": 0,
+      "same_day_core_alternative_count": 0,
+      "core_trade_count_available": 22,
+      "forward_return_distribution": {
+        "5d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        },
+        "10d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        },
+        "20d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "spy_excess_distribution": {
+        "5d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        },
+        "10d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        },
+        "20d": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "scarce_slot_replacement_value": {
+        "method": "10d event return minus average pnl_pct_net of same-day executed core trades, when any existed",
+        "count": 0,
+        "distribution": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "win_rate": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "sample_candidates": [
+        {
+          "ticker": "CORZ",
+          "cluster_end_date": "2025-03-10",
+          "cluster_start_date": "2025-03-01",
+          "event_count": 2,
+          "owner_count": 2,
+          "total_purchase_value": 551256.65,
+          "max_single_day_purchase_value": 500506.25,
+          "source_event_dates": [
+            "2025-03-07",
+            "2025-03-10"
+          ],
+          "sample_owner_names": [
+            "Levy Jordan",
+            "Weiss Eric Stanton"
+          ],
+          "sample_accessions": [
+            "0000905148-25-000877",
+            "0000905148-25-000880"
+          ],
+          "overlap_same_ticker_date": false,
+          "same_day_core_trade_count": 0,
+          "forward_5d_return": null,
+          "forward_5d_spy_excess": null,
+          "forward_10d_return": null,
+          "forward_10d_spy_excess": null,
+          "forward_20d_return": null,
+          "forward_20d_spy_excess": null,
+          "forward_10d_vs_same_day_core_trade_avg": null
+        }
+      ]
+    }
+  },
+  "aggregate": {
+    "candidate_count": 4,
+    "windows_with_candidates": 3,
+    "unique_tickers": [
+      "CORZ",
+      "LLY",
+      "TSM",
+      "UNH"
+    ],
+    "overlap_same_ticker_date_count": 0,
+    "same_day_core_alternative_count": 0,
+    "forward_10d_distribution": {
+      "count": 3,
+      "mean": 0.084404,
+      "median": 0.131277,
+      "win_rate": 0.666667,
+      "min": -0.011648,
+      "max": 0.133582
+    },
+    "spy_excess_10d_distribution": {
+      "count": 3,
+      "mean": 0.046128,
+      "median": 0.035008,
+      "win_rate": 0.666667,
+      "min": -0.025234,
+      "max": 0.12861
+    }
+  },
+  "baseline_reference": {
+    "core_stack": "exp-20260510-015",
+    "sec_financial_report_default_off": "exp-20260512-020",
+    "space_default_off": "exp-20260512-041"
+  },
+  "historical_experiment_check": {
+    "nearby_rejected": {
+      "exp-20260505-010": "Form 4 sale-pressure de-risking failed; this tests buy-cluster event interpretation, not sales.",
+      "exp-20260512-901": "Single-owner Form 4 queue was positive but not material; this isolates multi-owner clustering rather than owner_count == 1."
+    },
+    "not_retried": [
+      "broad filters",
+      "global slots or heat",
+      "SEC same-sample retunes",
+      "Space adjacent scalars",
+      "LLM soft-ranking"
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "live_slots_changed": false
+  },
+  "decision": "observed_only",
+  "next_evidence_needed": "If forward outcomes are attractive, freeze a default-off queue and collect closed forward replacement value before any production integration."
+}

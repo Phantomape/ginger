@@ -165,6 +165,15 @@ replacement-value evidence.
 
 Latest Space risk-allocation alpha search: `exp-20260511-009` swept a sleeve-level risk scalar on the rejected static Space catalyst pool. The highest-EV variant was `1.0x`: aggregate EV delta `+2.3036`, aggregate PnL delta `$64,577.73`, max drawdown damage `3.56%`, and Gate passed `False`. The closest risk-controlled variant was `0.75x`, but it still regressed `late_strong` EV. Conclusion: simple static-pool risk discount is not enough; Space should remain official-catalyst forward paper, not broad static universe enablement or attention-headline ranking.
 
+Latest low-deployment ETF alpha search: `exp-20260512-777` tested whether the
+accepted default-off low-deployment ETF overlay should change its candidate
+pool from the current `QQQ` / `SPY` / `IWM` / `GLD` / `SLV` set. No tested
+variant beat v1 across the canonical three-window gate. `equity_only` improved
+2/3 windows but regressed one; `add_energy` and `cross_asset_plus` had positive
+aggregate EV/PnL but were single-window/unstable with drawdown damage. Keep the
+v1 paper pool unchanged and do not retry adjacent ETF pool variants on the same
+frozen samples without forward replacement-value evidence.
+
 ### 2026-05-11 alpha search note: TQS-conditioned sector follower risk
 
 `exp-20260511-010` tested a relative-TQS discriminator on the rejected same-day
@@ -636,3 +645,13 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: mission-binary registry profile is not a material Space risk-allocation alpha on the frozen Space replay. Do not retry adjacent mission-binary profile scalars without forward replacement-value evidence or a different production-observable catalyst field.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-043\space_mission_binary_profile_risk.json`
+
+Latest core state-allocation alpha search: `exp-20260512-106` and
+`exp-20260512-107` tested signal-day sector-proxy tape as a production-knowable
+risk allocation state. The adverse-tape 0.5x haircut failed Gate 4 with
+aggregate EV `-0.0251` and PnL `-$1,901.95`; it only improved `mid_weak` and
+regressed `old_thin`. The positive-tape 1.10x top-up was directionally positive
+but underpowered, with aggregate EV `+0.0140` and PnL `+$820.26`, improving only
+`old_thin`. No shared policy was promoted. Do not retry fixed +/-1% signal-day
+sector-tape scalars without forward attribution or a stronger state
+discriminator.

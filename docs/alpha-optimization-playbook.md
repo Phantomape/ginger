@@ -398,6 +398,15 @@ structured reason stability.
 - Nearby add-on trigger, fraction, cap, and second-add-on retries.
 - Simple gap-cancel exceptions by sector, strategy, full-risk status, or TQS.
 - Broad ETF or static universe expansion as direct core alpha.
+- Adjacent low-deployment ETF overlay candidate-pool variants around the
+  accepted `QQQ` / `SPY` / `IWM` / `GLD` / `SLV` v1 pool, unless forward paper
+  replacement-value evidence changes the prior. `exp-20260512-777` found that
+  equity-only, bond-added, energy-added, cross-asset-plus, and defensive-plus
+  pools failed the three-window gate versus v1.
+- Fixed signal-day sector-proxy tape scalars at +/-1% without a stronger
+  discriminator. `exp-20260512-106` rejected the adverse-tape 0.5x haircut, and
+  `exp-20260512-107` found the positive-tape 1.10x top-up was aggregate-positive
+  but only moved `old_thin`.
 
 ### SEC
 
