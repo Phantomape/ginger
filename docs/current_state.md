@@ -290,3 +290,105 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Keep the accepted official-catalyst Space 5 ATR trend target broad across the full official bucket. Narrowing it away from PL/BKSY data-vendor trend or toward launch/connectivity did not add alpha on the frozen three-window sample.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260511-038\space_trend_target_bucket_scope.json`
+
+## exp-20260511-105 Space launch/connectivity trend target
+
+- timestamp: 2026-05-11T19:12:47+00:00
+- lane: alpha_search
+- decision: accepted_default_off_launch_connectivity_trend_target_extension
+- changed_variable: space_launch_connectivity_trend_target_atr_mult
+- best_launch_connectivity_trend_target_atr_mult: 7.0
+- expected_value_score_delta_vs_before: 0.9838
+- before_aggregate: {'expected_value_score_sum': 8.9564, 'total_pnl_sum': 237030.87, 'trade_count_sum': 71, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- after_aggregate: {'expected_value_score_sum': 9.9402, 'total_pnl_sum': 253985.68, 'trade_count_sum': 73, 'min_survival_rate': 0.807, 'max_drawdown_pct_max': 0.1012}
+- interpretation: Keep the accepted 5 ATR target for all official Space trend signals, but use 7 ATR for RKLB/ASTS launch/connectivity trend_long signals. This is default-off Space metadata/helper only; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-105\space_launch_connectivity_trend_target.json`
+
+## exp-20260511-106 Space lunar/manufacturing trend target
+
+- timestamp: 2026-05-11T20:46:58+00:00
+- lane: alpha_search
+- decision: rejected_lunar_manufacturing_trend_target_extension
+- changed_variable: space_lunar_manufacturing_trend_target_atr_mult
+- best_variant: lunar_manufacturing_7_0
+- expected_value_score_delta_vs_before: -0.0788
+- pnl_delta_vs_before: $-4,380.35
+- interpretation: RKLB/ASTS launch-connectivity trend convexity does not transfer to LUNR/RDW lunar/manufacturing trend signals. Keep non-launch official Space trend targets at the accepted 5 ATR path.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-106\space_lunar_manufacturing_trend_target.json`
+
+## exp-20260511-110 Space breakout stop width
+
+- timestamp: 2026-05-11T21:22:33+00:00
+- lane: alpha_search
+- decision: rejected_space_breakout_stop_width
+- changed_variable: space_official_breakout_stop_atr_mult
+- best_variant: breakout_stop_2_0
+- expected_value_score_delta_vs_before: -0.2752
+- pnl_delta_vs_before: $+964.57
+- interpretation: Widening official Space breakout stops helped late_strong but damaged mid_weak and old_thin EV. Space breakout fragility is not fixed by simply giving breakouts more stop room; keep the accepted exp-105 stack unchanged.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-110\space_breakout_stop_width.json`
+
+## exp-20260511-111 Space data-vendor trend target
+
+- timestamp: 2026-05-11T22:18:26+00:00
+- lane: alpha_search
+- decision: rejected_data_vendor_trend_target_extension
+- changed_variable: space_data_vendor_trend_target_atr_mult
+- best_variant: data_vendor_trend_target_6_0
+- expected_value_score_delta_vs_before: -0.3228
+- pnl_delta_vs_before: $-13,201.24
+- interpretation: PL/BKSY data-vendor trend target widening damaged old_thin and did nothing in late_strong or mid_weak. Keep PL/BKSY trend targets at the accepted broad 5 ATR Space trend setting; do not retry nearby data-vendor trend target widths on the frozen snapshots.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260511-111\space_data_vendor_trend_target.json`
+
+## exp-20260511-112 SEC financial-report T+1 paper sleeve capacity
+
+- timestamp: 2026-05-11T22:24:41+00:00
+- lane: alpha_search
+- decision: accept_default_off_paper_capacity_candidate
+- changed_variable: sec_financial_report_event_sleeve_max_positions
+- baseline_max_positions: 1
+- promoted_default_max_positions: 3
+- expected_value_score_delta: +0.174785
+- sleeve_pnl_delta: +$6,351.95
+- total_pnl_delta: +$6,766.07
+- before_aggregate: {'expected_value_score_sum': 6.414058, 'total_pnl_sum': 187675.61, 'trade_count_sum': 88, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.092599, 'sleeve_total_pnl_sum': 2204.51, 'sleeve_closed_trade_count_sum': 26}
+- after_aggregate: {'expected_value_score_sum': 6.588843, 'total_pnl_sum': 194441.68, 'trade_count_sum': 124, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.118812, 'sleeve_total_pnl_sum': 8556.46, 'sleeve_closed_trade_count_sum': 62}
+- interpretation: The SEC financial-report positive T+1 queue supports a larger default-off paper observation capacity, but not full max=5/10 capacity because old_thin drawdown rises too much. Promote max=3 only for paper observation; keep live orders disabled.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_sizing': False}
+- artifact: `data\experiments\exp-20260511-112\exp_20260511_112_sec_financial_report_t1_sleeve_capacity.json`
+
+## exp-20260512-001 SEC financial-report T+1 excess floor
+
+- timestamp: 2026-05-12T00:08:20+00:00
+- lane: alpha_search
+- decision: accepted_default_off_t1_excess_floor
+- changed_variable: sec_financial_report_t1_excess_return_floor
+- promoted_floor: 0.01 ticker-vs-SPY T+1 excess return
+- expected_value_score_delta: +0.820356
+- total_pnl_delta: +$15,448.11
+- sleeve_pnl_delta: +$15,448.11
+- before_aggregate: {'expected_value_score_sum': 6.588843, 'total_pnl_sum': 194441.68, 'trade_count_sum': 124, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.118812, 'sleeve_total_pnl_sum': 8556.46, 'sleeve_closed_trade_count_sum': 62}
+- after_aggregate: {'expected_value_score_sum': 7.409199, 'total_pnl_sum': 209889.79, 'trade_count_sum': 114, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.090703, 'sleeve_total_pnl_sum': 24004.57, 'sleeve_closed_trade_count_sum': 52}
+- interpretation: The SEC financial-report positive T+1 queue should require at least +1% ticker-vs-SPY T+1 excess before entering the default-off paper sleeve. This improved EV and PnL in all three canonical windows while reducing max drawdown and keeping 52 closed sleeve trades.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': True, 'alters_sizing': False}
+- artifact: `data\experiments\exp-20260512-001\exp_20260512_001_sec_financial_report_t1_excess_floor.json`
+
+## exp-20260512-002 SEC financial-report hold days
+
+- timestamp: 2026-05-12T01:06:19+00:00
+- lane: alpha_search
+- decision: rejected_hold_days
+- changed_variable: sec_financial_report_event_sleeve_hold_days
+- best_hold_days: 12
+- expected_value_score_delta: -0.126504
+- total_pnl_delta: -$2,705.41
+- sleeve_pnl_delta: -$2,481.89
+- before_aggregate: {'expected_value_score_sum': 7.409199, 'total_pnl_sum': 209889.79, 'trade_count_sum': 114, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.090703, 'sleeve_total_pnl_sum': 24004.57, 'sleeve_closed_trade_count_sum': 52}
+- after_aggregate: {'expected_value_score_sum': 7.282695, 'total_pnl_sum': 207184.38, 'trade_count_sum': 106, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.089763, 'sleeve_total_pnl_sum': 21522.68, 'sleeve_closed_trade_count_sum': 44}
+- interpretation: Keep the accepted 10-trading-day SEC financial-report paper sleeve hold. Shorter/later fixed holds did not beat the accepted max-3 plus 1% T+1 excess setup across the three canonical windows.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_sizing': False, 'alters_exit_lifecycle': True}
+- artifact: `data\experiments\exp-20260512-002\exp_20260512_002_sec_financial_report_hold_days.json`

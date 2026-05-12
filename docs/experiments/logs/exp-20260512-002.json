@@ -1,0 +1,114 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 7.282695,
+    "max_drawdown_pct_max": 0.089763,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 44,
+    "sleeve_total_pnl_sum": 21522.68,
+    "total_pnl_sum": 207184.38,
+    "trade_count_sum": 106
+  },
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for core baseline, plus production paper-sleeve replay over the same OHLCV snapshots. Core replay uses REPLAY_PARTIAL_REDUCES and REGIME_AWARE_EXIT.",
+  "before_metrics": {
+    "expected_value_score_sum": 7.409199,
+    "max_drawdown_pct_max": 0.090703,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 52,
+    "sleeve_total_pnl_sum": 24004.57,
+    "total_pnl_sum": 209889.79,
+    "trade_count_sum": 114
+  },
+  "change_type": "alpha_search_exit_lifecycle",
+  "changed_variable": "sec_financial_report_event_sleeve_hold_days",
+  "date_range": {
+    "primary": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "secondary": [
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "decision": "rejected_hold_days",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": -0.126504,
+      "expected_value_score_sum_delta_pct": -0.017074,
+      "max_drawdown_pct_max_delta": -0.00094,
+      "max_drawdown_pct_max_delta_pct": -0.010363,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": -8.0,
+      "sleeve_closed_trade_count_sum_delta_pct": -0.153846,
+      "sleeve_total_pnl_sum_delta": -2481.89,
+      "sleeve_total_pnl_sum_delta_pct": -0.103392,
+      "total_pnl_sum_delta": -2705.41,
+      "total_pnl_sum_delta_pct": -0.01289,
+      "trade_count_sum_delta": -8.0,
+      "trade_count_sum_delta_pct": -0.070175
+    },
+    "by_window": {
+      "late_strong": {
+        "ev_delta": 0.001618,
+        "max_drawdown_delta": -0.000234,
+        "pnl_delta": 261.08,
+        "sleeve_closed_trade_delta": -2
+      },
+      "mid_weak": {
+        "ev_delta": -0.078934,
+        "max_drawdown_delta": -0.00094,
+        "pnl_delta": -1359.95,
+        "sleeve_closed_trade_delta": -3
+      },
+      "old_thin": {
+        "ev_delta": -0.049188,
+        "max_drawdown_delta": -0.001126,
+        "pnl_delta": -1606.54,
+        "sleeve_closed_trade_delta": -3
+      }
+    }
+  },
+  "expected_value_score_delta": -0.126504,
+  "experiment_id": "exp-20260512-002",
+  "hypothesis": "Inside the accepted max-3 and T+1 excess >=1% SEC financial-report paper sleeve, the post-filing drift lifecycle may be shorter or longer than the current 10-trading-day hold.",
+  "next_evidence_needed": "Forward replacement-value evidence by hold-period bucket.",
+  "parameters": {
+    "baseline_hold_days": 10,
+    "hold_day_variants": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      20
+    ],
+    "max_positions": 3,
+    "min_promotion_closed_trades": 40,
+    "production_hold_days_at_run": 10,
+    "source_candidate_artifact": "data\\experiments\\exp-20260511-100\\exp_20260511_100_sec_financial_report_positive_t1_forward_outcome_refresh.json",
+    "t1_excess_floor": 0.01
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exit_lifecycle": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_orders_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "No tested hold period cleared the three-window lifecycle gate.",
+  "timestamp": "2026-05-12T01:06:19Z"
+}

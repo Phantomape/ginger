@@ -7423,3 +7423,95 @@ Mechanism insight: remaining PL/RDW-style trend continuation is a forward attrib
 - Aggregate EV delta vs exp032 stack: `-0.0270`; PnL delta `$-1,098.59`.
 - Interpretation: the accepted 5 ATR Space trend target should remain broad across official-catalyst trend signals. Narrowing by economic bucket did not improve the frozen three-window sample.
 - Anti-repeat: do not retry nearby Space trend-target bucket narrowing on the same snapshots. A valid retry needs closed forward replacement value by catalyst bucket or a genuinely new ex-ante catalyst-quality field.
+
+### exp-20260511-105 Space launch/connectivity trend target
+
+- Decision: accepted_default_off_launch_connectivity_trend_target_extension.
+- Tested variable: `space_launch_connectivity_trend_target_atr_mult` for RKLB/ASTS `trend_long` only, with the accepted 5 ATR target kept for other official Space trend signals.
+- Best target ATR multiple: `7.0`.
+- Aggregate EV delta vs exp032 stack: `+0.9838`; PnL delta `+$16,954.81`.
+- Interpretation: the next Space alpha direction is bucket-specific lifecycle convexity. RKLB/ASTS launch/connectivity trend winners can use a wider default-off target while PL/RDW/data-vendor trend targets stay on the accepted 5 ATR path.
+- Anti-repeat: do not broaden the 7 ATR target to all Space trend signals or retry nearby Space breakout target widths on the same snapshots. Future Space work should either collect forward replacement-value evidence for this exact hypothesis or test a genuinely orthogonal catalyst-quality field.
+
+### exp-20260511-106 Space lunar/manufacturing trend target
+
+- Decision: rejected_lunar_manufacturing_trend_target_extension.
+- Tested variable: `space_lunar_manufacturing_trend_target_atr_mult` for LUNR/RDW `trend_long` only, while keeping RKLB/ASTS at the accepted 7 ATR target and all other official Space trend signals at 5 ATR.
+- Best variant: `lunar_manufacturing_7_0`.
+- Aggregate EV delta vs exp105 stack: `-0.0788`; PnL delta `$-4,380.35`.
+- Interpretation: the accepted RKLB/ASTS launch-connectivity convexity is not a general Space hardware/lunar/manufacturing trend property. LUNR/RDW target widening only damaged the old_thin window and created no late/mid benefit.
+- Anti-repeat: do not retry nearby LUNR/RDW target widths or broaden launch/connectivity 7 ATR semantics to non-launch official Space trend signals on the same snapshots. Future Space work needs forward replacement value by catalyst bucket or a genuinely new official catalyst-quality field.
+
+### exp-20260511-110 Space breakout stop width
+
+- Decision: rejected_space_breakout_stop_width.
+- Tested variable: `space_official_breakout_stop_atr_mult` for official Space `breakout_long` signals only, while keeping the accepted exp105 trend targets, Space risk scalars, candidate pool, ranking, add-ons, LLM/news replay, and live slots fixed.
+- Best variant: `breakout_stop_2_0`.
+- Aggregate EV delta vs exp105 stack: `-0.2752`; PnL delta `$+964.57`.
+- Interpretation: wider Space breakout stops are not a robust fix. The 2.0 ATR stop helped `late_strong` by `+0.0693` EV but regressed `mid_weak` by `-0.3225` EV and `old_thin` by `-0.0220` EV. The breakout problem is catalyst/setup quality, not simple stop room.
+- Anti-repeat: do not retry nearby Space breakout stop widths on the same frozen snapshots. Future Space breakout work needs forward replacement value, official catalyst-quality fields, or a genuinely different ex-ante discriminator.
+
+### exp-20260511-111 Space data-vendor trend target
+
+- Decision: rejected_data_vendor_trend_target_extension.
+- Tested variable: `space_data_vendor_trend_target_atr_mult` for PL/BKSY `trend_long` only, while keeping RKLB/ASTS trend targets at 7 ATR and all other accepted Space risk/target semantics fixed.
+- Best variant: `data_vendor_trend_target_6_0`.
+- Aggregate EV delta vs exp105 stack: `-0.3228`; PnL delta `$-13,201.24`.
+- Interpretation: data-vendor trend continuation does not share the RKLB/ASTS launch-connectivity convexity. Wider PL/BKSY trend targets turned the old_thin PL winner into a stopout and produced no late/mid benefit.
+- Anti-repeat: do not retry nearby PL/BKSY trend target widths or data-vendor trend risk/target retunes on the same frozen snapshots. Future data-vendor Space work needs forward replacement value or a genuinely new catalyst-quality field.
+
+### exp-20260511-112 SEC financial-report T+1 paper sleeve capacity
+
+- Decision: accepted default-off paper capacity candidate.
+- Tested variable: `sec_financial_report_event_sleeve_max_positions` only, using production `build_sec_financial_report_event_sleeve_snapshot` over the three canonical windows.
+- Promoted default: `max_positions=3` versus baseline `1`; `max=5/10` had higher PnL but failed the drawdown guardrail in `old_thin`.
+- Aggregate delta: EV `+0.174785`, total PnL `+$6,766.07`, sleeve PnL `+$6,351.95`, sleeve closed trades `+36`, survival unchanged, max drawdown max `+2.62 pp`.
+- Interpretation: the SEC financial-report positive T+1 queue is the better near-term event/candidate-pool alpha surface than further Space same-sample retunes. Capacity should be expanded only for default-off paper observation; live-order scope still needs forward out-of-sample evidence.
+- Anti-repeat: do not promote `max=5` or `max=10` on the frozen sample despite higher PnL, because the old_thin drawdown penalty is too large. Next SEC work should focus on forward observation, event-quality fields, or replacement-value ranking rather than raw capacity.
+
+### exp-20260512-001 SEC financial-report T+1 excess floor
+
+- Decision: accepted default-off event-quality floor.
+- Tested variable: `sec_financial_report_t1_excess_return_floor` only, with the accepted max-3 default-off paper sleeve fixed.
+- Promoted floor: `t1_excess_return_vs_spy >= 0.01`.
+- Aggregate delta versus the accepted max-3 sleeve: EV `+0.820356`, total PnL `+$15,448.11`, sleeve PnL `+$15,448.11`, max drawdown max `-2.81 pp`, and closed sleeve trades `62 -> 52`.
+- Window evidence: EV and PnL improved in all three canonical windows: `late_strong +0.281744` EV / `+$2,782.53`, `mid_weak +0.352094` EV / `+$5,858.06`, and `old_thin +0.186518` EV / `+$6,807.52`.
+- Interpretation: for this SEC financial-report surface, T+1 excess magnitude is a stronger event-quality discriminator than form-base exclusion or pending quality ordering. The useful mechanism is not more raw capacity; it is requiring a large enough immediate post-filing relative reaction before paper entry.
+- Anti-repeat: do not retry nearby `0.005`, `0.015`, `0.02`, or `0.03` floors on the same frozen sample. Future SEC refinement should collect forward replacement value under the promoted 1% floor or add a genuinely new semantic earnings-quality field.
+
+### exp-20260512-002 SEC financial-report hold days
+
+- Decision: rejected_hold_days.
+- Tested variable: `sec_financial_report_event_sleeve_hold_days` only, with accepted max-3 capacity and `t1_excess_return_vs_spy >= 0.01` fixed.
+- Best non-baseline variant: `12` trading days.
+- Aggregate delta versus the accepted 10-day hold: EV `-0.126504`, total PnL `-$2,705.41`, sleeve PnL `-$2,481.89`, and sleeve closed trades `52 -> 44`.
+- Window evidence: only `late_strong` improved slightly (`+0.001618` EV / `+$261.08`); `mid_weak` and `old_thin` both regressed.
+- Interpretation: the accepted SEC financial-report paper sleeve edge is already aligned to the 10-trading-day lifecycle. Shorter holds harvest less drift, while modestly longer holds reduce closed-trade count and weaken mid/old-window replacement value.
+- Anti-repeat: do not retry nearby 5/7/12/15/20-day fixed holds on the frozen sample. Future SEC lifecycle work needs forward replacement value by holding-period bucket or a genuinely new exit-quality field.
+
+### exp-20260511-104 post-news pre-event RS20 context
+
+Decision: rejected.
+
+Core conclusion: `exp-20260511-104` tested whether the locked PEAD-like
+post-news continuation surface from `exp-20260509-020` should be gated by
+pre-event 20-day ticker relative strength versus SPY. This was a deterministic
+OHLCV/event-context alpha search, not an LLM ranking retry, not a reaction or
+volume threshold sweep, and not another Item 2.02 composition or
+`surprise_direction` gate.
+
+Evidence: best variant `rs20_positive_only` improved the raw post-news surface
+in all three canonical windows, but only by aggregate EV `+0.2043` (`+3.13%`)
+and PnL `+$3,020.69` (`+1.57%`) versus raw post-news, below materiality.
+Versus the accepted core it improved aggregate EV `+0.4506` (`+7.17%`) and PnL
+`+$11,210.04` (`+6.08%`), but `old_thin` max drawdown worsened by `+2.76 pp`
+versus core, so Gate 4 failed.
+
+Mechanism insight: post-news continuation still has a weak positive shape, but
+pre-event RS20 sign / 5pp context is not strong enough to rescue it for shared
+adapter work. The current bottleneck remains richer earnings-quality evidence
+or forward replacement value, not another deterministic RS20 gate.
+
+Do not repeat: nearby post-news pre-event RS20 sign, laggard-exclusion, or 5pp
+leader gates on this frozen sample without new forward outcomes or a richer
+same-accession earnings-quality field.
