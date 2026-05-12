@@ -1,0 +1,354 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 3.9873,
+    "max_drawdown_pct_max": 0.1148,
+    "min_survival_rate": 0.7841,
+    "signals_generated_sum": 256,
+    "signals_survived_sum": 208,
+    "total_pnl_sum": 135844.59,
+    "trade_count_sum": 98
+  },
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows using the accepted core snapshots. The variant monkeypatches signal generation only for this replay; no production code is changed because Gate 4 failed.",
+  "before_metrics": {
+    "expected_value_score_sum": 6.2882,
+    "max_drawdown_pct_max": 0.0941,
+    "min_survival_rate": 0.7925,
+    "signals_generated_sum": 164,
+    "signals_survived_sum": 138,
+    "total_pnl_sum": 184444.42,
+    "trade_count_sum": 62
+  },
+  "change_type": "entry_candidate_pool_alpha_search",
+  "changed_variable": "pullback_reclaim_long_entry_enabled",
+  "date_range": {
+    "primary": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "secondary": [
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "decision": "rejected_pullback_reclaim_entry",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": -2.3009,
+      "max_drawdown_pct_max_delta": 0.0207,
+      "min_survival_rate_delta": -0.0084,
+      "signals_generated_sum_delta": 92.0,
+      "signals_survived_sum_delta": 70.0,
+      "total_pnl_sum_delta": -48599.83,
+      "trade_count_sum_delta": 36.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": -0.9427,
+        "max_consecutive_losses": 2.0,
+        "max_drawdown_pct": 0.0148,
+        "sharpe_daily": -0.91,
+        "signals_generated": 36.0,
+        "signals_survived": 30.0,
+        "survival_rate": 0.0122,
+        "tail_loss_share": 0.0825,
+        "total_pnl": -2402.4,
+        "trade_count": 12.0,
+        "win_rate": -0.2411,
+        "worst_trade_pct": -0.0298
+      },
+      "mid_weak": {
+        "expected_value_score": -1.028,
+        "max_consecutive_losses": 1.0,
+        "max_drawdown_pct": -0.0044,
+        "sharpe_daily": -0.89,
+        "signals_generated": 35.0,
+        "signals_survived": 27.0,
+        "survival_rate": -0.0084,
+        "tail_loss_share": 0.2427,
+        "total_pnl": -26403.78,
+        "trade_count": 16.0,
+        "win_rate": -0.0103,
+        "worst_trade_pct": -0.0157
+      },
+      "old_thin": {
+        "expected_value_score": -0.3302,
+        "max_consecutive_losses": 5.0,
+        "max_drawdown_pct": 0.0333,
+        "sharpe_daily": -0.72,
+        "signals_generated": 21.0,
+        "signals_survived": 13.0,
+        "survival_rate": -0.0772,
+        "tail_loss_share": 0.0547,
+        "total_pnl": -19793.65,
+        "trade_count": 8.0,
+        "win_rate": -0.1758,
+        "worst_trade_pct": -0.1106
+      }
+    }
+  },
+  "expected_value_score_delta": -2.3009,
+  "experiment_id": "exp-20260512-024",
+  "gate": {
+    "ev_positive_windows": 0,
+    "ev_regressed_windows": 3,
+    "passed": false,
+    "pnl_positive_windows": 0,
+    "rule": "Pass only if EV and PnL improve in all three canonical windows and survival stays above 5%.",
+    "survival_after_min": 0.7841,
+    "window_deltas": {
+      "late_strong": {
+        "expected_value_score": -0.9427,
+        "max_consecutive_losses": 2.0,
+        "max_drawdown_pct": 0.0148,
+        "sharpe_daily": -0.91,
+        "signals_generated": 36.0,
+        "signals_survived": 30.0,
+        "survival_rate": 0.0122,
+        "tail_loss_share": 0.0825,
+        "total_pnl": -2402.4,
+        "trade_count": 12.0,
+        "win_rate": -0.2411,
+        "worst_trade_pct": -0.0298
+      },
+      "mid_weak": {
+        "expected_value_score": -1.028,
+        "max_consecutive_losses": 1.0,
+        "max_drawdown_pct": -0.0044,
+        "sharpe_daily": -0.89,
+        "signals_generated": 35.0,
+        "signals_survived": 27.0,
+        "survival_rate": -0.0084,
+        "tail_loss_share": 0.2427,
+        "total_pnl": -26403.78,
+        "trade_count": 16.0,
+        "win_rate": -0.0103,
+        "worst_trade_pct": -0.0157
+      },
+      "old_thin": {
+        "expected_value_score": -0.3302,
+        "max_consecutive_losses": 5.0,
+        "max_drawdown_pct": 0.0333,
+        "sharpe_daily": -0.72,
+        "signals_generated": 21.0,
+        "signals_survived": 13.0,
+        "survival_rate": -0.0772,
+        "tail_loss_share": 0.0547,
+        "total_pnl": -19793.65,
+        "trade_count": 8.0,
+        "win_rate": -0.1758,
+        "worst_trade_pct": -0.1106
+      }
+    }
+  },
+  "hypothesis": "A leadership pullback/reclaim entry can improve candidate-pool alpha by buying strong names above the 200MA after a controlled 5-15% pullback from 52-week highs, instead of waiting only for fresh 20d breakouts.",
+  "lane": "alpha_search",
+  "next_evidence_needed": "Do not promote this OHLCV pullback/reclaim entry shape. A valid retry needs a genuinely new event/news quality discriminator or forward replacement-value evidence, not nearby pullback threshold tuning.",
+  "parameters": {
+    "entry_shape": {
+      "above_200ma": true,
+      "atr_over_close_max": 0.07,
+      "days_to_earnings_block": "<= 3",
+      "exclude_breakdown_20d": true,
+      "exclude_breakout_20d": true,
+      "momentum_10d_pct": "> 0",
+      "momentum_20d_pct": ">= 0.05",
+      "pct_from_52w_high": "[-0.15, -0.05)",
+      "price_vs_200ma_pct": ">= 0.03",
+      "volume_spike_ratio": ">= 1.2"
+    },
+    "target_stop_sizing": "existing shared risk_engine/portfolio_engine defaults",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": true,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "protocol_answers": {
+    "1_alpha_hypothesis": "entry: add an OHLCV pullback/reclaim entry for strong names below near-high breakout territory.",
+    "2_history_check": "The playbook lists OHLCV pullback/reclaim entry as a possible non-LLM candidate-pool direction; prior logs mainly rejected global TQS ranking, scarce-slot sub-discriminators, Form 4 sparse satellites, and Space/SEC local retunes. This exact pullback entry shape was not found in the recent experiment log.",
+    "3_single_causal_variable": "pullback_reclaim_long_entry_enabled",
+    "4_acceptance_standard": "Pass only if EV and PnL improve in all three canonical windows and survival stays above 5%.",
+    "5_reproducibility": "Run .venv\\Scripts\\python.exe quant\\experiments\\exp_20260512_024_pullback_reclaim_entry.py"
+  },
+  "rejection_reason": "EV regressed in all three canonical windows; tail risk and loss clustering worsened.",
+  "related_files": [
+    "data\\experiments\\exp-20260512-024\\pullback_reclaim_entry.json",
+    "docs\\experiments\\logs\\exp-20260512-024.json",
+    "docs\\experiments\\tickets\\exp-20260512-024.json",
+    "docs\\experiments\\artifacts\\exp-20260512-024_pullback_reclaim_entry.md",
+    "quant/experiments/exp_20260512_024_pullback_reclaim_entry.py"
+  ],
+  "single_causal_variable": "add one OHLCV pullback/reclaim entry shape; no sizing, exit, ranking, LLM/news, universe, or event-sleeve changes",
+  "status": "rejected",
+  "timestamp": "2026-05-12T11:37:05Z",
+  "why_not_other_changes": "LLM soft-ranking remains measurement-blocked, Space breakout variants recently failed, Form 4 is too sparse, and SEC financial-report local notional/floor/hold variants should not be repeated after exp-20260512-020.",
+  "windows": {
+    "late_strong": {
+      "after": {
+        "expected_value_score": 3.2913,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0696,
+        "sharpe_daily": 3.59,
+        "signals_generated": 87,
+        "signals_survived": 71,
+        "strategy_total_return_pct": null,
+        "survival_rate": 0.8161,
+        "tail_loss_share": 0.5985,
+        "total_pnl": 91684.51,
+        "trade_count": 31,
+        "win_rate": 0.5484,
+        "worst_trade_pct": -0.0905
+      },
+      "before": {
+        "expected_value_score": 4.234,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0548,
+        "sharpe_daily": 4.5,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "strategy_total_return_pct": null,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.516,
+        "total_pnl": 94086.91,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.0607
+      },
+      "delta": {
+        "expected_value_score": -0.9427,
+        "max_consecutive_losses": 2.0,
+        "max_drawdown_pct": 0.0148,
+        "sharpe_daily": -0.91,
+        "signals_generated": 36.0,
+        "signals_survived": 30.0,
+        "survival_rate": 0.0122,
+        "tail_loss_share": 0.0825,
+        "total_pnl": -2402.4,
+        "trade_count": 12.0,
+        "win_rate": -0.2411,
+        "worst_trade_pct": -0.0298
+      }
+    },
+    "mid_weak": {
+      "after": {
+        "expected_value_score": 0.6409,
+        "max_consecutive_losses": 7,
+        "max_drawdown_pct": 0.0897,
+        "sharpe_daily": 1.81,
+        "signals_generated": 88,
+        "signals_survived": 69,
+        "strategy_total_return_pct": null,
+        "survival_rate": 0.7841,
+        "tail_loss_share": 0.7302,
+        "total_pnl": 35409.62,
+        "trade_count": 37,
+        "win_rate": 0.5135,
+        "worst_trade_pct": -0.1054
+      },
+      "before": {
+        "expected_value_score": 1.6689,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.0941,
+        "sharpe_daily": 2.7,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "strategy_total_return_pct": null,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4875,
+        "total_pnl": 61813.4,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.0897
+      },
+      "delta": {
+        "expected_value_score": -1.028,
+        "max_consecutive_losses": 1.0,
+        "max_drawdown_pct": -0.0044,
+        "sharpe_daily": -0.89,
+        "signals_generated": 35.0,
+        "signals_survived": 27.0,
+        "survival_rate": -0.0084,
+        "tail_loss_share": 0.2427,
+        "total_pnl": -26403.78,
+        "trade_count": 16.0,
+        "win_rate": -0.0103,
+        "worst_trade_pct": -0.0157
+      }
+    },
+    "old_thin": {
+      "after": {
+        "expected_value_score": 0.0551,
+        "max_consecutive_losses": 9,
+        "max_drawdown_pct": 0.1148,
+        "sharpe_daily": 0.63,
+        "signals_generated": 81,
+        "signals_survived": 68,
+        "strategy_total_return_pct": null,
+        "survival_rate": 0.8395,
+        "tail_loss_share": 0.5086,
+        "total_pnl": 8750.46,
+        "trade_count": 30,
+        "win_rate": 0.2333,
+        "worst_trade_pct": -0.1741
+      },
+      "before": {
+        "expected_value_score": 0.3853,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0815,
+        "sharpe_daily": 1.35,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "strategy_total_return_pct": null,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4539,
+        "total_pnl": 28544.11,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.0635
+      },
+      "delta": {
+        "expected_value_score": -0.3302,
+        "max_consecutive_losses": 5.0,
+        "max_drawdown_pct": 0.0333,
+        "sharpe_daily": -0.72,
+        "signals_generated": 21.0,
+        "signals_survived": 13.0,
+        "survival_rate": -0.0772,
+        "tail_loss_share": 0.0547,
+        "total_pnl": -19793.65,
+        "trade_count": 8.0,
+        "win_rate": -0.1758,
+        "worst_trade_pct": -0.1106
+      }
+    }
+  }
+}

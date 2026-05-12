@@ -1,0 +1,75 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 6.588843,
+    "max_drawdown_pct_max": 0.118812,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 62,
+    "sleeve_total_pnl_sum": 8556.46,
+    "total_pnl_sum": 194441.68,
+    "trade_count_sum": 124
+  },
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for the core baseline, plus production paper-sleeve replay over the same OHLCV snapshots. Core replay uses REPLAY_PARTIAL_REDUCES and REGIME_AWARE_EXIT.",
+  "before_metrics": {
+    "expected_value_score_sum": 6.414058,
+    "max_drawdown_pct_max": 0.092599,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 26,
+    "sleeve_total_pnl_sum": 2204.51,
+    "total_pnl_sum": 187675.61,
+    "trade_count_sum": 88
+  },
+  "change_type": "alpha_search_capital_allocation",
+  "changed_variable": "sec_financial_report_event_sleeve_max_positions",
+  "date_range": {
+    "primary": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "secondary": [
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "decision": "accept_default_off_paper_capacity_candidate",
+  "expected_value_score_delta": 0.174785,
+  "experiment_id": "exp-20260511-112",
+  "hypothesis": "The frozen SEC financial-report positive T+1 queue has enough capacity that the default-off paper event sleeve should track more than one concurrent position without degrading three-window EV or drawdown guardrails.",
+  "next_evidence_needed": "Forward out-of-sample default-off paper observation before any live-order scope.",
+  "parameters": {
+    "baseline_max_positions": 1,
+    "default_event_notional_usd": 10000.0,
+    "hold_days": "PRIMARY_HORIZON_TRADING_DAYS",
+    "max_position_variants": [
+      1,
+      2,
+      3,
+      5,
+      10
+    ],
+    "production_default_max_positions_at_run": 3,
+    "promotion_variant": 3,
+    "source_candidate_artifact": "data\\experiments\\exp-20260511-100\\exp_20260511_100_sec_financial_report_positive_t1_forward_outcome_refresh.json"
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_orders_changed": false,
+    "parity_test_added": true,
+    "production_signal_path_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "uses_production_sleeve_builder": true
+  },
+  "rejection_reason": null,
+  "timestamp": "2026-05-11T22:24:41Z"
+}

@@ -1,0 +1,719 @@
+"""exp-20260512-020: SEC financial-report 10-Q notional scalar.
+
+Alpha search on one causal variable: a paper-notional scalar for 10-Q
+``periodic_report`` rows inside the accepted default-off SEC financial-report
+T+1 sleeve. 10-K periodic reports keep the accepted 1.25x scalar, earnings 8-K
+rows keep 1.0x, and capacity, T+1 floor, hold days, ranking, and live orders
+stay fixed.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from collections import Counter, OrderedDict
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+
+EXPERIMENT_ID = "exp-20260512-020"
+STEM = "exp_20260512_020_sec_financial_report_10q_notional"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+QUANT_DIR = REPO_ROOT / "quant"
+EXPERIMENTS_DIR = QUANT_DIR / "experiments"
+for path in (QUANT_DIR, EXPERIMENTS_DIR):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
+
+from exp_20260511_112_sec_financial_report_t1_sleeve_capacity import (  # noqa: E402
+    SOURCE_EXP100_JSON,
+    WINDOWS,
+    _aggregate,
+    _combine_curves,
+    _core_metrics,
+    _delta,
+    _equity_metrics,
+    _load_exp100,
+    _load_snapshot_prices,
+    _normalise_core_curve,
+    _rebuild_sleeve_state,
+    _round,
+    _rows_by_t1_date,
+    _run_core_backtest,
+    _safe,
+    _write_json,
+)
+from exp_20260512_002_sec_financial_report_hold_days import (  # noqa: E402
+    _filter_current_queue,
+)
+from sec_event_queue import FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY  # noqa: E402
+from sec_financial_report_event_sleeve import (  # noqa: E402
+    DEFAULT_EVENT_NOTIONAL_USD,
+    DEFAULT_MAX_POSITIONS,
+    DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
+    build_sec_financial_report_event_sleeve_snapshot,
+    empty_sec_financial_report_event_sleeve_state,
+)
+
+
+OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
+OUT_JSON = OUT_DIR / f"{STEM}.json"
+DOC_LOG = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_TICKET = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+DOC_ARTIFACT = (
+    REPO_ROOT
+    / "docs"
+    / "experiments"
+    / "artifacts"
+    / f"{EXPERIMENT_ID}_sec_financial_report_10q_notional.md"
+)
+EXPERIMENT_LOG_JSONL = REPO_ROOT / "docs" / "experiment_log.jsonl"
+
+BASELINE_10Q_PERIODIC_REPORT_SCALAR = DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR
+TENQ_PERIODIC_REPORT_SCALAR_VARIANTS = (0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+MIN_PROMOTION_CLOSED_TRADES = 40
+MIN_10Q_CLOSED_TRADES = 10
+MAX_DRAWDOWN_WORSENING = 0.005
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(
+        "+00:00", "Z"
+    )
+
+
+def _append_jsonl_once(path: Path, payload: dict[str, Any]) -> None:
+    compact = json.dumps(_safe(payload), ensure_ascii=False, separators=(",", ":"))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        lines = [
+            line
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines()
+            if f'"experiment_id":"{EXPERIMENT_ID}"' not in line
+            and f'"experiment_id": "{EXPERIMENT_ID}"' not in line
+        ]
+    else:
+        lines = []
+    lines.append(compact)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _candidate_counts(exp100: dict[str, Any]) -> dict[str, int]:
+    return {
+        label: len(window.get("candidate_rows") or [])
+        for label, window in exp100.get("windows", {}).items()
+    }
+
+
+def _source_candidate(position: dict[str, Any]) -> dict[str, Any]:
+    candidate = position.get("source_candidate") or {}
+    return candidate if isinstance(candidate, dict) else {}
+
+
+def _event_family(position: dict[str, Any]) -> str:
+    return str(_source_candidate(position).get("event_family") or "")
+
+
+def _form_base(position: dict[str, Any]) -> str:
+    candidate = _source_candidate(position)
+    raw = (
+        candidate.get("form_base")
+        or candidate.get("form_type")
+        or candidate.get("form")
+        or candidate.get("sec_form")
+        or ""
+    )
+    return str(raw).upper().strip() or "UNKNOWN"
+
+
+def _is_10q(position: dict[str, Any]) -> bool:
+    return _form_base(position).startswith("10-Q")
+
+
+def _notional_for_position(
+    position: dict[str, Any],
+    *,
+    tenq_periodic_report_scalar: float,
+) -> tuple[float, float, str]:
+    base = float(DEFAULT_EVENT_NOTIONAL_USD)
+    if _event_family(position) != "periodic_report":
+        return base, 1.0, "base"
+    if _is_10q(position):
+        scalar = float(tenq_periodic_report_scalar)
+        return base * scalar, scalar, "periodic_report_10q_scalar"
+    scalar = float(DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR)
+    return base * scalar, scalar, "periodic_report_default_scalar"
+
+
+def _pnl_for_position(
+    position: dict[str, Any],
+    *,
+    tenq_periodic_report_scalar: float,
+    closed: bool,
+) -> float:
+    adjusted_notional, _, _ = _notional_for_position(
+        position,
+        tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+    )
+    if closed:
+        try:
+            net_return = float(position.get("net_return_pct") or 0.0) / 100.0
+        except (TypeError, ValueError):
+            net_return = 0.0
+        return adjusted_notional * net_return
+
+    try:
+        source_notional = float(position.get("notional") or 0.0)
+        source_pnl = float(position.get("net_pnl_if_closed_now") or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
+    if source_notional <= 0:
+        return 0.0
+    return adjusted_notional * (source_pnl / source_notional)
+
+
+def _adjust_closed_position(
+    position: dict[str, Any],
+    *,
+    tenq_periodic_report_scalar: float,
+) -> dict[str, Any]:
+    adjusted = dict(position)
+    notional, scalar, rule = _notional_for_position(
+        position,
+        tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+    )
+    adjusted["base_notional"] = float(DEFAULT_EVENT_NOTIONAL_USD)
+    adjusted["notional"] = round(notional, 2)
+    adjusted["event_notional_scalar"] = scalar
+    adjusted["event_notional_rule"] = rule
+    adjusted["form_base"] = _form_base(position)
+    adjusted["tenq_periodic_report_notional_scalar"] = tenq_periodic_report_scalar
+    adjusted["pnl"] = round(
+        _pnl_for_position(
+            position,
+            tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+            closed=True,
+        ),
+        2,
+    )
+    return adjusted
+
+
+def _closed_position_breakdown(
+    closed_positions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    count_by_form = Counter(str(item.get("form_base") or "UNKNOWN") for item in closed_positions)
+    pnl_by_form: dict[str, float] = {}
+    count_by_rule = Counter(
+        str(item.get("event_notional_rule") or "UNKNOWN") for item in closed_positions
+    )
+    pnl_by_rule: dict[str, float] = {}
+    for item in closed_positions:
+        form = str(item.get("form_base") or "UNKNOWN")
+        rule = str(item.get("event_notional_rule") or "UNKNOWN")
+        pnl = float(item.get("pnl") or 0.0)
+        pnl_by_form[form] = pnl_by_form.get(form, 0.0) + pnl
+        pnl_by_rule[rule] = pnl_by_rule.get(rule, 0.0) + pnl
+    return {
+        "closed_trade_count_by_form_base": dict(sorted(count_by_form.items())),
+        "closed_pnl_by_form_base": {
+            key: _round(value, 2) for key, value in sorted(pnl_by_form.items())
+        },
+        "closed_trade_count_by_rule": dict(sorted(count_by_rule.items())),
+        "closed_pnl_by_rule": {
+            key: _round(value, 2) for key, value in sorted(pnl_by_rule.items())
+        },
+        "tenq_closed_trade_count": int(count_by_form.get("10-Q", 0)),
+        "tenq_total_pnl": _round(pnl_by_form.get("10-Q", 0.0), 2),
+    }
+
+
+def _run_sleeve_replay(
+    window_label: str,
+    window: dict[str, str],
+    window_payload: dict[str, Any],
+    *,
+    tenq_periodic_report_scalar: float,
+) -> dict[str, Any]:
+    prices_by_date = _load_snapshot_prices(window["snapshot"])
+    candidates_by_t1 = _rows_by_t1_date(window_payload)
+    state = empty_sec_financial_report_event_sleeve_state()
+    skipped_entries: list[dict[str, Any]] = []
+    pnl_by_date: OrderedDict[str, float] = OrderedDict()
+    max_open_positions = 0
+    max_gross_notional = 0.0
+    enqueued_candidates = 0
+
+    for as_of, prices in prices_by_date.items():
+        candidates = candidates_by_t1.get(as_of, [])
+        enqueued_candidates += len(candidates)
+        queue = {
+            "queue_name": "SEC_FINANCIAL_REPORT_T1_DRIFT_QUEUE_REPLAY",
+            "rule_version": f"{EXPERIMENT_ID}-replay",
+            "enabled": False,
+            "asof_date": as_of,
+            "candidate_count": len(candidates),
+            "candidates": candidates,
+            "data_source": {
+                "status": "replay",
+                "source_experiment": "exp-20260511-100",
+                "window": window_label,
+            },
+        }
+        snapshot = build_sec_financial_report_event_sleeve_snapshot(
+            sec_financial_report_t1_queue=queue,
+            as_of=as_of,
+            open_prices=prices["open"],
+            current_prices=prices["close"],
+            state=state,
+            config={
+                "max_positions": DEFAULT_MAX_POSITIONS,
+                "event_notional_usd": DEFAULT_EVENT_NOTIONAL_USD,
+                "periodic_report_notional_scalar": DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
+            },
+            persist=False,
+        )
+        skipped_entries.extend(snapshot.get("skipped_entries_today") or [])
+        state = _rebuild_sleeve_state(snapshot, skipped_entries)
+
+        realized = sum(
+            _pnl_for_position(
+                item,
+                tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+                closed=True,
+            )
+            for item in state.get("closed_positions") or []
+        )
+        unrealized = sum(
+            _pnl_for_position(
+                item,
+                tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+                closed=False,
+            )
+            for item in state.get("open_positions") or []
+        )
+        pnl_by_date[as_of] = realized + unrealized
+        open_positions = state.get("open_positions") or []
+        max_open_positions = max(max_open_positions, len(open_positions))
+        max_gross_notional = max(
+            max_gross_notional,
+            sum(
+                _notional_for_position(
+                    item,
+                    tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+                )[0]
+                for item in open_positions
+            ),
+        )
+
+    closed_positions = [
+        _adjust_closed_position(
+            item,
+            tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+        )
+        for item in state.get("closed_positions") or []
+    ]
+    wins = sum(1 for item in closed_positions if float(item.get("pnl") or 0.0) > 0)
+    sleeve_curve = [
+        (date_value, 100_000.0 + pnl) for date_value, pnl in pnl_by_date.items()
+    ]
+    standalone_metrics = _equity_metrics(
+        sleeve_curve,
+        trade_count=len(closed_positions),
+        win_rate=(wins / len(closed_positions) if closed_positions else None),
+    )
+    standalone_metrics.update(
+        {
+            "candidate_count": enqueued_candidates,
+            "closed_trade_count": len(closed_positions),
+            "open_position_count_end": len(state.get("open_positions") or []),
+            "skipped_capacity_count": len(skipped_entries),
+            "max_open_positions": max_open_positions,
+            "max_gross_notional": _round(max_gross_notional, 2),
+        }
+    )
+    standalone_metrics.update(_closed_position_breakdown(closed_positions))
+    return {
+        "daily_pnl": list(pnl_by_date.items()),
+        "metrics": standalone_metrics,
+        "sample_closed_positions": closed_positions[:10],
+    }
+
+
+def _run_variant(
+    *,
+    core_results: dict[str, dict[str, Any]],
+    exp100: dict[str, Any],
+    tenq_periodic_report_scalar: float,
+) -> dict[str, Any]:
+    by_window = {}
+    for label, window in WINDOWS.items():
+        sleeve = _run_sleeve_replay(
+            label,
+            window,
+            exp100["windows"][label],
+            tenq_periodic_report_scalar=tenq_periodic_report_scalar,
+        )
+        core_curve = core_results[label]["equity_curve"]
+        combined_curve = _combine_curves(core_curve, sleeve["daily_pnl"])
+        core_metrics = core_results[label]["metrics"]
+        combined_metrics = _equity_metrics(
+            combined_curve,
+            trade_count=int(core_metrics.get("trade_count") or 0)
+            + int(sleeve["metrics"].get("closed_trade_count") or 0),
+            win_rate=None,
+            signals_generated=core_metrics.get("signals_generated"),
+            signals_survived=core_metrics.get("signals_survived"),
+        )
+        by_window[label] = {
+            "combined_metrics": combined_metrics,
+            "core_metrics": core_metrics,
+            "sleeve_metrics": sleeve["metrics"],
+            "sample_closed_positions": sleeve["sample_closed_positions"],
+        }
+    return {"by_window": by_window, "aggregate": _aggregate(by_window)}
+
+
+def _tenq_closed_trade_count(row: dict[str, Any]) -> int:
+    return sum(
+        int(
+            window["sleeve_metrics"]
+            .get("closed_trade_count_by_form_base", {})
+            .get("10-Q", 0)
+        )
+        for window in row["by_window"].values()
+    )
+
+
+def _window_checks(after: dict[str, Any], before: dict[str, Any]) -> dict[str, Any]:
+    checks = {}
+    for label in WINDOWS:
+        after_m = after["by_window"][label]["combined_metrics"]
+        before_m = before["by_window"][label]["combined_metrics"]
+        checks[label] = {
+            "ev_delta": _round(
+                float(after_m["expected_value_score"])
+                - float(before_m["expected_value_score"]),
+                6,
+            ),
+            "pnl_delta": _round(
+                float(after_m["total_pnl"]) - float(before_m["total_pnl"]),
+                2,
+            ),
+            "max_drawdown_delta": _round(
+                float(after_m["max_drawdown_pct"])
+                - float(before_m["max_drawdown_pct"]),
+                6,
+            ),
+            "tenq_closed_trade_count": int(
+                after["by_window"][label]["sleeve_metrics"].get(
+                    "tenq_closed_trade_count"
+                )
+                or 0
+            ),
+            "tenq_pnl_delta": _round(
+                float(
+                    after["by_window"][label]["sleeve_metrics"].get("tenq_total_pnl")
+                    or 0.0
+                )
+                - float(
+                    before["by_window"][label]["sleeve_metrics"].get("tenq_total_pnl")
+                    or 0.0
+                ),
+                2,
+            ),
+        }
+    return checks
+
+
+def _gate(after: dict[str, Any], before: dict[str, Any]) -> dict[str, Any]:
+    aggregate_delta = _delta(after["aggregate"], before["aggregate"])
+    checks = _window_checks(after, before)
+    ev_positive_windows = sum(1 for row in checks.values() if row["ev_delta"] > 0)
+    ev_regressed_windows = sum(1 for row in checks.values() if row["ev_delta"] < 0)
+    pnl_positive_windows = sum(1 for row in checks.values() if row["pnl_delta"] > 0)
+    tenq_positive_windows = sum(1 for row in checks.values() if row["tenq_pnl_delta"] > 0)
+    max_drawdown_delta_max = max(row["max_drawdown_delta"] for row in checks.values())
+    sleeve_trades_after = int(after["aggregate"].get("sleeve_closed_trade_count_sum") or 0)
+    tenq_closed_trades_after = _tenq_closed_trade_count(after)
+    passed = (
+        (aggregate_delta.get("expected_value_score_sum_delta") or 0.0) > 0
+        and (aggregate_delta.get("sleeve_total_pnl_sum_delta") or 0.0) >= 0.0
+        and ev_positive_windows == 3
+        and ev_regressed_windows == 0
+        and pnl_positive_windows == 3
+        and tenq_positive_windows >= 2
+        and max_drawdown_delta_max <= MAX_DRAWDOWN_WORSENING
+        and sleeve_trades_after >= MIN_PROMOTION_CLOSED_TRADES
+        and tenq_closed_trades_after >= MIN_10Q_CLOSED_TRADES
+    )
+    return {
+        "aggregate_delta": aggregate_delta,
+        "ev_positive_windows": ev_positive_windows,
+        "ev_regressed_windows": ev_regressed_windows,
+        "max_drawdown_delta_max": _round(max_drawdown_delta_max, 6),
+        "passed": passed,
+        "pnl_positive_windows": pnl_positive_windows,
+        "rule": (
+            "Pass if aggregate EV and sleeve PnL improve, EV and PnL improve "
+            "in all three windows, 10-Q PnL improves in at least two windows, "
+            "max drawdown worsens by no more than 0.5 percentage points in any "
+            "window, sleeve closed trades >= 40, and 10-Q closed trades >= 10."
+        ),
+        "sleeve_closed_trade_count_after": sleeve_trades_after,
+        "tenq_closed_trade_count_after": tenq_closed_trades_after,
+        "tenq_positive_windows": tenq_positive_windows,
+        "window_checks": checks,
+    }
+
+
+def _best_candidate(variants: OrderedDict[str, dict[str, Any]]) -> str:
+    baseline = variants[f"tenq_scalar_{BASELINE_10Q_PERIODIC_REPORT_SCALAR:.2f}"]
+    candidates = [
+        (name, row, _gate(row, baseline))
+        for name, row in variants.items()
+        if row["tenq_periodic_report_notional_scalar"]
+        != BASELINE_10Q_PERIODIC_REPORT_SCALAR
+    ]
+    passed = [(name, row, gate) for name, row, gate in candidates if gate["passed"]]
+    if passed:
+        return max(
+            passed,
+            key=lambda item: (
+                item[2]["aggregate_delta"].get("expected_value_score_sum_delta") or 0.0,
+                item[2]["aggregate_delta"].get("sleeve_total_pnl_sum_delta") or 0.0,
+                -item[2]["max_drawdown_delta_max"],
+            ),
+        )[0]
+    return max(
+        candidates,
+        key=lambda item: (
+            item[2]["aggregate_delta"].get("expected_value_score_sum_delta") or -999.0,
+            item[2]["aggregate_delta"].get("sleeve_total_pnl_sum_delta") or -999999.0,
+        ),
+    )[0]
+
+
+def _artifact_markdown(payload: dict[str, Any]) -> str:
+    lines = [
+        f"# {EXPERIMENT_ID} SEC financial-report 10-Q notional",
+        "",
+        f"- Decision: `{payload['decision']}`",
+        f"- Best variant: `{payload['best_variant']}`",
+        f"- EV delta: `{payload['expected_value_score_delta']}`",
+        (
+            f"- Total PnL delta: "
+            f"`{payload['gate']['aggregate_delta'].get('total_pnl_sum_delta')}`"
+        ),
+        f"- Max drawdown delta max: `{payload['gate']['max_drawdown_delta_max']}`",
+        f"- 10-Q closed trades after: `{payload['gate']['tenq_closed_trade_count_after']}`",
+        "",
+        "## Aggregate",
+        "",
+        "| Variant | EV sum | Total PnL | Sleeve PnL | Sleeve closed | Max DD max |",
+        "| --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for name, row in payload["variants"].items():
+        agg = row["aggregate"]
+        lines.append(
+            f"| {name} | {agg['expected_value_score_sum']:.6f} | "
+            f"${agg['total_pnl_sum']:,.2f} | ${agg['sleeve_total_pnl_sum']:,.2f} | "
+            f"{agg['sleeve_closed_trade_count_sum']} | {agg['max_drawdown_pct_max']:.4f} |"
+        )
+    lines.extend(["", "## Window Deltas", ""])
+    lines.append("| Window | EV delta | PnL delta | 10-Q PnL delta | Max DD delta |")
+    lines.append("| --- | ---: | ---: | ---: | ---: |")
+    for label, row in payload["gate"]["window_checks"].items():
+        lines.append(
+            f"| {label} | {row['ev_delta']:.6f} | ${row['pnl_delta']:,.2f} | "
+            f"${row['tenq_pnl_delta']:,.2f} | {row['max_drawdown_delta']:.6f} |"
+        )
+    lines.extend(
+        [
+            "",
+            (
+                "This is a semantic default-off paper sleeve risk-allocation "
+                "experiment. It changes no live orders, queue qualification, "
+                "candidate ranking, capacity, or hold period."
+            ),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def main() -> int:
+    timestamp = _utc_now()
+    raw_exp100 = _load_exp100()
+    exp100 = _filter_current_queue(raw_exp100)
+
+    core_results = {}
+    for label, window in WINDOWS.items():
+        result = _run_core_backtest(window)
+        core_results[label] = {
+            "metrics": _core_metrics(result),
+            "equity_curve": _normalise_core_curve(result),
+        }
+
+    variants: OrderedDict[str, dict[str, Any]] = OrderedDict()
+    for scalar in TENQ_PERIODIC_REPORT_SCALAR_VARIANTS:
+        name = f"tenq_scalar_{scalar:.2f}"
+        row = _run_variant(
+            core_results=core_results,
+            exp100=exp100,
+            tenq_periodic_report_scalar=scalar,
+        )
+        row["tenq_periodic_report_notional_scalar"] = scalar
+        variants[name] = row
+
+    baseline_key = f"tenq_scalar_{BASELINE_10Q_PERIODIC_REPORT_SCALAR:.2f}"
+    baseline = variants[baseline_key]
+    best_key = _best_candidate(variants)
+    best = variants[best_key]
+    gate = _gate(best, baseline)
+    promotion_applied = gate["passed"]
+    decision = (
+        f"accepted_10q_periodic_report_notional_{best['tenq_periodic_report_notional_scalar']:.2f}x"
+        if gate["passed"]
+        else "rejected_10q_periodic_report_notional_scalar"
+    )
+    status = "accepted" if gate["passed"] else "rejected"
+
+    payload = {
+        "experiment_id": EXPERIMENT_ID,
+        "timestamp": timestamp,
+        "status": status,
+        "hypothesis": (
+            "Inside the accepted SEC financial-report T+1 paper sleeve, "
+            "the periodic_report edge may be concentrated in 10-Q interim "
+            "reports; therefore 10-Q rows may deserve a separate paper "
+            "notional scalar while 10-K rows keep the accepted periodic scalar."
+        ),
+        "change_type": "alpha_search_semantic_risk_allocation",
+        "changed_variable": "sec_financial_report_10q_periodic_report_notional_scalar",
+        "parameters": {
+            "baseline_10q_periodic_report_notional_scalar": (
+                BASELINE_10Q_PERIODIC_REPORT_SCALAR
+            ),
+            "tenq_periodic_report_scalar_variants": list(
+                TENQ_PERIODIC_REPORT_SCALAR_VARIANTS
+            ),
+            "base_event_notional_usd": DEFAULT_EVENT_NOTIONAL_USD,
+            "earnings_8k_scalar": 1.0,
+            "non_10q_periodic_report_scalar": DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
+            "max_positions": DEFAULT_MAX_POSITIONS,
+            "min_t1_excess_return_vs_spy": FINANCIAL_REPORT_T1_MIN_EXCESS_RETURN_VS_SPY,
+            "source_candidate_artifact": str(SOURCE_EXP100_JSON.relative_to(REPO_ROOT)),
+        },
+        "backtest_protocol": (
+            "docs/backtesting.md canonical three fixed windows for core baseline, "
+            "plus production paper-sleeve replay over the same OHLCV snapshots. "
+            "Core replay uses REPLAY_PARTIAL_REDUCES and REGIME_AWARE_EXIT."
+        ),
+        "date_range": {
+            "primary": {
+                "start": WINDOWS["late_strong"]["start"],
+                "end": WINDOWS["late_strong"]["end"],
+            },
+            "secondary": [
+                {"start": WINDOWS["mid_weak"]["start"], "end": WINDOWS["mid_weak"]["end"]},
+                {"start": WINDOWS["old_thin"]["start"], "end": WINDOWS["old_thin"]["end"]},
+            ],
+        },
+        "candidate_counts_after_current_queue_filter": _candidate_counts(exp100),
+        "before_metrics": baseline["aggregate"],
+        "after_metrics": best["aggregate"],
+        "delta_metrics": {
+            "aggregate": gate["aggregate_delta"],
+            "by_window": gate["window_checks"],
+        },
+        "expected_value_score_delta": gate["aggregate_delta"].get(
+            "expected_value_score_sum_delta"
+        ),
+        "best_variant": best_key,
+        "gate": gate,
+        "decision": decision,
+        "rejection_reason": (
+            None
+            if gate["passed"]
+            else "No 10-Q periodic-report scalar cleared the three-window semantic risk-allocation gate."
+        ),
+        "next_evidence_needed": (
+            "Promote only as shared default-off paper-sleeve policy, then collect forward replacement-value evidence before any live-order scope."
+            if gate["passed"]
+            else "Avoid more local SEC notional retunes; next alpha should test a broader candidate/event surface with stronger sample support."
+        ),
+        "production_impact": {
+            "shared_policy_changed": promotion_applied,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": promotion_applied,
+            "replay_only": not promotion_applied,
+            "parity_test_added": promotion_applied,
+            "default_off_paper_only": True,
+            "alters_orders": False,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": True,
+        },
+        "protocol_answers": {
+            "1_alpha_hypothesis": (
+                "risk allocation: use existing SEC form_base semantics to scale "
+                "paper notional only for 10-Q periodic_report rows."
+            ),
+            "2_history_check": (
+                "exp-20260512-007 accepted a general periodic_report 1.25x "
+                "scalar; exp-20260511-114 rejected excluding 10-K rows; "
+                "exp-20260512-009/011/012 rejected rank1, clean earnings 8-K, "
+                "and entry-gap notional variants. This run does not exclude "
+                "forms or change ranking; it isolates 10-Q notional."
+            ),
+            "3_single_causal_variable": "10-Q periodic-report paper-notional scalar only",
+            "4_acceptance_standard": gate["rule"],
+            "5_reproducibility": (
+                f"Run .venv\\Scripts\\python.exe quant\\experiments\\{STEM}.py"
+            ),
+        },
+        "variants": variants,
+        "why_not_other_changes": (
+            "LLM soft-ranking is still coverage-limited, and recent Space "
+            "micro-retunes regressed or lacked enough replacement value. This "
+            "experiment stays in the accepted SEC event surface but avoids "
+            "repeating global notional, hold-day, floor, form-exclusion, rank, "
+            "or entry-gap sweeps."
+        ),
+    }
+
+    _write_json(OUT_JSON, payload)
+    _write_json(DOC_LOG, payload)
+    _write_json(
+        DOC_TICKET,
+        {
+            "experiment_id": EXPERIMENT_ID,
+            "lane": "alpha_search",
+            "owner": "alpha-search",
+            "status": status,
+            "hypothesis": payload["hypothesis"],
+            "single_causal_variable": payload["changed_variable"],
+            "acceptance_rule": gate["rule"],
+            "result": {
+                "decision": decision,
+                "artifact_file": str(OUT_JSON.relative_to(REPO_ROOT)),
+                "result_file": str(DOC_LOG.relative_to(REPO_ROOT)),
+                "expected_value_score_delta": payload["expected_value_score_delta"],
+                "total_pnl_delta": gate["aggregate_delta"].get("total_pnl_sum_delta"),
+            },
+            "updated_at": timestamp,
+        },
+    )
+    DOC_ARTIFACT.parent.mkdir(parents=True, exist_ok=True)
+    DOC_ARTIFACT.write_text(_artifact_markdown(payload), encoding="utf-8")
+    _append_jsonl_once(EXPERIMENT_LOG_JSONL, payload)
+
+    print(json.dumps(_safe(payload["gate"]), indent=2, sort_keys=True))
+    print(f"{EXPERIMENT_ID} {decision} best={best_key}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

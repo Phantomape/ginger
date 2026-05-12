@@ -43,6 +43,33 @@ attribution 只保存在本次回测的 `result["pilot_sleeve_replay"]` 里。
 `pilot_sleeve_replay.entries` 应为 `0`，core metrics 也不应变化。这是
 PIT 无泄漏的正确结果，不是 pilot sleeve 没有接入。
 
+## AI_INFRA_AGGRESSIVE Sleeve Validation
+
+The canonical command above remains the core-only baseline. It must stay
+core-only so pilot sleeve results do not contaminate accepted core metrics.
+
+Any experiment, rollout, parameter change, ticker addition/removal, slot
+change, capital/risk scalar change, bull-booster change, or promotion decision
+that touches `AI_INFRA_AGGRESSIVE` must also run the pilot-sleeve replay:
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT> --include-pilot-sleeve
+```
+
+Acceptance records for `AI_INFRA_AGGRESSIVE` must report both:
+
+- the unchanged core-only canonical baseline; and
+- the `--include-pilot-sleeve` result, including
+  `result["pilot_sleeve_replay"]`, direct PnL, cash-relative PnL, replacement
+  value, risk-adjusted replacement value, selected/sliced candidates, sleeve
+  slot usage, segment exposure, and bull-booster status.
+
+If the fixed historical windows predate the sleeve activation date, zero pilot
+entries are a valid PIT result. In that case, AI sleeve evidence must come from
+post-activation replay, forward decision logs, or daily attribution artifacts;
+do not infer that the sleeve is disconnected merely because old windows show
+`pilot_sleeve_replay.entries == 0`.
+
 Window labels used in experiment logs:
 
 | Label | Date range | Snapshot |

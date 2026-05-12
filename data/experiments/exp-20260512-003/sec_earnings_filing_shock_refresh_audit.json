@@ -1,0 +1,501 @@
+{
+  "after_metrics": {
+    "expected_value_score_delta": 0.0,
+    "reason": "Data audit and shadow table only; no replay, production queue, ranking, sizing, signal, or order path changed.",
+    "same_as_baseline": true,
+    "total_pnl_delta": 0.0
+  },
+  "answers_to_key_questions": {
+    "data_gap_type": "Fresh field-extraction gap: timestamp/text coverage exists, but the feature file and directional financial surprise/guidance fields are absent for the newest SEC refresh.",
+    "default_off_c_strategy_grading_harness": "Not ready; B/C cohorts remain empty and no fresh candidate-touch evidence exists.",
+    "event_confirmation_vs_standalone": "If this branch advances, it should be event confirmation or C-strategy grading, not standalone entry. The standalone SEC T+1 drift queue is a separate default-off paper family.",
+    "filing_shock_filters_fake_c_trades": "Still not testable: historical persisted candidate set had 0 earnings_event_long candidates and fresh rows are not candidate-linked.",
+    "filing_shock_improves_breakout_quality": "Still not testable as filing shock: historical breakout candidates had 0 B/C directional shock tags; fresh 2026-05-10 rows are post-window and featureless."
+  },
+  "baseline_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 6.2882,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "total_pnl_sum": 184444.42,
+      "trade_count_sum": 62
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 4.234,
+        "max_consecutive_losses": 2.0,
+        "max_drawdown_pct": 0.0548,
+        "qqq_buy_hold_return_pct": 0.057967,
+        "sharpe_daily": 4.5,
+        "signals_generated": 51.0,
+        "signals_survived": 41.0,
+        "spy_buy_hold_return_pct": 0.05408,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.516,
+        "total_pnl": 94086.91,
+        "total_return_pct": 0.9409,
+        "trade_count": 19,
+        "vs_qqq_pct": 0.882933,
+        "vs_spy_pct": 0.88682,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.060734
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6689,
+        "max_consecutive_losses": 6.0,
+        "max_drawdown_pct": 0.0941,
+        "qqq_buy_hold_return_pct": 0.335077,
+        "sharpe_daily": 2.7,
+        "signals_generated": 53.0,
+        "signals_survived": 42.0,
+        "spy_buy_hold_return_pct": 0.254401,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4875,
+        "total_pnl": 61813.4,
+        "total_return_pct": 0.6181,
+        "trade_count": 21,
+        "vs_qqq_pct": 0.283023,
+        "vs_spy_pct": 0.363699,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.089651
+      },
+      "old_thin": {
+        "expected_value_score": 0.3853,
+        "max_consecutive_losses": 4.0,
+        "max_drawdown_pct": 0.0815,
+        "qqq_buy_hold_return_pct": -0.074882,
+        "sharpe_daily": 1.35,
+        "signals_generated": 60.0,
+        "signals_survived": 55.0,
+        "spy_buy_hold_return_pct": -0.067229,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4539,
+        "total_pnl": 28544.11,
+        "total_return_pct": 0.2854,
+        "trade_count": 22,
+        "vs_qqq_pct": 0.360282,
+        "vs_spy_pct": 0.352629,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.063499
+      }
+    },
+    "source": "data/experiments/exp-20260510-015/trip_sector_taxonomy.json"
+  },
+  "data_availability_pit_status": {
+    "biased_or_blocked_fields": [
+      "eps_surprise",
+      "revenue_surprise",
+      "guidance_raise_cut",
+      "fresh same-accession Companyfacts fields",
+      "B/C candidate-touch cohorts"
+    ],
+    "do_not_use_as_production_evidence": true,
+    "earnings_snapshot_status": "earnings_snapshot_20260510 has EPS estimates and historical surprise coverage for 51/58 tickers, but no current EPS/revenue surprise vs PIT consensus.",
+    "event_timestamp_status": "Fresh SEC rows have accepted_at, accession_number, and usable_trade_date; period/report date was not used as a tradable date.",
+    "feature_status": "No sec_filing_features_20260510.jsonl exists; fresh rows cannot produce same-accession or directional filing-shock fields.",
+    "text_status": "8-K text exists for 42 rows but remains unstructured and is not a guidance surprise adapter."
+  },
+  "decision": "data_gap",
+  "decision_rationale": "The only fresh source since exp-20260511-001 is SEC 2026-05-10 metadata/text plus earnings_snapshot_20260510. It adds timestamp/text coverage but no filing-feature extraction, no same-accession rows, no EPS/revenue/guidance surprise fields, no B/C candidate tags, and no fresh core-signal overlap.",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260512-003",
+  "field_check": {
+    "backtester_earnings_snapshot_disclosure": "quant/backtester.py loads P-ERN earnings_snapshot_YYYYMMDD files and discloses EPS/surprise coverage for earnings_event_long.",
+    "data_layer_fields": [
+      "next_earnings_date",
+      "days_to_earnings",
+      "eps_estimate",
+      "eps_actual_last",
+      "historical_surprise_pct",
+      "avg_historical_surprise_pct"
+    ],
+    "feature_layer_fields": [
+      "days_to_earnings",
+      "next_earnings_date",
+      "eps_estimate",
+      "avg_historical_surprise_pct",
+      "positive_surprise_history",
+      "earnings_event_window"
+    ],
+    "missing_for_this_hypothesis": [
+      "revenue_surprise",
+      "guidance_raise_cut",
+      "same-accession financial-quality deltas on fresh rows",
+      "candidate-touch B/C tags"
+    ]
+  },
+  "fresh_coverage": {
+    "earnings_snapshot_20260510": {
+      "missing_for_filing_shock": [
+        "current EPS surprise vs PIT consensus",
+        "revenue surprise",
+        "structured guidance raise/cut",
+        "same-accession financial-quality deltas for 2026-05-10 filings"
+      ],
+      "path": "data\\earnings_snapshot_20260510.json",
+      "pit_note": "Replayable repo snapshot, not vendor-grade PIT consensus surprise evidence.",
+      "tickers_total": 58,
+      "tickers_with_eps_actual_last": 51,
+      "tickers_with_eps_estimate": 51,
+      "tickers_with_next_earnings_date": 51,
+      "tickers_with_surprise_history": 51
+    },
+    "sec_filing_events_20260510": {
+      "accepted_datetime_rows": 72,
+      "eight_k_item_counts": {
+        "1.01": 5,
+        "1.02": 1,
+        "2.01": 1,
+        "2.02": 23,
+        "2.03": 2,
+        "2.05": 1,
+        "3.03": 1,
+        "5.02": 7,
+        "5.03": 1,
+        "5.07": 5,
+        "7.01": 13,
+        "8.01": 6,
+        "9.01": 33,
+        "none": 30
+      },
+      "form_counts": {
+        "10-K/A": 1,
+        "10-Q": 29,
+        "8-K": 42
+      },
+      "path": "data\\non_ohlcv\\sec_filing_events_20260510.jsonl",
+      "pit_caveat": "This backfills SEC public availability by accepted_at/accession metadata. It is not a replay of what the local news pipeline or LLM actually observed.",
+      "pit_safe_rows": 72,
+      "rows": 72,
+      "tickers": 39,
+      "usable_trade_date_counts": {
+        "2026-04-30": 2,
+        "2026-05-01": 13,
+        "2026-05-04": 8,
+        "2026-05-05": 7,
+        "2026-05-06": 10,
+        "2026-05-07": 11,
+        "2026-05-08": 16,
+        "2026-05-11": 5
+      },
+      "usable_trade_date_rows": 72
+    },
+    "sec_filing_features_20260510": {
+      "blocking_gap": "No 2026-05-10 filing feature file exists, so fresh SEC metadata cannot be upgraded from D_unclear_or_missing_data.",
+      "directional_rows": 0,
+      "eps_surprise_rows": 0,
+      "exists": false,
+      "guidance_raise_cut_rows": 0,
+      "path": "data\\non_ohlcv\\sec_filing_features_20260510.jsonl",
+      "revenue_surprise_rows": 0,
+      "rows": 0,
+      "same_accession_rows": 0
+    },
+    "sec_filing_text_20260510": {
+      "coverage_note": "Text archive covers 8-K rows only; it is not a structured financial surprise adapter.",
+      "documents_fetched": 168,
+      "forms": [
+        "8-K"
+      ],
+      "path": "data\\non_ohlcv\\sec_filing_text_20260510.jsonl",
+      "rows": 42,
+      "status_counts": {
+        "ok": 42
+      },
+      "text_char_count": 2554864
+    }
+  },
+  "historical_experiment_check": {
+    "exp-20260510-002": "Refreshed SEC filing-shock rows for 2026-05-07/08 were all D_unclear_or_missing_data; zero same-accession rows and zero directional numeric rows.",
+    "exp-20260511-001": "Full current audit: 138 historical A/B candidates, B/C filing-shock cohorts empty, no earnings_event_long candidate sample, slot-value tie-break negative.",
+    "exp-20260511-112": "Separate SEC financial-report positive T+1 paper sleeve capacity accepted as default-off max=3; not retuned here.",
+    "exp-20260512-001": "Separate SEC financial-report T+1 excess floor accepted at >=1%; not retuned here.",
+    "exp-20260512-002": "SEC financial-report hold-day sweep rejected; keep accepted 10-day lifecycle.",
+    "post_news_family": "PEAD/post-news continuation remains forward-watch only; item-composition, surprise_direction, and RS20 context gates did not create a production C strategy."
+  },
+  "hypothesis": "SEC filing shock, financial surprise, 8-K/10-Q/10-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but only if fresh PIT directional fields touch candidates.",
+  "lane": "alpha_discovery",
+  "mechanism_family": "SEC / earnings / filing shock event-confirmation overlay",
+  "next_minimal_action": "Run or build the sec_filing_features extractor for the 2026-05-10 SEC refresh and then rerun same-accession candidate-touch tagging; do not retune SEC T+1 or C-strategy rules first.",
+  "non_ohlcv_data_source": [
+    "SEC submissions / filing events",
+    "SEC filing text archive",
+    "existing earnings snapshots",
+    "prior same-accession Companyfacts selected rows",
+    "prior persisted candidate filing-shock tags"
+  ],
+  "production_change_allowed": false,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_harness_changed": false,
+    "must_not_touch_respected": [
+      "quant/signal_engine.py",
+      "quant/risk_engine.py",
+      "quant/portfolio_engine.py"
+    ],
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "data\\non_ohlcv\\sec_earnings_filing_shock_shadow_events_exp-20260512-003.json",
+    "data\\experiments\\exp-20260512-003\\sec_earnings_filing_shock_refresh_audit.json",
+    "docs\\non_ohlcv_data_audit\\sec_earnings_filing_shock_refresh_exp-20260512-003_20260512.md",
+    "docs\\experiments\\tickets\\exp-20260512-003.json",
+    "docs\\experiments\\logs\\exp-20260512-003.json",
+    "docs\\experiment_log.jsonl"
+  ],
+  "run_type": "data_audit_plus_fresh_shadow_event_table",
+  "shadow_event_table": {
+    "directional_rows": 0,
+    "forward_returns_status": "Fresh 2026-05-10 refresh is an event-table audit only; no 5/10/20/60d candidate returns are mature or candidate-linked.",
+    "path": "data\\non_ohlcv\\sec_earnings_filing_shock_shadow_events_exp-20260512-003.json",
+    "pit_safe_rows": 72,
+    "rows": 72,
+    "same_accession_rows": 0,
+    "tag_counts": {
+      "D_unclear_or_missing_data": 72
+    }
+  },
+  "shadow_metrics": {
+    "fresh_current_overlap": {
+      "asof_date": "2026-05-10",
+      "current_core_signal_count": 0,
+      "current_core_signal_overlap_rows": 0,
+      "current_pilot_signal_count": 1,
+      "current_pilot_signal_overlap_rows": 1,
+      "event_sleeve_bundle_candidate_count": 0,
+      "event_sleeve_bundle_raw_candidate_count": 2,
+      "fresh_event_rows": 72,
+      "fresh_event_tickers": 39,
+      "open_or_observed_position_overlap_rows": 13,
+      "open_or_observed_position_overlap_tickers": [
+        "AMD",
+        "AMZN",
+        "APP",
+        "GOOG",
+        "META",
+        "NVDA",
+        "TRIP",
+        "TSLA",
+        "UNH"
+      ],
+      "sec_event_queue_candidate_count": 0,
+      "sec_financial_report_t1_queue_candidate_count": 0,
+      "sec_financial_report_t1_queue_data_source": {
+        "loaded_row_count": 72,
+        "path": "data\\non_ohlcv\\sec_filing_events_20260510.jsonl",
+        "skipped_not_pit_safe_count": 0,
+        "status": "loaded",
+        "t1_evaluated_count": 0
+      }
+    },
+    "historical_candidate_overlap_and_slot_value_carried_forward": {
+      "candidate_count": 138,
+      "overlap_with_existing_signals": {
+        "breakout_long_candidates": 53,
+        "breakout_long_recent_filing": 26,
+        "earnings_event_long_candidates": 0,
+        "entered_rows": 63,
+        "entered_with_negative_filing_shock": 0,
+        "entered_with_positive_filing_shock": 0,
+        "entered_with_recent_filing": 34,
+        "trend_long_candidates": 85
+      },
+      "scarce_slot_opportunity_cost": {
+        "by_tag": {
+          "A_no_recent_filing_event": {
+            "count": 4,
+            "delta_20d_distribution": {
+              "avg_pct": -2.1067,
+              "best_pct": 0.0051,
+              "count": 4,
+              "median_pct": -1.8267,
+              "win_rate": 0.25,
+              "worst_pct": -4.7784
+            },
+            "positive_delta_count": 1
+          },
+          "D_unclear_or_missing_data": {
+            "count": 5,
+            "delta_20d_distribution": {
+              "avg_pct": -15.2911,
+              "best_pct": 0.5953,
+              "count": 5,
+              "median_pct": -22.1741,
+              "win_rate": 0.2,
+              "worst_pct": -26.2463
+            },
+            "positive_delta_count": 1
+          }
+        },
+        "overall_delta_20d_distribution": {
+          "avg_pct": -9.4314,
+          "best_pct": 0.5953,
+          "count": 9,
+          "median_pct": -4.7594,
+          "win_rate": 0.2222,
+          "worst_pct": -26.2463
+        },
+        "same_day_comparable_count": 9,
+        "sample_comparisons": [
+          {
+            "candidate_date": "2026-01-21",
+            "candidate_ret_20d": -0.015412,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "A_no_recent_filing_event",
+            "same_day_entered_avg_ret_20d": 0.032372,
+            "slot_conflict_delta_20d": -0.047784,
+            "strategy": "breakout_long",
+            "ticker": "IWM",
+            "window": "late_strong"
+          },
+          {
+            "candidate_date": "2026-01-21",
+            "candidate_ret_20d": -0.189369,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "D_unclear_or_missing_data",
+            "same_day_entered_avg_ret_20d": 0.032372,
+            "slot_conflict_delta_20d": -0.221741,
+            "strategy": "breakout_long",
+            "ticker": "AMD",
+            "window": "late_strong"
+          },
+          {
+            "candidate_date": "2026-01-29",
+            "candidate_ret_20d": -0.125576,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "D_unclear_or_missing_data",
+            "same_day_entered_avg_ret_20d": 0.113135,
+            "slot_conflict_delta_20d": -0.238711,
+            "strategy": "trend_long",
+            "ticker": "META",
+            "window": "late_strong"
+          },
+          {
+            "candidate_date": "2025-09-02",
+            "candidate_ret_20d": 0.088323,
+            "decision": "scarce_slot_breakout_deferred",
+            "filing_shock_tag": "A_no_recent_filing_event",
+            "same_day_entered_avg_ret_20d": 0.088272,
+            "slot_conflict_delta_20d": 5.1e-05,
+            "strategy": "breakout_long",
+            "ticker": "IAU",
+            "window": "mid_weak"
+          },
+          {
+            "candidate_date": "2024-11-01",
+            "candidate_ret_20d": 0.067021,
+            "decision": "scarce_slot_breakout_deferred",
+            "filing_shock_tag": "D_unclear_or_missing_data",
+            "same_day_entered_avg_ret_20d": 0.061068,
+            "slot_conflict_delta_20d": 0.005953,
+            "strategy": "breakout_long",
+            "ticker": "CVX",
+            "window": "old_thin"
+          },
+          {
+            "candidate_date": "2024-11-07",
+            "candidate_ret_20d": 0.362642,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "D_unclear_or_missing_data",
+            "same_day_entered_avg_ret_20d": 0.625105,
+            "slot_conflict_delta_20d": -0.262463,
+            "strategy": "trend_long",
+            "ticker": "PLTR",
+            "window": "old_thin"
+          },
+          {
+            "candidate_date": "2025-01-30",
+            "candidate_ret_20d": 0.014697,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "A_no_recent_filing_event",
+            "same_day_entered_avg_ret_20d": 0.016729,
+            "slot_conflict_delta_20d": -0.002031,
+            "strategy": "trend_long",
+            "ticker": "MA",
+            "window": "old_thin"
+          },
+          {
+            "candidate_date": "2025-01-30",
+            "candidate_ret_20d": -0.030865,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "D_unclear_or_missing_data",
+            "same_day_entered_avg_ret_20d": 0.016729,
+            "slot_conflict_delta_20d": -0.047594,
+            "strategy": "trend_long",
+            "ticker": "META",
+            "window": "old_thin"
+          },
+          {
+            "candidate_date": "2025-01-30",
+            "candidate_ret_20d": -0.017776,
+            "decision": "slot_sliced",
+            "filing_shock_tag": "A_no_recent_filing_event",
+            "same_day_entered_avg_ret_20d": 0.016729,
+            "slot_conflict_delta_20d": -0.034504,
+            "strategy": "trend_long",
+            "ticker": "SLV",
+            "window": "old_thin"
+          }
+        ],
+        "slot_conflict_candidate_count": 25
+      }
+    },
+    "historical_tagged_candidate_forward_returns_carried_forward_from_exp_20260511_001": {
+      "A_no_recent_filing_event": {
+        "10d_avg_pct": 1.731,
+        "10d_count": 63,
+        "20d_avg_pct": 2.845,
+        "20d_count": 59,
+        "5d_avg_pct": 0.4767,
+        "5d_count": 64,
+        "60d_avg_pct": 0.977,
+        "60d_count": 43,
+        "candidate_count": 67
+      },
+      "B_positive_filing_shock": {
+        "10d_avg_pct": null,
+        "10d_count": 0,
+        "20d_avg_pct": null,
+        "20d_count": 0,
+        "5d_avg_pct": null,
+        "5d_count": 0,
+        "60d_avg_pct": null,
+        "60d_count": 0,
+        "candidate_count": 0
+      },
+      "C_negative_filing_shock": {
+        "10d_avg_pct": null,
+        "10d_count": 0,
+        "20d_avg_pct": null,
+        "20d_count": 0,
+        "5d_avg_pct": null,
+        "5d_count": 0,
+        "60d_avg_pct": null,
+        "60d_count": 0,
+        "candidate_count": 0
+      },
+      "D_unclear_or_missing_data": {
+        "10d_avg_pct": 1.0909,
+        "10d_count": 67,
+        "20d_avg_pct": 2.8629,
+        "20d_count": 65,
+        "5d_avg_pct": 0.8224,
+        "5d_count": 69,
+        "60d_avg_pct": 11.2336,
+        "60d_count": 46,
+        "candidate_count": 71
+      }
+    }
+  },
+  "single_causal_variable": "post_exp_20260511_001_sec_filing_refresh_field_availability",
+  "status": "observed_only",
+  "timestamp": "2026-05-12T01:25:59Z"
+}

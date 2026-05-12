@@ -1,0 +1,103 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 6.482188,
+    "max_drawdown_pct_max": 0.117258,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 60,
+    "sleeve_total_pnl_sum": 7298.9,
+    "total_pnl_sum": 193184.12,
+    "trade_count_sum": 122
+  },
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for core baseline, plus production paper-sleeve replay over the same OHLCV snapshots. Core replay uses REPLAY_PARTIAL_REDUCES and REGIME_AWARE_EXIT.",
+  "before_metrics": {
+    "expected_value_score_sum": 6.588843,
+    "max_drawdown_pct_max": 0.118812,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 62,
+    "sleeve_total_pnl_sum": 8556.46,
+    "total_pnl_sum": 194441.68,
+    "trade_count_sum": 124
+  },
+  "change_type": "alpha_search_event_quality_filter",
+  "changed_variable": "sec_financial_report_t1_form_base_eligibility",
+  "date_range": {
+    "primary": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "secondary": [
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "decision": "rejected_exclude_10k_financial_report_t1",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": -0.106655,
+      "expected_value_score_sum_delta_pct": -0.016187,
+      "max_drawdown_pct_max_delta": -0.001554,
+      "max_drawdown_pct_max_delta_pct": -0.013079,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": -2.0,
+      "sleeve_closed_trade_count_sum_delta_pct": -0.032258,
+      "sleeve_total_pnl_sum_delta": -1257.56,
+      "sleeve_total_pnl_sum_delta_pct": -0.146972,
+      "total_pnl_sum_delta": -1257.56,
+      "total_pnl_sum_delta_pct": -0.006468,
+      "trade_count_sum_delta": -2.0,
+      "trade_count_sum_delta_pct": -0.016129
+    },
+    "by_window": {
+      "late_strong": {
+        "ev_delta": -0.083289,
+        "max_drawdown_delta": 0.0,
+        "pnl_delta": -963.39,
+        "sleeve_closed_trade_delta": 0
+      },
+      "mid_weak": {
+        "ev_delta": -0.026893,
+        "max_drawdown_delta": 0.0,
+        "pnl_delta": -457.05,
+        "sleeve_closed_trade_delta": -1
+      },
+      "old_thin": {
+        "ev_delta": 0.003527,
+        "max_drawdown_delta": -0.001554,
+        "pnl_delta": 162.88,
+        "sleeve_closed_trade_delta": -1
+      }
+    }
+  },
+  "expected_value_score_delta": -0.106655,
+  "experiment_id": "exp-20260511-114",
+  "hypothesis": "Inside the accepted max-3 default-off SEC financial-report T+1 paper sleeve, 10-K periodic-report rows are lower-quality continuation events than earnings 8-K and 10-Q rows, so excluding them should improve three-window replacement value and drawdown.",
+  "next_evidence_needed": "Forward out-of-sample replacement-value evidence by form_base.",
+  "parameters": {
+    "baseline_form_base_eligibility": "8-K, 10-Q, 10-K",
+    "candidate_form_base_eligibility": "8-K, 10-Q",
+    "max_positions": 3,
+    "source_candidate_artifact": "data\\experiments\\exp-20260511-100\\exp_20260511_100_sec_financial_report_positive_t1_forward_outcome_refresh.json"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": true,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_orders_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Excluding 10-K rows did not clear the three-window event-quality gate.",
+  "timestamp": "2026-05-11T23:11:15Z"
+}

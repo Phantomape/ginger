@@ -1,0 +1,246 @@
+{
+  "baseline_metrics_if_applicable": {
+    "applicable_to_this_shadow_run": false,
+    "canonical_baseline_reference": {
+      "aggregate_expected_value_score": 6.2882,
+      "aggregate_total_pnl": 184444.42,
+      "aggregate_trade_count": 62,
+      "source": "accepted baseline after exp-20260510-015 from docs/current_state.md"
+    },
+    "reason": "No production, replay, ranking, sizing, entry, exit, or threshold behavior changed; baseline is context only."
+  },
+  "candidate_overlap_and_slot_value": {
+    "candidate_count": 14,
+    "overlap_with_existing_signals": 14,
+    "scarce_slot_opportunity_cost": {
+      "measurable": false,
+      "reason": "All tagged rows are existing candidates, no slot-conflict examples have closed 20d outcomes, and no replay path changed.",
+      "slot_conflict_value": null
+    }
+  },
+  "change_type": "data_audit_shadow_overlay",
+  "changed_variable": "forward options ledger quality gate and usable-date outcome refresh only",
+  "data_availability_pit_status": {
+    "chain_files": [
+      "data/non_ohlcv/options_onclickmedia_chain_20260505.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260506.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260507.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260508.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260511.jsonl"
+    ],
+    "earnings_date_alignment": "data/earnings_snapshot_20260511.json exists, but earnings date is not wired into the options ledger; earnings_vol_overlay remains null/zero.",
+    "latest_options_quote_date": "2026-05-11",
+    "new_options_snapshot_since_exp_20260511_099": true,
+    "pit_status": "Forward rows include pit_safe flags and usable_trade_date. Historical OnClickMedia backfills still lack vendor_asof, so only append-only forward rows are decision-grade.",
+    "quant_signal_join_gap": "2026-05-11 quote rows require data/quant_signals_20260512.json for strict usable-date joining; that file is absent.",
+    "schema_fields_present": [
+      "ticker",
+      "date",
+      "quote_date",
+      "expiry",
+      "strike",
+      "call_put",
+      "volume",
+      "open_interest",
+      "bid",
+      "ask",
+      "mid",
+      "implied_vol",
+      "delta",
+      "option_liquidity_score",
+      "option_liquidity_pass",
+      "usable_trade_date",
+      "pit_safe"
+    ],
+    "schema_or_feature_gaps": [
+      "iv_rank",
+      "iv_percentile",
+      "iv_minus_realized_vol",
+      "earnings_iv_flag",
+      "current PIT short-interest join",
+      "closed forward OHLCV outcomes"
+    ],
+    "short_interest_linkage": "Prior FINRA short-interest shadow artifacts exist, but no current PIT short-interest join is wired into this options ledger.",
+    "ticker_level_option_liquidity_filter": "Available as option_liquidity_pass and option_liquidity_score, enforced by the ledger quality gate."
+  },
+  "decision": "shadow_only",
+  "decision_rationale": "Local forward options data exists and passes liquidity gates on four quote dates, and the now-present 2026-05-11 quant_signals file increases candidate overlap from 11 to 14. The new 2026-05-11 options chain cannot be joined PIT-safely until quant_signals_20260512 exists, and no tagged candidate has closed 5/10/20/60d outcomes. This cannot support default-off replay or production promotion.",
+  "delta_metrics": {
+    "expected_value_score_delta": null,
+    "production_portfolio_delta": 0.0,
+    "reason": "No strategy or replay behavior changed.",
+    "total_pnl_delta": null
+  },
+  "expected_value_score_delta": {
+    "aggregate": null,
+    "reason": "Not applicable; this was a data audit/shadow ledger refresh only."
+  },
+  "experiment_id": "exp-20260512-099",
+  "experiment_mode": "default_off_forward_options_candidate_tag_ledger",
+  "generated_at": "2026-05-12T17:29:54+00:00",
+  "historical_experiment_check": {
+    "prior_options_records": [
+      {
+        "experiment_id": "exp-20260503-044",
+        "summary": "Initial options data gap; no structured PIT-safe options rows existed."
+      },
+      {
+        "experiment_id": "exp-20260504-043",
+        "summary": "No new options data after the first audit."
+      },
+      {
+        "experiment_id": "exp-20260505-021",
+        "summary": "No chain, IV/skew/OI, liquidity, short-interest, or earnings-aligned option rows."
+      },
+      {
+        "experiment_id": "exp-20260506-003",
+        "summary": "Default-off OnClickMedia data harness accepted for forward accumulation; historical backfill remains PIT-unsafe."
+      },
+      {
+        "experiment_id": "exp-20260506-009",
+        "summary": "Historical OnClickMedia overlay covered most candidates but was PIT-unsafe and rejected for promotion."
+      },
+      {
+        "experiment_id": "exp-20260511-099",
+        "summary": "Forward ledger joined 11 existing candidates with 6 scoring-allowed tags and no closed outcomes."
+      }
+    ],
+    "playbook_status": "Options overlay remains eligible only for forward PIT-safe shadow evidence with richer features and closed outcomes."
+  },
+  "hypothesis": "Forward PIT-safe EOD options structure tags may add explanatory power as an overlay for existing Ginger breakout/event/earnings candidates, not as a standalone entry.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "options_structure_overlay",
+  "non_ohlcv_data_source": "OnClickMedia EOD options chain snapshots in data/non_ohlcv/options_onclickmedia_chain_YYYYMMDD.jsonl",
+  "output_files": [
+    "docs/experiments/tickets/exp-20260512-099.json",
+    "docs/experiments/logs/exp-20260512-099.json",
+    "docs/non_ohlcv_data_audit/eod_options_forward_refresh_exp-20260512-099_20260512.md",
+    "data/experiments/exp-20260512-099/options_forward_candidate_ledger.jsonl",
+    "data/experiments/exp-20260512-099/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260512-099/options_collection_quality_gate.json",
+    "data/experiments/exp-20260512-099/options_quarantined_quote_dates.json"
+  ],
+  "parameters": {
+    "candidate_join_date_mode": "usable_trade_date",
+    "quality_gate": {
+      "min_liquid_tickers": 10,
+      "min_liquidity_pass_rate": 0.05,
+      "min_market_rows_rate": 0.5
+    },
+    "single_causal_variable": "forward options ledger quality gate and usable-date outcome refresh only",
+    "standalone_entries_generated": 0
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "required_metrics": {
+    "candidate_count": 14,
+    "expected_value_score": null,
+    "forward_return_of_tagged_candidates": {
+      "downside_risk_overlay": {
+        "closed_5d_count": 0,
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_60d_count": 0,
+        "count": 4,
+        "forward_5d_mean": null,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_60d_mean": null
+      },
+      "squeeze_overlay": {
+        "closed_5d_count": 0,
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_60d_count": 0,
+        "count": 4,
+        "forward_5d_mean": null,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_60d_mean": null
+      }
+    },
+    "max_drawdown": null,
+    "overlap_with_existing_signals": 14,
+    "scarce_slot_opportunity_cost": null,
+    "sharpe_daily": null,
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return": null,
+    "trade_count": null,
+    "vs_qqq": null,
+    "vs_spy": null,
+    "win_rate": null
+  },
+  "shadow_or_replay_metrics": {
+    "by_options_quote_date": {
+      "2026-05-05": {
+        "candidate_count": 3,
+        "option_liquidity_pass_rate": 0.00021,
+        "options_scoring_allowed_candidates": 0,
+        "quality_status": "quarantined"
+      },
+      "2026-05-06": {
+        "candidate_count": 2,
+        "option_liquidity_pass_rate": 0.873925,
+        "options_scoring_allowed_candidates": 1,
+        "quality_status": "usable_for_shadow"
+      },
+      "2026-05-07": {
+        "candidate_count": 6,
+        "option_liquidity_pass_rate": 0.851349,
+        "options_scoring_allowed_candidates": 5,
+        "quality_status": "usable_for_shadow"
+      },
+      "2026-05-08": {
+        "candidate_count": 3,
+        "option_liquidity_pass_rate": 0.815552,
+        "options_scoring_allowed_candidates": 1,
+        "quality_status": "usable_for_shadow"
+      },
+      "2026-05-11": {
+        "candidate_count": 0,
+        "join_gap": "requires data/quant_signals_20260512.json",
+        "option_liquidity_pass_rate": 0.868462,
+        "options_scoring_allowed_candidates": 0,
+        "quality_status": "usable_for_shadow_but_missing_20260512_candidate_file"
+      }
+    },
+    "candidate_summary": {
+      "candidate_count": 14,
+      "downside_risk_overlay_candidates": 6,
+      "earnings_vol_overlay_candidates": 0,
+      "option_liquidity_eligible_candidates": 11,
+      "options_candidate_coverage_rate": 1.0,
+      "options_covered_candidates": 14,
+      "options_scoring_allowed_candidates": 7,
+      "pit_join_safe_candidates": 9,
+      "pit_join_safe_rate": 0.642857,
+      "quality_quarantined_candidates": 3,
+      "quality_usable_candidates": 11,
+      "squeeze_overlay_candidates": 5
+    },
+    "outcome_status_counts": {
+      "ohlcv_snapshot_missing": 14
+    }
+  },
+  "single_causal_variable": "forward options ledger quality gate and usable-date outcome refresh only",
+  "standard_validation": {
+    "default_off_replay_required": false,
+    "reason": "This was a shadow/data audit and did not alter replay or production logic.",
+    "three_window_replay_run": false
+  },
+  "status": "observed_only",
+  "timestamp": "2026-05-12T17:29:54+00:00"
+}

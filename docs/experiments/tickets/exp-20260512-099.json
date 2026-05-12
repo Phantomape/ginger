@@ -1,0 +1,52 @@
+{
+  "acceptance_rule": "shadow/data audit only: report PIT status, coverage, liquidity, candidate overlap, closed forward outcomes if available, and no production impact",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "data/experiments",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/backtest_results_20260510.json",
+  "change_type": "data_audit_shadow_overlay",
+  "completed_at": "2026-05-12T17:29:54+00:00",
+  "created_at": "2026-05-12T17:19:29+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-05-12",
+      "start": "2026-05-05"
+    }
+  ],
+  "experiment_id": "exp-20260512-099",
+  "hypothesis": "Forward PIT-safe EOD options structure tags may add explanatory power as an overlay on existing Ginger breakout/event/earnings candidates, not as a standalone entry.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "production signal path",
+    "core universe",
+    "entry logic",
+    "ranking",
+    "sizing",
+    "exits",
+    "OHLCV thresholds",
+    "LLM prompt",
+    "options overlay thresholds"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "notes": "scripts/create_experiment_ticket.py was invoked first, but the local registry reused occupied IDs; this collision-free ticket preserves the same requested options scope.",
+  "owner": "universe-scout",
+  "result": {
+    "artifact": "data/experiments/exp-20260512-099/options_forward_candidate_ledger_report.json",
+    "decision": "shadow_only",
+    "log": "docs/experiments/logs/exp-20260512-099.json",
+    "report": "docs/non_ohlcv_data_audit/eod_options_forward_refresh_exp-20260512-099_20260512.md",
+    "summary": "Forward options coverage increased to 14 existing candidates, but there are no closed outcomes and the 2026-05-11 chain still needs a 2026-05-12 candidate file."
+  },
+  "single_causal_variable": "forward options ledger quality gate and usable-date outcome refresh only",
+  "status": "completed"
+}

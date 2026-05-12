@@ -620,3 +620,19 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: production registry event-guard profile terms are a usable Space catalyst-quality allocation field when sized conservatively. `1.10x` had higher raw EV but failed drawdown; keep `1.075x` and do not retry adjacent financing/dilution profile scalars on these frozen snapshots.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-041\space_financing_dilution_profile_risk.json`
+
+## exp-20260512-043 Space mission-binary profile risk
+
+- timestamp: 2026-05-12T17:41:41+00:00
+- lane: alpha_search
+- decision: rejected_space_mission_binary_profile_risk
+- changed_variable: space_mission_binary_event_guard_profile_risk_scalar
+- best scalar: `0.50x`, but all tested scalars from `0.50x` through `1.25x` produced zero EV/PnL delta versus the accepted exp-20260512-041 Space stack.
+- expected_value_score_delta: +0.0000
+- total_pnl_delta: +$0.00
+- before_aggregate: {'expected_value_score_sum': 14.0087, 'total_pnl_sum': 340127.26, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1243}
+- after_aggregate: {'expected_value_score_sum': 14.0087, 'total_pnl_sum': 340127.26, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1243}
+- window evidence: `mission_binary` matched only `LUNR` and adjusted just 2 signals; neither adjusted signal changed executed shares enough to move any of the three fixed windows.
+- interpretation: mission-binary registry profile is not a material Space risk-allocation alpha on the frozen Space replay. Do not retry adjacent mission-binary profile scalars without forward replacement-value evidence or a different production-observable catalyst field.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-043\space_mission_binary_profile_risk.json`

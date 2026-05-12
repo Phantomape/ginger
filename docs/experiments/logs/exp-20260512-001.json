@@ -1,0 +1,113 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 7.409199,
+    "max_drawdown_pct_max": 0.090703,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 52,
+    "sleeve_total_pnl_sum": 24004.57,
+    "total_pnl_sum": 209889.79,
+    "trade_count_sum": 114
+  },
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for core baseline, plus production paper-sleeve replay over the same OHLCV snapshots. Core replay uses REPLAY_PARTIAL_REDUCES and REGIME_AWARE_EXIT.",
+  "before_metrics": {
+    "expected_value_score_sum": 6.588843,
+    "max_drawdown_pct_max": 0.118812,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 62,
+    "sleeve_total_pnl_sum": 8556.46,
+    "total_pnl_sum": 194441.68,
+    "trade_count_sum": 124
+  },
+  "change_type": "alpha_search_event_quality_filter",
+  "changed_variable": "sec_financial_report_t1_excess_return_floor",
+  "date_range": {
+    "primary": {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    "secondary": [
+      {
+        "end": "2025-10-22",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "decision": "accepted_default_off_t1_excess_floor",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": 0.820356,
+      "expected_value_score_sum_delta_pct": 0.124507,
+      "max_drawdown_pct_max_delta": -0.028109,
+      "max_drawdown_pct_max_delta_pct": -0.236584,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": -10.0,
+      "sleeve_closed_trade_count_sum_delta_pct": -0.16129,
+      "sleeve_total_pnl_sum_delta": 15448.11,
+      "sleeve_total_pnl_sum_delta_pct": 1.805432,
+      "total_pnl_sum_delta": 15448.11,
+      "total_pnl_sum_delta_pct": 0.079449,
+      "trade_count_sum_delta": -10.0,
+      "trade_count_sum_delta_pct": -0.080645
+    },
+    "by_window": {
+      "late_strong": {
+        "ev_delta": 0.281744,
+        "max_drawdown_delta": -0.00495,
+        "pnl_delta": 2782.53,
+        "sleeve_closed_trade_delta": -5
+      },
+      "mid_weak": {
+        "ev_delta": 0.352094,
+        "max_drawdown_delta": -0.000278,
+        "pnl_delta": 5858.06,
+        "sleeve_closed_trade_delta": -3
+      },
+      "old_thin": {
+        "ev_delta": 0.186518,
+        "max_drawdown_delta": -0.029431,
+        "pnl_delta": 6807.52,
+        "sleeve_closed_trade_delta": -2
+      }
+    }
+  },
+  "expected_value_score_delta": 0.820356,
+  "experiment_id": "exp-20260512-001",
+  "hypothesis": "Inside the accepted max-3 default-off SEC financial-report T+1 paper sleeve, requiring a larger ticker-vs-SPY T+1 excess reaction should improve event quality and replacement value without relying on LLM soft-ranking data.",
+  "next_evidence_needed": "Forward default-off paper observation before any live-order scope.",
+  "parameters": {
+    "baseline_t1_excess_floor": 0.0,
+    "floor_variants": [
+      0.0,
+      0.0025,
+      0.005,
+      0.01,
+      0.015,
+      0.02,
+      0.03
+    ],
+    "max_positions": 3,
+    "min_promotion_closed_trades": 40,
+    "production_min_t1_excess_floor_at_run": 0.01,
+    "source_candidate_artifact": "data\\experiments\\exp-20260511-100\\exp_20260511_100_sec_financial_report_positive_t1_forward_outcome_refresh.json"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": true,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_orders_changed": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "rejection_reason": null,
+  "timestamp": "2026-05-12T00:08:20Z"
+}
