@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
+import shutil
 import signal
 import subprocess
 import threading
@@ -13,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from flask import Flask, Response, jsonify, request, stream_with_context
+from werkzeug.serving import WSGIRequestHandler
 
 
 APP_ROOT = Path(__file__).resolve().parent
@@ -20,7 +23,6 @@ REPO_ROOT = APP_ROOT.parent
 
 SECRET = os.environ.get("REMOTE_CODEX_TOKEN", "ying")
 PROMPT_FILE = Path(os.environ.get("REMOTE_CODEX_PROMPT", APP_ROOT / "prompt.md")).resolve()
-CODEX_BIN = os.environ.get("REMOTE_CODEX_BIN", "codex")
 CODEX_SANDBOX = os.environ.get("REMOTE_CODEX_SANDBOX", "workspace-write")
 CODEX_APPROVAL = os.environ.get("REMOTE_CODEX_APPROVAL", "never")
 CODEX_MODEL = os.environ.get("REMOTE_CODEX_MODEL")
@@ -30,10 +32,44 @@ MAX_LOG_LINES = int(os.environ.get("REMOTE_CODEX_MAX_LOG_LINES", "5000"))
 LOG_DIR = Path(os.environ.get("REMOTE_CODEX_LOG_DIR", APP_ROOT / "logs")).resolve()
 
 app = Flask(__name__)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 job_lock = threading.Lock()
 jobs: dict[str, "CodexJob"] = {}
 current_job_id: str | None = None
+
+
+class QuietRequestHandler(WSGIRequestHandler):
+    def log_request(self, code: str | int = "-", size: str | int = "-") -> None:
+        return
+
+    def log_error(self, format: str, *args: Any) -> None:
+        return
+
+
+def resolve_codex_bin() -> str:
+    configured = os.environ.get("REMOTE_CODEX_BIN")
+    if configured:
+        return configured
+
+    candidates = [
+        Path(os.environ.get("LOCALAPPDATA", "")) / "OpenAI" / "Codex" / "bin" / "codex.exe",
+        Path(os.environ.get("APPDATA", "")) / "npm" / "codex.cmd",
+        Path.home() / "AppData" / "Local" / "OpenAI" / "Codex" / "bin" / "codex.exe",
+        Path.home() / "AppData" / "Roaming" / "npm" / "codex.cmd",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    found = shutil.which("codex")
+    if found:
+        return found
+
+    return "codex"
+
+
+CODEX_BIN = resolve_codex_bin()
 
 
 def utc_now() -> str:
@@ -54,6 +90,27 @@ def require_token() -> tuple[bool, Any]:
     if check_token():
         return True, None
     return False, (jsonify({"error": "unauthorized"}), 403)
+
+
+def build_codex_command() -> list[str]:
+    cmd = [CODEX_BIN]
+    if CODEX_APPROVAL:
+        cmd.extend(["--ask-for-approval", CODEX_APPROVAL])
+    cmd.extend(
+        [
+            "exec",
+            "--cd",
+            str(REPO_ROOT),
+            "--sandbox",
+            CODEX_SANDBOX,
+            "--color",
+            "never",
+        ]
+    )
+    if CODEX_MODEL:
+        cmd.extend(["--model", CODEX_MODEL])
+    cmd.append("-")
+    return cmd
 
 
 class CodexJob:
@@ -135,21 +192,7 @@ class CodexJob:
             self.append(f"[server] job ended at {self.ended_at}")
             return
 
-        cmd = [
-            CODEX_BIN,
-            "exec",
-            "--cd",
-            str(REPO_ROOT),
-            "--sandbox",
-            CODEX_SANDBOX,
-            "--ask-for-approval",
-            CODEX_APPROVAL,
-            "--color",
-            "never",
-        ]
-        if CODEX_MODEL:
-            cmd.extend(["--model", CODEX_MODEL])
-        cmd.append("-")
+        cmd = build_codex_command()
         self.command = cmd
         self.append("[server] command: " + " ".join(redact_command(cmd)))
 
@@ -233,6 +276,11 @@ def index() -> str:
     return INDEX_HTML
 
 
+@app.route("/favicon.ico")
+def favicon() -> Response:
+    return Response(status=204)
+
+
 @app.route("/run", methods=["GET", "POST"])
 def run_codex() -> Any:
     ok, response = require_token()
@@ -271,6 +319,7 @@ def status() -> Any:
             "server_time": utc_now(),
             "prompt_file": str(PROMPT_FILE),
             "repo_root": str(REPO_ROOT),
+            "command_template": redact_command(build_codex_command()),
             "current_job": job.snapshot() if job else None,
         }
     )
@@ -312,7 +361,7 @@ def events() -> Any:
 
             lines = list(job.lines)
             while index < len(lines):
-                yield sse_event("log", {"index": index, "text": lines[index]})
+                yield sse_event("log", {"job_id": job.id, "index": index, "text": lines[index]})
                 index += 1
 
             if job.status in {"succeeded", "failed"} and index >= len(lines):
@@ -361,6 +410,7 @@ INDEX_HTML = """<!doctype html>
         <input id="token" type="password" placeholder="token" autocomplete="current-password">
         <button class="primary" id="run">Run</button>
         <button class="danger" id="stop">Stop</button>
+        <button id="copy">Copy Log</button>
         <button id="reconnect">Reconnect</button>
       </div>
     </header>
@@ -378,6 +428,8 @@ INDEX_HTML = """<!doctype html>
     const promptEl = document.getElementById("prompt");
     const logfileEl = document.getElementById("logfile");
     let source = null;
+    let activeJobId = null;
+    let seenLogLines = new Set();
 
     const urlToken = new URLSearchParams(location.search).get("token");
     if (urlToken) tokenInput.value = urlToken;
@@ -389,6 +441,35 @@ INDEX_HTML = """<!doctype html>
     function appendLog(text) {
       logEl.textContent += text + "\\n";
       logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    async function copyLog() {
+      const text = logEl.textContent;
+      const button = document.getElementById("copy");
+      const original = button.textContent;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          textarea.setSelectionRange(0, textarea.value.length);
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+        button.textContent = "Copied";
+      } catch (err) {
+        button.textContent = "Copy failed";
+        appendLog(`[browser] ${err.message}`);
+      } finally {
+        setTimeout(() => { button.textContent = original; }, 1200);
+      }
     }
 
     async function api(path, method = "GET") {
@@ -420,15 +501,24 @@ INDEX_HTML = """<!doctype html>
       source.addEventListener("status", event => {
         const data = JSON.parse(event.data);
         statusEl.textContent = data.id ? `${data.status} ${data.id}` : data.status;
+        if (data.id && data.id !== activeJobId) {
+          activeJobId = data.id;
+          seenLogLines = new Set();
+        }
         if (data.prompt_file) promptEl.textContent = data.prompt_file;
         if (data.log_file) logfileEl.textContent = data.log_file;
       });
       source.addEventListener("log", event => {
-        appendLog(JSON.parse(event.data).text);
+        const data = JSON.parse(event.data);
+        const key = `${data.job_id || activeJobId}:${data.index}`;
+        if (seenLogLines.has(key)) return;
+        seenLogLines.add(key);
+        appendLog(data.text);
       });
       source.addEventListener("done", event => {
         const data = JSON.parse(event.data);
         statusEl.textContent = `${data.status} ${data.id}`;
+        if (source) source.close();
       });
       source.onerror = () => {
         statusEl.textContent = "disconnected";
@@ -437,6 +527,7 @@ INDEX_HTML = """<!doctype html>
 
     document.getElementById("run").addEventListener("click", async () => {
       logEl.textContent = "";
+      seenLogLines = new Set();
       try {
         const data = await api("/run", "POST");
         statusEl.textContent = `${data.job.status} ${data.job.id}`;
@@ -456,6 +547,7 @@ INDEX_HTML = """<!doctype html>
     });
 
     document.getElementById("reconnect").addEventListener("click", connect);
+    document.getElementById("copy").addEventListener("click", copyLog);
     refreshStatus();
     if (tokenInput.value) connect();
   </script>
@@ -465,4 +557,4 @@ INDEX_HTML = """<!doctype html>
 
 
 if __name__ == "__main__":
-    app.run(host=HOST, port=PORT, threaded=True)
+    app.run(host=HOST, port=PORT, threaded=True, request_handler=QuietRequestHandler)
