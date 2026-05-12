@@ -418,6 +418,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     f"official customer source {source_field} @ "
                     f"{source_scalar}x"
                 )
+            company_source_scalar = forward.get(
+                "space_company_release_customer_source_risk_scalar"
+            )
+            if company_source_scalar is not None:
+                extra_policies.append(
+                    "company-release customer source @ "
+                    f"{company_source_scalar}x"
+                )
             profile_scalar = forward.get(
                 "space_financing_dilution_profile_risk_scalar"
             )
@@ -488,6 +496,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_official_customer_source_bucket")
                 else ""
             )
+            company_source_text = (
+                " company_release_source=True"
+                if plan.get("space_company_release_customer_source_bucket")
+                else ""
+            )
             profile_text = (
                 " financing_dilution_profile=True"
                 if plan.get("space_financing_dilution_profile_bucket")
@@ -511,7 +524,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
                 f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
-                f"{liquidity_text}{source_text}{profile_text}{perfect_tqs_text}"
+                f"{liquidity_text}{source_text}{company_source_text}{profile_text}"
+                f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )

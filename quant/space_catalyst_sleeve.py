@@ -78,11 +78,13 @@ SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES = (
     "company_release",
 )
 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
+SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES = ("company_release",)
+SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS = ("financing", "dilution")
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-041",
+    "experiment_id": "exp-20260512-110",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -164,6 +166,13 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_official_customer_source_risk_scalar": (
         SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+    ),
+    "space_company_release_customer_source_experiment_id": "exp-20260512-110",
+    "space_company_release_customer_source_types": list(
+        SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
+    ),
+    "space_company_release_customer_source_risk_scalar": (
+        SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR
     ),
     "space_financing_dilution_profile_experiment_id": "exp-20260512-041",
     "space_financing_dilution_profile_terms": list(
@@ -384,6 +393,13 @@ def space_catalyst_forward_risk_scalar(
         scalar *= SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_company_release_customer_source_profile(
+            official_customer_source_profile
+        )
+    ):
+        scalar *= SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_financing_dilution_profile(event_guard_profile)
     ):
         scalar *= SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
@@ -511,6 +527,12 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_official_customer_source_risk_scalar": (
                 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+            ),
+            "space_company_release_customer_source_types": list(
+                SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
+            ),
+            "space_company_release_customer_source_risk_scalar": (
+                SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR
             ),
             "space_financing_dilution_profile_terms": list(
                 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS
@@ -931,6 +953,12 @@ def build_space_catalyst_observation_slot(
             ),
             "space_iwm_relative_leader_risk_scalar": (
                 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+            ),
+            "space_company_release_customer_source_types": list(
+                SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
+            ),
+            "space_company_release_customer_source_risk_scalar": (
+                SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR
             ),
             "space_financing_dilution_profile_terms": list(
                 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS
@@ -1591,6 +1619,16 @@ def _observation_slot_row(
         if official_customer_source_bucket
         else 1.0
     )
+    company_release_customer_source_bucket = (
+        _is_space_company_release_customer_source_profile(
+            official_customer_source_profile
+        )
+    )
+    company_release_customer_source_risk_scalar = (
+        SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR
+        if company_release_customer_source_bucket
+        else 1.0
+    )
     financing_dilution_profile_bucket = _is_space_financing_dilution_profile(
         event_guard_profile
     )
@@ -1701,6 +1739,13 @@ def _observation_slot_row(
         "space_official_customer_source_bucket": official_customer_source_bucket,
         "space_official_customer_source_risk_scalar": _round(
             official_customer_source_risk_scalar,
+            6,
+        ),
+        "space_company_release_customer_source_bucket": (
+            company_release_customer_source_bucket
+        ),
+        "space_company_release_customer_source_risk_scalar": _round(
+            company_release_customer_source_risk_scalar,
             6,
         ),
         "space_financing_dilution_profile_bucket": (
@@ -1903,6 +1948,23 @@ def _is_space_near_perfect_tqs(value: Any) -> bool:
         and SPACE_CATALYST_NEAR_PERFECT_TQS_SCORE_FLOOR
         <= score
         < SPACE_CATALYST_NEAR_PERFECT_TQS_SCORE_CEILING
+    )
+
+
+def _is_space_company_release_customer_source_profile(
+    profile: dict[str, Any] | None,
+) -> bool:
+    if not profile:
+        return False
+    source_types = {str(item) for item in profile.get("source_types") or []}
+    fields = {str(item) for item in profile.get("event_fields") or []}
+    return (
+        bool(
+            source_types.intersection(
+                SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
+            )
+        )
+        and SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD in fields
     )
 
 
