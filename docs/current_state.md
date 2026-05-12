@@ -569,3 +569,35 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space data/defense bucket scaling is old-window concentrated and does not survive the accepted three-window Space gate. Do not retry adjacent BKSY/PL/RDW data/defense theme scalars on these frozen snapshots.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-035\space_data_defense_theme_risk.json`
+
+## exp-20260512-038 Space official customer-source risk
+
+- timestamp: 2026-05-12T16:01:19+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_official_customer_source_risk
+- changed_variable: space_official_customer_source_risk_scalar
+- best scalar: `1.10x` for official Space signals whose production event seed profile has `customer_win` from official/regulatory/company primary sources, on top of the accepted exp-20260512-037 liquidity-tier stack.
+- expected_value_score_delta: +0.5354
+- total_pnl_delta: +$10,864.99
+- before_aggregate: {'expected_value_score_sum': 12.9711, 'total_pnl_sum': 318249.96, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1161}
+- after_aggregate: {'expected_value_score_sum': 13.5065, 'total_pnl_sum': 329114.95, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1197}
+- window evidence: EV and PnL improved in all three Space augmented windows: `late_strong +0.1156` EV / `+$2,965.84`, `mid_weak +0.4107` EV / `+$7,037.53`, and `old_thin +0.0091` EV / `+$861.62`.
+- interpretation: Space catalyst-quality allocation should prefer source-qualified customer-win events over another local theme/ticker scalar. This remains shared default-off observation metadata/helper only; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-038\space_official_customer_source_risk.json`
+
+## exp-20260512-040 Space defense-budget source risk
+
+- timestamp: 2026-05-12T16:32:04+00:00
+- lane: alpha_search
+- decision: rejected_space_defense_budget_source_risk
+- changed_variable: space_defense_budget_source_risk_scalar
+- best scalar: `1.25x` for official Space signals whose event seed profile has `defense_budget_theme` + `government_space_contract` from `official_government_release`, on top of the accepted exp-20260512-038 customer-source stack.
+- expected_value_score_delta: +2.3678
+- total_pnl_delta: +$52,220.36
+- before_aggregate: {'expected_value_score_sum': 13.5065, 'total_pnl_sum': 329114.95, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1197}
+- after_aggregate: {'expected_value_score_sum': 15.8743, 'total_pnl_sum': 381335.31, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1351}
+- window evidence: EV and PnL improved in all three Space augmented windows, but max drawdown drift exceeded the Gate 4 guardrail: `1.10x` already worsened max drawdown by `0.62` percentage points and `1.25x` by `1.54` percentage points.
+- interpretation: broad official defense-budget source exposure behaves like a high-beta Space exposure amplifier, not a safe catalyst-quality discriminator. Do not retry adjacent defense-budget/government-contract source scalars on these frozen snapshots.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-040\space_defense_budget_source_risk.json`

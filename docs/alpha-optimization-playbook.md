@@ -7672,6 +7672,26 @@ same-accession earnings-quality field.
 - Interpretation: Space risk allocation has a modest production-visible liquidity-quality edge in the official operating pool. This is not support for live slots, noisy ticker expansion, LLM soft-ranking, or larger RKLB concentration.
 - Anti-repeat: do not retry nearby liquidity-tier Space scalars on these frozen snapshots. The `1.25x` and `1.50x` variants had higher EV but failed the drawdown guard; future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.
 
+### exp-20260512-038 Space official customer-source risk
+
+- Decision: accepted_default_off_space_official_customer_source_risk.
+- Tested variable: `space_official_customer_source_risk_scalar` for official Space signals whose production event seed profile has `customer_win` from official/regulatory/company primary sources, with the accepted exp-20260512-037 liquidity-tier stack fixed.
+- Promoted default-off metadata/helper: `1.10x` extra scalar for source-qualified customer-win Space signals. Current target tickers are `ASTS`, `LUNR`, and `RKLB`.
+- Aggregate delta versus exp-20260512-037: EV `+0.5354`, total PnL `+$10,864.99`, trade count unchanged at `70`, and no regressed canonical window.
+- Window evidence: `late_strong +0.1156` EV / `+$2,965.84`, `mid_weak +0.4107` EV / `+$7,037.53`, and `old_thin +0.0091` EV / `+$861.62`.
+- Interpretation: source-quality/event-family metadata is currently a stronger Space alpha direction than another ticker/theme retune. Keep it default-off and production-visible through shared helpers; live Space slots remain zero.
+- Anti-repeat: do not retry adjacent official customer-source scalars on the frozen snapshots. The `1.25x` variant had higher EV but failed the drawdown guard; future Space work should use forward replacement value or a genuinely different catalyst-quality field.
+
+### exp-20260512-040 Space defense-budget source risk
+
+- Decision: rejected_space_defense_budget_source_risk.
+- Tested variable: `space_defense_budget_source_risk_scalar` for official Space signals whose event seed profile has `defense_budget_theme` + `government_space_contract` from `official_government_release`, with the accepted exp-20260512-038 customer-source stack fixed.
+- Best variant: `1.25x`, but rejected.
+- Aggregate delta versus exp-20260512-038: EV `+2.3678`, total PnL `+$52,220.36`, trade count unchanged at `70`, and EV improved in all three windows.
+- Gate failure: max drawdown drift exceeded the guardrail (`+0.62 pp` at `1.10x`, `+1.54 pp` at `1.25x`).
+- Interpretation: broad official defense-budget validation behaves like a high-beta Space exposure amplifier, not a safe catalyst-quality discriminator. It is too drawdown-expensive even though raw EV is high.
+- Anti-repeat: do not retry adjacent defense-budget/government-contract source scalars on the frozen snapshots. Future Space source work needs forward replacement value, a narrower non-overlapping catalyst field, or a risk reducer that is itself tested as the single causal variable.
+
 ### exp-20260512-033 SEC financial-report paired-filing dedupe
 
 - Decision: rejected_paired_filing_dedupe.
