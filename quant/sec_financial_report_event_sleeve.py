@@ -30,6 +30,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER"
 STATE_SCHEMA_VERSION = 1
 DEFAULT_EVENT_NOTIONAL_USD = 15_000.0
+DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR = 1.25
 DEFAULT_MAX_POSITIONS = 3
 DEFAULT_STATE_PATH = Path("data/sec_financial_report_event_sleeve_paper_state.json")
 DEFAULT_SNAPSHOT_LOG_PATH = Path(
@@ -42,6 +43,7 @@ DEFAULT_CONFIG = {
     "trade_enabled": False,
     "max_positions": DEFAULT_MAX_POSITIONS,
     "event_notional_usd": DEFAULT_EVENT_NOTIONAL_USD,
+    "periodic_report_notional_scalar": DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
     "hold_days": PRIMARY_HORIZON_TRADING_DAYS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
@@ -270,7 +272,6 @@ def _fill_pending_entries(
         return [], []
 
     max_positions = int(config["max_positions"])
-    notional = float(config["event_notional_usd"])
     cost = float(config["round_trip_cost_pct"])
     remaining = []
     filled_today = []
@@ -299,6 +300,8 @@ def _fill_pending_entries(
             remaining.append(entry)
             continue
 
+        candidate = entry.get("candidate") or {}
+        notional, notional_scalar = _candidate_event_notional(candidate, config)
         position = {
             "decision_id": entry["decision_id"],
             "sleeve": SLEEVE_NAME,
@@ -307,6 +310,13 @@ def _fill_pending_entries(
             "entry_date": as_of,
             "entry_price": entry_open,
             "notional": notional,
+            "base_event_notional_usd": float(config["event_notional_usd"]),
+            "event_notional_scalar": notional_scalar,
+            "event_notional_rule": (
+                "periodic_report_scalar"
+                if str(candidate.get("event_family") or "") == "periodic_report"
+                else "base"
+            ),
             "shares": round(notional / entry_open, 8),
             "hold_days": int(config["hold_days"]),
             "observed_trading_days": 0,
@@ -314,7 +324,7 @@ def _fill_pending_entries(
             "last_price": current_prices.get(ticker),
             "trade_enabled": False,
             "paper_status": "open",
-            "source_candidate": entry.get("candidate") or {},
+            "source_candidate": candidate,
         }
         if position["last_price"] is not None:
             _mark_unrealized(position, float(position["last_price"]), cost)
@@ -323,6 +333,21 @@ def _fill_pending_entries(
 
     state["pending_entries"] = remaining
     return filled_today, skipped_today
+
+
+def _candidate_event_notional(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+) -> tuple[float, float]:
+    base = float(config["event_notional_usd"])
+    event_family = str(candidate.get("event_family") or "")
+    if event_family != "periodic_report":
+        return base, 1.0
+
+    scalar = _float_or_none(config.get("periodic_report_notional_scalar"))
+    if scalar is None or scalar <= 0:
+        scalar = 1.0
+    return base * scalar, scalar
 
 
 def _add_queue_candidates(

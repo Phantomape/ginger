@@ -422,3 +422,18 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: After the accepted event-quality floor, the SEC financial-report T+1 sleeve can carry a larger default-off paper budget. This is risk allocation, not candidate expansion: no live orders, candidate ranking, hold period, or queue filter changed.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_candidate_ranking': False, 'alters_sizing': True}
 - artifact: `data\experiments\exp-20260512-006\exp_20260512_006_sec_financial_report_event_notional.json`
+
+## exp-20260512-007 SEC financial-report periodic-report notional
+
+- timestamp: 2026-05-12T03:15:31Z
+- lane: alpha_search
+- decision: accepted_default_off_periodic_report_notional_1.25x
+- changed_variable: sec_financial_report_periodic_report_notional_scalar
+- promoted default: `periodic_report` rows use `1.25x` of the accepted `$15,000` base paper notional; `earnings_8k` stays at `1.0x`.
+- expected_value_score_delta: +0.190856
+- total_pnl_delta: +$3,408.57
+- before_aggregate: {'expected_value_score_sum': 7.914587, 'total_pnl_sum': 222126.86, 'trade_count_sum': 114, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.093657, 'sleeve_total_pnl_sum': 36006.85, 'sleeve_closed_trade_count_sum': 52}
+- after_aggregate: {'expected_value_score_sum': 8.105443, 'total_pnl_sum': 225535.43, 'trade_count_sum': 114, 'min_survival_rate': 0.792453, 'max_drawdown_pct_max': 0.096499, 'sleeve_total_pnl_sum': 39337.77, 'sleeve_closed_trade_count_sum': 52}
+- interpretation: Semantic event-family risk allocation improved the default-off SEC financial-report T+1 sleeve after the accepted $15k base budget. This changes no live orders, queue qualification, ranking, capacity, or hold period.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': False, 'parity_test_added': True, 'default_off_paper_only': True, 'alters_orders': False, 'alters_signal_generation': False, 'alters_candidate_ranking': False, 'alters_sizing': True}
+- artifact: `data\experiments\exp-20260512-007\exp_20260512_007_sec_financial_report_periodic_notional.json`

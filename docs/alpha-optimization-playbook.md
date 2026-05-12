@@ -7535,3 +7535,13 @@ same-accession earnings-quality field.
 - Window evidence: EV and PnL improved in all three canonical windows: `late_strong +0.043490` EV / `+$1,657.81`, `mid_weak +0.329677` EV / `+$5,440.73`, and `old_thin +0.132222` EV / `+$5,138.53`.
 - Interpretation: after the accepted T+1 excess quality floor, the SEC financial-report paper sleeve supports a modestly larger risk budget. This is a default-off paper risk-allocation improvement, not a new filter, ticker expansion, hold-period retry, or live-order change.
 - Anti-repeat: do not retry nearby $12.5k/$20k/$25k event-notional variants on the frozen sample. The next SEC step should be forward replacement-value evidence or a genuinely new semantic earnings-quality field.
+
+### exp-20260512-007 SEC financial-report periodic-report notional
+
+- Decision: accepted_default_off_periodic_report_notional_1.25x.
+- Tested variable: `sec_financial_report_periodic_report_notional_scalar`, with max-3 capacity, T+1 excess >= 1%, 10-trading-day hold, $15k base notional, queue qualification, and candidate ranking fixed.
+- Promoted default: `periodic_report` paper events use `1.25x` of the $15k base notional; `earnings_8k` events remain at `1.0x`.
+- Aggregate delta versus the accepted $15k setup: EV `+0.190856`, total PnL `+$3,408.57`, sleeve PnL `+$3,330.92`, closed sleeve trades unchanged at `52`, and max drawdown max `+0.2842 pp`.
+- Window evidence: EV and PnL improved in all three canonical windows: `late_strong +0.066803` EV / `+$1,051.01`, `mid_weak +0.108916` EV / `+$1,766.40`, and `old_thin +0.015137` EV / `+$591.16`.
+- Interpretation: the useful SEC financial-report refinement after the global $15k notional is semantic risk allocation by event family, not another form exclusion, hold-period change, raw capacity expansion, or nearby global notional sweep.
+- Anti-repeat: do not retry nearby periodic-report scalars, 10-Q/10-K exclusion variants, or adjacent SEC global notional values on the same frozen sample. The next SEC step should be forward replacement-value evidence or a genuinely new semantic earnings-quality field.
