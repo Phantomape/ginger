@@ -7636,3 +7636,13 @@ same-accession earnings-quality field.
 - Window evidence: `late_strong +0.1072` EV / `+$2,267.34`, `mid_weak +0.2138` EV / `+$3,541.68`, and `old_thin +0.0932` EV / `+$3,741.72`.
 - Interpretation: Space official-catalyst risk has a modest broad small-cap appetite interaction that survived the three-window gate. This is not support for theme ETF timing, static pool expansion, noisy ticker additions, or a larger IWM scalar; the `1.25x` variant had higher EV but failed the drawdown guard.
 - Anti-repeat: do not retry nearby IWM-vs-SPY scalars, Space ETF timing gates, or broad static-pool risk gates on the same frozen snapshots. Future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.
+
+### exp-20260512-033 SEC financial-report paired-filing dedupe
+
+- Decision: rejected_paired_filing_dedupe.
+- Tested variable: same-ticker same-event-date SEC financial-report paired-filing dedupe before the default-off T+1 paper sleeve.
+- Best tested variant: keep 10-Q periodic reports when paired with earnings 8-K rows.
+- Aggregate delta versus the accepted exp-20260512-020 SEC stack: EV `-0.3324`, total PnL `+$1,271.12`, sleeve PnL `+$1,581.71`, and sleeve closed trades `52 -> 50`.
+- Window evidence: `late_strong -0.4205` EV / `$-5,229.28`, `mid_weak -0.1373` EV / `$-2,249.61`, and `old_thin +0.2253` EV / `+$8,750.01`.
+- Interpretation: paired SEC filings are not just duplicate noise on this frozen sample; collapsing them reduces expected-value score and weakens two of three windows despite slightly raising total PnL.
+- Anti-repeat: do not retry same-ticker same-event-date SEC paired-filing dedupe variants on these snapshots. Future SEC work should use forward replacement value or a genuinely new earnings-quality field.
