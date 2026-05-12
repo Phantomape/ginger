@@ -1,4 +1,4 @@
-﻿# exp-20260512-043 Space mission-binary profile risk
+# exp-20260512-043 Space mission-binary profile risk
 
 - Decision: `rejected_space_mission_binary_profile_risk`
 - Single variable: risk scalar for official Space signals whose `event_guard_profile` contains mission_binary.
