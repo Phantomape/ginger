@@ -130,6 +130,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
                     "pilot_sleeve": "SPACE_CATALYST_SHADOW",
                     "theme_segment": "satellite_connectivity",
                     "liquidity_tier": "watch",
+                    "event_guard_profile": "satellite_launch_and_financing_sensitive",
                     "first_trade_allowed_as_of": None,
                     "max_capital_scalar": 0,
                     "max_risk_scalar": 0,
@@ -149,10 +150,13 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert snapshot["candidate_count"] == 1
     assert snapshot["tickers_by_segment"] == {"satellite_connectivity": ["ASTS"]}
     assert snapshot["tickers_by_liquidity_tier"] == {"watch": ["ASTS"]}
+    assert snapshot["tickers_by_event_guard_profile"] == {
+        "satellite_launch_and_financing_sensitive": ["ASTS"]
+    }
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-038"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-041"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -265,6 +269,21 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
             "space_official_customer_source_risk_scalar"
         ]
         == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_financing_dilution_profile_experiment_id"
+        ]
+        == "exp-20260512-041"
+    )
+    assert snapshot["forward_hypothesis"][
+        "space_financing_dilution_profile_terms"
+    ] == ["financing", "dilution"]
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_financing_dilution_profile_risk_scalar"
+        ]
+        == 1.075
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
@@ -405,6 +424,30 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         ),
         6,
     ) == 1.5125
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "trend_long",
+            event_guard_profile="launch_contract_and_dilution_sensitive",
+        ),
+        6,
+    ) == 1.34375
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "RDW",
+            "trend_long",
+            event_guard_profile="contract_concentration_and_dilution_sensitive",
+        )
+        == 1.075
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "PL",
+            "trend_long",
+            event_guard_profile="data_contract_and_revenue_quality_sensitive",
+        )
+        == 1.0
+    )
     assert round(
         space_catalyst_forward_risk_scalar(
             "RKLB",
@@ -670,6 +713,56 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert snapshot["production_impact"]["alters_orders"] is False
 
 
+def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "RDW",
+                "strategy": "trend_long",
+                "entry_price": 20.0,
+                "stop_price": 18.0,
+                "target_price": 27.0,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.9,
+                "sizing": {
+                    "shares_to_buy": 50,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.1},
+            "BKSY": {"momentum_20d_pct": 0.1},
+            "LUNR": {"momentum_20d_pct": 0.1},
+            "PL": {"momentum_20d_pct": 0.1},
+            "RDW": {"atr": 1.0, "momentum_20d_pct": 0.1},
+            "RKLB": {"momentum_20d_pct": 0.1},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {"space_data_defense": ["RDW"]},
+            "tickers_by_event_guard_profile": {
+                "contract_concentration_and_dilution_sensitive": ["RDW"]
+            },
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "RDW"
+    assert plan["event_guard_profile"] == (
+        "contract_concentration_and_dilution_sensitive"
+    )
+    assert plan["space_financing_dilution_profile_bucket"] is True
+    assert plan["space_financing_dilution_profile_risk_scalar"] == 1.075
+    assert plan["effective_risk_scalar"] == 0.886875
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 886.88
+
+
 def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
     snapshot = build_space_catalyst_observation_slot(
         as_of="2026-05-11",
@@ -887,6 +980,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_liquidity_tier_risk_scalar": 1.1,
                 "space_official_customer_source_event_field": "customer_win",
                 "space_official_customer_source_risk_scalar": 1.1,
+                "space_financing_dilution_profile_risk_scalar": 1.075,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -911,6 +1005,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "theme_segment": "launch_lunar",
                     "liquidity_tier": "ok",
                     "space_official_customer_source_bucket": True,
+                    "space_financing_dilution_profile_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -957,7 +1052,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "IWM>SPY Space risk @ 1.1x; "
         "launch/lunar theme risk @ 1.1x; "
         "liquidity tier ok @ 1.1x; "
-        "official customer source customer_win @ 1.1x)"
+        "official customer source customer_win @ 1.1x; "
+        "financing/dilution profile @ 1.075x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -965,7 +1061,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
     assert "RKLB: trend_long entry $100.00 target $125.00" in report
     assert (
         "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
-        "theme=launch_lunar liquidity=ok customer_source=True"
+        "theme=launch_lunar liquidity=ok customer_source=True "
+        "financing_dilution_profile=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

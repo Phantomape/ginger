@@ -407,6 +407,25 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     f"liquidity tier {liquidity_tier} @ "
                     f"{liquidity_tier_scalar}x"
                 )
+            source_scalar = forward.get(
+                "space_official_customer_source_risk_scalar"
+            )
+            source_field = forward.get(
+                "space_official_customer_source_event_field"
+            )
+            if source_scalar is not None:
+                extra_policies.append(
+                    f"official customer source {source_field} @ "
+                    f"{source_scalar}x"
+                )
+            profile_scalar = forward.get(
+                "space_financing_dilution_profile_risk_scalar"
+            )
+            if profile_scalar is not None:
+                extra_policies.append(
+                    "financing/dilution profile @ "
+                    f"{profile_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -464,6 +483,16 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             theme_text = f" theme={theme_segment}" if theme_segment else ""
             liquidity_tier = plan.get("liquidity_tier")
             liquidity_text = f" liquidity={liquidity_tier}" if liquidity_tier else ""
+            source_text = (
+                " customer_source=True"
+                if plan.get("space_official_customer_source_bucket")
+                else ""
+            )
+            profile_text = (
+                " financing_dilution_profile=True"
+                if plan.get("space_financing_dilution_profile_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -482,7 +511,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
                 f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
-                f"{liquidity_text}{perfect_tqs_text}"
+                f"{liquidity_text}{source_text}{profile_text}{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )

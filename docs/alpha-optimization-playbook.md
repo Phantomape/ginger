@@ -66,7 +66,7 @@ Latest accepted default-off Space checkpoint: the official-catalyst Space
 forward stack from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `exp-20260512-008`,
 `exp-20260512-013`, `exp-20260512-031`, `exp-20260512-032`, and
-`exp-20260512-037` and `exp-20260512-038`. The supported mechanism is
+`exp-20260512-037`, `exp-20260512-038`, and `exp-20260512-041`. The supported mechanism is
 signal-quality-conditioned risk allocation plus peer-relative breakout
 leadership plus small-cap risk-appetite scaling plus production-visible
 catalyst-quality fields: perfect-TQS official Space signals get a `1.5x`
@@ -76,8 +76,10 @@ official Space signals get a `1.10x` top-up when IWM 20d momentum is above SPY
 20d momentum, launch/lunar theme-segment signals get a `1.10x` top-up,
 official Space signals with production registry `liquidity_tier=ok` get a
 `1.10x` top-up, and official Space signals tied to `customer_win` event seeds
-from official/regulatory/company primary sources get a `1.10x` top-up. This
-remains default-off metadata/helper only, with live Space slots still zero and
+from official/regulatory/company primary sources get a `1.10x` top-up, and
+official Space signals whose production registry `event_guard_profile` contains
+financing/dilution get a `1.075x` top-up. This remains default-off
+metadata/helper only, with live Space slots still zero and
 forward replacement value still the blocking evidence gate.
 
 Latest unchanged core validation point: the 2026-05-03 through 2026-05-12
@@ -7691,6 +7693,16 @@ same-accession earnings-quality field.
 - Gate failure: max drawdown drift exceeded the guardrail (`+0.62 pp` at `1.10x`, `+1.54 pp` at `1.25x`).
 - Interpretation: broad official defense-budget validation behaves like a high-beta Space exposure amplifier, not a safe catalyst-quality discriminator. It is too drawdown-expensive even though raw EV is high.
 - Anti-repeat: do not retry adjacent defense-budget/government-contract source scalars on the frozen snapshots. Future Space source work needs forward replacement value, a narrower non-overlapping catalyst field, or a risk reducer that is itself tested as the single causal variable.
+
+### exp-20260512-041 Space financing/dilution profile risk
+
+- Decision: accepted_default_off_space_financing_dilution_profile_risk.
+- Tested variable: `space_financing_dilution_event_guard_profile_risk_scalar` for official Space signals whose production registry `event_guard_profile` contains `financing` or `dilution`, with the accepted exp-20260512-038 customer-source stack fixed.
+- Promoted default-off metadata/helper: `1.075x` extra scalar for profile-qualified Space signals. Current target tickers are `ASTS`, `RDW`, and `RKLB`.
+- Aggregate delta versus exp-20260512-038: EV `+0.5022`, total PnL `+$11,012.31`, trade count unchanged at `70`, and no regressed canonical window.
+- Window evidence: `late_strong +0.0915` EV / `+$2,463.78`, `mid_weak +0.3582` EV / `+$6,053.43`, and `old_thin +0.0525` EV / `+$2,495.10`; max drawdown drift was `+0.46 pp`, inside the gate.
+- Interpretation: production registry event-guard profile terms are useful Space catalyst-quality metadata when the size is conservative. This is not support for live slots or larger defense-budget beta.
+- Anti-repeat: do not retry adjacent financing/dilution profile scalars on the frozen snapshots. The `1.10x` variant had higher EV but failed the drawdown guard; future Space work should use forward replacement value or a genuinely different catalyst-quality field.
 
 ### exp-20260512-033 SEC financial-report paired-filing dedupe
 

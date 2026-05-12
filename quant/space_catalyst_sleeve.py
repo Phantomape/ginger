@@ -78,9 +78,11 @@ SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES = (
     "company_release",
 )
 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
+SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS = ("financing", "dilution")
+SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-038",
+    "experiment_id": "exp-20260512-041",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -162,6 +164,13 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_official_customer_source_risk_scalar": (
         SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+    ),
+    "space_financing_dilution_profile_experiment_id": "exp-20260512-041",
+    "space_financing_dilution_profile_terms": list(
+        SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS
+    ),
+    "space_financing_dilution_profile_risk_scalar": (
+        SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -314,6 +323,7 @@ def space_catalyst_forward_risk_scalar(
     theme_segment: str | None = None,
     liquidity_tier: str | None = None,
     official_customer_source_profile: dict[str, Any] | None = None,
+    event_guard_profile: str | None = None,
     trade_quality_score: Any = None,
 ) -> float:
     """Return the extra default-off forward scalar for Space sleeve attribution."""
@@ -372,6 +382,11 @@ def space_catalyst_forward_risk_scalar(
         and official_customer_source_profile
     ):
         scalar *= SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_financing_dilution_profile(event_guard_profile)
+    ):
+        scalar *= SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
     return scalar
 
 
@@ -403,6 +418,7 @@ def empty_space_catalyst_shadow_snapshot(as_of, reason: str = "not_built") -> di
         "segment_counts": {},
         "tickers_by_segment": {},
         "tickers_by_liquidity_tier": {},
+        "tickers_by_event_guard_profile": {},
         "trade_enabled_tickers": [],
         "llm_event_fields": list(SPACE_CATALYST_LLM_EVENT_FIELDS),
         "promotion_gates": deepcopy(SPACE_CATALYST_PROMOTION_GATES),
@@ -495,6 +511,12 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_official_customer_source_risk_scalar": (
                 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+            ),
+            "space_financing_dilution_profile_terms": list(
+                SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS
+            ),
+            "space_financing_dilution_profile_risk_scalar": (
+                SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -910,6 +932,12 @@ def build_space_catalyst_observation_slot(
             "space_iwm_relative_leader_risk_scalar": (
                 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
             ),
+            "space_financing_dilution_profile_terms": list(
+                SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS
+            ),
+            "space_financing_dilution_profile_risk_scalar": (
+                SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -1030,10 +1058,14 @@ def build_space_catalyst_shadow_snapshot(
     segment_counts = Counter(record.get("theme_segment") for record in records.values())
     tickers_by_segment = defaultdict(list)
     tickers_by_liquidity_tier = defaultdict(list)
+    tickers_by_event_guard_profile = defaultdict(list)
     trade_enabled = []
     for ticker, record in records.items():
         tickers_by_segment[record.get("theme_segment")].append(ticker)
         tickers_by_liquidity_tier[record.get("liquidity_tier") or "unknown"].append(ticker)
+        profile = record.get("event_guard_profile")
+        if profile:
+            tickers_by_event_guard_profile[str(profile)].append(ticker)
         if record.get("first_trade_allowed_as_of") and (
             float(record.get("max_capital_scalar") or 0.0) > 0
             or float(record.get("max_risk_scalar") or 0.0) > 0
@@ -1058,6 +1090,13 @@ def build_space_catalyst_shadow_snapshot(
             tier: sorted(tickers)
             for tier, tickers in sorted(
                 tickers_by_liquidity_tier.items(),
+                key=lambda item: str(item[0]),
+            )
+        },
+        "tickers_by_event_guard_profile": {
+            profile: sorted(tickers)
+            for profile, tickers in sorted(
+                tickers_by_event_guard_profile.items(),
                 key=lambda item: str(item[0]),
             )
         },
@@ -1353,6 +1392,19 @@ def _liquidity_tier_for_ticker(space_catalyst_shadow: dict[str, Any], ticker: st
     return None
 
 
+def _event_guard_profile_for_ticker(
+    space_catalyst_shadow: dict[str, Any],
+    ticker: str,
+) -> str | None:
+    ticker_upper = str(ticker or "").upper()
+    for profile, tickers in (
+        space_catalyst_shadow.get("tickers_by_event_guard_profile") or {}
+    ).items():
+        if ticker_upper in {str(item).upper() for item in tickers or []}:
+            return str(profile)
+    return None
+
+
 def _official_customer_source_profile_for_ticker(
     source_profiles: dict[str, dict[str, Any]] | None,
     ticker: str,
@@ -1360,6 +1412,14 @@ def _official_customer_source_profile_for_ticker(
     ticker_upper = str(ticker or "").upper()
     profile = (source_profiles or {}).get(ticker_upper)
     return deepcopy(profile) if isinstance(profile, dict) else None
+
+
+def _is_space_financing_dilution_profile(profile: str | None) -> bool:
+    profile_text = str(profile or "").lower()
+    return any(
+        term in profile_text
+        for term in SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS
+    )
 
 
 def _same_day_core_alternatives(
@@ -1444,6 +1504,7 @@ def _observation_slot_row(
     strategy = str(signal.get("strategy") or "")
     theme_segment = _theme_segment_for_ticker(space_catalyst_shadow, ticker)
     liquidity_tier = _liquidity_tier_for_ticker(space_catalyst_shadow, ticker)
+    event_guard_profile = _event_guard_profile_for_ticker(space_catalyst_shadow, ticker)
     official_customer_source_profile = _official_customer_source_profile_for_ticker(
         space_event_source_profiles,
         ticker,
@@ -1475,6 +1536,7 @@ def _observation_slot_row(
         theme_segment=theme_segment,
         liquidity_tier=liquidity_tier,
         official_customer_source_profile=official_customer_source_profile,
+        event_guard_profile=event_guard_profile,
         trade_quality_score=signal.get("trade_quality_score"),
     )
     basket_risk_scalar = (
@@ -1529,6 +1591,14 @@ def _observation_slot_row(
         if official_customer_source_bucket
         else 1.0
     )
+    financing_dilution_profile_bucket = _is_space_financing_dilution_profile(
+        event_guard_profile
+    )
+    financing_dilution_profile_risk_scalar = (
+        SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
+        if financing_dilution_profile_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -1551,6 +1621,7 @@ def _observation_slot_row(
         "action": signal.get("action"),
         "theme_segment": theme_segment,
         "liquidity_tier": liquidity_tier,
+        "event_guard_profile": event_guard_profile,
         "space_event_source_profile": official_customer_source_profile,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
@@ -1630,6 +1701,13 @@ def _observation_slot_row(
         "space_official_customer_source_bucket": official_customer_source_bucket,
         "space_official_customer_source_risk_scalar": _round(
             official_customer_source_risk_scalar,
+            6,
+        ),
+        "space_financing_dilution_profile_bucket": (
+            financing_dilution_profile_bucket
+        ),
+        "space_financing_dilution_profile_risk_scalar": _round(
+            financing_dilution_profile_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,

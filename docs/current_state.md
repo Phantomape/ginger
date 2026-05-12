@@ -55,13 +55,16 @@ SPY 20d momentum, `launch_lunar` theme-segment signals get `1.10x` extra
 default-off risk, and official Space signals with production registry
 `liquidity_tier=ok` get `1.10x` extra default-off risk, and official Space
 signals tied to `customer_win` event seeds from official/regulatory/company
-primary sources get `1.10x` extra default-off risk. This remains
-metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
+primary sources get `1.10x` extra default-off risk, and official Space signals
+whose production registry `event_guard_profile` contains financing/dilution get
+`1.075x` extra default-off risk. This remains metadata/helper only with live
+Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
 theme risk only at `1.10x`, `exp-20260512-035` rejected data/defense theme
 scaling, `exp-20260512-037` accepted liquidity-tier anchor risk only at
 `1.10x`, and `exp-20260512-038` accepted customer-source risk only at `1.10x`;
+`exp-20260512-041` accepted financing/dilution profile risk only at `1.075x`;
 the next valid Space step is forward replacement value or a genuinely new
 catalyst-quality field, not another frozen-window local scalar retune.
 
@@ -601,3 +604,19 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: broad official defense-budget source exposure behaves like a high-beta Space exposure amplifier, not a safe catalyst-quality discriminator. Do not retry adjacent defense-budget/government-contract source scalars on these frozen snapshots.
 - production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-040\space_defense_budget_source_risk.json`
+
+## exp-20260512-041 Space financing/dilution profile risk
+
+- timestamp: 2026-05-12T16:43:03+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_financing_dilution_profile_risk
+- changed_variable: space_financing_dilution_event_guard_profile_risk_scalar
+- best scalar: `1.075x` for official Space signals whose production registry `event_guard_profile` contains `financing` or `dilution`, on top of the accepted exp-20260512-038 customer-source stack.
+- expected_value_score_delta: +0.5022
+- total_pnl_delta: +$11,012.31
+- before_aggregate: {'expected_value_score_sum': 13.5065, 'total_pnl_sum': 329114.95, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1197}
+- after_aggregate: {'expected_value_score_sum': 14.0087, 'total_pnl_sum': 340127.26, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1243}
+- window evidence: EV and PnL improved in all three Space augmented windows: `late_strong +0.0915` EV / `+$2,463.78`, `mid_weak +0.3582` EV / `+$6,053.43`, and `old_thin +0.0525` EV / `+$2,495.10`. Max drawdown drift was `+0.46` percentage points, inside the Gate 4 guardrail.
+- interpretation: production registry event-guard profile terms are a usable Space catalyst-quality allocation field when sized conservatively. `1.10x` had higher raw EV but failed drawdown; keep `1.075x` and do not retry adjacent financing/dilution profile scalars on these frozen snapshots.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-041\space_financing_dilution_profile_risk.json`
