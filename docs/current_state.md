@@ -43,18 +43,21 @@ same-sample lifecycle sweep.
 
 Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
-now extends through `exp-20260512-004`, `008`, `013`, and `031`. The supported
+now extends through `exp-20260512-004`, `008`, `013`, `031`, and `032`. The supported
 direction is quality-conditioned risk allocation, peer-relative breakout
-leadership, and small-cap risk-appetite allocation: perfect-TQS official Space
-signals get a `1.5x` top-up, near-perfect official Space `trend_long` gets a
-`1.10x` top-up, peer-nonleader official Space `breakout_long` gets `0.00x`
-extra risk, and official Space signals get `1.10x` extra default-off risk when
-IWM 20d momentum is above SPY 20d momentum. This remains default-off
-metadata/helper only with live Space slots at zero. `exp-20260512-010`
-rejected nearby near-perfect breakout TQS gating, and `exp-20260512-031`
-accepted the IWM-relative state only at `1.10x`; the next valid Space step is
-forward replacement value or a genuinely new catalyst-quality field, not
-another frozen-window TQS/geometry/IWM scalar retune.
+leadership, small-cap risk-appetite allocation, and production-visible
+catalyst-bucket risk allocation: perfect-TQS official Space signals get a
+`1.5x` top-up, near-perfect official Space `trend_long` gets a `1.10x` top-up,
+peer-nonleader official Space `breakout_long` gets `0.00x` extra risk, official
+Space signals get `1.10x` extra default-off risk when IWM 20d momentum is above
+SPY 20d momentum, and `launch_lunar` theme-segment signals get `1.10x` extra
+default-off risk. This remains metadata/helper only with live Space slots at
+zero. `exp-20260512-010` rejected nearby near-perfect breakout TQS gating,
+`exp-20260512-031` accepted the IWM-relative state only at `1.10x`, and
+`exp-20260512-032` accepted launch/lunar theme risk only at `1.10x`; the next
+valid Space step is forward replacement value or a genuinely new
+catalyst-quality field, not another frozen-window TQS/geometry/IWM/theme scalar
+retune.
 
 Latest rejected core entry alpha search: `exp-20260512-024` tested a
 deterministic OHLCV `pullback_reclaim_long` entry shape for leadership
@@ -530,3 +533,17 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space official-catalyst risk should modestly scale up when small caps lead the broad tape. This is default-off observation-slot metadata/helper only; live Space slots remain zero.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-031\space_iwm_relative_momentum_risk.json`
+
+## exp-20260512-032 Space launch/lunar theme-segment risk
+
+- timestamp: 2026-05-12T13:27:47+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_launch_lunar_theme_risk
+- changed_variable: space_launch_lunar_theme_segment_risk_scalar
+- best scalar: `1.10x` for official Space signals whose production universe-registry `theme_segment` is `launch_lunar`, on top of the accepted exp-20260512-031 Space stack.
+- expected_value_score_delta: +0.2404
+- total_pnl_delta: +$5,233.68
+- window evidence: EV and PnL improved in all three Space augmented windows: `late_strong +0.1048` EV / `+$2,447.13`, `mid_weak +0.1227` EV / `+$2,092.83`, and `old_thin +0.0129` EV / `+$693.72`.
+- interpretation: Space official-catalyst risk has a modest production-visible launch/lunar bucket edge that survived the three-window gate. This is default-off observation-slot metadata/helper only; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-032\space_launch_lunar_theme_risk.json`

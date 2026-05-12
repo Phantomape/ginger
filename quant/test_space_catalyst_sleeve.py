@@ -149,7 +149,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-031"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-032"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -220,6 +220,20 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     )
     assert (
         snapshot["forward_hypothesis"]["space_iwm_relative_leader_risk_scalar"]
+        == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_launch_lunar_theme_segment_experiment_id"
+        ]
+        == "exp-20260512-032"
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_launch_lunar_theme_segment"]
+        == "launch_lunar"
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_launch_lunar_theme_risk_scalar"]
         == 1.1
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
@@ -328,6 +342,22 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         )
         == 1.0
     )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            theme_segment="launch_lunar",
+        )
+        == 1.1
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "ASTS",
+            "trend_long",
+            theme_segment="satellite_connectivity",
+        )
+        == 1.25
+    )
     assert round(
         space_catalyst_forward_risk_scalar(
             "RKLB",
@@ -338,6 +368,17 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         ),
         6,
     ) == 1.66375
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "trend_long",
+            basket_momentum_state={"state": "positive"},
+            iwm_relative_momentum_state={"state": "smallcap_leader"},
+            theme_segment="launch_lunar",
+            trade_quality_score=0.956,
+        ),
+        6,
+    ) == 1.830125
 
 
 def test_space_catalyst_basket_momentum_state_uses_official_pool():
@@ -513,8 +554,10 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_iwm_relative_state"] == "smallcap_leader"
     assert plan["space_iwm_excess_vs_spy_20d_pct"] == 0.05
     assert plan["space_iwm_relative_momentum_risk_scalar"] == 1.1
-    assert plan["effective_risk_scalar"] == 1.247813
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1247.81
+    assert plan["space_launch_lunar_theme_segment_bucket"] is True
+    assert plan["space_launch_lunar_theme_segment_risk_scalar"] == 1.1
+    assert plan["effective_risk_scalar"] == 1.372594
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1372.59
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -561,6 +604,8 @@ def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
     assert plan["space_peer_momentum_state"] == "nonleader"
     assert plan["space_peer_nonleader_breakout_bucket"] is True
     assert plan["space_peer_nonleader_breakout_risk_scalar"] == 0.0
+    assert plan["space_launch_lunar_theme_segment_bucket"] is True
+    assert plan["space_launch_lunar_theme_segment_risk_scalar"] == 1.1
     assert plan["effective_risk_scalar"] == 0.0
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 0.0
 
@@ -725,6 +770,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_near_perfect_tqs_trend_risk_scalar": 1.1,
                 "space_peer_nonleader_breakout_risk_scalar": 0.0,
                 "space_iwm_relative_leader_risk_scalar": 1.1,
+                "space_launch_lunar_theme_risk_scalar": 1.1,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -746,6 +792,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_basket_momentum_state": "positive",
                     "space_peer_momentum_state": "leader",
                     "space_iwm_relative_state": "smallcap_leader",
+                    "theme_segment": "launch_lunar",
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -789,12 +836,16 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "perfect Space TQS @ 1.5x; "
         "near-perfect Space trend TQS @ 1.1x; "
         "peer-nonleader Space breakout @ 0.0x; "
-        "IWM>SPY Space risk @ 1.1x)"
+        "IWM>SPY Space risk @ 1.1x; "
+        "launch/lunar theme risk @ 1.1x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
     assert "Live slots: 0" in report
     assert "RKLB: trend_long entry $100.00 target $125.00" in report
-    assert "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader" in report
+    assert (
+        "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
+        "theme=launch_lunar"
+    ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

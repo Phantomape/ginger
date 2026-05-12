@@ -7637,6 +7637,16 @@ same-accession earnings-quality field.
 - Interpretation: Space official-catalyst risk has a modest broad small-cap appetite interaction that survived the three-window gate. This is not support for theme ETF timing, static pool expansion, noisy ticker additions, or a larger IWM scalar; the `1.25x` variant had higher EV but failed the drawdown guard.
 - Anti-repeat: do not retry nearby IWM-vs-SPY scalars, Space ETF timing gates, or broad static-pool risk gates on the same frozen snapshots. Future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.
 
+### exp-20260512-032 Space launch/lunar theme-segment risk
+
+- Decision: accepted_default_off_space_launch_lunar_theme_risk.
+- Tested variable: `space_launch_lunar_theme_segment_risk_scalar` for official Space signals whose production universe-registry `theme_segment` is `launch_lunar`, with the accepted exp-20260512-031 Space stack fixed.
+- Promoted default-off metadata/helper: `1.10x` extra scalar for launch/lunar Space theme-segment signals.
+- Aggregate delta versus exp-20260512-031: EV `+0.2404`, total PnL `+$5,233.68`, trade count unchanged at `70`, and no regressed canonical window.
+- Window evidence: `late_strong +0.1048` EV / `+$2,447.13`, `mid_weak +0.1227` EV / `+$2,092.83`, and `old_thin +0.0129` EV / `+$693.72`.
+- Interpretation: Space risk allocation has a modest production-visible catalyst-bucket edge in launch/lunar names. This is not support for noisy ticker expansion, LLM soft-ranking on thin event data, or a broader theme ETF timing gate.
+- Anti-repeat: do not retry nearby launch/lunar theme-segment scalars on the same frozen snapshots. The `1.25x` variant had higher EV but failed the drawdown guard; future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.
+
 ### exp-20260512-033 SEC financial-report paired-filing dedupe
 
 - Decision: rejected_paired_filing_dedupe.

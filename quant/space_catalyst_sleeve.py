@@ -67,9 +67,11 @@ SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER = "IWM"
 SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE = "SPY"
 SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD = "momentum_20d_pct"
 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR = 1.1
+SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT = "launch_lunar"
+SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR = 1.1
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-031",
+    "experiment_id": "exp-20260512-032",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -129,6 +131,13 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_iwm_relative_leader_risk_scalar": (
         SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+    ),
+    "space_launch_lunar_theme_segment_experiment_id": "exp-20260512-032",
+    "space_launch_lunar_theme_segment": (
+        SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT
+    ),
+    "space_launch_lunar_theme_risk_scalar": (
+        SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -278,6 +287,7 @@ def space_catalyst_forward_risk_scalar(
     basket_momentum_state: dict[str, Any] | None = None,
     peer_momentum_state: dict[str, Any] | None = None,
     iwm_relative_momentum_state: dict[str, Any] | None = None,
+    theme_segment: str | None = None,
     trade_quality_score: Any = None,
 ) -> float:
     """Return the extra default-off forward scalar for Space sleeve attribution."""
@@ -321,6 +331,11 @@ def space_catalyst_forward_risk_scalar(
         and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
     ):
         scalar *= SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and str(theme_segment or "") == SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT
+    ):
+        scalar *= SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR
     return scalar
 
 
@@ -1285,6 +1300,7 @@ def _observation_slot_row(
 ) -> dict[str, Any]:
     ticker = str(signal.get("ticker") or "").upper()
     strategy = str(signal.get("strategy") or "")
+    theme_segment = _theme_segment_for_ticker(space_catalyst_shadow, ticker)
     target_atr_mult = space_catalyst_forward_target_atr_mult(
         ticker,
         strategy,
@@ -1309,6 +1325,7 @@ def _observation_slot_row(
         basket_momentum_state=basket_momentum_state,
         peer_momentum_state=peer_momentum_state,
         iwm_relative_momentum_state=iwm_relative_momentum_state,
+        theme_segment=theme_segment,
         trade_quality_score=signal.get("trade_quality_score"),
     )
     basket_risk_scalar = (
@@ -1343,6 +1360,14 @@ def _observation_slot_row(
         if (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
         else 1.0
     )
+    launch_lunar_theme_segment_bucket = (
+        theme_segment == SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT
+    )
+    launch_lunar_theme_segment_risk_scalar = (
+        SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR
+        if launch_lunar_theme_segment_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -1363,7 +1388,7 @@ def _observation_slot_row(
         "ticker": ticker,
         "strategy": strategy,
         "action": signal.get("action"),
-        "theme_segment": _theme_segment_for_ticker(space_catalyst_shadow, ticker),
+        "theme_segment": theme_segment,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
         "stop_price": _round(signal.get("stop_price"), 4),
@@ -1425,6 +1450,13 @@ def _observation_slot_row(
         ),
         "space_iwm_relative_momentum_risk_scalar": _round(
             iwm_relative_momentum_risk_scalar,
+            6,
+        ),
+        "space_launch_lunar_theme_segment_bucket": (
+            launch_lunar_theme_segment_bucket
+        ),
+        "space_launch_lunar_theme_segment_risk_scalar": _round(
+            launch_lunar_theme_segment_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
