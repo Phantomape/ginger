@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from sec_financial_report_event_sleeve import (
+    DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR,
     DEFAULT_CONFIG,
     DEFAULT_MAX_POSITIONS,
     DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
@@ -28,8 +29,9 @@ def _candidate(
     t1_excess: float = 0.03,
     date: str = "2026-05-04",
     event_family: str = "earnings_8k",
+    form_base: str | None = None,
 ) -> dict[str, object]:
-    return {
+    candidate = {
         "ticker": ticker,
         "usable_trade_date": date,
         "accession_number": accession,
@@ -38,6 +40,9 @@ def _candidate(
         "t1_excess_return_vs_spy": t1_excess,
         "trade_enabled": False,
     }
+    if form_base:
+        candidate["form_base"] = form_base
+    return candidate
 
 
 def _state_from_snapshot(snapshot: dict[str, object]) -> dict[str, object]:
@@ -165,7 +170,20 @@ def test_financial_report_sleeve_scales_periodic_report_notional_without_orders(
     first = build_sec_financial_report_event_sleeve_snapshot(
         sec_financial_report_t1_queue=_queue(
             _candidate("ERN", "0001", 0.05, event_family="earnings_8k"),
-            _candidate("PRD", "0002", 0.04, event_family="periodic_report"),
+            _candidate(
+                "PRD",
+                "0002",
+                0.04,
+                event_family="periodic_report",
+                form_base="10-K",
+            ),
+            _candidate(
+                "TENQ",
+                "0003",
+                0.03,
+                event_family="periodic_report",
+                form_base="10-Q",
+            ),
         ),
         as_of="2026-05-05",
         state=empty_sec_financial_report_event_sleeve_state(),
@@ -174,8 +192,8 @@ def test_financial_report_sleeve_scales_periodic_report_notional_without_orders(
     second = build_sec_financial_report_event_sleeve_snapshot(
         sec_financial_report_t1_queue=_queue(),
         as_of="2026-05-06",
-        open_prices={"ERN": 100.0, "PRD": 100.0},
-        current_prices={"ERN": 100.0, "PRD": 100.0},
+        open_prices={"ERN": 100.0, "PRD": 100.0, "TENQ": 100.0},
+        current_prices={"ERN": 100.0, "PRD": 100.0, "TENQ": 100.0},
         state=_state_from_snapshot(first),
         persist=False,
     )
@@ -183,12 +201,17 @@ def test_financial_report_sleeve_scales_periodic_report_notional_without_orders(
     by_ticker = {position["ticker"]: position for position in second["open_positions"]}
 
     assert DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR == 1.25
+    assert DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR == 2.0
     assert second["parameters"]["periodic_report_notional_scalar"] == 1.25
+    assert second["parameters"]["tenq_periodic_report_notional_scalar"] == 2.0
     assert by_ticker["ERN"]["notional"] == 15_000.0
     assert by_ticker["ERN"]["event_notional_rule"] == "base"
     assert by_ticker["PRD"]["notional"] == 18_750.0
     assert by_ticker["PRD"]["event_notional_scalar"] == 1.25
     assert by_ticker["PRD"]["event_notional_rule"] == "periodic_report_scalar"
+    assert by_ticker["TENQ"]["notional"] == 30_000.0
+    assert by_ticker["TENQ"]["event_notional_scalar"] == 2.0
+    assert by_ticker["TENQ"]["event_notional_rule"] == "periodic_report_10q_scalar"
     assert second["trade_enabled"] is False
     assert all(position["trade_enabled"] is False for position in second["open_positions"])
 

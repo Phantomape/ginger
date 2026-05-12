@@ -31,6 +31,7 @@ SLEEVE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER"
 STATE_SCHEMA_VERSION = 1
 DEFAULT_EVENT_NOTIONAL_USD = 15_000.0
 DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR = 1.25
+DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR = 2.0
 DEFAULT_MAX_POSITIONS = 3
 DEFAULT_STATE_PATH = Path("data/sec_financial_report_event_sleeve_paper_state.json")
 DEFAULT_SNAPSHOT_LOG_PATH = Path(
@@ -44,6 +45,7 @@ DEFAULT_CONFIG = {
     "max_positions": DEFAULT_MAX_POSITIONS,
     "event_notional_usd": DEFAULT_EVENT_NOTIONAL_USD,
     "periodic_report_notional_scalar": DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
+    "tenq_periodic_report_notional_scalar": DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR,
     "hold_days": PRIMARY_HORIZON_TRADING_DAYS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
@@ -301,7 +303,10 @@ def _fill_pending_entries(
             continue
 
         candidate = entry.get("candidate") or {}
-        notional, notional_scalar = _candidate_event_notional(candidate, config)
+        notional, notional_scalar, notional_rule = _candidate_event_notional(
+            candidate,
+            config,
+        )
         position = {
             "decision_id": entry["decision_id"],
             "sleeve": SLEEVE_NAME,
@@ -312,11 +317,7 @@ def _fill_pending_entries(
             "notional": notional,
             "base_event_notional_usd": float(config["event_notional_usd"]),
             "event_notional_scalar": notional_scalar,
-            "event_notional_rule": (
-                "periodic_report_scalar"
-                if str(candidate.get("event_family") or "") == "periodic_report"
-                else "base"
-            ),
+            "event_notional_rule": notional_rule,
             "shares": round(notional / entry_open, 8),
             "hold_days": int(config["hold_days"]),
             "observed_trading_days": 0,
@@ -338,16 +339,35 @@ def _fill_pending_entries(
 def _candidate_event_notional(
     candidate: dict[str, Any],
     config: dict[str, Any],
-) -> tuple[float, float]:
+) -> tuple[float, float, str]:
     base = float(config["event_notional_usd"])
     event_family = str(candidate.get("event_family") or "")
     if event_family != "periodic_report":
-        return base, 1.0
+        return base, 1.0, "base"
+
+    if _candidate_form_base(candidate).startswith("10-Q"):
+        scalar = _float_or_none(config.get("tenq_periodic_report_notional_scalar"))
+        if scalar is None or scalar <= 0:
+            scalar = _float_or_none(config.get("periodic_report_notional_scalar"))
+        if scalar is None or scalar <= 0:
+            scalar = 1.0
+        return base * scalar, scalar, "periodic_report_10q_scalar"
 
     scalar = _float_or_none(config.get("periodic_report_notional_scalar"))
     if scalar is None or scalar <= 0:
         scalar = 1.0
-    return base * scalar, scalar
+    return base * scalar, scalar, "periodic_report_scalar"
+
+
+def _candidate_form_base(candidate: dict[str, Any]) -> str:
+    raw = (
+        candidate.get("form_base")
+        or candidate.get("form_type")
+        or candidate.get("form")
+        or candidate.get("sec_form")
+        or ""
+    )
+    return str(raw).upper().strip()
 
 
 def _add_queue_candidates(
@@ -525,15 +545,15 @@ def _snapshot_payload(
 
 def _production_impact() -> dict[str, Any]:
     return {
-        "shared_policy_changed": False,
+        "shared_policy_changed": True,
         "run_adapter_changed": True,
         "backtester_adapter_changed": False,
-        "parity_test_added": False,
+        "parity_test_added": True,
         "replay_only": False,
         "production_signal_path_changed": False,
         "alters_signal_generation": False,
         "alters_candidate_ranking": False,
-        "alters_sizing": False,
+        "alters_sizing": True,
         "alters_orders": False,
         "scope": "default_off_sec_financial_report_t1_paper_event_sleeve",
     }
