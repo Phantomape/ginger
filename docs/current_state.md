@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-05-11.
+Last updated: 2026-05-12.
 
 The current accepted core stack includes the 2026-05-10 TRIP sector taxonomy
 completion from `exp-20260510-015`, layered on top of the RS20 entry-state
@@ -15,10 +15,11 @@ fixed-window core metrics are:
 | `old_thin` | 0.3853 | 28.54% | 1.35 | 8.15% | 22 | 91.67% |
 
 Latest standalone backtest datapoint: `data/backtest_results_20260510.json`
-refreshes the accepted `late_strong` window at the same canonical values
-(`EV 4.2340`, `PnL $94,086.91`, `survival 80.39%`). `mid_weak` and `old_thin`
-still rely on the accepted three-window artifact from
-`data/experiments/exp-20260510-015/trip_sector_taxonomy.json`.
+still remains the newest accepted standalone core CLI refresh as of
+2026-05-12. It refreshes the accepted `late_strong` window at the same
+canonical values (`EV 4.2340`, `PnL $94,086.91`, `survival 80.39%`).
+`mid_weak` and `old_thin` still rely on the accepted three-window artifact
+from `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`.
 
 Latest accepted alpha result: `exp-20260510-015` maps TRIP to Consumer
 Discretionary in shared `risk_engine.SECTOR_MAP` instead of leaving it in the
@@ -27,6 +28,42 @@ PnL improved `+$403.46` (`+0.22%`) across the three canonical windows, with
 unchanged trade count and survival. The effect flows through shared sector
 enrichment / sector-dispersion allocation, so this is production-visible and
 not a replay-only branch.
+
+Latest accepted default-off SEC paper stack: `exp-20260511-112`,
+`exp-20260512-001`, `exp-20260512-006`, and `exp-20260512-007` now define the
+current financial-report T+1 paper baseline. The accepted sleeve is:
+non-platform `earnings_8k` / `periodic_report` rows only, `max_positions=3`,
+`t1_excess_return_vs_spy >= 1%`, 10-trading-day hold, `$15,000` base paper
+notional, and `periodic_report` at `1.25x` that base. The latest accepted
+three-window sleeve datapoint is aggregate EV `8.105443`, total PnL
+`$225,535.43`, sleeve PnL `$39,337.77`, and max drawdown ceiling `9.6499%`.
+`exp-20260512-002` rejected nearby hold-day retuning, so the next valid SEC
+step is forward replacement value or a new earnings-quality field, not another
+same-sample lifecycle sweep.
+
+Latest accepted default-off Space forward stack: the accepted official-catalyst
+Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
+now extends through `exp-20260512-004`, `008`, `013`, and `031`. The supported
+direction is quality-conditioned risk allocation, peer-relative breakout
+leadership, and small-cap risk-appetite allocation: perfect-TQS official Space
+signals get a `1.5x` top-up, near-perfect official Space `trend_long` gets a
+`1.10x` top-up, peer-nonleader official Space `breakout_long` gets `0.00x`
+extra risk, and official Space signals get `1.10x` extra default-off risk when
+IWM 20d momentum is above SPY 20d momentum. This remains default-off
+metadata/helper only with live Space slots at zero. `exp-20260512-010`
+rejected nearby near-perfect breakout TQS gating, and `exp-20260512-031`
+accepted the IWM-relative state only at `1.10x`; the next valid Space step is
+forward replacement value or a genuinely new catalyst-quality field, not
+another frozen-window TQS/geometry/IWM scalar retune.
+
+Latest rejected core entry alpha search: `exp-20260512-024` tested a
+deterministic OHLCV `pullback_reclaim_long` entry shape for leadership
+pullbacks above the 200MA, 5-15% below 52-week highs, with positive 10d/20d
+momentum and no 20d breakout/breakdown. It failed all three canonical windows:
+aggregate EV `6.2882 -> 3.9873`, aggregate PnL `-$48,599.83`, and max drawdown
+ceiling worsened `+2.07 pp`. Do not promote or retune nearby pullback/reclaim
+entry thresholds on the frozen windows; this candidate-pool direction adds too
+many lower-quality trades under the current exit/risk stack.
 
 Recent slot alpha-search scout: `exp-20260510-018` rejected effective core slot
 accounting from observed-only slot-missed replacement value. All blocked rows
@@ -479,3 +516,17 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space breakout work has a stronger ex-ante peer-leadership discriminator than the rejected near-perfect TQS breakout scalar. Nonleader breakouts should be zero-risk in the default-off Space forward stack; live Space slots remain zero.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-013\space_peer_nonleader_breakout_risk.json`
+
+## exp-20260512-031 Space IWM-relative momentum risk
+
+- timestamp: 2026-05-12T12:30:02+00:00
+- lane: alpha_search
+- decision: accepted_default_off_space_iwm_relative_momentum_risk
+- changed_variable: space_iwm_relative_leader_risk_scalar
+- best scalar: `1.10x` for official Space signals when IWM 20d momentum is above SPY 20d momentum, on top of the accepted exp-20260512-013 Space stack.
+- expected_value_score_delta: +0.4142
+- total_pnl_delta: +$9,550.74
+- window evidence: EV and PnL improved in all three Space augmented windows: `late_strong +0.1072` EV / `+$2,267.34`, `mid_weak +0.2138` EV / `+$3,541.68`, and `old_thin +0.0932` EV / `+$3,741.72`.
+- interpretation: Space official-catalyst risk should modestly scale up when small caps lead the broad tape. This is default-off observation-slot metadata/helper only; live Space slots remain zero.
+- production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-031\space_iwm_relative_momentum_risk.json`

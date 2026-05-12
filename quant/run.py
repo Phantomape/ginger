@@ -197,6 +197,7 @@ def main():
         persist_space_catalyst_observation_slot,
         persist_space_catalyst_event_ledger,
         space_catalyst_event_tickers,
+        space_catalyst_observation_feature_tickers,
         space_catalyst_observation_tickers,
     )
     from pilot_sleeve       import (
@@ -838,7 +839,10 @@ def main():
         )
 
     try:
-        space_observation_tickers = space_catalyst_observation_tickers(
+        space_official_observation_tickers = set(
+            space_catalyst_observation_tickers(space_catalyst_shadow)
+        )
+        space_observation_tickers = space_catalyst_observation_feature_tickers(
             space_catalyst_shadow
         )
         space_observation_features = {}
@@ -863,13 +867,18 @@ def main():
         space_observation_raw_count = 0
         space_observation_enriched_count = 0
         space_observation_filter_audit = {}
-        if space_observation_features:
+        space_signal_features = {
+            ticker: features
+            for ticker, features in space_observation_features.items()
+            if ticker in space_official_observation_tickers
+        }
+        if space_signal_features:
             space_observation_feature_context = {
                 **features_dict,
                 **space_observation_features,
             }
             space_observation_signals = generate_signals(
-                space_observation_features,
+                space_signal_features,
                 market_context=market_context,
                 enabled_strategies=ENABLED_STRATEGIES,
                 breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,

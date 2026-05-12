@@ -21,18 +21,18 @@
 
 鑻ユ湰鏂囨。涓?`AGENTS.md` 鍐茬獊锛屼互 `AGENTS.md` 涓哄噯銆傝嫢闇€瑕佸鐜板疄楠岋紝鍏堟煡鏈枃妗ｇ殑瀹為獙绱㈠紩锛屽啀鏌ョ粨鏋勫寲鏃ュ織銆?
 
-## 2026-05-11 accepted state
+## 2026-05-12 accepted state
 
-Latest accepted-stack checkpoint: keep the accepted lifecycle allocation core
-from `exp-20260502-022`, then layer the shared RS20 entry-state sizing
-promotion from `exp-20260510-012` and the shared TRIP sector taxonomy repair
-from `exp-20260510-015`. Treat
-`data/experiments/exp-20260510-015/trip_sector_taxonomy.json` as the current
-three-window source of truth for the accepted core stack. The latest standalone
-CLI datapoint is `data/backtest_results_20260510.json` for `late_strong`; the
+Latest accepted core checkpoint: keep the lifecycle allocation core from
+`exp-20260502-022`, then layer the shared RS20 entry-state sizing promotion
+from `exp-20260510-012` and the shared TRIP sector taxonomy repair from
+`exp-20260510-015`. Treat
+`data/experiments/exp-20260510-015/trip_sector_taxonomy.json` as the accepted
+three-window source of truth for the core stack. The latest standalone core CLI
+datapoint is still `data/backtest_results_20260510.json` for `late_strong`; the
 accepted `mid_weak` / `old_thin` baseline still comes from the shared
-three-window artifact because no newer accepted standalone CLI refresh exists
-for those windows. The stack remains a capital-allocation / event-quality
+three-window artifact because no newer accepted standalone core refresh exists
+for those windows. The core stack remains a capital-allocation / event-quality
 baseline, not a new entry filter, universe expansion, or sector priority rule.
 
 Accepted fixed-window metrics after the current core stack:
@@ -50,16 +50,41 @@ Evidence: this refreshed checkpoint is the shared baseline after
 data-gap-only, or blocked comparisons. Aggregate accepted-stack EV is now
 `6.2882` with aggregate PnL `+$184,444.42`, and convergence remains `8/8`.
 
-Latest unchanged validation point: the 2026-05-03 through 2026-05-11
+Latest accepted default-off SEC paper checkpoint: `exp-20260511-112`,
+`exp-20260512-001`, `exp-20260512-006`, and `exp-20260512-007` now define the
+current financial-report T+1 paper stack. The accepted sleeve is:
+non-platform `earnings_8k` / `periodic_report` rows only, `max_positions=3`,
+`t1_excess_return_vs_spy >= 1%`, 10-trading-day hold, `$15,000` base paper
+notional, and `periodic_report` at `1.25x` that base. The latest accepted
+three-window paper datapoint is aggregate EV `8.105443`, total PnL
+`$225,535.43`, sleeve PnL `$39,337.77`, and max drawdown ceiling `9.6499%`.
+Mechanism conclusion: SEC refinement should stay on event-quality / semantic
+risk allocation, not nearby hold-day, floor, or raw capacity retunes on the
+same frozen sample.
+
+Latest accepted default-off Space checkpoint: the official-catalyst Space
+forward stack from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
+now extends through `exp-20260512-004`, `exp-20260512-008`, and
+`exp-20260512-013` and `exp-20260512-031`. The supported mechanism is
+signal-quality-conditioned risk allocation plus peer-relative breakout
+leadership plus small-cap risk-appetite scaling: perfect-TQS official Space
+signals get a `1.5x` top-up, near-perfect official Space `trend_long` gets a
+`1.10x` top-up, peer-nonleader official Space `breakout_long` gets `0.00x`
+extra risk, and official Space signals get a `1.10x` top-up when IWM 20d
+momentum is above SPY 20d momentum. This remains default-off metadata/helper
+only, with live Space slots still zero and forward replacement value still the
+blocking evidence gate.
+
+Latest unchanged core validation point: the 2026-05-03 through 2026-05-12
 observed-only SEC/Form 4 queue, shadow-universe, event-harness, short-pressure,
 options-overlay, entry-state oracle, earnings-estimate readiness, 10-K
-forward-watch, add-on reserve, queue-refinement, and space forward-observation
-experiments all reused the same canonical three-window core metrics whenever no
-executable policy was promoted into the core stack. Treat the
+forward-watch, add-on reserve, queue-refinement, and default-off paper/sleeve
+adapter experiments all reused the same canonical three-window core metrics
+whenever no executable policy was promoted into the core stack. Treat the
 `exp-20260510-015` shared taxonomy record plus
 `data/experiments/exp-20260510-015/trip_sector_taxonomy.json` as the latest
-accepted checkpoint; `data/backtest_results_20260510.json` is the latest
-standalone `late_strong` CLI datapoint after that promotion.
+accepted core checkpoint; `data/backtest_results_20260510.json` is still the
+latest standalone `late_strong` CLI datapoint after that promotion.
 
 ### 2026-05-10 mechanism update: RS20 entry-state shared sizing
 
@@ -843,6 +868,32 @@ mean reversion銆乣0DTE` flow 閮戒笉绗﹀悎褰撳墠绯荤粺鐨?EOD / 浜
 | Liquidity-gated 10-K forward watch | accepted measurement adapter | currently the best blocked external candidate-pool direction, but only as an append-only PIT watch until it accumulates real outside-universe candidates and replacement-value outcomes | exp-20260503-011, exp-20260508-011/012 |
 
 ## 5. 宸茶瘉浼垨闄嶇骇鐨勬満鍒舵棌
+
+### 2026-05-12 mechanism update: OHLCV pullback/reclaim entry
+
+Status: rejected.
+
+Core conclusion: `exp-20260512-024` tested a deterministic
+`pullback_reclaim_long` candidate-pool expansion: above-200MA names with
+positive 10d and 20d momentum, 5-15% below 52-week highs, volume ratio at least
+1.2, and no 20d breakout/breakdown. It was meant to test the playbook's
+pullback/reclaim entry direction without using LLM soft-ranking, event sleeves,
+new tickers, or sizing/exits/ranking changes.
+
+Evidence: EV regressed in all three canonical windows. Aggregate EV fell
+`6.2882 -> 3.9873` (`-2.3009`), aggregate PnL fell `-$48,599.83`, and the
+variant added `36` trades plus `92` generated signals. Window EV deltas were
+`late_strong -0.9427`, `mid_weak -1.0280`, and `old_thin -0.3302`; old-window
+max drawdown worsened by `+3.33 pp`.
+
+Mechanism insight: the current A/B stack is not missing a simple OHLCV
+pullback/reclaim entry. This shape admits too much lower-quality continuation
+clutter under the existing target/stop/sizing stack.
+
+Do not repeat: nearby pullback percentage bands, volume-ratio thresholds,
+10d/20d momentum cutoffs, or above-200MA reclaim variants on the same frozen
+windows. A valid retry needs a genuinely new event/news catalyst-quality field
+or forward replacement-value evidence, not another price-only pullback retune.
 
 ### 5.1 Weak-hold early exit
 
@@ -7575,3 +7626,13 @@ same-accession earnings-quality field.
 - Window evidence: `late_strong +0.0180` EV / `+$375.38`, `mid_weak +0.3117` EV / `+$3,834.08`, and `old_thin unchanged`.
 - Interpretation: Space breakout quality is better separated by relative peer leadership than by the rejected near-perfect TQS breakout bucket. The useful mechanism is a risk-allocation veto on breakout laggards, not ticker expansion, stop geometry, or a broader TQS threshold.
 - Anti-repeat: do not retry nearby peer-nonleader breakout scalars on the same frozen snapshots. Future Space breakout work should add a genuinely new catalyst-quality field or collect forward replacement value for leader versus nonleader breakouts.
+
+### exp-20260512-031 Space IWM-relative momentum risk
+
+- Decision: accepted_default_off_space_iwm_relative_momentum_risk.
+- Tested variable: `space_iwm_relative_leader_risk_scalar` for official Space signals when IWM 20d momentum is above SPY 20d momentum, with the accepted exp-20260512-013 Space stack fixed.
+- Promoted default-off metadata/helper: `1.10x` extra scalar in the small-cap-leader state.
+- Aggregate delta versus exp-20260512-013: EV `+0.4142`, total PnL `+$9,550.74`, trade count unchanged at `70`, and no regressed canonical window.
+- Window evidence: `late_strong +0.1072` EV / `+$2,267.34`, `mid_weak +0.2138` EV / `+$3,541.68`, and `old_thin +0.0932` EV / `+$3,741.72`.
+- Interpretation: Space official-catalyst risk has a modest broad small-cap appetite interaction that survived the three-window gate. This is not support for theme ETF timing, static pool expansion, noisy ticker additions, or a larger IWM scalar; the `1.25x` variant had higher EV but failed the drawdown guard.
+- Anti-repeat: do not retry nearby IWM-vs-SPY scalars, Space ETF timing gates, or broad static-pool risk gates on the same frozen snapshots. Future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.

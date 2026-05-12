@@ -63,9 +63,13 @@ SPACE_CATALYST_NEAR_PERFECT_TQS_SCORE_FLOOR = 0.95
 SPACE_CATALYST_NEAR_PERFECT_TQS_SCORE_CEILING = 1.0
 SPACE_CATALYST_NEAR_PERFECT_TQS_TREND_RISK_SCALAR = 1.1
 SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR = 0.0
+SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER = "IWM"
+SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE = "SPY"
+SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD = "momentum_20d_pct"
+SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR = 1.1
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-013",
+    "experiment_id": "exp-20260512-031",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -109,6 +113,22 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_peer_nonleader_breakout_risk_scalar": (
         SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR
+    ),
+    "space_iwm_relative_momentum_experiment_id": "exp-20260512-031",
+    "space_iwm_relative_momentum_definition": (
+        "IWM 20d momentum > SPY 20d momentum"
+    ),
+    "space_iwm_relative_momentum_ticker": (
+        SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER
+    ),
+    "space_iwm_relative_momentum_reference": (
+        SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE
+    ),
+    "space_iwm_relative_momentum_field": (
+        SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD
+    ),
+    "space_iwm_relative_leader_risk_scalar": (
+        SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -188,6 +208,43 @@ def space_catalyst_basket_momentum_state(
     }
 
 
+def space_catalyst_iwm_relative_momentum_state(
+    features_by_ticker: dict[str, dict[str, Any]] | None,
+    *,
+    ticker: str = SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER,
+    reference: str = SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE,
+    field: str = SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD,
+) -> dict[str, Any]:
+    """Compare small-cap momentum appetite with the broad-market reference."""
+    features_by_ticker = features_by_ticker or {}
+    ticker_upper = str(ticker or "").upper()
+    reference_upper = str(reference or "").upper()
+    ticker_value = _as_float((features_by_ticker.get(ticker_upper) or {}).get(field))
+    reference_value = _as_float(
+        (features_by_ticker.get(reference_upper) or {}).get(field)
+    )
+    if ticker_value is None or reference_value is None:
+        return {
+            "field": field,
+            "ticker": ticker_upper,
+            "reference": reference_upper,
+            "state": "missing",
+            "iwm_momentum_20d_pct": _round(ticker_value, 6),
+            "spy_momentum_20d_pct": _round(reference_value, 6),
+            "iwm_excess_vs_spy_20d_pct": None,
+        }
+    excess = ticker_value - reference_value
+    return {
+        "field": field,
+        "ticker": ticker_upper,
+        "reference": reference_upper,
+        "state": "smallcap_leader" if excess > 0 else "smallcap_laggard",
+        "iwm_momentum_20d_pct": _round(ticker_value, 6),
+        "spy_momentum_20d_pct": _round(reference_value, 6),
+        "iwm_excess_vs_spy_20d_pct": _round(excess, 6),
+    }
+
+
 def space_catalyst_peer_momentum_state(
     ticker: str,
     basket_momentum_state: dict[str, Any] | None,
@@ -220,6 +277,7 @@ def space_catalyst_forward_risk_scalar(
     *,
     basket_momentum_state: dict[str, Any] | None = None,
     peer_momentum_state: dict[str, Any] | None = None,
+    iwm_relative_momentum_state: dict[str, Any] | None = None,
     trade_quality_score: Any = None,
 ) -> float:
     """Return the extra default-off forward scalar for Space sleeve attribution."""
@@ -258,6 +316,11 @@ def space_catalyst_forward_risk_scalar(
         and (peer_momentum_state or {}).get("state") == "nonleader"
     ):
         scalar *= SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    ):
+        scalar *= SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
     return scalar
 
 
@@ -356,6 +419,18 @@ def empty_space_catalyst_observation_slot(
             "space_peer_nonleader_breakout_risk_scalar": (
                 SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR
             ),
+            "space_iwm_relative_momentum_ticker": (
+                SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER
+            ),
+            "space_iwm_relative_momentum_reference": (
+                SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE
+            ),
+            "space_iwm_relative_momentum_field": (
+                SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD
+            ),
+            "space_iwm_relative_leader_risk_scalar": (
+                SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -415,6 +490,16 @@ def space_catalyst_observation_tickers(
     }
     if not tickers:
         tickers.update(_same_theme_tickers(shadow))
+    return sorted(ticker for ticker in tickers if ticker)
+
+
+def space_catalyst_observation_feature_tickers(
+    space_catalyst_shadow: dict[str, Any] | None = None,
+) -> list[str]:
+    """Return official candidates plus market-context tickers needed by policies."""
+    tickers = set(space_catalyst_observation_tickers(space_catalyst_shadow))
+    tickers.add(SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER)
+    tickers.add(SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE)
     return sorted(ticker for ticker in tickers if ticker)
 
 
@@ -597,6 +682,9 @@ def build_space_catalyst_observation_slot(
         entry_execution_plan,
     )
     basket_momentum = space_catalyst_basket_momentum_state(features_by_ticker)
+    iwm_relative_momentum = space_catalyst_iwm_relative_momentum_state(
+        features_by_ticker
+    )
 
     candidates = []
     for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
@@ -610,6 +698,7 @@ def build_space_catalyst_observation_slot(
                 signal=signal,
                 features=features_by_ticker.get(ticker) or {},
                 basket_momentum_state=basket_momentum,
+                iwm_relative_momentum_state=iwm_relative_momentum,
                 space_catalyst_shadow=shadow,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
@@ -643,6 +732,7 @@ def build_space_catalyst_observation_slot(
         "same_day_core_alternative_count": len(core_alternatives),
         "same_day_core_alternatives": core_alternatives[:10],
         "space_basket_momentum": basket_momentum,
+        "space_iwm_relative_momentum": iwm_relative_momentum,
         "entry_plan_context": _entry_plan_context(entry_execution_plan),
         "portfolio_heat_context": _portfolio_heat_context(portfolio_heat or {}),
         "entry_filter_audit": _entry_filter_audit_summary(entry_filter_audit or {}),
@@ -677,6 +767,18 @@ def build_space_catalyst_observation_slot(
             ),
             "space_peer_nonleader_breakout_risk_scalar": (
                 SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR
+            ),
+            "space_iwm_relative_momentum_ticker": (
+                SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER
+            ),
+            "space_iwm_relative_momentum_reference": (
+                SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE
+            ),
+            "space_iwm_relative_momentum_field": (
+                SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD
+            ),
+            "space_iwm_relative_leader_risk_scalar": (
+                SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -1175,6 +1277,7 @@ def _observation_slot_row(
     signal: dict[str, Any],
     features: dict[str, Any],
     basket_momentum_state: dict[str, Any],
+    iwm_relative_momentum_state: dict[str, Any],
     space_catalyst_shadow: dict[str, Any],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
@@ -1205,6 +1308,7 @@ def _observation_slot_row(
         strategy,
         basket_momentum_state=basket_momentum_state,
         peer_momentum_state=peer_momentum_state,
+        iwm_relative_momentum_state=iwm_relative_momentum_state,
         trade_quality_score=signal.get("trade_quality_score"),
     )
     basket_risk_scalar = (
@@ -1232,6 +1336,11 @@ def _observation_slot_row(
     peer_nonleader_breakout_risk_scalar = (
         SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR
         if peer_nonleader_breakout_bucket
+        else 1.0
+    )
+    iwm_relative_momentum_risk_scalar = (
+        SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+        if (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
         else 1.0
     )
     effective_risk_scalar = (
@@ -1295,6 +1404,27 @@ def _observation_slot_row(
         "space_peer_nonleader_breakout_bucket": peer_nonleader_breakout_bucket,
         "space_peer_nonleader_breakout_risk_scalar": _round(
             peer_nonleader_breakout_risk_scalar,
+            6,
+        ),
+        "space_iwm_relative_state": (
+            iwm_relative_momentum_state or {}
+        ).get("state"),
+        "space_iwm_momentum_20d_pct": _round(
+            (iwm_relative_momentum_state or {}).get("iwm_momentum_20d_pct"),
+            6,
+        ),
+        "space_spy_momentum_20d_pct": _round(
+            (iwm_relative_momentum_state or {}).get("spy_momentum_20d_pct"),
+            6,
+        ),
+        "space_iwm_excess_vs_spy_20d_pct": _round(
+            (iwm_relative_momentum_state or {}).get(
+                "iwm_excess_vs_spy_20d_pct"
+            ),
+            6,
+        ),
+        "space_iwm_relative_momentum_risk_scalar": _round(
+            iwm_relative_momentum_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,

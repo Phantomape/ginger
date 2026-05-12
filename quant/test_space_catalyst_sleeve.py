@@ -18,6 +18,8 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_basket_momentum_state,
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
+    space_catalyst_iwm_relative_momentum_state,
+    space_catalyst_observation_feature_tickers,
     space_catalyst_observation_tickers,
     space_catalyst_peer_momentum_state,
     space_catalyst_records_as_of,
@@ -147,7 +149,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-013"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-031"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -201,6 +203,24 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
             "space_peer_nonleader_breakout_risk_scalar"
         ]
         == 0.0
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_iwm_relative_momentum_experiment_id"
+        ]
+        == "exp-20260512-031"
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_iwm_relative_momentum_ticker"]
+        == "IWM"
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_iwm_relative_momentum_reference"]
+        == "SPY"
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_iwm_relative_leader_risk_scalar"]
+        == 1.1
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
@@ -292,6 +312,32 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         )
         == 0.0
     )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            iwm_relative_momentum_state={"state": "smallcap_leader"},
+        )
+        == 1.1
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            iwm_relative_momentum_state={"state": "smallcap_laggard"},
+        )
+        == 1.0
+    )
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "RKLB",
+            "trend_long",
+            basket_momentum_state={"state": "positive"},
+            iwm_relative_momentum_state={"state": "smallcap_leader"},
+            trade_quality_score=0.956,
+        ),
+        6,
+    ) == 1.66375
 
 
 def test_space_catalyst_basket_momentum_state_uses_official_pool():
@@ -333,6 +379,22 @@ def test_space_catalyst_peer_momentum_state_compares_to_official_average():
     assert nonleader["excess_momentum_20d_pct"] == -0.05
 
 
+def test_space_catalyst_iwm_relative_momentum_state_compares_iwm_to_spy():
+    state = space_catalyst_iwm_relative_momentum_state(
+        {
+            "IWM": {"momentum_20d_pct": 0.08},
+            "SPY": {"momentum_20d_pct": 0.03},
+        }
+    )
+    missing = space_catalyst_iwm_relative_momentum_state(
+        {"IWM": {"momentum_20d_pct": 0.08}}
+    )
+
+    assert state["state"] == "smallcap_leader"
+    assert state["iwm_excess_vs_spy_20d_pct"] == 0.05
+    assert missing["state"] == "missing"
+
+
 def test_space_catalyst_forward_target_atr_mult_official_trends_only():
     assert space_catalyst_forward_target_atr_mult("RKLB", "trend_long", 4.5) == 7.0
     assert space_catalyst_forward_target_atr_mult("ASTS", "trend_long", 4.5) == 7.0
@@ -349,6 +411,16 @@ def test_space_catalyst_observation_tickers_use_official_forward_pool():
         "PL",
         "RDW",
         "RKLB",
+    ]
+    assert space_catalyst_observation_feature_tickers({}) == [
+        "ASTS",
+        "BKSY",
+        "IWM",
+        "LUNR",
+        "PL",
+        "RDW",
+        "RKLB",
+        "SPY",
     ]
 
 
@@ -403,6 +475,8 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
             "PL": {"momentum_20d_pct": 0.1},
             "RDW": {"momentum_20d_pct": 0.1},
             "RKLB": {"atr": 5.0, "momentum_20d_pct": 0.1},
+            "IWM": {"momentum_20d_pct": 0.08},
+            "SPY": {"momentum_20d_pct": 0.03},
             "IRDM": {"atr": 1.0},
         },
         space_catalyst_shadow={
@@ -436,8 +510,11 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_peer_momentum_state"] == "nonleader"
     assert plan["space_peer_nonleader_breakout_bucket"] is False
     assert plan["space_peer_nonleader_breakout_risk_scalar"] == 1.0
-    assert plan["effective_risk_scalar"] == 1.134375
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1134.38
+    assert plan["space_iwm_relative_state"] == "smallcap_leader"
+    assert plan["space_iwm_excess_vs_spy_20d_pct"] == 0.05
+    assert plan["space_iwm_relative_momentum_risk_scalar"] == 1.1
+    assert plan["effective_risk_scalar"] == 1.247813
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1247.81
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -647,6 +724,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_perfect_tqs_risk_scalar": 1.5,
                 "space_near_perfect_tqs_trend_risk_scalar": 1.1,
                 "space_peer_nonleader_breakout_risk_scalar": 0.0,
+                "space_iwm_relative_leader_risk_scalar": 1.1,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -667,6 +745,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "effective_risk_scalar": 1.03125,
                     "space_basket_momentum_state": "positive",
                     "space_peer_momentum_state": "leader",
+                    "space_iwm_relative_state": "smallcap_leader",
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -709,12 +788,13 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "Space basket positive 20d momentum @ 1.1x; "
         "perfect Space TQS @ 1.5x; "
         "near-perfect Space trend TQS @ 1.1x; "
-        "peer-nonleader Space breakout @ 0.0x)"
+        "peer-nonleader Space breakout @ 0.0x; "
+        "IWM>SPY Space risk @ 1.1x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
     assert "Live slots: 0" in report
     assert "RKLB: trend_long entry $100.00 target $125.00" in report
-    assert "risk=1.03125x basket=positive peer=leader" in report
+    assert "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader" in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

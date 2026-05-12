@@ -382,6 +382,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "peer-nonleader Space breakout @ "
                     f"{peer_nonleader_breakout_scalar}x"
                 )
+            iwm_relative_leader_scalar = forward.get(
+                "space_iwm_relative_leader_risk_scalar"
+            )
+            if iwm_relative_leader_scalar is not None:
+                extra_policies.append(
+                    "IWM>SPY Space risk @ "
+                    f"{iwm_relative_leader_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -433,6 +441,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             basket_text = f" basket={basket_state}" if basket_state else ""
             peer_state = plan.get("space_peer_momentum_state")
             peer_text = f" peer={peer_state}" if peer_state else ""
+            iwm_state = plan.get("space_iwm_relative_state")
+            iwm_text = f" iwm={iwm_state}" if iwm_state else ""
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -450,7 +460,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {plan.get('ticker', '?')}: {plan.get('strategy', '?')} "
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
-                f"risk={risk_text}{basket_text}{peer_text}{perfect_tqs_text}"
+                f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )
