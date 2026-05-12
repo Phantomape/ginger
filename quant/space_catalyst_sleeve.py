@@ -71,6 +71,8 @@ SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT = "launch_lunar"
 SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR = 1.1
 SPACE_CATALYST_LIQUIDITY_TIER = "ok"
 SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR = 1.1
+SPACE_CATALYST_WATCH_LIQUIDITY_TIER = "watch"
+SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR = 1.1
 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD = "customer_win"
 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES = (
     "official_or_primary_release",
@@ -84,7 +86,7 @@ SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS = ("financing", "dilution")
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-110",
+    "experiment_id": "exp-20260512-112",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -156,6 +158,11 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
     "space_liquidity_tier_risk_scalar": (
         SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
+    ),
+    "space_watch_liquidity_tier_experiment_id": "exp-20260512-112",
+    "space_watch_liquidity_tier": SPACE_CATALYST_WATCH_LIQUIDITY_TIER,
+    "space_watch_liquidity_tier_risk_scalar": (
+        SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
     ),
     "space_official_customer_source_experiment_id": "exp-20260512-038",
     "space_official_customer_source_event_field": (
@@ -388,6 +395,11 @@ def space_catalyst_forward_risk_scalar(
         scalar *= SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and str(liquidity_tier or "") == SPACE_CATALYST_WATCH_LIQUIDITY_TIER
+    ):
+        scalar *= SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and official_customer_source_profile
     ):
         scalar *= SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
@@ -518,6 +530,10 @@ def empty_space_catalyst_observation_slot(
             "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
             "space_liquidity_tier_risk_scalar": (
                 SPACE_CATALYST_LIQUIDITY_TIER_RISK_SCALAR
+            ),
+            "space_watch_liquidity_tier": SPACE_CATALYST_WATCH_LIQUIDITY_TIER,
+            "space_watch_liquidity_tier_risk_scalar": (
+                SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
             ),
             "space_official_customer_source_event_field": (
                 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD
@@ -953,6 +969,10 @@ def build_space_catalyst_observation_slot(
             ),
             "space_iwm_relative_leader_risk_scalar": (
                 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+            ),
+            "space_watch_liquidity_tier": SPACE_CATALYST_WATCH_LIQUIDITY_TIER,
+            "space_watch_liquidity_tier_risk_scalar": (
+                SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
             ),
             "space_company_release_customer_source_types": list(
                 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
@@ -1613,6 +1633,14 @@ def _observation_slot_row(
         if liquidity_tier_bucket
         else 1.0
     )
+    watch_liquidity_tier_bucket = (
+        liquidity_tier == SPACE_CATALYST_WATCH_LIQUIDITY_TIER
+    )
+    watch_liquidity_tier_risk_scalar = (
+        SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
+        if watch_liquidity_tier_bucket
+        else 1.0
+    )
     official_customer_source_bucket = official_customer_source_profile is not None
     official_customer_source_risk_scalar = (
         SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
@@ -1734,6 +1762,11 @@ def _observation_slot_row(
         "space_liquidity_tier_bucket": liquidity_tier_bucket,
         "space_liquidity_tier_risk_scalar": _round(
             liquidity_tier_risk_scalar,
+            6,
+        ),
+        "space_watch_liquidity_tier_bucket": watch_liquidity_tier_bucket,
+        "space_watch_liquidity_tier_risk_scalar": _round(
+            watch_liquidity_tier_risk_scalar,
             6,
         ),
         "space_official_customer_source_bucket": official_customer_source_bucket,

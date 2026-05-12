@@ -156,7 +156,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-110"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-112"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -250,6 +250,15 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert snapshot["forward_hypothesis"]["space_liquidity_tier"] == "ok"
     assert (
         snapshot["forward_hypothesis"]["space_liquidity_tier_risk_scalar"]
+        == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_watch_liquidity_tier_experiment_id"]
+        == "exp-20260512-112"
+    )
+    assert snapshot["forward_hypothesis"]["space_watch_liquidity_tier"] == "watch"
+    assert (
+        snapshot["forward_hypothesis"]["space_watch_liquidity_tier_risk_scalar"]
         == 1.1
     )
     assert (
@@ -429,6 +438,14 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             liquidity_tier="ok",
         )
         == 1.375
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            liquidity_tier="watch",
+        )
+        == 1.1
     )
     assert round(
         space_catalyst_forward_risk_scalar(
@@ -730,6 +747,8 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["liquidity_tier"] == "ok"
     assert plan["space_liquidity_tier_bucket"] is True
     assert plan["space_liquidity_tier_risk_scalar"] == 1.1
+    assert plan["space_watch_liquidity_tier_bucket"] is False
+    assert plan["space_watch_liquidity_tier_risk_scalar"] == 1.0
     assert plan["space_official_customer_source_bucket"] is True
     assert plan["space_official_customer_source_risk_scalar"] == 1.1
     assert plan["space_company_release_customer_source_bucket"] is True
@@ -792,6 +811,54 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 886.88
 
 
+def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "LUNR",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.86,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.1},
+            "BKSY": {"momentum_20d_pct": 0.1},
+            "LUNR": {"atr": 1.0, "momentum_20d_pct": 0.1},
+            "PL": {"momentum_20d_pct": 0.1},
+            "RDW": {"momentum_20d_pct": 0.1},
+            "RKLB": {"momentum_20d_pct": 0.1},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {"launch_lunar": ["LUNR"]},
+            "tickers_by_liquidity_tier": {"watch": ["LUNR"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "LUNR"
+    assert plan["liquidity_tier"] == "watch"
+    assert plan["space_liquidity_tier_bucket"] is False
+    assert plan["space_liquidity_tier_risk_scalar"] == 1.0
+    assert plan["space_watch_liquidity_tier_bucket"] is True
+    assert plan["space_watch_liquidity_tier_risk_scalar"] == 1.1
+    assert plan["effective_risk_scalar"] == 0.99825
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 998.25
+
+
 def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
     snapshot = build_space_catalyst_observation_slot(
         as_of="2026-05-11",
@@ -839,6 +906,8 @@ def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
     assert plan["space_launch_lunar_theme_segment_risk_scalar"] == 1.1
     assert plan["space_liquidity_tier_bucket"] is True
     assert plan["space_liquidity_tier_risk_scalar"] == 1.1
+    assert plan["space_watch_liquidity_tier_bucket"] is False
+    assert plan["space_watch_liquidity_tier_risk_scalar"] == 1.0
     assert plan["effective_risk_scalar"] == 0.0
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 0.0
 
@@ -1007,6 +1076,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_launch_lunar_theme_risk_scalar": 1.1,
                 "space_liquidity_tier": "ok",
                 "space_liquidity_tier_risk_scalar": 1.1,
+                "space_watch_liquidity_tier": "watch",
+                "space_watch_liquidity_tier_risk_scalar": 1.1,
                 "space_official_customer_source_event_field": "customer_win",
                 "space_official_customer_source_risk_scalar": 1.1,
                 "space_company_release_customer_source_risk_scalar": 1.1,
@@ -1083,6 +1154,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "IWM>SPY Space risk @ 1.1x; "
         "launch/lunar theme risk @ 1.1x; "
         "liquidity tier ok @ 1.1x; "
+        "liquidity tier watch @ 1.1x; "
         "official customer source customer_win @ 1.1x; "
         "company-release customer source @ 1.1x; "
         "financing/dilution profile @ 1.075x)"

@@ -407,6 +407,15 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     f"liquidity tier {liquidity_tier} @ "
                     f"{liquidity_tier_scalar}x"
                 )
+            watch_liquidity_tier_scalar = forward.get(
+                "space_watch_liquidity_tier_risk_scalar"
+            )
+            watch_liquidity_tier = forward.get("space_watch_liquidity_tier")
+            if watch_liquidity_tier_scalar is not None:
+                extra_policies.append(
+                    f"liquidity tier {watch_liquidity_tier} @ "
+                    f"{watch_liquidity_tier_scalar}x"
+                )
             source_scalar = forward.get(
                 "space_official_customer_source_risk_scalar"
             )
@@ -491,6 +500,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             theme_text = f" theme={theme_segment}" if theme_segment else ""
             liquidity_tier = plan.get("liquidity_tier")
             liquidity_text = f" liquidity={liquidity_tier}" if liquidity_tier else ""
+            watch_liquidity_text = (
+                " watch_liquidity=True"
+                if plan.get("space_watch_liquidity_tier_bucket")
+                else ""
+            )
             source_text = (
                 " customer_source=True"
                 if plan.get("space_official_customer_source_bucket")
@@ -524,7 +538,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"entry {entry_text} target {target_text} "
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
                 f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
-                f"{liquidity_text}{source_text}{company_source_text}{profile_text}"
+                f"{liquidity_text}{watch_liquidity_text}{source_text}"
+                f"{company_source_text}{profile_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
