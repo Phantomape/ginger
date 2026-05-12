@@ -7647,6 +7647,16 @@ same-accession earnings-quality field.
 - Interpretation: Space risk allocation has a modest production-visible catalyst-bucket edge in launch/lunar names. This is not support for noisy ticker expansion, LLM soft-ranking on thin event data, or a broader theme ETF timing gate.
 - Anti-repeat: do not retry nearby launch/lunar theme-segment scalars on the same frozen snapshots. The `1.25x` variant had higher EV but failed the drawdown guard; future Space work should add forward catalyst replacement value or a genuinely new catalyst-quality field.
 
+### exp-20260512-035 Space data/defense theme-segment risk
+
+- Decision: rejected_space_data_defense_theme_risk.
+- Tested variable: `space_data_defense_theme_segment_risk_scalar` for official Space signals whose production universe-registry `theme_segment` is `space_data_defense`, with the accepted exp-20260512-032 Space stack fixed.
+- Best tested variant: `1.25x` extra scalar.
+- Aggregate delta versus exp-20260512-032: EV `+0.1986`, total PnL `+$8,204.94`, trade count unchanged at `70`, but Gate 4 failed.
+- Window evidence: `late_strong +0.0000` EV / `+$0.00`, `mid_weak -0.0065` EV / `$-145.96`, and `old_thin +0.2051` EV / `+$8,350.90`; max drawdown worsened by `0.63` percentage points.
+- Interpretation: Space data/defense theme risk is an old-window concentration, not a robust same-sample catalyst-bucket edge. The accepted Space stack should keep the launch/lunar theme scalar and avoid adding a BKSY/PL/RDW theme top-up without forward replacement value.
+- Anti-repeat: do not retry adjacent Space data/defense theme scalars on these frozen snapshots. Future Space work should use forward catalyst replacement value or a genuinely new production-observable catalyst-quality field, not another local bucket scalar.
+
 ### exp-20260512-033 SEC financial-report paired-filing dedupe
 
 - Decision: rejected_paired_filing_dedupe.

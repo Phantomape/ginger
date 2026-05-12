@@ -547,3 +547,19 @@ Latest Space remaining trend risk refinement: `exp-20260511-023` tested extendin
 - interpretation: Space official-catalyst risk has a modest production-visible launch/lunar bucket edge that survived the three-window gate. This is default-off observation-slot metadata/helper only; live Space slots remain zero.
 - production_impact: {'shared_policy_changed': True, 'backtester_adapter_changed': False, 'run_adapter_changed': True, 'replay_only': True, 'parity_test_added': True, 'daily_report_metadata_changed': True, 'live_slots_changed': False, 'live_slots': 0}
 - artifact: `data\experiments\exp-20260512-032\space_launch_lunar_theme_risk.json`
+
+## exp-20260512-035 Space data/defense theme-segment risk
+
+- timestamp: 2026-05-12T14:33:05+00:00
+- lane: alpha_search
+- decision: rejected_space_data_defense_theme_risk
+- changed_variable: space_data_defense_theme_segment_risk_scalar
+- best scalar: `1.25x` for official Space signals whose production universe-registry `theme_segment` is `space_data_defense`, on top of the accepted exp-20260512-032 Space stack.
+- expected_value_score_delta: +0.1986
+- total_pnl_delta: +$8,204.94
+- before_aggregate: {'expected_value_score_sum': 12.7321, 'total_pnl_sum': 312460.94, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1128}
+- after_aggregate: {'expected_value_score_sum': 12.9307, 'total_pnl_sum': 320665.88, 'trade_count_sum': 70, 'min_survival_rate': 0.7746, 'max_drawdown_pct_max': 0.1191}
+- window evidence: only `old_thin` improved (`+0.2051` EV / `+$8,350.90`); `mid_weak` regressed (`-0.0065` EV / `$-145.96`) and `late_strong` was unchanged. Max drawdown worsened by `0.63` percentage points, above the gate guardrail.
+- interpretation: Space data/defense bucket scaling is old-window concentrated and does not survive the accepted three-window Space gate. Do not retry adjacent BKSY/PL/RDW data/defense theme scalars on these frozen snapshots.
+- production_impact: {'shared_policy_changed': False, 'backtester_adapter_changed': False, 'run_adapter_changed': False, 'replay_only': True, 'parity_test_added': False, 'daily_report_metadata_changed': False, 'live_slots_changed': False, 'live_slots': 0}
+- artifact: `data\experiments\exp-20260512-035\space_data_defense_theme_risk.json`
