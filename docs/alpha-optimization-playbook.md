@@ -2,42 +2,78 @@
 
 Last reviewed: 2026-05-12.
 
-This file is a mechanism playbook, not an experiment diary. It should tell the
-next agent what to test, what not to retest, and where the current alpha seems
-to come from. Individual dated experiments belong in:
+This file is the long-run alpha synthesis for the strategy system. It is not a
+single-session action card and it is not a chronological experiment diary. Its
+job is to compress many experiments into durable mechanism conclusions:
+
+- where the current alpha appears to come from;
+- which experiment families have been accepted, rejected, blocked, or deferred;
+- what patterns repeated across windows and strategy sleeves;
+- what should be tested next, and what should not be retried without new
+  evidence.
+
+Individual experiment parameters, exact commands, window metrics, artifacts,
+and reproduction details belong in:
 
 - `docs/experiment_log.jsonl`
 - `docs/experiments/logs/*.json`
 - `docs/experiments/artifacts/*.md`
 - `data/experiments/**`
 
-Use `docs/backtesting.md` as the single source of truth for commands, standard
-windows, metrics, and acceptance protocol. If this file conflicts with
+Use `docs/backtesting.md` as the single source of truth for standard windows,
+commands, metrics, and acceptance protocol. If this file conflicts with
 `AGENTS.md`, `AGENTS.md` wins.
 
-## Current Strategy Shape
+## How To Use This Playbook
+
+Before starting a new alpha search:
+
+1. Identify the mechanism family below.
+2. Read its accepted laws and rejected patterns.
+3. Check whether the proposed variable is genuinely new or only a nearby retry.
+4. Follow `docs/backtesting.md` for the three-window protocol.
+5. Record the experiment in structured logs, then update this playbook only if
+   the result changes a durable conclusion.
+
+Good updates to this file look like:
+
+- "This mechanism is now accepted, with these evidence IDs."
+- "This family is now rejected unless new evidence appears."
+- "The bottleneck is measurement/data, not parameter choice."
+- "The next valid alpha variable should move from X to Y."
+
+Bad updates look like:
+
+- appending every experiment result as a dated note;
+- copying full metric dumps already stored in logs;
+- recording one-off parameter sweeps without a mechanism conclusion;
+- using this file as a replacement for `experiment_log.jsonl`.
+
+## Current Strategy Doctrine
 
 The system is an event-enhanced intermediate-term trend / breakout strategy.
-The durable alpha map is:
 
-1. Core stack: trend continuation, breakout follow-through, lifecycle sizing,
-   and capital allocation.
-2. Event overlays: production-visible event semantics and replacement-value
-   paper sleeves.
-3. Space sleeve: default-off official-catalyst risk allocation, not live
-   routing yet.
-4. SEC financial-report sleeve: default-off T+1 drift paper queue with semantic
-   notional allocation.
-5. LLM: useful for event understanding and risk explanation, but not for hard
-   sizing, stops, or live routing.
+Current alpha sources, in descending practical importance:
 
-## Accepted Checkpoints
+1. Trend continuation and breakout follow-through.
+2. Lifecycle and capital allocation around already-selected positions.
+3. Production-visible event semantics.
+4. Default-off paper replacement-value sleeves.
+5. Narrow risk allocation by state, sector, catalyst quality, and relative
+   strength.
+
+The main lesson from the experiment history is that the system rarely improves
+from broad filters or broad capacity changes. The durable wins tend to be
+small, production-visible allocation changes that preserve candidate survival
+and do not invent a new backtest-only decision path.
+
+## Current Accepted Checkpoints
 
 ### Core Stack
 
-Accepted checkpoint: `exp-20260510-015` with the shared TRIP sector taxonomy
-repair, layered on the lifecycle allocation core from `exp-20260502-022` and
-the RS20 entry-state sizing promotion from `exp-20260510-012`.
+Accepted checkpoint: `exp-20260510-015`, layered on the lifecycle allocation
+core from `exp-20260502-022` and the RS20 entry-state sizing promotion from
+`exp-20260510-012`.
 
 Accepted three-window metrics:
 
@@ -48,14 +84,13 @@ Accepted three-window metrics:
 | `old_thin` | 0.3853 | +28.54% | 1.35 | 8.15% | 40.91% | 22 |
 
 Aggregate accepted-stack EV is `6.2882`; aggregate PnL is `+$184,444.42`;
-convergence is `8/8`. Treat
-`data/experiments/exp-20260510-015/trip_sector_taxonomy.json` as the current
-three-window source of truth for the core stack.
+convergence is `8/8`.
 
-Mechanism conclusion: core work should favor modest shared allocation edges and
-state-aware lifecycle controls. Do not reopen broad entry filters, capacity
-counts, or target/stop sweeps unless a new independent state variable explains
-why the old attempts failed.
+Source of truth: `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`.
+
+Core conclusion: the accepted core is a capital-allocation and lifecycle
+baseline. It is not evidence for new broad entry filters, broad universe
+expansion, global sector priority, or global capacity changes.
 
 ### SEC Financial-Report Paper Sleeve
 
@@ -65,157 +100,371 @@ Accepted checkpoint: `exp-20260512-020`, after the accepted sequence
 
 Current default-off sleeve:
 
-- Non-platform `earnings_8k` and `periodic_report` rows only.
-- `max_positions=3`.
-- `t1_excess_return_vs_spy >= 1%`.
-- Hold for 10 trading days.
-- Base paper notional `$15,000`.
-- `periodic_report` default scalar `1.25x`.
-- `10-Q periodic_report` scalar `2.00x`.
+- non-platform `earnings_8k` and `periodic_report` rows only;
+- `max_positions=3`;
+- `t1_excess_return_vs_spy >= 1%`;
+- 10-trading-day hold;
+- `$15,000` base paper notional;
+- `periodic_report` default scalar `1.25x`;
+- `10-Q periodic_report` scalar `2.00x`;
 - `earnings_8k` scalar `1.00x`.
 
 Accepted aggregate metrics after `exp-20260512-020`: EV `8.558004`, total PnL
-`$234,762.79`, sleeve PnL `$48,332.18`, max drawdown ceiling `10.0721%`, 52
-closed sleeve trades.
+`$234,762.79`, sleeve PnL `$48,332.18`, max drawdown ceiling `10.0721%`, and
+52 closed sleeve trades.
 
-Mechanism conclusion: the SEC edge is event-quality and semantic risk
-allocation after a strong T+1 relative reaction. The useful surface is not more
-raw capacity, hold-day retuning, paired-filing dedupe, or local item-code
-notional tweaks on the same sample.
+SEC conclusion: this sleeve is a T+1 relative-reaction and semantic
+risk-allocation surface. It should stay default-off until forward replacement
+value supports live scope.
 
 ### Space Default-Off Sleeve
 
 Accepted checkpoint: official-catalyst Space stack through `exp-20260512-041`.
-`exp-20260512-043` tested `mission_binary` and produced no executable delta.
+`exp-20260512-043` tested `mission_binary` profile membership and produced no
+executable delta.
 
 Current default-off Space helpers:
 
-- Perfect official Space TQS: `1.50x` risk top-up.
-- Near-perfect official Space `trend_long` TQS: `1.10x` top-up.
-- Peer-nonleader official Space `breakout_long`: `0.00x` extra risk.
-- IWM 20d momentum above SPY 20d momentum: `1.10x` top-up.
-- `theme_segment=launch_lunar`: `1.10x` top-up.
-- `liquidity_tier=ok`: `1.10x` top-up.
-- Primary-source `customer_win`: `1.10x` top-up.
-- `event_guard_profile` containing financing or dilution: `1.075x` top-up.
+- perfect official Space TQS: `1.50x` risk top-up;
+- near-perfect official Space `trend_long` TQS: `1.10x` top-up;
+- peer-nonleader official Space `breakout_long`: `0.00x` extra risk;
+- IWM 20d momentum above SPY 20d momentum: `1.10x` top-up;
+- `theme_segment=launch_lunar`: `1.10x` top-up;
+- `liquidity_tier=ok`: `1.10x` top-up;
+- primary-source `customer_win`: `1.10x` top-up;
+- `event_guard_profile` containing financing or dilution: `1.075x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
 Accepted aggregate metrics after `exp-20260512-041`: EV `14.0087`, total PnL
-`$340,127.26`, max drawdown ceiling `12.43%`, min survival `77.46%`, 70 trades.
+`$340,127.26`, max drawdown ceiling `12.43%`, min survival `77.46%`, and 70
+trades.
 
-Live Space slots remain zero. The accepted Space stack is production-visible
-metadata/helper policy, not a live order path.
+Space conclusion: the supported Space alpha is production-visible
+catalyst-quality risk allocation, not live routing. Live Space slots remain
+zero, and forward replacement value is still the promotion gate.
 
-Mechanism conclusion: the next Space alpha direction is production-visible
-catalyst-quality and forward replacement value, not LLM soft-ranking on thin
-data, noisy ticker expansion, or another same-sample stop/target/risk scalar.
-Candidate-pool work is valid only if it improves official-catalyst coverage or
-forward attribution quality without adding noise tickers.
+## Long-Run Mechanism Laws
 
-### Event Paper Stack
+### 1. Broad Filters Usually Fail
 
-Accepted paper direction: event-specific state-surface allocation, especially
-rotation-breakout leadership plus benchmark-gated state-surface replacement
-value.
+Repeated experiments show that broad entry filters, global ranking filters, and
+simple sector/strategy gates often remove good trades along with bad ones.
+Survival pressure matters more than intuitive cleanliness.
 
-Key evidence:
+Accepted implications:
 
-- `exp-20260510-003`: rotation-surface event tilt accepted as a shared
-  production-visible default-off adapter.
-- `exp-20260510-005`: rotation-event plus benchmark-gated state-surface stack
-  remained strongly additive in all three windows.
+- New filters need measured survival and three-window evidence.
+- Prefer replacing or refining an existing filter over adding another one.
+- Avoid broad "looks safer" rules unless they improve EV and risk distribution
+  across the canonical windows.
 
-Mechanism conclusion: the current event-paper edge is not a broad benchmark
-gate or generic source-pruning rule. It is a narrow replacement-value surface
-that needs forward paper outcomes before live/default routing.
+Evidence families:
 
-## Research Queue
+- global TQS ordering and confidence ordering: rejected;
+- same-day trend-first ordering: rejected;
+- sector cap / sector priority shortcuts: rejected;
+- broad ETF/universe expansion as direct core alpha: rejected;
+- simple gap-cancel exceptions by sector/strategy/TQS: rejected.
 
-1. Space forward replacement value. Measure closed forward outcomes for the
-   current official-catalyst helpers, especially leader versus nonleader
-   breakouts and primary-source customer wins. Do not spend more loops on Space
-   LLM soft-ranking while the labeled forward set is thin.
-2. SEC semantic quality fields. Add genuinely new PIT-safe earnings/filing
-   quality fields, such as same-accession surprise, guidance, or management
-   language structure. Avoid nearby hold-day, capacity, floor, form-exclusion,
-   paired-filing, or item-code notional retunes.
-3. Event paper replacement value. Keep the rotation/state-surface stack
-   default-off while collecting forward closed outcomes and concentration risk.
-4. Core allocation edges. Search for one independent state variable at a time:
-   relative strength, dispersion, event quality, or heat capacity. Avoid new
-   filters unless survival remains healthy and the field is production-visible.
-5. Measurement repair only when it blocks alpha. Valid blockers include
-   production/backtest divergence, missing runtime fields, incomplete forward
-   attribution, or a data join gap that makes the candidate alpha unreplayable.
+### 2. Allocation Beats New Entry More Often Than New Entry Beats Allocation
+
+The strongest durable changes usually resize or route already-qualified
+signals. They do not invent a new entry source.
+
+Accepted or useful allocation mechanisms:
+
+- strict follow-through add-on production default;
+- follow-through add-on fraction increase after confirmation;
+- 40% initial cap allocation;
+- one-slot scarce-capacity breakout deferral;
+- risk-on unmodified sizing lift;
+- low/mid-score plain risk-on sizing;
+- RS20 shared entry-state sizing top-up;
+- selected sector/state risk boosts when they survive all windows.
+
+Rejected nearby patterns:
+
+- global `MAX_POSITIONS` / slot-count sweeps;
+- raw portfolio heat budget expansion;
+- simple sector caps;
+- second add-on timing/size/cap retries after materiality failed;
+- add-on cap/headroom retunes without new forward concentration evidence.
+
+Rule: if a proposed change can be phrased as "more slots, more heat, more size
+for a broad group," assume it is low-quality until proven otherwise.
+
+### 3. Lifecycle Edges Are Narrow
+
+Winner capture and stop/target geometry have produced selective wins, but
+generalization has repeatedly failed.
+
+Durable pattern:
+
+- lifecycle changes work only for a narrow strategy/sector/state cohort;
+- broad target widening usually delays exits in weaker windows;
+- trailing-stop and runner logic often looks appealing in diagnostics but fails
+  fixed-entry replay.
+
+Accepted or supported context:
+
+- selected trend cohorts can justify wider target geometry;
+- RKLB/ASTS launch-connectivity Space trends can use wider default-off target
+  semantics;
+- adverse next-open cancel at 2% is accepted and should not be weakened by
+  simple exceptions.
+
+Rejected patterns:
+
+- broad Commodity breakout target widening;
+- Financials trend wider target without a new discriminator;
+- Commodity trend target extension beyond accepted width;
+- simple target-exit re-entry;
+- ATR trailing full exits;
+- target-half or target-third runner splits;
+- early MFE breakeven/profit-protective stops without stronger state evidence.
+
+Rule: any new lifecycle alpha needs a state or catalyst discriminator, not just
+a nearby ATR multiple.
+
+### 4. Event Alpha Needs Replacement Value, Not Just Event Labels
+
+Event overlays help when the event label changes the replacement value of a
+candidate or paper sleeve. Generic event optimism has not been enough.
+
+Supported event surfaces:
+
+- rotation-breakout leadership inside the event bundle;
+- benchmark-gated state-surface paper replacement value;
+- default-off SEC financial-report T+1 drift;
+- production-visible Space official-catalyst metadata.
+
+Rejected or weak event surfaces:
+
+- broad event-source pruning;
+- generic event benchmark gates applied directly to the event bundle;
+- simple post-news PEAD-style entry thresholds after materiality/risk failed;
+- item-composition gates without better earnings-quality fields;
+- shadow-only short-pressure and options overlays without promotion-grade
+  replay evidence.
+
+Rule: an event variable should explain why this candidate has better expected
+replacement value than the next available candidate. If it only explains why
+the story sounds interesting, keep it in audit/paper mode.
+
+### 5. SEC Alpha Is Blocked By Semantic Data Quality, Not More Retunes
+
+SEC experiments split into two families:
+
+- financial-report T+1 drift paper sleeve, which is currently useful;
+- filing-shock / earnings-quality grading, which remains blocked by missing
+  same-accession directional fields.
+
+Accepted financial-report paper mechanism:
+
+- strong T+1 excess reaction versus SPY;
+- non-platform filtering;
+- modest max-3 capacity;
+- 10-trading-day lifecycle;
+- semantic notional allocation by report family and 10-Q subtype.
+
+Blocked filing-shock mechanism:
+
+- no reliable same-accession EPS/revenue surprise fields;
+- no reliable guidance raise/cut fields;
+- Companyfacts joins alone do not provide directional shock;
+- PIT timestamp plumbing is less of a blocker than semantic feature absence.
+
+Rejected SEC retunes:
+
+- nearby T+1 floor sweeps around the accepted 1%;
+- fixed hold-day sweeps around 10 trading days;
+- capacity above max-3 on the frozen sample;
+- paired-filing dedupe;
+- auxiliary earnings 8-K item-code notional scalar;
+- 10-K/10-Q form exclusion without a new semantic field.
+
+Next valid SEC alpha: add PIT-safe same-accession earnings/guidance/language
+quality fields or collect forward replacement value. Do not keep retuning the
+accepted paper sleeve on the same frozen sample.
+
+### 6. Space Alpha Is Catalyst-Quality Risk Allocation
+
+Space became useful only after the experiments moved away from noisy ticker
+expansion and toward production-visible catalyst metadata.
+
+Supported Space pattern:
+
+- official catalyst context matters;
+- peer leadership matters for breakouts;
+- trend quality ladders are more reliable than breakout TQS ladders;
+- source quality and registry quality fields can support conservative top-ups;
+- broad small-cap appetite helps modestly when IWM leads SPY;
+- launch/lunar and liquidity anchor metadata are useful but should stay small.
+
+Accepted Space evidence:
+
+- perfect TQS risk top-up: `exp-20260512-004`;
+- near-perfect trend TQS top-up: `exp-20260512-008`;
+- peer-nonleader breakout zero extra risk: `exp-20260512-013`;
+- IWM-relative small-cap state: `exp-20260512-031`;
+- launch/lunar theme segment: `exp-20260512-032`;
+- liquidity-tier risk: `exp-20260512-037`;
+- official customer-source risk: `exp-20260512-038`;
+- financing/dilution profile risk: `exp-20260512-041`.
+
+Rejected Space patterns:
+
+- noisy static pool expansion;
+- mature satcom breadth;
+- Space ETF timing;
+- data-vendor trend target/risk retunes;
+- launch/connectivity breakout risk haircuts;
+- Space breakout stop-width and target-width sweeps;
+- lunar/manufacturing target broadening;
+- data/defense theme scalar;
+- broad defense-budget source scalar due to drawdown cost;
+- mission-binary profile scalar due to immaterial coverage.
+
+Next valid Space alpha: forward replacement value by catalyst family, source
+quality, peer leadership, and production registry profile. Candidate-pool work
+is valid only if it improves official-catalyst coverage or attribution quality;
+do not add noise tickers just to get more trades.
+
+### 7. LLM Is A Semantic Layer, Not A Risk Engine
+
+The LLM can be part of the alpha system, but only inside auditable boundaries.
+
+Valid LLM jobs:
+
+- event classification;
+- semantic strength;
+- catastrophe/risk explanation;
+- source-quality summaries;
+- structured candidate annotations for later attribution.
+
+Invalid LLM jobs:
+
+- position sizing;
+- stops and targets;
+- portfolio heat;
+- hard entry/exit decisions without replayable fields;
+- prompt-only numeric threshold duplication.
+
+Current limitation: LLM soft-ranking is not the best near-term alpha search for
+Space because the labeled forward set is thin. If LLM work resumes, it should
+add attribution metrics such as pass/veto return, event-class return, or
+structured reason stability.
+
+## Family Index
+
+| Family | Current conclusion | Evidence index |
+|---|---|---|
+| Core allocation | Modest shared sizing/routing edges work better than broad filters | `exp-20260428-005`, `exp-20260428-025`, `exp-20260429-025`, `exp-20260510-012` |
+| Core capacity | Global slots, heat, broad sector caps usually fail | `exp-20260427-014`, `exp-20260428-028`, `exp-20260429-001`, `exp-20260430-002` |
+| Lifecycle exits | Narrow cohort geometry only; broad runner/trailing rules fail | `exp-20260429-007`, `exp-20260429-012`, `exp-20260507-013`, `exp-20260507-014` |
+| Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
+| SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
+| SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041` |
+| Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
+| LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
+
+## Current Research Queue
+
+1. Space forward replacement value. Close the loop on official-catalyst helpers:
+   peer leader versus nonleader breakouts, customer-source quality,
+   financing/dilution profile, and launch/lunar versus data/defense buckets.
+2. SEC semantic feature expansion. Add PIT-safe same-accession surprise,
+   guidance, or language-quality fields before more sleeve retunes.
+3. Event replacement-value paper outcomes. Track the rotation/state-surface
+   paper stack forward and measure concentration risk.
+4. Core state allocation. Search for one new production-visible state variable
+   at a time: relative strength, dispersion, heat pressure, event quality, or
+   deployment context.
+5. LLM attribution. Only resume LLM scoring when structured labels and forward
+   outcomes can show pass/veto or event-class value.
 
 ## Do Not Retry Without New Evidence
 
 ### Core
 
 - Global position slot count and broad capacity sweeps.
-- Same-day global trend-first ordering.
-- Broad sector caps, simple sector-persistence entries, and same-sector caps.
-- Commodity breakout target widening and mechanical target-width generalization.
-- Financials trend wider targets without a new state discriminator.
-- Nearby add-on fraction/cap retries around already accepted add-on rules.
-- Simple gap-cancel exceptions based only on sector or accepted target-width
-  evidence.
+- Global TQS/confidence candidate sorting.
+- Same-day trend-first ordering.
+- Broad sector caps or sector priority ordering.
+- Commodity breakout target widening.
+- Financials trend target widening without a new discriminator.
+- Nearby add-on trigger, fraction, cap, and second-add-on retries.
+- Simple gap-cancel exceptions by sector, strategy, full-risk status, or TQS.
+- Broad ETF or static universe expansion as direct core alpha.
 
 ### SEC
 
-- Companyfacts or filing-shock weighting without same-accession directional
-  surprise/guidance fields.
-- Raw capacity above the accepted max-3 sleeve on the same frozen sample.
-- Nearby T+1 excess floors around 1%.
+- Companyfacts weighting without directional surprise/guidance fields.
+- Raw capacity above max-3 on the frozen SEC sleeve sample.
+- Nearby T+1 excess floors around the accepted 1%.
 - Fixed hold-day sweeps around 10 trading days.
-- Paired-filing dedupe and auxiliary earnings 8-K notional scalars on the same
-  snapshots.
+- Paired-filing dedupe variants.
+- Auxiliary earnings 8-K item-code notional scalars.
 - Form exclusion or 10-K/10-Q retunes unless the new variable is semantic and
   production-visible.
 
 ### Space
 
-- Noisy ticker additions, static pool expansion, or theme ETF timing as a proxy
-  for Space quality.
-- LLM soft-ranking until there are enough labeled Space forward outcomes.
-- Nearby perfect/near-perfect TQS scalar or threshold sweeps.
-- Space breakout stop-width, breakout target-width, and generic trend target
-  retunes on the same snapshots.
+- Noisy ticker additions or static pool expansion.
+- Theme ETF timing gates.
+- LLM soft-ranking while labeled Space outcomes remain thin.
+- Nearby perfect/near-perfect TQS scalars.
+- Space breakout stop-width or target-width sweeps.
 - Data-vendor trend target/risk retunes.
-- Lunar/manufacturing target broadening from the RKLB/ASTS launch-connectivity
-  result.
-- Defense-budget/government-contract broad source scalars; raw EV was high but
-  drawdown was too expensive.
-- Mission-binary profile scalars until the profile has enough executed outcome
-  coverage to matter.
+- Lunar/manufacturing target broadening from RKLB/ASTS evidence.
+- Defense-budget/government-contract broad source scalars.
+- Mission-binary profile scalars until outcome coverage is material.
 
 ### Event / LLM
 
 - Broad event-source pruning.
-- Generic event benchmark gates that are not tied to the state-surface sleeve.
-- Prompt-only changes that duplicate quantitative thresholds already defined in
-  code.
-- Any LLM expansion without an attribution metric.
+- Generic event benchmark gates not tied to a state-surface sleeve.
+- Prompt-only numeric threshold changes.
+- Any LLM expansion without a replayable attribution metric.
 
-## Update Rules
+## Measurement And Parity Rules
 
-Do not append per-experiment diary entries here.
+Strategy changes are not accepted because they pass `pytest`; they need the
+standard backtest protocol.
 
-Promote an experiment into this playbook only when it changes a durable
-mechanism-level conclusion:
+For any positive alpha change, record production/backtest impact:
 
-- accepted checkpoint,
-- current research priority,
-- rejected family / anti-repeat rule,
-- production/backtest parity constraint,
-- LLM governance boundary,
-- or measurement blocker that changes what alpha can be trusted.
+- shared policy changed;
+- backtester adapter changed;
+- run adapter changed;
+- replay-only status;
+- parity test added or not;
+- default-off paper status if applicable.
 
-When updating this file, write a short synthesis and cite experiment IDs. Keep
-the reproduction details, parameters, windows, and full metrics in the
-structured experiment logs.
+Measurement repair can outrank alpha search only when it blocks a trustworthy
+experiment. Valid blockers include:
 
-Every new alpha session should still answer the five AGENTS.md questions, use
-`docs/backtesting.md` for the three-window protocol, change one independent
-causal variable, and declare production/backtest impact before commit.
+- production/backtest divergence;
+- missing runtime fields;
+- missing prompt/log/replay fields for an LLM judgment;
+- missing forward attribution;
+- data joins that make a candidate alpha unreplayable.
+
+## Update Discipline
+
+This file should grow slowly. A new experiment should update this playbook only
+when it changes one of the following:
+
+- an accepted checkpoint;
+- a durable mechanism law;
+- a rejected family or anti-repeat rule;
+- the current research queue;
+- a measurement blocker;
+- an LLM governance boundary;
+- a production/backtest parity constraint.
+
+When updating, write synthesis first and cite experiment IDs as evidence. Do not
+paste full artifacts or every window table unless the table defines the current
+checkpoint.
