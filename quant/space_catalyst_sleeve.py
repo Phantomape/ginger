@@ -81,6 +81,15 @@ SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES = (
 )
 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
 SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR = 1.1
+SPACE_CATALYST_GOVERNMENT_CONTRACT_EVENT_FIELD = "government_space_contract"
+SPACE_CATALYST_GOVERNMENT_CONTRACT_SOURCE_TYPES = (
+    "official_or_primary_release",
+    "official_government_release",
+)
+SPACE_CATALYST_GOVERNMENT_CONTRACT_EXCLUDED_SEMANTIC_BUCKETS = (
+    "attention_only",
+)
+SPACE_CATALYST_GOVERNMENT_CONTRACT_PEER_LEADER_RISK_SCALAR = 1.05
 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES = ("company_release",)
 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS = ("financing", "dilution")
@@ -96,7 +105,7 @@ SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
 SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260513-014",
+    "experiment_id": "exp-20260513-015",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -190,6 +199,22 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_customer_source_peer_leader_risk_scalar": (
         SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
+    ),
+    "space_government_contract_peer_leader_experiment_id": "exp-20260513-015",
+    "space_government_contract_peer_leader_definition": (
+        "government_space_contract official source profile and peer momentum leader"
+    ),
+    "space_government_contract_event_field": (
+        SPACE_CATALYST_GOVERNMENT_CONTRACT_EVENT_FIELD
+    ),
+    "space_government_contract_source_types": list(
+        SPACE_CATALYST_GOVERNMENT_CONTRACT_SOURCE_TYPES
+    ),
+    "space_government_contract_excluded_semantic_buckets": list(
+        SPACE_CATALYST_GOVERNMENT_CONTRACT_EXCLUDED_SEMANTIC_BUCKETS
+    ),
+    "space_government_contract_peer_leader_risk_scalar": (
+        SPACE_CATALYST_GOVERNMENT_CONTRACT_PEER_LEADER_RISK_SCALAR
     ),
     "space_company_release_customer_source_experiment_id": "exp-20260512-110",
     "space_company_release_customer_source_types": list(
@@ -369,6 +394,7 @@ def space_catalyst_forward_risk_scalar(
     theme_segment: str | None = None,
     liquidity_tier: str | None = None,
     official_customer_source_profile: dict[str, Any] | None = None,
+    government_contract_profile: dict[str, Any] | None = None,
     multi_event_depth_profile: dict[str, Any] | None = None,
     event_guard_profile: str | None = None,
     trade_quality_score: Any = None,
@@ -440,6 +466,12 @@ def space_catalyst_forward_risk_scalar(
         and (peer_momentum_state or {}).get("state") == "leader"
     ):
         scalar *= SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_government_contract_profile(government_contract_profile)
+        and (peer_momentum_state or {}).get("state") == "leader"
+    ):
+        scalar *= SPACE_CATALYST_GOVERNMENT_CONTRACT_PEER_LEADER_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_company_release_customer_source_profile(
@@ -688,6 +720,65 @@ def space_catalyst_official_customer_source_profiles(
             profile["source_types"].add(source_type)
     return {
         ticker: {
+            "event_ids": sorted(profile["event_ids"]),
+            "event_fields": sorted(profile["event_fields"]),
+            "semantic_buckets": sorted(profile["semantic_buckets"]),
+            "source_types": sorted(profile["source_types"]),
+        }
+        for ticker, profile in sorted(profiles.items())
+    }
+
+
+def space_catalyst_government_contract_profiles(
+    events: list[dict[str, Any]] | None = None,
+    *,
+    source_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH,
+    included_tickers: list[str] | tuple[str, ...] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return official Space profiles for government contract event seeds."""
+    seeds = events if events is not None else load_space_catalyst_event_seeds(source_path)
+    allowed_tickers = {
+        str(ticker).upper()
+        for ticker in (
+            included_tickers
+            or SPACE_CATALYST_FORWARD_HYPOTHESIS.get("included_tickers")
+            or []
+        )
+        if ticker
+    }
+    profiles: dict[str, dict[str, Any]] = {}
+    for event in (_normalise_event_seed(row) for row in seeds):
+        if not event:
+            continue
+        source_type = str(event.get("source_type") or "")
+        semantic_bucket = str(event.get("semantic_bucket") or "")
+        fields = [str(field) for field in event.get("event_fields") or []]
+        if source_type not in SPACE_CATALYST_GOVERNMENT_CONTRACT_SOURCE_TYPES:
+            continue
+        if semantic_bucket in SPACE_CATALYST_GOVERNMENT_CONTRACT_EXCLUDED_SEMANTIC_BUCKETS:
+            continue
+        if SPACE_CATALYST_GOVERNMENT_CONTRACT_EVENT_FIELD not in fields:
+            continue
+        for ticker in event.get("tickers") or []:
+            ticker_upper = str(ticker or "").upper()
+            if allowed_tickers and ticker_upper not in allowed_tickers:
+                continue
+            profile = profiles.setdefault(
+                ticker_upper,
+                {
+                    "event_ids": set(),
+                    "event_fields": set(),
+                    "semantic_buckets": set(),
+                    "source_types": set(),
+                },
+            )
+            profile["event_ids"].add(event["event_id"])
+            profile["event_fields"].update(fields)
+            profile["semantic_buckets"].add(semantic_bucket)
+            profile["source_types"].add(source_type)
+    return {
+        ticker: {
+            "event_count": len(profile["event_ids"]),
             "event_ids": sorted(profile["event_ids"]),
             "event_fields": sorted(profile["event_fields"]),
             "semantic_buckets": sorted(profile["semantic_buckets"]),
@@ -968,6 +1059,7 @@ def build_space_catalyst_observation_slot(
     raw_signal_count: int | None = None,
     enriched_signal_count: int | None = None,
     space_event_source_profiles: dict[str, dict[str, Any]] | None = None,
+    space_government_contract_profiles: dict[str, dict[str, Any]] | None = None,
     space_multi_event_depth_profiles: dict[str, dict[str, Any]] | None = None,
     generated_at: datetime | None = None,
 ) -> dict[str, Any]:
@@ -990,6 +1082,13 @@ def build_space_catalyst_observation_slot(
         space_event_source_profiles
         if space_event_source_profiles is not None
         else space_catalyst_official_customer_source_profiles(
+            included_tickers=list(official_tickers)
+        )
+    )
+    government_contract_profiles = (
+        space_government_contract_profiles
+        if space_government_contract_profiles is not None
+        else space_catalyst_government_contract_profiles(
             included_tickers=list(official_tickers)
         )
     )
@@ -1016,6 +1115,7 @@ def build_space_catalyst_observation_slot(
                 iwm_relative_momentum_state=iwm_relative_momentum,
                 space_catalyst_shadow=shadow,
                 space_event_source_profiles=source_profiles,
+                space_government_contract_profiles=government_contract_profiles,
                 space_multi_event_depth_profiles=multi_event_profiles,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
@@ -1592,6 +1692,15 @@ def _official_customer_source_profile_for_ticker(
     return deepcopy(profile) if isinstance(profile, dict) else None
 
 
+def _government_contract_profile_for_ticker(
+    government_contract_profiles: dict[str, dict[str, Any]] | None,
+    ticker: str,
+) -> dict[str, Any] | None:
+    ticker_upper = str(ticker or "").upper()
+    profile = (government_contract_profiles or {}).get(ticker_upper)
+    return deepcopy(profile) if isinstance(profile, dict) else None
+
+
 def _multi_event_depth_profile_for_ticker(
     multi_event_profiles: dict[str, dict[str, Any]] | None,
     ticker: str,
@@ -1683,6 +1792,7 @@ def _observation_slot_row(
     iwm_relative_momentum_state: dict[str, Any],
     space_catalyst_shadow: dict[str, Any],
     space_event_source_profiles: dict[str, dict[str, Any]],
+    space_government_contract_profiles: dict[str, dict[str, Any]],
     space_multi_event_depth_profiles: dict[str, dict[str, Any]],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
@@ -1695,6 +1805,10 @@ def _observation_slot_row(
     event_guard_profile = _event_guard_profile_for_ticker(space_catalyst_shadow, ticker)
     official_customer_source_profile = _official_customer_source_profile_for_ticker(
         space_event_source_profiles,
+        ticker,
+    )
+    government_contract_profile = _government_contract_profile_for_ticker(
+        space_government_contract_profiles,
         ticker,
     )
     multi_event_depth_profile = _multi_event_depth_profile_for_ticker(
@@ -1728,6 +1842,7 @@ def _observation_slot_row(
         theme_segment=theme_segment,
         liquidity_tier=liquidity_tier,
         official_customer_source_profile=official_customer_source_profile,
+        government_contract_profile=government_contract_profile,
         multi_event_depth_profile=multi_event_depth_profile,
         event_guard_profile=event_guard_profile,
         trade_quality_score=signal.get("trade_quality_score"),
@@ -1801,6 +1916,18 @@ def _observation_slot_row(
         if customer_source_peer_leader_bucket
         else 1.0
     )
+    government_contract_profile_bucket = _is_space_government_contract_profile(
+        government_contract_profile
+    )
+    government_contract_peer_leader_bucket = (
+        government_contract_profile_bucket
+        and peer_momentum_state.get("state") == "leader"
+    )
+    government_contract_peer_leader_risk_scalar = (
+        SPACE_CATALYST_GOVERNMENT_CONTRACT_PEER_LEADER_RISK_SCALAR
+        if government_contract_peer_leader_bucket
+        else 1.0
+    )
     company_release_customer_source_bucket = (
         _is_space_company_release_customer_source_profile(
             official_customer_source_profile
@@ -1851,6 +1978,7 @@ def _observation_slot_row(
         "liquidity_tier": liquidity_tier,
         "event_guard_profile": event_guard_profile,
         "space_event_source_profile": official_customer_source_profile,
+        "space_government_contract_profile": government_contract_profile,
         "space_multi_event_depth_profile": multi_event_depth_profile,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
@@ -1942,6 +2070,16 @@ def _observation_slot_row(
         ),
         "space_customer_source_peer_leader_risk_scalar": _round(
             customer_source_peer_leader_risk_scalar,
+            6,
+        ),
+        "space_government_contract_profile_bucket": (
+            government_contract_profile_bucket
+        ),
+        "space_government_contract_peer_leader_bucket": (
+            government_contract_peer_leader_bucket
+        ),
+        "space_government_contract_peer_leader_risk_scalar": _round(
+            government_contract_peer_leader_risk_scalar,
             6,
         ),
         "space_company_release_customer_source_bucket": (
@@ -2173,6 +2311,21 @@ def _is_space_company_release_customer_source_profile(
             )
         )
         and SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD in fields
+    )
+
+
+def _is_space_government_contract_profile(profile: dict[str, Any] | None) -> bool:
+    if not profile:
+        return False
+    source_types = {str(item) for item in profile.get("source_types") or []}
+    fields = {str(item) for item in profile.get("event_fields") or []}
+    semantic_buckets = {str(item) for item in profile.get("semantic_buckets") or []}
+    return (
+        bool(source_types.intersection(SPACE_CATALYST_GOVERNMENT_CONTRACT_SOURCE_TYPES))
+        and SPACE_CATALYST_GOVERNMENT_CONTRACT_EVENT_FIELD in fields
+        and not semantic_buckets.intersection(
+            SPACE_CATALYST_GOVERNMENT_CONTRACT_EXCLUDED_SEMANTIC_BUCKETS
+        )
     )
 
 

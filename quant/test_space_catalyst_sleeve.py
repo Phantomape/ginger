@@ -18,6 +18,7 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_basket_momentum_state,
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
+    space_catalyst_government_contract_profiles,
     space_catalyst_iwm_relative_momentum_state,
     space_catalyst_multi_event_depth_profiles,
     space_catalyst_official_customer_source_profiles,
@@ -157,7 +158,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-014"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-015"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -291,6 +292,25 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
             "space_customer_source_peer_leader_risk_scalar"
         ]
         == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_government_contract_peer_leader_experiment_id"
+        ]
+        == "exp-20260513-015"
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_government_contract_event_field"]
+        == "government_space_contract"
+    )
+    assert snapshot["forward_hypothesis"][
+        "space_government_contract_source_types"
+    ] == ["official_or_primary_release", "official_government_release"]
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_government_contract_peer_leader_risk_scalar"
+        ]
+        == 1.05
     )
     assert (
         snapshot["forward_hypothesis"][
@@ -498,6 +518,32 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
     )
     assert round(
         space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            government_contract_profile={
+                "event_ids": ["lunr_nasa_clps"],
+                "event_fields": ["government_space_contract"],
+                "source_types": ["official_or_primary_release"],
+            },
+            peer_momentum_state={"state": "leader"},
+        ),
+        6,
+    ) == 1.05
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            government_contract_profile={
+                "event_ids": ["lunr_nasa_clps"],
+                "event_fields": ["government_space_contract"],
+                "source_types": ["official_or_primary_release"],
+            },
+            peer_momentum_state={"state": "nonleader"},
+        )
+        == 1.0
+    )
+    assert round(
+        space_catalyst_forward_risk_scalar(
             "RKLB",
             "trend_long",
             official_customer_source_profile={
@@ -637,6 +683,69 @@ def test_space_catalyst_official_customer_source_profiles_filters_attention_only
             "semantic_buckets": ["fundamental_contract_regulatory"],
             "source_types": ["company_release"],
         }
+    }
+
+
+def test_space_catalyst_government_contract_profiles_use_official_sources():
+    profiles = space_catalyst_government_contract_profiles(
+        [
+            {
+                "event_id": "lunr_nasa_contract",
+                "event_date": "2026-05-01",
+                "tickers": ["LUNR"],
+                "event_fields": ["government_space_contract"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "official_or_primary_release",
+            },
+            {
+                "event_id": "golden_dome",
+                "event_date": "2026-05-02",
+                "tickers": ["LUNR", "RDW"],
+                "event_fields": ["government_space_contract"],
+                "semantic_bucket": "defense_budget_theme",
+                "source_type": "official_government_release",
+            },
+            {
+                "event_id": "company_contract",
+                "event_date": "2026-05-03",
+                "tickers": ["LUNR"],
+                "event_fields": ["government_space_contract"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "company_release",
+            },
+            {
+                "event_id": "attention_only",
+                "event_date": "2026-05-04",
+                "tickers": ["RDW"],
+                "event_fields": ["government_space_contract"],
+                "semantic_bucket": "attention_only",
+                "source_type": "official_government_release",
+            },
+        ],
+        included_tickers=["LUNR", "RDW"],
+    )
+
+    assert profiles == {
+        "LUNR": {
+            "event_count": 2,
+            "event_ids": ["golden_dome", "lunr_nasa_contract"],
+            "event_fields": ["government_space_contract"],
+            "semantic_buckets": [
+                "defense_budget_theme",
+                "fundamental_contract_regulatory",
+            ],
+            "source_types": [
+                "official_government_release",
+                "official_or_primary_release",
+            ],
+        },
+        "RDW": {
+            "event_count": 1,
+            "event_ids": ["golden_dome"],
+            "event_fields": ["government_space_contract"],
+            "semantic_buckets": ["defense_budget_theme"],
+            "source_types": ["official_government_release"],
+        },
     }
 
 
@@ -822,6 +931,7 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
                 "source_types": ["company_release"],
             }
         },
+        space_government_contract_profiles={},
         space_multi_event_depth_profiles={
             "RKLB": {
                 "event_count": 2,
@@ -897,6 +1007,65 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert snapshot["production_impact"]["alters_orders"] is False
 
 
+def test_space_catalyst_observation_slot_marks_government_contract_peer_leader():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "LUNR",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.0},
+            "BKSY": {"momentum_20d_pct": 0.0},
+            "LUNR": {"atr": 1.0, "momentum_20d_pct": 0.6},
+            "PL": {"momentum_20d_pct": 0.0},
+            "RDW": {"momentum_20d_pct": 0.0},
+            "RKLB": {"momentum_20d_pct": 0.0},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={
+            "LUNR": {
+                "event_count": 1,
+                "event_ids": ["lunr_nasa_contract"],
+                "event_fields": ["government_space_contract"],
+                "semantic_buckets": ["fundamental_contract_regulatory"],
+                "source_types": ["official_or_primary_release"],
+            }
+        },
+        space_multi_event_depth_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "LUNR"
+    assert plan["space_peer_momentum_state"] == "leader"
+    assert plan["space_government_contract_profile_bucket"] is True
+    assert plan["space_government_contract_peer_leader_bucket"] is True
+    assert plan["space_government_contract_peer_leader_risk_scalar"] == 1.05
+    assert plan["space_government_contract_profile"]["event_ids"] == [
+        "lunr_nasa_contract"
+    ]
+    assert plan["effective_risk_scalar"] == 0.86625
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 866.25
+
+
 def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
     snapshot = build_space_catalyst_observation_slot(
         as_of="2026-05-11",
@@ -934,6 +1103,7 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
     )
 
@@ -983,6 +1153,7 @@ def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
     )
 
@@ -1033,6 +1204,7 @@ def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
     )
 
@@ -1072,6 +1244,7 @@ def test_space_catalyst_observation_slot_persistence_dedupes_daily_plan(tmp_path
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
     )
     ledger_path = tmp_path / "observation.jsonl"
@@ -1221,6 +1394,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_official_customer_source_event_field": "customer_win",
                 "space_official_customer_source_risk_scalar": 1.1,
                 "space_customer_source_peer_leader_risk_scalar": 1.1,
+                "space_government_contract_peer_leader_risk_scalar": 1.05,
                 "space_company_release_customer_source_risk_scalar": 1.1,
                 "space_financing_dilution_profile_risk_scalar": 1.075,
                 "space_multi_event_depth_min_count": 2,
@@ -1250,6 +1424,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "liquidity_tier": "ok",
                     "space_official_customer_source_bucket": True,
                     "space_customer_source_peer_leader_bucket": True,
+                    "space_government_contract_peer_leader_bucket": True,
                     "space_company_release_customer_source_bucket": True,
                     "space_financing_dilution_profile_bucket": True,
                     "space_multi_event_depth_bucket": True,
@@ -1302,6 +1477,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "liquidity tier watch @ 1.1x; "
         "official customer source customer_win @ 1.1x; "
         "customer-source peer leader @ 1.1x; "
+        "government-contract peer leader @ 1.05x; "
         "company-release customer source @ 1.1x; "
         "financing/dilution profile @ 1.075x; "
         "multi-event catalyst depth >=2 @ 1.075x)"
@@ -1313,7 +1489,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
     assert (
         "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
         "theme=launch_lunar liquidity=ok customer_source=True "
-        "source_peer_leader=True company_release_source=True "
+        "source_peer_leader=True government_contract_peer_leader=True "
+        "company_release_source=True "
         "financing_dilution_profile=True "
         "multi_event_depth=True"
     ) in report

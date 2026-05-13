@@ -42,7 +42,8 @@ same-sample lifecycle sweep.
 Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
-`038`, `041`, `112`, and `exp-20260513-012`.
+`038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`, and
+`exp-20260513-015`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -54,6 +55,10 @@ default-off risk, and official Space signals with production registry
 `liquidity_tier=ok` get `1.10x` extra default-off risk, and official Space
 signals tied to `customer_win` event seeds from official/regulatory/company
 primary sources get `1.10x` extra default-off risk, and official Space signals
+with source-qualified `customer_win` plus Space peer momentum leadership get
+`1.10x` extra default-off risk, and official Space signals with
+`government_space_contract` from official/government sources plus Space peer
+momentum leadership get `1.05x` extra default-off risk, and official Space signals
 whose production registry `event_guard_profile` contains financing/dilution get
 `1.075x` extra default-off risk, and official Space signals with production
 registry `liquidity_tier=watch` get `1.10x` extra default-off risk, and
@@ -66,12 +71,14 @@ theme risk only at `1.10x`, `exp-20260512-035` rejected data/defense theme
 scaling, `exp-20260512-037` accepted liquidity-tier anchor risk only at
 `1.10x`, and `exp-20260512-038` accepted customer-source risk only at `1.10x`;
 `exp-20260512-041` accepted financing/dilution profile risk only at `1.075x`;
-`exp-20260512-112` accepted watch-liquidity risk only at `1.10x`; and
+`exp-20260512-112` accepted watch-liquidity risk only at `1.10x`;
 `exp-20260513-012` accepted multi-event official catalyst-depth risk only at
-`1.075x`. The `exp-20260513-012` aggregate improved versus the accepted
-`exp-20260512-112` stack from EV `15.9183` / PnL `$381,850.99` to EV `16.4140`
-/ PnL `$392,748.95`; all three fixed windows improved EV, trade count and
-survival stayed unchanged, and max drawdown drift was `+0.35 pp`.
+`1.075x`; `exp-20260513-014` accepted customer-source peer-leader risk only at
+`1.10x`; and `exp-20260513-015` accepted government-contract peer-leader risk
+only at `1.05x`. The `exp-20260513-015` aggregate improved versus the accepted
+`exp-20260513-014` stack from EV `16.6827` / PnL `$398,461.58` to EV `16.8887`
+/ PnL `$404,189.82`; `mid_weak` and `old_thin` improved, `late_strong` was
+unchanged, and max drawdown drift was `+0.44 pp`.
 
 Latest rejected Space alpha search: `exp-20260513-010` tested whether the
 accepted watch-liquidity helper should be scoped by established TQS buckets.
@@ -698,14 +705,24 @@ PnL `-$387.79`, so Gate 4 failed and no shared policy was promoted. Do not
 retry adjacent core momentum-acceleration scalars on these frozen windows
 without a materially different production-visible discriminator.
 
-Latest Space alpha search: `exp-20260513-014` tested a source-qualified
-peer-leader risk scalar on top of the accepted `exp-20260513-012` Space stack.
-The accepted scalar is `1.10x` for official customer-win Space signals whose
-own 20d momentum is above the official Space basket average. Aggregate EV
-improved `+0.2687` to `16.6827` and PnL improved `+$5,712.63` to
-`$398,461.58`, with no EV-regressed window. `mid_weak` improved `+0.2527` EV /
-`+$4,425.42`, `old_thin` improved `+0.0160` EV / `+$1,287.21`, and
-`late_strong` was unchanged. Max drawdown drift was `+0.49` percentage points,
-inside the Gate 4 guardrail; min survival fell to `71.83%` but stayed above the
-guardrail. Promote only as shared default-off Space metadata/helper; live Space
-slots remain zero.
+Latest rejected core setup-quality alpha search: `exp-20260513-016` tested a
+cap-aware risk top-up for core `trend_long` / `breakout_long` signals with
+near-perfect `trade_quality_score >= 0.95`. The best scalar was `1.20x`:
+aggregate EV improved `+0.0376` and PnL improved `+$4,016.23`, but `old_thin`
+EV regressed slightly and the max drawdown ceiling worsened by `+1.42`
+percentage points, failing Gate 4. Do not promote or retry broad high-TQS core
+sizing on the frozen windows without a narrower production-visible
+discriminator or forward setup-quality attribution.
+
+Latest Space alpha search: `exp-20260513-015` tested a government-contract
+peer-leader risk scalar on top of the accepted `exp-20260513-014` Space stack.
+The accepted scalar is `1.05x` for official Space signals with
+`government_space_contract` event seeds from official/primary or official
+government sources when the ticker's 20d momentum is above the official Space
+basket average. Aggregate EV improved `+0.2060` to `16.8887` and PnL improved
+`+$5,728.24` to `$404,189.82`, with no EV-regressed window. `mid_weak` improved
+`+0.1472` EV / `+$3,009.19`, `old_thin` improved `+0.0588` EV / `+$2,719.05`,
+and `late_strong` was unchanged. Max drawdown drift was `+0.44` percentage
+points, inside the Gate 4 guardrail; min survival fell to `70.42%` but stayed
+well above the guardrail. Promote only as shared default-off Space
+metadata/helper; live Space slots remain zero.
