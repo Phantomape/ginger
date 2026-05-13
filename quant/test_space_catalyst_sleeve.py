@@ -26,6 +26,7 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_observation_tickers,
     space_catalyst_peer_momentum_state,
     space_catalyst_records_as_of,
+    space_catalyst_single_event_defense_profiles,
 )
 from report_generator import generate_daily_report  # noqa: E402
 
@@ -158,7 +159,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-020"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-028"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -362,6 +363,10 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert (
         snapshot["forward_hypothesis"]["space_multi_event_depth_risk_scalar"]
         == 1.075
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_single_event_defense_risk_scalar"]
+        == 1.05
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
@@ -621,6 +626,49 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         )
         == 1.0
     )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "RDW",
+            "trend_long",
+            single_event_defense_profile={
+                "event_count": 1,
+                "event_ids": ["golden_dome"],
+                "event_fields": ["government_space_contract"],
+                "semantic_buckets": ["defense_budget_theme"],
+                "source_types": ["official_government_release"],
+            },
+        )
+        == 1.05
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "RDW",
+            "trend_long",
+            single_event_defense_profile={
+                "event_count": 1,
+                "event_ids": ["golden_dome"],
+                "event_fields": ["customer_win", "government_space_contract"],
+                "semantic_buckets": ["defense_budget_theme"],
+                "source_types": ["official_government_release"],
+            },
+        )
+        == 1.0
+    )
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "RDW",
+            "trend_long",
+            event_guard_profile="contract_concentration_and_dilution_sensitive",
+            single_event_defense_profile={
+                "event_count": 1,
+                "event_ids": ["golden_dome"],
+                "event_fields": ["government_space_contract"],
+                "semantic_buckets": ["defense_budget_theme"],
+                "source_types": ["official_government_release"],
+            },
+        ),
+        6,
+    ) == 1.12875
     assert round(
         space_catalyst_forward_risk_scalar(
             "RKLB",
@@ -814,6 +862,56 @@ def test_space_catalyst_multi_event_depth_profiles_filters_attention_and_singlet
                 "official_government_release",
                 "official_or_primary_release",
             ],
+        }
+    }
+
+
+def test_space_catalyst_single_event_defense_profiles_isolates_defense_only():
+    profiles = space_catalyst_single_event_defense_profiles(
+        [
+            {
+                "event_id": "lunr_customer",
+                "event_date": "2026-05-01",
+                "tickers": ["LUNR"],
+                "event_fields": ["customer_win"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "official_or_primary_release",
+            },
+            {
+                "event_id": "golden_dome",
+                "event_date": "2026-05-02",
+                "tickers": ["LUNR", "RDW", "PL"],
+                "event_fields": ["government_space_contract"],
+                "semantic_bucket": "defense_budget_theme",
+                "source_type": "official_government_release",
+            },
+            {
+                "event_id": "rdw_customer",
+                "event_date": "2026-05-03",
+                "tickers": ["RDW"],
+                "event_fields": ["customer_win"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "company_release",
+            },
+            {
+                "event_id": "pl_attention",
+                "event_date": "2026-05-04",
+                "tickers": ["PL"],
+                "event_fields": ["uap_attention_spike"],
+                "semantic_bucket": "attention_only",
+                "source_type": "official_attention_release",
+            },
+        ],
+        included_tickers=["LUNR", "RDW", "PL"],
+    )
+
+    assert profiles == {
+        "PL": {
+            "event_count": 1,
+            "event_ids": ["golden_dome"],
+            "event_fields": ["government_space_contract"],
+            "semantic_buckets": ["defense_budget_theme"],
+            "source_types": ["official_government_release"],
         }
     }
 
@@ -1068,6 +1166,7 @@ def test_space_catalyst_observation_slot_marks_iwm_peer_leader_trend():
         space_event_source_profiles={},
         space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]
@@ -1180,6 +1279,7 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
         space_event_source_profiles={},
         space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]
@@ -1193,6 +1293,64 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
     assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.0
     assert plan["effective_risk_scalar"] == 0.886875
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 886.88
+
+
+def test_space_catalyst_observation_slot_marks_single_event_defense_profile():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "RDW",
+                "strategy": "trend_long",
+                "entry_price": 20.0,
+                "stop_price": 18.0,
+                "target_price": 27.0,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.9,
+                "sizing": {
+                    "shares_to_buy": 50,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.1},
+            "BKSY": {"momentum_20d_pct": 0.1},
+            "LUNR": {"momentum_20d_pct": 0.1},
+            "PL": {"momentum_20d_pct": 0.1},
+            "RDW": {"atr": 1.0, "momentum_20d_pct": 0.1},
+            "RKLB": {"momentum_20d_pct": 0.1},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {"space_data_defense": ["RDW"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={
+            "RDW": {
+                "event_count": 1,
+                "event_ids": ["golden_dome"],
+                "event_fields": ["government_space_contract"],
+                "semantic_buckets": ["defense_budget_theme"],
+                "source_types": ["official_government_release"],
+            }
+        },
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "RDW"
+    assert plan["space_single_event_defense_bucket"] is True
+    assert plan["space_single_event_defense_risk_scalar"] == 1.05
+    assert plan["space_single_event_defense_profile"]["event_ids"] == [
+        "golden_dome"
+    ]
+    assert plan["effective_risk_scalar"] == 0.86625
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 866.25
 
 
 def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
@@ -1479,6 +1637,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_financing_dilution_profile_risk_scalar": 1.075,
                 "space_multi_event_depth_min_count": 2,
                 "space_multi_event_depth_risk_scalar": 1.075,
+                "space_single_event_defense_risk_scalar": 1.05,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -1509,6 +1668,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_company_release_customer_source_bucket": True,
                     "space_financing_dilution_profile_bucket": True,
                     "space_multi_event_depth_bucket": True,
+                    "space_single_event_defense_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -1562,7 +1722,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "government-contract peer leader @ 1.05x; "
         "company-release customer source @ 1.1x; "
         "financing/dilution profile @ 1.075x; "
-        "multi-event catalyst depth >=2 @ 1.075x)"
+        "multi-event catalyst depth >=2 @ 1.075x; "
+        "single-event defense-only @ 1.05x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -1575,7 +1736,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "iwm_peer_leader_trend=True "
         "company_release_source=True "
         "financing_dilution_profile=True "
-        "multi_event_depth=True"
+        "multi_event_depth=True single_event_defense=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

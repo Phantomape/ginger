@@ -49,8 +49,8 @@ queue-order or lifecycle retune.
 Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
-`038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`, and
-`exp-20260513-015`, and `exp-20260513-020`.
+`038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`,
+`exp-20260513-015`, `exp-20260513-020`, and `exp-20260513-028`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -72,8 +72,10 @@ whose production registry `event_guard_profile` contains financing/dilution get
 `1.075x` extra default-off risk, and official Space signals with production
 registry `liquidity_tier=watch` get `1.10x` extra default-off risk, and
 official Space signals with at least two official non-attention event seed rows
-get `1.075x` extra default-off risk. This remains metadata/helper only with
-live Space slots at zero. `exp-20260512-010` rejected
+get `1.075x` extra default-off risk, and official Space signals with exactly
+one official non-attention defense-budget `government_space_contract` seed and
+no `customer_win` seed get `1.05x` extra default-off risk. This remains
+metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
 theme risk only at `1.10x`, `exp-20260512-035` rejected data/defense theme
@@ -85,10 +87,12 @@ scaling, `exp-20260512-037` accepted liquidity-tier anchor risk only at
 `1.075x`; `exp-20260513-014` accepted customer-source peer-leader risk only at
 `1.10x`; and `exp-20260513-015` accepted government-contract peer-leader risk
 only at `1.05x`; and `exp-20260513-020` accepted IWM-plus-peer-leader
-`trend_long` risk only at `1.15x`. The `exp-20260513-020` aggregate improved
-versus the accepted `exp-20260513-015` stack from EV `16.8887` / PnL
-`$404,189.82` to EV `17.6697` / PnL `$421,418.99`; `mid_weak` and `old_thin`
-improved, `late_strong` was unchanged, and max drawdown drift was `+0.44 pp`.
+`trend_long` risk only at `1.15x`; and `exp-20260513-028` accepted
+single-event defense-only risk only at `1.05x`. The `exp-20260513-028`
+aggregate improved versus the accepted `exp-20260513-020` stack from EV
+`17.6697` / PnL `$421,418.99` to EV `17.7538` / PnL `$424,636.65`;
+`mid_weak` and `old_thin` improved, `late_strong` was unchanged, and max
+drawdown drift was `+0.16 pp`.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

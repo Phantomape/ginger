@@ -127,7 +127,7 @@ until forward replacement value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260513-020`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260513-028`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -148,11 +148,13 @@ Current default-off Space helpers:
   momentum leader: `1.05x` top-up;
 - `event_guard_profile` containing financing or dilution: `1.075x` top-up;
 - official, non-attention event seed count `>= 2`: `1.075x` top-up;
+- single official defense-budget `government_space_contract` seed with no
+  `customer_win`: `1.05x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260513-020`: EV `17.6697`, total PnL
-`$421,418.99`, max drawdown ceiling `15.18%`, min survival `70.42%`, and 70
+Accepted aggregate metrics after `exp-20260513-028`: EV `17.7538`, total PnL
+`$424,636.65`, max drawdown ceiling `15.34%`, min survival `70.42%`, and 70
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
@@ -336,6 +338,7 @@ Accepted Space evidence:
 - multi-event official catalyst-depth risk: `exp-20260513-012`.
 - source-qualified customer-win peer-leader risk: `exp-20260513-014`.
 - government-contract peer-leader risk: `exp-20260513-015`.
+- single-event defense-only risk: `exp-20260513-028`.
 
 Rejected Space patterns:
 
@@ -361,10 +364,10 @@ Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
 the accepted watch-liquidity helper by peer state or TQS bucket on frozen
 snapshots, and do not retune nearby multi-event, source-qualified peer-leader,
-or government-contract peer-leader count/scalar values, or nearby IWM-plus-peer
-trend scalars, without new forward evidence. Candidate-pool work is valid only
-if it improves official-catalyst coverage or attribution quality; do not add
-noise tickers just to get more trades.
+government-contract peer-leader, or single-event defense-only count/scalar
+values, or nearby IWM-plus-peer trend scalars, without new forward evidence.
+Candidate-pool work is valid only if it improves official-catalyst coverage or
+attribution quality; do not add noise tickers just to get more trades.
 
 ### 7. LLM Is A Semantic Layer, Not A Risk Engine
 
@@ -401,7 +404,7 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 
@@ -409,7 +412,8 @@ structured reason stability.
 
 1. Space forward replacement value. Close the loop on official-catalyst helpers:
    peer leader versus nonleader breakouts, customer-source quality,
-   financing/dilution profile, and launch/lunar versus data/defense buckets.
+   financing/dilution profile, single-event defense-only exposure, and
+   launch/lunar versus data/defense buckets.
 2. SEC semantic feature expansion. Add PIT-safe same-accession surprise,
    guidance, or language-quality fields before more sleeve retunes.
 3. Event replacement-value paper outcomes. Track the rotation/state-surface
@@ -516,6 +520,10 @@ structured reason stability.
   but regressed `old_thin` badly and reduced aggregate PnL, so this state
   should remain a sizing helper rather than a wider-target lifecycle rule
   without forward target-touch evidence.
+- Nearby single-event defense-only Space count/scalar variants on the frozen
+  replay. `exp-20260513-028` accepted only the narrow `1.05x` helper for
+  exactly one defense-budget government-contract seed with no `customer_win`;
+  further slicing needs forward replacement-value evidence.
 
 ### Event / LLM
 
