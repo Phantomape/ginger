@@ -512,6 +512,13 @@ structured reason stability.
   `late_strong`, so do not keep adding execution-cushion overlays to the
   accepted clean-leader helper without forward evidence or a new independent
   discriminator.
+- Clean SPY-relative leader non-confirmation haircuts on the frozen core
+  windows. `exp-20260513-109` tested de-risking already-clean risk-on
+  SPY-relative leaders whose signal-day ticker return did not beat SPY.
+  Best `0.90x` still lowered aggregate EV by `-0.0785` and PnL by
+  `-$2,006.90`, with `late_strong` regression overwhelming tiny weak-window
+  gains. Keep the accepted clean-leader positive-confirmation top-up
+  asymmetric; do not add the mirror-image haircut without forward evidence.
 - Fixed broad index ETF target-width pools. `exp-20260513-017` tested
   `QQQ`/`SPY`/`IWM` target widths at `5.0x`, `6.0x`, and `7.0x` ATR; the best
   variant reduced aggregate EV by `-0.1030` and PnL by `-$2,267.28` because the
@@ -654,3 +661,9 @@ checkpoint.
   aggregate EV by `-0.0002` and regressed `late_strong`, so the next core
   allocation search should move to a different production-visible state rather
   than another clean-leader execution-cushion overlay.
+- `exp-20260513-109` (rejected_clean_spy_leader_nonconfirmation_risk): the
+  mirror-image haircut for clean SPY leaders without signal-day SPY
+  outperformance failed. Best `0.90x` improved `mid_weak`/`old_thin` by only
+  `+0.0006` EV combined, but cut `late_strong` EV by `-0.0791`, so signal-day
+  confirmation should remain a positive top-up, not a negative de-risk rule, on
+  these frozen windows.

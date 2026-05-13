@@ -807,6 +807,14 @@ Gate 4 failed: best `1.025x` moved aggregate EV `-0.0002` while adding
 promote or keep retuning clean-leader execution-cushion overlays on the frozen
 windows without forward evidence or a genuinely independent state variable.
 
+Latest rejected core clean-leader non-confirmation search: `exp-20260513-109`
+tested a post-sizing risk haircut for already clean risk-on SPY-relative
+leaders whose signal-day ticker return did not beat SPY. The best `0.90x`
+variant improved `mid_weak` and `old_thin` EV by only `+0.0006` combined, but
+regressed `late_strong` by `-0.0791` EV and cut aggregate PnL by `$2,006.90`.
+Keep signal-day SPY outperformance as the accepted positive-confirmation top-up
+only; do not add the mirror-image haircut without forward evidence.
+
 Latest Space alpha search: `exp-20260513-020` tested a Space `trend_long`
 risk scalar conditioned on both IWM 20d momentum beating SPY and the ticker's
 20d momentum beating the official Space basket average, on top of the accepted
