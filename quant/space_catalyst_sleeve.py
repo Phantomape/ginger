@@ -132,9 +132,11 @@ SPACE_CATALYST_SOURCE_DIVERSITY_SOURCE_TYPES = (
 )
 SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
 SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR = 1.075
+SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR = 1.15
+SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR = 1.05
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260513-038",
+    "experiment_id": "exp-20260513-108",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -342,6 +344,21 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_source_diversity_risk_scalar": (
         SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
+    ),
+    "space_source_diversity_peer_leader_experiment_id": "exp-20260513-039",
+    "space_source_diversity_peer_leader_definition": (
+        "source-diverse official non-attention evidence and Space peer momentum leader"
+    ),
+    "space_source_diversity_peer_leader_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR
+    ),
+    "space_source_diversity_iwm_leader_experiment_id": "exp-20260513-108",
+    "space_source_diversity_iwm_leader_definition": (
+        "source-diverse official non-attention evidence and IWM 20d momentum "
+        "> SPY 20d momentum"
+    ),
+    "space_source_diversity_iwm_leader_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -614,6 +631,18 @@ def space_catalyst_forward_risk_scalar(
         and _is_space_source_diversity_profile(source_diversity_profile)
     ):
         scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_source_diversity_profile(source_diversity_profile)
+        and (peer_momentum_state or {}).get("state") == "leader"
+    ):
+        scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_source_diversity_profile(source_diversity_profile)
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    ):
+        scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
     return scalar
 
 
@@ -817,6 +846,12 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_source_diversity_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
+            ),
+            "space_source_diversity_peer_leader_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR
+            ),
+            "space_source_diversity_iwm_leader_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -1668,6 +1703,12 @@ def build_space_catalyst_observation_slot(
             "space_source_diversity_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
             ),
+            "space_source_diversity_peer_leader_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR
+            ),
+            "space_source_diversity_iwm_leader_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -2485,6 +2526,23 @@ def _observation_slot_row(
         if source_diversity_bucket
         else 1.0
     )
+    source_diversity_peer_leader_bucket = (
+        source_diversity_bucket and peer_momentum_state.get("state") == "leader"
+    )
+    source_diversity_peer_leader_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR
+        if source_diversity_peer_leader_bucket
+        else 1.0
+    )
+    source_diversity_iwm_leader_bucket = (
+        source_diversity_bucket
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    )
+    source_diversity_iwm_leader_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
+        if source_diversity_iwm_leader_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -2653,6 +2711,20 @@ def _observation_slot_row(
         "space_source_diversity_bucket": source_diversity_bucket,
         "space_source_diversity_risk_scalar": _round(
             source_diversity_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_peer_leader_bucket": (
+            source_diversity_peer_leader_bucket
+        ),
+        "space_source_diversity_peer_leader_risk_scalar": _round(
+            source_diversity_peer_leader_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_iwm_leader_bucket": (
+            source_diversity_iwm_leader_bucket
+        ),
+        "space_source_diversity_iwm_leader_risk_scalar": _round(
+            source_diversity_iwm_leader_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,

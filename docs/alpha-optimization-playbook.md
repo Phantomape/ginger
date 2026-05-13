@@ -133,7 +133,7 @@ until forward replacement value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260513-028`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260513-108`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -156,11 +156,19 @@ Current default-off Space helpers:
 - official, non-attention event seed count `>= 2`: `1.075x` top-up;
 - single official defense-budget `government_space_contract` seed with no
   `customer_win`: `1.05x` top-up;
+- attention-only event support plus an official non-attention catalyst:
+  `1.25x` top-up;
+- official non-attention source diversity across source types and semantic
+  buckets: `1.075x` top-up;
+- source-diverse official Space signals that also lead the Space peer basket:
+  `1.15x` top-up;
+- source-diverse official Space signals when IWM 20d momentum beats SPY 20d
+  momentum: `1.05x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260513-028`: EV `17.7538`, total PnL
-`$424,636.65`, max drawdown ceiling `15.34%`, min survival `70.42%`, and 70
+Accepted aggregate metrics after `exp-20260513-108`: EV `23.4374`, total PnL
+`$564,173.22`, max drawdown ceiling `11.36%`, min survival `65.33%`, and 68
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
@@ -347,6 +355,10 @@ Accepted Space evidence:
 - source-qualified customer-win peer-leader risk: `exp-20260513-014`.
 - government-contract peer-leader risk: `exp-20260513-015`.
 - single-event defense-only risk: `exp-20260513-028`.
+- attention overlay with official catalyst: `exp-20260513-032`.
+- official source-diversity risk: `exp-20260513-038`.
+- source-diversity peer-leader risk: `exp-20260513-039`.
+- source-diversity plus IWM small-cap leadership risk: `exp-20260513-108`.
 
 Rejected Space patterns:
 
@@ -372,17 +384,12 @@ Rejected Space patterns:
   momentum versus the equal-weight peer average excluding the ticker have the
   same leader/nonleader sign, so the accepted peer-state helpers were
   behaviorally unchanged on all three windows.
-- attention overlay with official catalyst. `exp-20260513-032` accepted a
-  `1.25x` default-off risk scalar only for official Space tickers whose
-  event-seed profile has both an attention-only catalyst and an official
-  non-attention catalyst. Aggregate EV improved `+0.8788` versus the
-  exp-028 stack, all three windows improved EV, and live slots remain zero.
-
 Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
 the accepted watch-liquidity helper by peer state or TQS bucket on frozen
 snapshots, and do not retune nearby multi-event, source-qualified peer-leader,
-government-contract peer-leader, single-event defense-only, or attention-overlay
+government-contract peer-leader, single-event defense-only, attention-overlay,
+source-diversity, source-diversity peer-leader, or source-diversity IWM-leader
 count/scalar values, or nearby IWM-plus-peer trend scalars, without new forward
 evidence.
 Candidate-pool work is valid only if it improves official-catalyst coverage or

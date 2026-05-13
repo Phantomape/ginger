@@ -73,8 +73,9 @@ Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`,
-`exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`, and
-`exp-20260513-032`.
+`exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
+`exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
+`exp-20260513-108`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -100,7 +101,12 @@ get `1.075x` extra default-off risk, and official Space signals with exactly
 one official non-attention defense-budget `government_space_contract` seed and
 no `customer_win` seed get `1.05x` extra default-off risk, and official Space
 signals whose event-seed profile has both an attention-only seed and an official
-non-attention seed get `1.25x` extra default-off risk. This remains
+non-attention seed get `1.25x` extra default-off risk, official Space signals
+with non-attention source diversity get `1.075x` extra default-off risk, and
+source-diverse official Space signals that also lead the Space peer basket get
+`1.15x` extra default-off risk, and source-diverse official Space signals also
+get `1.05x` extra default-off risk when IWM 20d momentum beats SPY 20d
+momentum. This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
@@ -119,7 +125,15 @@ accepted attention-overlay-with-official-catalyst risk only at `1.25x`. The
 `exp-20260513-032` aggregate improved versus the accepted `exp-20260513-028`
 stack from EV `17.8725` / PnL `$436,331.45` to EV `18.7513` / PnL
 `$444,450.36`; all three windows improved EV and max drawdown ceiling improved
-by `3.84 pp`.
+by `3.84 pp`. `exp-20260513-038` then accepted source-diversity risk only at
+`1.075x`, and `exp-20260513-039` accepted the source-diversity peer-leader
+interaction only at `1.15x`: aggregate EV moved from `22.1922` to `22.9617`,
+PnL from `$529,603.76` to `$550,143.02`, with no trade-count or survival
+change. `exp-20260513-108` then accepted the source-diversity IWM-leader
+interaction only at `1.05x`: aggregate EV moved from `22.9617` to `23.4374`,
+PnL from `$550,143.02` to `$564,173.22`, all three windows improved EV, max
+drawdown drift stayed inside Gate 4 at `+0.47 pp`, and live Space slots still
+zero.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

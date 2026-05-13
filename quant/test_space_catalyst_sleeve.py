@@ -161,7 +161,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-038"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-108"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -398,6 +398,30 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert (
         snapshot["forward_hypothesis"]["space_source_diversity_risk_scalar"]
         == 1.075
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_peer_leader_experiment_id"
+        ]
+        == "exp-20260513-039"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_peer_leader_risk_scalar"
+        ]
+        == 1.15
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_iwm_leader_experiment_id"
+        ]
+        == "exp-20260513-108"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_iwm_leader_risk_scalar"
+        ]
+        == 1.05
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
@@ -676,6 +700,79 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             },
         )
         == 1.075
+    )
+    assert (
+        round(
+            space_catalyst_forward_risk_scalar(
+                "LUNR",
+                "trend_long",
+                peer_momentum_state={"state": "leader"},
+                source_diversity_profile={
+                    "event_count": 2,
+                    "event_ids": ["lunr_contract", "golden_dome"],
+                    "event_fields": ["customer_win", "government_space_contract"],
+                    "semantic_buckets": [
+                        "defense_budget_theme",
+                        "fundamental_contract_regulatory",
+                    ],
+                    "source_types": [
+                        "official_government_release",
+                        "official_or_primary_release",
+                    ],
+                },
+            ),
+            6,
+        )
+        == 1.23625
+    )
+    assert (
+        round(
+            space_catalyst_forward_risk_scalar(
+                "LUNR",
+                "trend_long",
+                iwm_relative_momentum_state={"state": "smallcap_leader"},
+                source_diversity_profile={
+                    "event_count": 2,
+                    "event_ids": ["lunr_contract", "golden_dome"],
+                    "event_fields": ["customer_win", "government_space_contract"],
+                    "semantic_buckets": [
+                        "defense_budget_theme",
+                        "fundamental_contract_regulatory",
+                    ],
+                    "source_types": [
+                        "official_government_release",
+                        "official_or_primary_release",
+                    ],
+                },
+            ),
+            6,
+        )
+        == 1.241625
+    )
+    assert (
+        round(
+            space_catalyst_forward_risk_scalar(
+                "LUNR",
+                "trend_long",
+                iwm_relative_momentum_state={"state": "smallcap_leader"},
+                peer_momentum_state={"state": "leader"},
+                source_diversity_profile={
+                    "event_count": 2,
+                    "event_ids": ["lunr_contract", "golden_dome"],
+                    "event_fields": ["customer_win", "government_space_contract"],
+                    "semantic_buckets": [
+                        "defense_budget_theme",
+                        "fundamental_contract_regulatory",
+                    ],
+                    "source_types": [
+                        "official_government_release",
+                        "official_or_primary_release",
+                    ],
+                },
+            ),
+            6,
+        )
+        == 1.642049
     )
     assert (
         space_catalyst_forward_risk_scalar(
@@ -1393,14 +1490,18 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_attention_overlay_risk_scalar"] == 1.25
     assert plan["space_source_diversity_bucket"] is True
     assert plan["space_source_diversity_risk_scalar"] == 1.075
+    assert plan["space_source_diversity_peer_leader_bucket"] is False
+    assert plan["space_source_diversity_peer_leader_risk_scalar"] == 1.0
+    assert plan["space_source_diversity_iwm_leader_bucket"] is True
+    assert plan["space_source_diversity_iwm_leader_risk_scalar"] == 1.05
     assert plan["space_event_source_profile"]["event_fields"] == ["customer_win"]
     assert plan["space_multi_event_depth_profile"]["event_count"] == 2
     assert plan["space_attention_overlay_profile"]["attention_event_ids"] == [
         "spacex_ipo_proxy"
     ]
     assert plan["space_source_diversity_profile"]["event_count"] == 2
-    assert plan["effective_risk_scalar"] == 2.639046
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 2639.05
+    assert plan["effective_risk_scalar"] == 2.770999
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 2771.0
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -1456,6 +1557,73 @@ def test_space_catalyst_observation_slot_marks_iwm_peer_leader_trend():
     assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.15
     assert plan["effective_risk_scalar"] == 1.043625
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 1043.62
+
+
+def test_space_catalyst_observation_slot_marks_source_diversity_peer_leader():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "LUNR",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.0},
+            "BKSY": {"momentum_20d_pct": 0.0},
+            "LUNR": {"atr": 1.0, "momentum_20d_pct": 0.6},
+            "PL": {"momentum_20d_pct": 0.0},
+            "RDW": {"momentum_20d_pct": 0.0},
+            "RKLB": {"momentum_20d_pct": 0.0},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
+        space_source_diversity_profiles={
+            "LUNR": {
+                "event_count": 2,
+                "event_ids": ["lunr_nasa_clps", "golden_dome"],
+                "event_fields": ["customer_win", "government_space_contract"],
+                "semantic_buckets": [
+                    "defense_budget_theme",
+                    "fundamental_contract_regulatory",
+                ],
+                "source_types": [
+                    "official_government_release",
+                    "official_or_primary_release",
+                ],
+            }
+        },
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "LUNR"
+    assert plan["space_peer_momentum_state"] == "leader"
+    assert plan["space_source_diversity_bucket"] is True
+    assert plan["space_source_diversity_risk_scalar"] == 1.075
+    assert plan["space_source_diversity_peer_leader_bucket"] is True
+    assert plan["space_source_diversity_peer_leader_risk_scalar"] == 1.15
+    assert plan["space_source_diversity_iwm_leader_bucket"] is False
+    assert plan["space_source_diversity_iwm_leader_risk_scalar"] == 1.0
+    assert plan["effective_risk_scalar"] == 1.019906
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1019.91
 
 
 def test_space_catalyst_observation_slot_marks_government_contract_peer_leader():
@@ -1927,6 +2095,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_single_event_defense_risk_scalar": 1.05,
                 "space_attention_overlay_risk_scalar": 1.25,
                 "space_source_diversity_risk_scalar": 1.075,
+                "space_source_diversity_peer_leader_risk_scalar": 1.15,
+                "space_source_diversity_iwm_leader_risk_scalar": 1.05,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -1960,6 +2130,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_single_event_defense_bucket": True,
                     "space_attention_overlay_bucket": True,
                     "space_source_diversity_bucket": True,
+                    "space_source_diversity_peer_leader_bucket": True,
+                    "space_source_diversity_iwm_leader_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -2016,7 +2188,9 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "multi-event catalyst depth >=2 @ 1.075x; "
         "single-event defense-only @ 1.05x; "
         "attention overlay with official catalyst @ 1.25x; "
-        "official source diversity @ 1.075x)"
+        "official source diversity @ 1.075x; "
+        "source-diversity peer leader @ 1.15x; "
+        "source-diversity IWM-leader @ 1.05x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -2030,7 +2204,9 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "company_release_source=True "
         "financing_dilution_profile=True "
         "multi_event_depth=True single_event_defense=True "
-        "attention_overlay=True source_diversity=True"
+        "attention_overlay=True source_diversity=True "
+        "source_diversity_peer_leader=True "
+        "source_diversity_iwm_leader=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report
