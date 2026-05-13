@@ -435,6 +435,11 @@ structured reason stability.
   with aggregate EV `+0.0449` and PnL `+$4,126.60`, but it regressed
   `old_thin` and worsened the max drawdown ceiling by `+1.06` percentage
   points.
+- Fixed core momentum-acceleration scalars, including the narrower accepted
+  green-candle-confirmed acceleration state. `exp-20260513-013` found the best
+  green acceleration scalar was `1.25x`, with aggregate EV `+0.0869` and PnL
+  `+$1,344.23`, improving `late_strong` and `mid_weak` but still regressing
+  `old_thin`.
 
 ### SEC
 

@@ -689,6 +689,15 @@ Do not retry fixed core breakout strong-volume scalars on these frozen windows
 without forward breakout volume-bucket attribution or a stronger orthogonal
 entry-quality state.
 
+Latest rejected core state-allocation alpha search: `exp-20260513-013` tested
+whether the previously rejected broad momentum-acceleration top-up becomes
+robust when restricted to signals that also have the accepted signal-day own
+green candle. The best scalar was `1.25x`: aggregate EV improved `+0.0869` and
+PnL improved `+$1,344.23`, but `old_thin` still regressed by EV `-0.0080` /
+PnL `-$387.79`, so Gate 4 failed and no shared policy was promoted. Do not
+retry adjacent core momentum-acceleration scalars on these frozen windows
+without a materially different production-visible discriminator.
+
 Latest Space alpha search: `exp-20260513-003` tested whether the accepted
 `exp-20260512-112` watch-liquidity 1.10x helper should apply only to Space
 signals with a specific peer-momentum state. Both peer-scope splits failed the
