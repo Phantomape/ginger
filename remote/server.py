@@ -31,6 +31,7 @@ PORT = int(os.environ.get("REMOTE_CODEX_PORT", "5000"))
 MAX_LOG_LINES = int(os.environ.get("REMOTE_CODEX_MAX_LOG_LINES", "5000"))
 SSE_BATCH_LINES = max(1, int(os.environ.get("REMOTE_CODEX_SSE_BATCH_LINES", "100")))
 CONSOLE_LOGS = os.environ.get("REMOTE_CODEX_CONSOLE_LOGS", "1").lower() not in {"0", "false", "no", "off"}
+FIX_MOJIBAKE = os.environ.get("REMOTE_CODEX_FIX_MOJIBAKE", "1").lower() not in {"0", "false", "no", "off"}
 LOG_DIR = Path(os.environ.get("REMOTE_CODEX_LOG_DIR", APP_ROOT / "logs")).resolve()
 
 app = Flask(__name__)
@@ -40,6 +41,42 @@ job_lock = threading.Lock()
 console_lock = threading.Lock()
 jobs: dict[str, "CodexJob"] = {}
 current_job_id: str | None = None
+
+MOJIBAKE_MARKERS = (
+    "Ã",
+    "Â",
+    "â",
+    "€",
+    "鏂",
+    "囨",
+    "鍒",
+    "鍏",
+    "鍥",
+    "涓",
+    "浠",
+    "杩",
+    "璇",
+    "鎴",
+    "瀛",
+    "绋",
+    "銆",
+    "锛",
+    "妯",
+    "绛",
+    "搴",
+    "瑙",
+    "閫",
+    "熀",
+    "姝",
+    "鍊",
+    "浼",
+    "蹇",
+    "楂",
+    "粏",
+    "鍚",
+    "彂",
+    "獙",
+)
 
 
 class QuietRequestHandler(WSGIRequestHandler):
@@ -87,6 +124,32 @@ def console_log(line: str) -> None:
             print(line, flush=True)
         except Exception:
             return
+
+
+def mojibake_score(text: str) -> int:
+    return sum(text.count(marker) for marker in MOJIBAKE_MARKERS)
+
+
+def repair_mojibake(text: str) -> str:
+    if not FIX_MOJIBAKE:
+        return text
+
+    original_score = mojibake_score(text)
+    if original_score == 0:
+        return text
+
+    best_text = text
+    best_score = original_score
+    for encoding in ("gbk", "cp936"):
+        try:
+            candidate = text.encode(encoding).decode("utf-8")
+        except UnicodeError:
+            continue
+        candidate_score = mojibake_score(candidate)
+        if candidate_score < best_score:
+            best_text = candidate
+            best_score = candidate_score
+    return best_text
 
 
 def client_addr() -> str:
@@ -174,7 +237,7 @@ class CodexJob:
         }
 
     def append(self, line: str) -> None:
-        clean_line = line.rstrip("\r\n")
+        clean_line = repair_mojibake(line.rstrip("\r\n"))
         with self._condition:
             seq = self.next_seq
             self.next_seq += 1
@@ -762,4 +825,5 @@ if __name__ == "__main__":
     console_log(f"[server] prompt file: {PROMPT_FILE}")
     console_log(f"[server] codex bin: {CODEX_BIN}")
     console_log(f"[server] console logs: {'enabled' if CONSOLE_LOGS else 'disabled'}")
+    console_log(f"[server] mojibake repair: {'enabled' if FIX_MOJIBAKE else 'disabled'}")
     app.run(host=HOST, port=PORT, threaded=True, request_handler=QuietRequestHandler)
