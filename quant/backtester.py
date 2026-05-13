@@ -487,6 +487,7 @@ SIZING_MULTIPLIER_KEYS = (
     "spy_relative_leader_risk_on_multiplier_applied",
     "rs20_entry_state_risk_multiplier_applied",
     "signal_day_ticker_green_risk_multiplier_applied",
+    "rs60_top_quintile_risk_multiplier_applied",
     "trend_mid_sector_dispersion_risk_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
     "trend_financials_risk_multiplier_applied",

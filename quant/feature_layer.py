@@ -3,8 +3,8 @@ Feature Layer: Convert raw data into trading features.
 
 Trend features:
   close, price_vs_200ma_pct, above_200ma, breakout_20d, breakdown_20d,
-  momentum_10d_pct, momentum_20d_pct, atr, atr_expansion, volume_spike, volume_spike_ratio,
-  daily_range_vs_atr, high_20d, low_20d
+  momentum_10d_pct, momentum_20d_pct, momentum_60d_pct, atr, atr_expansion,
+  volume_spike, volume_spike_ratio, daily_range_vs_atr, high_20d, low_20d
 
 Earnings features:
   days_to_earnings, next_earnings_date, eps_estimate,
@@ -98,15 +98,19 @@ def compute_trend_features(data):
         breakout_20d  = bool(close > high_20d)
         breakdown_20d = bool(close < low_20d)
 
-        # 10-day / 20-day momentum
+        # 10-day / 20-day / 60-day momentum
         momentum_10d_pct = None
         momentum_20d_pct = None
+        momentum_60d_pct = None
         if len(data) >= 11:
             close_10d_ago    = _scalar(data['Close'].iloc[-11])
             momentum_10d_pct = round((close - close_10d_ago) / close_10d_ago, 4)
         if len(data) >= 21:
             close_20d_ago    = _scalar(data['Close'].iloc[-21])
             momentum_20d_pct = round((close - close_20d_ago) / close_20d_ago, 4)
+        if len(data) >= 61:
+            close_60d_ago    = _scalar(data['Close'].iloc[-61])
+            momentum_60d_pct = round((close - close_60d_ago) / close_60d_ago, 6)
 
         # ATR
         atr = _compute_atr(data)
@@ -161,6 +165,7 @@ def compute_trend_features(data):
             "low_20d":             round(low_20d, 2),
             "momentum_10d_pct":    momentum_10d_pct,
             "momentum_20d_pct":    momentum_20d_pct,
+            "momentum_60d_pct":    momentum_60d_pct,
             "atr":                 atr,
             "atr_expansion":       atr_expansion,
             "volume_spike":        volume_spike,

@@ -2,28 +2,39 @@
 
 Last updated: 2026-05-13.
 
-The current accepted core stack includes the 2026-05-13 signal-day own-green
-candle sizing promotion from `exp-20260513-007`, layered on top of the
-2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015` and the
+The current accepted core stack includes the 2026-05-13 RS60 top-quintile
+stock sizing promotion from `exp-20260513-030`, layered on top of the
+signal-day own-green candle sizing promotion from `exp-20260513-007`, the
+2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
 RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
 documented in `docs/backtesting.md` and
 `docs/alpha-optimization-playbook.md`. Canonical fixed-window core metrics are:
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.2894 | 95.32% | 4.50 | 5.52% | 19 | 80.39% |
-| `mid_weak` | 1.6747 | 62.49% | 2.68 | 9.70% | 21 | 79.25% |
-| `old_thin` | 0.3867 | 28.86% | 1.34 | 8.21% | 22 | 91.67% |
+| `late_strong` | 4.3663 | 98.12% | 4.45 | 5.68% | 19 | 80.39% |
+| `mid_weak` | 1.6788 | 62.64% | 2.68 | 9.70% | 21 | 79.25% |
+| `old_thin` | 0.4151 | 30.52% | 1.36 | 8.21% | 22 | 91.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260513-007/signal_day_ticker_green_risk.json`.
-Aggregate core EV is now `6.3508`; aggregate PnL is `$186,668.01`.
+`data/experiments/exp-20260513-030/rs60_top_quintile_risk.json`.
+Aggregate core EV is now `6.4602`; aggregate PnL is `$191,283.94`.
 Latest saved single-window backtest artifact on disk is
-`data/backtest_results_20260512.json`, matching the accepted `old_thin` core
-window at EV `0.3867`, total PnL `$28,855.61`, daily Sharpe `1.34`, max
+`data/backtest_results_20260513.json`, matching the accepted `old_thin` core
+window at EV `0.4151`, total PnL `$30,524.01`, daily Sharpe `1.36`, max
 drawdown `8.21%`, `22` trades, and survival `91.67%`.
 
-Latest accepted alpha result: `exp-20260513-007` tags signals whose own
+Latest accepted alpha result: `exp-20260513-030` computes 60-trading-day
+momentum in shared `feature_layer.py`, tags already-qualified `trend_long` /
+`breakout_long` stock signals whose same-day return is in the top quintile of
+the feature-complete non-ETF/non-commodity stock universe, and applies a
+1.15x cap-aware post-sizing top-up. Aggregate EV improved `+0.1094` and
+aggregate PnL improved `+$4,615.93` across the three canonical windows, with
+unchanged trade count and survival. The rule lives in shared `feature_layer.py`,
+`risk_engine.py`, and `portfolio_engine.py`, with backtester attribution and
+focused parity tests, so it is production-visible and not a replay-only branch.
+
+Previous accepted alpha result: `exp-20260513-007` tags signals whose own
 signal-day candle closes above its open and applies a conservative 1.05x
 cap-aware post-sizing top-up. Aggregate EV improved `+0.0626` and aggregate
 PnL improved `+$2,223.59` across the three canonical windows, with unchanged
@@ -185,9 +196,9 @@ official catalyst buckets, not attention-only rows, prove positive forward
 replacement value.
 
 Current priority: do not retune local add-on trigger, cap, heat, reserve,
-strategy-cohort variants, ETF overlay parameters, nearby RS20 risk scalars,
-single-ticker sector taxonomy, global `MAX_POSITIONS`, or scarce-slot breakout
-thresholds on the same frozen samples. Future slot work needs a shared
+strategy-cohort variants, ETF overlay parameters, nearby RS20 or RS60 risk
+scalars, single-ticker sector taxonomy, global `MAX_POSITIONS`, or scarce-slot
+breakout thresholds on the same frozen samples. Future slot work needs a shared
 exposure/risk-based effective-slot accounting design with full portfolio replay
 and production visibility, not another global slot-count sweep. Do not keep
 retuning the SEC financial-report T+1 label or adjacent cohort slices on the

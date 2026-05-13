@@ -12,6 +12,7 @@ Every trade must include:
 """
 
 import logging
+import math
 import statistics
 from collections import defaultdict
 
@@ -25,6 +26,8 @@ from constants import (
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
     RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN,
+    RS60_TOP_QUINTILE_EXCLUDED_SECTORS,
+    RS60_TOP_QUINTILE_FRACTION,
     TREND_MID_SECTOR_DISPERSION_MIN,
     TREND_MID_SECTOR_DISPERSION_MAX,
 )
@@ -240,6 +243,30 @@ def _sector_ret20_dispersion(features_dict):
     return statistics.pstdev(sector_avgs)
 
 
+def _rs60_top_quintile_cutoff(features_dict):
+    """Return the same-day RS60 top-quintile cutoff for non-ETF stock features."""
+    values = []
+    for ticker, features in (features_dict or {}).items():
+        if not features:
+            continue
+        sector = SECTOR_MAP.get(ticker, "Unknown")
+        ret60 = features.get("momentum_60d_pct")
+        if sector in RS60_TOP_QUINTILE_EXCLUDED_SECTORS:
+            continue
+        if isinstance(ret60, (int, float)):
+            values.append(float(ret60))
+
+    if not values:
+        return None
+
+    values.sort()
+    index = max(
+        0,
+        math.ceil(len(values) * (1.0 - RS60_TOP_QUINTILE_FRACTION)) - 1,
+    )
+    return values[index]
+
+
 def enrich_signals(signals, features_dict, atr_target_mult=None):
     """
     Enrich all signals with risk parameters and Trade Quality Score.
@@ -276,6 +303,7 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         < sector_ret20_dispersion
         < TREND_MID_SECTOR_DISPERSION_MAX
     )
+    rs60_top_quintile_cutoff = _rs60_top_quintile_cutoff(features_dict)
 
     for sig in signals:
         ticker   = sig["ticker"]
@@ -345,6 +373,20 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         enriched_sig["signal_day_ticker_green_candle"] = (
             isinstance(own_open_close_return, (int, float))
             and own_open_close_return > 0
+        )
+        ticker_ret60 = features.get("momentum_60d_pct")
+        enriched_sig["momentum_60d_pct"] = ticker_ret60
+        enriched_sig["rs60_top_quintile_cutoff"] = (
+            round(rs60_top_quintile_cutoff, 6)
+            if isinstance(rs60_top_quintile_cutoff, (int, float))
+            else None
+        )
+        enriched_sig["rs60_top_quintile_state"] = (
+            enriched_sig.get("strategy") in {"trend_long", "breakout_long"}
+            and enriched_sig["sector"] not in RS60_TOP_QUINTILE_EXCLUDED_SECTORS
+            and isinstance(ticker_ret60, (int, float))
+            and isinstance(rs60_top_quintile_cutoff, (int, float))
+            and ticker_ret60 >= rs60_top_quintile_cutoff
         )
         if sector_ret20_dispersion is not None:
             enriched_sig["sector_ret20_dispersion"] = round(sector_ret20_dispersion, 4)

@@ -293,6 +293,69 @@ def test_enrich_signals_marks_signal_day_green_candle():
     assert msft["signal_day_ticker_green_candle"] is False
 
 
+def test_compute_trend_features_includes_60d_momentum():
+    from feature_layer import compute_trend_features
+
+    close = [100.0 + i for i in range(61)]
+    data = pd.DataFrame(
+        {
+            "Open": close,
+            "High": [value + 1.0 for value in close],
+            "Low": [value - 1.0 for value in close],
+            "Close": close,
+            "Volume": [1_000_000] * 61,
+        }
+    )
+
+    features = compute_trend_features(data)
+
+    assert features["momentum_60d_pct"] == 0.6
+
+
+def test_enrich_signals_marks_rs60_top_quintile_stock_state():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "GLD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.9,
+        },
+    ]
+    features = {
+        "AMD": {"atr": 2.0, "momentum_60d_pct": 0.30},
+        "MSFT": {"atr": 2.0, "momentum_60d_pct": 0.20},
+        "JPM": {"atr": 2.0, "momentum_60d_pct": 0.10},
+        "XOM": {"atr": 2.0, "momentum_60d_pct": 0.00},
+        "GLD": {"atr": 2.0, "momentum_60d_pct": 0.99},
+        "QQQ": {"atr": 2.0, "momentum_60d_pct": 0.80},
+    }
+
+    amd, msft, gld = enrich_signals(signals, features)
+
+    assert amd["rs60_top_quintile_cutoff"] == 0.30
+    assert amd["rs60_top_quintile_state"] is True
+    assert msft["rs60_top_quintile_state"] is False
+    assert gld["sector"] == "Commodities"
+    assert gld["rs60_top_quintile_state"] is False
+
+
 def test_trade_quality_score_range():
     """TQS must be within [0, 1]."""
     from risk_engine import _trade_quality_score

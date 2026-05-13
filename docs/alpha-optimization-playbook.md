@@ -71,8 +71,9 @@ and do not invent a new backtest-only decision path.
 
 ### Core Stack
 
-Accepted checkpoint: `exp-20260513-007`, layered on the lifecycle allocation
-core from `exp-20260502-022`, the RS20 entry-state sizing promotion from
+Accepted checkpoint: `exp-20260513-030`, layered on the signal-day own-green
+sizing promotion from `exp-20260513-007`, the lifecycle allocation core from
+`exp-20260502-022`, the RS20 entry-state sizing promotion from
 `exp-20260510-012`, and the TRIP sector taxonomy completion from
 `exp-20260510-015`.
 
@@ -80,22 +81,24 @@ Accepted three-window metrics:
 
 | Window | EV | Return | Sharpe | Max DD | Win rate | Trades |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.2894 | +95.32% | 4.50 | 5.52% | 78.95% | 19 |
-| `mid_weak` | 1.6747 | +62.49% | 2.68 | 9.70% | 52.38% | 21 |
-| `old_thin` | 0.3867 | +28.86% | 1.34 | 8.21% | 40.91% | 22 |
+| `late_strong` | 4.3663 | +98.12% | 4.45 | 5.68% | 78.95% | 19 |
+| `mid_weak` | 1.6788 | +62.64% | 2.68 | 9.70% | 52.38% | 21 |
+| `old_thin` | 0.4151 | +30.52% | 1.36 | 8.21% | 40.91% | 22 |
 
-Aggregate accepted-stack EV is `6.3508`; aggregate PnL is `+$186,668.01`;
+Aggregate accepted-stack EV is `6.4602`; aggregate PnL is `+$191,283.94`;
 convergence is `8/8`.
 
-Source of truth: `data/experiments/exp-20260513-007/signal_day_ticker_green_risk.json`.
+Source of truth: `data/experiments/exp-20260513-030/rs60_top_quintile_risk.json`.
 
 Core conclusion: the accepted core is a capital-allocation and lifecycle
 baseline. It is not evidence for new broad entry filters, broad universe
 expansion, global sector priority, or global capacity changes.
-`exp-20260513-007` reinforces the current best core-alpha direction: small,
-production-visible state allocation on already-selected signals. Do not retry
-nearby own-candle scalars on the frozen windows without forward evidence or a
-materially narrower discriminator.
+`exp-20260513-030` reinforces the current best core-alpha direction: small,
+production-visible state allocation on already-selected signals. The accepted
+RS60 state uses long-horizon cross-sectional leadership, not another
+short-horizon acceleration/TQS stack. Do not retry nearby own-candle or RS60
+scalars on the frozen windows without forward evidence or a materially narrower
+discriminator.
 
 ### SEC Financial-Report Paper Sleeve
 
@@ -199,6 +202,7 @@ Accepted or useful allocation mechanisms:
 - risk-on unmodified sizing lift;
 - low/mid-score plain risk-on sizing;
 - RS20 shared entry-state sizing top-up;
+- RS60 top-quintile shared sizing top-up;
 - selected sector/state risk boosts when they survive all windows.
 
 Rejected nearby patterns:
@@ -359,6 +363,11 @@ Rejected Space patterns:
   near-perfect-or-better was identical to the accepted helper, while perfect,
   below-near-perfect, and nonperfect scopes all regressed the three-window
   gate.
+- leave-one-out peer-state definition. `exp-20260513-029` showed that own
+  momentum versus the official basket average including the ticker and own
+  momentum versus the equal-weight peer average excluding the ticker have the
+  same leader/nonleader sign, so the accepted peer-state helpers were
+  behaviorally unchanged on all three windows.
 
 Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
@@ -474,6 +483,10 @@ structured reason stability.
   high TQS. `exp-20260513-018` found the best confirmed-quality scalar was
   `1.20x`, with aggregate EV `+0.0534` and PnL `+$4,540.10`, but the edge
   stayed old-window concentrated and failed the multi-window gate.
+- Nearby fixed RS60 top-quintile scalars on the frozen core windows.
+  `exp-20260513-030` accepted `1.15x`; `1.20x` raised raw PnL but lowered EV
+  and worsened drawdown more. Further RS60 tuning needs forward evidence or an
+  independent production-visible discriminator.
 - Fixed broad index ETF target-width pools. `exp-20260513-017` tested
   `QQQ`/`SPY`/`IWM` target widths at `5.0x`, `6.0x`, and `7.0x` ATR; the best
   variant reduced aggregate EV by `-0.1030` and PnL by `-$2,267.28` because the
@@ -524,6 +537,11 @@ structured reason stability.
   replay. `exp-20260513-028` accepted only the narrow `1.05x` helper for
   exactly one defense-budget government-contract seed with no `customer_win`;
   further slicing needs forward replacement-value evidence.
+- Leave-one-out peer-state definition swaps on the frozen Space replay.
+  `exp-20260513-029` changed no classifications because the leader/nonleader
+  sign is algebraically identical to the accepted full-basket definition; do
+  not revisit unless downstream logic begins using excess magnitude rather
+  than state.
 
 ### Event / LLM
 

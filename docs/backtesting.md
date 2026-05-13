@@ -78,21 +78,34 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after `exp-20260513-007` promoted the
-signal-day own-green-candle 1.05x cap-aware sizing top-up:
+Current accepted fixed-window metrics after `exp-20260513-030` promoted the
+RS60 top-quintile stock 1.15x cap-aware sizing top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.2894 | 4.50 | $95,321.74 | 95.32% | 5.52% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.6747 | 2.68 | $62,490.66 | 62.49% | 9.70% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.3867 | 1.34 | $28,855.61 | 28.86% | 8.21% | 40.91% | 22 | 91.67% |
+| `late_strong` | 4.3663 | 4.45 | $98,115.26 | 98.12% | 5.68% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.6788 | 2.68 | $62,644.67 | 62.64% | 9.70% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.4151 | 1.36 | $30,524.01 | 30.52% | 8.21% | 40.91% | 22 | 91.67% |
 
-Artifact note: `data/experiments/exp-20260513-007/signal_day_ticker_green_risk.json`
+Artifact note: `data/experiments/exp-20260513-030/rs60_top_quintile_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.3508`; aggregate PnL is `$186,668.01`.
+EV is `6.4602`; aggregate PnL is `$191,283.94`.
 
-Latest accepted core-sizing result: `exp-20260513-007` tags signals whose own
-signal-day open-to-close return is positive in shared `feature_layer.py` /
+Latest accepted core-sizing result: `exp-20260513-030` computes
+`momentum_60d_pct` in shared `feature_layer.py`, tags already-qualified
+`trend_long` / `breakout_long` stock signals whose same-day 60-trading-day
+return is in the top quintile of the non-ETF/non-commodity stock universe in
+`risk_engine.py`, then applies a cap-aware 1.15x post-sizing top-up in
+`portfolio_engine.py`. The change improved EV and PnL in all three fixed
+windows with unchanged trade count and survival: aggregate EV `+0.1094`,
+aggregate PnL `+$4,615.93`, max drawdown drift within the Gate 4 guardrail,
+and no production/backtest split because both adapters use the same shared
+modules. Do not retry nearby RS60 top-quintile scalars on these frozen windows
+without forward evidence or a materially different production-visible
+discriminator.
+
+Previous accepted core-sizing result: `exp-20260513-007` tags signals whose
+own signal-day open-to-close return is positive in shared `feature_layer.py` /
 `risk_engine.py`, then applies a cap-aware 1.05x post-sizing top-up in
 `portfolio_engine.py`. The change improved EV and PnL in all three fixed
 windows with unchanged trade count and survival: aggregate EV `+0.0626`,

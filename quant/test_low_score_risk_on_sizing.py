@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from portfolio_engine import size_signals  # noqa: E402
 from constants import (  # noqa: E402
     RS20_ENTRY_STATE_RISK_MULTIPLIER,
+    RS60_TOP_QUINTILE_RISK_MULTIPLIER,
     SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
 )
 
@@ -223,3 +224,73 @@ def test_signal_day_green_candle_top_up_respects_position_cap():
     assert sizing["shares_to_buy"] == 400
     assert sizing["position_pct_of_portfolio"] == 0.4
     assert sizing["signal_day_ticker_green_risk_multiplier_applied"] == 1.0
+
+
+def test_rs60_top_quintile_gets_cap_aware_post_sizing_top_up_after_green():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "balanced",
+            "conditions_met": {},
+            "signal_day_ticker_green_candle": True,
+            "rs60_top_quintile_state": True,
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "balanced",
+            "conditions_met": {},
+            "signal_day_ticker_green_candle": False,
+            "rs60_top_quintile_state": False,
+        },
+    ]
+
+    rs60, base = [
+        item["sizing"] for item in size_signals(signals, portfolio_value=100_000)
+    ]
+
+    expected_after_green = int(
+        base["shares_to_buy"] * SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER
+    )
+    expected_after_rs60 = int(
+        expected_after_green * RS60_TOP_QUINTILE_RISK_MULTIPLIER
+    )
+    assert rs60["signal_day_ticker_green_risk_multiplier_applied"] == (
+        SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER
+    )
+    assert rs60["rs60_top_quintile_risk_multiplier_applied"] == (
+        RS60_TOP_QUINTILE_RISK_MULTIPLIER
+    )
+    assert rs60["rs60_top_quintile_baseline_shares"] == expected_after_green
+    assert rs60["shares_to_buy"] == expected_after_rs60
+    assert rs60["risk_pct"] > base["risk_pct"]
+    assert base["rs60_top_quintile_risk_multiplier_applied"] == 1.0
+
+
+def test_rs60_top_quintile_top_up_respects_position_cap():
+    signal = {
+        "ticker": "AMD",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 100.0,
+        "stop_price": 99.0,
+        "trade_quality_score": 0.95,
+        "regime_exit_bucket": "balanced",
+        "conditions_met": {},
+        "rs60_top_quintile_state": True,
+    }
+
+    sizing = size_signals([signal], portfolio_value=100_000)[0]["sizing"]
+
+    assert sizing["shares_to_buy"] == 400
+    assert sizing["position_pct_of_portfolio"] == 0.4
+    assert sizing["rs60_top_quintile_risk_multiplier_applied"] == 1.0

@@ -66,6 +66,9 @@ RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT = 0.50
 RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN = 0.05
 RS20_ENTRY_STATE_RISK_MULTIPLIER = 1.10
 SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER = 1.05
+RS60_TOP_QUINTILE_FRACTION = 0.20
+RS60_TOP_QUINTILE_EXCLUDED_SECTORS = ("ETF", "Commodities")
+RS60_TOP_QUINTILE_RISK_MULTIPLIER = 1.15
 TREND_MID_SECTOR_DISPERSION_MIN = 0.035
 TREND_MID_SECTOR_DISPERSION_MAX = 0.08
 TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
@@ -162,6 +165,10 @@ TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # exp-20260513-003: signal-day own green candles carry small follow-through
 # value. Apply only a cap-aware post-sizing 1.05x share top-up, after existing
 # sizing rules, so this stays an allocation rule and not a new entry filter.
+# exp-20260513-030: top-quintile 60-day cross-sectional momentum among
+# feature-complete non-ETF/non-commodity stocks deserves a 1.15x cap-aware
+# post-sizing top-up. This stays allocation-only; do not use it as a filter or
+# slot-priority key without separate three-window evidence.
 MAX_POSITION_PCT        = 0.40       # Initial position cap; exp-20260428-025
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap
