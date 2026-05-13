@@ -421,6 +421,11 @@ structured reason stability.
   `conditions_met.volume_spike_ratio > 2.0` boundary. `exp-20260513-001`
   found the best scalar was only `1.05x`, with aggregate EV `+0.0002` and PnL
   `+$2.62`, improving only `mid_weak`.
+- Fixed signal-day upper-quartile close-location scalars on top of the accepted
+  green-candle baseline. `exp-20260513-009` found the best scalar was `1.15x`
+  with aggregate EV `+0.0449` and PnL `+$4,126.60`, but it regressed
+  `old_thin` and worsened the max drawdown ceiling by `+1.06` percentage
+  points.
 
 ### SEC
 
