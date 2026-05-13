@@ -71,26 +71,31 @@ and do not invent a new backtest-only decision path.
 
 ### Core Stack
 
-Accepted checkpoint: `exp-20260510-015`, layered on the lifecycle allocation
-core from `exp-20260502-022` and the RS20 entry-state sizing promotion from
-`exp-20260510-012`.
+Accepted checkpoint: `exp-20260513-007`, layered on the lifecycle allocation
+core from `exp-20260502-022`, the RS20 entry-state sizing promotion from
+`exp-20260510-012`, and the TRIP sector taxonomy completion from
+`exp-20260510-015`.
 
 Accepted three-window metrics:
 
 | Window | EV | Return | Sharpe | Max DD | Win rate | Trades |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.2340 | +94.09% | 4.50 | 5.48% | 78.95% | 19 |
-| `mid_weak` | 1.6689 | +61.81% | 2.70 | 9.41% | 52.38% | 21 |
-| `old_thin` | 0.3853 | +28.54% | 1.35 | 8.15% | 40.91% | 22 |
+| `late_strong` | 4.2894 | +95.32% | 4.50 | 5.52% | 78.95% | 19 |
+| `mid_weak` | 1.6747 | +62.49% | 2.68 | 9.70% | 52.38% | 21 |
+| `old_thin` | 0.3867 | +28.86% | 1.34 | 8.21% | 40.91% | 22 |
 
-Aggregate accepted-stack EV is `6.2882`; aggregate PnL is `+$184,444.42`;
+Aggregate accepted-stack EV is `6.3508`; aggregate PnL is `+$186,668.01`;
 convergence is `8/8`.
 
-Source of truth: `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`.
+Source of truth: `data/experiments/exp-20260513-007/signal_day_ticker_green_risk.json`.
 
 Core conclusion: the accepted core is a capital-allocation and lifecycle
 baseline. It is not evidence for new broad entry filters, broad universe
 expansion, global sector priority, or global capacity changes.
+`exp-20260513-007` reinforces the current best core-alpha direction: small,
+production-visible state allocation on already-selected signals. Do not retry
+nearby own-candle scalars on the frozen windows without forward evidence or a
+materially narrower discriminator.
 
 ### SEC Financial-Report Paper Sleeve
 

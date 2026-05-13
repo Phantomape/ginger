@@ -2,32 +2,30 @@
 
 Last updated: 2026-05-13.
 
-The current accepted core stack includes the 2026-05-10 TRIP sector taxonomy
-completion from `exp-20260510-015`, layered on top of the RS20 entry-state
-shared sizing promotion from `exp-20260510-012`. Both are documented in
-`docs/backtesting.md` and `docs/alpha-optimization-playbook.md`. Canonical
-fixed-window core metrics are:
+The current accepted core stack includes the 2026-05-13 signal-day own-green
+candle sizing promotion from `exp-20260513-007`, layered on top of the
+2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015` and the
+RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
+documented in `docs/backtesting.md` and
+`docs/alpha-optimization-playbook.md`. Canonical fixed-window core metrics are:
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.2340 | 94.09% | 4.50 | 5.48% | 19 | 80.39% |
-| `mid_weak` | 1.6689 | 61.81% | 2.70 | 9.41% | 21 | 79.25% |
-| `old_thin` | 0.3853 | 28.54% | 1.35 | 8.15% | 22 | 91.67% |
+| `late_strong` | 4.2894 | 95.32% | 4.50 | 5.52% | 19 | 80.39% |
+| `mid_weak` | 1.6747 | 62.49% | 2.68 | 9.70% | 21 | 79.25% |
+| `old_thin` | 0.3867 | 28.86% | 1.34 | 8.21% | 22 | 91.67% |
 
-Latest standalone backtest datapoint: `data/backtest_results_20260510.json`
-still remains the newest accepted standalone core CLI refresh as of
-2026-05-12. It refreshes the accepted `late_strong` window at the same
-canonical values (`EV 4.2340`, `PnL $94,086.91`, `survival 80.39%`).
-`mid_weak` and `old_thin` still rely on the accepted three-window artifact
-from `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`.
+Latest accepted three-window artifact:
+`data/experiments/exp-20260513-007/signal_day_ticker_green_risk.json`.
+Aggregate core EV is now `6.3508`; aggregate PnL is `$186,668.01`.
 
-Latest accepted alpha result: `exp-20260510-015` maps TRIP to Consumer
-Discretionary in shared `risk_engine.SECTOR_MAP` instead of leaving it in the
-`Unknown` sector path. Aggregate EV improved `+0.0171` (`+0.27%`) and aggregate
-PnL improved `+$403.46` (`+0.22%`) across the three canonical windows, with
-unchanged trade count and survival. The effect flows through shared sector
-enrichment / sector-dispersion allocation, so this is production-visible and
-not a replay-only branch.
+Latest accepted alpha result: `exp-20260513-007` tags signals whose own
+signal-day candle closes above its open and applies a conservative 1.05x
+cap-aware post-sizing top-up. Aggregate EV improved `+0.0626` and aggregate
+PnL improved `+$2,223.59` across the three canonical windows, with unchanged
+trade count and survival. The rule lives in shared `feature_layer.py`,
+`risk_engine.py`, and `portfolio_engine.py`, with backtester attribution and
+focused parity tests, so it is production-visible and not a replay-only branch.
 
 Latest accepted default-off SEC paper stack: `exp-20260511-112`,
 `exp-20260512-001`, `exp-20260512-006`, and `exp-20260512-007` now define the
