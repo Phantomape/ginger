@@ -451,6 +451,12 @@ structured reason stability.
   with aggregate EV `+0.0449` and PnL `+$4,126.60`, but it regressed
   `old_thin` and worsened the max drawdown ceiling by `+1.06` percentage
   points.
+- Fixed signal-day own-green slot-priority ranking. `exp-20260513-027` found
+  that prioritizing own-green candidates before same-day slot slicing replaced
+  stronger late-window commodity exposure with weaker green candidates:
+  aggregate EV fell `-2.2683` and PnL fell `-$40,404.08`, while only three
+  collision days changed. Keep own-green as the accepted small sizing helper,
+  not a same-day slot-priority rule, without forward collision evidence.
 - Fixed core momentum-acceleration scalars, including the narrower accepted
   green-candle-confirmed acceleration state. `exp-20260513-013` found the best
   green acceleration scalar was `1.25x`, with aggregate EV `+0.0869` and PnL
@@ -585,3 +591,9 @@ checkpoint.
   Keep this state as risk allocation, not lifecycle widening, until forward
   target-touch attribution changes the evidence.
 - `exp-20260513-017` (rejected_index_etf_target_width): Index ETF lifecycle scout tested wider target widths for `QQQ`/`SPY`/`IWM` only. Best `index_etf_target_5_0atr` produced aggregate EV delta -0.103 (-1.62%), PnL delta $-2267.28, with 1 changed index ETF trades. Do not split broad index ETFs into a promoted target pool without a positive shared-policy retest or a narrower state-conditioned discriminator.
+- `exp-20260513-027` (rejected_signal_day_green_slot_priority): own-green is
+  useful as a small cap-aware sizing helper, but not as a replacement-value
+  ranking key. The slot-priority scout changed only three collision days and
+  cut aggregate EV by `-2.2683` / PnL by `-$40,404.08`, concentrated in
+  `late_strong`, so do not promote own-green slot ordering on the frozen
+  windows.

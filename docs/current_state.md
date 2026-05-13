@@ -742,6 +742,17 @@ target exit reduced PnL from `$4,783.80` to `$2,513.69`. Do not split broad
 index ETFs into a promoted target pool without forward target-touch evidence
 or a narrower state-conditioned lifecycle discriminator.
 
+Latest rejected core slot-priority alpha search: `exp-20260513-027` tested
+whether the accepted signal-day own-green state should also rank ahead of
+non-green candidates during same-day slot slicing. The scout changed only the
+slot ordering after existing filters, sizing, and scarce-slot breakout
+deferral; it did not change entry logic, sizing, exits, universe, LLM/news, or
+add-ons. Gate 4 failed: aggregate EV fell `-2.2683` and PnL fell
+`-$40,404.08`, entirely from `late_strong`, where replacing GLD/IAU exposure
+with green IWM/AMD and later META materially hurt results. Keep own-green as
+the accepted small sizing helper, not as a slot-priority ranking key, unless
+forward collision evidence changes the prior.
+
 Latest Space alpha search: `exp-20260513-020` tested a Space `trend_long`
 risk scalar conditioned on both IWM 20d momentum beating SPY and the ticker's
 20d momentum beating the official Space basket average, on top of the accepted
