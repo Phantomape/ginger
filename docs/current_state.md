@@ -674,3 +674,14 @@ left `late_strong` / `old_thin` unchanged. No shared sizing policy was promoted.
 Do not retry fixed core breakout strong-volume scalars on these frozen windows
 without forward breakout volume-bucket attribution or a stronger orthogonal
 entry-quality state.
+
+Latest Space alpha search: `exp-20260513-003` tested whether the accepted
+`exp-20260512-112` watch-liquidity 1.10x helper should apply only to Space
+signals with a specific peer-momentum state. Both peer-scope splits failed the
+three-window gate versus the accepted all-peer-state helper. The best variant,
+`watch_liquidity_peer_nonleader_only`, had aggregate EV `-0.3263` and PnL
+`-$8,133.37`, with `mid_weak -0.2285` EV / `-$4,032.48` and `old_thin -0.0978`
+EV / `-$4,100.89`; `late_strong` was unchanged. No shared policy or production
+adapter was changed. Keep the all-peer-state watch-liquidity helper and do not
+retry nearby watch-liquidity peer-scope splits on the frozen Space snapshots
+without forward replacement-value evidence.

@@ -311,7 +311,8 @@ Accepted Space evidence:
 - launch/lunar theme segment: `exp-20260512-032`;
 - liquidity-tier risk: `exp-20260512-037`;
 - official customer-source risk: `exp-20260512-038`;
-- financing/dilution profile risk: `exp-20260512-041`.
+- financing/dilution profile risk: `exp-20260512-041`;
+- watch-liquidity risk: `exp-20260512-112`.
 
 Rejected Space patterns:
 
@@ -324,12 +325,16 @@ Rejected Space patterns:
 - lunar/manufacturing target broadening;
 - data/defense theme scalar;
 - broad defense-budget source scalar due to drawdown cost;
-- mission-binary profile scalar due to immaterial coverage.
+- mission-binary profile scalar due to immaterial coverage;
+- watch-liquidity peer-state narrowing. `exp-20260513-003` found both
+  leader-only and nonleader-only scopes worse than the accepted all-peer-state
+  watch-liquidity helper.
 
 Next valid Space alpha: forward replacement value by catalyst family, source
-quality, peer leadership, and production registry profile. Candidate-pool work
-is valid only if it improves official-catalyst coverage or attribution quality;
-do not add noise tickers just to get more trades.
+quality, peer leadership, and production registry profile. Do not keep slicing
+the accepted watch-liquidity helper by peer state on frozen snapshots.
+Candidate-pool work is valid only if it improves official-catalyst coverage or
+attribution quality; do not add noise tickers just to get more trades.
 
 ### 7. LLM Is A Semantic Layer, Not A Risk Engine
 
@@ -366,7 +371,7 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 
@@ -434,6 +439,9 @@ structured reason stability.
 - Lunar/manufacturing target broadening from RKLB/ASTS evidence.
 - Defense-budget/government-contract broad source scalars.
 - Mission-binary profile scalars until outcome coverage is material.
+- Watch-liquidity peer-state scope splits on the frozen Space replay.
+  `exp-20260513-003` found leader-only and nonleader-only scopes both regressed
+  the accepted all-peer-state helper.
 
 ### Event / LLM
 
