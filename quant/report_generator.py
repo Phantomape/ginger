@@ -486,6 +486,22 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "single-event defense-only @ "
                     f"{single_event_defense_scalar}x"
                 )
+            attention_overlay_scalar = forward.get(
+                "space_attention_overlay_risk_scalar"
+            )
+            if attention_overlay_scalar is not None:
+                extra_policies.append(
+                    "attention overlay with official catalyst @ "
+                    f"{attention_overlay_scalar}x"
+                )
+            source_diversity_scalar = forward.get(
+                "space_source_diversity_risk_scalar"
+            )
+            if source_diversity_scalar is not None:
+                extra_policies.append(
+                    "official source diversity @ "
+                    f"{source_diversity_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -588,6 +604,16 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_single_event_defense_bucket")
                 else ""
             )
+            attention_overlay_text = (
+                " attention_overlay=True"
+                if plan.get("space_attention_overlay_bucket")
+                else ""
+            )
+            source_diversity_text = (
+                " source_diversity=True"
+                if plan.get("space_source_diversity_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -611,6 +637,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{iwm_peer_leader_trend_text}"
                 f"{company_source_text}{profile_text}"
                 f"{multi_event_text}{single_event_defense_text}"
+                f"{attention_overlay_text}{source_diversity_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"

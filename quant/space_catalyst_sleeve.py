@@ -1,4 +1,4 @@
-"""Observe-only governance helpers for the space catalyst theme.
+﻿"""Observe-only governance helpers for the space catalyst theme.
 
 The space catalyst sleeve starts as a shadow universe, not a pilot trade
 adapter. It lets the daily system and experiments see a clean, auditable pool
@@ -115,9 +115,26 @@ SPACE_CATALYST_SINGLE_EVENT_DEFENSE_EVENT_FIELD = "government_space_contract"
 SPACE_CATALYST_SINGLE_EVENT_DEFENSE_EXCLUDED_EVENT_FIELD = "customer_win"
 SPACE_CATALYST_SINGLE_EVENT_DEFENSE_SEMANTIC_BUCKET = "defense_budget_theme"
 SPACE_CATALYST_SINGLE_EVENT_DEFENSE_RISK_SCALAR = 1.05
+SPACE_CATALYST_ATTENTION_OVERLAY_SEMANTIC_BUCKET = "attention_only"
+SPACE_CATALYST_ATTENTION_OVERLAY_EVENT_FIELDS = (
+    "spacex_ipo_proxy",
+    "uap_attention_spike",
+)
+SPACE_CATALYST_ATTENTION_OVERLAY_NON_ATTENTION_SOURCE_TYPES = (
+    SPACE_CATALYST_MULTI_EVENT_DEPTH_SOURCE_TYPES
+)
+SPACE_CATALYST_ATTENTION_OVERLAY_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
+SPACE_CATALYST_ATTENTION_OVERLAY_RISK_SCALAR = 1.25
+SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SOURCE_TYPES = 2
+SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SEMANTIC_BUCKETS = 2
+SPACE_CATALYST_SOURCE_DIVERSITY_SOURCE_TYPES = (
+    SPACE_CATALYST_MULTI_EVENT_DEPTH_SOURCE_TYPES
+)
+SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
+SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260513-028",
+    "experiment_id": "exp-20260513-038",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -286,6 +303,46 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_single_event_defense_risk_scalar": (
         SPACE_CATALYST_SINGLE_EVENT_DEFENSE_RISK_SCALAR
     ),
+    "space_attention_overlay_experiment_id": "exp-20260513-032",
+    "space_attention_overlay_definition": (
+        "at least one attention-only event seed and at least one official "
+        "non-attention event seed"
+    ),
+    "space_attention_overlay_semantic_bucket": (
+        SPACE_CATALYST_ATTENTION_OVERLAY_SEMANTIC_BUCKET
+    ),
+    "space_attention_overlay_event_fields": list(
+        SPACE_CATALYST_ATTENTION_OVERLAY_EVENT_FIELDS
+    ),
+    "space_attention_overlay_non_attention_source_types": list(
+        SPACE_CATALYST_ATTENTION_OVERLAY_NON_ATTENTION_SOURCE_TYPES
+    ),
+    "space_attention_overlay_excluded_semantic_buckets": list(
+        SPACE_CATALYST_ATTENTION_OVERLAY_EXCLUDED_SEMANTIC_BUCKETS
+    ),
+    "space_attention_overlay_risk_scalar": (
+        SPACE_CATALYST_ATTENTION_OVERLAY_RISK_SCALAR
+    ),
+    "space_source_diversity_experiment_id": "exp-20260513-038",
+    "space_source_diversity_definition": (
+        "official non-attention event seeds spanning at least two official "
+        "source types and at least two semantic catalyst buckets"
+    ),
+    "space_source_diversity_min_source_types": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SOURCE_TYPES
+    ),
+    "space_source_diversity_min_semantic_buckets": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SEMANTIC_BUCKETS
+    ),
+    "space_source_diversity_source_types": list(
+        SPACE_CATALYST_SOURCE_DIVERSITY_SOURCE_TYPES
+    ),
+    "space_source_diversity_excluded_semantic_buckets": list(
+        SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS
+    ),
+    "space_source_diversity_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
+    ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -440,6 +497,8 @@ def space_catalyst_forward_risk_scalar(
     government_contract_profile: dict[str, Any] | None = None,
     multi_event_depth_profile: dict[str, Any] | None = None,
     single_event_defense_profile: dict[str, Any] | None = None,
+    attention_overlay_profile: dict[str, Any] | None = None,
+    source_diversity_profile: dict[str, Any] | None = None,
     event_guard_profile: str | None = None,
     trade_quality_score: Any = None,
 ) -> float:
@@ -545,6 +604,16 @@ def space_catalyst_forward_risk_scalar(
         and _is_space_single_event_defense_profile(single_event_defense_profile)
     ):
         scalar *= SPACE_CATALYST_SINGLE_EVENT_DEFENSE_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_attention_overlay_profile(attention_overlay_profile)
+    ):
+        scalar *= SPACE_CATALYST_ATTENTION_OVERLAY_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_source_diversity_profile(source_diversity_profile)
+    ):
+        scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
     return scalar
 
 
@@ -718,6 +787,36 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_single_event_defense_risk_scalar": (
                 SPACE_CATALYST_SINGLE_EVENT_DEFENSE_RISK_SCALAR
+            ),
+            "space_attention_overlay_semantic_bucket": (
+                SPACE_CATALYST_ATTENTION_OVERLAY_SEMANTIC_BUCKET
+            ),
+            "space_attention_overlay_event_fields": list(
+                SPACE_CATALYST_ATTENTION_OVERLAY_EVENT_FIELDS
+            ),
+            "space_attention_overlay_non_attention_source_types": list(
+                SPACE_CATALYST_ATTENTION_OVERLAY_NON_ATTENTION_SOURCE_TYPES
+            ),
+            "space_attention_overlay_excluded_semantic_buckets": list(
+                SPACE_CATALYST_ATTENTION_OVERLAY_EXCLUDED_SEMANTIC_BUCKETS
+            ),
+            "space_attention_overlay_risk_scalar": (
+                SPACE_CATALYST_ATTENTION_OVERLAY_RISK_SCALAR
+            ),
+            "space_source_diversity_min_source_types": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SOURCE_TYPES
+            ),
+            "space_source_diversity_min_semantic_buckets": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SEMANTIC_BUCKETS
+            ),
+            "space_source_diversity_source_types": list(
+                SPACE_CATALYST_SOURCE_DIVERSITY_SOURCE_TYPES
+            ),
+            "space_source_diversity_excluded_semantic_buckets": list(
+                SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS
+            ),
+            "space_source_diversity_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -992,6 +1091,129 @@ def space_catalyst_single_event_defense_profiles(
     return out
 
 
+def space_catalyst_attention_overlay_profiles(
+    events: list[dict[str, Any]] | None = None,
+    *,
+    source_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH,
+    included_tickers: list[str] | tuple[str, ...] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return Space profiles with both attention and official catalyst support."""
+    seeds = events if events is not None else load_space_catalyst_event_seeds(source_path)
+    allowed_tickers = {
+        str(ticker).upper()
+        for ticker in (
+            included_tickers
+            or SPACE_CATALYST_FORWARD_HYPOTHESIS.get("included_tickers")
+            or []
+        )
+        if ticker
+    }
+    profiles: dict[str, dict[str, Any]] = {}
+    for event in (_normalise_event_seed(row) for row in seeds):
+        if not event:
+            continue
+        source_type = str(event.get("source_type") or "")
+        semantic_bucket = str(event.get("semantic_bucket") or "")
+        fields = [str(field) for field in event.get("event_fields") or []]
+        field_set = set(fields)
+        is_attention = (
+            semantic_bucket == SPACE_CATALYST_ATTENTION_OVERLAY_SEMANTIC_BUCKET
+            or bool(field_set.intersection(SPACE_CATALYST_ATTENTION_OVERLAY_EVENT_FIELDS))
+        )
+        is_non_attention = (
+            source_type in SPACE_CATALYST_ATTENTION_OVERLAY_NON_ATTENTION_SOURCE_TYPES
+            and semantic_bucket
+            not in SPACE_CATALYST_ATTENTION_OVERLAY_EXCLUDED_SEMANTIC_BUCKETS
+        )
+        if not is_attention and not is_non_attention:
+            continue
+        for ticker in event.get("tickers") or []:
+            ticker_upper = str(ticker or "").upper()
+            if allowed_tickers and ticker_upper not in allowed_tickers:
+                continue
+            profile = profiles.setdefault(
+                ticker_upper,
+                {
+                    "all_event_ids": set(),
+                    "attention_event_ids": set(),
+                    "attention_event_fields": set(),
+                    "attention_semantic_buckets": set(),
+                    "attention_source_types": set(),
+                    "non_attention_event_ids": set(),
+                    "non_attention_event_fields": set(),
+                    "non_attention_semantic_buckets": set(),
+                    "non_attention_source_types": set(),
+                },
+            )
+            profile["all_event_ids"].add(event["event_id"])
+            if is_attention:
+                profile["attention_event_ids"].add(event["event_id"])
+                profile["attention_event_fields"].update(fields)
+                profile["attention_semantic_buckets"].add(semantic_bucket)
+                profile["attention_source_types"].add(source_type)
+            if is_non_attention:
+                profile["non_attention_event_ids"].add(event["event_id"])
+                profile["non_attention_event_fields"].update(fields)
+                profile["non_attention_semantic_buckets"].add(semantic_bucket)
+                profile["non_attention_source_types"].add(source_type)
+
+    out = {}
+    for ticker, profile in sorted(profiles.items()):
+        attention_event_ids = sorted(profile["attention_event_ids"])
+        non_attention_event_ids = sorted(profile["non_attention_event_ids"])
+        if not attention_event_ids or not non_attention_event_ids:
+            continue
+        out[ticker] = {
+            "event_count": len(profile["all_event_ids"]),
+            "attention_event_count": len(attention_event_ids),
+            "attention_event_ids": attention_event_ids,
+            "attention_event_fields": sorted(profile["attention_event_fields"]),
+            "attention_semantic_buckets": sorted(
+                profile["attention_semantic_buckets"]
+            ),
+            "attention_source_types": sorted(profile["attention_source_types"]),
+            "non_attention_event_count": len(non_attention_event_ids),
+            "non_attention_event_ids": non_attention_event_ids,
+            "non_attention_event_fields": sorted(
+                profile["non_attention_event_fields"]
+            ),
+            "non_attention_semantic_buckets": sorted(
+                profile["non_attention_semantic_buckets"]
+            ),
+            "non_attention_source_types": sorted(
+                profile["non_attention_source_types"]
+            ),
+        }
+    return out
+
+
+def space_catalyst_source_diversity_profiles(
+    events: list[dict[str, Any]] | None = None,
+    *,
+    source_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH,
+    included_tickers: list[str] | tuple[str, ...] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return official Space profiles with diverse official catalyst support."""
+    profiles = space_catalyst_multi_event_depth_profiles(
+        events,
+        source_path=source_path,
+        included_tickers=included_tickers,
+    )
+    out = {}
+    for ticker, profile in sorted(profiles.items()):
+        source_types = {str(item) for item in profile.get("source_types") or []}
+        semantic_buckets = {
+            str(item) for item in profile.get("semantic_buckets") or []
+        }
+        if (
+            len(source_types) >= SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SOURCE_TYPES
+            and len(semantic_buckets)
+            >= SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SEMANTIC_BUCKETS
+        ):
+            out[ticker] = profile
+    return out
+
+
 def space_catalyst_event_tickers(
     as_of,
     *,
@@ -1205,6 +1427,8 @@ def build_space_catalyst_observation_slot(
     space_government_contract_profiles: dict[str, dict[str, Any]] | None = None,
     space_multi_event_depth_profiles: dict[str, dict[str, Any]] | None = None,
     space_single_event_defense_profiles: dict[str, dict[str, Any]] | None = None,
+    space_attention_overlay_profiles: dict[str, dict[str, Any]] | None = None,
+    space_source_diversity_profiles: dict[str, dict[str, Any]] | None = None,
     generated_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Build the one-slot blocked trade plan used for Space forward evidence."""
@@ -1250,6 +1474,20 @@ def build_space_catalyst_observation_slot(
             included_tickers=list(official_tickers)
         )
     )
+    attention_overlay_profiles = (
+        space_attention_overlay_profiles
+        if space_attention_overlay_profiles is not None
+        else space_catalyst_attention_overlay_profiles(
+            included_tickers=list(official_tickers)
+        )
+    )
+    source_diversity_profiles = (
+        space_source_diversity_profiles
+        if space_source_diversity_profiles is not None
+        else space_catalyst_source_diversity_profiles(
+            included_tickers=list(official_tickers)
+        )
+    )
 
     candidates = []
     for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
@@ -1269,6 +1507,8 @@ def build_space_catalyst_observation_slot(
                 space_government_contract_profiles=government_contract_profiles,
                 space_multi_event_depth_profiles=multi_event_profiles,
                 space_single_event_defense_profiles=single_event_defense_profiles,
+                space_attention_overlay_profiles=attention_overlay_profiles,
+                space_source_diversity_profiles=source_diversity_profiles,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
                 portfolio_heat=portfolio_heat or {},
@@ -1397,6 +1637,36 @@ def build_space_catalyst_observation_slot(
             ),
             "space_single_event_defense_risk_scalar": (
                 SPACE_CATALYST_SINGLE_EVENT_DEFENSE_RISK_SCALAR
+            ),
+            "space_attention_overlay_semantic_bucket": (
+                SPACE_CATALYST_ATTENTION_OVERLAY_SEMANTIC_BUCKET
+            ),
+            "space_attention_overlay_event_fields": list(
+                SPACE_CATALYST_ATTENTION_OVERLAY_EVENT_FIELDS
+            ),
+            "space_attention_overlay_non_attention_source_types": list(
+                SPACE_CATALYST_ATTENTION_OVERLAY_NON_ATTENTION_SOURCE_TYPES
+            ),
+            "space_attention_overlay_excluded_semantic_buckets": list(
+                SPACE_CATALYST_ATTENTION_OVERLAY_EXCLUDED_SEMANTIC_BUCKETS
+            ),
+            "space_attention_overlay_risk_scalar": (
+                SPACE_CATALYST_ATTENTION_OVERLAY_RISK_SCALAR
+            ),
+            "space_source_diversity_min_source_types": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SOURCE_TYPES
+            ),
+            "space_source_diversity_min_semantic_buckets": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SEMANTIC_BUCKETS
+            ),
+            "space_source_diversity_source_types": list(
+                SPACE_CATALYST_SOURCE_DIVERSITY_SOURCE_TYPES
+            ),
+            "space_source_diversity_excluded_semantic_buckets": list(
+                SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS
+            ),
+            "space_source_diversity_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -1901,6 +2171,24 @@ def _single_event_defense_profile_for_ticker(
     return deepcopy(profile) if isinstance(profile, dict) else None
 
 
+def _attention_overlay_profile_for_ticker(
+    attention_profiles: dict[str, dict[str, Any]] | None,
+    ticker: str,
+) -> dict[str, Any] | None:
+    ticker_upper = str(ticker or "").upper()
+    profile = (attention_profiles or {}).get(ticker_upper)
+    return deepcopy(profile) if isinstance(profile, dict) else None
+
+
+def _source_diversity_profile_for_ticker(
+    source_diversity_profiles: dict[str, dict[str, Any]] | None,
+    ticker: str,
+) -> dict[str, Any] | None:
+    ticker_upper = str(ticker or "").upper()
+    profile = (source_diversity_profiles or {}).get(ticker_upper)
+    return deepcopy(profile) if isinstance(profile, dict) else None
+
+
 def _is_space_financing_dilution_profile(profile: str | None) -> bool:
     profile_text = str(profile or "").lower()
     return any(
@@ -1986,6 +2274,8 @@ def _observation_slot_row(
     space_government_contract_profiles: dict[str, dict[str, Any]],
     space_multi_event_depth_profiles: dict[str, dict[str, Any]],
     space_single_event_defense_profiles: dict[str, dict[str, Any]],
+    space_attention_overlay_profiles: dict[str, dict[str, Any]],
+    space_source_diversity_profiles: dict[str, dict[str, Any]],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
     portfolio_heat: dict[str, Any],
@@ -2009,6 +2299,14 @@ def _observation_slot_row(
     )
     single_event_defense_profile = _single_event_defense_profile_for_ticker(
         space_single_event_defense_profiles,
+        ticker,
+    )
+    attention_overlay_profile = _attention_overlay_profile_for_ticker(
+        space_attention_overlay_profiles,
+        ticker,
+    )
+    source_diversity_profile = _source_diversity_profile_for_ticker(
+        space_source_diversity_profiles,
         ticker,
     )
     target_atr_mult = space_catalyst_forward_target_atr_mult(
@@ -2041,6 +2339,8 @@ def _observation_slot_row(
         government_contract_profile=government_contract_profile,
         multi_event_depth_profile=multi_event_depth_profile,
         single_event_defense_profile=single_event_defense_profile,
+        attention_overlay_profile=attention_overlay_profile,
+        source_diversity_profile=source_diversity_profile,
         event_guard_profile=event_guard_profile,
         trade_quality_score=signal.get("trade_quality_score"),
     )
@@ -2169,6 +2469,22 @@ def _observation_slot_row(
         if single_event_defense_bucket
         else 1.0
     )
+    attention_overlay_bucket = _is_space_attention_overlay_profile(
+        attention_overlay_profile
+    )
+    attention_overlay_risk_scalar = (
+        SPACE_CATALYST_ATTENTION_OVERLAY_RISK_SCALAR
+        if attention_overlay_bucket
+        else 1.0
+    )
+    source_diversity_bucket = _is_space_source_diversity_profile(
+        source_diversity_profile
+    )
+    source_diversity_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR
+        if source_diversity_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -2196,6 +2512,8 @@ def _observation_slot_row(
         "space_government_contract_profile": government_contract_profile,
         "space_multi_event_depth_profile": multi_event_depth_profile,
         "space_single_event_defense_profile": single_event_defense_profile,
+        "space_attention_overlay_profile": attention_overlay_profile,
+        "space_source_diversity_profile": source_diversity_profile,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
         "stop_price": _round(signal.get("stop_price"), 4),
@@ -2325,6 +2643,16 @@ def _observation_slot_row(
         "space_single_event_defense_bucket": single_event_defense_bucket,
         "space_single_event_defense_risk_scalar": _round(
             single_event_defense_risk_scalar,
+            6,
+        ),
+        "space_attention_overlay_bucket": attention_overlay_bucket,
+        "space_attention_overlay_risk_scalar": _round(
+            attention_overlay_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_bucket": source_diversity_bucket,
+        "space_source_diversity_risk_scalar": _round(
+            source_diversity_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -2581,6 +2909,65 @@ def _is_space_single_event_defense_profile(profile: dict[str, Any] | None) -> bo
         and bool(source_types.intersection(SPACE_CATALYST_SINGLE_EVENT_DEFENSE_SOURCE_TYPES))
         and not semantic_buckets.intersection(
             SPACE_CATALYST_SINGLE_EVENT_DEFENSE_EXCLUDED_SEMANTIC_BUCKETS
+        )
+    )
+
+
+def _is_space_attention_overlay_profile(profile: dict[str, Any] | None) -> bool:
+    if not profile:
+        return False
+    attention_count = _as_float(profile.get("attention_event_count"))
+    non_attention_count = _as_float(profile.get("non_attention_event_count"))
+    if attention_count is None:
+        attention_count = float(len(profile.get("attention_event_ids") or []))
+    if non_attention_count is None:
+        non_attention_count = float(len(profile.get("non_attention_event_ids") or []))
+    attention_fields = {
+        str(item) for item in profile.get("attention_event_fields") or []
+    }
+    attention_buckets = {
+        str(item) for item in profile.get("attention_semantic_buckets") or []
+    }
+    non_attention_sources = {
+        str(item) for item in profile.get("non_attention_source_types") or []
+    }
+    non_attention_buckets = {
+        str(item) for item in profile.get("non_attention_semantic_buckets") or []
+    }
+    return (
+        attention_count > 0
+        and non_attention_count > 0
+        and (
+            SPACE_CATALYST_ATTENTION_OVERLAY_SEMANTIC_BUCKET in attention_buckets
+            or bool(
+                attention_fields.intersection(
+                    SPACE_CATALYST_ATTENTION_OVERLAY_EVENT_FIELDS
+                )
+            )
+        )
+        and bool(
+            non_attention_sources.intersection(
+                SPACE_CATALYST_ATTENTION_OVERLAY_NON_ATTENTION_SOURCE_TYPES
+            )
+        )
+        and not non_attention_buckets.intersection(
+            SPACE_CATALYST_ATTENTION_OVERLAY_EXCLUDED_SEMANTIC_BUCKETS
+        )
+    )
+
+
+def _is_space_source_diversity_profile(profile: dict[str, Any] | None) -> bool:
+    if not profile:
+        return False
+    source_types = {str(item) for item in profile.get("source_types") or []}
+    semantic_buckets = {str(item) for item in profile.get("semantic_buckets") or []}
+    return (
+        len(source_types) >= SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SOURCE_TYPES
+        and len(semantic_buckets)
+        >= SPACE_CATALYST_SOURCE_DIVERSITY_MIN_SEMANTIC_BUCKETS
+        and bool(source_types.intersection(SPACE_CATALYST_SOURCE_DIVERSITY_SOURCE_TYPES))
+        and not semantic_buckets.intersection(
+            SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS
         )
     )
 
