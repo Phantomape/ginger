@@ -2,8 +2,9 @@
 
 Last updated: 2026-05-13.
 
-The current accepted core stack includes the 2026-05-13 RS60 top-quintile
-stock sizing promotion from `exp-20260513-030`, layered on top of the
+The current accepted core stack includes the 2026-05-13 clean SPY-relative
+leader signal-day sizing promotion from `exp-20260513-036`, layered on top of
+the RS60 top-quintile stock sizing promotion from `exp-20260513-030`, the
 signal-day own-green candle sizing promotion from `exp-20260513-007`, the
 2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
 RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
@@ -12,19 +13,30 @@ documented in `docs/backtesting.md` and
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.3663 | 98.12% | 4.45 | 5.68% | 19 | 80.39% |
+| `late_strong` | 4.3768 | 99.70% | 4.39 | 6.02% | 19 | 80.39% |
 | `mid_weak` | 1.6788 | 62.64% | 2.68 | 9.70% | 21 | 79.25% |
-| `old_thin` | 0.4151 | 30.52% | 1.36 | 8.21% | 22 | 91.67% |
+| `old_thin` | 0.4292 | 31.56% | 1.36 | 8.36% | 22 | 91.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260513-030/rs60_top_quintile_risk.json`.
-Aggregate core EV is now `6.4602`; aggregate PnL is `$191,283.94`.
+`data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json`.
+Aggregate core EV is now `6.4848`; aggregate PnL is `$193,903.95`.
 Latest saved single-window backtest artifact on disk is
-`data/backtest_results_20260513.json`, matching the accepted `old_thin` core
-window at EV `0.4151`, total PnL `$30,524.01`, daily Sharpe `1.36`, max
-drawdown `8.21%`, `22` trades, and survival `91.67%`.
+`data/backtest_results_20260513.json`; it predates `exp-20260513-036` and
+matches the prior `old_thin` core window at EV `0.4151`, total PnL
+`$30,524.01`, daily Sharpe `1.36`, max drawdown `8.21%`, `22` trades, and
+survival `91.67%`.
 
-Latest accepted alpha result: `exp-20260513-030` computes 60-trading-day
+Latest accepted alpha result: `exp-20260513-036` computes signal-day
+ticker-minus-SPY open-to-close return in shared `risk_engine.py` and applies a
+1.10x cap-aware post-sizing top-up in `portfolio_engine.py` only to already
+clean `risk_on` SPY-relative leaders whose ticker also beat SPY on the signal
+day. Aggregate EV improved `+0.0246` and aggregate PnL improved `+$2,620.01`
+across the three canonical windows, with unchanged trade count and survival.
+The rule lives in shared `risk_engine.py` and `portfolio_engine.py`, with
+backtester attribution and focused tests, so it is production-visible and not a
+replay-only branch.
+
+Previous accepted alpha result: `exp-20260513-030` computes 60-trading-day
 momentum in shared `feature_layer.py`, tags already-qualified `trend_long` /
 `breakout_long` stock signals whose same-day return is in the top quintile of
 the feature-complete non-ETF/non-commodity stock universe, and applies a
@@ -61,7 +73,8 @@ Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`,
-`exp-20260513-015`, `exp-20260513-020`, and `exp-20260513-028`.
+`exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`, and
+`exp-20260513-032`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -85,7 +98,9 @@ registry `liquidity_tier=watch` get `1.10x` extra default-off risk, and
 official Space signals with at least two official non-attention event seed rows
 get `1.075x` extra default-off risk, and official Space signals with exactly
 one official non-attention defense-budget `government_space_contract` seed and
-no `customer_win` seed get `1.05x` extra default-off risk. This remains
+no `customer_win` seed get `1.05x` extra default-off risk, and official Space
+signals whose event-seed profile has both an attention-only seed and an official
+non-attention seed get `1.25x` extra default-off risk. This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
@@ -99,11 +114,12 @@ scaling, `exp-20260512-037` accepted liquidity-tier anchor risk only at
 `1.10x`; and `exp-20260513-015` accepted government-contract peer-leader risk
 only at `1.05x`; and `exp-20260513-020` accepted IWM-plus-peer-leader
 `trend_long` risk only at `1.15x`; and `exp-20260513-028` accepted
-single-event defense-only risk only at `1.05x`. The `exp-20260513-028`
-aggregate improved versus the accepted `exp-20260513-020` stack from EV
-`17.6697` / PnL `$421,418.99` to EV `17.7538` / PnL `$424,636.65`;
-`mid_weak` and `old_thin` improved, `late_strong` was unchanged, and max
-drawdown drift was `+0.16 pp`.
+single-event defense-only risk only at `1.05x`; and `exp-20260513-032`
+accepted attention-overlay-with-official-catalyst risk only at `1.25x`. The
+`exp-20260513-032` aggregate improved versus the accepted `exp-20260513-028`
+stack from EV `17.8725` / PnL `$436,331.45` to EV `18.7513` / PnL
+`$444,450.36`; all three windows improved EV and max drawdown ceiling improved
+by `3.84 pp`.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space
@@ -767,6 +783,15 @@ add-ons. Gate 4 failed: aggregate EV fell `-2.2683` and PnL fell
 with green IWM/AMD and later META materially hurt results. Keep own-green as
 the accepted small sizing helper, not as a slot-priority ranking key, unless
 forward collision evidence changes the prior.
+
+Latest rejected core clean-leader refinement: `exp-20260513-038` tested an
+extra cap-aware top-up only for already accepted clean SPY-relative leader
+signal-day winners whose existing stop had at least the 2% gap cushion. No
+entry, ranking, exit, target, universe, LLM/news, or production policy changed.
+Gate 4 failed: best `1.025x` moved aggregate EV `-0.0002` while adding
+`$589.77` PnL, improved only `old_thin`, and regressed `late_strong`. Do not
+promote or keep retuning clean-leader execution-cushion overlays on the frozen
+windows without forward evidence or a genuinely independent state variable.
 
 Latest Space alpha search: `exp-20260513-020` tested a Space `trend_long`
 risk scalar conditioned on both IWM 20d momentum beating SPY and the ticker's

@@ -71,8 +71,9 @@ and do not invent a new backtest-only decision path.
 
 ### Core Stack
 
-Accepted checkpoint: `exp-20260513-030`, layered on the signal-day own-green
-sizing promotion from `exp-20260513-007`, the lifecycle allocation core from
+Accepted checkpoint: `exp-20260513-036`, layered on the RS60 top-quintile
+sizing promotion from `exp-20260513-030`, the signal-day own-green sizing
+promotion from `exp-20260513-007`, the lifecycle allocation core from
 `exp-20260502-022`, the RS20 entry-state sizing promotion from
 `exp-20260510-012`, and the TRIP sector taxonomy completion from
 `exp-20260510-015`.
@@ -81,23 +82,25 @@ Accepted three-window metrics:
 
 | Window | EV | Return | Sharpe | Max DD | Win rate | Trades |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.3663 | +98.12% | 4.45 | 5.68% | 78.95% | 19 |
+| `late_strong` | 4.3768 | +99.70% | 4.39 | 6.02% | 78.95% | 19 |
 | `mid_weak` | 1.6788 | +62.64% | 2.68 | 9.70% | 52.38% | 21 |
-| `old_thin` | 0.4151 | +30.52% | 1.36 | 8.21% | 40.91% | 22 |
+| `old_thin` | 0.4292 | +31.56% | 1.36 | 8.36% | 40.91% | 22 |
 
-Aggregate accepted-stack EV is `6.4602`; aggregate PnL is `+$191,283.94`;
+Aggregate accepted-stack EV is `6.4848`; aggregate PnL is `+$193,903.95`;
 convergence is `8/8`.
 
-Source of truth: `data/experiments/exp-20260513-030/rs60_top_quintile_risk.json`.
+Source of truth:
+`data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json`.
 
 Core conclusion: the accepted core is a capital-allocation and lifecycle
 baseline. It is not evidence for new broad entry filters, broad universe
 expansion, global sector priority, or global capacity changes.
-`exp-20260513-030` reinforces the current best core-alpha direction: small,
-production-visible state allocation on already-selected signals. The accepted
-RS60 state uses long-horizon cross-sectional leadership, not another
-short-horizon acceleration/TQS stack. Do not retry nearby own-candle or RS60
-scalars on the frozen windows without forward evidence or a materially narrower
+`exp-20260513-036` reinforces the current best core-alpha direction: small,
+production-visible state allocation on already-selected signals. The useful
+state is now narrower than broad same-day SPY outperformance: it must already
+be a clean `risk_on` SPY-relative leader and also beat SPY on the signal day.
+Do not retry nearby own-candle, RS60, or clean SPY-leader signal-day scalars on
+the frozen windows without forward evidence or a materially narrower
 discriminator.
 
 ### SEC Financial-Report Paper Sleeve
@@ -203,6 +206,7 @@ Accepted or useful allocation mechanisms:
 - low/mid-score plain risk-on sizing;
 - RS20 shared entry-state sizing top-up;
 - RS60 top-quintile shared sizing top-up;
+- clean risk-on SPY-relative leader plus signal-day SPY outperformance top-up;
 - selected sector/state risk boosts when they survive all windows.
 
 Rejected nearby patterns:
@@ -368,13 +372,19 @@ Rejected Space patterns:
   momentum versus the equal-weight peer average excluding the ticker have the
   same leader/nonleader sign, so the accepted peer-state helpers were
   behaviorally unchanged on all three windows.
+- attention overlay with official catalyst. `exp-20260513-032` accepted a
+  `1.25x` default-off risk scalar only for official Space tickers whose
+  event-seed profile has both an attention-only catalyst and an official
+  non-attention catalyst. Aggregate EV improved `+0.8788` versus the
+  exp-028 stack, all three windows improved EV, and live slots remain zero.
 
 Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
 the accepted watch-liquidity helper by peer state or TQS bucket on frozen
 snapshots, and do not retune nearby multi-event, source-qualified peer-leader,
-government-contract peer-leader, or single-event defense-only count/scalar
-values, or nearby IWM-plus-peer trend scalars, without new forward evidence.
+government-contract peer-leader, single-event defense-only, or attention-overlay
+count/scalar values, or nearby IWM-plus-peer trend scalars, without new forward
+evidence.
 Candidate-pool work is valid only if it improves official-catalyst coverage or
 attribution quality; do not add noise tickers just to get more trades.
 
@@ -413,7 +423,7 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`, `exp-20260513-032` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 
@@ -421,8 +431,9 @@ structured reason stability.
 
 1. Space forward replacement value. Close the loop on official-catalyst helpers:
    peer leader versus nonleader breakouts, customer-source quality,
-   financing/dilution profile, single-event defense-only exposure, and
-   launch/lunar versus data/defense buckets.
+   financing/dilution profile, single-event defense-only exposure,
+   attention-overlay-with-official-catalyst exposure, and launch/lunar versus
+   data/defense buckets.
 2. SEC semantic feature expansion. Add PIT-safe same-accession surprise,
    guidance, or language-quality fields before more sleeve retunes.
 3. Event replacement-value paper outcomes. Track the rotation/state-surface
@@ -487,6 +498,13 @@ structured reason stability.
   `exp-20260513-030` accepted `1.15x`; `1.20x` raised raw PnL but lowered EV
   and worsened drawdown more. Further RS60 tuning needs forward evidence or an
   independent production-visible discriminator.
+- Clean SPY-relative leader gap-cushion top-ups on the frozen core windows.
+  `exp-20260513-038` tested an extra scalar only for already-clean
+  SPY-relative leader signal-day winners with the existing `gap_vulnerability_pct
+  >= 0.02` cushion. Even `1.025x` lowered aggregate EV and regressed
+  `late_strong`, so do not keep adding execution-cushion overlays to the
+  accepted clean-leader helper without forward evidence or a new independent
+  discriminator.
 - Fixed broad index ETF target-width pools. `exp-20260513-017` tested
   `QQQ`/`SPY`/`IWM` target widths at `5.0x`, `6.0x`, and `7.0x` ATR; the best
   variant reduced aggregate EV by `-0.1030` and PnL by `-$2,267.28` because the
@@ -623,3 +641,9 @@ checkpoint.
   cut aggregate EV by `-2.2683` / PnL by `-$40,404.08`, concentrated in
   `late_strong`, so do not promote own-green slot ordering on the frozen
   windows.
+- `exp-20260513-038` (rejected_clean_spy_gap_cushion_risk): the accepted clean
+  SPY-leader signal-day helper did not improve when narrowed again by the
+  existing 2% gap-cushion field. Best `1.025x` added raw PnL but reduced
+  aggregate EV by `-0.0002` and regressed `late_strong`, so the next core
+  allocation search should move to a different production-visible state rather
+  than another clean-leader execution-cushion overlay.
