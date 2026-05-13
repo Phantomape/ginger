@@ -66,6 +66,7 @@ MOJIBAKE_MARKERS = (
     "搴",
     "瑙",
     "閫",
+    "闃",
     "熀",
     "姝",
     "鍊",
@@ -127,7 +128,9 @@ def console_log(line: str) -> None:
 
 
 def mojibake_score(text: str) -> int:
-    return sum(text.count(marker) for marker in MOJIBAKE_MARKERS)
+    marker_score = sum(text.count(marker) for marker in MOJIBAKE_MARKERS)
+    private_use_score = sum(1 for char in text if "\ue000" <= char <= "\uf8ff")
+    return marker_score + private_use_score
 
 
 def repair_mojibake(text: str) -> str:
@@ -140,7 +143,7 @@ def repair_mojibake(text: str) -> str:
 
     best_text = text
     best_score = original_score
-    for encoding in ("gbk", "cp936"):
+    for encoding in ("gb18030", "gbk", "cp936"):
         try:
             candidate = text.encode(encoding).decode("utf-8")
         except UnicodeError:
