@@ -1,0 +1,54 @@
+{
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, shadow event table, overlap, slot value, and next experiment; no production change.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260513_006_sec_filing_shock_delta_audit.py",
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260513-006.json",
+    "data/experiments/exp-20260513-006/sec_earnings_filing_shock_delta_audit.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_delta_exp-20260513-006_20260513.md",
+    "docs/experiments/tickets/exp-20260513-006.json",
+    "docs/experiments/logs/exp-20260513-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260510-015/trip_sector_taxonomy.json",
+  "change_type": "non_ohlcv_data_audit_shadow_tagging",
+  "claimed_at": "2026-05-13T01:33:19+00:00",
+  "completed_at": "2026-05-13T01:33:19+00:00",
+  "created_at": "2026-05-13T01:33:19+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260513-006",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K/10-Q/10-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but only if the post-exp-20260512-003 SEC refresh adds PIT directional fields that touch candidates.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "SEC filing shock field availability",
+    "C strategy grading candidate touch"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "owner": "codex-alpha-discovery",
+  "result": {
+    "artifact_file": "data/experiments/exp-20260513-006/sec_earnings_filing_shock_delta_audit.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_delta_exp-20260513-006_20260513.md",
+    "decision": "data_gap",
+    "reason": "The 2026-05-11 SEC refresh adds a feature file, but it contains zero same-accession rows, zero EPS/revenue/guidance surprise rows, zero directional filing-shock rows, no current core-signal overlap, and no fresh candidate-linked forward returns."
+  },
+  "single_causal_variable": "post_exp_20260512_003_sec_filing_20260511_feature_availability",
+  "status": "data_gap",
+  "ticket_creation_note": "scripts/create_experiment_ticket.py was invoked first, but the registry lacked existing exp-20260513-001..003 filesystem tickets and attempted a colliding ID. The colliding ticket was restored, and this audit uses non-conflicting exp-20260513-006."
+}
