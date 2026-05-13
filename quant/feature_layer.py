@@ -71,9 +71,14 @@ def compute_trend_features(data):
         return None
 
     try:
+        open_  = _scalar(data['Open'].iloc[-1])
         close  = _scalar(data['Close'].iloc[-1])
         high   = _scalar(data['High'].iloc[-1])
         volume = _scalar(data['Volume'].iloc[-1])
+
+        signal_day_open_close_return_pct = (
+            round((close - open_) / open_, 6) if open_ > 0 else None
+        )
 
         # 20-day avg volume (exclude today)
         avg_vol_20 = _scalar(data['Volume'].iloc[-21:-1].mean()) if len(data) >= 21 else None
@@ -146,6 +151,7 @@ def compute_trend_features(data):
 
         return {
             "close":               round(close, 2),
+            "signal_day_ticker_open_close_return_pct": signal_day_open_close_return_pct,
             "daily_high":          round(high, 2),
             "price_vs_200ma_pct":  price_vs_200ma_pct,
             "above_200ma":         above_200ma,

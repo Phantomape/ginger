@@ -253,6 +253,46 @@ def test_enrich_signals_classifies_trip_consumer_discretionary():
     assert enriched[0]["sector"] == "Consumer Discretionary"
 
 
+def test_enrich_signals_marks_signal_day_green_candle():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.8,
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.8,
+        },
+    ]
+    features = {
+        "AMD": {
+            "atr": 2.0,
+            "momentum_20d_pct": 0.04,
+            "signal_day_ticker_open_close_return_pct": 0.012,
+        },
+        "MSFT": {
+            "atr": 2.0,
+            "momentum_20d_pct": 0.04,
+            "signal_day_ticker_open_close_return_pct": -0.004,
+        },
+        "SPY": {"momentum_20d_pct": 0.0},
+    }
+
+    amd, msft = enrich_signals(signals, features)
+
+    assert amd["signal_day_ticker_green_candle"] is True
+    assert amd["signal_day_ticker_open_close_return_pct"] == 0.012
+    assert msft["signal_day_ticker_green_candle"] is False
+
+
 def test_trade_quality_score_range():
     """TQS must be within [0, 1]."""
     from risk_engine import _trade_quality_score

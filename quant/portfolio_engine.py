@@ -66,6 +66,7 @@ from constants import (
     RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER,
     RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     RS20_ENTRY_STATE_RISK_MULTIPLIER,
+    SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
     TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
@@ -350,6 +351,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             spy_relative_leader_risk_on_multiplier = 1.0
             trend_mid_sector_dispersion_risk_multiplier = 1.0
             rs20_entry_state_risk_multiplier = 1.0
+            signal_day_ticker_green_risk_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
                 strategy == "trend_long"
@@ -667,6 +669,42 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                         sizing["rs20_entry_state_baseline_shares"] = old_shares
                         sizing["rs20_entry_state_desired_shares"] = desired_shares
                         sizing["rs20_entry_state_cap_shares"] = cap_shares
+                if (
+                    sig.get("signal_day_ticker_green_candle") is True
+                    and strategy in {"trend_long", "breakout_long"}
+                    and sizing.get("shares_to_buy")
+                    and signal_risk_pct > 0
+                    and SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER > 1.0
+                ):
+                    old_shares = int(sizing.get("shares_to_buy") or 0)
+                    cap_shares = int(
+                        math.floor(portfolio_value * max_position_pct / entry)
+                    )
+                    desired_shares = max(
+                        old_shares,
+                        int(math.floor(old_shares * SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER)),
+                    )
+                    new_shares = min(desired_shares, cap_shares)
+                    if new_shares > old_shares:
+                        net_risk_per_share = sizing.get("net_risk_per_share") or 0.0
+                        risk_amount = new_shares * net_risk_per_share
+                        position_value = new_shares * entry
+                        signal_day_ticker_green_risk_multiplier = (
+                            SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER
+                        )
+                        sizing["shares_to_buy"] = new_shares
+                        sizing["position_value_usd"] = round(position_value, 2)
+                        sizing["position_pct_of_portfolio"] = round(
+                            position_value / portfolio_value,
+                            4,
+                        )
+                        sizing["risk_amount_usd"] = round(risk_amount, 2)
+                        sizing["risk_pct"] = (
+                            risk_amount / portfolio_value if portfolio_value else 0.0
+                        )
+                        sizing["signal_day_ticker_green_baseline_shares"] = old_shares
+                        sizing["signal_day_ticker_green_desired_shares"] = desired_shares
+                        sizing["signal_day_ticker_green_cap_shares"] = cap_shares
                 sizing["base_risk_pct"] = effective_risk_pct
                 sizing["max_position_pct_applied"] = max_position_pct
                 sizing["trade_quality_score"] = trade_quality_score
@@ -694,6 +732,9 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["rs20_entry_state_risk_multiplier_applied"] = (
                     rs20_entry_state_risk_multiplier
+                )
+                sizing["signal_day_ticker_green_risk_multiplier_applied"] = (
+                    signal_day_ticker_green_risk_multiplier
                 )
                 sizing["sector_ret20_dispersion"] = sig.get("sector_ret20_dispersion")
                 sizing["mid_sector_dispersion"] = sig.get("mid_sector_dispersion")

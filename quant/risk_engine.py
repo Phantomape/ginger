@@ -340,6 +340,12 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Inject sector so LLM can enforce the 40% sector concentration rule.
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
+        own_open_close_return = features.get("signal_day_ticker_open_close_return_pct")
+        enriched_sig["signal_day_ticker_open_close_return_pct"] = own_open_close_return
+        enriched_sig["signal_day_ticker_green_candle"] = (
+            isinstance(own_open_close_return, (int, float))
+            and own_open_close_return > 0
+        )
         if sector_ret20_dispersion is not None:
             enriched_sig["sector_ret20_dispersion"] = round(sector_ret20_dispersion, 4)
             enriched_sig["mid_sector_dispersion"] = mid_sector_dispersion

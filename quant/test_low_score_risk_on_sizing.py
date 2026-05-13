@@ -5,7 +5,10 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from portfolio_engine import size_signals  # noqa: E402
-from constants import RS20_ENTRY_STATE_RISK_MULTIPLIER  # noqa: E402
+from constants import (  # noqa: E402
+    RS20_ENTRY_STATE_RISK_MULTIPLIER,
+    SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
+)
 
 
 def test_low_score_plain_risk_on_uses_dedicated_non_stacking_lift():
@@ -158,3 +161,65 @@ def test_rs20_entry_state_leader_gets_cap_aware_post_sizing_top_up():
     )
     assert leader["risk_pct"] > non_leader["risk_pct"]
     assert non_leader["rs20_entry_state_risk_multiplier_applied"] == 1.0
+
+
+def test_signal_day_green_candle_gets_cap_aware_post_sizing_top_up():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "balanced",
+            "conditions_met": {},
+            "signal_day_ticker_green_candle": True,
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "balanced",
+            "conditions_met": {},
+            "signal_day_ticker_green_candle": False,
+        },
+    ]
+
+    green, not_green = [
+        item["sizing"] for item in size_signals(signals, portfolio_value=100_000)
+    ]
+
+    expected_shares = int(
+        not_green["shares_to_buy"] * SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER
+    )
+    assert green["signal_day_ticker_green_risk_multiplier_applied"] == (
+        SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER
+    )
+    assert green["signal_day_ticker_green_baseline_shares"] == not_green["shares_to_buy"]
+    assert green["shares_to_buy"] == expected_shares
+    assert green["risk_pct"] > not_green["risk_pct"]
+    assert not_green["signal_day_ticker_green_risk_multiplier_applied"] == 1.0
+
+
+def test_signal_day_green_candle_top_up_respects_position_cap():
+    signal = {
+        "ticker": "AMD",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 100.0,
+        "stop_price": 99.0,
+        "trade_quality_score": 0.95,
+        "regime_exit_bucket": "balanced",
+        "conditions_met": {},
+        "signal_day_ticker_green_candle": True,
+    }
+
+    sizing = size_signals([signal], portfolio_value=100_000)[0]["sizing"]
+
+    assert sizing["shares_to_buy"] == 400
+    assert sizing["position_pct_of_portfolio"] == 0.4
+    assert sizing["signal_day_ticker_green_risk_multiplier_applied"] == 1.0
