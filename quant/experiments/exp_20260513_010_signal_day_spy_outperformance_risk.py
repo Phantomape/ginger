@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import math
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable
 
 import exp_20260512_106_signal_day_sector_tape_risk as base
@@ -24,6 +25,30 @@ MULTIPLIER_KEY = "signal_day_spy_outperformance_risk_multiplier_applied"
 SCALARS = [1.02, 1.03, 1.05, 1.075, 1.10]
 
 CURRENT_SCALAR = 1.0
+
+
+def _upsert_jsonl(path: Path, payload: dict[str, Any]) -> None:
+    line = json.dumps(base._safe(payload), ensure_ascii=False, sort_keys=True)
+    rows: list[str] = []
+    replaced = False
+    if path.exists():
+        for existing in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if not existing.strip():
+                continue
+            try:
+                row = json.loads(existing)
+            except json.JSONDecodeError:
+                rows.append(existing)
+                continue
+            if row.get("experiment_id") == EXPERIMENT_ID:
+                if not replaced:
+                    rows.append(line)
+                    replaced = True
+                continue
+            rows.append(existing)
+    if not replaced:
+        rows.append(line)
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
 
 
 def _make_enrich_wrapper(original: Callable[..., list[dict[str, Any]]]) -> Callable[..., list[dict[str, Any]]]:
@@ -487,7 +512,7 @@ def persist(payload: dict[str, Any]) -> None:
     base._write_json(ticket_path, ticket)
     md_path.parent.mkdir(parents=True, exist_ok=True)
     md_path.write_text(_markdown(payload) + "\n", encoding="utf-8")
-    base._upsert_jsonl(base.REPO_ROOT / "docs" / "experiment_log.jsonl", payload)
+    _upsert_jsonl(base.REPO_ROOT / "docs" / "experiment_log.jsonl", payload)
 
 
 if __name__ == "__main__":
