@@ -133,7 +133,7 @@ until forward replacement value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260513-108`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260513-110`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -164,11 +164,13 @@ Current default-off Space helpers:
   `1.15x` top-up;
 - source-diverse official Space signals when IWM 20d momentum beats SPY 20d
   momentum: `1.05x` top-up;
+- source-diverse official Space signals that also lead the Space peer basket
+  while IWM beats SPY: another `1.05x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260513-108`: EV `23.4374`, total PnL
-`$564,173.22`, max drawdown ceiling `11.36%`, min survival `65.33%`, and 68
+Accepted aggregate metrics after `exp-20260513-110`: EV `23.6930`, total PnL
+`$570,527.21`, max drawdown ceiling `11.76%`, min survival `65.33%`, and 68
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
@@ -257,6 +259,10 @@ Rejected patterns:
 - ATR trailing full exits;
 - target-half or target-third runner splits;
 - early MFE breakeven/profit-protective stops without stronger state evidence.
+- early SPY-relative weakness full exits without forward lifecycle evidence.
+  `exp-20260513-112` converted the observed exp-20260513-101 loss family into
+  a next-open full exit after three holding-session closes, but only `old_thin`
+  changed and aggregate EV fell `-0.0408` with PnL `-$1,686.11`.
 
 Rule: any new lifecycle alpha needs a state or catalyst discriminator, not just
 a nearby ATR multiple.
@@ -359,6 +365,7 @@ Accepted Space evidence:
 - official source-diversity risk: `exp-20260513-038`.
 - source-diversity peer-leader risk: `exp-20260513-039`.
 - source-diversity plus IWM small-cap leadership risk: `exp-20260513-108`.
+- source-diversity plus peer-leader plus IWM leadership risk: `exp-20260513-110`.
 
 Rejected Space patterns:
 
@@ -523,6 +530,11 @@ structured reason stability.
   `QQQ`/`SPY`/`IWM` target widths at `5.0x`, `6.0x`, and `7.0x` ATR; the best
   variant reduced aggregate EV by `-0.1030` and PnL by `-$2,267.28` because the
   one changed `IWM` trade gave back an earlier target win.
+- Fixed early SPY-relative weakness full exits after three holding-session
+  closes. `exp-20260513-112` executed three exits, all in `old_thin`, and
+  reduced aggregate EV by `-0.0408` and PnL by `-$1,686.11`; do not retune
+  nearby day-count or relative-weakness thresholds without forward lifecycle
+  attribution.
 
 ### SEC
 

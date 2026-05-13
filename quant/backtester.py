@@ -94,6 +94,7 @@ from constants import (
 from regime_exit import compute_regime_exit_profile
 from production_parity import (
     TRAILING_PARTIAL_REDUCE_ENABLED,
+    build_early_relative_weakness_exit_actions,
     cap_followthrough_addon_shares,
     classify_entry_open_cancel,
     filter_entry_signal_candidates,
@@ -141,6 +142,11 @@ DEFAULT_CONFIG = {
     "POST_ADDON_WEAKNESS_DAYS": 3,
     "POST_ADDON_WEAKNESS_MIN_RS_VS_SPY": 0.0,
     "POST_ADDON_WEAKNESS_REQUIRE_NEGATIVE_ADDON_RETURN": True,
+    "EARLY_RELATIVE_WEAKNESS_EXIT_ENABLED": False,
+    "EARLY_RELATIVE_WEAKNESS_HOLDING_ROWS": 3,
+    "EARLY_RELATIVE_WEAKNESS_MIN_RS_VS_SPY": -0.03,
+    "EARLY_RELATIVE_WEAKNESS_REQUIRE_NEGATIVE_RETURN": True,
+    "EARLY_RELATIVE_WEAKNESS_REDUCE_PCT": 100,
     "ADDON_ENABLED": ADDON_ENABLED,
     "ADDON_CHECKPOINT_DAYS": ADDON_CHECKPOINT_DAYS,
     "ADDON_MIN_UNREALIZED_PCT": ADDON_MIN_UNREALIZED_PCT,
@@ -488,6 +494,7 @@ SIZING_MULTIPLIER_KEYS = (
     "rs20_entry_state_risk_multiplier_applied",
     "signal_day_ticker_green_risk_multiplier_applied",
     "rs60_top_quintile_risk_multiplier_applied",
+    "clean_spy_leader_signal_day_risk_multiplier_applied",
     "trend_mid_sector_dispersion_risk_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
     "trend_financials_risk_multiplier_applied",
@@ -2221,6 +2228,72 @@ class BacktestEngine:
                     "shares_to_sell": shares_to_sell,
                 })
 
+        def _schedule_early_relative_weakness_exits(today):
+            nonlocal partial_reduce_scheduled_count
+            if not partial_reduce_enabled:
+                return
+            if not self.config.get("EARLY_RELATIVE_WEAKNESS_EXIT_ENABLED"):
+                return
+
+            open_positions = {"positions": []}
+            ohlcv_dict = {"SPY": ohlcv_all.get("SPY").loc[:today]} if ohlcv_all.get("SPY") is not None else {}
+            current_prices = {}
+            position_by_ticker = {}
+            for pos in positions:
+                if getattr(pos, "sleeve", "core") != "core":
+                    continue
+                if pos.shares <= 0:
+                    continue
+                df = ohlcv_all.get(pos.ticker)
+                if df is None or today not in df.index:
+                    continue
+                position_by_ticker[pos.ticker] = pos
+                ohlcv_dict[pos.ticker] = df.loc[:today]
+                close = _scalar_price(df.loc[today], "Close")
+                current_prices[pos.ticker] = close
+                open_positions["positions"].append({
+                    "ticker": pos.ticker,
+                    "shares": pos.shares,
+                    "avg_cost": pos.entry_price,
+                    "entry_price": pos.entry_price,
+                    "entry_open_price": pos.entry_open_price,
+                    "entry_date": str(pos.entry_date.date()) if hasattr(pos.entry_date, "date") else str(pos.entry_date),
+                })
+
+            actions, _audit = build_early_relative_weakness_exit_actions(
+                open_positions,
+                ohlcv_dict,
+                current_prices=current_prices,
+                enabled=True,
+                holding_rows=self.config.get("EARLY_RELATIVE_WEAKNESS_HOLDING_ROWS", 3),
+                min_rs_vs_spy=self.config.get("EARLY_RELATIVE_WEAKNESS_MIN_RS_VS_SPY", -0.03),
+                require_negative_return=self.config.get(
+                    "EARLY_RELATIVE_WEAKNESS_REQUIRE_NEGATIVE_RETURN",
+                    True,
+                ),
+                reduce_pct=self.config.get("EARLY_RELATIVE_WEAKNESS_REDUCE_PCT", 100),
+            )
+            for action in actions:
+                pos = position_by_ticker.get(action.get("ticker"))
+                if pos is None:
+                    continue
+                fill_date = _next_trade_date_for_ticker(pos.ticker, today)
+                if fill_date is None:
+                    continue
+                shares_to_sell = min(int(action.get("shares_to_sell") or 0), int(pos.shares))
+                if shares_to_sell <= 0:
+                    continue
+                partial_reduce_scheduled_count += 1
+                pending_partial_reduces.setdefault(str(fill_date.date()), []).append({
+                    **action,
+                    "strategy": pos.strategy,
+                    "sector": pos.sector,
+                    "trigger_date": str(today.date()),
+                    "scheduled_fill_date": str(fill_date.date()),
+                    "shares_before": pos.shares,
+                    "shares_to_sell": shares_to_sell,
+                })
+
         def _record_exit_advisory_shadow(pos, today, df, close):
             entry_ts = pd.Timestamp(pos.entry_date)
             history = df.loc[(df.index >= entry_ts) & (df.index <= today)]
@@ -2579,6 +2652,7 @@ class BacktestEngine:
             positions = still_open
             _schedule_partial_reduces(today)
             _schedule_post_addon_weakness_reduces(today)
+            _schedule_early_relative_weakness_exits(today)
             _schedule_followthrough_addons(today)
 
             # ── 2. Generate signals using the REAL pipeline ─────────────────

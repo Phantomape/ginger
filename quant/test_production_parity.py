@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from production_parity import (  # noqa: E402
     TRAILING_PARTIAL_REDUCE_ENABLED,
+    build_early_relative_weakness_exit_actions,
     build_followthrough_addon_actions,
     cap_followthrough_addon_shares,
     classify_entry_open_cancel,
@@ -202,6 +203,65 @@ def test_build_followthrough_addon_actions_uses_spy_leader_addon_cap():
     assert actions[0]["spy_relative_leader_addon_cap"] is True
     assert actions[0]["addon_position_cap_pct"] == 0.60
     assert actions[0]["shares_to_buy"] == 12
+
+
+def test_build_early_relative_weakness_exit_actions_emits_day_three_exit():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 99.0, 96.0]),
+        "SPY": _ohlcv([100.0, 100.5, 101.0]),
+    }
+
+    actions, audit = build_early_relative_weakness_exit_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        current_prices={"NVDA": 96.0},
+        enabled=True,
+    )
+
+    assert len(actions) == 1
+    assert actions[0]["ticker"] == "NVDA"
+    assert actions[0]["action"] == "EXIT"
+    assert actions[0]["shares_to_sell"] == 10
+    assert actions[0]["fill_timing"] == "next_session_open"
+    assert actions[0]["triggered_rule"] == "EARLY_RELATIVE_WEAKNESS"
+    assert any(row["status"] == "eligible" for row in audit)
+
+
+def test_build_early_relative_weakness_exit_actions_waits_for_check_day():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 96.0]),
+        "SPY": _ohlcv([100.0, 101.0]),
+    }
+
+    actions, audit = build_early_relative_weakness_exit_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        current_prices={"NVDA": 96.0},
+        enabled=True,
+    )
+
+    assert actions == []
+    assert audit[0]["reason"] == "not_early_weakness_check_day"
 
 
 def test_cap_followthrough_addon_shares_uses_effective_stop_heat_room():

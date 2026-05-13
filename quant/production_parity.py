@@ -305,6 +305,16 @@ def partial_reduce_shares(current_shares, reduce_pct):
     return max(0, math.floor(int(current_shares) * float(reduce_pct) / 100.0))
 
 
+def _price_at(df, idx, field):
+    if df is None or idx is None or field not in df:
+        return None
+    try:
+        value = df[field].iloc[idx]
+        return float(value.item() if hasattr(value, "item") else value)
+    except (TypeError, ValueError, IndexError, KeyError):
+        return None
+
+
 def _latest_close(df):
     if df is None or len(df) == 0 or "Close" not in df:
         return None
@@ -368,6 +378,150 @@ def cap_followthrough_addon_shares(
         "effective_stop": effective_stop,
         "cap_reason": cap_reason,
     }
+
+
+def build_early_relative_weakness_exit_actions(
+    open_positions,
+    ohlcv_dict,
+    current_prices=None,
+    enabled=False,
+    holding_rows=3,
+    min_rs_vs_spy=-0.03,
+    require_negative_return=True,
+    reduce_pct=100,
+):
+    """Return next-open exits for fresh positions that fail early vs SPY.
+
+    The trigger is intentionally narrow and production-visible: after the Nth
+    available holding-session close, the position must be negative from avg
+    cost and trail SPY by at least `min_rs_vs_spy`.
+    """
+    actions = []
+    audit = []
+    if not enabled:
+        return actions, audit
+
+    spy_df = (ohlcv_dict or {}).get("SPY")
+    if spy_df is None or len(spy_df) == 0:
+        return actions, [{
+            "ticker": "SPY",
+            "status": "skipped",
+            "reason": "missing_spy_ohlcv_for_relative_strength",
+        }]
+
+    target_days_since_entry = max(0, int(holding_rows) - 1)
+    current_prices = current_prices or {}
+
+    for pos in _positive_positions(open_positions):
+        ticker = str(pos.get("ticker", "")).upper()
+        df = (ohlcv_dict or {}).get(ticker)
+        if df is None or len(df) == 0:
+            audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_ohlcv"})
+            continue
+
+        entry_date = pos.get("entry_date")
+        if not entry_date:
+            audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_entry_date"})
+            continue
+
+        entry_idx = _entry_index(df, entry_date)
+        spy_entry_idx = _entry_index(spy_df, entry_date)
+        if entry_idx is None or spy_entry_idx is None:
+            audit.append({"ticker": ticker, "status": "skipped", "reason": "entry_date_not_in_ohlcv"})
+            continue
+
+        today_idx = len(df.index) - 1
+        days_since_entry = today_idx - entry_idx
+        if days_since_entry != target_days_since_entry:
+            audit.append({
+                "ticker": ticker,
+                "status": "skipped",
+                "reason": "not_early_weakness_check_day",
+                "days_since_entry": int(days_since_entry),
+                "required_days_since_entry": target_days_since_entry,
+                "holding_rows": int(holding_rows),
+            })
+            continue
+
+        entry_price = (
+            pos.get("avg_cost")
+            or pos.get("entry_price")
+            or pos.get("entry_open_price")
+            or _price_at(df, entry_idx, "Open")
+        )
+        close = current_prices.get(ticker) or _latest_close(df)
+        spy_close = _latest_close(spy_df)
+        spy_entry_open = _price_at(spy_df, spy_entry_idx, "Open")
+        try:
+            entry_price = float(entry_price)
+        except (TypeError, ValueError):
+            entry_price = None
+        if not entry_price or not close or not spy_close or not spy_entry_open:
+            audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_price"})
+            continue
+
+        ticker_return = (float(close) - entry_price) / entry_price
+        spy_return = (float(spy_close) - float(spy_entry_open)) / float(spy_entry_open)
+        rs_vs_spy = ticker_return - spy_return
+        if rs_vs_spy > min_rs_vs_spy:
+            audit.append({
+                "ticker": ticker,
+                "status": "rejected",
+                "reason": "relative_weakness_threshold_not_met",
+                "ticker_return_pct": round(ticker_return, 6),
+                "spy_return_pct": round(spy_return, 6),
+                "rs_vs_spy": round(rs_vs_spy, 6),
+                "min_rs_vs_spy": min_rs_vs_spy,
+            })
+            continue
+        if require_negative_return and ticker_return >= 0:
+            audit.append({
+                "ticker": ticker,
+                "status": "rejected",
+                "reason": "ticker_return_not_negative",
+                "ticker_return_pct": round(ticker_return, 6),
+                "spy_return_pct": round(spy_return, 6),
+                "rs_vs_spy": round(rs_vs_spy, 6),
+            })
+            continue
+
+        current_shares = int(pos.get("shares") or 0)
+        shares_to_sell = partial_reduce_shares(current_shares, reduce_pct)
+        if shares_to_sell <= 0:
+            audit.append({"ticker": ticker, "status": "skipped", "reason": "zero_shares_to_sell"})
+            continue
+
+        action = {
+            "ticker": ticker,
+            "action": "EXIT" if shares_to_sell >= current_shares else "REDUCE",
+            "decision_mode": "code_early_relative_weakness_exit",
+            "fill_timing": "next_session_open",
+            "triggered_rule": "EARLY_RELATIVE_WEAKNESS",
+            "exit_reason": "early_relative_weakness_exit",
+            "holding_rows": int(holding_rows),
+            "days_since_entry": int(days_since_entry),
+            "entry_date": str(pd.Timestamp(entry_date).date()),
+            "entry_price": round(entry_price, 4),
+            "trigger_close": round(float(close), 4),
+            "spy_entry_open": round(float(spy_entry_open), 4),
+            "spy_trigger_close": round(float(spy_close), 4),
+            "ticker_return_pct": round(ticker_return, 6),
+            "spy_return_pct": round(spy_return, 6),
+            "rs_vs_spy": round(rs_vs_spy, 6),
+            "min_rs_vs_spy": min_rs_vs_spy,
+            "require_negative_return": bool(require_negative_return),
+            "reduce_pct": reduce_pct,
+            "shares_before": current_shares,
+            "shares_to_sell": shares_to_sell,
+            "reason": (
+                f"day-{holding_rows} early weakness: "
+                f"return {ticker_return:.1%}, RS vs SPY {rs_vs_spy:.1%}"
+            ),
+        }
+        actions.append(action)
+        audit.append({"ticker": ticker, "status": "eligible", **action})
+
+    return actions, audit
 
 
 def build_followthrough_addon_actions(

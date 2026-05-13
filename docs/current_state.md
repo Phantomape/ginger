@@ -75,7 +75,7 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`,
 `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
-`exp-20260513-108`.
+`exp-20260513-108`, and `exp-20260513-110`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -106,7 +106,9 @@ with non-attention source diversity get `1.075x` extra default-off risk, and
 source-diverse official Space signals that also lead the Space peer basket get
 `1.15x` extra default-off risk, and source-diverse official Space signals also
 get `1.05x` extra default-off risk when IWM 20d momentum beats SPY 20d
-momentum. This remains
+momentum, and source-diverse official Space signals that also lead the Space
+peer basket while IWM beats SPY get a further `1.05x` extra default-off risk.
+This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
@@ -133,7 +135,12 @@ change. `exp-20260513-108` then accepted the source-diversity IWM-leader
 interaction only at `1.05x`: aggregate EV moved from `22.9617` to `23.4374`,
 PnL from `$550,143.02` to `$564,173.22`, all three windows improved EV, max
 drawdown drift stayed inside Gate 4 at `+0.47 pp`, and live Space slots still
-zero.
+zero. `exp-20260513-110` then accepted the source-diversity peer+IWM-leader
+interaction only at `1.05x`: aggregate EV moved from `23.4374` to `23.6930`,
+PnL from `$564,173.22` to `$570,527.21`, `mid_weak` and `old_thin` improved
+while `late_strong` was unchanged, max drawdown drift stayed inside Gate 4 at
+`+0.40 pp`, trade count and survival stayed unchanged, and live Space slots
+still zero.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space
@@ -150,6 +157,14 @@ aggregate EV `6.2882 -> 3.9873`, aggregate PnL `-$48,599.83`, and max drawdown
 ceiling worsened `+2.07 pp`. Do not promote or retune nearby pullback/reclaim
 entry thresholds on the frozen windows; this candidate-pool direction adds too
 many lower-quality trades under the current exit/risk stack.
+
+Latest rejected core exit alpha search: `exp-20260513-112` tested converting
+the observed early SPY-relative underperformance loss family into a next-open
+full exit after the third holding-session close. It executed only three exits,
+all in `old_thin`, and failed Gate 4: aggregate EV `6.4848 -> 6.4440`,
+aggregate PnL `$193,903.95 -> $192,217.84`, with no improved window and
+`old_thin` EV `0.4292 -> 0.3884`. Do not retune nearby day-count or
+relative-weakness exit thresholds without forward lifecycle attribution.
 
 Recent slot alpha-search scout: `exp-20260510-018` rejected effective core slot
 accounting from observed-only slot-missed replacement value. All blocked rows
