@@ -124,7 +124,7 @@ value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260513-012`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260513-014`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -138,18 +138,20 @@ Current default-off Space helpers:
 - `liquidity_tier=ok`: `1.10x` top-up;
 - `liquidity_tier=watch`: `1.10x` top-up;
 - primary-source `customer_win`: `1.10x` top-up;
+- primary-source `customer_win` plus Space peer momentum leader: `1.10x` top-up;
 - `event_guard_profile` containing financing or dilution: `1.075x` top-up;
 - official, non-attention event seed count `>= 2`: `1.075x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260513-012`: EV `16.4140`, total PnL
-`$392,748.95`, max drawdown ceiling `13.81%`, min survival `76.06%`, and 70
+Accepted aggregate metrics after `exp-20260513-014`: EV `16.6827`, total PnL
+`$398,461.58`, max drawdown ceiling `14.30%`, min survival `71.83%`, and 70
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
-catalyst-quality risk allocation, not live routing. Live Space slots remain
-zero, and forward replacement value is still the promotion gate.
+catalyst-quality plus relative-strength risk allocation, not live routing. Live
+Space slots remain zero, and forward replacement value is still the promotion
+gate.
 
 ## Long-Run Mechanism Laws
 

@@ -427,6 +427,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     f"official customer source {source_field} @ "
                     f"{source_scalar}x"
                 )
+            source_peer_leader_scalar = forward.get(
+                "space_customer_source_peer_leader_risk_scalar"
+            )
+            if source_peer_leader_scalar is not None:
+                extra_policies.append(
+                    "customer-source peer leader @ "
+                    f"{source_peer_leader_scalar}x"
+                )
             company_source_scalar = forward.get(
                 "space_company_release_customer_source_risk_scalar"
             )
@@ -521,6 +529,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_official_customer_source_bucket")
                 else ""
             )
+            source_peer_leader_text = (
+                " source_peer_leader=True"
+                if plan.get("space_customer_source_peer_leader_bucket")
+                else ""
+            )
             company_source_text = (
                 " company_release_source=True"
                 if plan.get("space_company_release_customer_source_bucket")
@@ -555,7 +568,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"TQS={plan.get('trade_quality_score', 'n/a')} "
                 f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
                 f"{liquidity_text}{watch_liquidity_text}{source_text}"
-                f"{company_source_text}{profile_text}"
+                f"{source_peer_leader_text}{company_source_text}{profile_text}"
                 f"{multi_event_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "

@@ -698,13 +698,14 @@ PnL `-$387.79`, so Gate 4 failed and no shared policy was promoted. Do not
 retry adjacent core momentum-acceleration scalars on these frozen windows
 without a materially different production-visible discriminator.
 
-Latest Space alpha search: `exp-20260513-003` tested whether the accepted
-`exp-20260512-112` watch-liquidity 1.10x helper should apply only to Space
-signals with a specific peer-momentum state. Both peer-scope splits failed the
-three-window gate versus the accepted all-peer-state helper. The best variant,
-`watch_liquidity_peer_nonleader_only`, had aggregate EV `-0.3263` and PnL
-`-$8,133.37`, with `mid_weak -0.2285` EV / `-$4,032.48` and `old_thin -0.0978`
-EV / `-$4,100.89`; `late_strong` was unchanged. No shared policy or production
-adapter was changed. Keep the all-peer-state watch-liquidity helper and do not
-retry nearby watch-liquidity peer-scope splits on the frozen Space snapshots
-without forward replacement-value evidence.
+Latest Space alpha search: `exp-20260513-014` tested a source-qualified
+peer-leader risk scalar on top of the accepted `exp-20260513-012` Space stack.
+The accepted scalar is `1.10x` for official customer-win Space signals whose
+own 20d momentum is above the official Space basket average. Aggregate EV
+improved `+0.2687` to `16.6827` and PnL improved `+$5,712.63` to
+`$398,461.58`, with no EV-regressed window. `mid_weak` improved `+0.2527` EV /
+`+$4,425.42`, `old_thin` improved `+0.0160` EV / `+$1,287.21`, and
+`late_strong` was unchanged. Max drawdown drift was `+0.49` percentage points,
+inside the Gate 4 guardrail; min survival fell to `71.83%` but stayed above the
+guardrail. Promote only as shared default-off Space metadata/helper; live Space
+slots remain zero.

@@ -80,6 +80,7 @@ SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_TYPES = (
     "company_release",
 )
 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
+SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR = 1.1
 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES = ("company_release",)
 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS = ("financing", "dilution")
@@ -95,7 +96,7 @@ SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
 SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260513-012",
+    "experiment_id": "exp-20260513-014",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -182,6 +183,13 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_official_customer_source_risk_scalar": (
         SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+    ),
+    "space_customer_source_peer_leader_experiment_id": "exp-20260513-014",
+    "space_customer_source_peer_leader_definition": (
+        "official customer_win source profile and peer momentum leader"
+    ),
+    "space_customer_source_peer_leader_risk_scalar": (
+        SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
     ),
     "space_company_release_customer_source_experiment_id": "exp-20260512-110",
     "space_company_release_customer_source_types": list(
@@ -428,6 +436,12 @@ def space_catalyst_forward_risk_scalar(
         scalar *= SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and official_customer_source_profile
+        and (peer_momentum_state or {}).get("state") == "leader"
+    ):
+        scalar *= SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_company_release_customer_source_profile(
             official_customer_source_profile
         )
@@ -571,6 +585,9 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_official_customer_source_risk_scalar": (
                 SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_RISK_SCALAR
+            ),
+            "space_customer_source_peer_leader_risk_scalar": (
+                SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
             ),
             "space_company_release_customer_source_types": list(
                 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
@@ -1083,6 +1100,9 @@ def build_space_catalyst_observation_slot(
             "space_watch_liquidity_tier": SPACE_CATALYST_WATCH_LIQUIDITY_TIER,
             "space_watch_liquidity_tier_risk_scalar": (
                 SPACE_CATALYST_WATCH_LIQUIDITY_TIER_RISK_SCALAR
+            ),
+            "space_customer_source_peer_leader_risk_scalar": (
+                SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
             ),
             "space_company_release_customer_source_types": list(
                 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES
@@ -1772,6 +1792,15 @@ def _observation_slot_row(
         if official_customer_source_bucket
         else 1.0
     )
+    customer_source_peer_leader_bucket = (
+        official_customer_source_bucket
+        and peer_momentum_state.get("state") == "leader"
+    )
+    customer_source_peer_leader_risk_scalar = (
+        SPACE_CATALYST_CUSTOMER_SOURCE_PEER_LEADER_RISK_SCALAR
+        if customer_source_peer_leader_bucket
+        else 1.0
+    )
     company_release_customer_source_bucket = (
         _is_space_company_release_customer_source_profile(
             official_customer_source_profile
@@ -1906,6 +1935,13 @@ def _observation_slot_row(
         "space_official_customer_source_bucket": official_customer_source_bucket,
         "space_official_customer_source_risk_scalar": _round(
             official_customer_source_risk_scalar,
+            6,
+        ),
+        "space_customer_source_peer_leader_bucket": (
+            customer_source_peer_leader_bucket
+        ),
+        "space_customer_source_peer_leader_risk_scalar": _round(
+            customer_source_peer_leader_risk_scalar,
             6,
         ),
         "space_company_release_customer_source_bucket": (

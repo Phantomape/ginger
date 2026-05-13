@@ -157,7 +157,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-012"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-014"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -277,6 +277,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert (
         snapshot["forward_hypothesis"][
             "space_official_customer_source_risk_scalar"
+        ]
+        == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_customer_source_peer_leader_experiment_id"
+        ]
+        == "exp-20260513-014"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_customer_source_peer_leader_risk_scalar"
         ]
         == 1.1
     )
@@ -466,6 +478,24 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         ),
         6,
     ) == 1.5125
+    assert round(
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            official_customer_source_profile={"event_ids": ["lunr_customer"]},
+            peer_momentum_state={"state": "leader"},
+        ),
+        6,
+    ) == 1.21
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            official_customer_source_profile={"event_ids": ["lunr_customer"]},
+            peer_momentum_state={"state": "nonleader"},
+        )
+        == 1.1
+    )
     assert round(
         space_catalyst_forward_risk_scalar(
             "RKLB",
@@ -852,6 +882,8 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_watch_liquidity_tier_risk_scalar"] == 1.0
     assert plan["space_official_customer_source_bucket"] is True
     assert plan["space_official_customer_source_risk_scalar"] == 1.1
+    assert plan["space_customer_source_peer_leader_bucket"] is False
+    assert plan["space_customer_source_peer_leader_risk_scalar"] == 1.0
     assert plan["space_company_release_customer_source_bucket"] is True
     assert plan["space_company_release_customer_source_risk_scalar"] == 1.1
     assert plan["space_multi_event_depth_bucket"] is True
@@ -1188,6 +1220,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_watch_liquidity_tier_risk_scalar": 1.1,
                 "space_official_customer_source_event_field": "customer_win",
                 "space_official_customer_source_risk_scalar": 1.1,
+                "space_customer_source_peer_leader_risk_scalar": 1.1,
                 "space_company_release_customer_source_risk_scalar": 1.1,
                 "space_financing_dilution_profile_risk_scalar": 1.075,
                 "space_multi_event_depth_min_count": 2,
@@ -1216,6 +1249,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "theme_segment": "launch_lunar",
                     "liquidity_tier": "ok",
                     "space_official_customer_source_bucket": True,
+                    "space_customer_source_peer_leader_bucket": True,
                     "space_company_release_customer_source_bucket": True,
                     "space_financing_dilution_profile_bucket": True,
                     "space_multi_event_depth_bucket": True,
@@ -1267,6 +1301,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "liquidity tier ok @ 1.1x; "
         "liquidity tier watch @ 1.1x; "
         "official customer source customer_win @ 1.1x; "
+        "customer-source peer leader @ 1.1x; "
         "company-release customer source @ 1.1x; "
         "financing/dilution profile @ 1.075x; "
         "multi-event catalyst depth >=2 @ 1.075x)"
@@ -1278,7 +1313,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
     assert (
         "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
         "theme=launch_lunar liquidity=ok customer_source=True "
-        "company_release_source=True financing_dilution_profile=True "
+        "source_peer_leader=True company_release_source=True "
+        "financing_dilution_profile=True "
         "multi_event_depth=True"
     ) in report
     assert "Closed 10d: 0" in report
