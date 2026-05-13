@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-05-12.
+Last updated: 2026-05-13.
 
 The current accepted core stack includes the 2026-05-10 TRIP sector taxonomy
 completion from `exp-20260510-015`, layered on top of the RS20 entry-state
@@ -655,3 +655,22 @@ but underpowered, with aggregate EV `+0.0140` and PnL `+$820.26`, improving only
 `old_thin`. No shared policy was promoted. Do not retry fixed +/-1% signal-day
 sector-tape scalars without forward attribution or a stronger state
 discriminator.
+
+Latest Form 4 alpha search: `exp-20260512-108` tested a PIT-safe 5-trading-day
+pre-entry relative-strength confirmation on top of the latest single-owner
+Form 4 forward-queue replay. The confirmed slice stayed positive versus core
+(`aggregate EV +0.2115`, PnL `+$4,014.97`, no core EV regression), but it
+regressed the single-owner baseline in all three windows (`aggregate EV
+-0.1074`, PnL `-$1,900.00`) and left only 5 selected event trades, below the
+sample guard. No shared policy or production adapter was changed. Keep Form 4
+in forward observation and do not add pre-entry RS qualification to the frozen
+single-owner queue without new forward replacement-value evidence.
+
+Latest core breakout alpha search: `exp-20260513-001` tested a cap-aware risk
+scalar for already-qualified `breakout_long` signals whose existing
+`conditions_met.volume_spike_ratio > 2.0`. The best scalar was only `1.05x`,
+with aggregate EV `+0.0002` and PnL `+$2.62`; it improved only `mid_weak` and
+left `late_strong` / `old_thin` unchanged. No shared sizing policy was promoted.
+Do not retry fixed core breakout strong-volume scalars on these frozen windows
+without forward breakout volume-bucket attribution or a stronger orthogonal
+entry-quality state.

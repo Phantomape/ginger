@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last reviewed: 2026-05-12.
+Last reviewed: 2026-05-13.
 
 This file is the long-run alpha synthesis for the strategy system. It is not a
 single-session action card and it is not a chronological experiment diary. Its
@@ -407,6 +407,10 @@ structured reason stability.
   discriminator. `exp-20260512-106` rejected the adverse-tape 0.5x haircut, and
   `exp-20260512-107` found the positive-tape 1.10x top-up was aggregate-positive
   but only moved `old_thin`.
+- Fixed core breakout strong-volume scalars using the existing
+  `conditions_met.volume_spike_ratio > 2.0` boundary. `exp-20260513-001`
+  found the best scalar was only `1.05x`, with aggregate EV `+0.0002` and PnL
+  `+$2.62`, improving only `mid_weak`.
 
 ### SEC
 
@@ -435,6 +439,9 @@ structured reason stability.
 
 - Broad event-source pruning.
 - Generic event benchmark gates not tied to a state-surface sleeve.
+- Form 4 single-owner queue pre-entry relative-strength confirmation on the
+  frozen sample. `exp-20260512-108` stayed positive versus core but regressed
+  the single-owner baseline in all three windows and failed the sample guard.
 - Prompt-only numeric threshold changes.
 - Any LLM expansion without a replayable attribution metric.
 
