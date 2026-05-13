@@ -505,6 +505,11 @@ structured reason stability.
 - Nearby IWM-plus-peer-leader trend scalar retunes on the frozen Space replay.
   `exp-20260513-020` accepted `1.15x`; further tuning needs forward evidence
   or a new independent discriminator.
+- IWM-plus-peer-leader Space trend target-width floors on the frozen Space
+  replay. `exp-20260513-026` found the best 8 ATR floor improved `mid_weak`
+  but regressed `old_thin` badly and reduced aggregate PnL, so this state
+  should remain a sizing helper rather than a wider-target lifecycle rule
+  without forward target-touch evidence.
 
 ### Event / LLM
 
@@ -573,4 +578,10 @@ checkpoint.
   customer-source alpha did not generalize down to peer-nonleader official
   Space signals. Keep customer-source sizing tied to stronger peer-quality
   buckets until forward replacement value says otherwise.
+- `exp-20260513-026` (rejected_space_iwm_peer_leader_trend_target):
+  The accepted IWM-plus-peer-leader Space trend state did not translate into a
+  wider target edge. Best 8 ATR target floor improved aggregate EV only because
+  `mid_weak` surged, while aggregate PnL fell and `old_thin` regressed sharply.
+  Keep this state as risk allocation, not lifecycle widening, until forward
+  target-touch attribution changes the evidence.
 - `exp-20260513-017` (rejected_index_etf_target_width): Index ETF lifecycle scout tested wider target widths for `QQQ`/`SPY`/`IWM` only. Best `index_etf_target_5_0atr` produced aggregate EV delta -0.103 (-1.62%), PnL delta $-2267.28, with 1 changed index ETF trades. Do not split broad index ETFs into a promoted target pool without a positive shared-policy retest or a narrower state-conditioned discriminator.

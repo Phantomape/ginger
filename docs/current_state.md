@@ -762,3 +762,11 @@ stay tied to stronger peer-quality buckets. Do not promote customer-source
 peer-nonleader scaling on the frozen snapshots; the next valid Space step is
 forward replacement value by catalyst family/source/peer bucket or a genuinely
 new production-visible official catalyst-quality field.
+
+Latest rejected Space lifecycle alpha search: `exp-20260513-026` tested
+whether the accepted IWM-plus-peer-leader `trend_long` state should also get a
+wider target ATR floor. The best 8 ATR floor raised aggregate EV by `+0.4165`
+but cut aggregate PnL by `$21,220.04`, improved only `mid_weak`, and regressed
+`old_thin` by `-1.1259` EV / `-$42,518.52` with max drawdown worsening to
+`19.68%`. Keep the accepted exp020 state as a sizing helper, not a lifecycle
+target-width rule, until forward target-touch evidence exists.
