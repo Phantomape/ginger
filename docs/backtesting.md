@@ -78,23 +78,30 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after `exp-20260510-015` classified TRIP
-as Consumer Discretionary in shared sector enrichment:
+Current accepted fixed-window metrics after `exp-20260513-007` promoted the
+signal-day own-green-candle 1.05x cap-aware sizing top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.2340 | 4.50 | $94,086.91 | 94.09% | 5.48% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.6689 | 2.70 | $61,813.40 | 61.81% | 9.41% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.3853 | 1.35 | $28,544.11 | 28.54% | 8.15% | 40.91% | 22 | 91.67% |
+| `late_strong` | 4.2894 | 4.50 | $95,321.74 | 95.32% | 5.52% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.6747 | 2.68 | $62,490.66 | 62.49% | 9.70% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.3867 | 1.34 | $28,855.61 | 28.86% | 8.21% | 40.91% | 22 | 91.67% |
 
-Artifact note: `data/experiments/exp-20260510-015/trip_sector_taxonomy.json`
-records the latest accepted three-window comparison. The latest standalone CLI
-datapoint is `data/backtest_results_20260510.json` for `late_strong`; accepted
-`mid_weak` / `old_thin` baseline values still come from the shared
-three-window artifact because there is no newer accepted standalone refresh for
-those windows.
+Artifact note: `data/experiments/exp-20260513-007/signal_day_ticker_green_risk.json`
+records the latest accepted three-window comparison. Aggregate accepted-stack
+EV is `6.3508`; aggregate PnL is `$186,668.01`.
 
-Latest accepted taxonomy result: `exp-20260510-015` maps TRIP through shared
+Latest accepted core-sizing result: `exp-20260513-007` tags signals whose own
+signal-day open-to-close return is positive in shared `feature_layer.py` /
+`risk_engine.py`, then applies a cap-aware 1.05x post-sizing top-up in
+`portfolio_engine.py`. The change improved EV and PnL in all three fixed
+windows with unchanged trade count and survival: aggregate EV `+0.0626`,
+aggregate PnL `+$2,223.59`, max drawdown drift within the Gate 4 guardrail,
+and no production/backtest split because both adapters use the same shared
+modules. Do not retry nearby own-candle scalars on these frozen windows without
+forward evidence or a materially narrower production-visible discriminator.
+
+Previous accepted taxonomy result: `exp-20260510-015` maps TRIP through shared
 sector enrichment as Consumer Discretionary instead of `Unknown`. This is a
 small alpha/data-quality improvement, not a new threshold: aggregate EV
 improved `+0.0171` / `+0.27%`, aggregate PnL improved `+$403.46` / `+0.22%`,
