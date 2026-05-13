@@ -124,7 +124,7 @@ value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260512-041`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260512-112`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -136,13 +136,14 @@ Current default-off Space helpers:
 - IWM 20d momentum above SPY 20d momentum: `1.10x` top-up;
 - `theme_segment=launch_lunar`: `1.10x` top-up;
 - `liquidity_tier=ok`: `1.10x` top-up;
+- `liquidity_tier=watch`: `1.10x` top-up;
 - primary-source `customer_win`: `1.10x` top-up;
 - `event_guard_profile` containing financing or dilution: `1.075x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260512-041`: EV `14.0087`, total PnL
-`$340,127.26`, max drawdown ceiling `12.43%`, min survival `77.46%`, and 70
+Accepted aggregate metrics after `exp-20260512-112`: EV `15.9183`, total PnL
+`$381,850.99`, max drawdown ceiling `13.46%`, min survival `76.06%`, and 70
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
@@ -333,11 +334,16 @@ Rejected Space patterns:
 - mission-binary profile scalar due to immaterial coverage;
 - watch-liquidity peer-state narrowing. `exp-20260513-003` found both
   leader-only and nonleader-only scopes worse than the accepted all-peer-state
-  watch-liquidity helper.
+  watch-liquidity helper;
+- watch-liquidity TQS bucket narrowing. `exp-20260513-010` found
+  near-perfect-or-better was identical to the accepted helper, while perfect,
+  below-near-perfect, and nonperfect scopes all regressed the three-window
+  gate.
 
 Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
-the accepted watch-liquidity helper by peer state on frozen snapshots.
+the accepted watch-liquidity helper by peer state or TQS bucket on frozen
+snapshots.
 Candidate-pool work is valid only if it improves official-catalyst coverage or
 attribution quality; do not add noise tickers just to get more trades.
 
@@ -376,7 +382,7 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 
@@ -452,6 +458,9 @@ structured reason stability.
 - Watch-liquidity peer-state scope splits on the frozen Space replay.
   `exp-20260513-003` found leader-only and nonleader-only scopes both regressed
   the accepted all-peer-state helper.
+- Watch-liquidity TQS bucket scope splits on the frozen Space replay.
+  `exp-20260513-010` found near-perfect-or-better unchanged and the other
+  tested scopes regressed the accepted all-TQS helper.
 
 ### Event / LLM
 

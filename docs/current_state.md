@@ -41,8 +41,8 @@ same-sample lifecycle sweep.
 
 Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
-now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, and
-`038`.
+now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
+`038`, `041`, and `112`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -55,16 +55,25 @@ default-off risk, and official Space signals with production registry
 signals tied to `customer_win` event seeds from official/regulatory/company
 primary sources get `1.10x` extra default-off risk, and official Space signals
 whose production registry `event_guard_profile` contains financing/dilution get
-`1.075x` extra default-off risk. This remains metadata/helper only with live
-Space slots at zero. `exp-20260512-010` rejected
+`1.075x` extra default-off risk, and official Space signals with production
+registry `liquidity_tier=watch` get `1.10x` extra default-off risk. This remains
+metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
 IWM-relative state only at `1.10x`, `exp-20260512-032` accepted launch/lunar
 theme risk only at `1.10x`, `exp-20260512-035` rejected data/defense theme
 scaling, `exp-20260512-037` accepted liquidity-tier anchor risk only at
 `1.10x`, and `exp-20260512-038` accepted customer-source risk only at `1.10x`;
 `exp-20260512-041` accepted financing/dilution profile risk only at `1.075x`;
-the next valid Space step is forward replacement value or a genuinely new
-catalyst-quality field, not another frozen-window local scalar retune.
+`exp-20260512-112` accepted watch-liquidity risk only at `1.10x`.
+
+Latest rejected Space alpha search: `exp-20260513-010` tested whether the
+accepted watch-liquidity helper should be scoped by established TQS buckets.
+The best variant, near-perfect-or-better, was identical to the accepted helper:
+aggregate EV delta `+0.0000`, aggregate PnL delta `$+0.00`, and no improved
+windows. Perfect-only, below-near-perfect, and nonperfect scopes all regressed
+the three-window gate. Keep the all-TQS watch-liquidity helper; the next valid
+Space step is forward replacement value or a genuinely new catalyst-quality
+field, not another frozen-window local scalar or scope retune.
 
 Latest rejected core entry alpha search: `exp-20260512-024` tested a
 deterministic OHLCV `pullback_reclaim_long` entry shape for leadership
