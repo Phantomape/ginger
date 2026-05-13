@@ -124,7 +124,7 @@ value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260512-112`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260513-012`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -139,11 +139,12 @@ Current default-off Space helpers:
 - `liquidity_tier=watch`: `1.10x` top-up;
 - primary-source `customer_win`: `1.10x` top-up;
 - `event_guard_profile` containing financing or dilution: `1.075x` top-up;
+- official, non-attention event seed count `>= 2`: `1.075x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260512-112`: EV `15.9183`, total PnL
-`$381,850.99`, max drawdown ceiling `13.46%`, min survival `76.06%`, and 70
+Accepted aggregate metrics after `exp-20260513-012`: EV `16.4140`, total PnL
+`$392,748.95`, max drawdown ceiling `13.81%`, min survival `76.06%`, and 70
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
@@ -318,7 +319,8 @@ Accepted Space evidence:
 - liquidity-tier risk: `exp-20260512-037`;
 - official customer-source risk: `exp-20260512-038`;
 - financing/dilution profile risk: `exp-20260512-041`;
-- watch-liquidity risk: `exp-20260512-112`.
+- watch-liquidity risk: `exp-20260512-112`;
+- multi-event official catalyst-depth risk: `exp-20260513-012`.
 
 Rejected Space patterns:
 
@@ -343,9 +345,10 @@ Rejected Space patterns:
 Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
 the accepted watch-liquidity helper by peer state or TQS bucket on frozen
-snapshots.
-Candidate-pool work is valid only if it improves official-catalyst coverage or
-attribution quality; do not add noise tickers just to get more trades.
+snapshots, and do not retune nearby multi-event count/scalar values without new
+forward evidence. Candidate-pool work is valid only if it improves
+official-catalyst coverage or attribution quality; do not add noise tickers
+just to get more trades.
 
 ### 7. LLM Is A Semantic Layer, Not A Risk Engine
 
@@ -382,7 +385,7 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 

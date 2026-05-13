@@ -84,9 +84,18 @@ SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_TYPES = ("company_release",)
 SPACE_CATALYST_COMPANY_RELEASE_CUSTOMER_SOURCE_RISK_SCALAR = 1.1
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_TERMS = ("financing", "dilution")
 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR = 1.075
+SPACE_CATALYST_MULTI_EVENT_DEPTH_MIN_COUNT = 2
+SPACE_CATALYST_MULTI_EVENT_DEPTH_SOURCE_TYPES = (
+    "official_or_primary_release",
+    "official_regulatory_release",
+    "official_government_release",
+    "company_release",
+)
+SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
+SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260512-112",
+    "experiment_id": "exp-20260513-012",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -187,6 +196,19 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_financing_dilution_profile_risk_scalar": (
         SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
+    ),
+    "space_multi_event_depth_experiment_id": "exp-20260513-012",
+    "space_multi_event_depth_min_count": (
+        SPACE_CATALYST_MULTI_EVENT_DEPTH_MIN_COUNT
+    ),
+    "space_multi_event_depth_source_types": list(
+        SPACE_CATALYST_MULTI_EVENT_DEPTH_SOURCE_TYPES
+    ),
+    "space_multi_event_depth_excluded_semantic_buckets": list(
+        SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS
+    ),
+    "space_multi_event_depth_risk_scalar": (
+        SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -339,6 +361,7 @@ def space_catalyst_forward_risk_scalar(
     theme_segment: str | None = None,
     liquidity_tier: str | None = None,
     official_customer_source_profile: dict[str, Any] | None = None,
+    multi_event_depth_profile: dict[str, Any] | None = None,
     event_guard_profile: str | None = None,
     trade_quality_score: Any = None,
 ) -> float:
@@ -415,6 +438,11 @@ def space_catalyst_forward_risk_scalar(
         and _is_space_financing_dilution_profile(event_guard_profile)
     ):
         scalar *= SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_multi_event_depth_profile(multi_event_depth_profile)
+    ):
+        scalar *= SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR
     return scalar
 
 
@@ -556,6 +584,18 @@ def empty_space_catalyst_observation_slot(
             "space_financing_dilution_profile_risk_scalar": (
                 SPACE_CATALYST_FINANCING_DILUTION_PROFILE_RISK_SCALAR
             ),
+            "space_multi_event_depth_min_count": (
+                SPACE_CATALYST_MULTI_EVENT_DEPTH_MIN_COUNT
+            ),
+            "space_multi_event_depth_source_types": list(
+                SPACE_CATALYST_MULTI_EVENT_DEPTH_SOURCE_TYPES
+            ),
+            "space_multi_event_depth_excluded_semantic_buckets": list(
+                SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS
+            ),
+            "space_multi_event_depth_risk_scalar": (
+                SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -638,6 +678,67 @@ def space_catalyst_official_customer_source_profiles(
         }
         for ticker, profile in sorted(profiles.items())
     }
+
+
+def space_catalyst_multi_event_depth_profiles(
+    events: list[dict[str, Any]] | None = None,
+    *,
+    source_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH,
+    included_tickers: list[str] | tuple[str, ...] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return official Space profiles with multiple non-attention event seeds."""
+    seeds = events if events is not None else load_space_catalyst_event_seeds(source_path)
+    allowed_tickers = {
+        str(ticker).upper()
+        for ticker in (
+            included_tickers
+            or SPACE_CATALYST_FORWARD_HYPOTHESIS.get("included_tickers")
+            or []
+        )
+        if ticker
+    }
+    profiles: dict[str, dict[str, Any]] = {}
+    for event in (_normalise_event_seed(row) for row in seeds):
+        if not event:
+            continue
+        source_type = str(event.get("source_type") or "")
+        semantic_bucket = str(event.get("semantic_bucket") or "")
+        fields = [str(field) for field in event.get("event_fields") or []]
+        if source_type not in SPACE_CATALYST_MULTI_EVENT_DEPTH_SOURCE_TYPES:
+            continue
+        if semantic_bucket in SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS:
+            continue
+        for ticker in event.get("tickers") or []:
+            ticker_upper = str(ticker or "").upper()
+            if allowed_tickers and ticker_upper not in allowed_tickers:
+                continue
+            profile = profiles.setdefault(
+                ticker_upper,
+                {
+                    "event_ids": set(),
+                    "event_fields": set(),
+                    "semantic_buckets": set(),
+                    "source_types": set(),
+                },
+            )
+            profile["event_ids"].add(event["event_id"])
+            profile["event_fields"].update(fields)
+            profile["semantic_buckets"].add(semantic_bucket)
+            profile["source_types"].add(source_type)
+
+    out = {}
+    for ticker, profile in sorted(profiles.items()):
+        event_ids = sorted(profile["event_ids"])
+        if len(event_ids) < SPACE_CATALYST_MULTI_EVENT_DEPTH_MIN_COUNT:
+            continue
+        out[ticker] = {
+            "event_count": len(event_ids),
+            "event_ids": event_ids,
+            "event_fields": sorted(profile["event_fields"]),
+            "semantic_buckets": sorted(profile["semantic_buckets"]),
+            "source_types": sorted(profile["source_types"]),
+        }
+    return out
 
 
 def space_catalyst_event_tickers(
@@ -850,6 +951,7 @@ def build_space_catalyst_observation_slot(
     raw_signal_count: int | None = None,
     enriched_signal_count: int | None = None,
     space_event_source_profiles: dict[str, dict[str, Any]] | None = None,
+    space_multi_event_depth_profiles: dict[str, dict[str, Any]] | None = None,
     generated_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Build the one-slot blocked trade plan used for Space forward evidence."""
@@ -874,6 +976,13 @@ def build_space_catalyst_observation_slot(
             included_tickers=list(official_tickers)
         )
     )
+    multi_event_profiles = (
+        space_multi_event_depth_profiles
+        if space_multi_event_depth_profiles is not None
+        else space_catalyst_multi_event_depth_profiles(
+            included_tickers=list(official_tickers)
+        )
+    )
 
     candidates = []
     for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
@@ -890,6 +999,7 @@ def build_space_catalyst_observation_slot(
                 iwm_relative_momentum_state=iwm_relative_momentum,
                 space_catalyst_shadow=shadow,
                 space_event_source_profiles=source_profiles,
+                space_multi_event_depth_profiles=multi_event_profiles,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
                 portfolio_heat=portfolio_heat or {},
@@ -1462,6 +1572,15 @@ def _official_customer_source_profile_for_ticker(
     return deepcopy(profile) if isinstance(profile, dict) else None
 
 
+def _multi_event_depth_profile_for_ticker(
+    multi_event_profiles: dict[str, dict[str, Any]] | None,
+    ticker: str,
+) -> dict[str, Any] | None:
+    ticker_upper = str(ticker or "").upper()
+    profile = (multi_event_profiles or {}).get(ticker_upper)
+    return deepcopy(profile) if isinstance(profile, dict) else None
+
+
 def _is_space_financing_dilution_profile(profile: str | None) -> bool:
     profile_text = str(profile or "").lower()
     return any(
@@ -1544,6 +1663,7 @@ def _observation_slot_row(
     iwm_relative_momentum_state: dict[str, Any],
     space_catalyst_shadow: dict[str, Any],
     space_event_source_profiles: dict[str, dict[str, Any]],
+    space_multi_event_depth_profiles: dict[str, dict[str, Any]],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
     portfolio_heat: dict[str, Any],
@@ -1555,6 +1675,10 @@ def _observation_slot_row(
     event_guard_profile = _event_guard_profile_for_ticker(space_catalyst_shadow, ticker)
     official_customer_source_profile = _official_customer_source_profile_for_ticker(
         space_event_source_profiles,
+        ticker,
+    )
+    multi_event_depth_profile = _multi_event_depth_profile_for_ticker(
+        space_multi_event_depth_profiles,
         ticker,
     )
     target_atr_mult = space_catalyst_forward_target_atr_mult(
@@ -1584,6 +1708,7 @@ def _observation_slot_row(
         theme_segment=theme_segment,
         liquidity_tier=liquidity_tier,
         official_customer_source_profile=official_customer_source_profile,
+        multi_event_depth_profile=multi_event_depth_profile,
         event_guard_profile=event_guard_profile,
         trade_quality_score=signal.get("trade_quality_score"),
     )
@@ -1665,6 +1790,14 @@ def _observation_slot_row(
         if financing_dilution_profile_bucket
         else 1.0
     )
+    multi_event_depth_bucket = _is_space_multi_event_depth_profile(
+        multi_event_depth_profile
+    )
+    multi_event_depth_risk_scalar = (
+        SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR
+        if multi_event_depth_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -1689,6 +1822,7 @@ def _observation_slot_row(
         "liquidity_tier": liquidity_tier,
         "event_guard_profile": event_guard_profile,
         "space_event_source_profile": official_customer_source_profile,
+        "space_multi_event_depth_profile": multi_event_depth_profile,
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
         "stop_price": _round(signal.get("stop_price"), 4),
@@ -1786,6 +1920,11 @@ def _observation_slot_row(
         ),
         "space_financing_dilution_profile_risk_scalar": _round(
             financing_dilution_profile_risk_scalar,
+            6,
+        ),
+        "space_multi_event_depth_bucket": multi_event_depth_bucket,
+        "space_multi_event_depth_risk_scalar": _round(
+            multi_event_depth_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -1999,6 +2138,15 @@ def _is_space_company_release_customer_source_profile(
         )
         and SPACE_CATALYST_OFFICIAL_CUSTOMER_SOURCE_EVENT_FIELD in fields
     )
+
+
+def _is_space_multi_event_depth_profile(profile: dict[str, Any] | None) -> bool:
+    if not profile:
+        return False
+    event_count = _as_float(profile.get("event_count"))
+    if event_count is None:
+        event_count = float(len(profile.get("event_ids") or []))
+    return event_count >= SPACE_CATALYST_MULTI_EVENT_DEPTH_MIN_COUNT
 
 
 def _round(value: Any, digits: int = 6) -> Any:

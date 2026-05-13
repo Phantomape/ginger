@@ -1,0 +1,947 @@
+"""exp-20260513-012: Space multi-event catalyst depth risk.
+
+Tests one causal variable on top of the accepted exp-20260512-112 default-off
+Space stack: an extra risk scalar for official Space tickers that have at least
+two official, non-attention event seed rows. This is a production-visible
+catalyst-depth risk-allocation test, not candidate-pool expansion, LLM
+soft-ranking, source retuning, or live-slot promotion.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from collections import Counter
+from copy import deepcopy
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from exp_20260511_115_space_basket_momentum_risk import (  # noqa: E402
+    OFFICIAL_SPACE_TICKERS,
+    PROJECT_ROOT,
+    WINDOWS,
+    _adjustment_summary,
+    _aggregate,
+    _aggregate_delta,
+    _delta,
+    _gate2_open_positions,
+    _metrics,
+    _restore_policy,
+    _run_core_baseline,
+    _run_window,
+    _safe,
+    _scale_sizing,
+    _space_trade_attribution,
+    _write_json,
+)
+from exp_20260512_038_space_official_customer_source_risk import (  # noqa: E402
+    _event_seed_profiles,
+)
+from exp_20260512_041_space_financing_dilution_profile_risk import (  # noqa: E402
+    _field_check_event_guard_profiles as _accepted_financing_profile_gate,
+)
+from exp_20260512_110_space_company_release_source_risk import (  # noqa: E402
+    ACCEPTED_FINANCING_DILUTION_PROFILE_RISK_SCALAR,
+    _field_check_company_release_source,
+)
+from exp_20260512_112_space_watch_liquidity_risk import (  # noqa: E402
+    ACCEPTED_COMPANY_RELEASE_SOURCE_RISK_SCALAR,
+    TARGET_LIQUIDITY_TIER,
+    _field_check_watch_liquidity_tier,
+    _install_space_policy as _install_accepted_exp112_policy,
+    _run_variant as _run_accepted_exp112_variant,
+)
+from data_layer import get_universe  # noqa: E402
+import portfolio_engine  # noqa: E402
+
+
+logging.basicConfig(level=logging.WARNING)
+
+EXPERIMENT_ID = "exp-20260513-012"
+STEM = "space_multi_event_depth_risk"
+WATCH_LIQUIDITY_RISK_SCALAR = 1.10
+MULTI_EVENT_MIN_COUNT = 2
+OFFICIAL_NON_ATTENTION_SOURCE_TYPES = (
+    "official_or_primary_release",
+    "official_regulatory_release",
+    "official_government_release",
+    "company_release",
+)
+EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
+MULTI_EVENT_DEPTH_RISK_SCALARS = (0.50, 0.75, 0.90, 1.00, 1.05, 1.075, 1.10, 1.25)
+
+
+def _append_jsonl_for_this_experiment(path: Path, payload: dict[str, Any]) -> None:
+    compact = json.dumps(_safe(payload), ensure_ascii=False, separators=(",", ":"))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        lines = [
+            line
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines()
+            if f'"experiment_id":"{EXPERIMENT_ID}"' not in line
+            and f'"experiment_id": "{EXPERIMENT_ID}"' not in line
+        ]
+    else:
+        lines = []
+    lines.append(compact)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _field_check_multi_event_depth() -> dict[str, Any]:
+    path = PROJECT_ROOT / "data" / "space_catalyst_event_seeds.jsonl"
+    if not path.exists():
+        return {
+            "passed": False,
+            "path": str(path.relative_to(PROJECT_ROOT)),
+            "missing": "file",
+        }
+
+    rows: list[dict[str, Any]] = []
+    missing_fields: list[dict[str, Any]] = []
+    profiles: dict[str, dict[str, Any]] = {}
+    source_counts = Counter()
+    semantic_counts = Counter()
+    event_field_counts = Counter()
+    for line_number, line in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), 1):
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        rows.append(row)
+        required_missing = [
+            field
+            for field in ("event_id", "event_fields", "semantic_bucket", "source_type", "tickers")
+            if not row.get(field)
+        ]
+        if required_missing:
+            missing_fields.append(
+                {
+                    "line_number": line_number,
+                    "event_id": row.get("event_id"),
+                    "missing": required_missing,
+                }
+            )
+            continue
+
+        source_type = str(row.get("source_type") or "")
+        semantic_bucket = str(row.get("semantic_bucket") or "")
+        source_counts[source_type] += 1
+        semantic_counts[semantic_bucket] += 1
+        fields = [str(item) for item in row.get("event_fields") or []]
+        for field in fields:
+            event_field_counts[field] += 1
+
+        if source_type not in OFFICIAL_NON_ATTENTION_SOURCE_TYPES:
+            continue
+        if semantic_bucket in EXCLUDED_SEMANTIC_BUCKETS:
+            continue
+
+        for raw_ticker in row.get("tickers") or []:
+            ticker = str(raw_ticker or "").upper()
+            if ticker not in OFFICIAL_SPACE_TICKERS:
+                continue
+            profile = profiles.setdefault(
+                ticker,
+                {
+                    "event_ids": [],
+                    "event_fields": set(),
+                    "semantic_buckets": set(),
+                    "source_types": set(),
+                },
+            )
+            profile["event_ids"].append(str(row.get("event_id")))
+            profile["event_fields"].update(fields)
+            profile["semantic_buckets"].add(semantic_bucket)
+            profile["source_types"].add(source_type)
+
+    serialized_profiles = {}
+    for ticker, profile in profiles.items():
+        event_ids = sorted(set(profile["event_ids"]))
+        serialized_profiles[ticker] = {
+            "event_count": len(event_ids),
+            "event_ids": event_ids,
+            "event_fields": sorted(profile["event_fields"]),
+            "semantic_buckets": sorted(profile["semantic_buckets"]),
+            "source_types": sorted(profile["source_types"]),
+        }
+
+    target_tickers = sorted(
+        ticker
+        for ticker, profile in serialized_profiles.items()
+        if int(profile["event_count"]) >= MULTI_EVENT_MIN_COUNT
+    )
+    return {
+        "passed": not missing_fields and bool(target_tickers),
+        "path": str(path.relative_to(PROJECT_ROOT)),
+        "event_seed_count": len(rows),
+        "target_definition": (
+            "official Space ticker with at least two official, non-attention "
+            "event seed rows"
+        ),
+        "multi_event_min_count": MULTI_EVENT_MIN_COUNT,
+        "target_source_types": list(OFFICIAL_NON_ATTENTION_SOURCE_TYPES),
+        "excluded_semantic_buckets": list(EXCLUDED_SEMANTIC_BUCKETS),
+        "target_tickers": target_tickers,
+        "profiles": serialized_profiles,
+        "source_type_counts": dict(sorted(source_counts.items())),
+        "semantic_bucket_counts": dict(sorted(semantic_counts.items())),
+        "event_field_counts": dict(sorted(event_field_counts.items())),
+        "missing_required_fields": missing_fields,
+    }
+
+
+def _install_space_policy(
+    multi_event_scalar: float,
+    multi_event_gate: dict[str, Any],
+    liquidity_gate: dict[str, Any],
+    company_release_gate: dict[str, Any],
+    financing_gate: dict[str, Any],
+    source_gate: dict[str, Any],
+) -> tuple[Any, ...]:
+    installed = _install_accepted_exp112_policy(
+        WATCH_LIQUIDITY_RISK_SCALAR,
+        liquidity_gate,
+        company_release_gate,
+        financing_gate,
+        source_gate,
+    )
+    (
+        original_generate,
+        original_enrich,
+        original_size,
+        watch_adjustments,
+        watch_counts,
+        company_release_adjustments,
+        company_release_counts,
+        financing_adjustments,
+        financing_counts,
+        source_adjustments,
+        source_counts,
+        liquidity_ok_adjustments,
+        theme_adjustments,
+        iwm_adjustments,
+        peer_nonleader_breakout_adjustments,
+        near_perfect_adjustments,
+        perfect_adjustments,
+        basket_adjustments,
+        theme_counts,
+        iwm_state_counts,
+        peer_counts,
+        near_perfect_counts,
+        perfect_counts,
+        basket_counts,
+        day_counts,
+    ) = installed
+
+    accepted_size = portfolio_engine.size_signals
+    target_tickers = set(multi_event_gate["target_tickers"])
+    profiles = multi_event_gate["profiles"]
+    multi_event_adjustments: list[dict[str, Any]] = []
+    multi_event_counts = Counter()
+
+    def size_wrapper(signals, portfolio_value, risk_pct=None):
+        sized = accepted_size(signals, portfolio_value, risk_pct=risk_pct)
+        out = []
+        for signal in sized:
+            ticker = str(signal.get("ticker") or "").upper()
+            sizing = deepcopy(signal.get("sizing") or {})
+            if ticker in target_tickers and sizing:
+                multi_event_counts["eligible_signal"] += 1
+                shares_before = int(sizing.get("shares_to_buy") or 0)
+                _scale_sizing(
+                    sizing,
+                    multi_event_scalar,
+                    portfolio_value,
+                    "space_multi_event_depth_risk",
+                )
+                multi_event_adjustments.append(
+                    {
+                        "ticker": ticker,
+                        "strategy": signal.get("strategy"),
+                        "marker": "space_multi_event_depth_risk",
+                        "space_multi_event_depth_profile": profiles.get(ticker),
+                        "scalar": multi_event_scalar,
+                        "shares_before_scalar": shares_before,
+                        "shares_after_scalar": int(sizing.get("shares_to_buy") or 0),
+                        "trade_quality_score": signal.get("trade_quality_score"),
+                        "confidence_score": signal.get("confidence_score"),
+                    }
+                )
+                signal = {
+                    **signal,
+                    "sizing": sizing,
+                    "space_multi_event_depth_profile": profiles.get(ticker),
+                    "space_multi_event_depth_eligible": True,
+                }
+            out.append(signal)
+        return out
+
+    portfolio_engine.size_signals = size_wrapper
+    return (
+        original_generate,
+        original_enrich,
+        original_size,
+        multi_event_adjustments,
+        multi_event_counts,
+        watch_adjustments,
+        watch_counts,
+        company_release_adjustments,
+        company_release_counts,
+        financing_adjustments,
+        financing_counts,
+        source_adjustments,
+        source_counts,
+        liquidity_ok_adjustments,
+        theme_adjustments,
+        iwm_adjustments,
+        peer_nonleader_breakout_adjustments,
+        near_perfect_adjustments,
+        perfect_adjustments,
+        basket_adjustments,
+        theme_counts,
+        iwm_state_counts,
+        peer_counts,
+        near_perfect_counts,
+        perfect_counts,
+        basket_counts,
+        day_counts,
+    )
+
+
+def _run_variant(
+    name: str,
+    multi_event_scalar: float,
+    multi_event_gate: dict[str, Any],
+    liquidity_gate: dict[str, Any],
+    company_release_gate: dict[str, Any],
+    financing_gate: dict[str, Any],
+    source_gate: dict[str, Any],
+) -> dict[str, Any]:
+    universe = sorted(set(get_universe()) | set(OFFICIAL_SPACE_TICKERS) | {"IWM", "SPY"})
+    (
+        original_generate,
+        original_enrich,
+        original_size,
+        multi_event_adjustments,
+        multi_event_counts,
+        watch_adjustments,
+        watch_counts,
+        company_release_adjustments,
+        company_release_counts,
+        financing_adjustments,
+        financing_counts,
+        source_adjustments,
+        source_counts,
+        liquidity_ok_adjustments,
+        theme_adjustments,
+        iwm_adjustments,
+        peer_nonleader_breakout_adjustments,
+        near_perfect_adjustments,
+        perfect_adjustments,
+        basket_adjustments,
+        theme_counts,
+        iwm_state_counts,
+        peer_counts,
+        near_perfect_counts,
+        perfect_counts,
+        basket_counts,
+        day_counts,
+    ) = _install_space_policy(
+        multi_event_scalar,
+        multi_event_gate,
+        liquidity_gate,
+        company_release_gate,
+        financing_gate,
+        source_gate,
+    )
+    try:
+        by_window = {}
+        for label, window in WINDOWS.items():
+            before_multi_event = len(multi_event_adjustments)
+            before_watch = len(watch_adjustments)
+            before_company = len(company_release_adjustments)
+            before_financing = len(financing_adjustments)
+            before_source = len(source_adjustments)
+            before_liquidity_ok = len(liquidity_ok_adjustments)
+            before_theme = len(theme_adjustments)
+            before_iwm = len(iwm_adjustments)
+            before_peer = len(peer_nonleader_breakout_adjustments)
+            before_near = len(near_perfect_adjustments)
+            before_perfect = len(perfect_adjustments)
+            before_basket = len(basket_adjustments)
+            result = _run_window(window, universe, "space_snapshot")
+            by_window[label] = {
+                "metrics": _metrics(result),
+                "space_trade_attribution": _space_trade_attribution(result),
+                "space_multi_event_depth_adjustment": _adjustment_summary(
+                    multi_event_adjustments[before_multi_event:]
+                ),
+                "space_watch_liquidity_tier_adjustment": _adjustment_summary(
+                    watch_adjustments[before_watch:]
+                ),
+                "space_company_release_source_adjustment": _adjustment_summary(
+                    company_release_adjustments[before_company:]
+                ),
+                "space_financing_dilution_profile_adjustment": _adjustment_summary(
+                    financing_adjustments[before_financing:]
+                ),
+                "space_official_customer_source_adjustment": _adjustment_summary(
+                    source_adjustments[before_source:]
+                ),
+                "space_liquidity_tier_adjustment": _adjustment_summary(
+                    liquidity_ok_adjustments[before_liquidity_ok:]
+                ),
+                "space_launch_lunar_theme_adjustment": _adjustment_summary(
+                    theme_adjustments[before_theme:]
+                ),
+                "space_iwm_relative_momentum_adjustment": _adjustment_summary(
+                    iwm_adjustments[before_iwm:]
+                ),
+                "space_peer_nonleader_breakout_adjustment": _adjustment_summary(
+                    peer_nonleader_breakout_adjustments[before_peer:]
+                ),
+                "space_near_perfect_tqs_trend_adjustment": _adjustment_summary(
+                    near_perfect_adjustments[before_near:]
+                ),
+                "space_perfect_tqs_risk_adjustment": _adjustment_summary(
+                    perfect_adjustments[before_perfect:]
+                ),
+                "space_basket_positive_adjustment": _adjustment_summary(
+                    basket_adjustments[before_basket:]
+                ),
+                "space_multi_event_depth_signal_counts": dict(
+                    sorted(multi_event_counts.items())
+                ),
+                "space_watch_liquidity_tier_signal_counts": dict(
+                    sorted(watch_counts.items())
+                ),
+                "space_company_release_source_signal_counts": dict(
+                    sorted(company_release_counts.items())
+                ),
+                "space_financing_dilution_profile_signal_counts": dict(
+                    sorted(financing_counts.items())
+                ),
+                "space_source_eligible_signal_counts": dict(sorted(source_counts.items())),
+                "space_theme_segment_signal_counts": dict(sorted(theme_counts.items())),
+                "space_iwm_relative_state_counts": dict(sorted(iwm_state_counts.items())),
+                "space_peer_momentum_state_counts": dict(sorted(peer_counts.items())),
+                "space_near_perfect_tqs_trend_signal_counts": dict(
+                    sorted(near_perfect_counts.items())
+                ),
+                "space_perfect_tqs_signal_counts": dict(sorted(perfect_counts.items())),
+                "space_basket_signal_state_counts": dict(sorted(basket_counts.items())),
+                "space_iwm_relative_day_counts": dict(sorted(day_counts.items())),
+            }
+    finally:
+        _restore_policy(original_generate, original_enrich, original_size)
+    metrics_by_window = {label: row["metrics"] for label, row in by_window.items()}
+    return {
+        "variant": name,
+        "target_definition": multi_event_gate["target_definition"],
+        "target_tickers": multi_event_gate["target_tickers"],
+        "space_multi_event_depth_risk_scalar": multi_event_scalar,
+        "by_window": by_window,
+        "aggregate": _aggregate(metrics_by_window),
+    }
+
+
+def _gate(variant: dict[str, Any], before: dict[str, Any], core: dict[str, Any]) -> dict[str, Any]:
+    aggregate_delta = _aggregate_delta(variant["aggregate"], before["aggregate"])
+    aggregate_delta_vs_core = _aggregate_delta(variant["aggregate"], core["aggregate"])
+    by_window_delta = {
+        label: _delta(row["metrics"], before["by_window"][label]["metrics"])
+        for label, row in variant["by_window"].items()
+    }
+    windows_ev_improved = sum(
+        1 for row in by_window_delta.values() if row.get("expected_value_score", 0) > 0
+    )
+    windows_ev_regressed = sum(
+        1 for row in by_window_delta.values() if row.get("expected_value_score", 0) < 0
+    )
+    adjusted_count = sum(
+        row["space_multi_event_depth_adjustment"]["adjusted_signal_count"]
+        for row in variant["by_window"].values()
+    )
+    passed = (
+        aggregate_delta["expected_value_score_sum"] > 0
+        and aggregate_delta["total_pnl_sum"] > 0
+        and windows_ev_improved >= 2
+        and windows_ev_regressed == 0
+        and aggregate_delta["max_drawdown_pct_max"] <= 0.005
+        and variant["aggregate"]["min_survival_rate"] >= 0.05
+        and variant["aggregate"]["trade_count_sum"] >= 50
+        and adjusted_count > 0
+        and variant["space_multi_event_depth_risk_scalar"] != 1.0
+    )
+    return {
+        "passed": passed,
+        "aggregate_delta_vs_before": aggregate_delta,
+        "aggregate_delta_vs_core": aggregate_delta_vs_core,
+        "by_window_delta_vs_before": by_window_delta,
+        "windows_ev_improved_vs_before": windows_ev_improved,
+        "windows_ev_regressed_vs_before": windows_ev_regressed,
+        "max_drawdown_change_vs_before": aggregate_delta["max_drawdown_pct_max"],
+        "space_multi_event_depth_adjusted_signal_count": adjusted_count,
+    }
+
+
+def _artifact_markdown(payload: dict[str, Any]) -> str:
+    best = payload["best_variant"]
+    lines = [
+        f"# {EXPERIMENT_ID} Space multi-event catalyst depth risk",
+        "",
+        f"- Decision: `{payload['decision']}`",
+        (
+            "- Single variable: risk scalar for official Space signals whose event "
+            "seed profile has at least two official, non-attention catalyst rows."
+        ),
+        f"- Best variant: `{best['variant']}`",
+        f"- Aggregate EV delta vs accepted: `{payload['expected_value_score_delta']:+.4f}`",
+        (
+            "- Aggregate PnL delta vs accepted: "
+            f"`${payload['delta_metrics']['aggregate']['total_pnl_sum']:+,.2f}`"
+        ),
+        "",
+        "## Sweep",
+        "",
+        (
+            "| Variant | Scalar | Gate | dEV | dPnL | Improved windows | "
+            "Regressed windows | Adjusted signals |"
+        ),
+        "|---|---:|---|---:|---:|---:|---:|---:|",
+    ]
+    for name, variant in payload["variants"].items():
+        gate = variant["gate"]
+        delta = gate["aggregate_delta_vs_before"]
+        lines.append(
+            f"| {name} | {variant['space_multi_event_depth_risk_scalar']:.3f} | "
+            f"{'pass' if gate['passed'] else 'fail'} | "
+            f"{delta['expected_value_score_sum']:+.4f} | "
+            f"{delta['total_pnl_sum']:+,.2f} | "
+            f"{gate['windows_ev_improved_vs_before']} | "
+            f"{gate['windows_ev_regressed_vs_before']} | "
+            f"{gate['space_multi_event_depth_adjusted_signal_count']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Best Three-Window Comparison",
+            "",
+            (
+                "| Window | Before EV | After EV | dEV | Before PnL | After PnL | "
+                "dPnL | Trades | Max DD | Survival | Multi-event signals |"
+            ),
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        ]
+    )
+    for label in WINDOWS:
+        before = payload["before_metrics"][label]
+        after = payload["after_metrics"][label]
+        delta = payload["delta_metrics"]["by_window"][label]
+        adjusted = best["by_window"][label]["space_multi_event_depth_adjustment"][
+            "adjusted_signal_count"
+        ]
+        lines.append(
+            "| {label} | {before_ev:.4f} | {after_ev:.4f} | {delta_ev:+.4f} | "
+            "{before_pnl:,.2f} | {after_pnl:,.2f} | {delta_pnl:+,.2f} | "
+            "{trades} | {max_dd:.4f} | {survival:.4f} | {adjusted} |".format(
+                label=label,
+                before_ev=before["expected_value_score"],
+                after_ev=after["expected_value_score"],
+                delta_ev=delta.get("expected_value_score", 0),
+                before_pnl=before["total_pnl"],
+                after_pnl=after["total_pnl"],
+                delta_pnl=delta.get("total_pnl", 0),
+                trades=after["trade_count"],
+                max_dd=after["max_drawdown_pct"],
+                survival=after["survival_rate"],
+                adjusted=adjusted,
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Field Check",
+            "",
+            json.dumps(payload["gate2"]["space_multi_event_depth"], sort_keys=True),
+            "",
+            "## Interpretation",
+            "",
+            payload["interpretation"],
+            "",
+            "## Production Impact",
+            "",
+            json.dumps(payload["production_impact"], sort_keys=True),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _ticket(payload: dict[str, Any]) -> dict[str, Any]:
+    best = payload["best_variant"]
+    return {
+        "experiment_id": payload["experiment_id"],
+        "status": payload["status"],
+        "decision": payload["decision"],
+        "changed_variable": payload["changed_variable"],
+        "best_variant": best["variant"],
+        "expected_value_score_delta": payload["expected_value_score_delta"],
+        "total_pnl_delta": payload["delta_metrics"]["aggregate"]["total_pnl_sum"],
+        "gate4_passed": payload["gate4"]["passed"],
+        "summary": payload["interpretation"],
+        "artifact": str(Path("data") / "experiments" / EXPERIMENT_ID / f"{STEM}.json"),
+    }
+
+
+def run() -> dict[str, Any]:
+    gate2_open = _gate2_open_positions()
+    if not gate2_open["passed"]:
+        raise RuntimeError(f"Gate 2 failed: {gate2_open}")
+    source_gate = _event_seed_profiles()
+    if not source_gate["passed"]:
+        raise RuntimeError(f"Accepted event source field check failed: {source_gate}")
+    financing_gate = _accepted_financing_profile_gate()
+    if not financing_gate["passed"]:
+        raise RuntimeError(f"Accepted financing profile field check failed: {financing_gate}")
+    company_release_gate = _field_check_company_release_source()
+    if not company_release_gate["passed"]:
+        raise RuntimeError(
+            f"Accepted company-release source field check failed: {company_release_gate}"
+        )
+    liquidity_gate = _field_check_watch_liquidity_tier()
+    if not liquidity_gate["passed"]:
+        raise RuntimeError(f"Watch-liquidity field check failed: {liquidity_gate}")
+    multi_event_gate = _field_check_multi_event_depth()
+    if not multi_event_gate["passed"]:
+        raise RuntimeError(f"Multi-event catalyst-depth field check failed: {multi_event_gate}")
+
+    core = _run_core_baseline()
+    before = _run_accepted_exp112_variant(
+        "accepted_exp112_watch_liquidity_stack",
+        WATCH_LIQUIDITY_RISK_SCALAR,
+        liquidity_gate,
+        company_release_gate,
+        financing_gate,
+        source_gate,
+    )
+    variants = {}
+    for scalar in MULTI_EVENT_DEPTH_RISK_SCALARS:
+        name = f"multi_event_depth_{str(scalar).replace('.', '_')}"
+        variants[name] = _run_variant(
+            name,
+            scalar,
+            multi_event_gate,
+            liquidity_gate,
+            company_release_gate,
+            financing_gate,
+            source_gate,
+        )
+
+    for variant in variants.values():
+        variant["gate"] = _gate(variant, before, core)
+
+    best_variant = max(
+        variants.values(),
+        key=lambda variant: (
+            variant["gate"]["passed"],
+            variant["gate"]["aggregate_delta_vs_before"]["expected_value_score_sum"],
+            variant["gate"]["aggregate_delta_vs_before"]["total_pnl_sum"],
+        ),
+    )
+    accepted = best_variant["gate"]["passed"]
+    decision = (
+        "accepted_default_off_space_multi_event_depth_risk"
+        if accepted
+        else "rejected_space_multi_event_depth_risk"
+    )
+    interpretation = (
+        "Official non-attention catalyst-depth risk scaling improved the accepted "
+        "default-off Space stack under the three-window gate. Promotion must stay "
+        "shared and metadata-only with live Space slots at zero."
+        if accepted
+        else (
+            "Official non-attention catalyst-depth risk scaling did not clear the "
+            "three-window gate on top of exp-20260512-112. The best variant still "
+            "failed the multi-window acceptance rule, so do not promote this helper "
+            "into shared policy on these frozen snapshots."
+        )
+    )
+
+    payload = {
+        "experiment_id": EXPERIMENT_ID,
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "lane": "alpha_search",
+        "status": decision,
+        "decision": decision,
+        "change_type": "risk_allocation_shadow_sweep",
+        "changed_variable": "space_multi_event_depth_risk_scalar",
+        "single_causal_variable": (
+            "risk scalar for official Space signals whose event seed profile has "
+            "at least two official, non-attention catalyst rows"
+        ),
+        "hypothesis": (
+            "Space replacement value should be higher where an official ticker has "
+            "multiple independent production-visible catalyst seeds rather than a "
+            "single broad theme event. A bounded scalar tests that catalyst-depth "
+            "risk allocation without changing the candidate pool, signal ranking, "
+            "entry filters, exits, LLM/news logic, or live slots."
+        ),
+        "gate_questions": {
+            "1_alpha_hypothesis": (
+                "risk allocation: scale official Space signals with multiple "
+                "official, non-attention event seed rows."
+            ),
+            "2_history_check": {
+                "exp-20260512-112": (
+                    "Accepted watch-liquidity 1.10x risk helper; this is the fixed "
+                    "before state."
+                ),
+                "exp-20260513-010": (
+                    "Rejected watch-liquidity TQS scope. This run does not retune "
+                    "that helper and instead tests a new catalyst-depth field."
+                ),
+                "exp-20260512-944": (
+                    "Rejected official/regulatory/primary source split. This run "
+                    "does not split source authority; it counts independent "
+                    "non-attention event rows across allowed official source types."
+                ),
+                "exp-20260512-040": (
+                    "Rejected broad defense-budget source scalar. This run requires "
+                    "ticker-level multi-event depth, so singleton broad-theme names "
+                    "are not adjusted."
+                ),
+                "exp-20260512-023": (
+                    "Rejected GSAT pool expansion; no ticker expansion here."
+                ),
+            },
+            "3_single_causal_variable": (
+                "space_multi_event_depth_risk_scalar. Candidate pool, accepted "
+                "Space stack, targets, stops, ranking, add-ons, LLM/news, and live "
+                "slots stay fixed."
+            ),
+            "4_acceptance_standard": (
+                "docs/backtesting.md three fixed windows; require positive aggregate "
+                "EV/PnL versus exp-112, at least 2/3 improved EV windows, no "
+                "EV-regressed window, max drawdown drift <= 0.5 pp, survival >= 5%, "
+                ">=50 total trades, nonzero adjusted multi-event signals, and "
+                "non-1.0 scalar."
+            ),
+            "5_reproducibility": (
+            "Run .venv\\Scripts\\python.exe "
+            "quant\\experiments\\exp_20260513_012_space_multi_event_depth_risk.py"
+            ),
+        },
+        "parameters": {
+            "official_space_tickers": list(OFFICIAL_SPACE_TICKERS),
+            "multi_event_min_count": MULTI_EVENT_MIN_COUNT,
+            "target_source_types": list(OFFICIAL_NON_ATTENTION_SOURCE_TYPES),
+            "excluded_semantic_buckets": list(EXCLUDED_SEMANTIC_BUCKETS),
+            "target_multi_event_tickers": multi_event_gate["target_tickers"],
+            "target_multi_event_profiles": multi_event_gate["profiles"],
+            "tested_multi_event_depth_scalars": list(MULTI_EVENT_DEPTH_RISK_SCALARS),
+            "accepted_before_experiment": "exp-20260512-112",
+            "accepted_watch_liquidity_risk_scalar": WATCH_LIQUIDITY_RISK_SCALAR,
+            "target_liquidity_tier": TARGET_LIQUIDITY_TIER,
+            "accepted_company_release_source_risk_scalar": (
+                ACCEPTED_COMPANY_RELEASE_SOURCE_RISK_SCALAR
+            ),
+            "accepted_financing_dilution_profile_risk_scalar": (
+                ACCEPTED_FINANCING_DILUTION_PROFILE_RISK_SCALAR
+            ),
+            "locked_variables": [
+                "official Space candidate pool",
+                "base Space risk scalar",
+                "accepted Space basket-positive scalar",
+                "accepted perfect-TQS risk scalar",
+                "accepted near-perfect trend TQS scalar",
+                "accepted peer-nonleader breakout scalar",
+                "accepted IWM-relative small-cap leader scalar",
+                "accepted launch/lunar theme scalar",
+                "accepted liquidity_tier=ok scalar",
+                "accepted watch-liquidity scalar",
+                "accepted broad official customer-source scalar",
+                "accepted company-release customer-source scalar",
+                "accepted financing/dilution profile scalar",
+                "accepted Space trend targets",
+                "core production universe",
+                "core signal generation",
+                "entry filters",
+                "ranking",
+                "MAX_POSITIONS",
+                "add-ons",
+                "LLM/news replay",
+                "live Space slots",
+            ],
+        },
+        "date_range": {
+            label: {
+                "start": window["start"],
+                "end": window["end"],
+                "snapshot": window["space_snapshot"],
+            }
+            for label, window in WINDOWS.items()
+        },
+        "backtest_protocol": (
+            "docs/backtesting.md canonical three fixed windows. Core uses canonical "
+            "snapshots; Space variants use exp-20260510-028 augmented Space snapshots. "
+            "The accepted_before variant reproduces exp-20260512-112 policy semantics."
+        ),
+        "gate1": {
+            "core_baseline": core["aggregate"],
+            "accepted_before_metrics": before["aggregate"],
+            "known_bias": (
+                "Space candidate snapshots are frozen historical replay copies built "
+                "from a 2026-05-10 research universe. Event seed rows are "
+                "production-visible, but any accepted Space change must remain "
+                "default-off until forward evidence matures."
+            ),
+        },
+        "gate2": {
+            "open_positions": gate2_open,
+            "accepted_official_customer_source_profile": source_gate,
+            "accepted_financing_dilution_profiles": financing_gate,
+            "accepted_company_release_source_profile": company_release_gate,
+            "watch_liquidity_tier_registry": liquidity_gate,
+            "space_multi_event_depth": multi_event_gate,
+            "runtime_fields": [
+                "operator_inputs/open_positions.json entry_date",
+                "operator_inputs/open_positions.json target_price",
+                "data/space_catalyst_event_seeds.jsonl event_id",
+                "data/space_catalyst_event_seeds.jsonl event_fields",
+                "data/space_catalyst_event_seeds.jsonl semantic_bucket",
+                "data/space_catalyst_event_seeds.jsonl source_type",
+                "data/space_catalyst_event_seeds.jsonl tickers",
+            ],
+            "passed": (
+                gate2_open["passed"]
+                and source_gate["passed"]
+                and financing_gate["passed"]
+                and company_release_gate["passed"]
+                and liquidity_gate["passed"]
+                and multi_event_gate["passed"]
+            ),
+        },
+        "gate3": {
+            "new_filter_added": False,
+            "new_risk_scalar_added": True,
+            "min_survival_rate_after": best_variant["aggregate"]["min_survival_rate"],
+            "passed": best_variant["aggregate"]["min_survival_rate"] >= 0.05,
+        },
+        "core_baseline_metrics": core["by_window"],
+        "core_aggregate": core["aggregate"],
+        "before_variant": before,
+        "before_metrics": {
+            "aggregate": before["aggregate"],
+            **{label: row["metrics"] for label, row in before["by_window"].items()},
+        },
+        "after_metrics": {
+            "aggregate": best_variant["aggregate"],
+            **{label: row["metrics"] for label, row in best_variant["by_window"].items()},
+        },
+        "delta_metrics": {
+            "aggregate": best_variant["gate"]["aggregate_delta_vs_before"],
+            "by_window": best_variant["gate"]["by_window_delta_vs_before"],
+        },
+        "expected_value_score_delta": best_variant["gate"][
+            "aggregate_delta_vs_before"
+        ]["expected_value_score_sum"],
+        "gate_results": best_variant["gate"],
+        "gate4": best_variant["gate"],
+        "variants": variants,
+        "best_variant": best_variant,
+        "llm_metrics": {
+            "used_llm": False,
+            "why_not_llm_soft_ranking": (
+                "Space soft-ranking remains label-limited; this run uses deterministic "
+                "production-visible event seed metadata."
+            ),
+        },
+        "production_impact": {
+            "shared_policy_changed": accepted,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": accepted,
+            "replay_only": True,
+            "parity_test_added": accepted,
+            "daily_report_metadata_changed": accepted,
+            "alters_signal_generation": False,
+            "alters_candidate_ranking": False,
+            "alters_sizing": False,
+            "alters_orders": False,
+            "live_slots_changed": False,
+            "live_slots": 0,
+        },
+        "decision_rationale": interpretation,
+        "interpretation": interpretation,
+        "rejection_reason": None if accepted else interpretation,
+        "next_evidence_needed": (
+            "If rejected, do not promote multi-event catalyst-depth risk scaling on "
+            "these frozen snapshots. Future Space work should use closed forward "
+            "replacement value by catalyst family/source profile, or add a new "
+            "production-visible official catalyst-quality field with broader coverage."
+        ),
+        "related_files": [
+            "quant/experiments/exp_20260513_012_space_multi_event_depth_risk.py",
+            "data/experiments/exp-20260513-012/space_multi_event_depth_risk.json",
+            "docs/experiments/logs/exp-20260513-012.json",
+            "docs/experiments/tickets/exp-20260513-012.json",
+            "docs/experiments/artifacts/exp-20260513-012_space_multi_event_depth_risk.md",
+            "docs/experiment_log.jsonl",
+            "quant/space_catalyst_sleeve.py",
+            "quant/report_generator.py",
+            "quant/test_space_catalyst_sleeve.py",
+            "docs/alpha-optimization-playbook.md",
+            "docs/current_state.md",
+            "docs/production_backtest_parity.md",
+        ],
+        "why_not_other_changes": (
+            "LLM soft-ranking is data-limited; noisy ticker additions, watch-liquidity "
+            "TQS/peer/strategy scopes, broad defense-budget source scalars, "
+            "primary-authority source scalars, contract-profile scalars, and generic "
+            "risk caps were already rejected or underpowered. This tests one new "
+            "production-visible catalyst-depth field."
+        ),
+    }
+    return payload
+
+
+def persist(payload: dict[str, Any]) -> None:
+    out_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
+    artifact_path = out_dir / f"{STEM}.json"
+    log_path = PROJECT_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = PROJECT_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    md_path = (
+        PROJECT_ROOT
+        / "docs"
+        / "experiments"
+        / "artifacts"
+        / f"{EXPERIMENT_ID}_{STEM}.md"
+    )
+    _write_json(artifact_path, payload)
+    _write_json(log_path, payload)
+    _write_json(ticket_path, _ticket(payload))
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+    md_path.write_text(_artifact_markdown(payload), encoding="utf-8")
+    _append_jsonl_for_this_experiment(
+        PROJECT_ROOT / "docs" / "experiment_log.jsonl",
+        payload,
+    )
+
+
+if __name__ == "__main__":
+    result = run()
+    persist(result)
+    print(
+        json.dumps(
+            {
+                "experiment_id": result["experiment_id"],
+                "decision": result["decision"],
+                "expected_value_score_delta": result["expected_value_score_delta"],
+                "pnl_delta": result["delta_metrics"]["aggregate"]["total_pnl_sum"],
+                "best_variant": result["best_variant"]["variant"],
+                "gate4_passed": result["gate4"]["passed"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )

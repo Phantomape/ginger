@@ -443,6 +443,17 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "financing/dilution profile @ "
                     f"{profile_scalar}x"
                 )
+            multi_event_scalar = forward.get(
+                "space_multi_event_depth_risk_scalar"
+            )
+            multi_event_min_count = forward.get(
+                "space_multi_event_depth_min_count"
+            )
+            if multi_event_scalar is not None:
+                extra_policies.append(
+                    "multi-event catalyst depth "
+                    f">={multi_event_min_count} @ {multi_event_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -520,6 +531,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_financing_dilution_profile_bucket")
                 else ""
             )
+            multi_event_text = (
+                " multi_event_depth=True"
+                if plan.get("space_multi_event_depth_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -540,6 +556,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
                 f"{liquidity_text}{watch_liquidity_text}{source_text}"
                 f"{company_source_text}{profile_text}"
+                f"{multi_event_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"

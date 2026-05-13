@@ -19,6 +19,7 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
     space_catalyst_iwm_relative_momentum_state,
+    space_catalyst_multi_event_depth_profiles,
     space_catalyst_official_customer_source_profiles,
     space_catalyst_observation_feature_tickers,
     space_catalyst_observation_tickers,
@@ -156,7 +157,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260512-112"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-012"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -307,6 +308,15 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         snapshot["forward_hypothesis"][
             "space_financing_dilution_profile_risk_scalar"
         ]
+        == 1.075
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_multi_event_depth_experiment_id"]
+        == "exp-20260513-012"
+    )
+    assert snapshot["forward_hypothesis"]["space_multi_event_depth_min_count"] == 2
+    assert (
+        snapshot["forward_hypothesis"]["space_multi_event_depth_risk_scalar"]
         == 1.075
     )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
@@ -492,6 +502,28 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
         )
         == 1.0
     )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            multi_event_depth_profile={
+                "event_count": 2,
+                "event_ids": ["lunr_contract", "golden_dome"],
+            },
+        )
+        == 1.075
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            multi_event_depth_profile={
+                "event_count": 1,
+                "event_ids": ["lunr_contract"],
+            },
+        )
+        == 1.0
+    )
     assert round(
         space_catalyst_forward_risk_scalar(
             "RKLB",
@@ -574,6 +606,54 @@ def test_space_catalyst_official_customer_source_profiles_filters_attention_only
             "event_fields": ["customer_win"],
             "semantic_buckets": ["fundamental_contract_regulatory"],
             "source_types": ["company_release"],
+        }
+    }
+
+
+def test_space_catalyst_multi_event_depth_profiles_filters_attention_and_singletons():
+    profiles = space_catalyst_multi_event_depth_profiles(
+        [
+            {
+                "event_id": "lunr_contract",
+                "event_date": "2026-05-01",
+                "tickers": ["LUNR"],
+                "event_fields": ["customer_win"],
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "official_or_primary_release",
+            },
+            {
+                "event_id": "lunr_golden_dome",
+                "event_date": "2026-05-02",
+                "tickers": ["LUNR", "RDW"],
+                "event_fields": ["government_space_contract"],
+                "semantic_bucket": "defense_budget_theme",
+                "source_type": "official_government_release",
+            },
+            {
+                "event_id": "lunr_attention",
+                "event_date": "2026-05-03",
+                "tickers": ["LUNR"],
+                "event_fields": ["uap_attention_spike"],
+                "semantic_bucket": "attention_only",
+                "source_type": "official_attention_release",
+            },
+        ],
+        included_tickers=["LUNR", "RDW"],
+    )
+
+    assert profiles == {
+        "LUNR": {
+            "event_count": 2,
+            "event_ids": ["lunr_contract", "lunr_golden_dome"],
+            "event_fields": ["customer_win", "government_space_contract"],
+            "semantic_buckets": [
+                "defense_budget_theme",
+                "fundamental_contract_regulatory",
+            ],
+            "source_types": [
+                "official_government_release",
+                "official_or_primary_release",
+            ],
         }
     }
 
@@ -712,6 +792,27 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
                 "source_types": ["company_release"],
             }
         },
+        space_multi_event_depth_profiles={
+            "RKLB": {
+                "event_count": 2,
+                "event_ids": [
+                    "golden_dome_sbi_awards_20260424",
+                    "rklb_record_backlog_launch_deal_20260507",
+                ],
+                "event_fields": [
+                    "customer_win",
+                    "government_space_contract",
+                ],
+                "semantic_buckets": [
+                    "defense_budget_theme",
+                    "fundamental_contract_regulatory",
+                ],
+                "source_types": [
+                    "company_release",
+                    "official_government_release",
+                ],
+            }
+        },
         core_signals=[{"ticker": "AMD", "strategy": "trend_long"}],
         entry_execution_plan={"available_slots": 1, "slot_sliced_signals": []},
         portfolio_heat={"portfolio_heat_pct": 0.03, "can_add_new_positions": True},
@@ -753,9 +854,12 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_official_customer_source_risk_scalar"] == 1.1
     assert plan["space_company_release_customer_source_bucket"] is True
     assert plan["space_company_release_customer_source_risk_scalar"] == 1.1
+    assert plan["space_multi_event_depth_bucket"] is True
+    assert plan["space_multi_event_depth_risk_scalar"] == 1.075
     assert plan["space_event_source_profile"]["event_fields"] == ["customer_win"]
-    assert plan["effective_risk_scalar"] == 1.826922
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1826.92
+    assert plan["space_multi_event_depth_profile"]["event_count"] == 2
+    assert plan["effective_risk_scalar"] == 1.963941
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1963.94
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -798,6 +902,7 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_multi_event_depth_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]
@@ -846,6 +951,7 @@ def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_multi_event_depth_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]
@@ -895,6 +1001,7 @@ def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_multi_event_depth_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]
@@ -933,6 +1040,7 @@ def test_space_catalyst_observation_slot_persistence_dedupes_daily_plan(tmp_path
             "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
         },
         space_event_source_profiles={},
+        space_multi_event_depth_profiles={},
     )
     ledger_path = tmp_path / "observation.jsonl"
     summary_path = tmp_path / "observation_summary.json"
@@ -1082,6 +1190,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_official_customer_source_risk_scalar": 1.1,
                 "space_company_release_customer_source_risk_scalar": 1.1,
                 "space_financing_dilution_profile_risk_scalar": 1.075,
+                "space_multi_event_depth_min_count": 2,
+                "space_multi_event_depth_risk_scalar": 1.075,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -1108,6 +1218,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_official_customer_source_bucket": True,
                     "space_company_release_customer_source_bucket": True,
                     "space_financing_dilution_profile_bucket": True,
+                    "space_multi_event_depth_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -1157,7 +1268,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "liquidity tier watch @ 1.1x; "
         "official customer source customer_win @ 1.1x; "
         "company-release customer source @ 1.1x; "
-        "financing/dilution profile @ 1.075x)"
+        "financing/dilution profile @ 1.075x; "
+        "multi-event catalyst depth >=2 @ 1.075x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -1166,7 +1278,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
     assert (
         "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
         "theme=launch_lunar liquidity=ok customer_source=True "
-        "company_release_source=True financing_dilution_profile=True"
+        "company_release_source=True financing_dilution_profile=True "
+        "multi_event_depth=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report
