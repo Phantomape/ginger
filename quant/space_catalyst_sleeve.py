@@ -67,6 +67,7 @@ SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER = "IWM"
 SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE = "SPY"
 SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_FIELD = "momentum_20d_pct"
 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR = 1.1
+SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR = 1.15
 SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT = "launch_lunar"
 SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR = 1.1
 SPACE_CATALYST_LIQUIDITY_TIER = "ok"
@@ -105,7 +106,7 @@ SPACE_CATALYST_MULTI_EVENT_DEPTH_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
 SPACE_CATALYST_MULTI_EVENT_DEPTH_RISK_SCALAR = 1.075
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260513-015",
+    "experiment_id": "exp-20260513-020",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -165,6 +166,14 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_iwm_relative_leader_risk_scalar": (
         SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+    ),
+    "space_iwm_peer_leader_trend_experiment_id": "exp-20260513-020",
+    "space_iwm_peer_leader_trend_definition": (
+        "trend_long when IWM 20d momentum > SPY 20d momentum and ticker "
+        "20d momentum > official Space basket average"
+    ),
+    "space_iwm_peer_leader_trend_risk_scalar": (
+        SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
     ),
     "space_launch_lunar_theme_segment_experiment_id": "exp-20260512-032",
     "space_launch_lunar_theme_segment": (
@@ -442,6 +451,13 @@ def space_catalyst_forward_risk_scalar(
         scalar *= SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+        and (peer_momentum_state or {}).get("state") == "leader"
+    ):
+        scalar *= SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and str(theme_segment or "") == SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT
     ):
         scalar *= SPACE_CATALYST_LAUNCH_LUNAR_THEME_RISK_SCALAR
@@ -600,6 +616,9 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_iwm_relative_leader_risk_scalar": (
                 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+            ),
+            "space_iwm_peer_leader_trend_risk_scalar": (
+                SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
             ),
             "space_liquidity_tier": SPACE_CATALYST_LIQUIDITY_TIER,
             "space_liquidity_tier_risk_scalar": (
@@ -1196,6 +1215,9 @@ def build_space_catalyst_observation_slot(
             ),
             "space_iwm_relative_leader_risk_scalar": (
                 SPACE_CATALYST_IWM_RELATIVE_LEADER_RISK_SCALAR
+            ),
+            "space_iwm_peer_leader_trend_risk_scalar": (
+                SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
             ),
             "space_watch_liquidity_tier": SPACE_CATALYST_WATCH_LIQUIDITY_TIER,
             "space_watch_liquidity_tier_risk_scalar": (
@@ -1879,6 +1901,16 @@ def _observation_slot_row(
         if (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
         else 1.0
     )
+    iwm_peer_leader_trend_bucket = (
+        strategy.lower() == "trend_long"
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+        and peer_momentum_state.get("state") == "leader"
+    )
+    iwm_peer_leader_trend_risk_scalar = (
+        SPACE_CATALYST_IWM_PEER_LEADER_TREND_RISK_SCALAR
+        if iwm_peer_leader_trend_bucket
+        else 1.0
+    )
     launch_lunar_theme_segment_bucket = (
         theme_segment == SPACE_CATALYST_LAUNCH_LUNAR_THEME_SEGMENT
     )
@@ -2041,6 +2073,11 @@ def _observation_slot_row(
         ),
         "space_iwm_relative_momentum_risk_scalar": _round(
             iwm_relative_momentum_risk_scalar,
+            6,
+        ),
+        "space_iwm_peer_leader_trend_bucket": iwm_peer_leader_trend_bucket,
+        "space_iwm_peer_leader_trend_risk_scalar": _round(
+            iwm_peer_leader_trend_risk_scalar,
             6,
         ),
         "space_launch_lunar_theme_segment_bucket": (

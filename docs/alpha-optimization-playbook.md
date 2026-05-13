@@ -119,12 +119,15 @@ Accepted aggregate metrics after `exp-20260512-020`: EV `8.558004`, total PnL
 52 closed sleeve trades.
 
 SEC conclusion: this sleeve is a T+1 relative-reaction and semantic
-risk-allocation surface. It should stay default-off until forward replacement
-value supports live scope.
+risk-allocation surface. `exp-20260512-025` then rejected 10-Q-first queue
+priority even with positive aggregate EV/PnL because the gain came only from
+`old_thin` while `late_strong` regressed. The accepted SEC edge is semantic
+notional sizing, not same-sample queue reordering. It should stay default-off
+until forward replacement value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260513-015`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260513-020`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -134,6 +137,8 @@ Current default-off Space helpers:
 - near-perfect official Space `trend_long` TQS: `1.10x` top-up;
 - peer-nonleader official Space `breakout_long`: `0.00x` extra risk;
 - IWM 20d momentum above SPY 20d momentum: `1.10x` top-up;
+- official Space `trend_long` when IWM leads SPY and the ticker leads the
+  official Space peer basket: `1.15x` top-up;
 - `theme_segment=launch_lunar`: `1.10x` top-up;
 - `liquidity_tier=ok`: `1.10x` top-up;
 - `liquidity_tier=watch`: `1.10x` top-up;
@@ -146,8 +151,8 @@ Current default-off Space helpers:
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260513-015`: EV `16.8887`, total PnL
-`$404,189.82`, max drawdown ceiling `14.74%`, min survival `70.42%`, and 70
+Accepted aggregate metrics after `exp-20260513-020`: EV `17.6697`, total PnL
+`$421,418.99`, max drawdown ceiling `15.18%`, min survival `70.42%`, and 70
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
@@ -293,6 +298,9 @@ Rejected SEC retunes:
 - capacity above max-3 on the frozen sample;
 - paired-filing dedupe;
 - auxiliary earnings 8-K item-code notional scalar;
+- 10-Q-first queue priority on the frozen sample. `exp-20260512-025` improved
+  aggregate EV/PnL but only `old_thin` moved while `late_strong` regressed, so
+  queue-order retunes need forward evidence or a genuinely new semantic field;
 - 10-K/10-Q form exclusion without a new semantic field.
 
 Next valid SEC alpha: add PIT-safe same-accession earnings/guidance/language
@@ -319,6 +327,7 @@ Accepted Space evidence:
 - near-perfect trend TQS top-up: `exp-20260512-008`;
 - peer-nonleader breakout zero extra risk: `exp-20260512-013`;
 - IWM-relative small-cap state: `exp-20260512-031`;
+- IWM-relative plus peer-leader Space trend risk: `exp-20260513-020`;
 - launch/lunar theme segment: `exp-20260512-032`;
 - liquidity-tier risk: `exp-20260512-037`;
 - official customer-source risk: `exp-20260512-038`;
@@ -352,10 +361,10 @@ Next valid Space alpha: forward replacement value by catalyst family, source
 quality, peer leadership, and production registry profile. Do not keep slicing
 the accepted watch-liquidity helper by peer state or TQS bucket on frozen
 snapshots, and do not retune nearby multi-event, source-qualified peer-leader,
-or government-contract peer-leader count/scalar values without new forward
-evidence. Candidate-pool work is valid only if it improves official-catalyst
-coverage or attribution quality; do not add noise tickers just to get more
-trades.
+or government-contract peer-leader count/scalar values, or nearby IWM-plus-peer
+trend scalars, without new forward evidence. Candidate-pool work is valid only
+if it improves official-catalyst coverage or attribution quality; do not add
+noise tickers just to get more trades.
 
 ### 7. LLM Is A Semantic Layer, Not A Risk Engine
 
@@ -392,7 +401,7 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 
@@ -451,6 +460,10 @@ structured reason stability.
   `trade_quality_score >= 0.95` scalar was `1.20x`, with aggregate EV
   `+0.0376` and PnL `+$4,016.23`, but it regressed `old_thin` EV and worsened
   max drawdown by `+1.42` percentage points.
+- Fixed stacked setup-quality scalars that combine own-green, RS20 leader, and
+  high TQS. `exp-20260513-018` found the best confirmed-quality scalar was
+  `1.20x`, with aggregate EV `+0.0534` and PnL `+$4,540.10`, but the edge
+  stayed old-window concentrated and failed the multi-window gate.
 - Fixed broad index ETF target-width pools. `exp-20260513-017` tested
   `QQQ`/`SPY`/`IWM` target widths at `5.0x`, `6.0x`, and `7.0x` ATR; the best
   variant reduced aggregate EV by `-0.1030` and PnL by `-$2,267.28` because the
@@ -485,6 +498,13 @@ structured reason stability.
 - Watch-liquidity TQS bucket scope splits on the frozen Space replay.
   `exp-20260513-010` found near-perfect-or-better unchanged and the other
   tested scopes regressed the accepted all-TQS helper.
+- Customer-source peer-nonleader top-ups on the frozen Space replay.
+  `exp-20260513-019` found aggregate EV `+0.1320`, but the edge did not clear
+  the Space three-window gate, so customer-source allocation should stay tied
+  to stronger peer-quality buckets.
+- Nearby IWM-plus-peer-leader trend scalar retunes on the frozen Space replay.
+  `exp-20260513-020` accepted `1.15x`; further tuning needs forward evidence
+  or a new independent discriminator.
 
 ### Event / LLM
 
@@ -538,4 +558,19 @@ checkpoint.
 
 ## Recent mechanism insights
 
+- `exp-20260512-025` (rejected_10q_queue_priority): SEC financial-report
+  replay showed the accepted edge remains semantic notional sizing, not
+  queue-order retuning. 10-Q-first priority raised aggregate EV `+0.4162` and
+  PnL `+$14,430.16`, but only `old_thin` improved while `late_strong`
+  regressed, so nearby queue-priority sweeps should wait for forward outcomes
+  or a genuinely new earnings-quality field.
+- `exp-20260513-018` (rejected_core_confirmed_quality_risk): Stacking
+  own-green, RS20 leader, and high-TQS confirmation stayed underpowered.
+  Best confirmed-quality `1.20x` sizing added aggregate EV `+0.0534` and PnL
+  `+$4,540.10`, but the effect was old-window concentrated and failed the
+  multi-window gate.
+- `exp-20260513-019` (rejected_space_customer_source_peer_nonleader_risk):
+  customer-source alpha did not generalize down to peer-nonleader official
+  Space signals. Keep customer-source sizing tied to stronger peer-quality
+  buckets until forward replacement value says otherwise.
 - `exp-20260513-017` (rejected_index_etf_target_width): Index ETF lifecycle scout tested wider target widths for `QQQ`/`SPY`/`IWM` only. Best `index_etf_target_5_0atr` produced aggregate EV delta -0.103 (-1.62%), PnL delta $-2267.28, with 1 changed index ETF trades. Do not split broad index ETFs into a promoted target pool without a positive shared-policy retest or a narrower state-conditioned discriminator.

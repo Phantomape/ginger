@@ -390,6 +390,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "IWM>SPY Space risk @ "
                     f"{iwm_relative_leader_scalar}x"
                 )
+            iwm_peer_leader_trend_scalar = forward.get(
+                "space_iwm_peer_leader_trend_risk_scalar"
+            )
+            if iwm_peer_leader_trend_scalar is not None:
+                extra_policies.append(
+                    "IWM+peer-leader Space trend @ "
+                    f"{iwm_peer_leader_trend_scalar}x"
+                )
             launch_lunar_theme_scalar = forward.get(
                 "space_launch_lunar_theme_risk_scalar"
             )
@@ -547,6 +555,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_government_contract_peer_leader_bucket")
                 else ""
             )
+            iwm_peer_leader_trend_text = (
+                " iwm_peer_leader_trend=True"
+                if plan.get("space_iwm_peer_leader_trend_bucket")
+                else ""
+            )
             company_source_text = (
                 " company_release_source=True"
                 if plan.get("space_company_release_customer_source_bucket")
@@ -582,6 +595,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"risk={risk_text}{basket_text}{peer_text}{iwm_text}{theme_text}"
                 f"{liquidity_text}{watch_liquidity_text}{source_text}"
                 f"{source_peer_leader_text}{government_contract_peer_leader_text}"
+                f"{iwm_peer_leader_trend_text}"
                 f"{company_source_text}{profile_text}"
                 f"{multi_event_text}"
                 f"{perfect_tqs_text}"

@@ -158,7 +158,7 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert "spacex_ipo_proxy" in snapshot["llm_event_fields"]
     assert tuple(snapshot["llm_event_fields"]) == SPACE_CATALYST_LLM_EVENT_FIELDS
     assert snapshot["forward_hypothesis"] == SPACE_CATALYST_FORWARD_HYPOTHESIS
-    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-015"
+    assert snapshot["forward_hypothesis"]["experiment_id"] == "exp-20260513-020"
     assert snapshot["forward_hypothesis"]["risk_budget_scalar"] == 0.75
     assert (
         snapshot["forward_hypothesis"]["data_vendor_breakout_risk_scalar"]
@@ -230,6 +230,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert (
         snapshot["forward_hypothesis"]["space_iwm_relative_leader_risk_scalar"]
         == 1.1
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_iwm_peer_leader_trend_experiment_id"
+        ]
+        == "exp-20260513-020"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_iwm_peer_leader_trend_risk_scalar"
+        ]
+        == 1.15
     )
     assert (
         snapshot["forward_hypothesis"][
@@ -448,6 +460,15 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             iwm_relative_momentum_state={"state": "smallcap_leader"},
         )
         == 1.1
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "trend_long",
+            iwm_relative_momentum_state={"state": "smallcap_leader"},
+            peer_momentum_state={"state": "leader"},
+        )
+        == 1.265
     )
     assert (
         space_catalyst_forward_risk_scalar(
@@ -983,6 +1004,8 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_iwm_relative_state"] == "smallcap_leader"
     assert plan["space_iwm_excess_vs_spy_20d_pct"] == 0.05
     assert plan["space_iwm_relative_momentum_risk_scalar"] == 1.1
+    assert plan["space_iwm_peer_leader_trend_bucket"] is False
+    assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.0
     assert plan["space_launch_lunar_theme_segment_bucket"] is True
     assert plan["space_launch_lunar_theme_segment_risk_scalar"] == 1.1
     assert plan["liquidity_tier"] == "ok"
@@ -1005,6 +1028,56 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
+
+
+def test_space_catalyst_observation_slot_marks_iwm_peer_leader_trend():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "LUNR",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {"momentum_20d_pct": 0.0},
+            "BKSY": {"momentum_20d_pct": 0.0},
+            "LUNR": {"atr": 1.0, "momentum_20d_pct": 0.6},
+            "PL": {"momentum_20d_pct": 0.0},
+            "RDW": {"momentum_20d_pct": 0.0},
+            "RKLB": {"momentum_20d_pct": 0.0},
+            "IWM": {"momentum_20d_pct": 0.2},
+            "SPY": {"momentum_20d_pct": 0.05},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["ticker"] == "LUNR"
+    assert plan["space_iwm_relative_state"] == "smallcap_leader"
+    assert plan["space_peer_momentum_state"] == "leader"
+    assert plan["space_iwm_peer_leader_trend_bucket"] is True
+    assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.15
+    assert plan["effective_risk_scalar"] == 1.043625
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1043.62
 
 
 def test_space_catalyst_observation_slot_marks_government_contract_peer_leader():
@@ -1059,6 +1132,8 @@ def test_space_catalyst_observation_slot_marks_government_contract_peer_leader()
     assert plan["space_government_contract_profile_bucket"] is True
     assert plan["space_government_contract_peer_leader_bucket"] is True
     assert plan["space_government_contract_peer_leader_risk_scalar"] == 1.05
+    assert plan["space_iwm_peer_leader_trend_bucket"] is False
+    assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.0
     assert plan["space_government_contract_profile"]["event_ids"] == [
         "lunr_nasa_contract"
     ]
@@ -1114,6 +1189,8 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
     )
     assert plan["space_financing_dilution_profile_bucket"] is True
     assert plan["space_financing_dilution_profile_risk_scalar"] == 1.075
+    assert plan["space_iwm_peer_leader_trend_bucket"] is False
+    assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.0
     assert plan["effective_risk_scalar"] == 0.886875
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 886.88
 
@@ -1164,6 +1241,8 @@ def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
     assert plan["space_liquidity_tier_risk_scalar"] == 1.0
     assert plan["space_watch_liquidity_tier_bucket"] is True
     assert plan["space_watch_liquidity_tier_risk_scalar"] == 1.1
+    assert plan["space_iwm_peer_leader_trend_bucket"] is False
+    assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.0
     assert plan["effective_risk_scalar"] == 0.99825
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 998.25
 
@@ -1386,6 +1465,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_near_perfect_tqs_trend_risk_scalar": 1.1,
                 "space_peer_nonleader_breakout_risk_scalar": 0.0,
                 "space_iwm_relative_leader_risk_scalar": 1.1,
+                "space_iwm_peer_leader_trend_risk_scalar": 1.15,
                 "space_launch_lunar_theme_risk_scalar": 1.1,
                 "space_liquidity_tier": "ok",
                 "space_liquidity_tier_risk_scalar": 1.1,
@@ -1425,6 +1505,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_official_customer_source_bucket": True,
                     "space_customer_source_peer_leader_bucket": True,
                     "space_government_contract_peer_leader_bucket": True,
+                    "space_iwm_peer_leader_trend_bucket": True,
                     "space_company_release_customer_source_bucket": True,
                     "space_financing_dilution_profile_bucket": True,
                     "space_multi_event_depth_bucket": True,
@@ -1472,6 +1553,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "near-perfect Space trend TQS @ 1.1x; "
         "peer-nonleader Space breakout @ 0.0x; "
         "IWM>SPY Space risk @ 1.1x; "
+        "IWM+peer-leader Space trend @ 1.15x; "
         "launch/lunar theme risk @ 1.1x; "
         "liquidity tier ok @ 1.1x; "
         "liquidity tier watch @ 1.1x; "
@@ -1490,6 +1572,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "risk=1.03125x basket=positive peer=leader iwm=smallcap_leader "
         "theme=launch_lunar liquidity=ok customer_source=True "
         "source_peer_leader=True government_contract_peer_leader=True "
+        "iwm_peer_leader_trend=True "
         "company_release_source=True "
         "financing_dilution_profile=True "
         "multi_event_depth=True"
