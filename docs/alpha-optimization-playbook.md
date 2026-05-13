@@ -451,6 +451,10 @@ structured reason stability.
   `trade_quality_score >= 0.95` scalar was `1.20x`, with aggregate EV
   `+0.0376` and PnL `+$4,016.23`, but it regressed `old_thin` EV and worsened
   max drawdown by `+1.42` percentage points.
+- Fixed broad index ETF target-width pools. `exp-20260513-017` tested
+  `QQQ`/`SPY`/`IWM` target widths at `5.0x`, `6.0x`, and `7.0x` ATR; the best
+  variant reduced aggregate EV by `-0.1030` and PnL by `-$2,267.28` because the
+  one changed `IWM` trade gave back an earlier target win.
 
 ### SEC
 
@@ -531,3 +535,7 @@ when it changes one of the following:
 When updating, write synthesis first and cite experiment IDs as evidence. Do not
 paste full artifacts or every window table unless the table defines the current
 checkpoint.
+
+## Recent mechanism insights
+
+- `exp-20260513-017` (rejected_index_etf_target_width): Index ETF lifecycle scout tested wider target widths for `QQQ`/`SPY`/`IWM` only. Best `index_etf_target_5_0atr` produced aggregate EV delta -0.103 (-1.62%), PnL delta $-2267.28, with 1 changed index ETF trades. Do not split broad index ETFs into a promoted target pool without a positive shared-policy retest or a narrower state-conditioned discriminator.

@@ -714,6 +714,17 @@ percentage points, failing Gate 4. Do not promote or retry broad high-TQS core
 sizing on the frozen windows without a narrower production-visible
 discriminator or forward setup-quality attribution.
 
+Latest rejected index ETF lifecycle alpha search: `exp-20260513-017` tested
+whether `QQQ` / `SPY` / `IWM` should receive a separate wider target-width pool
+after a live QQQ `SIGNAL_TARGET` felt early. The sweep changed only the index
+ETF target ATR multiple (`5.0x`, `6.0x`, `7.0x`) and left entries, ranking,
+sizing, universe, LLM/news, and hard stops unchanged. The best variant was
+`5.0x`: aggregate EV fell `-0.1030` / `-1.62%` and PnL fell `-$2,267.28` /
+`-1.21%`; the only changed trade was `IWM` in `mid_weak`, where delaying the
+target exit reduced PnL from `$4,783.80` to `$2,513.69`. Do not split broad
+index ETFs into a promoted target pool without forward target-touch evidence
+or a narrower state-conditioned lifecycle discriminator.
+
 Latest Space alpha search: `exp-20260513-015` tested a government-contract
 peer-leader risk scalar on top of the accepted `exp-20260513-014` Space stack.
 The accepted scalar is `1.05x` for official Space signals with
