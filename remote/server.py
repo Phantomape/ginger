@@ -12,7 +12,7 @@ import uuid
 from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 from flask import Flask, Response, jsonify, request, stream_with_context
 from werkzeug.serving import WSGIRequestHandler
@@ -29,12 +29,15 @@ CODEX_MODEL = os.environ.get("REMOTE_CODEX_MODEL")
 HOST = os.environ.get("REMOTE_CODEX_HOST", "0.0.0.0")
 PORT = int(os.environ.get("REMOTE_CODEX_PORT", "5000"))
 MAX_LOG_LINES = int(os.environ.get("REMOTE_CODEX_MAX_LOG_LINES", "5000"))
+SSE_BATCH_LINES = max(1, int(os.environ.get("REMOTE_CODEX_SSE_BATCH_LINES", "100")))
+CONSOLE_LOGS = os.environ.get("REMOTE_CODEX_CONSOLE_LOGS", "1").lower() not in {"0", "false", "no", "off"}
 LOG_DIR = Path(os.environ.get("REMOTE_CODEX_LOG_DIR", APP_ROOT / "logs")).resolve()
 
 app = Flask(__name__)
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 job_lock = threading.Lock()
+console_lock = threading.Lock()
 jobs: dict[str, "CodexJob"] = {}
 current_job_id: str | None = None
 
@@ -74,6 +77,23 @@ CODEX_BIN = resolve_codex_bin()
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def console_log(line: str) -> None:
+    if not CONSOLE_LOGS:
+        return
+    with console_lock:
+        try:
+            print(line, flush=True)
+        except Exception:
+            return
+
+
+def client_addr() -> str:
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",", 1)[0].strip()
+    return request.remote_addr or "unknown"
 
 
 def check_token() -> bool:
@@ -123,15 +143,22 @@ class CodexJob:
         self.returncode: int | None = None
         self.error: str | None = None
         self.command: list[str] = []
-        self.lines: deque[str] = deque(maxlen=MAX_LOG_LINES)
+        self.lines: deque[tuple[int, str]] = deque(maxlen=MAX_LOG_LINES)
+        self.next_seq = 0
         self.process: subprocess.Popen[str] | None = None
         self.log_file = LOG_DIR / f"{self.id}.log"
+        self._condition = threading.Condition()
+        self._log_handle: TextIO | None = None
+        self._log_file_lock = threading.Lock()
         self._thread = threading.Thread(target=self._run, name=f"codex-job-{self.id}", daemon=True)
 
     def start(self) -> None:
         self._thread.start()
 
     def snapshot(self) -> dict[str, Any]:
+        with self._condition:
+            line_count = self.next_seq
+            retained_lines = len(self.lines)
         return {
             "id": self.id,
             "status": self.status,
@@ -142,15 +169,45 @@ class CodexJob:
             "prompt_file": str(self.prompt_file),
             "log_file": str(self.log_file),
             "command": redact_command(self.command),
-            "line_count": len(self.lines),
+            "line_count": line_count,
+            "retained_lines": retained_lines,
         }
 
     def append(self, line: str) -> None:
         clean_line = line.rstrip("\r\n")
-        self.lines.append(clean_line)
-        LOG_DIR.mkdir(parents=True, exist_ok=True)
-        with self.log_file.open("a", encoding="utf-8", errors="replace") as fh:
-            fh.write(clean_line + "\n")
+        with self._condition:
+            seq = self.next_seq
+            self.next_seq += 1
+            self.lines.append((seq, clean_line))
+            self._condition.notify_all()
+        console_log(clean_line)
+        self._write_log_line(clean_line)
+
+    def _write_log_line(self, line: str) -> None:
+        with self._log_file_lock:
+            if self._log_handle is not None:
+                self._log_handle.write(line + "\n")
+                self._log_handle.flush()
+                return
+            LOG_DIR.mkdir(parents=True, exist_ok=True)
+            with self.log_file.open("a", encoding="utf-8", errors="replace") as fh:
+                fh.write(line + "\n")
+
+    def log_lines(self) -> list[str]:
+        with self._condition:
+            return [line for _, line in self.lines]
+
+    def log_entries_after(self, after_seq: int) -> tuple[list[tuple[int, str]], int]:
+        with self._condition:
+            if not self.lines:
+                return [], 0
+            oldest_seq = self.lines[0][0]
+            dropped = max(0, oldest_seq - after_seq - 1)
+            return [(seq, line) for seq, line in self.lines if seq > after_seq], dropped
+
+    def wait_for_log_change(self, timeout: float) -> None:
+        with self._condition:
+            self._condition.wait(timeout=timeout)
 
     def stop(self) -> None:
         process = self.process
@@ -171,68 +228,73 @@ class CodexJob:
 
         self.status = "running"
         self.started_at = utc_now()
-        self.append(f"[server] job {self.id} started at {self.started_at}")
-        self.append(f"[server] prompt file: {self.prompt_file}")
-
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
         try:
-            prompt = self.prompt_file.read_text(encoding="utf-8")
-        except Exception as exc:
-            self.status = "failed"
-            self.error = f"failed to read prompt file: {exc}"
-            self.ended_at = utc_now()
-            self.append(f"[server] {self.error}")
-            self.append(f"[server] job ended at {self.ended_at}")
-            return
+            with self.log_file.open("a", encoding="utf-8", errors="replace") as fh:
+                with self._log_file_lock:
+                    self._log_handle = fh
+                try:
+                    self.append(f"[server] job {self.id} started at {self.started_at}")
+                    self.append(f"[server] prompt file: {self.prompt_file}")
 
-        if not prompt.strip():
-            self.status = "failed"
-            self.error = "prompt file is empty"
-            self.ended_at = utc_now()
-            self.append("[server] prompt file is empty")
-            self.append(f"[server] job ended at {self.ended_at}")
-            return
+                    try:
+                        prompt = self.prompt_file.read_text(encoding="utf-8")
+                    except Exception as exc:
+                        self.status = "failed"
+                        self.error = f"failed to read prompt file: {exc}"
+                        self.append(f"[server] {self.error}")
+                        return
 
-        cmd = build_codex_command()
-        self.command = cmd
-        self.append("[server] command: " + " ".join(redact_command(cmd)))
+                    if not prompt.strip():
+                        self.status = "failed"
+                        self.error = "prompt file is empty"
+                        self.append("[server] prompt file is empty")
+                        return
 
-        env = os.environ.copy()
-        env["NO_COLOR"] = "1"
-        env["PYTHONIOENCODING"] = "utf-8"
+                    cmd = build_codex_command()
+                    self.command = cmd
+                    self.append("[server] command: " + " ".join(redact_command(cmd)))
 
-        creationflags = 0
-        if os.name == "nt":
-            creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+                    env = os.environ.copy()
+                    env["NO_COLOR"] = "1"
+                    env["PYTHONIOENCODING"] = "utf-8"
 
-        try:
-            self.process = subprocess.Popen(
-                cmd,
-                cwd=REPO_ROOT,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                bufsize=1,
-                env=env,
-                creationflags=creationflags,
-            )
-            assert self.process.stdin is not None
-            assert self.process.stdout is not None
-            self.process.stdin.write(prompt)
-            self.process.stdin.close()
+                    creationflags = 0
+                    if os.name == "nt":
+                        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
 
-            for line in self.process.stdout:
-                self.append(line)
+                    try:
+                        self.process = subprocess.Popen(
+                            cmd,
+                            cwd=REPO_ROOT,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            text=True,
+                            encoding="utf-8",
+                            errors="replace",
+                            bufsize=1,
+                            env=env,
+                            creationflags=creationflags,
+                        )
+                        assert self.process.stdin is not None
+                        assert self.process.stdout is not None
+                        self.process.stdin.write(prompt)
+                        self.process.stdin.close()
 
-            self.returncode = self.process.wait()
-            self.status = "succeeded" if self.returncode == 0 else "failed"
-            self.append(f"[server] codex exited with code {self.returncode}")
-        except Exception as exc:
-            self.status = "failed"
-            self.error = str(exc)
-            self.append(f"[server] failed to run codex: {exc}")
+                        for line in self.process.stdout:
+                            self.append(line)
+
+                        self.returncode = self.process.wait()
+                        self.status = "succeeded" if self.returncode == 0 else "failed"
+                        self.append(f"[server] codex exited with code {self.returncode}")
+                    except Exception as exc:
+                        self.status = "failed"
+                        self.error = str(exc)
+                        self.append(f"[server] failed to run codex: {exc}")
+                finally:
+                    with self._log_file_lock:
+                        self._log_handle = None
         finally:
             self.ended_at = utc_now()
             self.append(f"[server] job ended at {self.ended_at}")
@@ -285,10 +347,13 @@ def favicon() -> Response:
 def run_codex() -> Any:
     ok, response = require_token()
     if not ok:
+        console_log(f"[server] unauthorized run request from {client_addr()}")
         return response
 
+    console_log(f"[server] run requested from {client_addr()}")
     job, error = start_job()
     if error:
+        console_log(f"[server] run rejected: {error}")
         return jsonify({"error": error, "job": current_job().snapshot() if current_job() else None}), 409
     assert job is not None
     return jsonify({"status": "started", "job": job.snapshot()})
@@ -298,10 +363,13 @@ def run_codex() -> Any:
 def stop_codex() -> Any:
     ok, response = require_token()
     if not ok:
+        console_log(f"[server] unauthorized stop request from {client_addr()}")
         return response
 
+    console_log(f"[server] stop requested from {client_addr()}")
     job = current_job()
     if job is None:
+        console_log("[server] stop ignored: no current job")
         return jsonify({"status": "idle"})
     job.stop()
     return jsonify({"status": "stopping", "job": job.snapshot()})
@@ -334,7 +402,7 @@ def log() -> Any:
     job = current_job()
     if job is None:
         return jsonify({"lines": []})
-    return jsonify({"job": job.snapshot(), "lines": list(job.lines)})
+    return jsonify({"job": job.snapshot(), "lines": job.log_lines()})
 
 
 @app.route("/events")
@@ -345,8 +413,14 @@ def events() -> Any:
 
     @stream_with_context
     def generate() -> Any:
-        index = 0
-        last_status = None
+        request_job_id = request.args.get("job") or ""
+        try:
+            last_seq = int(request.args.get("after", "-1"))
+        except ValueError:
+            last_seq = -1
+        active_job_id = request_job_id
+        last_status_key = None
+        next_heartbeat = 0.0
         while True:
             job = current_job()
             if job is None:
@@ -354,21 +428,61 @@ def events() -> Any:
                 time.sleep(2)
                 continue
 
+            if job.id != active_job_id:
+                active_job_id = job.id
+                last_seq = -1
+                last_status_key = None
+
             snapshot = job.snapshot()
-            if snapshot != last_status:
+            status_key = (
+                snapshot["id"],
+                snapshot["status"],
+                snapshot["started_at"],
+                snapshot["ended_at"],
+                snapshot["returncode"],
+                snapshot["error"],
+            )
+            now = time.monotonic()
+            if status_key != last_status_key or now >= next_heartbeat:
                 yield sse_event("status", snapshot)
-                last_status = snapshot
+                last_status_key = status_key
+                next_heartbeat = now + 5
 
-            lines = list(job.lines)
-            while index < len(lines):
-                yield sse_event("log", {"job_id": job.id, "index": index, "text": lines[index]})
-                index += 1
+            entries, dropped = job.log_entries_after(last_seq)
+            if dropped:
+                yield sse_event(
+                    "log",
+                    {
+                        "job_id": job.id,
+                        "seq": last_seq + dropped,
+                        "index": last_seq + dropped,
+                        "text": f"[server] skipped {dropped} old retained log lines during reconnect",
+                    },
+                )
+                last_seq += dropped
+            for offset in range(0, len(entries), SSE_BATCH_LINES):
+                chunk = entries[offset : offset + SSE_BATCH_LINES]
+                if len(chunk) == 1:
+                    seq, line = chunk[0]
+                    yield sse_event("log", {"job_id": job.id, "seq": seq, "index": seq, "text": line})
+                else:
+                    yield sse_event(
+                        "log_batch",
+                        {
+                            "job_id": job.id,
+                            "entries": [
+                                {"seq": seq, "index": seq, "text": line}
+                                for seq, line in chunk
+                            ],
+                        },
+                    )
+                last_seq = chunk[-1][0]
 
-            if job.status in {"succeeded", "failed"} and index >= len(lines):
+            if job.status in {"succeeded", "failed"} and not entries:
                 yield sse_event("done", job.snapshot())
                 break
 
-            time.sleep(0.5)
+            job.wait_for_log_change(timeout=0.5)
 
     headers = {
         "Cache-Control": "no-cache",
@@ -398,7 +512,7 @@ INDEX_HTML = """<!doctype html>
     .meta { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 16px 0; }
     .box { border: 1px solid #2b313d; border-radius: 6px; padding: 10px; background: #171b22; min-height: 42px; overflow-wrap: anywhere; }
     .label { color: #9aa7b7; font-size: 12px; margin-bottom: 5px; }
-    #log { min-height: 65vh; max-height: 72vh; overflow: auto; white-space: pre-wrap; border: 1px solid #2b313d; border-radius: 6px; padding: 12px; background: #0b0d10; line-height: 1.45; }
+    #log { min-height: 65vh; max-height: 72vh; overflow: auto; white-space: pre-wrap; border: 1px solid #2b313d; border-radius: 6px; padding: 12px; background: #0b0d10; line-height: 1.45; overflow-anchor: none; contain: content; }
     .muted { color: #9aa7b7; }
   </style>
 </head>
@@ -427,27 +541,81 @@ INDEX_HTML = """<!doctype html>
     const statusEl = document.getElementById("status");
     const promptEl = document.getElementById("prompt");
     const logfileEl = document.getElementById("logfile");
+    const MAX_RENDERED_LINES = 1200;
     let source = null;
+    let reconnectTimer = null;
     let activeJobId = null;
-    let seenLogLines = new Set();
+    let lastSeq = -1;
+    let logLines = [];
+    let pendingLogLines = [];
+    let flushTimer = 0;
 
     const urlToken = new URLSearchParams(location.search).get("token");
     if (urlToken) tokenInput.value = urlToken;
 
-    function tokenParam() {
-      return encodeURIComponent(tokenInput.value.trim());
+    function buildUrl(path, extra = {}) {
+      const params = new URLSearchParams();
+      const token = tokenInput.value.trim();
+      if (token) params.set("token", token);
+      for (const [key, value] of Object.entries(extra)) {
+        if (value !== undefined && value !== null && value !== "") {
+          params.set(key, String(value));
+        }
+      }
+      const query = params.toString();
+      return query ? `${path}?${query}` : path;
     }
 
     function appendLog(text) {
-      logEl.textContent += text + "\\n";
-      logEl.scrollTop = logEl.scrollHeight;
+      pendingLogLines.push(text);
+      if (!flushTimer) flushTimer = window.setTimeout(flushLog, 80);
+    }
+
+    function flushLog() {
+      if (flushTimer) {
+        window.clearTimeout(flushTimer);
+        flushTimer = 0;
+      }
+      if (!pendingLogLines.length) return;
+
+      const shouldStick = logEl.scrollTop + logEl.clientHeight >= logEl.scrollHeight - 24;
+      const batch = pendingLogLines;
+      pendingLogLines = [];
+      logLines.push(...batch);
+
+      if (logLines.length > MAX_RENDERED_LINES) {
+        logLines = logLines.slice(-MAX_RENDERED_LINES);
+        logEl.textContent = logLines.join("\\n") + "\\n";
+      } else {
+        logEl.appendChild(document.createTextNode(batch.join("\\n") + "\\n"));
+      }
+
+      if (shouldStick) logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function resetLogState() {
+      if (flushTimer) {
+        window.clearTimeout(flushTimer);
+        flushTimer = 0;
+      }
+      logLines = [];
+      pendingLogLines = [];
+      lastSeq = -1;
+      logEl.textContent = "";
     }
 
     async function copyLog() {
-      const text = logEl.textContent;
+      flushLog();
       const button = document.getElementById("copy");
       const original = button.textContent;
       try {
+        let text = logLines.join("\\n");
+        try {
+          const data = await api("/log");
+          if (Array.isArray(data.lines)) text = data.lines.join("\\n");
+        } catch (_) {
+          text = logEl.textContent;
+        }
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(text);
         } else {
@@ -473,7 +641,7 @@ INDEX_HTML = """<!doctype html>
     }
 
     async function api(path, method = "GET") {
-      const response = await fetch(`${path}?token=${tokenParam()}`, { method });
+      const response = await fetch(buildUrl(path), { method });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || response.statusText);
       return data;
@@ -497,40 +665,71 @@ INDEX_HTML = """<!doctype html>
 
     function connect() {
       if (source) source.close();
-      source = new EventSource(`/events?token=${tokenParam()}`);
+      if (reconnectTimer) {
+        window.clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+      const cursor = activeJobId ? { job: activeJobId, after: lastSeq } : {};
+      source = new EventSource(buildUrl("/events", cursor));
+      const handleLogEntry = data => {
+        if (data.job_id && data.job_id !== activeJobId) {
+          activeJobId = data.job_id;
+          resetLogState();
+        }
+        const seq = Number(data.seq ?? data.index ?? -1);
+        if (seq <= lastSeq) return;
+        lastSeq = seq;
+        appendLog(data.text);
+      };
       source.addEventListener("status", event => {
         const data = JSON.parse(event.data);
         statusEl.textContent = data.id ? `${data.status} ${data.id}` : data.status;
         if (data.id && data.id !== activeJobId) {
           activeJobId = data.id;
-          seenLogLines = new Set();
+          resetLogState();
         }
         if (data.prompt_file) promptEl.textContent = data.prompt_file;
         if (data.log_file) logfileEl.textContent = data.log_file;
       });
       source.addEventListener("log", event => {
+        handleLogEntry(JSON.parse(event.data));
+      });
+      source.addEventListener("log_batch", event => {
         const data = JSON.parse(event.data);
-        const key = `${data.job_id || activeJobId}:${data.index}`;
-        if (seenLogLines.has(key)) return;
-        seenLogLines.add(key);
-        appendLog(data.text);
+        const jobId = data.job_id || activeJobId;
+        for (const entry of data.entries || []) {
+          handleLogEntry({ ...entry, job_id: jobId });
+        }
       });
       source.addEventListener("done", event => {
+        flushLog();
         const data = JSON.parse(event.data);
         statusEl.textContent = `${data.status} ${data.id}`;
-        if (source) source.close();
+        if (source) {
+          source.close();
+          source = null;
+        }
       });
       source.onerror = () => {
         statusEl.textContent = "disconnected";
+        if (source) {
+          source.close();
+          source = null;
+        }
+        if (!reconnectTimer) reconnectTimer = window.setTimeout(connect, 1200);
       };
     }
 
     document.getElementById("run").addEventListener("click", async () => {
-      logEl.textContent = "";
-      seenLogLines = new Set();
+      if (source) {
+        source.close();
+        source = null;
+      }
+      resetLogState();
       try {
         const data = await api("/run", "POST");
         statusEl.textContent = `${data.job.status} ${data.job.id}`;
+        activeJobId = data.job.id;
         connect();
       } catch (err) {
         appendLog(`[browser] ${err.message}`);
@@ -557,4 +756,10 @@ INDEX_HTML = """<!doctype html>
 
 
 if __name__ == "__main__":
+    console_log(f"[server] remote runner starting at {utc_now()}")
+    console_log(f"[server] listen: http://{HOST}:{PORT}")
+    console_log(f"[server] repo root: {REPO_ROOT}")
+    console_log(f"[server] prompt file: {PROMPT_FILE}")
+    console_log(f"[server] codex bin: {CODEX_BIN}")
+    console_log(f"[server] console logs: {'enabled' if CONSOLE_LOGS else 'disabled'}")
     app.run(host=HOST, port=PORT, threaded=True, request_handler=QuietRequestHandler)
