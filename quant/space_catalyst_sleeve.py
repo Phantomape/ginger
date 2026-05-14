@@ -134,9 +134,19 @@ SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS = ("attention_only",)
 SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR = 1.075
 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR = 1.15
 SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR = 1.05
+SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR = 1.05
+SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON = "10d"
+SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL = 0.0
+SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE = 0.0
+SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_EXCLUDED_SEMANTIC_BUCKETS = (
+    "attention_only",
+)
+SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_RISK_SCALAR = 1.05
+SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE = 500.0
+SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR = 1.05
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
-    "experiment_id": "exp-20260513-108",
+    "experiment_id": "exp-20260513-113",
     "mode": "default_off_forward_observation",
     "candidate_pool": "official_catalyst_operating_growth",
     "risk_budget_scalar": 0.75,
@@ -360,6 +370,47 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_source_diversity_iwm_leader_risk_scalar": (
         SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
     ),
+    "space_source_diversity_peer_iwm_leader_experiment_id": "exp-20260513-110",
+    "space_source_diversity_peer_iwm_leader_definition": (
+        "source-diverse official non-attention evidence, Space peer momentum "
+        "leader, and IWM 20d momentum > SPY 20d momentum"
+    ),
+    "space_source_diversity_peer_iwm_leader_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
+    ),
+    "space_forward_replacement_positive_experiment_id": "exp-20260513-113",
+    "space_forward_replacement_positive_definition": (
+        "official non-attention Space tickers with closed event-state profiles "
+        "that are both cash-positive and same-theme replacement-positive"
+    ),
+    "space_forward_replacement_positive_horizon": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
+    ),
+    "space_forward_replacement_positive_min_cash_pnl": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL
+    ),
+    "space_forward_replacement_positive_min_same_theme_value": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE
+    ),
+    "space_forward_replacement_positive_excluded_semantic_buckets": list(
+        SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_EXCLUDED_SEMANTIC_BUCKETS
+    ),
+    "space_forward_replacement_positive_risk_scalar": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_RISK_SCALAR
+    ),
+    "space_forward_replacement_same_theme_strength_experiment_id": (
+        "exp-20260514-002"
+    ),
+    "space_forward_replacement_same_theme_strength_definition": (
+        "accepted forward replacement-positive profile with average 10d "
+        "same-theme replacement value >= $500"
+    ),
+    "space_forward_replacement_same_theme_strength_min_value": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+    ),
+    "space_forward_replacement_same_theme_strength_risk_scalar": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR
+    ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -516,6 +567,7 @@ def space_catalyst_forward_risk_scalar(
     single_event_defense_profile: dict[str, Any] | None = None,
     attention_overlay_profile: dict[str, Any] | None = None,
     source_diversity_profile: dict[str, Any] | None = None,
+    forward_replacement_profile: dict[str, Any] | None = None,
     event_guard_profile: str | None = None,
     trade_quality_score: Any = None,
 ) -> float:
@@ -643,6 +695,27 @@ def space_catalyst_forward_risk_scalar(
         and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
     ):
         scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_source_diversity_profile(source_diversity_profile)
+        and (peer_momentum_state or {}).get("state") == "leader"
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    ):
+        scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_forward_replacement_positive_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and _is_space_forward_replacement_same_theme_strength_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR
     return scalar
 
 
@@ -852,6 +925,21 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_source_diversity_iwm_leader_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
+            ),
+            "space_source_diversity_peer_iwm_leader_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
+            ),
+            "space_forward_replacement_positive_horizon": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
+            ),
+            "space_forward_replacement_positive_risk_scalar": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_RISK_SCALAR
+            ),
+            "space_forward_replacement_same_theme_strength_min_value": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+            ),
+            "space_forward_replacement_same_theme_strength_risk_scalar": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -1249,6 +1337,139 @@ def space_catalyst_source_diversity_profiles(
     return out
 
 
+def space_catalyst_forward_replacement_positive_profiles(
+    ledger_rows: list[dict[str, Any]] | None = None,
+    *,
+    ledger_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_LEDGER_PATH,
+    included_tickers: list[str] | tuple[str, ...] | None = None,
+    horizon: str = SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON,
+) -> dict[str, dict[str, Any]]:
+    """Return official Space tickers with positive closed replacement evidence."""
+    official_tickers = {
+        str(ticker).upper()
+        for ticker in (
+            included_tickers
+            if included_tickers is not None
+            else SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        )
+        if ticker
+    }
+    rows = (
+        ledger_rows
+        if ledger_rows is not None
+        else _read_jsonl_rows(Path(ledger_path))
+    )
+    latest_by_event_ticker: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").upper()
+        if not ticker or ticker not in official_tickers:
+            continue
+        if row.get("closed_decision") is not True:
+            continue
+        if (
+            str(row.get("semantic_bucket") or "")
+            in SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_EXCLUDED_SEMANTIC_BUCKETS
+        ):
+            continue
+        horizon_row = (row.get("horizons") or {}).get(horizon) or {}
+        if horizon_row.get("status") != "mature":
+            continue
+        cash_pnl = _as_float(horizon_row.get("cash_relative_pnl"))
+        same_theme_value = _as_float(
+            horizon_row.get("same_theme_replacement_value")
+        )
+        if cash_pnl is None or same_theme_value is None:
+            continue
+        event_id = str(row.get("event_id") or "")
+        if not event_id:
+            continue
+        key = (event_id, ticker)
+        prior = latest_by_event_ticker.get(key)
+        if prior is None or str(row.get("asof_date") or "") >= str(
+            prior.get("asof_date") or ""
+        ):
+            latest_by_event_ticker[key] = row
+
+    rows_by_ticker: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in latest_by_event_ticker.values():
+        ticker = str(row.get("ticker") or "").upper()
+        horizon_row = (row.get("horizons") or {}).get(horizon) or {}
+        rows_by_ticker[ticker].append(
+            {
+                "asof_date": row.get("asof_date"),
+                "event_id": row.get("event_id"),
+                "semantic_bucket": row.get("semantic_bucket"),
+                "source_type": row.get("source_type"),
+                "event_fields": list(row.get("event_fields") or []),
+                "cash_relative_pnl": _as_float(
+                    horizon_row.get("cash_relative_pnl")
+                ),
+                "same_theme_replacement_value": _as_float(
+                    horizon_row.get("same_theme_replacement_value")
+                ),
+            }
+        )
+
+    profiles: dict[str, dict[str, Any]] = {}
+    for ticker, ticker_rows in sorted(rows_by_ticker.items()):
+        cash_values = [
+            float(row["cash_relative_pnl"])
+            for row in ticker_rows
+            if row.get("cash_relative_pnl") is not None
+        ]
+        same_theme_values = [
+            float(row["same_theme_replacement_value"])
+            for row in ticker_rows
+            if row.get("same_theme_replacement_value") is not None
+        ]
+        if not cash_values or not same_theme_values:
+            continue
+        avg_cash = mean(cash_values)
+        avg_same_theme = mean(same_theme_values)
+        if (
+            avg_cash
+            <= SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL
+            or avg_same_theme
+            <= SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE
+        ):
+            continue
+        profiles[ticker] = {
+            "horizon": horizon,
+            "closed_event_count": len(ticker_rows),
+            "avg_10d_cash_relative_pnl": _round(avg_cash, 6),
+            "avg_10d_same_theme_replacement_value": _round(avg_same_theme, 6),
+            "positive_cash_count": sum(1 for value in cash_values if value > 0),
+            "positive_same_theme_count": sum(
+                1 for value in same_theme_values if value > 0
+            ),
+            "event_ids": sorted(
+                {
+                    str(row.get("event_id"))
+                    for row in ticker_rows
+                    if row.get("event_id")
+                }
+            ),
+            "semantic_buckets": sorted(
+                {
+                    str(row.get("semantic_bucket"))
+                    for row in ticker_rows
+                    if row.get("semantic_bucket")
+                }
+            ),
+            "source_types": sorted(
+                {
+                    str(row.get("source_type"))
+                    for row in ticker_rows
+                    if row.get("source_type")
+                }
+            ),
+            "rows": ticker_rows,
+        }
+    return profiles
+
+
 def space_catalyst_event_tickers(
     as_of,
     *,
@@ -1464,6 +1685,7 @@ def build_space_catalyst_observation_slot(
     space_single_event_defense_profiles: dict[str, dict[str, Any]] | None = None,
     space_attention_overlay_profiles: dict[str, dict[str, Any]] | None = None,
     space_source_diversity_profiles: dict[str, dict[str, Any]] | None = None,
+    space_forward_replacement_profiles: dict[str, dict[str, Any]] | None = None,
     generated_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Build the one-slot blocked trade plan used for Space forward evidence."""
@@ -1523,6 +1745,11 @@ def build_space_catalyst_observation_slot(
             included_tickers=list(official_tickers)
         )
     )
+    forward_replacement_profiles = (
+        space_forward_replacement_profiles
+        if space_forward_replacement_profiles is not None
+        else {}
+    )
 
     candidates = []
     for rank, signal in enumerate(_rank_observation_signals(candidate_signals or []), start=1):
@@ -1544,6 +1771,7 @@ def build_space_catalyst_observation_slot(
                 space_single_event_defense_profiles=single_event_defense_profiles,
                 space_attention_overlay_profiles=attention_overlay_profiles,
                 space_source_diversity_profiles=source_diversity_profiles,
+                space_forward_replacement_profiles=forward_replacement_profiles,
                 same_day_core_alternatives=core_alternatives,
                 entry_execution_plan=entry_execution_plan,
                 portfolio_heat=portfolio_heat or {},
@@ -1708,6 +1936,15 @@ def build_space_catalyst_observation_slot(
             ),
             "space_source_diversity_iwm_leader_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR
+            ),
+            "space_source_diversity_peer_iwm_leader_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
+            ),
+            "space_forward_replacement_positive_horizon": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
+            ),
+            "space_forward_replacement_positive_risk_scalar": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -2230,6 +2467,15 @@ def _source_diversity_profile_for_ticker(
     return deepcopy(profile) if isinstance(profile, dict) else None
 
 
+def _forward_replacement_profile_for_ticker(
+    forward_replacement_profiles: dict[str, dict[str, Any]] | None,
+    ticker: str,
+) -> dict[str, Any] | None:
+    ticker_upper = str(ticker or "").upper()
+    profile = (forward_replacement_profiles or {}).get(ticker_upper)
+    return deepcopy(profile) if isinstance(profile, dict) else None
+
+
 def _is_space_financing_dilution_profile(profile: str | None) -> bool:
     profile_text = str(profile or "").lower()
     return any(
@@ -2317,6 +2563,7 @@ def _observation_slot_row(
     space_single_event_defense_profiles: dict[str, dict[str, Any]],
     space_attention_overlay_profiles: dict[str, dict[str, Any]],
     space_source_diversity_profiles: dict[str, dict[str, Any]],
+    space_forward_replacement_profiles: dict[str, dict[str, Any]],
     same_day_core_alternatives: list[dict[str, Any]],
     entry_execution_plan: dict[str, Any],
     portfolio_heat: dict[str, Any],
@@ -2348,6 +2595,10 @@ def _observation_slot_row(
     )
     source_diversity_profile = _source_diversity_profile_for_ticker(
         space_source_diversity_profiles,
+        ticker,
+    )
+    forward_replacement_profile = _forward_replacement_profile_for_ticker(
+        space_forward_replacement_profiles,
         ticker,
     )
     target_atr_mult = space_catalyst_forward_target_atr_mult(
@@ -2382,6 +2633,7 @@ def _observation_slot_row(
         single_event_defense_profile=single_event_defense_profile,
         attention_overlay_profile=attention_overlay_profile,
         source_diversity_profile=source_diversity_profile,
+        forward_replacement_profile=forward_replacement_profile,
         event_guard_profile=event_guard_profile,
         trade_quality_score=signal.get("trade_quality_score"),
     )
@@ -2543,6 +2795,35 @@ def _observation_slot_row(
         if source_diversity_iwm_leader_bucket
         else 1.0
     )
+    source_diversity_peer_iwm_leader_bucket = (
+        source_diversity_peer_leader_bucket
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    )
+    source_diversity_peer_iwm_leader_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
+        if source_diversity_peer_iwm_leader_bucket
+        else 1.0
+    )
+    forward_replacement_positive_bucket = (
+        _is_space_forward_replacement_positive_profile(
+            forward_replacement_profile
+        )
+    )
+    forward_replacement_positive_risk_scalar = (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_RISK_SCALAR
+        if forward_replacement_positive_bucket
+        else 1.0
+    )
+    forward_replacement_same_theme_strength_bucket = (
+        _is_space_forward_replacement_same_theme_strength_profile(
+            forward_replacement_profile
+        )
+    )
+    forward_replacement_same_theme_strength_risk_scalar = (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR
+        if forward_replacement_same_theme_strength_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -2572,6 +2853,9 @@ def _observation_slot_row(
         "space_single_event_defense_profile": single_event_defense_profile,
         "space_attention_overlay_profile": attention_overlay_profile,
         "space_source_diversity_profile": source_diversity_profile,
+        "space_forward_replacement_positive_profile": (
+            forward_replacement_profile
+        ),
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
         "stop_price": _round(signal.get("stop_price"), 4),
@@ -2725,6 +3009,30 @@ def _observation_slot_row(
         ),
         "space_source_diversity_iwm_leader_risk_scalar": _round(
             source_diversity_iwm_leader_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_peer_iwm_leader_bucket": (
+            source_diversity_peer_iwm_leader_bucket
+        ),
+        "space_source_diversity_peer_iwm_leader_risk_scalar": _round(
+            source_diversity_peer_iwm_leader_risk_scalar,
+            6,
+        ),
+        "space_forward_replacement_positive_bucket": (
+            forward_replacement_positive_bucket
+        ),
+        "space_forward_replacement_positive_risk_scalar": _round(
+            forward_replacement_positive_risk_scalar,
+            6,
+        ),
+        "space_forward_replacement_same_theme_strength_bucket": (
+            forward_replacement_same_theme_strength_bucket
+        ),
+        "space_forward_replacement_same_theme_strength_min_value": (
+            SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+        ),
+        "space_forward_replacement_same_theme_strength_risk_scalar": _round(
+            forward_replacement_same_theme_strength_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -3041,6 +3349,42 @@ def _is_space_source_diversity_profile(profile: dict[str, Any] | None) -> bool:
         and not semantic_buckets.intersection(
             SPACE_CATALYST_SOURCE_DIVERSITY_EXCLUDED_SEMANTIC_BUCKETS
         )
+    )
+
+
+def _is_space_forward_replacement_positive_profile(
+    profile: dict[str, Any] | None,
+) -> bool:
+    if not profile:
+        return False
+    avg_cash = _as_float(profile.get("avg_10d_cash_relative_pnl"))
+    avg_same_theme = _as_float(
+        profile.get("avg_10d_same_theme_replacement_value")
+    )
+    closed_count = _as_float(profile.get("closed_event_count"))
+    return (
+        closed_count is not None
+        and closed_count > 0
+        and avg_cash is not None
+        and avg_cash > SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL
+        and avg_same_theme is not None
+        and avg_same_theme
+        > SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE
+    )
+
+
+def _is_space_forward_replacement_same_theme_strength_profile(
+    profile: dict[str, Any] | None,
+) -> bool:
+    if not _is_space_forward_replacement_positive_profile(profile):
+        return False
+    avg_same_theme = _as_float(
+        (profile or {}).get("avg_10d_same_theme_replacement_value")
+    )
+    return (
+        avg_same_theme is not None
+        and avg_same_theme
+        >= SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
     )
 
 
