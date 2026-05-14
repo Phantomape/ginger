@@ -438,6 +438,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     )
     assert (
         snapshot["forward_hypothesis"][
+            "space_source_diversity_trend_experiment_id"
+        ]
+        == "exp-20260514-028"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_trend_risk_scalar"
+        ]
+        == 1.025
+    )
+    assert (
+        snapshot["forward_hypothesis"][
             "space_forward_replacement_positive_experiment_id"
         ]
         == "exp-20260513-113"
@@ -766,6 +778,26 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
                 ],
             },
         )
+        == 1.101875
+    )
+    assert (
+        space_catalyst_forward_risk_scalar(
+            "LUNR",
+            "breakout_long",
+            source_diversity_profile={
+                "event_count": 2,
+                "event_ids": ["lunr_contract", "golden_dome"],
+                "event_fields": ["customer_win", "government_space_contract"],
+                "semantic_buckets": [
+                    "defense_budget_theme",
+                    "fundamental_contract_regulatory",
+                ],
+                "source_types": [
+                    "official_government_release",
+                    "official_or_primary_release",
+                ],
+            },
+        )
         == 1.075
     )
     assert (
@@ -790,7 +822,7 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             ),
             6,
         )
-        == 1.23625
+        == 1.267156
     )
     assert (
         round(
@@ -814,7 +846,7 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             ),
             6,
         )
-        == 1.241625
+        == 1.272666
     )
     assert (
         round(
@@ -839,7 +871,7 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             ),
             6,
         )
-        == 1.724152
+        == 1.767255
     )
     assert (
         round(
@@ -1252,6 +1284,11 @@ def test_space_catalyst_forward_replacement_positive_profiles_use_closed_ledger_
                 "event_fields": ["customer_win"],
                 "closed_decision": True,
                 "horizons": {
+                    "5d": {
+                        "status": "mature",
+                        "cash_relative_pnl": -25.0,
+                        "same_theme_replacement_value": 20.0,
+                    },
                     "10d": {
                         "status": "mature",
                         "cash_relative_pnl": 200.0,
@@ -1268,6 +1305,11 @@ def test_space_catalyst_forward_replacement_positive_profiles_use_closed_ledger_
                 "event_fields": ["government_space_contract"],
                 "closed_decision": True,
                 "horizons": {
+                    "5d": {
+                        "status": "mature",
+                        "cash_relative_pnl": 50.0,
+                        "same_theme_replacement_value": 40.0,
+                    },
                     "10d": {
                         "status": "mature",
                         "cash_relative_pnl": -50.0,
@@ -1313,8 +1355,11 @@ def test_space_catalyst_forward_replacement_positive_profiles_use_closed_ledger_
 
     assert sorted(profiles) == ["LUNR"]
     assert profiles["LUNR"]["closed_event_count"] == 2
+    assert profiles["LUNR"]["avg_5d_cash_relative_pnl"] == 12.5
+    assert profiles["LUNR"]["avg_5d_same_theme_replacement_value"] == 30.0
     assert profiles["LUNR"]["avg_10d_cash_relative_pnl"] == 75.0
     assert profiles["LUNR"]["avg_10d_same_theme_replacement_value"] == 80.0
+    assert profiles["LUNR"]["weak_5d_cash_count"] == 1
     assert profiles["LUNR"]["positive_cash_count"] == 1
     assert profiles["LUNR"]["positive_same_theme_count"] == 2
 
@@ -1688,14 +1733,16 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_source_diversity_iwm_leader_risk_scalar"] == 1.05
     assert plan["space_source_diversity_peer_iwm_leader_bucket"] is False
     assert plan["space_source_diversity_peer_iwm_leader_risk_scalar"] == 1.0
+    assert plan["space_source_diversity_trend_bucket"] is True
+    assert plan["space_source_diversity_trend_risk_scalar"] == 1.025
     assert plan["space_event_source_profile"]["event_fields"] == ["customer_win"]
     assert plan["space_multi_event_depth_profile"]["event_count"] == 2
     assert plan["space_attention_overlay_profile"]["attention_event_ids"] == [
         "spacex_ipo_proxy"
     ]
     assert plan["space_source_diversity_profile"]["event_count"] == 2
-    assert plan["effective_risk_scalar"] == 2.770999
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 2771.0
+    assert plan["effective_risk_scalar"] == 2.840274
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 2840.27
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -1818,8 +1865,10 @@ def test_space_catalyst_observation_slot_marks_source_diversity_peer_leader():
     assert plan["space_source_diversity_iwm_leader_risk_scalar"] == 1.0
     assert plan["space_source_diversity_peer_iwm_leader_bucket"] is False
     assert plan["space_source_diversity_peer_iwm_leader_risk_scalar"] == 1.0
-    assert plan["effective_risk_scalar"] == 1.019906
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1019.91
+    assert plan["space_source_diversity_trend_bucket"] is True
+    assert plan["space_source_diversity_trend_risk_scalar"] == 1.025
+    assert plan["effective_risk_scalar"] == 1.045404
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1045.4
 
 
 def test_space_catalyst_observation_slot_marks_source_diversity_peer_iwm_leader():
@@ -1887,8 +1936,10 @@ def test_space_catalyst_observation_slot_marks_source_diversity_peer_iwm_leader(
     assert plan["space_source_diversity_iwm_leader_bucket"] is True
     assert plan["space_source_diversity_peer_iwm_leader_bucket"] is True
     assert plan["space_source_diversity_peer_iwm_leader_risk_scalar"] == 1.05
-    assert plan["effective_risk_scalar"] == 1.422425
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1422.42
+    assert plan["space_source_diversity_trend_bucket"] is True
+    assert plan["space_source_diversity_trend_risk_scalar"] == 1.025
+    assert plan["effective_risk_scalar"] == 1.457986
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1457.99
 
 
 def test_space_catalyst_observation_slot_marks_forward_replacement_positive():
@@ -2086,6 +2137,7 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_company_sourc
         space_forward_replacement_profiles={
             "RKLB": {
                 "closed_event_count": 1,
+                "avg_5d_cash_relative_pnl": -250.0,
                 "avg_10d_cash_relative_pnl": 1200.0,
                 "avg_10d_same_theme_replacement_value": 600.0,
             }
@@ -2099,13 +2151,16 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_company_sourc
     assert plan["space_forward_replacement_trend_strength_bucket"] is True
     assert plan["space_forward_replacement_company_source_trend_bucket"] is True
     assert plan["space_forward_replacement_company_source_trend_risk_scalar"] == 1.025
-    assert plan["effective_risk_scalar"] == 1.34601
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1346.01
+    assert plan["space_delayed_absorption_trend_bucket"] is True
+    assert plan["space_delayed_absorption_trend_risk_scalar"] == 1.025
+    assert plan["effective_risk_scalar"] == 1.379661
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1379.66
 
 
 def test_space_catalyst_forward_replacement_trend_strength_is_trend_only():
     profile = {
         "closed_event_count": 1,
+        "avg_5d_cash_relative_pnl": -150.0,
         "avg_10d_cash_relative_pnl": 1200.0,
         "avg_10d_same_theme_replacement_value": 600.0,
     }
@@ -2121,7 +2176,7 @@ def test_space_catalyst_forward_replacement_trend_strength_is_trend_only():
         forward_replacement_profile=profile,
     )
 
-    assert round(trend_scalar, 6) == 1.157625
+    assert round(trend_scalar, 6) == 1.186566
     assert round(breakout_scalar, 6) == 1.1025
 
     company_source_profile = {
@@ -2143,7 +2198,7 @@ def test_space_catalyst_forward_replacement_trend_strength_is_trend_only():
         forward_replacement_profile=profile,
     )
 
-    assert round(company_source_trend_scalar, 6) == 1.794681
+    assert round(company_source_trend_scalar, 6) == 1.839548
     assert round(company_source_breakout_scalar, 6) == 1.334025
 
 
@@ -2619,6 +2674,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_source_diversity_peer_leader_risk_scalar": 1.15,
                 "space_source_diversity_iwm_leader_risk_scalar": 1.05,
                 "space_source_diversity_peer_iwm_leader_risk_scalar": 1.05,
+                "space_source_diversity_trend_risk_scalar": 1.025,
                 "space_forward_replacement_positive_horizon": "10d",
                 "space_forward_replacement_positive_risk_scalar": 1.05,
                 "space_forward_replacement_same_theme_strength_min_value": 500.0,
@@ -2626,6 +2682,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_forward_replacement_trend_strength_risk_scalar": 1.05,
                 "space_forward_replacement_iwm_leader_trend_risk_scalar": 1.025,
                 "space_forward_replacement_company_source_trend_risk_scalar": 1.025,
+                "space_delayed_absorption_trend_risk_scalar": 1.025,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -2662,11 +2719,13 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_source_diversity_peer_leader_bucket": True,
                     "space_source_diversity_iwm_leader_bucket": True,
                     "space_source_diversity_peer_iwm_leader_bucket": True,
+                    "space_source_diversity_trend_bucket": True,
                     "space_forward_replacement_positive_bucket": True,
                     "space_forward_replacement_same_theme_strength_bucket": True,
                     "space_forward_replacement_trend_strength_bucket": True,
                     "space_forward_replacement_iwm_leader_trend_bucket": True,
                     "space_forward_replacement_company_source_trend_bucket": True,
+                    "space_delayed_absorption_trend_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -2727,11 +2786,13 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source-diversity peer leader @ 1.15x; "
         "source-diversity IWM-leader @ 1.05x; "
         "source-diversity peer+IWM leader @ 1.05x; "
+        "source-diversity trend @ 1.025x; "
         "forward replacement-positive 10d @ 1.05x; "
         "forward same-theme replacement-strength >=500.0 @ 1.05x; "
         "forward replacement-strength trend @ 1.05x; "
         "forward replacement-strength IWM trend @ 1.025x; "
-        "forward replacement-strength company-source trend @ 1.025x)"
+        "forward replacement-strength company-source trend @ 1.025x; "
+        "delayed-absorption trend @ 1.025x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -2749,11 +2810,13 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source_diversity_peer_leader=True "
         "source_diversity_iwm_leader=True "
         "source_diversity_peer_iwm_leader=True "
+        "source_diversity_trend=True "
         "forward_replacement_positive=True "
         "forward_replacement_same_theme_strength=True "
         "forward_replacement_trend_strength=True "
         "forward_replacement_iwm_leader_trend=True "
-        "forward_replacement_company_source_trend=True"
+        "forward_replacement_company_source_trend=True "
+        "delayed_absorption_trend=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

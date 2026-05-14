@@ -40,6 +40,18 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
+Latest accepted default-off Space alpha result: `exp-20260514-030` keeps live
+Space slots at zero and adds only the shared
+`space_delayed_absorption_trend_risk_scalar=1.025` helper for `trend_long`
+Space signals whose closed event-state profile has weak average 5d cash
+reaction but strong 10d same-theme replacement value. Against the accepted
+`exp-20260514-028` Space stack, aggregate EV improved `+0.1374` and aggregate
+PnL improved `+$5,064.39` across the three frozen Space replay windows:
+`late_strong` EV `+0.0340`, `mid_weak` EV `+0.1034`, and `old_thin`
+unchanged. Trade count and survival were unchanged; max drawdown drift stayed
+inside Gate 4 (`+0.36 pp` worst window). The helper lives in shared
+`space_catalyst_sleeve.py` and remains observe-only/default-off.
+
 Previous accepted alpha result: `exp-20260514-023` keeps entries, exits, ranking,
 universe, raw Financials risk, heat, slots, and LLM/news logic unchanged, but
 allows the already-accepted `trend_long` Financials sector-leader sleeve to
@@ -124,7 +136,7 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
 `exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`,
 `exp-20260514-002`, `exp-20260514-009`, `exp-20260514-024`, and
-`exp-20260514-026`.
+`exp-20260514-026`, and `exp-20260514-028`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -157,6 +169,8 @@ source-diverse official Space signals that also lead the Space peer basket get
 get `1.05x` extra default-off risk when IWM 20d momentum beats SPY 20d
 momentum, and source-diverse official Space signals that also lead the Space
 peer basket while IWM beats SPY get a further `1.05x` extra default-off risk,
+and source-diverse official Space `trend_long` signals get a further
+`1.025x` extra default-off risk,
 and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward
@@ -232,6 +246,15 @@ for that same closed-forward same-theme-strength `trend_long` bucket at
 slice was narrow (`RKLB`, 3 adjusted signals), so do not retry nearby
 company-source or RKLB-only Space multipliers on these frozen windows without
 new closed forward evidence.
+`exp-20260514-028` then accepted the source-diversity trend interaction at
+`1.025x`: current three-window replay moved aggregate EV from `25.9506` to
+`26.3533`, PnL from `$639,550.70` to `$649,167.44`, improved `late_strong` and
+`mid_weak`, left `old_thin` unchanged, kept max drawdown drift inside Gate 4 at
+`+0.34 pp`, and kept trade count `68` / minimum survival `65.33%`. The target
+slice was broader than the RKLB-only company-source branch (`ASTS`, `LUNR`,
+`RKLB`, 6 adjusted signals), but still source-diversity/trend specific, so do
+not retry nearby source-diversity trend scalars on these frozen windows without
+new closed forward evidence or a materially different catalyst-quality field.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

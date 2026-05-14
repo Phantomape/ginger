@@ -78,21 +78,36 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after `exp-20260514-027` promoted the
-clean SPY-relative leader signal-day 52.5% sleeve-specific position cap:
+Current accepted fixed-window metrics after core `exp-20260514-030`
+(`financials_mid_dispersion_leader_cap`) promoted the Financials
+mid-dispersion sector-leader 55% sleeve-specific position cap:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `late_strong` | 4.4853 | 4.35 | $103,112.67 | 103.11% | 6.09% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.8502 | 2.69 | $68,776.24 | 68.78% | 10.13% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.4704 | 1.40 | $33,597.15 | 33.60% | 8.76% | 40.91% | 22 | 91.67% |
+| `mid_weak` | 1.8580 | 2.69 | $69,070.09 | 69.07% | 10.14% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.4749 | 1.40 | $33,921.46 | 33.92% | 8.89% | 40.91% | 22 | 91.67% |
 
 Artifact note:
-`data/experiments/exp-20260514-027/clean_spy_leader_signal_day_cap.json`
+`data/experiments/exp-20260514-030/financials_mid_dispersion_leader_cap.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.8059`; aggregate PnL is `$205,486.06`.
+EV is `6.8182`; aggregate PnL is `$206,104.22`.
 
-Latest accepted core-sizing result: `exp-20260514-027` keeps the existing
+Latest accepted core-sizing result: core `exp-20260514-030` keeps entries,
+exits, ranking, universe, raw Financials multipliers, heat, slots, and
+LLM/news logic unchanged, but lets only `trend_long + Financials +
+financials_sector_leader=true + mid_sector_dispersion=true` use a 55%
+single-position cap in shared `portfolio_engine.py`. The change improved EV
+and PnL in `mid_weak` and `old_thin`, left `late_strong` unchanged, and kept
+trade count and survival unchanged: aggregate EV `+0.0123`, aggregate PnL
+`+$618.16`, max drawdown drift stayed inside the Gate 4 guardrail at
+`+0.13 pp` worst window, and there is no production/backtest split because
+both adapters call the same shared sizing module. Only 3 signals adjusted, so
+do not retry nearby Financials cap values on these frozen windows without
+forward cap-room attribution or a materially different production-visible
+discriminator.
+
+Previous accepted core-sizing result: `exp-20260514-027` keeps the existing
 clean SPY-relative leader signal-day 1.10x top-up unchanged but lets only that
 already-accepted confirmation sleeve use a 52.5% single-position cap in shared
 `portfolio_engine.py`. The change improved EV and PnL in all three fixed
@@ -117,24 +132,25 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260514-026` adds only
+Latest accepted default-off Space replay result: `exp-20260514-030` adds only
 the shared Space metadata/helper
-`space_forward_replacement_company_source_trend_risk_scalar=1.025` for
-`trend_long` signals already in the closed 10d forward same-theme
-replacement-strength bucket when the event seed profile includes
-`company_release` + `customer_win`. It uses the same three window labels above
-with frozen Space snapshots and keeps live Space slots at zero. Aggregate
-default-off Space EV improved `+0.1624` and PnL improved `+$4,879.91` versus
-the accepted `exp-20260514-024` stack; window EV deltas were `late_strong
-+0.0286`, `mid_weak +0.1338`, and `old_thin unchanged`. Max drawdown drift was
-`+0.35 pp`, trade count stayed `68`, and minimum survival stayed `65.33%`.
-The target slice was narrow (`RKLB`, 3 adjusted signals), so do not retry
-nearby company-source or RKLB-only Space multipliers on these frozen windows
-without new closed forward evidence or a materially different catalyst-quality
-field. The previous accepted `exp-20260514-024` IWM-leader trend-strength
-helper remains part of the default-off Space stack at `1.025x`; stronger
-nearby IWM scalars (`1.05x+`) had already failed the `0.5 pp` drawdown
-guardrail.
+`space_delayed_absorption_trend_risk_scalar=1.025` for official Space
+`trend_long` signals whose closed event-state profile has weak average 5d cash
+reaction (`<= $0`) but strong 10d cash and same-theme replacement value
+(`>= $500`). It uses the same three window labels above with frozen Space
+snapshots and keeps live Space slots at zero. Aggregate default-off Space EV
+improved `+0.1374` and PnL improved `+$5,064.39` versus the accepted
+`exp-20260514-028` stack; window EV deltas were `late_strong +0.0340`,
+`mid_weak +0.1034`, and `old_thin unchanged`. Max drawdown drift was
+`+0.36 pp`, trade count stayed `68`, and minimum survival stayed `65.33%`.
+The target slice was delayed-absorption trend evidence (`RDW`, `RKLB`, 3
+adjusted signals), so do not retry nearby delayed-absorption scalars on these
+frozen windows without new closed forward evidence or a materially different
+catalyst-quality field. The previous accepted `exp-20260514-028`
+source-diversity trend helper remains part of the default-off Space stack at
+`1.025x`; its target slice was source-diverse trend evidence (`ASTS`, `LUNR`,
+`RKLB`, 6 adjusted signals), so do not retry nearby source-diversity trend
+scalars without new evidence.
 
 Previous accepted core-sizing result: `exp-20260514-018` keeps the existing
 `trend_long + Commodities + pct_from_52w_high >= -3%` risk boost unchanged but

@@ -126,7 +126,7 @@ SEC interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted official-catalyst Space stack through
-`exp-20260514-026`.
+`exp-20260514-030`.
 
 Mechanism summary:
 
@@ -137,7 +137,13 @@ Mechanism summary:
 - the latest accepted forward-strength interactions are `trend_long` plus
   IWM-leader tape at a conservative `1.025x`, then `trend_long` plus
   company-release customer-win confirmation at a conservative `1.025x`;
+- source-diverse official Space catalysts also work best when the executed
+  setup is `trend_long`, but only at a conservative `1.025x`;
   stronger nearby or ticker-only retries require new closed forward evidence;
+- closed forward-outcome timing matters: the first useful new state after
+  source diversity was delayed absorption, defined as weak average 5d cash
+  reaction but strong 10d same-theme replacement value, again only as a
+  conservative `trend_long` allocation helper;
 - the best use is semantic risk allocation inside a quarantined sleeve.
 
 Space interpretation:
@@ -147,6 +153,9 @@ Space interpretation:
   adding more tickers;
 - future progress should come from closed forward outcomes and better catalyst
   semantics, not from nearby scalar retunes on the frozen snapshots.
+- do not retry nearby source-diversity, company-source, or delayed-absorption
+  scalars without new closed forward rows or a new production-visible
+  catalyst-quality field.
 
 ## Durable Laws From Repository Evidence
 

@@ -135,6 +135,7 @@ SPACE_CATALYST_SOURCE_DIVERSITY_RISK_SCALAR = 1.075
 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_LEADER_RISK_SCALAR = 1.15
 SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR = 1.05
 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR = 1.05
+SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON = "10d"
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL = 0.0
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE = 0.0
@@ -147,6 +148,10 @@ SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR = 1.05
 SPACE_CATALYST_FORWARD_REPLACEMENT_TREND_STRENGTH_RISK_SCALAR = 1.05
 SPACE_CATALYST_FORWARD_REPLACEMENT_IWM_LEADER_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL = 0.0
+SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_CASH_PNL = 0.0
+SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE = 500.0
+SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR = 1.025
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -381,6 +386,13 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_source_diversity_peer_iwm_leader_risk_scalar": (
         SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
     ),
+    "space_source_diversity_trend_experiment_id": "exp-20260514-028",
+    "space_source_diversity_trend_definition": (
+        "source-diverse official non-attention evidence on trend_long signals"
+    ),
+    "space_source_diversity_trend_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR
+    ),
     "space_forward_replacement_positive_experiment_id": "exp-20260513-113",
     "space_forward_replacement_positive_definition": (
         "official non-attention Space tickers with closed event-state profiles "
@@ -437,6 +449,24 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_forward_replacement_company_source_trend_risk_scalar": (
         SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
+    ),
+    "space_delayed_absorption_trend_experiment_id": "exp-20260514-030",
+    "space_delayed_absorption_trend_definition": (
+        "accepted forward same-theme replacement-strength trend profile with "
+        "average 5d cash reaction <= $0 and average 10d cash/same-theme "
+        "replacement strength"
+    ),
+    "space_delayed_absorption_max_5d_cash_pnl": (
+        SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL
+    ),
+    "space_delayed_absorption_min_10d_cash_pnl": (
+        SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_CASH_PNL
+    ),
+    "space_delayed_absorption_min_10d_same_theme_value": (
+        SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE
+    ),
+    "space_delayed_absorption_trend_risk_scalar": (
+        SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -731,6 +761,12 @@ def space_catalyst_forward_risk_scalar(
         scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_source_diversity_profile(source_diversity_profile)
+    ):
+        scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
         )
@@ -775,6 +811,12 @@ def space_catalyst_forward_risk_scalar(
         scalar *= (
             SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
         )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_delayed_absorption_profile(forward_replacement_profile)
+    ):
+        scalar *= SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
     return scalar
 
 
@@ -988,6 +1030,9 @@ def empty_space_catalyst_observation_slot(
             "space_source_diversity_peer_iwm_leader_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
             ),
+            "space_source_diversity_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR
+            ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
             ),
@@ -1008,6 +1053,18 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_forward_replacement_company_source_trend_risk_scalar": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
+            ),
+            "space_delayed_absorption_max_5d_cash_pnl": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL
+            ),
+            "space_delayed_absorption_min_10d_cash_pnl": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_CASH_PNL
+            ),
+            "space_delayed_absorption_min_10d_same_theme_value": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE
+            ),
+            "space_delayed_absorption_trend_risk_scalar": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -1464,6 +1521,7 @@ def space_catalyst_forward_replacement_positive_profiles(
     for row in latest_by_event_ticker.values():
         ticker = str(row.get("ticker") or "").upper()
         horizon_row = (row.get("horizons") or {}).get(horizon) or {}
+        five_day_row = (row.get("horizons") or {}).get("5d") or {}
         rows_by_ticker[ticker].append(
             {
                 "asof_date": row.get("asof_date"),
@@ -1471,6 +1529,16 @@ def space_catalyst_forward_replacement_positive_profiles(
                 "semantic_bucket": row.get("semantic_bucket"),
                 "source_type": row.get("source_type"),
                 "event_fields": list(row.get("event_fields") or []),
+                "5d_cash_relative_pnl": (
+                    _as_float(five_day_row.get("cash_relative_pnl"))
+                    if five_day_row.get("status") == "mature"
+                    else None
+                ),
+                "5d_same_theme_replacement_value": (
+                    _as_float(five_day_row.get("same_theme_replacement_value"))
+                    if five_day_row.get("status") == "mature"
+                    else None
+                ),
                 "cash_relative_pnl": _as_float(
                     horizon_row.get("cash_relative_pnl")
                 ),
@@ -1492,6 +1560,16 @@ def space_catalyst_forward_replacement_positive_profiles(
             for row in ticker_rows
             if row.get("same_theme_replacement_value") is not None
         ]
+        five_day_cash_values = [
+            float(row["5d_cash_relative_pnl"])
+            for row in ticker_rows
+            if row.get("5d_cash_relative_pnl") is not None
+        ]
+        five_day_same_theme_values = [
+            float(row["5d_same_theme_replacement_value"])
+            for row in ticker_rows
+            if row.get("5d_same_theme_replacement_value") is not None
+        ]
         if not cash_values or not same_theme_values:
             continue
         avg_cash = mean(cash_values)
@@ -1506,8 +1584,23 @@ def space_catalyst_forward_replacement_positive_profiles(
         profiles[ticker] = {
             "horizon": horizon,
             "closed_event_count": len(ticker_rows),
+            "avg_5d_cash_relative_pnl": (
+                _round(mean(five_day_cash_values), 6)
+                if five_day_cash_values
+                else None
+            ),
+            "avg_5d_same_theme_replacement_value": (
+                _round(mean(five_day_same_theme_values), 6)
+                if five_day_same_theme_values
+                else None
+            ),
             "avg_10d_cash_relative_pnl": _round(avg_cash, 6),
             "avg_10d_same_theme_replacement_value": _round(avg_same_theme, 6),
+            "weak_5d_cash_count": sum(
+                1
+                for value in five_day_cash_values
+                if value <= SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL
+            ),
             "positive_cash_count": sum(1 for value in cash_values if value > 0),
             "positive_same_theme_count": sum(
                 1 for value in same_theme_values if value > 0
@@ -2008,6 +2101,9 @@ def build_space_catalyst_observation_slot(
             "space_source_diversity_peer_iwm_leader_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR
             ),
+            "space_source_diversity_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR
+            ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
             ),
@@ -2028,6 +2124,18 @@ def build_space_catalyst_observation_slot(
             ),
             "space_forward_replacement_company_source_trend_risk_scalar": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
+            ),
+            "space_delayed_absorption_max_5d_cash_pnl": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL
+            ),
+            "space_delayed_absorption_min_10d_cash_pnl": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_CASH_PNL
+            ),
+            "space_delayed_absorption_min_10d_same_theme_value": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE
+            ),
+            "space_delayed_absorption_trend_risk_scalar": (
+                SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -2887,6 +2995,14 @@ def _observation_slot_row(
         if source_diversity_peer_iwm_leader_bucket
         else 1.0
     )
+    source_diversity_trend_bucket = (
+        source_diversity_bucket and strategy.lower() == "trend_long"
+    )
+    source_diversity_trend_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR
+        if source_diversity_trend_bucket
+        else 1.0
+    )
     forward_replacement_positive_bucket = (
         _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
@@ -2934,6 +3050,15 @@ def _observation_slot_row(
         if forward_replacement_company_source_trend_bucket
         else 1.0
     )
+    delayed_absorption_trend_bucket = (
+        forward_replacement_trend_strength_bucket
+        and _is_space_delayed_absorption_profile(forward_replacement_profile)
+    )
+    delayed_absorption_trend_risk_scalar = (
+        SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
+        if delayed_absorption_trend_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -2965,6 +3090,9 @@ def _observation_slot_row(
         "space_source_diversity_profile": source_diversity_profile,
         "space_forward_replacement_positive_profile": (
             forward_replacement_profile
+        ),
+        "space_delayed_absorption_profile": (
+            forward_replacement_profile if delayed_absorption_trend_bucket else None
         ),
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
@@ -3128,6 +3256,11 @@ def _observation_slot_row(
             source_diversity_peer_iwm_leader_risk_scalar,
             6,
         ),
+        "space_source_diversity_trend_bucket": source_diversity_trend_bucket,
+        "space_source_diversity_trend_risk_scalar": _round(
+            source_diversity_trend_risk_scalar,
+            6,
+        ),
         "space_forward_replacement_positive_bucket": (
             forward_replacement_positive_bucket
         ),
@@ -3164,6 +3297,17 @@ def _observation_slot_row(
         ),
         "space_forward_replacement_company_source_trend_risk_scalar": _round(
             forward_replacement_company_source_trend_risk_scalar,
+            6,
+        ),
+        "space_delayed_absorption_trend_bucket": delayed_absorption_trend_bucket,
+        "space_delayed_absorption_max_5d_cash_pnl": (
+            SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL
+        ),
+        "space_delayed_absorption_min_10d_same_theme_value": (
+            SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE
+        ),
+        "space_delayed_absorption_trend_risk_scalar": _round(
+            delayed_absorption_trend_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -3516,6 +3660,25 @@ def _is_space_forward_replacement_same_theme_strength_profile(
         avg_same_theme is not None
         and avg_same_theme
         >= SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+    )
+
+
+def _is_space_delayed_absorption_profile(profile: dict[str, Any] | None) -> bool:
+    if not _is_space_forward_replacement_same_theme_strength_profile(profile):
+        return False
+    avg_5d_cash = _as_float((profile or {}).get("avg_5d_cash_relative_pnl"))
+    avg_10d_cash = _as_float((profile or {}).get("avg_10d_cash_relative_pnl"))
+    avg_10d_same_theme = _as_float(
+        (profile or {}).get("avg_10d_same_theme_replacement_value")
+    )
+    return (
+        avg_5d_cash is not None
+        and avg_5d_cash <= SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL
+        and avg_10d_cash is not None
+        and avg_10d_cash > SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_CASH_PNL
+        and avg_10d_same_theme is not None
+        and avg_10d_same_theme
+        >= SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE
     )
 
 
