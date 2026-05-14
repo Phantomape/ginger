@@ -1,4 +1,4 @@
-# Alpha Optimization Playbook
+﻿# Alpha Optimization Playbook
 
 Last reviewed: 2026-05-14.
 
@@ -74,7 +74,7 @@ Keep only the minimal anchor points here. Full metrics stay in
 ### Core Stack
 
 Current core checkpoint is the 2026-05-14 accepted stack ending at
-`exp-20260514-023`.
+`exp-20260514-027`.
 
 Mechanism summary:
 
@@ -82,6 +82,9 @@ Mechanism summary:
 - Signal-day own-green state helps as a modest sizing top-up.
 - RS60 top-quintile stock state helps as a modest sizing top-up.
 - Clean SPY-relative signal-day confirmation helps as a final top-up.
+- The same clean SPY-relative signal-day sleeve is modestly cap-bound; a
+  sleeve-specific 52.5% position cap worked, while nearby 55%+ caps regressed
+  the old window.
 - The accepted commodity near-high trend sleeve is cap-bound alpha; a
   sleeve-specific 50% position cap worked better than more raw commodity
   multiplier tuning.
@@ -95,8 +98,9 @@ Core interpretation:
 - the edge lives in shared allocation on already-qualified signals;
 - the edge does not justify new broad entry filters;
 - the edge does not justify broad slot expansion;
-- commodity or Financials cap follow-up should require a new production-visible
-  state, not another raw multiplier/cap retry after the accepted sleeve caps;
+- commodity, Financials, or clean-SPY signal-day cap follow-up should require
+  a new production-visible state, not another raw multiplier/cap retry after
+  the accepted sleeve caps;
 - the edge does not justify broad lifecycle redesign.
 
 ### SEC Financial-Report Default-Off Sleeve
@@ -122,7 +126,7 @@ SEC interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted official-catalyst Space stack through
-`exp-20260514-024`.
+`exp-20260514-026`.
 
 Mechanism summary:
 
@@ -130,9 +134,10 @@ Mechanism summary:
 - peer-relative strength matters;
 - small-cap tape participation matters;
 - source diversity and forward replacement-strength matter;
-- the latest accepted forward-strength interaction is `trend_long` plus
-  IWM-leader tape at a conservative `1.025x`; stronger nearby scalars failed
-  the drawdown guardrail;
+- the latest accepted forward-strength interactions are `trend_long` plus
+  IWM-leader tape at a conservative `1.025x`, then `trend_long` plus
+  company-release customer-win confirmation at a conservative `1.025x`;
+  stronger nearby or ticker-only retries require new closed forward evidence;
 - the best use is semantic risk allocation inside a quarantined sleeve.
 
 Space interpretation:

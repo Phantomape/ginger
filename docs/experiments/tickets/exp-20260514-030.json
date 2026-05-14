@@ -1,0 +1,1004 @@
+{
+  "adjustments": {
+    "late_strong": [],
+    "mid_weak": [
+      {
+        "baseline_shares": 79,
+        "max_position_pct": 0.55,
+        "mid_sector_dispersion": true,
+        "new_cap_shares": 87,
+        "new_shares": 87,
+        "old_cap_shares": 79,
+        "raw_shares": 124,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.0463,
+        "rs20_entry_state_leader": true,
+        "rs60_top_quintile_state": false,
+        "sector": "Financials",
+        "signal_day_ticker_green_candle": true,
+        "strategy": "trend_long",
+        "ticker": "GS",
+        "trade_quality_score": 0.936
+      }
+    ],
+    "old_thin": [
+      {
+        "baseline_shares": 231,
+        "max_position_pct": 0.55,
+        "mid_sector_dispersion": true,
+        "new_cap_shares": 255,
+        "new_shares": 255,
+        "old_cap_shares": 231,
+        "raw_shares": 361,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1075,
+        "rs20_entry_state_leader": true,
+        "rs60_top_quintile_state": false,
+        "sector": "Financials",
+        "signal_day_ticker_green_candle": true,
+        "strategy": "trend_long",
+        "ticker": "JPM",
+        "trade_quality_score": 0.944
+      },
+      {
+        "baseline_shares": 187,
+        "max_position_pct": 0.55,
+        "mid_sector_dispersion": true,
+        "new_cap_shares": 205,
+        "new_shares": 205,
+        "old_cap_shares": 187,
+        "raw_shares": 375,
+        "regime_exit_bucket": "balanced",
+        "regime_exit_score": 0.0215,
+        "rs20_entry_state_leader": true,
+        "rs60_top_quintile_state": true,
+        "sector": "Financials",
+        "signal_day_ticker_green_candle": true,
+        "strategy": "trend_long",
+        "ticker": "V",
+        "trade_quality_score": 0.88
+      }
+    ]
+  },
+  "after_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.4853,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0609,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5115,
+      "total_pnl": 103112.67,
+      "total_return_pct": 1.0311,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.858,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1014,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4936,
+      "total_pnl": 69070.09,
+      "total_return_pct": 0.6907,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.4749,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0889,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.4,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4461,
+      "total_pnl": 33921.46,
+      "total_return_pct": 0.3392,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "artifact_markdown": "# exp-20260514-030 Financials Mid-Dispersion Leader Cap\n\nDecision: `accepted_for_shared_policy_implementation`.\n\nSingle variable: max position cap for the already-accepted `trend_long + Financials + financials_sector_leader=true` sleeve, restricted to signals that also carry `mid_sector_dispersion=true`. Entries, exits, ranking, universe, LLM/news logic, raw multipliers, heat, and slot limits were unchanged.\n\n## Sweep\n\n| Cap | Gate 4 | dEV sum | dPnL sum | Improved | Regressed | Adjusted | Max DD worse |\n|---:|:---:|---:|---:|---|---|---:|---:|\n| 0.525 | PASS | +0.0067 | $+351.45 | mid_weak, old_thin | - | 3 | +0.0007 |\n| 0.550 | PASS | +0.0123 | $+618.16 | mid_weak, old_thin | - | 3 | +0.0013 |\n\nSelected cap: `0.55`.\n\n## Selected Three-Window Result\n\n| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| late_strong | 4.4853 | 4.4853 | +0.0000 | $103,112.67 | $103,112.67 | $+0.00 | +0.0000 | 0.8039 | 0 |\n| mid_weak | 1.8502 | 1.8580 | +0.0078 | $68,776.24 | $69,070.09 | $+293.85 | +0.0001 | 0.7925 | 1 |\n| old_thin | 0.4704 | 0.4749 | +0.0045 | $33,597.15 | $33,921.46 | $+324.31 | +0.0013 | 0.9167 | 2 |\n\nProduction impact: shadow scout only unless promoted into shared `constants.py`, `portfolio_engine.py`, backtest attribution, and focused parity tests.",
+  "before_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.4853,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0609,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5115,
+      "total_pnl": 103112.67,
+      "total_return_pct": 1.0311,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.8502,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1013,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4937,
+      "total_pnl": 68776.24,
+      "total_return_pct": 0.6878,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.4704,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0876,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.4,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4513,
+      "total_pnl": 33597.15,
+      "total_return_pct": 0.336,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "change_type": "capital_allocation_shadow",
+  "changed_trades": {
+    "late_strong": {
+      "added_count": 0,
+      "added_keys": [],
+      "common_pnl_changed": [],
+      "common_pnl_changed_count": 0,
+      "removed_count": 0,
+      "removed_keys": []
+    },
+    "mid_weak": {
+      "added_count": 2,
+      "added_keys": [
+        "AAPL|2025-08-11|breakout_long|228.24",
+        "GS|2025-06-23|trend_long|633.74"
+      ],
+      "common_pnl_changed": [
+        {
+          "after": {
+            "entry_date": "2025-10-23",
+            "exit_date": "2025-10-22",
+            "pnl": -89.81,
+            "sector": "Healthcare",
+            "shares": 127,
+            "sizing_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "ISRG"
+          },
+          "before": {
+            "entry_date": "2025-10-23",
+            "exit_date": "2025-10-22",
+            "pnl": -89.11,
+            "sector": "Healthcare",
+            "shares": 126,
+            "sizing_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "ISRG"
+          },
+          "key": "ISRG|2025-10-23|breakout_long|525.63"
+        },
+        {
+          "after": {
+            "entry_date": "2025-08-25",
+            "exit_date": "2025-10-15",
+            "pnl": 5132.61,
+            "sector": "ETF",
+            "shares": 309,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "IWM"
+          },
+          "before": {
+            "entry_date": "2025-08-25",
+            "exit_date": "2025-10-15",
+            "pnl": 5116.0,
+            "sector": "ETF",
+            "shares": 308,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "IWM"
+          },
+          "key": "IWM|2025-08-25|breakout_long|232.4"
+        },
+        {
+          "after": {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-22",
+            "pnl": 5994.85,
+            "sector": "Commodities",
+            "shares": 1897,
+            "sizing_multipliers": {
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_commodities_near_high_risk_multiplier_applied": 1.5
+            },
+            "ticker": "SLV"
+          },
+          "before": {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-22",
+            "pnl": 5985.37,
+            "sector": "Commodities",
+            "shares": 1894,
+            "sizing_multipliers": {
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_commodities_near_high_risk_multiplier_applied": 1.5
+            },
+            "ticker": "SLV"
+          },
+          "key": "SLV|2025-09-02|trend_long|36.65"
+        },
+        {
+          "after": {
+            "entry_date": "2025-09-29",
+            "exit_date": "2025-10-09",
+            "pnl": 6842.36,
+            "sector": "Commodities",
+            "shares": 1898,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "SLV"
+          },
+          "before": {
+            "entry_date": "2025-09-29",
+            "exit_date": "2025-10-09",
+            "pnl": 6827.94,
+            "sector": "Commodities",
+            "shares": 1894,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "SLV"
+          },
+          "key": "SLV|2025-09-29|breakout_long|42.48"
+        }
+      ],
+      "common_pnl_changed_count": 4,
+      "removed_count": 2,
+      "removed_keys": [
+        "AAPL|2025-08-11|breakout_long|228.26",
+        "GS|2025-06-23|trend_long|636.21"
+      ]
+    },
+    "old_thin": {
+      "added_count": 1,
+      "added_keys": [
+        "AMZN|2024-11-04|trend_long|198.41"
+      ],
+      "common_pnl_changed": [
+        {
+          "after": {
+            "entry_date": "2024-11-08",
+            "exit_date": "2024-11-19",
+            "pnl": 12268.28,
+            "sector": "Technology",
+            "shares": 178,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "APP"
+          },
+          "before": {
+            "entry_date": "2024-11-08",
+            "exit_date": "2024-11-19",
+            "pnl": 12199.36,
+            "sector": "Technology",
+            "shares": 177,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "APP"
+          },
+          "key": "APP|2024-11-08|trend_long|249.21"
+        },
+        {
+          "after": {
+            "entry_date": "2024-11-25",
+            "exit_date": "2024-12-19",
+            "pnl": -19.72,
+            "sector": "Technology",
+            "shares": 2,
+            "sizing_multipliers": {
+              "trend_tech_dte_risk_multiplier_applied": 0.25,
+              "trend_tech_gap_risk_multiplier_applied": 0.25,
+              "trend_tech_near_high_risk_multiplier_applied": 0.25
+            },
+            "ticker": "DDOG"
+          },
+          "before": {
+            "entry_date": "2024-11-25",
+            "exit_date": "2024-12-19",
+            "pnl": -9.86,
+            "sector": "Technology",
+            "shares": 1,
+            "sizing_multipliers": {
+              "trend_tech_dte_risk_multiplier_applied": 0.25,
+              "trend_tech_gap_risk_multiplier_applied": 0.25,
+              "trend_tech_near_high_risk_multiplier_applied": 0.25
+            },
+            "ticker": "DDOG"
+          },
+          "key": "DDOG|2024-11-25|trend_long|155.78"
+        },
+        {
+          "after": {
+            "entry_date": "2025-01-31",
+            "exit_date": "2025-03-18",
+            "pnl": 4814.43,
+            "sector": "Commodities",
+            "shares": 246,
+            "sizing_multipliers": {
+              "trend_commodities_near_high_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "GLD"
+          },
+          "before": {
+            "entry_date": "2025-01-31",
+            "exit_date": "2025-03-18",
+            "pnl": 4794.86,
+            "sector": "Commodities",
+            "shares": 245,
+            "sizing_multipliers": {
+              "trend_commodities_near_high_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "GLD"
+          },
+          "key": "GLD|2025-01-31|trend_long|259.21"
+        },
+        {
+          "after": {
+            "entry_date": "2024-10-14",
+            "exit_date": "2024-11-06",
+            "pnl": 4711.48,
+            "sector": "Financials",
+            "shares": 255,
+            "sizing_multipliers": {
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+              "trend_financials_mid_dispersion_leader_max_position_pct_applied": 0.55,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "JPM"
+          },
+          "before": {
+            "entry_date": "2024-10-14",
+            "exit_date": "2024-11-06",
+            "pnl": 4268.04,
+            "sector": "Financials",
+            "shares": 231,
+            "sizing_multipliers": {
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "JPM"
+          },
+          "key": "JPM|2024-10-14|trend_long|216.59"
+        },
+        {
+          "after": {
+            "entry_date": "2025-01-16",
+            "exit_date": "2025-02-06",
+            "pnl": 5319.5,
+            "sector": "Financials",
+            "shares": 298,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "JPM"
+          },
+          "before": {
+            "entry_date": "2025-01-16",
+            "exit_date": "2025-02-06",
+            "pnl": 5301.65,
+            "sector": "Financials",
+            "shares": 297,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "JPM"
+          },
+          "key": "JPM|2025-01-16|breakout_long|248.54"
+        },
+        {
+          "after": {
+            "entry_date": "2025-02-11",
+            "exit_date": "2025-02-19",
+            "pnl": -1916.9,
+            "sector": "Consumer Discretionary",
+            "shares": 232,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "MCD"
+          },
+          "before": {
+            "entry_date": "2025-02-11",
+            "exit_date": "2025-02-19",
+            "pnl": -1908.64,
+            "sector": "Consumer Discretionary",
+            "shares": 231,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "MCD"
+          },
+          "key": "MCD|2025-02-11|trend_long|298.84"
+        },
+        {
+          "after": {
+            "entry_date": "2025-01-23",
+            "exit_date": "2025-03-06",
+            "pnl": -2559.37,
+            "sector": "Communication Services",
+            "shares": 454,
+            "sizing_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "NFLX"
+          },
+          "before": {
+            "entry_date": "2025-01-23",
+            "exit_date": "2025-03-06",
+            "pnl": -2548.1,
+            "sector": "Communication Services",
+            "shares": 452,
+            "sizing_multipliers": {
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "NFLX"
+          },
+          "key": "NFLX|2025-01-23|trend_long|95.83"
+        },
+        {
+          "after": {
+            "entry_date": "2025-03-14",
+            "exit_date": "2025-03-21",
+            "pnl": -991.2,
+            "sector": "Commodities",
+            "shares": 844,
+            "sizing_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "SLV"
+          },
+          "before": {
+            "entry_date": "2025-03-14",
+            "exit_date": "2025-03-21",
+            "pnl": -987.68,
+            "sector": "Commodities",
+            "shares": 841,
+            "sizing_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "SLV"
+          },
+          "key": "SLV|2025-03-14|trend_long|30.93"
+        },
+        {
+          "after": {
+            "entry_date": "2025-01-24",
+            "exit_date": "2025-02-20",
+            "pnl": -2670.31,
+            "sector": "Consumer Discretionary",
+            "shares": 2736,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "TRIP"
+          },
+          "before": {
+            "entry_date": "2025-01-24",
+            "exit_date": "2025-02-20",
+            "pnl": -2659.58,
+            "sector": "Consumer Discretionary",
+            "shares": 2725,
+            "sizing_multipliers": {
+              "clean_spy_leader_signal_day_max_position_pct_applied": 0.525,
+              "clean_spy_leader_signal_day_risk_multiplier_applied": 1.1,
+              "risk_on_unmodified_risk_multiplier_applied": 2.0,
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "spy_relative_leader_risk_on_multiplier_applied": 2.0
+            },
+            "ticker": "TRIP"
+          },
+          "key": "TRIP|2025-01-24|trend_long|17.8"
+        },
+        {
+          "after": {
+            "entry_date": "2025-03-03",
+            "exit_date": "2025-03-04",
+            "pnl": -2089.4,
+            "sector": "Financials",
+            "shares": 205,
+            "sizing_multipliers": {
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+              "trend_financials_mid_dispersion_leader_max_position_pct_applied": 0.55,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "V"
+          },
+          "before": {
+            "entry_date": "2025-03-03",
+            "exit_date": "2025-03-04",
+            "pnl": -1895.75,
+            "sector": "Financials",
+            "shares": 186,
+            "sizing_multipliers": {
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "V"
+          },
+          "key": "V|2025-03-03|trend_long|360.48"
+        }
+      ],
+      "common_pnl_changed_count": 10,
+      "removed_count": 1,
+      "removed_keys": [
+        "AMZN|2024-11-04|trend_long|198.38"
+      ]
+    }
+  },
+  "changed_variable": "max_position_pct_for_financials_sector_leader_mid_sector_dispersion_sleeve",
+  "decision": "accepted_for_shared_policy_implementation",
+  "decision_reason": "The Financials sector-leader mid-dispersion intersection remained cap-bound and the selected cap improved the canonical three-window stack without EV regression.",
+  "delta_metrics": {
+    "aggregate_after": {
+      "expected_value_score_sum": 6.8182,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 206104.22,
+      "trade_count_sum": 62
+    },
+    "aggregate_before": {
+      "expected_value_score_sum": 6.8059,
+      "max_drawdown_pct_max": 0.1013,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 205486.06,
+      "trade_count_sum": 62
+    },
+    "aggregate_delta": {
+      "expected_value_score_sum": 0.0123,
+      "max_drawdown_pct_max": 0.0001,
+      "signals_generated_sum": 0,
+      "signals_survived_sum": 0,
+      "survival_rate_min": 0.0,
+      "total_pnl_sum": 618.16,
+      "trade_count_sum": 0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0078,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0001,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": -0.0001,
+        "total_pnl": 293.85,
+        "total_return_pct": 0.0029,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0045,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0013,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": -0.0052,
+        "total_pnl": 324.31,
+        "total_return_pct": 0.0032,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0123,
+  "experiment_id": "exp-20260514-030",
+  "gate1": {
+    "baseline_aggregate": {
+      "expected_value_score_sum": 6.8059,
+      "max_drawdown_pct_max": 0.1013,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 205486.06,
+      "trade_count_sum": 62
+    },
+    "baseline_metrics": {
+      "late_strong": {
+        "converged": true,
+        "expected_value_score": 4.4853,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0609,
+        "qqq_buy_hold_return_pct": 0.058,
+        "sharpe_daily": 4.35,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "spy_buy_hold_return_pct": 0.0541,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5115,
+        "total_pnl": 103112.67,
+        "total_return_pct": 1.0311,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.060734
+      },
+      "mid_weak": {
+        "converged": true,
+        "expected_value_score": 1.8502,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1013,
+        "qqq_buy_hold_return_pct": 0.3351,
+        "sharpe_daily": 2.69,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "spy_buy_hold_return_pct": 0.2544,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4937,
+        "total_pnl": 68776.24,
+        "total_return_pct": 0.6878,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.089651
+      },
+      "old_thin": {
+        "converged": true,
+        "expected_value_score": 0.4704,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0876,
+        "qqq_buy_hold_return_pct": -0.0749,
+        "sharpe_daily": 1.4,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "spy_buy_hold_return_pct": -0.0672,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4513,
+        "total_pnl": 33597.15,
+        "total_return_pct": 0.336,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.063499
+      }
+    },
+    "protocol": "docs/backtesting.md canonical three-window fixed-snapshot replay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "checked_rows": 14,
+      "missing_required_fields": [],
+      "passed": true,
+      "path": "operator_inputs\\open_positions.json",
+      "required_fields": [
+        "entry_date",
+        "target_price"
+      ]
+    },
+    "passed": true,
+    "runtime_fields": [
+      "strategy",
+      "sector",
+      "financials_sector_leader",
+      "mid_sector_dispersion",
+      "entry_price",
+      "net_risk_per_share",
+      "base_risk_pct"
+    ]
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "passed": true,
+    "signals_generated_delta_sum": 0,
+    "signals_survived_delta_sum": 0,
+    "survival_rate_min_after": 0.7925
+  },
+  "gate4": {
+    "adjusted_signal_count": 3,
+    "drawdown_guardrail_passed": true,
+    "improved_windows": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "max_drawdown_worse": 0.0013,
+    "max_drawdown_worse_guardrail": 0.005,
+    "passed": true,
+    "regressed_windows": []
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "capital allocation: Financials sector-leaders with accepted mid-sector-dispersion confirmation may deserve more cap room",
+    "2_history_check": "No same or near-identical experiment found; nearest broad Financials cap was accepted at 50%, while non-Financials mid-dispersion sector-leader top-up was inert.",
+    "3_single_causal_variable": "sleeve-specific max_position_pct",
+    "4_acceptance_standard": "docs/backtesting.md three fixed windows; aggregate EV/PnL positive, at least two EV-improved windows, no EV-regressed windows, survival >= 5%, max DD worse <= 0.5pp, nonzero adjustments",
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260514_030_financials_mid_dispersion_leader_cap.py"
+  },
+  "historical_experiment_check": {
+    "similar_prior_results": {
+      "exp-20260506-005": "Financials leader target-width retunes were rejected; this run changes initial cap room only, not exits.",
+      "exp-20260510-019": "Rejected/inert non-Financials mid-dispersion sector-leader top-up; this run targets the Financials leader sleeve that already has accepted cap-bound evidence.",
+      "exp-20260514-023": "Accepted the broad Financials sector-leader cap at 50%; this run does not retune that whole sleeve and only tests a new production-visible mid-dispersion intersection."
+    },
+    "why_not_llm_soft_ranking": "LLM soft-ranking remains production-sample limited; this deterministic allocation alpha uses existing shared fields."
+  },
+  "hypothesis": "The accepted Financials sector-leader cap may still under-allocate the strongest rotation tape cases. When Financials sector-leader trend signals also occur in the accepted mid-sector-dispersion state, incremental cap room may unlock convex winners without broad Financials cap expansion.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking data is insufficient, so this run deliberately tests deterministic capital allocation instead.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "next_evidence_needed": "Do not retry nearby Financials mid-dispersion cap values unless new forward cap-room or leader-quality evidence separates winners from cap-amplified losers.",
+  "parameters": {
+    "baseline_financials_sector_leader_max_position_pct": 0.5,
+    "cap_sweep": [
+      0.525,
+      0.55
+    ],
+    "locked_variables": [
+      "core universe",
+      "candidate pool",
+      "entry filters",
+      "candidate ranking",
+      "stop and target logic",
+      "raw Financials risk multipliers",
+      "existing Financials sector-leader cap",
+      "all other sizing multipliers",
+      "portfolio heat",
+      "slot limits",
+      "LLM/news replay",
+      "Space sleeves"
+    ],
+    "selected_max_position_pct": 0.55,
+    "target_sleeve": {
+      "financials_sector_leader": true,
+      "mid_sector_dispersion": true,
+      "sector": "Financials",
+      "strategy": "trend_long"
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted for trading, add a shared constant and cap branch in portfolio_engine.size_signals, include the attribution key in backtester.py, and add focused production/backtest parity tests before live orders change.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260514_030_financials_mid_dispersion_leader_cap.py",
+    "data/experiments/exp-20260514-030/financials_mid_dispersion_leader_cap.json",
+    "docs/experiments/logs/exp-20260514-030.json",
+    "docs/experiments/tickets/exp-20260514-030.json",
+    "docs/experiments/artifacts/exp-20260514-030_financials_mid_dispersion_leader_cap.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "single_causal_variable": "max_position_pct for trend_long Financials sector-leader signals with mid_sector_dispersion=true",
+  "sizing_attribution": {
+    "late_strong": {
+      "signal": null,
+      "trade": null
+    },
+    "mid_weak": {
+      "signal": {
+        "avg_risk_pct_after": 0.021839,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 1,
+        "risk_pct_reduced_sum": 0.0,
+        "sectors": {
+          "Financials": 1
+        },
+        "signals_seen": 1,
+        "strategies": {
+          "trend_long": 1
+        },
+        "zero_risk_signals": 0
+      },
+      "trade": {
+        "avg_pnl_usd": 6670.91,
+        "losses": 0,
+        "multipliers": {
+          "0.55": 1
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 6670.91,
+        "trade_count": 1,
+        "win_rate": 1.0,
+        "wins": 1
+      }
+    },
+    "old_thin": {
+      "signal": {
+        "avg_risk_pct_after": 0.019534,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 2,
+        "risk_pct_reduced_sum": 0.0,
+        "sectors": {
+          "Financials": 2
+        },
+        "signals_seen": 2,
+        "strategies": {
+          "trend_long": 2
+        },
+        "zero_risk_signals": 0
+      },
+      "trade": {
+        "avg_pnl_usd": 1311.04,
+        "losses": 1,
+        "multipliers": {
+          "0.55": 2
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 2622.08,
+        "trade_count": 2,
+        "win_rate": 0.5,
+        "wins": 1
+      }
+    }
+  },
+  "status": "accepted_for_shared_policy_implementation",
+  "sweep_summary": [
+    {
+      "adjusted_signal_count": 3,
+      "expected_value_score_delta": 0.0067,
+      "improved_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "max_drawdown_worse": 0.0007,
+      "max_position_pct": 0.525,
+      "passed": true,
+      "regressed_windows": [],
+      "total_pnl_delta": 351.45
+    },
+    {
+      "adjusted_signal_count": 3,
+      "expected_value_score_delta": 0.0123,
+      "improved_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "max_drawdown_worse": 0.0013,
+      "max_position_pct": 0.55,
+      "passed": true,
+      "regressed_windows": [],
+      "total_pnl_delta": 618.16
+    }
+  ],
+  "timestamp": "2026-05-14T13:22:47+00:00",
+  "total_pnl_delta": 618.16
+}

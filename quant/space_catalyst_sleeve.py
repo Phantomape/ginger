@@ -146,6 +146,7 @@ SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE = 500.0
 SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_RISK_SCALAR = 1.05
 SPACE_CATALYST_FORWARD_REPLACEMENT_TREND_STRENGTH_RISK_SCALAR = 1.05
 SPACE_CATALYST_FORWARD_REPLACEMENT_IWM_LEADER_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR = 1.025
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -428,6 +429,14 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_forward_replacement_iwm_leader_trend_risk_scalar": (
         SPACE_CATALYST_FORWARD_REPLACEMENT_IWM_LEADER_TREND_RISK_SCALAR
+    ),
+    "space_forward_replacement_company_source_trend_experiment_id": "exp-20260514-026",
+    "space_forward_replacement_company_source_trend_definition": (
+        "accepted forward same-theme replacement-strength trend profile when "
+        "the event seed profile includes company_release customer_win"
+    ),
+    "space_forward_replacement_company_source_trend_risk_scalar": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -753,6 +762,19 @@ def space_catalyst_forward_risk_scalar(
         scalar *= (
             SPACE_CATALYST_FORWARD_REPLACEMENT_IWM_LEADER_TREND_RISK_SCALAR
         )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_company_release_customer_source_profile(
+            official_customer_source_profile
+        )
+        and _is_space_forward_replacement_same_theme_strength_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= (
+            SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
+        )
     return scalar
 
 
@@ -983,6 +1005,9 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_forward_replacement_iwm_leader_trend_risk_scalar": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_IWM_LEADER_TREND_RISK_SCALAR
+            ),
+            "space_forward_replacement_company_source_trend_risk_scalar": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -2001,6 +2026,9 @@ def build_space_catalyst_observation_slot(
             "space_forward_replacement_iwm_leader_trend_risk_scalar": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_IWM_LEADER_TREND_RISK_SCALAR
             ),
+            "space_forward_replacement_company_source_trend_risk_scalar": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -2897,6 +2925,15 @@ def _observation_slot_row(
         if forward_replacement_iwm_leader_trend_bucket
         else 1.0
     )
+    forward_replacement_company_source_trend_bucket = (
+        forward_replacement_trend_strength_bucket
+        and company_release_customer_source_bucket
+    )
+    forward_replacement_company_source_trend_risk_scalar = (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_COMPANY_SOURCE_TREND_RISK_SCALAR
+        if forward_replacement_company_source_trend_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -3120,6 +3157,13 @@ def _observation_slot_row(
         ),
         "space_forward_replacement_iwm_leader_trend_risk_scalar": _round(
             forward_replacement_iwm_leader_trend_risk_scalar,
+            6,
+        ),
+        "space_forward_replacement_company_source_trend_bucket": (
+            forward_replacement_company_source_trend_bucket
+        ),
+        "space_forward_replacement_company_source_trend_risk_scalar": _round(
+            forward_replacement_company_source_trend_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,

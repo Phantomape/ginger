@@ -1,10 +1,12 @@
-# Current State
+﻿# Current State
 
 Last updated: 2026-05-14.
 
-The current accepted core stack includes the 2026-05-14 Financials
-sector-leader trend cap promotion from `exp-20260514-023`, layered on top of
-the 2026-05-14 commodity near-high trend cap promotion from `exp-20260514-018`,
+The current accepted core stack includes the 2026-05-14 clean SPY-relative
+leader signal-day cap promotion from `exp-20260514-027`, layered on top of the
+2026-05-14 Financials sector-leader trend cap promotion from
+`exp-20260514-023`, the 2026-05-14 commodity near-high trend cap promotion
+from `exp-20260514-018`,
 the 2026-05-13 clean SPY-relative leader signal-day sizing promotion from `exp-20260513-036`,
 the RS60 top-quintile stock sizing promotion from `exp-20260513-030`, the
 signal-day own-green candle sizing promotion from `exp-20260513-007`, the
@@ -15,19 +17,30 @@ documented in `docs/backtesting.md` and
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.4313 | 101.87% | 4.35 | 5.98% | 19 | 80.39% |
-| `mid_weak` | 1.8324 | 68.12% | 2.69 | 10.13% | 21 | 79.25% |
-| `old_thin` | 0.4703 | 33.59% | 1.40 | 8.72% | 22 | 91.67% |
+| `late_strong` | 4.4853 | 103.11% | 4.35 | 6.09% | 19 | 80.39% |
+| `mid_weak` | 1.8502 | 68.78% | 2.69 | 10.13% | 21 | 79.25% |
+| `old_thin` | 0.4704 | 33.60% | 1.40 | 8.76% | 22 | 91.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260514-023/financials_sector_leader_cap.json`.
-Aggregate core EV is now `6.7340`; aggregate PnL is `$203,588.66`.
+`data/experiments/exp-20260514-027/clean_spy_leader_signal_day_cap.json`.
+Aggregate core EV is now `6.8059`; aggregate PnL is `$205,486.06`.
 Latest saved single-window backtest artifact on disk is
 `data/backtest_results_20260514.json`; it matches the current `old_thin` core
-window at EV `0.4703`, total PnL `$33,591.36`, daily Sharpe `1.40`, max
-drawdown `8.72%`, `22` trades, and survival `91.67%`.
+window at EV `0.4704`, total PnL `$33,597.15`, daily Sharpe `1.40`, max
+drawdown `8.76%`, `22` trades, and survival `91.67%`.
 
-Latest accepted alpha result: `exp-20260514-023` keeps entries, exits, ranking,
+Latest accepted alpha result: `exp-20260514-027` keeps entries, exits, ranking,
+universe, raw clean-SPY risk multiplier, heat, slots, and LLM/news logic
+unchanged, but allows already clean `risk_on` SPY-relative leaders whose ticker
+also beat SPY on the signal day to use a 52.5% single-position cap. Aggregate
+EV improved `+0.0719` and aggregate PnL improved `+$1,897.40` across the three
+canonical windows: `late_strong` EV `4.4313 -> 4.4853`, `mid_weak` EV
+`1.8324 -> 1.8502`, and `old_thin` EV `0.4703 -> 0.4704`. Max drawdown drift
+stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
+unchanged, and the rule lives in shared `portfolio_engine.py` with focused
+production-parity tests.
+
+Previous accepted alpha result: `exp-20260514-023` keeps entries, exits, ranking,
 universe, raw Financials risk, heat, slots, and LLM/news logic unchanged, but
 allows the already-accepted `trend_long` Financials sector-leader sleeve to
 use a 50% single-position cap. Aggregate EV improved `+0.1173` and aggregate
@@ -110,7 +123,8 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
 `exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`,
-`exp-20260514-002`, `exp-20260514-009`, and `exp-20260514-024`.
+`exp-20260514-002`, `exp-20260514-009`, `exp-20260514-024`, and
+`exp-20260514-026`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -151,7 +165,9 @@ another `1.05x` extra default-off risk, and that same closed-forward
 same-theme-strength bucket gets a further `1.05x` extra default-off risk only
 on `trend_long` signals, and the same trend-only closed-forward strength bucket
 gets a further conservative `1.025x` extra default-off risk when IWM 20d
-momentum leads SPY.
+momentum leads SPY, and the same trend-only closed-forward strength bucket gets
+a further conservative `1.025x` extra default-off risk when the event seed
+profile includes `company_release` + `customer_win`.
 This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
@@ -207,6 +223,15 @@ drift stayed inside Gate 4 at `+0.34 pp`, trade count stayed `68`, minimum
 survival stayed `65.33%`, and live Space slots still zero. Stronger nearby
 scalars (`1.05x+`) were rejected because max drawdown damage exceeded the
 `0.5 pp` guardrail despite higher raw EV.
+`exp-20260514-026` then accepted the company-release customer-win interaction
+for that same closed-forward same-theme-strength `trend_long` bucket at
+`1.025x`: current three-window replay moved aggregate EV from `25.7882` to
+`25.9506`, PnL from `$634,670.79` to `$639,550.70`, improved `late_strong` and
+`mid_weak`, left `old_thin` unchanged, kept max drawdown drift inside Gate 4 at
+`+0.35 pp`, and kept trade count `68` / minimum survival `65.33%`. The target
+slice was narrow (`RKLB`, 3 adjusted signals), so do not retry nearby
+company-source or RKLB-only Space multipliers on these frozen windows without
+new closed forward evidence.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

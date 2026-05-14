@@ -565,6 +565,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "forward replacement-strength IWM trend @ "
                     f"{forward_replacement_iwm_trend_scalar}x"
                 )
+            forward_replacement_company_source_trend_scalar = forward.get(
+                "space_forward_replacement_company_source_trend_risk_scalar"
+            )
+            if forward_replacement_company_source_trend_scalar is not None:
+                extra_policies.append(
+                    "forward replacement-strength company-source trend @ "
+                    f"{forward_replacement_company_source_trend_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -712,6 +720,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_forward_replacement_iwm_leader_trend_bucket")
                 else ""
             )
+            forward_replacement_company_source_trend_text = (
+                " forward_replacement_company_source_trend=True"
+                if plan.get("space_forward_replacement_company_source_trend_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -743,6 +756,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{forward_replacement_same_theme_strength_text}"
                 f"{forward_replacement_trend_strength_text}"
                 f"{forward_replacement_iwm_leader_trend_text}"
+                f"{forward_replacement_company_source_trend_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"

@@ -478,6 +478,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         ]
         == 1.025
     )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_forward_replacement_company_source_trend_experiment_id"
+        ]
+        == "exp-20260514-026"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_forward_replacement_company_source_trend_risk_scalar"
+        ]
+        == 1.025
+    )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
 
@@ -1909,6 +1921,7 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_positive():
         space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
         space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
         space_source_diversity_profiles={},
         space_forward_replacement_profiles={
             "LUNR": {
@@ -1956,6 +1969,7 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_trend_strengt
         space_government_contract_profiles={},
         space_multi_event_depth_profiles={},
         space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
         space_source_diversity_profiles={},
         space_forward_replacement_profiles={
             "RDW": {
@@ -2030,6 +2044,65 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_iwm_leader_tr
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 978.92
 
 
+def test_space_catalyst_observation_slot_marks_forward_replacement_company_source_trend():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "RKLB",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={"RKLB": {"atr": 1.0}},
+        space_catalyst_shadow={
+            "tickers_by_segment": {},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={
+            "RKLB": {
+                "event_ids": ["rklb_record_backlog_launch_deal"],
+                "event_fields": ["customer_win"],
+                "semantic_buckets": ["fundamental_contract_regulatory"],
+                "source_types": ["company_release"],
+            }
+        },
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
+        space_source_diversity_profiles={},
+        space_forward_replacement_profiles={
+            "RKLB": {
+                "closed_event_count": 1,
+                "avg_10d_cash_relative_pnl": 1200.0,
+                "avg_10d_same_theme_replacement_value": 600.0,
+            }
+        },
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["space_company_release_customer_source_bucket"] is True
+    assert plan["space_forward_replacement_positive_bucket"] is True
+    assert plan["space_forward_replacement_same_theme_strength_bucket"] is True
+    assert plan["space_forward_replacement_trend_strength_bucket"] is True
+    assert plan["space_forward_replacement_company_source_trend_bucket"] is True
+    assert plan["space_forward_replacement_company_source_trend_risk_scalar"] == 1.025
+    assert plan["effective_risk_scalar"] == 1.34601
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 1346.01
+
+
 def test_space_catalyst_forward_replacement_trend_strength_is_trend_only():
     profile = {
         "closed_event_count": 1,
@@ -2050,6 +2123,28 @@ def test_space_catalyst_forward_replacement_trend_strength_is_trend_only():
 
     assert round(trend_scalar, 6) == 1.157625
     assert round(breakout_scalar, 6) == 1.1025
+
+    company_source_profile = {
+        "event_ids": ["rklb_record_backlog_launch_deal"],
+        "event_fields": ["customer_win"],
+        "semantic_buckets": ["fundamental_contract_regulatory"],
+        "source_types": ["company_release"],
+    }
+    company_source_trend_scalar = space_catalyst_forward_risk_scalar(
+        "RKLB",
+        "trend_long",
+        official_customer_source_profile=company_source_profile,
+        forward_replacement_profile=profile,
+    )
+    company_source_breakout_scalar = space_catalyst_forward_risk_scalar(
+        "RKLB",
+        "breakout_long",
+        official_customer_source_profile=company_source_profile,
+        forward_replacement_profile=profile,
+    )
+
+    assert round(company_source_trend_scalar, 6) == 1.794681
+    assert round(company_source_breakout_scalar, 6) == 1.334025
 
 
 def test_space_catalyst_observation_slot_marks_government_contract_peer_leader():
@@ -2530,6 +2625,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_forward_replacement_same_theme_strength_risk_scalar": 1.05,
                 "space_forward_replacement_trend_strength_risk_scalar": 1.05,
                 "space_forward_replacement_iwm_leader_trend_risk_scalar": 1.025,
+                "space_forward_replacement_company_source_trend_risk_scalar": 1.025,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -2570,6 +2666,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_forward_replacement_same_theme_strength_bucket": True,
                     "space_forward_replacement_trend_strength_bucket": True,
                     "space_forward_replacement_iwm_leader_trend_bucket": True,
+                    "space_forward_replacement_company_source_trend_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -2633,7 +2730,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "forward replacement-positive 10d @ 1.05x; "
         "forward same-theme replacement-strength >=500.0 @ 1.05x; "
         "forward replacement-strength trend @ 1.05x; "
-        "forward replacement-strength IWM trend @ 1.025x)"
+        "forward replacement-strength IWM trend @ 1.025x; "
+        "forward replacement-strength company-source trend @ 1.025x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -2654,7 +2752,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "forward_replacement_positive=True "
         "forward_replacement_same_theme_strength=True "
         "forward_replacement_trend_strength=True "
-        "forward_replacement_iwm_leader_trend=True"
+        "forward_replacement_iwm_leader_trend=True "
+        "forward_replacement_company_source_trend=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report
