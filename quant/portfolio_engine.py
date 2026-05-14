@@ -62,6 +62,8 @@ from constants import (
     TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK,
     TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT,
     TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER,
+    TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT,
+    TREND_GOLD_NEAR_HIGH_TICKERS,
     RISK_ON_UNMODIFIED_RISK_MULTIPLIER,
     RISK_ON_UNMODIFIED_LOW_SCORE_MAX,
     RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER,
@@ -323,6 +325,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
         entry    = sig.get("entry_price")
         stop     = sig.get("stop_price")
         strategy = sig.get("strategy", "")
+        ticker = str(sig.get("ticker") or "").upper()
         if entry and stop and portfolio_value:
             signal_risk_pct = effective_risk_pct
             trade_quality_score = sig.get("trade_quality_score")
@@ -607,6 +610,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             clean_spy_leader_signal_day_cap_applied = False
             breakout_commodities_cap_applied = False
             financials_mid_dispersion_leader_cap_applied = False
+            trend_gold_near_high_cap_applied = False
             if (
                 sig.get("signal_day_ticker_outperformed_spy") is True
                 and strategy in {"trend_long", "breakout_long"}
@@ -632,6 +636,12 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                     max_position_pct,
                     TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT,
                 )
+                if ticker in TREND_GOLD_NEAR_HIGH_TICKERS:
+                    trend_gold_near_high_cap_applied = True
+                    max_position_pct = max(
+                        max_position_pct,
+                        TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT,
+                    )
             if financials_sector_leader_risk_multiplier != 1.0:
                 max_position_pct = max(
                     max_position_pct,
@@ -838,6 +848,81 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                         )
                         sizing["clean_spy_leader_signal_day_cap_shares"] = cap_shares
                         sizing["clean_spy_leader_signal_day_new_shares"] = new_shares
+                if (
+                    trend_gold_near_high_cap_applied
+                    and sizing.get("shares_to_buy")
+                    and sizing.get("net_risk_per_share")
+                    and signal_risk_pct > 0
+                ):
+                    old_shares = int(sizing.get("shares_to_buy") or 0)
+                    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+                    pre_sizing_risk_pct = effective_risk_pct
+                    for multiplier in (
+                        tqs_risk_multiplier,
+                        risk_on_unmodified_risk_multiplier,
+                        spy_relative_leader_risk_on_multiplier,
+                        rs20_entry_state_risk_multiplier,
+                        signal_day_ticker_green_risk_multiplier,
+                        rs60_top_quintile_risk_multiplier,
+                        clean_spy_leader_signal_day_risk_multiplier,
+                        trend_mid_sector_dispersion_risk_multiplier,
+                        trend_commodities_near_high_risk_multiplier,
+                    ):
+                        pre_sizing_risk_pct *= multiplier
+                    raw_shares = max(
+                        1,
+                        int(
+                            math.floor(
+                                (portfolio_value * pre_sizing_risk_pct)
+                                / net_risk_per_share
+                            )
+                        ),
+                    )
+                    old_cap_shares = max(
+                        1,
+                        int(
+                            math.floor(
+                                portfolio_value
+                                * TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
+                                / entry
+                            )
+                        ),
+                    )
+                    new_cap_shares = max(
+                        1,
+                        int(
+                            math.floor(
+                                portfolio_value
+                                * TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT
+                                / entry
+                            )
+                        ),
+                    )
+                    new_shares = min(raw_shares, new_cap_shares)
+                    if new_shares > old_shares:
+                        risk_amount = new_shares * net_risk_per_share
+                        position_value = new_shares * entry
+                        sizing["shares_to_buy"] = new_shares
+                        sizing["position_value_usd"] = round(position_value, 2)
+                        sizing["position_pct_of_portfolio"] = round(
+                            position_value / portfolio_value,
+                            4,
+                        )
+                        sizing["risk_amount_usd"] = round(risk_amount, 2)
+                        sizing["risk_pct"] = (
+                            risk_amount / portfolio_value if portfolio_value else 0.0
+                        )
+                        sizing["trend_gold_near_high_cap_baseline_shares"] = (
+                            old_shares
+                        )
+                        sizing["trend_gold_near_high_cap_raw_shares"] = raw_shares
+                        sizing["trend_gold_near_high_cap_old_cap_shares"] = (
+                            old_cap_shares
+                        )
+                        sizing["trend_gold_near_high_cap_new_cap_shares"] = (
+                            new_cap_shares
+                        )
+                        sizing["trend_gold_near_high_cap_new_shares"] = new_shares
                 sizing["base_risk_pct"] = effective_risk_pct
                 sizing["max_position_pct_applied"] = max_position_pct
                 sizing["trade_quality_score"] = trade_quality_score
@@ -887,6 +972,10 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 if breakout_commodities_cap_applied:
                     sizing["breakout_commodities_max_position_pct_applied"] = (
                         BREAKOUT_COMMODITIES_MAX_POSITION_PCT
+                    )
+                if trend_gold_near_high_cap_applied:
+                    sizing["trend_gold_near_high_max_position_pct_applied"] = (
+                        TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT
                     )
                 if financials_mid_dispersion_leader_cap_applied:
                     sizing[

@@ -74,7 +74,7 @@ Keep only the minimal anchor points here. Full metrics stay in
 ### Core Stack
 
 Current core checkpoint is the 2026-05-14 accepted stack ending at core
-`exp-20260514-049` (`commodity_breakout_cap`).
+`exp-20260514-050` (`gold_trend_near_high_cap`).
 
 Mechanism summary:
 
@@ -91,6 +91,9 @@ Mechanism summary:
 - Commodity breakout signals are a separate cap-bound allocation sleeve; a
   57.5% cap worked without changing entries, ranking, exits, or raw commodity
   multipliers.
+- Gold trend near-high signals are a narrower cap-bound sleeve inside the
+  accepted Commodity near-high trend policy. A 57.5% GLD/IAU-only cap improved
+  all three windows while leaving SLV and raw Commodity multipliers unchanged.
 - The accepted Financials sector-leader trend sleeve is also cap-bound alpha;
   a sleeve-specific 50% position cap improved weak and old windows without
   changing the raw Financials multipliers.
@@ -105,7 +108,7 @@ Core interpretation:
 - the edge lives in shared allocation on already-qualified signals;
 - the edge does not justify new broad entry filters;
 - the edge does not justify broad slot expansion;
-- commodity, Financials, or clean-SPY signal-day cap follow-up should require
+- commodity, Gold, Financials, or clean-SPY signal-day cap follow-up should require
   a new production-visible state and forward cap-room attribution, not another
   raw multiplier/cap retry after the accepted sleeve caps;
 - the edge does not justify broad lifecycle redesign.
