@@ -50,17 +50,17 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260514-030` keeps live
+Latest accepted default-off Space alpha result: `exp-20260514-041` keeps live
 Space slots at zero and adds only the shared
-`space_delayed_absorption_trend_risk_scalar=1.025` helper for `trend_long`
-Space signals whose closed event-state profile has weak average 5d cash
-reaction but strong 10d same-theme replacement value. Against the accepted
-`exp-20260514-028` Space stack, aggregate EV improved `+0.1374` and aggregate
-PnL improved `+$5,064.39` across the three frozen Space replay windows:
-`late_strong` EV `+0.0340`, `mid_weak` EV `+0.1034`, and `old_thin`
-unchanged. Trade count and survival were unchanged; max drawdown drift stayed
-inside Gate 4 (`+0.36 pp` worst window). The helper lives in shared
-`space_catalyst_sleeve.py` and remains observe-only/default-off.
+`space_benchmark_breadth_trend_risk_scalar=1.025` helper for `trend_long`
+Space signals whose closed 10d event-state profile is positive versus cash,
+SPY, QQQ, UFO, and ARKX. Against the accepted `exp-20260514-030` Space stack,
+aggregate EV improved `+0.2226` and aggregate PnL improved `+$5,848.12` across
+the three frozen Space replay windows: `late_strong` EV `+0.0482`, `mid_weak`
+EV `+0.1744`, and `old_thin` unchanged. Trade count and survival were
+unchanged; max drawdown drift stayed inside Gate 4 (`+0.37 pp` worst window).
+The helper lives in shared `space_catalyst_sleeve.py`, is surfaced in the
+production observation slot/report, and remains observe-only/default-off.
 
 Previous accepted alpha result: `exp-20260514-023` keeps entries, exits, ranking,
 universe, raw Financials risk, heat, slots, and LLM/news logic unchanged, but

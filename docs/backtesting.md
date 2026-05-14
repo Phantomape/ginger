@@ -132,25 +132,23 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260514-030` adds only
+Latest accepted default-off Space replay result: `exp-20260514-041` adds only
 the shared Space metadata/helper
-`space_delayed_absorption_trend_risk_scalar=1.025` for official Space
-`trend_long` signals whose closed event-state profile has weak average 5d cash
-reaction (`<= $0`) but strong 10d cash and same-theme replacement value
-(`>= $500`). It uses the same three window labels above with frozen Space
-snapshots and keeps live Space slots at zero. Aggregate default-off Space EV
-improved `+0.1374` and PnL improved `+$5,064.39` versus the accepted
-`exp-20260514-028` stack; window EV deltas were `late_strong +0.0340`,
-`mid_weak +0.1034`, and `old_thin unchanged`. Max drawdown drift was
-`+0.36 pp`, trade count stayed `68`, and minimum survival stayed `65.33%`.
-The target slice was delayed-absorption trend evidence (`RDW`, `RKLB`, 3
-adjusted signals), so do not retry nearby delayed-absorption scalars on these
-frozen windows without new closed forward evidence or a materially different
-catalyst-quality field. The previous accepted `exp-20260514-028`
-source-diversity trend helper remains part of the default-off Space stack at
-`1.025x`; its target slice was source-diverse trend evidence (`ASTS`, `LUNR`,
-`RKLB`, 6 adjusted signals), so do not retry nearby source-diversity trend
-scalars without new evidence.
+`space_benchmark_breadth_trend_risk_scalar=1.025` for official Space
+`trend_long` signals whose closed 10d event-state profile is positive versus
+cash, SPY, QQQ, UFO, and ARKX. It uses the same three window labels above with
+frozen Space snapshots and keeps live Space slots at zero. Aggregate
+default-off Space EV improved `+0.2226` and PnL improved `+$5,848.12` versus
+the accepted `exp-20260514-030` stack; window EV deltas were
+`late_strong +0.0482`, `mid_weak +0.1744`, and `old_thin unchanged`. Max
+drawdown drift was `+0.37 pp`, trade count stayed `68`, and minimum survival
+stayed `65.33%`. The changed slice was benchmark-breadth trend evidence
+(`LUNR`, `RKLB`, 4 adjusted signals), so do not retry nearby broad-benchmark
+Space scalars on these frozen windows without new closed forward rows or a
+materially different production-visible catalyst-quality field. The previous
+accepted `exp-20260514-030` delayed-absorption trend helper remains part of the
+default-off Space stack at `1.025x`, and `exp-20260514-028` source-diversity
+trend remains part of the same stack at `1.025x`.
 
 Previous accepted core-sizing result: `exp-20260514-018` keeps the existing
 `trend_long + Commodities + pct_from_52w_high >= -3%` risk boost unchanged but

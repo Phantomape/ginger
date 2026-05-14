@@ -152,6 +152,12 @@ SPACE_CATALYST_DELAYED_ABSORPTION_MAX_5D_CASH_PNL = 0.0
 SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_CASH_PNL = 0.0
 SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE = 500.0
 SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL = 0.0
+SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE = 0.0
+SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE = 0.0
+SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE = 0.0
+SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE = 0.0
+SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR = 1.025
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -467,6 +473,29 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_delayed_absorption_trend_risk_scalar": (
         SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
+    ),
+    "space_benchmark_breadth_trend_experiment_id": "exp-20260514-041",
+    "space_benchmark_breadth_trend_definition": (
+        "official Space trend_long with closed 10d event-state profiles that "
+        "are cash-, SPY-, QQQ-, UFO-, and ARKX-positive"
+    ),
+    "space_benchmark_breadth_min_10d_cash_pnl": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL
+    ),
+    "space_benchmark_breadth_min_10d_spy_value": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE
+    ),
+    "space_benchmark_breadth_min_10d_qqq_value": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE
+    ),
+    "space_benchmark_breadth_min_10d_ufo_value": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
+    ),
+    "space_benchmark_breadth_min_10d_arkx_value": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
+    ),
+    "space_benchmark_breadth_trend_risk_scalar": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -817,6 +846,12 @@ def space_catalyst_forward_risk_scalar(
         and _is_space_delayed_absorption_profile(forward_replacement_profile)
     ):
         scalar *= SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_benchmark_breadth_profile(forward_replacement_profile)
+    ):
+        scalar *= SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
     return scalar
 
 
@@ -1065,6 +1100,24 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_delayed_absorption_trend_risk_scalar": (
                 SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
+            ),
+            "space_benchmark_breadth_min_10d_cash_pnl": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL
+            ),
+            "space_benchmark_breadth_min_10d_spy_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE
+            ),
+            "space_benchmark_breadth_min_10d_qqq_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE
+            ),
+            "space_benchmark_breadth_min_10d_ufo_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
+            ),
+            "space_benchmark_breadth_min_10d_arkx_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
+            ),
+            "space_benchmark_breadth_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -1545,6 +1598,18 @@ def space_catalyst_forward_replacement_positive_profiles(
                 "same_theme_replacement_value": _as_float(
                     horizon_row.get("same_theme_replacement_value")
                 ),
+                "spy_relative_value": _as_float(
+                    horizon_row.get("spy_relative_value")
+                ),
+                "qqq_relative_value": _as_float(
+                    horizon_row.get("qqq_relative_value")
+                ),
+                "ufo_relative_value": _as_float(
+                    horizon_row.get("ufo_relative_value")
+                ),
+                "arkx_relative_value": _as_float(
+                    horizon_row.get("arkx_relative_value")
+                ),
             }
         )
 
@@ -1570,15 +1635,53 @@ def space_catalyst_forward_replacement_positive_profiles(
             for row in ticker_rows
             if row.get("5d_same_theme_replacement_value") is not None
         ]
+        spy_values = [
+            float(row["spy_relative_value"])
+            for row in ticker_rows
+            if row.get("spy_relative_value") is not None
+        ]
+        qqq_values = [
+            float(row["qqq_relative_value"])
+            for row in ticker_rows
+            if row.get("qqq_relative_value") is not None
+        ]
+        ufo_values = [
+            float(row["ufo_relative_value"])
+            for row in ticker_rows
+            if row.get("ufo_relative_value") is not None
+        ]
+        arkx_values = [
+            float(row["arkx_relative_value"])
+            for row in ticker_rows
+            if row.get("arkx_relative_value") is not None
+        ]
         if not cash_values or not same_theme_values:
             continue
         avg_cash = mean(cash_values)
         avg_same_theme = mean(same_theme_values)
+        avg_spy = mean(spy_values) if spy_values else None
+        avg_qqq = mean(qqq_values) if qqq_values else None
+        avg_ufo = mean(ufo_values) if ufo_values else None
+        avg_arkx = mean(arkx_values) if arkx_values else None
+        forward_positive = (
+            avg_cash > SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL
+            and avg_same_theme
+            > SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE
+        )
+        benchmark_breadth_positive = (
+            avg_cash > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL
+            and avg_spy is not None
+            and avg_spy > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE
+            and avg_qqq is not None
+            and avg_qqq > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE
+            and avg_ufo is not None
+            and avg_ufo > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
+            and avg_arkx is not None
+            and avg_arkx > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
+        )
         if (
-            avg_cash
-            <= SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL
-            or avg_same_theme
-            <= SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE
+            not forward_positive
+            and not benchmark_breadth_positive
         ):
             continue
         profiles[ticker] = {
@@ -1596,6 +1699,10 @@ def space_catalyst_forward_replacement_positive_profiles(
             ),
             "avg_10d_cash_relative_pnl": _round(avg_cash, 6),
             "avg_10d_same_theme_replacement_value": _round(avg_same_theme, 6),
+            "avg_10d_spy_relative_value": _round(avg_spy, 6),
+            "avg_10d_qqq_relative_value": _round(avg_qqq, 6),
+            "avg_10d_ufo_relative_value": _round(avg_ufo, 6),
+            "avg_10d_arkx_relative_value": _round(avg_arkx, 6),
             "weak_5d_cash_count": sum(
                 1
                 for value in five_day_cash_values
@@ -1605,6 +1712,10 @@ def space_catalyst_forward_replacement_positive_profiles(
             "positive_same_theme_count": sum(
                 1 for value in same_theme_values if value > 0
             ),
+            "positive_spy_count": sum(1 for value in spy_values if value > 0),
+            "positive_qqq_count": sum(1 for value in qqq_values if value > 0),
+            "positive_ufo_count": sum(1 for value in ufo_values if value > 0),
+            "positive_arkx_count": sum(1 for value in arkx_values if value > 0),
             "event_ids": sorted(
                 {
                     str(row.get("event_id"))
@@ -2136,6 +2247,24 @@ def build_space_catalyst_observation_slot(
             ),
             "space_delayed_absorption_trend_risk_scalar": (
                 SPACE_CATALYST_DELAYED_ABSORPTION_TREND_RISK_SCALAR
+            ),
+            "space_benchmark_breadth_min_10d_cash_pnl": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL
+            ),
+            "space_benchmark_breadth_min_10d_spy_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE
+            ),
+            "space_benchmark_breadth_min_10d_qqq_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE
+            ),
+            "space_benchmark_breadth_min_10d_ufo_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
+            ),
+            "space_benchmark_breadth_min_10d_arkx_value": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
+            ),
+            "space_benchmark_breadth_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -3059,6 +3188,15 @@ def _observation_slot_row(
         if delayed_absorption_trend_bucket
         else 1.0
     )
+    benchmark_breadth_trend_bucket = (
+        strategy.lower() == "trend_long"
+        and _is_space_benchmark_breadth_profile(forward_replacement_profile)
+    )
+    benchmark_breadth_trend_risk_scalar = (
+        SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
+        if benchmark_breadth_trend_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -3093,6 +3231,9 @@ def _observation_slot_row(
         ),
         "space_delayed_absorption_profile": (
             forward_replacement_profile if delayed_absorption_trend_bucket else None
+        ),
+        "space_benchmark_breadth_profile": (
+            forward_replacement_profile if benchmark_breadth_trend_bucket else None
         ),
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
@@ -3308,6 +3449,26 @@ def _observation_slot_row(
         ),
         "space_delayed_absorption_trend_risk_scalar": _round(
             delayed_absorption_trend_risk_scalar,
+            6,
+        ),
+        "space_benchmark_breadth_trend_bucket": benchmark_breadth_trend_bucket,
+        "space_benchmark_breadth_min_10d_cash_pnl": (
+            SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL
+        ),
+        "space_benchmark_breadth_min_10d_spy_value": (
+            SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE
+        ),
+        "space_benchmark_breadth_min_10d_qqq_value": (
+            SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE
+        ),
+        "space_benchmark_breadth_min_10d_ufo_value": (
+            SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
+        ),
+        "space_benchmark_breadth_min_10d_arkx_value": (
+            SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
+        ),
+        "space_benchmark_breadth_trend_risk_scalar": _round(
+            benchmark_breadth_trend_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -3679,6 +3840,31 @@ def _is_space_delayed_absorption_profile(profile: dict[str, Any] | None) -> bool
         and avg_10d_same_theme is not None
         and avg_10d_same_theme
         >= SPACE_CATALYST_DELAYED_ABSORPTION_MIN_10D_SAME_THEME_VALUE
+    )
+
+
+def _is_space_benchmark_breadth_profile(profile: dict[str, Any] | None) -> bool:
+    if not profile:
+        return False
+    closed_count = _as_float(profile.get("closed_event_count"))
+    avg_cash = _as_float(profile.get("avg_10d_cash_relative_pnl"))
+    avg_spy = _as_float(profile.get("avg_10d_spy_relative_value"))
+    avg_qqq = _as_float(profile.get("avg_10d_qqq_relative_value"))
+    avg_ufo = _as_float(profile.get("avg_10d_ufo_relative_value"))
+    avg_arkx = _as_float(profile.get("avg_10d_arkx_relative_value"))
+    return (
+        closed_count is not None
+        and closed_count > 0
+        and avg_cash is not None
+        and avg_cash > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_CASH_PNL
+        and avg_spy is not None
+        and avg_spy > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_SPY_VALUE
+        and avg_qqq is not None
+        and avg_qqq > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE
+        and avg_ufo is not None
+        and avg_ufo > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
+        and avg_arkx is not None
+        and avg_arkx > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
     )
 
 

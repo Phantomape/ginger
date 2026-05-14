@@ -130,7 +130,7 @@ SEC interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted official-catalyst Space stack through
-`exp-20260514-030`.
+`exp-20260514-041`.
 
 Mechanism summary:
 
@@ -148,6 +148,9 @@ Mechanism summary:
   source diversity was delayed absorption, defined as weak average 5d cash
   reaction but strong 10d same-theme replacement value, again only as a
   conservative `trend_long` allocation helper;
+- broad closed-forward benchmark confirmation now matters too: `exp-20260514-041`
+  accepted a conservative `1.025x` `trend_long` helper when 10d event-state
+  profiles are positive versus cash, SPY, QQQ, UFO, and ARKX;
 - the best use is semantic risk allocation inside a quarantined sleeve.
 
 Space interpretation:
@@ -157,9 +160,9 @@ Space interpretation:
   adding more tickers;
 - future progress should come from closed forward outcomes and better catalyst
   semantics, not from nearby scalar retunes on the frozen snapshots.
-- do not retry nearby source-diversity, company-source, or delayed-absorption
-  scalars without new closed forward rows or a new production-visible
-  catalyst-quality field.
+- do not retry nearby source-diversity, company-source, delayed-absorption, or
+  broad benchmark-breadth scalars without new closed forward rows or a new
+  production-visible catalyst-quality field.
 
 ## Durable Laws From Repository Evidence
 

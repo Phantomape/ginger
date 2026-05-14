@@ -502,6 +502,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         ]
         == 1.025
     )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_benchmark_breadth_trend_experiment_id"
+        ]
+        == "exp-20260514-041"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_benchmark_breadth_trend_risk_scalar"
+        ]
+        == 1.025
+    )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
 
@@ -887,6 +899,25 @@ def test_space_catalyst_forward_risk_scalar_subbucket_overrides():
             6,
         )
         == 1.05
+    )
+    assert (
+        round(
+            space_catalyst_forward_risk_scalar(
+                "LUNR",
+                "trend_long",
+                forward_replacement_profile={
+                    "closed_event_count": 1,
+                    "avg_10d_cash_relative_pnl": 100.0,
+                    "avg_10d_same_theme_replacement_value": -50.0,
+                    "avg_10d_spy_relative_value": 25.0,
+                    "avg_10d_qqq_relative_value": 20.0,
+                    "avg_10d_ufo_relative_value": 15.0,
+                    "avg_10d_arkx_relative_value": 10.0,
+                },
+            ),
+            6,
+        )
+        == 1.025
     )
     assert (
         round(
@@ -1362,6 +1393,38 @@ def test_space_catalyst_forward_replacement_positive_profiles_use_closed_ledger_
     assert profiles["LUNR"]["weak_5d_cash_count"] == 1
     assert profiles["LUNR"]["positive_cash_count"] == 1
     assert profiles["LUNR"]["positive_same_theme_count"] == 2
+
+    benchmark_profiles = space_catalyst_forward_replacement_positive_profiles(
+        [
+            {
+                "asof_date": "2026-05-12",
+                "event_id": "asts_authorization",
+                "ticker": "ASTS",
+                "semantic_bucket": "fundamental_contract_regulatory",
+                "source_type": "official_government_release",
+                "event_fields": ["customer_win"],
+                "closed_decision": True,
+                "horizons": {
+                    "10d": {
+                        "status": "mature",
+                        "cash_relative_pnl": 300.0,
+                        "same_theme_replacement_value": -10.0,
+                        "spy_relative_value": 120.0,
+                        "qqq_relative_value": 90.0,
+                        "ufo_relative_value": 80.0,
+                        "arkx_relative_value": 70.0,
+                    }
+                },
+            },
+        ],
+        included_tickers=["ASTS"],
+    )
+
+    assert sorted(benchmark_profiles) == ["ASTS"]
+    assert benchmark_profiles["ASTS"]["avg_10d_same_theme_replacement_value"] == -10.0
+    assert benchmark_profiles["ASTS"]["avg_10d_spy_relative_value"] == 120.0
+    assert benchmark_profiles["ASTS"]["positive_same_theme_count"] == 0
+    assert benchmark_profiles["ASTS"]["positive_arkx_count"] == 1
 
 
 def test_space_catalyst_single_event_defense_profiles_isolates_defense_only():
@@ -1988,6 +2051,60 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_positive():
     assert plan["space_forward_replacement_positive_risk_scalar"] == 1.05
     assert plan["effective_risk_scalar"] == 0.7875
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 787.5
+
+
+def test_space_catalyst_observation_slot_marks_benchmark_breadth_trend():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "LUNR",
+                "strategy": "trend_long",
+                "entry_price": 10.0,
+                "stop_price": 9.0,
+                "target_price": 13.5,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={"LUNR": {"atr": 1.0}},
+        space_catalyst_shadow={
+            "tickers_by_segment": {},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
+        space_source_diversity_profiles={},
+        space_forward_replacement_profiles={
+            "LUNR": {
+                "closed_event_count": 1,
+                "avg_10d_cash_relative_pnl": 200.0,
+                "avg_10d_same_theme_replacement_value": -50.0,
+                "avg_10d_spy_relative_value": 40.0,
+                "avg_10d_qqq_relative_value": 30.0,
+                "avg_10d_ufo_relative_value": 20.0,
+                "avg_10d_arkx_relative_value": 10.0,
+            }
+        },
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["space_forward_replacement_positive_bucket"] is False
+    assert plan["space_benchmark_breadth_trend_bucket"] is True
+    assert plan["space_benchmark_breadth_trend_risk_scalar"] == 1.025
+    assert plan["space_benchmark_breadth_profile"]["avg_10d_spy_relative_value"] == 40.0
+    assert plan["effective_risk_scalar"] == 0.76875
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 768.75
 
 
 def test_space_catalyst_observation_slot_marks_forward_replacement_trend_strength():
@@ -2683,6 +2800,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_forward_replacement_iwm_leader_trend_risk_scalar": 1.025,
                 "space_forward_replacement_company_source_trend_risk_scalar": 1.025,
                 "space_delayed_absorption_trend_risk_scalar": 1.025,
+                "space_benchmark_breadth_trend_risk_scalar": 1.025,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -2726,6 +2844,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_forward_replacement_iwm_leader_trend_bucket": True,
                     "space_forward_replacement_company_source_trend_bucket": True,
                     "space_delayed_absorption_trend_bucket": True,
+                    "space_benchmark_breadth_trend_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -2792,7 +2911,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "forward replacement-strength trend @ 1.05x; "
         "forward replacement-strength IWM trend @ 1.025x; "
         "forward replacement-strength company-source trend @ 1.025x; "
-        "delayed-absorption trend @ 1.025x)"
+        "delayed-absorption trend @ 1.025x; "
+        "benchmark-breadth trend @ 1.025x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -2816,7 +2936,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "forward_replacement_trend_strength=True "
         "forward_replacement_iwm_leader_trend=True "
         "forward_replacement_company_source_trend=True "
-        "delayed_absorption_trend=True"
+        "delayed_absorption_trend=True "
+        "benchmark_breadth_trend=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report
