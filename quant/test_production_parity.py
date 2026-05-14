@@ -591,6 +591,53 @@ def test_financials_sector_leader_cap_is_shared_sizing_policy():
     assert non_leader["position_pct_of_portfolio"] == constants.MAX_POSITION_PCT
 
 
+def test_financials_mid_dispersion_leader_cap_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "COIN",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "financials_sector_leader": True,
+            "mid_sector_dispersion": True,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "GS",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "financials_sector_leader": True,
+            "mid_sector_dispersion": False,
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    mid_dispersion = sized[0]["sizing"]
+    plain_leader = sized[1]["sizing"]
+    assert mid_dispersion["max_position_pct_applied"] == (
+        constants.TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT
+    )
+    assert plain_leader["max_position_pct_applied"] == (
+        constants.TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT
+    )
+    assert mid_dispersion[
+        "trend_financials_mid_dispersion_leader_max_position_pct_applied"
+    ] == constants.TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT
+    assert (
+        "trend_financials_mid_dispersion_leader_max_position_pct_applied"
+        not in plain_leader
+    )
+    assert mid_dispersion["shares_to_buy"] == 550
+    assert plain_leader["shares_to_buy"] == 500
+
+
 def test_mid_sector_dispersion_trend_boost_is_shared_sizing_policy():
     signals = [
         {
@@ -624,6 +671,54 @@ def test_mid_sector_dispersion_trend_boost_is_shared_sizing_policy():
     assert boosted["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.25
     assert unboosted["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.0
     assert boosted["risk_pct"] > unboosted["risk_pct"]
+
+
+def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "spy_relative_leader": True,
+            "signal_day_ticker_outperformed_spy": True,
+            "conditions_met": {"pct_from_52w_high": -0.10},
+        },
+        {
+            "ticker": "NVDA",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "spy_relative_leader": True,
+            "signal_day_ticker_outperformed_spy": False,
+            "conditions_met": {"pct_from_52w_high": -0.10},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    confirmed = sized[0]["sizing"]
+    unconfirmed = sized[1]["sizing"]
+    assert confirmed["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
+    assert unconfirmed["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
+    assert confirmed["max_position_pct_applied"] == (
+        constants.CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
+    )
+    assert unconfirmed["max_position_pct_applied"] == (
+        constants.RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
+    )
+    assert confirmed["clean_spy_leader_signal_day_max_position_pct_applied"] == (
+        constants.CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
+    )
+    assert "clean_spy_leader_signal_day_max_position_pct_applied" not in unconfirmed
+    assert confirmed["shares_to_buy"] == 525
+    assert unconfirmed["shares_to_buy"] == 500
 
 
 def test_risk_on_unmodified_risk_lift_does_not_stack_on_other_sizing_rules():

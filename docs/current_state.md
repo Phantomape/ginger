@@ -2,11 +2,12 @@
 
 Last updated: 2026-05-14.
 
-The current accepted core stack includes the 2026-05-14 clean SPY-relative
-leader signal-day cap promotion from `exp-20260514-027`, layered on top of the
-2026-05-14 Financials sector-leader trend cap promotion from
-`exp-20260514-023`, the 2026-05-14 commodity near-high trend cap promotion
-from `exp-20260514-018`,
+The current accepted core stack includes the 2026-05-14 Financials
+mid-dispersion sector-leader cap promotion from core `exp-20260514-030`,
+layered on top of the 2026-05-14 clean SPY-relative leader signal-day cap
+promotion from `exp-20260514-027`, the 2026-05-14 Financials sector-leader
+trend cap promotion from `exp-20260514-023`, the 2026-05-14 commodity
+near-high trend cap promotion from `exp-20260514-018`,
 the 2026-05-13 clean SPY-relative leader signal-day sizing promotion from `exp-20260513-036`,
 the RS60 top-quintile stock sizing promotion from `exp-20260513-030`, the
 signal-day own-green candle sizing promotion from `exp-20260513-007`, the
@@ -18,18 +19,27 @@ documented in `docs/backtesting.md` and
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
 | `late_strong` | 4.4853 | 103.11% | 4.35 | 6.09% | 19 | 80.39% |
-| `mid_weak` | 1.8502 | 68.78% | 2.69 | 10.13% | 21 | 79.25% |
-| `old_thin` | 0.4704 | 33.60% | 1.40 | 8.76% | 22 | 91.67% |
+| `mid_weak` | 1.8580 | 69.07% | 2.69 | 10.14% | 21 | 79.25% |
+| `old_thin` | 0.4749 | 33.92% | 1.40 | 8.89% | 22 | 91.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260514-027/clean_spy_leader_signal_day_cap.json`.
-Aggregate core EV is now `6.8059`; aggregate PnL is `$205,486.06`.
-Latest saved single-window backtest artifact on disk is
-`data/backtest_results_20260514.json`; it matches the current `old_thin` core
-window at EV `0.4704`, total PnL `$33,597.15`, daily Sharpe `1.40`, max
-drawdown `8.76%`, `22` trades, and survival `91.67%`.
+`data/experiments/exp-20260514-030/financials_mid_dispersion_leader_cap.json`.
+Aggregate core EV is now `6.8182`; aggregate PnL is `$206,104.22`.
+Latest saved single-window backtest artifact on disk may predate this
+promotion; canonical acceptance evidence is the three-window artifact above.
 
-Latest accepted alpha result: `exp-20260514-027` keeps entries, exits, ranking,
+Latest accepted alpha result: core `exp-20260514-030` keeps entries, exits,
+ranking, universe, raw Financials risk, heat, slots, and LLM/news logic
+unchanged, but allows the already-accepted `trend_long` Financials
+sector-leader sleeve to use a 55% single-position cap only when
+`mid_sector_dispersion=true`. Aggregate EV improved `+0.0123` and aggregate
+PnL improved `+$618.16` across the three canonical windows: `late_strong`
+unchanged at EV `4.4853`, `mid_weak` EV `1.8502 -> 1.8580`, and `old_thin` EV
+`0.4704 -> 0.4749`. Max drawdown drift stayed inside Gate 4 (`+0.13 pp` worst
+window), trade count and survival were unchanged, and the rule lives in shared
+`portfolio_engine.py` with focused production-parity tests.
+
+Previous accepted alpha result: `exp-20260514-027` keeps entries, exits, ranking,
 universe, raw clean-SPY risk multiplier, heat, slots, and LLM/news logic
 unchanged, but allows already clean `risk_on` SPY-relative leaders whose ticker
 also beat SPY on the signal day to use a 52.5% single-position cap. Aggregate

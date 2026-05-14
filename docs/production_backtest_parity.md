@@ -33,6 +33,7 @@ in shared modules such as:
 | Position sizing | `portfolio_engine.py` | required | required | fill price may differ |
 | SPY-relative leader position cap | `portfolio_engine.py` | required | required | none |
 | Financials sector-leader trend position cap | `portfolio_engine.py` | required | required | none |
+| Financials mid-dispersion sector-leader trend position cap | `portfolio_engine.py` | required | required | none |
 | Commodity near-high trend position cap | `portfolio_engine.py` | required | required | none |
 | RS20 entry-state sizing top-up | `risk_engine.py`, `portfolio_engine.py` | required | required | none |
 | Signal-day own-green-candle sizing top-up | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |

@@ -73,8 +73,8 @@ Keep only the minimal anchor points here. Full metrics stay in
 
 ### Core Stack
 
-Current core checkpoint is the 2026-05-14 accepted stack ending at
-`exp-20260514-027`.
+Current core checkpoint is the 2026-05-14 accepted stack ending at core
+`exp-20260514-030` (`financials_mid_dispersion_leader_cap`).
 
 Mechanism summary:
 
@@ -91,6 +91,10 @@ Mechanism summary:
 - The accepted Financials sector-leader trend sleeve is also cap-bound alpha;
   a sleeve-specific 50% position cap improved weak and old windows without
   changing the raw Financials multipliers.
+- The narrower Financials sector-leader plus mid-sector-dispersion
+  intersection is modestly cap-bound; a 55% cap improved weak and old windows
+  without changing entries, ranking, or raw Financials multipliers, but only 3
+  signals adjusted.
 - Small taxonomy/data repairs can matter when they change real routing.
 
 Core interpretation:
@@ -99,8 +103,8 @@ Core interpretation:
 - the edge does not justify new broad entry filters;
 - the edge does not justify broad slot expansion;
 - commodity, Financials, or clean-SPY signal-day cap follow-up should require
-  a new production-visible state, not another raw multiplier/cap retry after
-  the accepted sleeve caps;
+  a new production-visible state and forward cap-room attribution, not another
+  raw multiplier/cap retry after the accepted sleeve caps;
 - the edge does not justify broad lifecycle redesign.
 
 ### SEC Financial-Report Default-Off Sleeve

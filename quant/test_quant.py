@@ -922,6 +922,51 @@ def test_size_signals_financials_sector_leader_total_risk():
     assert non_leader_sizing["financials_sector_leader_risk_multiplier_applied"] == 1.0
 
 
+def test_size_signals_financials_mid_dispersion_leader_cap():
+    from constants import (
+        TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT,
+        TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT,
+    )
+    from portfolio_engine import size_signals
+
+    leader = {
+        "ticker": "COIN",
+        "strategy": "trend_long",
+        "sector": "Financials",
+        "financials_sector_leader": True,
+        "mid_sector_dispersion": True,
+        "entry_price": 100.0,
+        "stop_price": 99.0,
+        "trade_quality_score": 0.95,
+    }
+    non_mid = {
+        **leader,
+        "ticker": "JPM",
+        "mid_sector_dispersion": False,
+    }
+
+    sized_leader, sized_non_mid = size_signals(
+        [leader, non_mid],
+        portfolio_value=100_000,
+    )
+
+    leader_sizing = sized_leader["sizing"]
+    non_mid_sizing = sized_non_mid["sizing"]
+    assert leader_sizing["max_position_pct_applied"] == (
+        TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT
+    )
+    assert leader_sizing[
+        "trend_financials_mid_dispersion_leader_max_position_pct_applied"
+    ] == TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT
+    assert non_mid_sizing["max_position_pct_applied"] == (
+        TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT
+    )
+    assert (
+        "trend_financials_mid_dispersion_leader_max_position_pct_applied"
+        not in non_mid_sizing
+    )
+
+
 def test_size_signals_boosts_mid_sector_dispersion_trends():
     from constants import (
         RISK_PER_TRADE_PCT,
@@ -1345,6 +1390,50 @@ def test_evaluate_exit_signals_signal_target_uses_daily_high():
     assert target_rules[0]["trigger_price"] == 136.50
 
 
+def test_legacy_signal_target_surfaces_review_not_target_exit():
+    from position_manager import evaluate_exit_signals, compute_exit_levels
+
+    levels = compute_exit_levels(avg_cost=154.753, signal_target_price=431.57)
+    result = evaluate_exit_signals(
+        current_price=445.0,
+        current_high=449.16,
+        avg_cost=154.753,
+        exit_levels=levels,
+        legacy_basis=True,
+    )
+
+    rules = [r["rule"] for r in result["triggered_rules"]]
+    assert "SIGNAL_TARGET" not in rules
+    assert rules == ["LEGACY_TARGET_REVIEW"]
+
+    review = result["triggered_rules"][0]
+    assert review["urgency"] == "REVIEW"
+    assert review["price_source"] == "daily_high"
+    assert review["trigger_price"] == 449.16
+    assert review["target_price"] == 431.57
+    assert review["stale_target_10pct_below_trigger"] is False
+    assert review["target_vs_trigger_pct"] == pytest.approx(-0.0392, abs=0.0001)
+
+
+def test_legacy_signal_target_review_flags_stale_target():
+    from position_manager import evaluate_exit_signals, compute_exit_levels
+
+    levels = compute_exit_levels(avg_cost=27.0, signal_target_price=61.23)
+    result = evaluate_exit_signals(
+        current_price=258.12,
+        avg_cost=27.0,
+        exit_levels=levels,
+        legacy_basis=True,
+    )
+
+    review_rules = [
+        r for r in result["triggered_rules"]
+        if r["rule"] == "LEGACY_TARGET_REVIEW"
+    ]
+    assert len(review_rules) == 1
+    assert review_rules[0]["stale_target_10pct_below_trigger"] is True
+
+
 def test_snxx_profit_target_no_reduce_before_signal_target():
     from position_manager import evaluate_exit_signals, compute_exit_levels
     from preflight_validator import compute_account_state
@@ -1423,6 +1512,46 @@ def test_preflight_signal_target_maps_to_target_exit_not_reduce():
     result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
     assert result["position_states"]["TEST"] == "TARGET_EXIT"
     assert "TEST" not in result["suggested_reduce_pct"]
+
+
+def test_preflight_legacy_target_review_stays_hold():
+    from preflight_validator import compute_account_state
+
+    ts = {
+        "signals": {
+            "TSLA": {
+                "close": 445.0,
+                "daily_high": 449.16,
+                "position": {
+                    "shares": 5,
+                    "avg_cost": 154.753,
+                    "unrealized_pnl_pct": 1.8756,
+                    "legacy_basis": True,
+                    "breach_status": "OK",
+                    "exit_levels": {
+                        "hard_stop_price": 360.23,
+                        "signal_target_price": 431.57,
+                    },
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "triggered_rules": [
+                            {
+                                "rule": "LEGACY_TARGET_REVIEW",
+                                "urgency": "REVIEW",
+                                "target_price": 431.57,
+                                "trigger_price": 449.16,
+                                "message": "target reached; review only",
+                            }
+                        ],
+                    },
+                },
+            }
+        }
+    }
+
+    result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
+    assert result["position_states"]["TSLA"] == "HOLD"
+    assert "TSLA" not in result["suggested_reduce_pct"]
 
 
 def test_same_day_manual_buy_blocks_profit_reduce_rule():
@@ -2592,6 +2721,8 @@ def test_size_signals_boosts_clean_spy_leader_signal_day_outperformance():
 
     assert sized["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
     assert sized["clean_spy_leader_signal_day_risk_multiplier_applied"] == 1.10
+    assert sized["clean_spy_leader_signal_day_max_position_pct_applied"] == 0.525
+    assert sized["max_position_pct_applied"] == 0.525
     assert sized["clean_spy_leader_signal_day_baseline_shares"] == 341
     assert sized["shares_to_buy"] == 375
     assert sized["risk_pct"] > 0.02
@@ -4231,6 +4362,62 @@ def test_build_prompt_signal_target_low_urgency_in_attention_list():
     assert "positions_requiring_attention" in user_msg or "CRDO" in user_msg, (
         "CRDO position with SIGNAL_TARGET must be surfaced in the prompt"
     )
+
+
+def test_build_prompt_legacy_target_review_in_attention_list():
+    import os, sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from llm_advisor import build_prompt
+
+    fake_trend_signals = {
+        "market_regime": {"regime": "BULL", "note": "", "indices": {}},
+        "quant_signals": [],
+        "signals": {
+            "TSLA": {
+                "close": 445.0,
+                "daily_high": 449.16,
+                "position": {
+                    "shares": 5,
+                    "avg_cost": 154.753,
+                    "market_value_usd": 2225.0,
+                    "unrealized_pnl_pct": 1.8756,
+                    "legacy_basis": True,
+                    "stop_source": "auto_rolling",
+                    "exit_levels": {
+                        "hard_stop_price": 360.23,
+                        "signal_target_price": 431.57,
+                    },
+                    "exit_signals": {
+                        "any_triggered": True,
+                        "critical_exit": False,
+                        "high_urgency": False,
+                        "triggered_rules": [
+                            {
+                                "rule": "LEGACY_TARGET_REVIEW",
+                                "urgency": "REVIEW",
+                                "message": "target reached; review only",
+                                "target_price": 431.57,
+                                "trigger_price": 449.16,
+                                "stale_target_10pct_below_trigger": False,
+                            },
+                        ],
+                    },
+                    "trailing_stop_from_20d_high": 413.23,
+                    "drawdown_from_20d_high_pct": 0.009,
+                },
+            }
+        },
+    }
+
+    positions = {"portfolio_value_usd": 100_000, "positions": []}
+    system_msg, user_msg = build_prompt([], positions, trend_signals=fake_trend_signals)
+
+    if system_msg is None:
+        pytest.skip("Prompt template file not found - skipping integration test")
+
+    assert "LEGACY_TARGET_REVIEW" in user_msg
+    assert "TSLA" in user_msg
+    assert "legacy_basis" in user_msg
 
 
 def test_build_prompt_daily_return_pct_in_attention_entry():

@@ -116,7 +116,7 @@
       "worst_trade_pct": -0.063499
     }
   },
-  "artifact_markdown": "# exp-20260514-030 Financials Mid-Dispersion Leader Cap\n\nDecision: `accepted_for_shared_policy_implementation`.\n\nSingle variable: max position cap for the already-accepted `trend_long + Financials + financials_sector_leader=true` sleeve, restricted to signals that also carry `mid_sector_dispersion=true`. Entries, exits, ranking, universe, LLM/news logic, raw multipliers, heat, and slot limits were unchanged.\n\n## Sweep\n\n| Cap | Gate 4 | dEV sum | dPnL sum | Improved | Regressed | Adjusted | Max DD worse |\n|---:|:---:|---:|---:|---|---|---:|---:|\n| 0.525 | PASS | +0.0067 | $+351.45 | mid_weak, old_thin | - | 3 | +0.0007 |\n| 0.550 | PASS | +0.0123 | $+618.16 | mid_weak, old_thin | - | 3 | +0.0013 |\n\nSelected cap: `0.55`.\n\n## Selected Three-Window Result\n\n| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| late_strong | 4.4853 | 4.4853 | +0.0000 | $103,112.67 | $103,112.67 | $+0.00 | +0.0000 | 0.8039 | 0 |\n| mid_weak | 1.8502 | 1.8580 | +0.0078 | $68,776.24 | $69,070.09 | $+293.85 | +0.0001 | 0.7925 | 1 |\n| old_thin | 0.4704 | 0.4749 | +0.0045 | $33,597.15 | $33,921.46 | $+324.31 | +0.0013 | 0.9167 | 2 |\n\nProduction impact: shadow scout only unless promoted into shared `constants.py`, `portfolio_engine.py`, backtest attribution, and focused parity tests.",
+  "artifact_markdown": "# exp-20260514-030 Financials Mid-Dispersion Leader Cap\n\nDecision: `accepted_shared_policy_promoted`.\n\nSingle variable: max position cap for the already-accepted `trend_long + Financials + financials_sector_leader=true` sleeve, restricted to signals that also carry `mid_sector_dispersion=true`. Entries, exits, ranking, universe, LLM/news logic, raw multipliers, heat, and slot limits were unchanged.\n\n## Sweep\n\n| Cap | Gate 4 | dEV sum | dPnL sum | Improved | Regressed | Adjusted | Max DD worse |\n|---:|:---:|---:|---:|---|---|---:|---:|\n| 0.525 | PASS | +0.0067 | $+351.45 | mid_weak, old_thin | - | 3 | +0.0007 |\n| 0.550 | PASS | +0.0123 | $+618.16 | mid_weak, old_thin | - | 3 | +0.0013 |\n\nSelected cap: `0.55`.\n\n## Selected Three-Window Result\n\n| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| late_strong | 4.4853 | 4.4853 | +0.0000 | $103,112.67 | $103,112.67 | $+0.00 | +0.0000 | 0.8039 | 0 |\n| mid_weak | 1.8502 | 1.8580 | +0.0078 | $68,776.24 | $69,070.09 | $+293.85 | +0.0001 | 0.7925 | 1 |\n| old_thin | 0.4704 | 0.4749 | +0.0045 | $33,597.15 | $33,921.46 | $+324.31 | +0.0013 | 0.9167 | 2 |\n\nProduction impact: promoted into shared `constants.py` and `portfolio_engine.py`; `backtester.py` records the sizing attribution key; production and backtest both call the same shared `size_signals` path. Focused sizing and parity tests passed.\n",
   "before_metrics": {
     "late_strong": {
       "converged": true,
@@ -173,7 +173,7 @@
       "worst_trade_pct": -0.063499
     }
   },
-  "change_type": "capital_allocation_shadow",
+  "change_type": "capital_allocation_shared_policy",
   "changed_trades": {
     "late_strong": {
       "added_count": 0,
@@ -633,8 +633,8 @@
     }
   },
   "changed_variable": "max_position_pct_for_financials_sector_leader_mid_sector_dispersion_sleeve",
-  "decision": "accepted_for_shared_policy_implementation",
-  "decision_reason": "The Financials sector-leader mid-dispersion intersection remained cap-bound and the selected cap improved the canonical three-window stack without EV regression.",
+  "decision": "accepted_shared_policy_promoted",
+  "decision_reason": "The Financials sector-leader mid-dispersion intersection remained cap-bound; the selected cap improved the canonical three-window stack without EV regression, then was promoted into shared sizing policy with focused parity coverage.",
   "delta_metrics": {
     "aggregate_after": {
       "expected_value_score_sum": 6.8182,
@@ -892,20 +892,55 @@
   },
   "production_impact": {
     "backtester_adapter_changed": true,
-    "parity_test_added": false,
-    "promotion_requirement": "If accepted for trading, add a shared constant and cap branch in portfolio_engine.size_signals, include the attribution key in backtester.py, and add focused production/backtest parity tests before live orders change.",
-    "replay_only": true,
-    "run_adapter_changed": false,
-    "shared_policy_changed": false
+    "backtester_attribution_key": "trend_financials_mid_dispersion_leader_max_position_pct_applied",
+    "focused_tests": [
+      "python -m pytest quant/test_quant.py -k financials_mid_dispersion_leader_cap",
+      "python -m pytest quant/test_production_parity.py -k financials_mid_dispersion_leader_cap"
+    ],
+    "parity_test_added": true,
+    "production_path": "run.py uses portfolio_engine.size_signals through the shared sizing policy; no run-only branch was added.",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "shared_policy_files": [
+      "quant/constants.py",
+      "quant/portfolio_engine.py"
+    ]
+  },
+  "promotion_validation": {
+    "adjusted_signal_count": 3,
+    "aggregate_expected_value_score_delta": 0.0123,
+    "aggregate_total_pnl_delta": 618.16,
+    "attribution_key": "trend_financials_mid_dispersion_leader_max_position_pct_applied",
+    "improved_windows": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "max_drawdown_worse": 0.0013,
+    "regressed_windows": [],
+    "selected_max_position_pct": 0.55,
+    "tests_passed": [
+      "python -m pytest quant/test_quant.py -k \"financials_mid_dispersion_leader_cap or financials_sector_leader_total_risk or boosts_mid_sector_dispersion\"",
+      "python -m pytest quant/test_production_parity.py -k \"financials_mid_dispersion_leader_cap or financials_sector_leader_cap or mid_sector_dispersion_trend_boost\""
+    ]
   },
   "rejection_reason": null,
   "related_files": [
+    "quant/constants.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/test_quant.py",
+    "quant/test_production_parity.py",
     "quant/experiments/exp_20260514_030_financials_mid_dispersion_leader_cap.py",
     "data/experiments/exp-20260514-030/financials_mid_dispersion_leader_cap.json",
     "docs/experiments/logs/exp-20260514-030.json",
     "docs/experiments/tickets/exp-20260514-030.json",
     "docs/experiments/artifacts/exp-20260514-030_financials_mid_dispersion_leader_cap.md",
-    "docs/experiment_log.jsonl"
+    "docs/experiment_log.jsonl",
+    "docs/backtesting.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/production_backtest_parity.md"
   ],
   "single_causal_variable": "max_position_pct for trend_long Financials sector-leader signals with mid_sector_dispersion=true",
   "sizing_attribution": {
@@ -970,7 +1005,7 @@
       }
     }
   },
-  "status": "accepted_for_shared_policy_implementation",
+  "status": "accepted_shared_policy_promoted",
   "sweep_summary": [
     {
       "adjusted_signal_count": 3,

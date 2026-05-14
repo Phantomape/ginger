@@ -22,6 +22,7 @@ from constants import (
     TREND_FINANCIALS_RISK_MULTIPLIER,
     TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER,
     TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT,
+    TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT,
     TREND_TECH_GAP_VULN_MIN,
     TREND_TECH_GAP_VULN_MAX,
     TREND_TECH_GAP_RISK_MULTIPLIER,
@@ -71,6 +72,7 @@ from constants import (
     RS60_TOP_QUINTILE_RISK_MULTIPLIER,
     SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
     CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER,
+    CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT,
     TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
@@ -601,6 +603,19 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 == RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
             ):
                 max_position_pct = RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
+            clean_spy_leader_signal_day_cap_applied = False
+            financials_mid_dispersion_leader_cap_applied = False
+            if (
+                sig.get("signal_day_ticker_outperformed_spy") is True
+                and strategy in {"trend_long", "breakout_long"}
+                and spy_relative_leader_risk_on_multiplier
+                == RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
+            ):
+                clean_spy_leader_signal_day_cap_applied = True
+                max_position_pct = max(
+                    max_position_pct,
+                    CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT,
+                )
             if (
                 trend_commodities_near_high_risk_multiplier
                 == TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER
@@ -614,6 +629,12 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                     max_position_pct,
                     TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT,
                 )
+                if sig.get("mid_sector_dispersion") is True:
+                    financials_mid_dispersion_leader_cap_applied = True
+                    max_position_pct = max(
+                        max_position_pct,
+                        TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT,
+                    )
             if (
                 strategy == "trend_long"
                 and sig.get("mid_sector_dispersion") is True
@@ -851,6 +872,14 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sizing["clean_spy_leader_signal_day_risk_multiplier_applied"] = (
                     clean_spy_leader_signal_day_risk_multiplier
                 )
+                if clean_spy_leader_signal_day_cap_applied:
+                    sizing["clean_spy_leader_signal_day_max_position_pct_applied"] = (
+                        CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
+                    )
+                if financials_mid_dispersion_leader_cap_applied:
+                    sizing[
+                        "trend_financials_mid_dispersion_leader_max_position_pct_applied"
+                    ] = TREND_FINANCIALS_MID_DISPERSION_LEADER_MAX_POSITION_PCT
                 sizing["ticker_minus_spy_signal_day_open_close_return_pct"] = (
                     sig.get("ticker_minus_spy_signal_day_open_close_return_pct")
                 )
