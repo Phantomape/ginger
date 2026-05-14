@@ -78,21 +78,34 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after `exp-20260514-018` promoted the
-trend Commodities near-high 50% sleeve-specific position cap:
+Current accepted fixed-window metrics after `exp-20260514-023` promoted the
+trend Financials sector-leader 50% sleeve-specific position cap:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `late_strong` | 4.4313 | 4.35 | $101,873.18 | 101.87% | 5.98% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.7334 | 2.65 | $65,410.59 | 65.41% | 10.12% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.4520 | 1.39 | $32,522.26 | 32.52% | 8.48% | 40.91% | 22 | 91.67% |
+| `mid_weak` | 1.8324 | 2.69 | $68,124.12 | 68.12% | 10.13% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.4703 | 1.40 | $33,591.36 | 33.59% | 8.72% | 40.91% | 22 | 91.67% |
 
 Artifact note:
-`data/experiments/exp-20260514-018/trend_commodities_near_high_cap.json`
+`data/experiments/exp-20260514-023/financials_sector_leader_cap.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.6167`; aggregate PnL is `$199,806.03`.
+EV is `6.7340`; aggregate PnL is `$203,588.66`.
 
-Latest accepted core-sizing result: `exp-20260514-018` keeps the existing
+Latest accepted core-sizing result: `exp-20260514-023` keeps the existing
+`trend_long + Financials + financials_sector_leader=true` 2.5x total risk
+budget unchanged but lets only that already-accepted sleeve use a 50%
+single-position cap in shared `portfolio_engine.py`. The change improved EV
+and PnL in `mid_weak` and `old_thin`, left `late_strong` unchanged, and kept
+trade count and survival unchanged: aggregate EV `+0.1173`, aggregate PnL
+`+$3,782.63`, max drawdown drift stayed inside the Gate 4 guardrail at
+`+0.24 pp` worst window, and there is no production/backtest split because
+both adapters call the same shared sizing module. Do not retry nearby
+Financials raw multipliers, target-width variants, or cap values on these
+frozen windows without forward evidence or a materially different
+production-visible discriminator.
+
+Previous accepted core-sizing result: `exp-20260514-018` keeps the existing
 `trend_long + Commodities + pct_from_52w_high >= -3%` risk boost unchanged but
 lets only that already-accepted sleeve use a 50% single-position cap in shared
 `portfolio_engine.py`. The change improved EV and PnL in all three fixed

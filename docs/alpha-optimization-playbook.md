@@ -73,8 +73,8 @@ Keep only the minimal anchor points here. Full metrics stay in
 
 ### Core Stack
 
-Current core checkpoint is the 2026-05-13 accepted stack ending at
-`exp-20260513-036`.
+Current core checkpoint is the 2026-05-14 accepted stack ending at
+`exp-20260514-023`.
 
 Mechanism summary:
 
@@ -85,6 +85,9 @@ Mechanism summary:
 - The accepted commodity near-high trend sleeve is cap-bound alpha; a
   sleeve-specific 50% position cap worked better than more raw commodity
   multiplier tuning.
+- The accepted Financials sector-leader trend sleeve is also cap-bound alpha;
+  a sleeve-specific 50% position cap improved weak and old windows without
+  changing the raw Financials multipliers.
 - Small taxonomy/data repairs can matter when they change real routing.
 
 Core interpretation:
@@ -92,8 +95,8 @@ Core interpretation:
 - the edge lives in shared allocation on already-qualified signals;
 - the edge does not justify new broad entry filters;
 - the edge does not justify broad slot expansion;
-- commodity follow-up should require a new production-visible state, not
-  another raw multiplier/cap retry after the accepted sleeve cap;
+- commodity or Financials cap follow-up should require a new production-visible
+  state, not another raw multiplier/cap retry after the accepted sleeve caps;
 - the edge does not justify broad lifecycle redesign.
 
 ### SEC Financial-Report Default-Off Sleeve

@@ -547,6 +547,50 @@ def test_financials_trend_risk_boost_is_shared_sizing_policy():
     assert boosted["risk_pct"] > unboosted["risk_pct"]
 
 
+def test_financials_sector_leader_cap_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "GS",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "financials_sector_leader": True,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "MS",
+            "strategy": "trend_long",
+            "sector": "Financials",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "financials_sector_leader": False,
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    leader = sized[0]["sizing"]
+    non_leader = sized[1]["sizing"]
+    assert leader["max_position_pct_applied"] == (
+        constants.TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT
+    )
+    assert non_leader["max_position_pct_applied"] == constants.MAX_POSITION_PCT
+    assert leader["trend_financials_sector_leader_max_position_pct_applied"] == (
+        constants.TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT
+    )
+    assert non_leader["trend_financials_sector_leader_max_position_pct_applied"] == (
+        constants.MAX_POSITION_PCT
+    )
+    assert leader["position_pct_of_portfolio"] == (
+        constants.TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT
+    )
+    assert non_leader["position_pct_of_portfolio"] == constants.MAX_POSITION_PCT
+
+
 def test_mid_sector_dispersion_trend_boost_is_shared_sizing_policy():
     signals = [
         {

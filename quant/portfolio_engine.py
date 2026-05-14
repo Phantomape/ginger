@@ -21,6 +21,7 @@ from constants import (
     TREND_INDUSTRIALS_RISK_MULTIPLIER,
     TREND_FINANCIALS_RISK_MULTIPLIER,
     TREND_FINANCIALS_SECTOR_LEADER_RISK_MULTIPLIER,
+    TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT,
     TREND_TECH_GAP_VULN_MIN,
     TREND_TECH_GAP_VULN_MAX,
     TREND_TECH_GAP_RISK_MULTIPLIER,
@@ -608,6 +609,11 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                     max_position_pct,
                     TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT,
                 )
+            if financials_sector_leader_risk_multiplier != 1.0:
+                max_position_pct = max(
+                    max_position_pct,
+                    TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT,
+                )
             if (
                 strategy == "trend_long"
                 and sig.get("mid_sector_dispersion") is True
@@ -818,6 +824,11 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["financials_sector_leader_risk_multiplier_applied"] = (
                     financials_sector_leader_risk_multiplier
+                )
+                sizing["trend_financials_sector_leader_max_position_pct_applied"] = (
+                    TREND_FINANCIALS_SECTOR_LEADER_MAX_POSITION_PCT
+                    if financials_sector_leader_risk_multiplier != 1.0
+                    else MAX_POSITION_PCT
                 )
                 sizing["risk_on_unmodified_risk_multiplier_applied"] = (
                     risk_on_unmodified_risk_multiplier
