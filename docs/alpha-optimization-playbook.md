@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last reviewed: 2026-05-13.
+Last reviewed: 2026-05-14.
 
 This file is the long-run alpha synthesis for the strategy system. It is not a
 single-session action card and it is not a chronological experiment diary. Its
@@ -133,7 +133,7 @@ until forward replacement value supports live scope.
 
 ### Space Default-Off Sleeve
 
-Accepted checkpoint: official-catalyst Space stack through `exp-20260513-110`.
+Accepted checkpoint: official-catalyst Space stack through `exp-20260514-002`.
 `exp-20260512-043` tested `mission_binary` profile membership and produced no
 executable delta.
 
@@ -166,17 +166,22 @@ Current default-off Space helpers:
   momentum: `1.05x` top-up;
 - source-diverse official Space signals that also lead the Space peer basket
   while IWM beats SPY: another `1.05x` top-up;
+- closed 10d event-state profiles with both positive cash-relative PnL and
+  positive same-theme replacement value: `1.05x` top-up;
+- closed 10d event-state profiles with average same-theme replacement value
+  `>= $500`: another `1.05x` top-up;
 - RKLB/ASTS launch-connectivity `trend_long` target extension: 7 ATR in the
   default-off Space context.
 
-Accepted aggregate metrics after `exp-20260513-110`: EV `23.6930`, total PnL
-`$570,527.21`, max drawdown ceiling `11.76%`, min survival `65.33%`, and 68
+Accepted aggregate metrics after `exp-20260514-002`: EV `24.4642`, total PnL
+`$599,684.05`, max drawdown ceiling `12.73%`, min survival `65.33%`, and 68
 trades.
 
 Space conclusion: the supported Space alpha is production-visible
 catalyst-quality plus relative-strength risk allocation, not live routing. Live
-Space slots remain zero, and forward replacement value is still the promotion
-gate.
+Space slots remain zero. Forward replacement value is now useful for
+default-off risk allocation, but the promotion gate still requires broader
+closed evidence before live slots can be enabled.
 
 ## Long-Run Mechanism Laws
 
@@ -366,6 +371,8 @@ Accepted Space evidence:
 - source-diversity peer-leader risk: `exp-20260513-039`.
 - source-diversity plus IWM small-cap leadership risk: `exp-20260513-108`.
 - source-diversity plus peer-leader plus IWM leadership risk: `exp-20260513-110`.
+- forward replacement-positive risk: `exp-20260513-113`.
+- forward same-theme replacement-strength risk: `exp-20260514-002`.
 
 Rejected Space patterns:
 
@@ -391,13 +398,16 @@ Rejected Space patterns:
   momentum versus the equal-weight peer average excluding the ticker have the
   same leader/nonleader sign, so the accepted peer-state helpers were
   behaviorally unchanged on all three windows.
-Next valid Space alpha: forward replacement value by catalyst family, source
-quality, peer leadership, and production registry profile. Do not keep slicing
+Next valid Space alpha: expand forward replacement value beyond the current
+positive-profile scalar into catalyst-family/source/peer/profile cohorts with
+more closed evidence. Do not keep slicing
 the accepted watch-liquidity helper by peer state or TQS bucket on frozen
 snapshots, and do not retune nearby multi-event, source-qualified peer-leader,
 government-contract peer-leader, single-event defense-only, attention-overlay,
 source-diversity, source-diversity peer-leader, or source-diversity IWM-leader
-count/scalar values, or nearby IWM-plus-peer trend scalars, without new forward
+count/scalar values, nearby IWM-plus-peer trend scalars, the accepted
+forward replacement-positive `1.05x` scalar, or nearby same-theme strength
+floors/scalars around the accepted `$500` / `1.05x` helper without new forward
 evidence.
 Candidate-pool work is valid only if it improves official-catalyst coverage or
 attribution quality; do not add noise tickers just to get more trades.
@@ -437,17 +447,16 @@ structured reason stability.
 | Event paper | Replacement-value state surfaces beat broad event gates | `exp-20260510-003`, `exp-20260510-005` |
 | SEC T+1 | Useful default-off paper sleeve; semantic risk allocation is current edge | `exp-20260511-112`, `exp-20260512-001`, `exp-20260512-006`, `exp-20260512-007`, `exp-20260512-020` |
 | SEC filing shock | Blocked by missing directional same-accession fields | `exp-20260510-002` |
-| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`, `exp-20260513-032` |
+| Space | Official-catalyst risk allocation works; live slots remain blocked | `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`, `038`, `041`, `112`, `exp-20260513-003`, `exp-20260513-010`, `exp-20260513-012`, `exp-20260513-014`, `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`, `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, `exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`, `exp-20260514-002` |
 | Post-news PEAD | Directionally interesting but not promotion-grade yet | `exp-20260509-020`, `exp-20260511-104`, `exp-20260511-027`, `exp-20260511-029` |
 | LLM | Keep semantic and attributable; no hard risk delegation | governance rule plus LLM attribution requirements in `AGENTS.md` |
 
 ## Current Research Queue
 
-1. Space forward replacement value. Close the loop on official-catalyst helpers:
-   peer leader versus nonleader breakouts, customer-source quality,
-   financing/dilution profile, single-event defense-only exposure,
-   attention-overlay-with-official-catalyst exposure, and launch/lunar versus
-   data/defense buckets.
+1. Space forward replacement value. After `exp-20260514-002`, the valid next
+   step needs new closed outcomes or a clearly different production-visible
+   catalyst-quality axis; do not keep retuning same-theme strength floors on the
+   frozen sample.
 2. SEC semantic feature expansion. Add PIT-safe same-accession surprise,
    guidance, or language-quality fields before more sleeve retunes.
 3. Event replacement-value paper outcomes. Track the rotation/state-surface
@@ -457,6 +466,70 @@ structured reason stability.
    deployment context.
 5. LLM attribution. Only resume LLM scoring when structured labels and forward
    outcomes can show pass/veto or event-class value.
+
+## Exploratory Strategy Backlog
+
+This backlog captures strategy families that are not yet accepted, rejected, or
+ranked ahead of the current research queue. Treat them as idea inventory for
+future alpha search, not as evidence. A valid test must still follow
+`docs/backtesting.md`, change one independent variable, use production-visible
+fields, and record the experiment in `docs/experiment_log.jsonl`.
+
+Priority rule: prefer ideas that create a new replayable source of market
+behavior over nearby threshold retunes. New event sleeves should start
+default-off or paper-only until closed replacement value justifies promotion.
+
+1. Buyback authorization drift. Test whether repurchase authorization or
+   accelerated buyback events have positive 20-60 trading day replacement value
+   when free cash flow, balance-sheet quality, and post-announcement relative
+   strength confirm the event. This should be an event sleeve or allocation
+   surface, not a broad "buy all buybacks" entry filter.
+2. High-quality insider buying. Move beyond the rejected frozen Form 4
+   pre-entry RS variant by adding a genuinely new semantic field: multi-officer
+   cluster buying, open-market purchases, large dollar size versus market cap
+   or compensation, non-10b5-1 context, or historical owner quality. Keep this
+   in forward observation until sample size clears the guardrail.
+3. Short-interest pressure plus official positive catalyst. A valid squeeze
+   hypothesis needs both crowded short exposure and a production-visible
+   fundamental or official event, such as customer win, guidance raise,
+   approval, buyback, or financing-risk resolution. Do not use social-media
+   heat alone as an entry rule.
+4. Index-inclusion and rebalance flow. Test announce-to-effective-date drift
+   around Russell, S&P, and major ETF/index membership changes. This is a
+   mechanical-flow paper sleeve candidate; it should use official announcement
+   and effective dates, not hindsight membership files.
+5. Analyst estimate revision momentum. For post-earnings candidates, measure
+   whether repeated EPS/revenue estimate upgrades after the event add
+   replacement value beyond T+1 price reaction. This is blocked until
+   point-in-time consensus estimate data is available.
+6. Fundamental inflection sleeve. Add PIT-safe structured financial fields
+   such as revenue acceleration, gross-margin expansion, operating leverage,
+   free-cash-flow turn, leverage improvement, or backlog acceleration. The
+   hypothesis is a numeric inflection surface, not a prompt-only "good
+   earnings" label.
+7. Corporate-action events. Track spin-offs, strategic reviews, asset sales,
+   activist settlements, management changes, bankruptcy exits, and uplistings
+   as semantic event candidates. LLM may classify event type and ambiguity, but
+   code must own sizing, stops, ranking, and promotion gates.
+8. Second-order thematic supply chains. Generalize the Space method to themes
+   such as AI data-center power, grid equipment, defense procurement, nuclear,
+   GLP-1 beneficiaries or casualties, and advanced manufacturing. The valid
+   test is official customer/budget/order evidence plus peer leadership and
+   replacement value, not static ticker expansion.
+9. Volatility-state lifecycle allocation. Use VIX, VIX term structure, or
+   realized-volatility shock as a lifecycle or sizing state that explains when
+   existing trend/breakout trades should use wider targets, tighter risk, or
+   shorter holds. Do not add it as another broad entry filter without survival
+   evidence.
+10. Market-breadth thrust allocation. Test whether participation expansion
+   fields, such as advance/decline breadth, percent of stocks above moving
+   averages, or sector diffusion, improve sizing or deployment context for
+   already-qualified signals. Keep it allocation-first because broad market
+   filters have repeatedly killed good trades.
+
+Initial best candidate: buyback authorization drift. It is orthogonal to the
+current Space/SEC/core allocation stack, production-visible, replayable from
+event records, and can keep LLM inside a bounded event-classification role.
 
 ## Do Not Retry Without New Evidence
 
@@ -639,6 +712,13 @@ checkpoint.
 
 ## Recent mechanism insights
 
+- `exp-20260514-002` (accepted_space_forward_replacement_same_theme_strength):
+  forward replacement value has a useful strength dimension beyond merely
+  positive 10d cash and same-theme value. The narrowed BKSY/RDW/RKLB bucket
+  with average 10d same-theme replacement value `>= $500` supported a further
+  `1.05x` default-off risk helper, improving EV in all three windows while
+  keeping live Space slots at zero. Nearby same-theme floors/scalars should
+  wait for new closed forward evidence.
 - `exp-20260512-025` (rejected_10q_queue_priority): SEC financial-report
   replay showed the accepted edge remains semantic notional sizing, not
   queue-order retuning. 10-Q-first priority raised aggregate EV `+0.4162` and

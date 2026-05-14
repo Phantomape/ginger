@@ -75,7 +75,8 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`,
 `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
-`exp-20260513-108`, and `exp-20260513-110`.
+`exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`, and
+`exp-20260514-002`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -107,7 +108,12 @@ source-diverse official Space signals that also lead the Space peer basket get
 `1.15x` extra default-off risk, and source-diverse official Space signals also
 get `1.05x` extra default-off risk when IWM 20d momentum beats SPY 20d
 momentum, and source-diverse official Space signals that also lead the Space
-peer basket while IWM beats SPY get a further `1.05x` extra default-off risk.
+peer basket while IWM beats SPY get a further `1.05x` extra default-off risk,
+and official non-attention Space tickers whose closed 10d event-state profiles
+are both cash-positive and same-theme replacement-positive get a further
+`1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward
+profile bucket with average 10d same-theme replacement value `>= $500` gets
+another `1.05x` extra default-off risk.
 This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
@@ -140,7 +146,16 @@ interaction only at `1.05x`: aggregate EV moved from `23.4374` to `23.6930`,
 PnL from `$564,173.22` to `$570,527.21`, `mid_weak` and `old_thin` improved
 while `late_strong` was unchanged, max drawdown drift stayed inside Gate 4 at
 `+0.40 pp`, trade count and survival stayed unchanged, and live Space slots
-still zero.
+still zero. `exp-20260513-113` then accepted forward replacement-positive
+official Space risk only at `1.05x`: aggregate EV moved from `23.6930` to
+`24.0468`, PnL from `$570,527.21` to `$584,613.67`, all three windows improved
+EV, max drawdown drift stayed inside Gate 4 at `+0.48 pp`, trade count and
+survival stayed unchanged, and live Space slots still zero.
+`exp-20260514-002` then accepted same-theme replacement-strength risk only at
+the `$500` floor / `1.05x` scalar: aggregate EV moved from `24.0468` to
+`24.4642`, PnL from `$584,613.67` to `$599,684.05`, all three windows improved
+EV, max drawdown drift stayed inside Gate 4 at `+0.49 pp`, trade count and
+survival stayed unchanged, and live Space slots still zero.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space
