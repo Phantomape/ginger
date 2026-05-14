@@ -1,9 +1,10 @@
 # Current State
 
-Last updated: 2026-05-13.
+Last updated: 2026-05-14.
 
-The current accepted core stack includes the 2026-05-13 clean SPY-relative
-leader signal-day sizing promotion from `exp-20260513-036`, layered on top of
+The current accepted core stack includes the 2026-05-14 commodity near-high
+trend cap promotion from `exp-20260514-018`, layered on top of the 2026-05-13
+clean SPY-relative leader signal-day sizing promotion from `exp-20260513-036`,
 the RS60 top-quintile stock sizing promotion from `exp-20260513-030`, the
 signal-day own-green candle sizing promotion from `exp-20260513-007`, the
 2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
@@ -13,20 +14,31 @@ documented in `docs/backtesting.md` and
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.3768 | 99.70% | 4.39 | 6.02% | 19 | 80.39% |
-| `mid_weak` | 1.6788 | 62.64% | 2.68 | 9.70% | 21 | 79.25% |
-| `old_thin` | 0.4292 | 31.56% | 1.36 | 8.36% | 22 | 91.67% |
+| `late_strong` | 4.4313 | 101.87% | 4.35 | 5.98% | 19 | 80.39% |
+| `mid_weak` | 1.7334 | 65.41% | 2.65 | 10.12% | 21 | 79.25% |
+| `old_thin` | 0.4520 | 32.52% | 1.39 | 8.48% | 22 | 91.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json`.
-Aggregate core EV is now `6.4848`; aggregate PnL is `$193,903.95`.
+`data/experiments/exp-20260514-018/trend_commodities_near_high_cap.json`.
+Aggregate core EV is now `6.6167`; aggregate PnL is `$199,806.03`.
 Latest saved single-window backtest artifact on disk is
 `data/backtest_results_20260513.json`; it predates `exp-20260513-036` and
 matches the prior `old_thin` core window at EV `0.4151`, total PnL
 `$30,524.01`, daily Sharpe `1.36`, max drawdown `8.21%`, `22` trades, and
 survival `91.67%`.
 
-Latest accepted alpha result: `exp-20260513-036` computes signal-day
+Latest accepted alpha result: `exp-20260514-018` keeps entries, exits, ranking,
+universe, raw commodity risk, heat, slots, and LLM/news logic unchanged, but
+allows the already-accepted `trend_long` Commodities sleeve within 3% of its
+52-week high to use a 50% single-position cap. Aggregate EV improved `+0.1319`
+and aggregate PnL improved `+$5,902.08` across the three canonical windows:
+`late_strong` EV `4.3768 -> 4.4313`, `mid_weak` EV `1.6788 -> 1.7334`, and
+`old_thin` EV `0.4292 -> 0.4520`. Max drawdown drift stayed inside Gate 4
+(`+0.42 pp` worst window), trade count and survival were unchanged, and the
+rule lives in shared `portfolio_engine.py` with a focused production-parity
+test.
+
+Previous accepted alpha result: `exp-20260513-036` computes signal-day
 ticker-minus-SPY open-to-close return in shared `risk_engine.py` and applies a
 1.10x cap-aware post-sizing top-up in `portfolio_engine.py` only to already
 clean `risk_on` SPY-relative leaders whose ticker also beat SPY on the signal
@@ -69,14 +81,25 @@ while `late_strong` regressed, so the next valid SEC step is forward
 replacement value or a new earnings-quality field, not another same-sample
 queue-order or lifecycle retune.
 
+Latest rejected SEC buyback alpha search: `exp-20260514-010` tested a
+default-off event overlay for SEC text disclosures with buyback credibility
+signals: actual execution updates, accelerated share repurchases, or
+cash-supported authorization increases. The frozen sample produced 16
+qualified events across six tickers, but failed the three-window gate:
+aggregate EV `6.4848 -> 6.2417`, aggregate PnL `$193,903.95 -> $192,280.62`,
+and `late_strong` EV regressed `4.3768 -> 4.1264` despite small positive reads
+in `mid_weak` and `old_thin`. Do not promote or retry this exact public-archive
+buyback credibility ladder without richer fields such as completion status,
+remaining authorization, cash-richness, or forward closed evidence.
+
 Latest accepted default-off Space forward stack: the accepted official-catalyst
 Space baseline from `exp-20260511-011`, `019`, `021`, `031`, `032`, and `105`
 now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `038`, `041`, `112`, `exp-20260513-012`, `exp-20260513-014`,
 `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
-`exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`, and
-`exp-20260514-002`.
+`exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`,
+`exp-20260514-002`, and `exp-20260514-009`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -113,7 +136,9 @@ and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward
 profile bucket with average 10d same-theme replacement value `>= $500` gets
-another `1.05x` extra default-off risk.
+another `1.05x` extra default-off risk, and that same closed-forward
+same-theme-strength bucket gets a further `1.05x` extra default-off risk only
+on `trend_long` signals.
 This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
@@ -156,6 +181,11 @@ the `$500` floor / `1.05x` scalar: aggregate EV moved from `24.0468` to
 `24.4642`, PnL from `$584,613.67` to `$599,684.05`, all three windows improved
 EV, max drawdown drift stayed inside Gate 4 at `+0.49 pp`, trade count and
 survival stayed unchanged, and live Space slots still zero.
+`exp-20260514-009` then accepted the trend-only same-theme-strength interaction
+at `1.05x`: aggregate EV moved from `24.4642` to `24.8880`, PnL from
+`$599,684.05` to `$612,354.95`, all three windows improved EV, max drawdown
+drift stayed inside Gate 4 at `+0.39 pp`, trade count and survival stayed
+unchanged, and live Space slots still zero.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

@@ -506,6 +506,13 @@ def test_commodity_near_high_trend_risk_boost_is_shared_sizing_policy():
     unboosted = sized[1]["sizing"]
     assert boosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.5
     assert unboosted["trend_commodities_near_high_risk_multiplier_applied"] == 1.0
+    assert boosted["max_position_pct_applied"] == (
+        constants.TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
+    )
+    assert unboosted["max_position_pct_applied"] == constants.MAX_POSITION_PCT
+    assert boosted["trend_commodities_near_high_max_position_pct_applied"] == (
+        constants.TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
+    )
     assert boosted["risk_pct"] > unboosted["risk_pct"]
 
 

@@ -57,6 +57,7 @@ from constants import (
     TREND_CONSUMER_NEAR_HIGH_MAX_PULLBACK,
     TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER,
     TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK,
+    TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT,
     TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER,
     RISK_ON_UNMODIFIED_RISK_MULTIPLIER,
     RISK_ON_UNMODIFIED_LOW_SCORE_MAX,
@@ -600,6 +601,14 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             ):
                 max_position_pct = RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
             if (
+                trend_commodities_near_high_risk_multiplier
+                == TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER
+            ):
+                max_position_pct = max(
+                    max_position_pct,
+                    TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT,
+                )
+            if (
                 strategy == "trend_long"
                 and sig.get("mid_sector_dispersion") is True
             ):
@@ -877,6 +886,12 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["trend_commodities_near_high_risk_multiplier_applied"] = (
                     trend_commodities_near_high_risk_multiplier
+                )
+                sizing["trend_commodities_near_high_max_position_pct_applied"] = (
+                    TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
+                    if trend_commodities_near_high_risk_multiplier
+                    == TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER
+                    else MAX_POSITION_PCT
                 )
                 sig = {**sig, "sizing": sizing}
         sized.append(sig)

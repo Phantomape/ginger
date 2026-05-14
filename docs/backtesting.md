@@ -78,21 +78,32 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after `exp-20260513-036` promoted the
-clean SPY-relative leader signal-day 1.10x cap-aware sizing top-up:
+Current accepted fixed-window metrics after `exp-20260514-018` promoted the
+trend Commodities near-high 50% sleeve-specific position cap:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.3768 | 4.39 | $99,695.99 | 99.70% | 6.02% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.6788 | 2.68 | $62,644.67 | 62.64% | 9.70% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.4292 | 1.36 | $31,563.29 | 31.56% | 8.36% | 40.91% | 22 | 91.67% |
+| `late_strong` | 4.4313 | 4.35 | $101,873.18 | 101.87% | 5.98% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.7334 | 2.65 | $65,410.59 | 65.41% | 10.12% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.4520 | 1.39 | $32,522.26 | 32.52% | 8.48% | 40.91% | 22 | 91.67% |
 
 Artifact note:
-`data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json`
+`data/experiments/exp-20260514-018/trend_commodities_near_high_cap.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.4848`; aggregate PnL is `$193,903.95`.
+EV is `6.6167`; aggregate PnL is `$199,806.03`.
 
-Latest accepted core-sizing result: `exp-20260513-036` computes the
+Latest accepted core-sizing result: `exp-20260514-018` keeps the existing
+`trend_long + Commodities + pct_from_52w_high >= -3%` risk boost unchanged but
+lets only that already-accepted sleeve use a 50% single-position cap in shared
+`portfolio_engine.py`. The change improved EV and PnL in all three fixed
+windows with unchanged trade count and survival: aggregate EV `+0.1319`,
+aggregate PnL `+$5,902.08`, max drawdown drift stayed inside the Gate 4
+guardrail at `+0.42 pp`, and there is no production/backtest split because
+both adapters call the same shared sizing module. Do not retry nearby raw
+commodity multipliers or cap values on these frozen windows without forward
+evidence or a materially different production-visible discriminator.
+
+Previous accepted core-sizing result: `exp-20260513-036` computes the
 signal-day ticker-minus-SPY open-to-close return in shared `risk_engine.py`,
 then applies a cap-aware 1.10x post-sizing top-up in `portfolio_engine.py` only
 when a `trend_long` / `breakout_long` signal already qualified for the clean

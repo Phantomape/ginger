@@ -56,6 +56,7 @@ TREND_CONSUMER_NEAR_HIGH_MAX_PULLBACK = -0.01
 TREND_CONSUMER_NEAR_HIGH_DTE_RISK_MULTIPLIER = 0.0
 TREND_COMMODITIES_NEAR_HIGH_MAX_PULLBACK = -0.03
 TREND_COMMODITIES_NEAR_HIGH_RISK_MULTIPLIER = 1.5
+TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT = 0.50
 RISK_ON_UNMODIFIED_RISK_MULTIPLIER = 1.25
 RISK_ON_UNMODIFIED_LOW_SCORE_MAX = 0.10
 RISK_ON_UNMODIFIED_LOW_SCORE_RISK_MULTIPLIER = 1.5
@@ -138,7 +139,8 @@ TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # 52-week high repeatedly carried the system's convex winners. A 1.5x risk
 # budget improved late_strong and mid_weak while leaving old_thin unchanged;
 # wider/deeper commodity boosts were rejected because they increased old_thin
-# exposure to the weaker SLV shape.
+# exposure to the weaker SLV shape. exp-20260514-018 showed this accepted sleeve
+# was still cap-bound; allow only this sleeve to use a 50% single-position cap.
 # Clean SPY-relative leaders with same-day idiosyncratic confirmation now get
 # a small cap-aware share top-up after the accepted RS20/green/RS60 layers.
 # Keep this scoped to signals that already qualify for the clean risk-on
