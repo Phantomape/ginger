@@ -197,6 +197,7 @@ def main():
         persist_space_catalyst_observation_slot,
         persist_space_catalyst_event_ledger,
         space_catalyst_event_tickers,
+        space_catalyst_forward_replacement_positive_profiles,
         space_catalyst_observation_feature_tickers,
         space_catalyst_observation_tickers,
     )
@@ -933,6 +934,11 @@ def main():
                 entry_filter_audit=space_observation_filter_audit,
                 raw_signal_count=space_observation_raw_count,
                 enriched_signal_count=space_observation_enriched_count,
+                space_forward_replacement_profiles=(
+                    space_catalyst_forward_replacement_positive_profiles(
+                        included_tickers=space_official_observation_tickers
+                    )
+                ),
             )
         )
         if space_catalyst_observation_slot.get("candidate_count", 0) > 0:

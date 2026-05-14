@@ -518,6 +518,25 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "source-diversity IWM-leader @ "
                     f"{source_diversity_iwm_leader_scalar}x"
                 )
+            source_diversity_peer_iwm_leader_scalar = forward.get(
+                "space_source_diversity_peer_iwm_leader_risk_scalar"
+            )
+            if source_diversity_peer_iwm_leader_scalar is not None:
+                extra_policies.append(
+                    "source-diversity peer+IWM leader @ "
+                    f"{source_diversity_peer_iwm_leader_scalar}x"
+                )
+            forward_replacement_scalar = forward.get(
+                "space_forward_replacement_positive_risk_scalar"
+            )
+            forward_replacement_horizon = forward.get(
+                "space_forward_replacement_positive_horizon"
+            )
+            if forward_replacement_scalar is not None:
+                extra_policies.append(
+                    "forward replacement-positive "
+                    f"{forward_replacement_horizon} @ {forward_replacement_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -640,6 +659,16 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_source_diversity_iwm_leader_bucket")
                 else ""
             )
+            source_diversity_peer_iwm_leader_text = (
+                " source_diversity_peer_iwm_leader=True"
+                if plan.get("space_source_diversity_peer_iwm_leader_bucket")
+                else ""
+            )
+            forward_replacement_text = (
+                " forward_replacement_positive=True"
+                if plan.get("space_forward_replacement_positive_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -666,6 +695,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{attention_overlay_text}{source_diversity_text}"
                 f"{source_diversity_peer_leader_text}"
                 f"{source_diversity_iwm_leader_text}"
+                f"{source_diversity_peer_iwm_leader_text}"
+                f"{forward_replacement_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
