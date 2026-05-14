@@ -1,0 +1,25 @@
+# exp-20260514-035 Clean SPY Breakout Cap Scope
+
+Decision: `rejected_clean_spy_breakout_cap_scope`.
+
+Single variable: keep the accepted clean SPY-relative risk top-up for trend and breakout, but restrict the accepted 52.5% clean cap expansion to `breakout_long` signals. No entries, ranking, exits, universe, LLM/news, heat, slots, or other sizing rules changed.
+
+## Three-Window Result
+
+| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| late_strong | 4.4853 | 4.4853 | +0.0000 | $103,112.67 | $103,112.67 | $+0.00 | +0.0000 | 0.8039 | 0 |
+| mid_weak | 1.8580 | 1.8580 | +0.0000 | $69,070.09 | $69,070.09 | $+0.00 | +0.0000 | 0.7925 | 0 |
+| old_thin | 0.4749 | 0.4771 | +0.0022 | $33,921.46 | $33,840.49 | $-80.97 | -0.0004 | 0.9167 | 5 |
+
+## Gate 4
+
+- Passed: `False`
+- Aggregate dEV: `+0.0022`
+- Aggregate dPnL: `$-80.97`
+- Improved windows: `['old_thin']`
+- Regressed windows: `[]`
+- Adjusted signal count: `5`
+- Adjusted trade count: `8`
+
+Production impact: shadow scout only unless promoted into shared `portfolio_engine.py`; the shared policy is called by both `backtester.py` and `run.py`.
