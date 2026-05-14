@@ -158,6 +158,7 @@ SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR = 1.025
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
@@ -497,6 +498,20 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_benchmark_breadth_trend_risk_scalar": (
         SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
+    ),
+    "space_benchmark_breadth_same_theme_strength_trend_experiment_id": (
+        "exp-20260514-047"
+    ),
+    "space_benchmark_breadth_same_theme_strength_trend_definition": (
+        "official Space trend_long with closed broad benchmark-positive 10d "
+        "event-state profiles and average 10d same-theme replacement value "
+        ">= $500"
+    ),
+    "space_benchmark_breadth_same_theme_strength_min_value": (
+        SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+    ),
+    "space_benchmark_breadth_same_theme_strength_trend_risk_scalar": (
+        SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR
     ),
     "space_benchmark_breadth_peer_nonleader_trend_experiment_id": (
         "exp-20260514-044"
@@ -868,6 +883,17 @@ def space_catalyst_forward_risk_scalar(
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and strategy_key == "trend_long"
         and _is_space_benchmark_breadth_profile(forward_replacement_profile)
+        and _is_space_forward_replacement_same_theme_strength_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= (
+            SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR
+        )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_benchmark_breadth_profile(forward_replacement_profile)
         and (peer_momentum_state or {}).get("state") == "nonleader"
     ):
         scalar *= (
@@ -1139,6 +1165,12 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_benchmark_breadth_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
+            ),
+            "space_benchmark_breadth_same_theme_strength_min_value": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+            ),
+            "space_benchmark_breadth_same_theme_strength_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR
             ),
             "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
@@ -2290,6 +2322,12 @@ def build_space_catalyst_observation_slot(
             "space_benchmark_breadth_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
             ),
+            "space_benchmark_breadth_same_theme_strength_min_value": (
+                SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+            ),
+            "space_benchmark_breadth_same_theme_strength_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR
+            ),
             "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
             ),
@@ -3224,6 +3262,15 @@ def _observation_slot_row(
         if benchmark_breadth_trend_bucket
         else 1.0
     )
+    benchmark_same_theme_strength_trend_bucket = (
+        benchmark_breadth_trend_bucket
+        and forward_replacement_same_theme_strength_bucket
+    )
+    benchmark_same_theme_strength_trend_risk_scalar = (
+        SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR
+        if benchmark_same_theme_strength_trend_bucket
+        else 1.0
+    )
     benchmark_breadth_peer_nonleader_trend_bucket = (
         benchmark_breadth_trend_bucket
         and peer_momentum_state.get("state") == "nonleader"
@@ -3270,6 +3317,11 @@ def _observation_slot_row(
         ),
         "space_benchmark_breadth_profile": (
             forward_replacement_profile if benchmark_breadth_trend_bucket else None
+        ),
+        "space_benchmark_breadth_same_theme_strength_profile": (
+            forward_replacement_profile
+            if benchmark_same_theme_strength_trend_bucket
+            else None
         ),
         "space_benchmark_breadth_peer_nonleader_profile": (
             forward_replacement_profile
@@ -3510,6 +3562,16 @@ def _observation_slot_row(
         ),
         "space_benchmark_breadth_trend_risk_scalar": _round(
             benchmark_breadth_trend_risk_scalar,
+            6,
+        ),
+        "space_benchmark_breadth_same_theme_strength_trend_bucket": (
+            benchmark_same_theme_strength_trend_bucket
+        ),
+        "space_benchmark_breadth_same_theme_strength_min_value": (
+            SPACE_CATALYST_FORWARD_REPLACEMENT_SAME_THEME_STRENGTH_MIN_VALUE
+        ),
+        "space_benchmark_breadth_same_theme_strength_trend_risk_scalar": _round(
+            benchmark_same_theme_strength_trend_risk_scalar,
             6,
         ),
         "space_benchmark_breadth_peer_nonleader_trend_bucket": (

@@ -130,7 +130,7 @@ SEC interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted official-catalyst Space stack through
-`exp-20260514-044`.
+`exp-20260514-047`.
 
 Mechanism summary:
 
@@ -154,6 +154,10 @@ Mechanism summary:
 - the benchmark-breadth trend cohort improves again only when paired with a
   production-visible peer state: `exp-20260514-044` accepted an additional
   conservative `1.025x` helper for peer-`nonleader` `trend_long` signals;
+- the same benchmark-breadth cohort also improves when paired with the already
+  accepted same-theme replacement-strength floor: `exp-20260514-047` accepted
+  a conservative `1.025x` helper for broad benchmark-positive `trend_long`
+  signals with average 10d same-theme replacement value >= $500;
 - the best use is semantic risk allocation inside a quarantined sleeve.
 
 Space interpretation:
@@ -164,8 +168,9 @@ Space interpretation:
 - future progress should come from closed forward outcomes and better catalyst
   semantics, not from nearby scalar retunes on the frozen snapshots.
 - do not retry nearby source-diversity, company-source, delayed-absorption,
-  broad benchmark-breadth, or benchmark-breadth peer-state scalars without new
-  closed forward rows or a new production-visible catalyst-quality field.
+  broad benchmark-breadth, benchmark-breadth same-theme strength, or
+  benchmark-breadth peer-state scalars without new closed forward rows or a new
+  production-visible catalyst-quality field.
 
 ## Durable Laws From Repository Evidence
 
