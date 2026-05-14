@@ -110,7 +110,7 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
 `exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`,
-`exp-20260514-002`, and `exp-20260514-009`.
+`exp-20260514-002`, `exp-20260514-009`, and `exp-20260514-024`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -149,7 +149,9 @@ are both cash-positive and same-theme replacement-positive get a further
 profile bucket with average 10d same-theme replacement value `>= $500` gets
 another `1.05x` extra default-off risk, and that same closed-forward
 same-theme-strength bucket gets a further `1.05x` extra default-off risk only
-on `trend_long` signals.
+on `trend_long` signals, and the same trend-only closed-forward strength bucket
+gets a further conservative `1.025x` extra default-off risk when IWM 20d
+momentum leads SPY.
 This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the
@@ -197,6 +199,14 @@ at `1.05x`: aggregate EV moved from `24.4642` to `24.8880`, PnL from
 `$599,684.05` to `$612,354.95`, all three windows improved EV, max drawdown
 drift stayed inside Gate 4 at `+0.39 pp`, trade count and survival stayed
 unchanged, and live Space slots still zero.
+`exp-20260514-024` then accepted the IWM-leader tape interaction for the same
+closed-forward same-theme-strength `trend_long` bucket at `1.025x`: current
+three-window replay moved aggregate EV from `25.5557` to `25.7839`, PnL from
+`$627,135.82` to `$633,988.67`, all three windows improved EV, max drawdown
+drift stayed inside Gate 4 at `+0.34 pp`, trade count stayed `68`, minimum
+survival stayed `65.33%`, and live Space slots still zero. Stronger nearby
+scalars (`1.05x+`) were rejected because max drawdown damage exceeded the
+`0.5 pp` guardrail despite higher raw EV.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

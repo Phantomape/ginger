@@ -105,6 +105,20 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
+Latest accepted default-off Space replay result: `exp-20260514-024` adds only
+the shared Space metadata/helper
+`space_forward_replacement_iwm_leader_trend_risk_scalar=1.025` for
+`trend_long` signals already in the closed 10d forward same-theme
+replacement-strength bucket when IWM 20d momentum leads SPY. It uses the same
+three window labels above with frozen Space snapshots and keeps live Space
+slots at zero. Aggregate default-off Space EV improved `+0.2282` and PnL
+improved `+$6,852.85`; window EV deltas were `late_strong +0.0449`,
+`mid_weak +0.1135`, and `old_thin +0.0698`. Max drawdown drift was `+0.34 pp`,
+trade count stayed `68`, and minimum survival stayed `65.33%`. Stronger
+nearby scalars (`1.05x+`) failed the `0.5 pp` drawdown guardrail, so do not
+retry adjacent Space IWM-leader trend-strength multipliers on these frozen
+windows without new forward evidence.
+
 Previous accepted core-sizing result: `exp-20260514-018` keeps the existing
 `trend_long + Commodities + pct_from_52w_high >= -3%` risk boost unchanged but
 lets only that already-accepted sleeve use a 50% single-position cap in shared

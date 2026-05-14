@@ -122,7 +122,7 @@ SEC interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted official-catalyst Space stack through
-`exp-20260514-009`.
+`exp-20260514-024`.
 
 Mechanism summary:
 
@@ -130,6 +130,9 @@ Mechanism summary:
 - peer-relative strength matters;
 - small-cap tape participation matters;
 - source diversity and forward replacement-strength matter;
+- the latest accepted forward-strength interaction is `trend_long` plus
+  IWM-leader tape at a conservative `1.025x`; stronger nearby scalars failed
+  the drawdown guardrail;
 - the best use is semantic risk allocation inside a quarantined sleeve.
 
 Space interpretation:

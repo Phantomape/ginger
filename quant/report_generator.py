@@ -537,6 +537,34 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "forward replacement-positive "
                     f"{forward_replacement_horizon} @ {forward_replacement_scalar}x"
                 )
+            forward_replacement_strength_scalar = forward.get(
+                "space_forward_replacement_same_theme_strength_risk_scalar"
+            )
+            forward_replacement_strength_floor = forward.get(
+                "space_forward_replacement_same_theme_strength_min_value"
+            )
+            if forward_replacement_strength_scalar is not None:
+                extra_policies.append(
+                    "forward same-theme replacement-strength "
+                    f">={forward_replacement_strength_floor} @ "
+                    f"{forward_replacement_strength_scalar}x"
+                )
+            forward_replacement_trend_scalar = forward.get(
+                "space_forward_replacement_trend_strength_risk_scalar"
+            )
+            if forward_replacement_trend_scalar is not None:
+                extra_policies.append(
+                    "forward replacement-strength trend @ "
+                    f"{forward_replacement_trend_scalar}x"
+                )
+            forward_replacement_iwm_trend_scalar = forward.get(
+                "space_forward_replacement_iwm_leader_trend_risk_scalar"
+            )
+            if forward_replacement_iwm_trend_scalar is not None:
+                extra_policies.append(
+                    "forward replacement-strength IWM trend @ "
+                    f"{forward_replacement_iwm_trend_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -669,6 +697,21 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_forward_replacement_positive_bucket")
                 else ""
             )
+            forward_replacement_same_theme_strength_text = (
+                " forward_replacement_same_theme_strength=True"
+                if plan.get("space_forward_replacement_same_theme_strength_bucket")
+                else ""
+            )
+            forward_replacement_trend_strength_text = (
+                " forward_replacement_trend_strength=True"
+                if plan.get("space_forward_replacement_trend_strength_bucket")
+                else ""
+            )
+            forward_replacement_iwm_leader_trend_text = (
+                " forward_replacement_iwm_leader_trend=True"
+                if plan.get("space_forward_replacement_iwm_leader_trend_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -697,6 +740,9 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{source_diversity_iwm_leader_text}"
                 f"{source_diversity_peer_iwm_leader_text}"
                 f"{forward_replacement_text}"
+                f"{forward_replacement_same_theme_strength_text}"
+                f"{forward_replacement_trend_strength_text}"
+                f"{forward_replacement_iwm_leader_trend_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
