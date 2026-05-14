@@ -50,17 +50,19 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260514-041` keeps live
+Latest accepted default-off Space alpha result: `exp-20260514-044` keeps live
 Space slots at zero and adds only the shared
-`space_benchmark_breadth_trend_risk_scalar=1.025` helper for `trend_long`
-Space signals whose closed 10d event-state profile is positive versus cash,
-SPY, QQQ, UFO, and ARKX. Against the accepted `exp-20260514-030` Space stack,
-aggregate EV improved `+0.2226` and aggregate PnL improved `+$5,848.12` across
-the three frozen Space replay windows: `late_strong` EV `+0.0482`, `mid_weak`
-EV `+0.1744`, and `old_thin` unchanged. Trade count and survival were
-unchanged; max drawdown drift stayed inside Gate 4 (`+0.37 pp` worst window).
-The helper lives in shared `space_catalyst_sleeve.py`, is surfaced in the
-production observation slot/report, and remains observe-only/default-off.
+`space_benchmark_breadth_peer_nonleader_trend_risk_scalar=1.025` helper on top
+of the accepted `exp-20260514-041` benchmark-breadth trend helper. It applies
+to `trend_long` Space signals whose closed 10d event-state profile is positive
+versus cash, SPY, QQQ, UFO, and ARKX and whose Space peer momentum state is
+`nonleader`. Against the accepted `exp041` Space stack, aggregate EV improved
+`+0.2035` and aggregate PnL improved `+$5,903.12` across the three frozen Space
+replay windows: `late_strong` EV `+0.0327`, `mid_weak` EV `+0.1708`, and
+`old_thin` unchanged. Trade count and survival were unchanged; max drawdown
+drift stayed inside Gate 4 (`+0.38 pp` worst window). The helper lives in
+shared `space_catalyst_sleeve.py`, is surfaced in the production observation
+slot/report, and remains observe-only/default-off.
 
 Previous accepted alpha result: `exp-20260514-023` keeps entries, exits, ranking,
 universe, raw Financials risk, heat, slots, and LLM/news logic unchanged, but
@@ -145,8 +147,9 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `exp-20260513-015`, `exp-20260513-020`, `exp-20260513-028`,
 `exp-20260513-032`, `exp-20260513-038`, `exp-20260513-039`, and
 `exp-20260513-108`, `exp-20260513-110`, `exp-20260513-113`,
-`exp-20260514-002`, `exp-20260514-009`, `exp-20260514-024`, and
-`exp-20260514-026`, and `exp-20260514-028`.
+`exp-20260514-002`, `exp-20260514-009`, `exp-20260514-024`,
+`exp-20260514-026`, `exp-20260514-028`, `exp-20260514-030`,
+`exp-20260514-041`, and `exp-20260514-044`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -192,6 +195,10 @@ gets a further conservative `1.025x` extra default-off risk when IWM 20d
 momentum leads SPY, and the same trend-only closed-forward strength bucket gets
 a further conservative `1.025x` extra default-off risk when the event seed
 profile includes `company_release` + `customer_win`.
+Official Space `trend_long` signals whose closed 10d event-state profiles are
+positive versus cash, SPY, QQQ, UFO, and ARKX get a further `1.025x` extra
+default-off risk, and the same benchmark-breadth trend bucket gets another
+`1.025x` only when Space peer momentum state is `nonleader`.
 This remains
 metadata/helper only with live Space slots at zero. `exp-20260512-010` rejected
 nearby near-perfect breakout TQS gating, `exp-20260512-031` accepted the

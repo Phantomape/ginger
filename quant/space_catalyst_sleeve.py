@@ -158,6 +158,7 @@ SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_QQQ_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR = 1.025
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -496,6 +497,17 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_benchmark_breadth_trend_risk_scalar": (
         SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
+    ),
+    "space_benchmark_breadth_peer_nonleader_trend_experiment_id": (
+        "exp-20260514-044"
+    ),
+    "space_benchmark_breadth_peer_nonleader_trend_definition": (
+        "official Space trend_long with closed broad benchmark-positive 10d "
+        "event-state profiles and peer momentum state nonleader"
+    ),
+    "space_benchmark_breadth_peer_nonleader_trend_state": "nonleader",
+    "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -852,6 +864,15 @@ def space_catalyst_forward_risk_scalar(
         and _is_space_benchmark_breadth_profile(forward_replacement_profile)
     ):
         scalar *= SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_benchmark_breadth_profile(forward_replacement_profile)
+        and (peer_momentum_state or {}).get("state") == "nonleader"
+    ):
+        scalar *= (
+            SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
+        )
     return scalar
 
 
@@ -1118,6 +1139,9 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_benchmark_breadth_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
+            ),
+            "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -2266,6 +2290,9 @@ def build_space_catalyst_observation_slot(
             "space_benchmark_breadth_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR
             ),
+            "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -3197,6 +3224,15 @@ def _observation_slot_row(
         if benchmark_breadth_trend_bucket
         else 1.0
     )
+    benchmark_breadth_peer_nonleader_trend_bucket = (
+        benchmark_breadth_trend_bucket
+        and peer_momentum_state.get("state") == "nonleader"
+    )
+    benchmark_breadth_peer_nonleader_trend_risk_scalar = (
+        SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
+        if benchmark_breadth_peer_nonleader_trend_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -3234,6 +3270,11 @@ def _observation_slot_row(
         ),
         "space_benchmark_breadth_profile": (
             forward_replacement_profile if benchmark_breadth_trend_bucket else None
+        ),
+        "space_benchmark_breadth_peer_nonleader_profile": (
+            forward_replacement_profile
+            if benchmark_breadth_peer_nonleader_trend_bucket
+            else None
         ),
         "sector": signal.get("sector"),
         "entry_price": _round(signal.get("entry_price"), 4),
@@ -3469,6 +3510,14 @@ def _observation_slot_row(
         ),
         "space_benchmark_breadth_trend_risk_scalar": _round(
             benchmark_breadth_trend_risk_scalar,
+            6,
+        ),
+        "space_benchmark_breadth_peer_nonleader_trend_bucket": (
+            benchmark_breadth_peer_nonleader_trend_bucket
+        ),
+        "space_benchmark_breadth_peer_nonleader_trend_state": "nonleader",
+        "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": _round(
+            benchmark_breadth_peer_nonleader_trend_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
