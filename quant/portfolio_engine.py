@@ -68,6 +68,7 @@ from constants import (
     RS20_ENTRY_STATE_RISK_MULTIPLIER,
     RS60_TOP_QUINTILE_RISK_MULTIPLIER,
     SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
+    CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER,
     TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
@@ -354,6 +355,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             rs20_entry_state_risk_multiplier = 1.0
             signal_day_ticker_green_risk_multiplier = 1.0
             rs60_top_quintile_risk_multiplier = 1.0
+            clean_spy_leader_signal_day_risk_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
                 strategy == "trend_long"
@@ -744,6 +746,54 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                         sizing["rs60_top_quintile_desired_shares"] = desired_shares
                         sizing["rs60_top_quintile_cap_shares"] = cap_shares
                         sizing["rs60_top_quintile_new_shares"] = new_shares
+                if (
+                    sig.get("signal_day_ticker_outperformed_spy") is True
+                    and strategy in {"trend_long", "breakout_long"}
+                    and sizing.get("shares_to_buy")
+                    and signal_risk_pct > 0
+                    and spy_relative_leader_risk_on_multiplier
+                    == RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER
+                    and CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER > 1.0
+                ):
+                    old_shares = int(sizing.get("shares_to_buy") or 0)
+                    cap_shares = int(
+                        math.floor(portfolio_value * max_position_pct / entry)
+                    )
+                    desired_shares = max(
+                        old_shares,
+                        int(
+                            math.floor(
+                                old_shares
+                                * CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER
+                            )
+                        ),
+                    )
+                    new_shares = min(desired_shares, cap_shares)
+                    if new_shares > old_shares:
+                        net_risk_per_share = sizing.get("net_risk_per_share") or 0.0
+                        risk_amount = new_shares * net_risk_per_share
+                        position_value = new_shares * entry
+                        clean_spy_leader_signal_day_risk_multiplier = (
+                            CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER
+                        )
+                        sizing["shares_to_buy"] = new_shares
+                        sizing["position_value_usd"] = round(position_value, 2)
+                        sizing["position_pct_of_portfolio"] = round(
+                            position_value / portfolio_value,
+                            4,
+                        )
+                        sizing["risk_amount_usd"] = round(risk_amount, 2)
+                        sizing["risk_pct"] = (
+                            risk_amount / portfolio_value if portfolio_value else 0.0
+                        )
+                        sizing["clean_spy_leader_signal_day_baseline_shares"] = (
+                            old_shares
+                        )
+                        sizing["clean_spy_leader_signal_day_desired_shares"] = (
+                            desired_shares
+                        )
+                        sizing["clean_spy_leader_signal_day_cap_shares"] = cap_shares
+                        sizing["clean_spy_leader_signal_day_new_shares"] = new_shares
                 sizing["base_risk_pct"] = effective_risk_pct
                 sizing["max_position_pct_applied"] = max_position_pct
                 sizing["trade_quality_score"] = trade_quality_score
@@ -777,6 +827,15 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["rs60_top_quintile_risk_multiplier_applied"] = (
                     rs60_top_quintile_risk_multiplier
+                )
+                sizing["clean_spy_leader_signal_day_risk_multiplier_applied"] = (
+                    clean_spy_leader_signal_day_risk_multiplier
+                )
+                sizing["ticker_minus_spy_signal_day_open_close_return_pct"] = (
+                    sig.get("ticker_minus_spy_signal_day_open_close_return_pct")
+                )
+                sizing["signal_day_ticker_outperformed_spy"] = sig.get(
+                    "signal_day_ticker_outperformed_spy"
                 )
                 sizing["sector_ret20_dispersion"] = sig.get("sector_ret20_dispersion")
                 sizing["mid_sector_dispersion"] = sig.get("mid_sector_dispersion")

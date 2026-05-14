@@ -78,20 +78,34 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after `exp-20260513-030` promoted the
-RS60 top-quintile stock 1.15x cap-aware sizing top-up:
+Current accepted fixed-window metrics after `exp-20260513-036` promoted the
+clean SPY-relative leader signal-day 1.10x cap-aware sizing top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.3663 | 4.45 | $98,115.26 | 98.12% | 5.68% | 78.95% | 19 | 80.39% |
+| `late_strong` | 4.3768 | 4.39 | $99,695.99 | 99.70% | 6.02% | 78.95% | 19 | 80.39% |
 | `mid_weak` | 1.6788 | 2.68 | $62,644.67 | 62.64% | 9.70% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.4151 | 1.36 | $30,524.01 | 30.52% | 8.21% | 40.91% | 22 | 91.67% |
+| `old_thin` | 0.4292 | 1.36 | $31,563.29 | 31.56% | 8.36% | 40.91% | 22 | 91.67% |
 
-Artifact note: `data/experiments/exp-20260513-030/rs60_top_quintile_risk.json`
+Artifact note:
+`data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.4602`; aggregate PnL is `$191,283.94`.
+EV is `6.4848`; aggregate PnL is `$193,903.95`.
 
-Latest accepted core-sizing result: `exp-20260513-030` computes
+Latest accepted core-sizing result: `exp-20260513-036` computes the
+signal-day ticker-minus-SPY open-to-close return in shared `risk_engine.py`,
+then applies a cap-aware 1.10x post-sizing top-up in `portfolio_engine.py` only
+when a `trend_long` / `breakout_long` signal already qualified for the clean
+`risk_on` SPY-relative leader sizing path and also beat SPY on the signal day.
+The change improved EV and PnL in `late_strong` and `old_thin`, left
+`mid_weak` unchanged, and preserved trade count and survival: aggregate EV
+`+0.0246`, aggregate PnL `+$2,620.01`, max drawdown drift within the Gate 4
+guardrail, and no production/backtest split because both adapters use the same
+shared risk and sizing modules. Do not retry nearby clean SPY-leader signal-day
+scalars on these frozen windows without forward evidence or a materially
+different production-visible discriminator.
+
+Previous accepted core-sizing result: `exp-20260513-030` computes
 `momentum_60d_pct` in shared `feature_layer.py`, tags already-qualified
 `trend_long` / `breakout_long` stock signals whose same-day 60-trading-day
 return is in the top quintile of the non-ETF/non-commodity stock universe in

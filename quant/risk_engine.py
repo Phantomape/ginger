@@ -369,11 +369,29 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
         own_open_close_return = features.get("signal_day_ticker_open_close_return_pct")
+        spy_open_close_return = (features_dict.get("SPY") or {}).get(
+            "signal_day_ticker_open_close_return_pct"
+        )
         enriched_sig["signal_day_ticker_open_close_return_pct"] = own_open_close_return
         enriched_sig["signal_day_ticker_green_candle"] = (
             isinstance(own_open_close_return, (int, float))
             and own_open_close_return > 0
         )
+        enriched_sig["spy_signal_day_open_close_return_pct"] = spy_open_close_return
+        if isinstance(own_open_close_return, (int, float)) and isinstance(
+            spy_open_close_return, (int, float)
+        ):
+            ticker_minus_spy_open_close = own_open_close_return - spy_open_close_return
+            enriched_sig["ticker_minus_spy_signal_day_open_close_return_pct"] = round(
+                ticker_minus_spy_open_close,
+                6,
+            )
+            enriched_sig["signal_day_ticker_outperformed_spy"] = (
+                ticker_minus_spy_open_close > 0
+            )
+        else:
+            enriched_sig["ticker_minus_spy_signal_day_open_close_return_pct"] = None
+            enriched_sig["signal_day_ticker_outperformed_spy"] = False
         ticker_ret60 = features.get("momentum_60d_pct")
         enriched_sig["momentum_60d_pct"] = ticker_ret60
         enriched_sig["rs60_top_quintile_cutoff"] = (

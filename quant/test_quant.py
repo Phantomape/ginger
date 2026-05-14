@@ -293,6 +293,49 @@ def test_enrich_signals_marks_signal_day_green_candle():
     assert msft["signal_day_ticker_green_candle"] is False
 
 
+def test_enrich_signals_marks_signal_day_spy_outperformance():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.8,
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 0.8,
+        },
+    ]
+    features = {
+        "AMD": {
+            "atr": 2.0,
+            "signal_day_ticker_open_close_return_pct": 0.012,
+        },
+        "MSFT": {
+            "atr": 2.0,
+            "signal_day_ticker_open_close_return_pct": -0.004,
+        },
+        "SPY": {
+            "atr": 2.0,
+            "signal_day_ticker_open_close_return_pct": 0.002,
+        },
+    }
+
+    amd, msft = enrich_signals(signals, features)
+
+    assert amd["spy_signal_day_open_close_return_pct"] == 0.002
+    assert amd["ticker_minus_spy_signal_day_open_close_return_pct"] == 0.01
+    assert amd["signal_day_ticker_outperformed_spy"] is True
+    assert msft["ticker_minus_spy_signal_day_open_close_return_pct"] == -0.006
+    assert msft["signal_day_ticker_outperformed_spy"] is False
+
+
 def test_compute_trend_features_includes_60d_momentum():
     from feature_layer import compute_trend_features
 
@@ -2524,6 +2567,63 @@ def test_size_signals_keeps_full_risk_for_high_tqs_signals():
     assert sized["base_risk_pct"] == 0.0075
     assert sized["risk_pct"] == 0.0075
     assert sized["tqs_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_boosts_clean_spy_leader_signal_day_outperformance():
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "AMD",
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "confidence_score": 1.0,
+        "trade_quality_score": 0.96,
+        "sector": "Technology",
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.12,
+        "spy_relative_leader": True,
+        "signal_day_ticker_outperformed_spy": True,
+        "ticker_minus_spy_signal_day_open_close_return_pct": 0.018,
+        "conditions_met": {"pct_from_52w_high": -0.10},
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
+    assert sized["clean_spy_leader_signal_day_risk_multiplier_applied"] == 1.10
+    assert sized["clean_spy_leader_signal_day_baseline_shares"] == 341
+    assert sized["shares_to_buy"] == 375
+    assert sized["risk_pct"] > 0.02
+    assert sized["ticker_minus_spy_signal_day_open_close_return_pct"] == 0.018
+    assert sized["signal_day_ticker_outperformed_spy"] is True
+
+
+def test_size_signals_does_not_boost_non_spy_leader_signal_day_outperformance():
+    from portfolio_engine import size_signals
+
+    sig = {
+        "ticker": "AMD",
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "confidence_score": 1.0,
+        "trade_quality_score": 0.96,
+        "sector": "Technology",
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.12,
+        "spy_relative_leader": False,
+        "signal_day_ticker_outperformed_spy": True,
+        "ticker_minus_spy_signal_day_open_close_return_pct": 0.018,
+        "conditions_met": {"pct_from_52w_high": -0.10},
+    }
+
+    sized = size_signals([sig], 100_000.0)[0]["sizing"]
+
+    assert sized["spy_relative_leader_risk_on_multiplier_applied"] == 1.0
+    assert sized["clean_spy_leader_signal_day_risk_multiplier_applied"] == 1.0
+    assert "clean_spy_leader_signal_day_baseline_shares" not in sized
+    assert sized["signal_day_ticker_outperformed_spy"] is True
 
 
 def test_size_signals_exempts_low_tqs_commodities_from_haircut():
@@ -8305,6 +8405,11 @@ def test_space_catalyst_observation_slot_uses_launch_connectivity_target():
         ],
         features_by_ticker={"RKLB": {"atr": 2.0}},
         space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
+        space_source_diversity_profiles={},
     )
 
     plan = snapshot["blocked_trade_plans"][0]

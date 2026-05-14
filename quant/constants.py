@@ -69,6 +69,7 @@ SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER = 1.05
 RS60_TOP_QUINTILE_FRACTION = 0.20
 RS60_TOP_QUINTILE_EXCLUDED_SECTORS = ("ETF", "Commodities")
 RS60_TOP_QUINTILE_RISK_MULTIPLIER = 1.15
+CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER = 1.10
 TREND_MID_SECTOR_DISPERSION_MIN = 0.035
 TREND_MID_SECTOR_DISPERSION_MAX = 0.08
 TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
@@ -138,6 +139,11 @@ TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # budget improved late_strong and mid_weak while leaving old_thin unchanged;
 # wider/deeper commodity boosts were rejected because they increased old_thin
 # exposure to the weaker SLV shape.
+# Clean SPY-relative leaders with same-day idiosyncratic confirmation now get
+# a small cap-aware share top-up after the accepted RS20/green/RS60 layers.
+# Keep this scoped to signals that already qualify for the clean risk-on
+# SPY-relative leader path; broad same-day SPY-outperformance top-ups failed the
+# drawdown guardrail.
 # Candidate allocation sleeve: accepted-stack cohort audit shows trend
 # Financials were positive in mid_weak and old_thin while absent in late_strong.
 # Keep this as sizing only; do not turn it into sector priority or new entry.
