@@ -46,6 +46,7 @@ BREAKOUT_TECH_DTE_RISK_MULTIPLIER = 0.0
 BREAKOUT_HEALTHCARE_DTE_MIN = 20
 BREAKOUT_HEALTHCARE_DTE_MAX = 65
 BREAKOUT_HEALTHCARE_DTE_RISK_MULTIPLIER = 0.25
+BREAKOUT_COMMODITIES_MAX_POSITION_PCT = 0.575
 TREND_TECH_DTE_MIN = 44
 TREND_TECH_DTE_MAX = 64
 TREND_TECH_DTE_RISK_MULTIPLIER = 0.25
@@ -144,6 +145,8 @@ TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # wider/deeper commodity boosts were rejected because they increased old_thin
 # exposure to the weaker SLV shape. exp-20260514-018 showed this accepted sleeve
 # was still cap-bound; allow only this sleeve to use a 50% single-position cap.
+# exp-20260514-049 found a separate cap-bound Commodity breakout sleeve. Keep
+# it cap-only at 57.5%, with no new entry, ranking, or raw risk multiplier.
 # Clean SPY-relative leaders with same-day idiosyncratic confirmation now get
 # a small cap-aware share top-up after the accepted RS20/green/RS60 layers.
 # Keep this scoped to signals that already qualify for the clean risk-on

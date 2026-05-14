@@ -74,7 +74,7 @@ Keep only the minimal anchor points here. Full metrics stay in
 ### Core Stack
 
 Current core checkpoint is the 2026-05-14 accepted stack ending at core
-`exp-20260514-030` (`financials_mid_dispersion_leader_cap`).
+`exp-20260514-049` (`commodity_breakout_cap`).
 
 Mechanism summary:
 
@@ -88,6 +88,9 @@ Mechanism summary:
 - The accepted commodity near-high trend sleeve is cap-bound alpha; a
   sleeve-specific 50% position cap worked better than more raw commodity
   multiplier tuning.
+- Commodity breakout signals are a separate cap-bound allocation sleeve; a
+  57.5% cap worked without changing entries, ranking, exits, or raw commodity
+  multipliers.
 - The accepted Financials sector-leader trend sleeve is also cap-bound alpha;
   a sleeve-specific 50% position cap improved weak and old windows without
   changing the raw Financials multipliers.

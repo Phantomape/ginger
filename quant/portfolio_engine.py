@@ -48,6 +48,7 @@ from constants import (
     BREAKOUT_HEALTHCARE_DTE_MIN,
     BREAKOUT_HEALTHCARE_DTE_MAX,
     BREAKOUT_HEALTHCARE_DTE_RISK_MULTIPLIER,
+    BREAKOUT_COMMODITIES_MAX_POSITION_PCT,
     TREND_TECH_DTE_MIN,
     TREND_TECH_DTE_MAX,
     TREND_TECH_DTE_RISK_MULTIPLIER,
@@ -604,6 +605,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             ):
                 max_position_pct = RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
             clean_spy_leader_signal_day_cap_applied = False
+            breakout_commodities_cap_applied = False
             financials_mid_dispersion_leader_cap_applied = False
             if (
                 sig.get("signal_day_ticker_outperformed_spy") is True
@@ -615,6 +617,12 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 max_position_pct = max(
                     max_position_pct,
                     CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT,
+                )
+            if strategy == "breakout_long" and sector == "Commodities":
+                breakout_commodities_cap_applied = True
+                max_position_pct = max(
+                    max_position_pct,
+                    BREAKOUT_COMMODITIES_MAX_POSITION_PCT,
                 )
             if (
                 trend_commodities_near_high_risk_multiplier
@@ -875,6 +883,10 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 if clean_spy_leader_signal_day_cap_applied:
                     sizing["clean_spy_leader_signal_day_max_position_pct_applied"] = (
                         CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
+                    )
+                if breakout_commodities_cap_applied:
+                    sizing["breakout_commodities_max_position_pct_applied"] = (
+                        BREAKOUT_COMMODITIES_MAX_POSITION_PCT
                     )
                 if financials_mid_dispersion_leader_cap_applied:
                     sizing[

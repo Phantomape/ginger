@@ -78,22 +78,34 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260514-030`
-(`financials_mid_dispersion_leader_cap`) promoted the Financials
-mid-dispersion sector-leader 55% sleeve-specific position cap:
+Current accepted fixed-window metrics after core `exp-20260514-049`
+(`commodity_breakout_cap`) promoted the Commodity breakout 57.5%
+sleeve-specific position cap:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.4853 | 4.35 | $103,112.67 | 103.11% | 6.09% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.8580 | 2.69 | $69,070.09 | 69.07% | 10.14% | 52.38% | 21 | 79.25% |
+| `late_strong` | 4.5701 | 4.37 | $104,582.95 | 104.58% | 6.06% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.8824 | 2.70 | $69,718.99 | 69.72% | 10.14% | 52.38% | 21 | 79.25% |
 | `old_thin` | 0.4749 | 1.40 | $33,921.46 | 33.92% | 8.89% | 40.91% | 22 | 91.67% |
 
 Artifact note:
-`data/experiments/exp-20260514-030/financials_mid_dispersion_leader_cap.json`
+`data/experiments/exp-20260514-049/commodity_breakout_cap.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.8182`; aggregate PnL is `$206,104.22`.
+EV is `6.9274`; aggregate PnL is `$208,223.40`.
 
-Latest accepted core-sizing result: core `exp-20260514-030` keeps entries,
+Latest accepted core-sizing result: core `exp-20260514-049` keeps entries,
+exits, ranking, universe, raw Commodity multipliers, heat, slots, and LLM/news
+logic unchanged, but lets only `breakout_long + Commodities` use a 57.5%
+single-position cap in shared `portfolio_engine.py`. The change improved EV
+and PnL in `late_strong` and `mid_weak`, left `old_thin` unchanged, and kept
+trade count and survival unchanged: aggregate EV `+0.1092`, aggregate PnL
+`+$2,119.18`, max drawdown did not worsen, and there is no
+production/backtest split because both adapters call the same shared sizing
+module. Only 5 signals adjusted, so do not retry nearby Commodity breakout cap
+values on these frozen windows without forward cap-room attribution or a
+materially different production-visible discriminator.
+
+Previous accepted core-sizing result: core `exp-20260514-030` keeps entries,
 exits, ranking, universe, raw Financials multipliers, heat, slots, and
 LLM/news logic unchanged, but lets only `trend_long + Financials +
 financials_sector_leader=true + mid_sector_dispersion=true` use a 55%

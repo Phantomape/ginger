@@ -511,6 +511,7 @@ SIZING_MULTIPLIER_KEYS = (
     "breakout_financials_dte_risk_multiplier_applied",
     "breakout_tech_dte_risk_multiplier_applied",
     "breakout_healthcare_dte_risk_multiplier_applied",
+    "breakout_commodities_max_position_pct_applied",
     "trend_healthcare_dte_risk_multiplier_applied",
     "trend_consumer_near_high_dte_risk_multiplier_applied",
     "trend_commodities_near_high_risk_multiplier_applied",
