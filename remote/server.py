@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -10,6 +11,7 @@ import threading
 import time
 import uuid
 from collections import deque
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TextIO
@@ -33,12 +35,19 @@ SSE_BATCH_LINES = max(1, int(os.environ.get("REMOTE_CODEX_SSE_BATCH_LINES", "100
 CONSOLE_LOGS = os.environ.get("REMOTE_CODEX_CONSOLE_LOGS", "1").lower() not in {"0", "false", "no", "off"}
 FIX_MOJIBAKE = os.environ.get("REMOTE_CODEX_FIX_MOJIBAKE", "1").lower() not in {"0", "false", "no", "off"}
 LOG_DIR = Path(os.environ.get("REMOTE_CODEX_LOG_DIR", APP_ROOT / "logs")).resolve()
+OPEN_POSITIONS_FILE = Path(
+    os.environ.get("REMOTE_CODEX_OPEN_POSITIONS", REPO_ROOT / "operator_inputs" / "open_positions.json")
+).resolve()
+OPEN_POSITIONS_SECTIONS = ("observations", "positions")
+TICKER_RE = re.compile(r"^[A-Z0-9][A-Z0-9.\-]{0,15}$")
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 app = Flask(__name__)
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 job_lock = threading.Lock()
 console_lock = threading.Lock()
+open_positions_lock = threading.Lock()
 jobs: dict[str, "CodexJob"] = {}
 current_job_id: str | None = None
 
@@ -176,6 +185,275 @@ def require_token() -> tuple[bool, Any]:
     if check_token():
         return True, None
     return False, (jsonify({"error": "unauthorized"}), 403)
+
+
+def json_error(message: str, status: int = 400, **extra: Any) -> tuple[Any, int]:
+    payload: dict[str, Any] = {"error": message}
+    payload.update(extra)
+    return jsonify(payload), status
+
+
+def open_positions_audit_path() -> Path:
+    return LOG_DIR / "open_positions_edits.jsonl"
+
+
+def open_positions_backup_dir() -> Path:
+    return LOG_DIR / "open_positions_backups"
+
+
+def load_open_positions_payload() -> dict[str, Any]:
+    with OPEN_POSITIONS_FILE.open("r", encoding="utf-8-sig") as fh:
+        payload = json.load(fh)
+    if not isinstance(payload, dict):
+        raise ValueError("open_positions payload must be a JSON object")
+    return payload
+
+
+def write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_name(f"{path.name}.tmp-{uuid.uuid4().hex}")
+    text = json.dumps(payload, ensure_ascii=False, indent=4, allow_nan=False) + "\n"
+    try:
+        tmp_path.write_text(text, encoding="utf-8")
+        os.replace(tmp_path, path)
+    finally:
+        if tmp_path.exists():
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
+
+
+def backup_open_positions() -> str | None:
+    if not OPEN_POSITIONS_FILE.exists():
+        return None
+    backup_dir = open_positions_backup_dir()
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    suffix = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]
+    backup_path = backup_dir / f"open_positions_{suffix}.json"
+    shutil.copy2(OPEN_POSITIONS_FILE, backup_path)
+    return str(backup_path)
+
+
+def normalize_ticker(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    ticker = value.strip().upper()
+    if not TICKER_RE.match(ticker):
+        return None
+    return ticker
+
+
+def coerce_number(
+    row: dict[str, Any],
+    field: str,
+    path: str,
+    errors: list[str],
+    *,
+    required: bool,
+    positive: bool = False,
+    allow_null: bool = False,
+) -> None:
+    if field not in row or row.get(field) == "":
+        if required:
+            errors.append(f"{path}.{field} is required")
+        return
+    value = row.get(field)
+    if value is None:
+        if allow_null:
+            return
+        errors.append(f"{path}.{field} cannot be null")
+        return
+    if isinstance(value, bool):
+        errors.append(f"{path}.{field} must be numeric")
+        return
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        errors.append(f"{path}.{field} must be numeric")
+        return
+    if not numeric == numeric or numeric in {float("inf"), float("-inf")}:
+        errors.append(f"{path}.{field} must be finite")
+        return
+    if positive and numeric <= 0:
+        errors.append(f"{path}.{field} must be > 0")
+        return
+    row[field] = int(numeric) if numeric.is_integer() else numeric
+
+
+def validate_date_field(row: dict[str, Any], field: str, path: str, errors: list[str]) -> None:
+    value = row.get(field)
+    if not isinstance(value, str) or not DATE_RE.match(value.strip()):
+        errors.append(f"{path}.{field} must be YYYY-MM-DD")
+        return
+    row[field] = value.strip()
+
+
+def validate_position_row(raw: Any, section: str, index: int, seen: set[str], errors: list[str]) -> dict[str, Any]:
+    path = f"{section}[{index}]"
+    if not isinstance(raw, dict):
+        errors.append(f"{path} must be an object")
+        return {}
+
+    row = deepcopy(raw)
+    ticker = normalize_ticker(row.get("ticker"))
+    if ticker is None:
+        errors.append(f"{path}.ticker must be an uppercase ticker-like string")
+    elif ticker in seen:
+        errors.append(f"{path}.ticker duplicates another {section} row")
+    else:
+        seen.add(ticker)
+        row["ticker"] = ticker
+
+    direction = row.get("direction")
+    if not isinstance(direction, str) or direction.strip().lower() not in {"long", "short"}:
+        errors.append(f"{path}.direction must be long or short")
+    else:
+        row["direction"] = direction.strip().lower()
+
+    coerce_number(row, "shares", path, errors, required=True, positive=True)
+    coerce_number(row, "original_shares", path, errors, required=False, positive=True)
+    coerce_number(row, "avg_cost", path, errors, required=True, positive=True)
+    coerce_number(row, "target_price", path, errors, required=True, positive=True)
+    coerce_number(row, "stop_price", path, errors, required=True, positive=True)
+    validate_date_field(row, "entry_date", path, errors)
+
+    strategy = row.get("opened_by_strategy")
+    if strategy is None:
+        row["opened_by_strategy"] = "manual"
+    elif not isinstance(strategy, str):
+        errors.append(f"{path}.opened_by_strategy must be a string")
+    else:
+        row["opened_by_strategy"] = strategy.strip() or "manual"
+
+    notes = row.get("risk_notes")
+    if notes is None:
+        row["risk_notes"] = ""
+    elif not isinstance(notes, str):
+        errors.append(f"{path}.risk_notes must be a string")
+
+    return row
+
+
+def validate_open_positions_payload(raw: Any) -> tuple[dict[str, Any] | None, list[str]]:
+    errors: list[str] = []
+    if not isinstance(raw, dict):
+        return None, ["payload must be a JSON object"]
+
+    payload = deepcopy(raw)
+    as_of = payload.get("as_of")
+    if as_of is not None:
+        if not isinstance(as_of, str) or not DATE_RE.match(as_of.strip()):
+            errors.append("as_of must be YYYY-MM-DD when present")
+        else:
+            payload["as_of"] = as_of.strip()
+
+    account = payload.get("account")
+    if account is not None and not isinstance(account, str):
+        errors.append("account must be a string when present")
+
+    coerce_number(payload, "portfolio_value_usd", "root", errors, required=False, positive=True)
+    coerce_number(payload, "cash_usd", "root", errors, required=False, allow_null=True)
+
+    if "positions" not in payload:
+        errors.append("positions list is required")
+
+    for section in OPEN_POSITIONS_SECTIONS:
+        rows = payload.get(section, [])
+        if rows is None:
+            rows = []
+        if not isinstance(rows, list):
+            errors.append(f"{section} must be a list")
+            continue
+        seen: set[str] = set()
+        payload[section] = [
+            validate_position_row(item, section, index, seen, errors)
+            for index, item in enumerate(rows)
+        ]
+
+    return (None if errors else payload), errors
+
+
+def open_positions_field_audit(payload: dict[str, Any]) -> dict[str, Any]:
+    missing: dict[str, list[str]] = {"positions": [], "observations": []}
+    counts: dict[str, int] = {}
+    required_fields = ("entry_date", "target_price", "stop_price")
+    for section in OPEN_POSITIONS_SECTIONS:
+        rows = payload.get(section) or []
+        counts[section] = len(rows) if isinstance(rows, list) else 0
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            ticker = str(row.get("ticker") or "?")
+            missing_fields = [field for field in required_fields if row.get(field) in {None, ""}]
+            if missing_fields:
+                missing[section].append(f"{ticker}: {', '.join(missing_fields)}")
+    return {
+        "counts": counts,
+        "required_fields": list(required_fields),
+        "missing": missing,
+        "passed": not any(missing.values()),
+    }
+
+
+def open_positions_summary(payload: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {}
+    return {
+        "as_of": payload.get("as_of"),
+        "portfolio_value_usd": payload.get("portfolio_value_usd"),
+        "cash_usd": payload.get("cash_usd"),
+        "positions": [row.get("ticker") for row in payload.get("positions", []) if isinstance(row, dict)],
+        "observations": [row.get("ticker") for row in payload.get("observations", []) if isinstance(row, dict)],
+    }
+
+
+def record_open_positions_audit(
+    action: str,
+    before: dict[str, Any] | None,
+    after: dict[str, Any] | None,
+    detail: dict[str, Any] | None = None,
+) -> None:
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    record = {
+        "timestamp": utc_now(),
+        "client": client_addr(),
+        "action": action,
+        "path": str(OPEN_POSITIONS_FILE),
+        "detail": detail or {},
+        "before": open_positions_summary(before),
+        "after": open_positions_summary(after),
+    }
+    with open_positions_audit_path().open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n")
+
+
+def find_position_index(payload: dict[str, Any], section: str, ticker: str) -> int | None:
+    rows = payload.get(section) or []
+    for index, row in enumerate(rows):
+        if isinstance(row, dict) and normalize_ticker(row.get("ticker")) == ticker:
+            return index
+    return None
+
+
+def save_open_positions_payload(
+    payload: dict[str, Any],
+    *,
+    action: str,
+    detail: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any] | None, list[str], str | None]:
+    normalized, errors = validate_open_positions_payload(payload)
+    if errors or normalized is None:
+        return None, errors, None
+
+    with open_positions_lock:
+        before = load_open_positions_payload() if OPEN_POSITIONS_FILE.exists() else None
+        backup_path = backup_open_positions()
+        write_json_atomic(OPEN_POSITIONS_FILE, normalized)
+        record_open_positions_audit(action, before, normalized, detail)
+    return normalized, [], backup_path
 
 
 def build_codex_command() -> list[str]:
@@ -399,6 +677,151 @@ def sse_event(event: str, payload: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+@app.route("/open-positions", methods=["GET", "PUT"])
+def open_positions() -> Any:
+    ok, response = require_token()
+    if not ok:
+        console_log(f"[server] unauthorized open-positions request from {client_addr()}")
+        return response
+
+    if request.method == "GET":
+        try:
+            payload = load_open_positions_payload()
+        except Exception as exc:
+            return json_error(f"failed to read open_positions.json: {exc}", 500)
+        return jsonify(
+            {
+                "path": str(OPEN_POSITIONS_FILE),
+                "updated_at": utc_now(),
+                "payload": payload,
+                "field_audit": open_positions_field_audit(payload),
+            }
+        )
+
+    incoming = request.get_json(silent=True)
+    normalized, errors, backup_path = save_open_positions_payload(
+        incoming,
+        action="replace_payload",
+        detail={"source": "open_positions_editor"},
+    )
+    if errors or normalized is None:
+        return json_error("open_positions validation failed", 400, errors=errors)
+    console_log(f"[server] open_positions saved from {client_addr()}")
+    return jsonify(
+        {
+            "status": "saved",
+            "path": str(OPEN_POSITIONS_FILE),
+            "backup_path": backup_path,
+            "payload": normalized,
+            "field_audit": open_positions_field_audit(normalized),
+        }
+    )
+
+
+@app.route("/open-positions/<section>", methods=["POST"])
+def create_open_position(section: str) -> Any:
+    ok, response = require_token()
+    if not ok:
+        return response
+    if section not in OPEN_POSITIONS_SECTIONS:
+        return json_error(f"section must be one of {', '.join(OPEN_POSITIONS_SECTIONS)}", 404)
+
+    row = request.get_json(silent=True)
+    if not isinstance(row, dict):
+        return json_error("request body must be a position object")
+    ticker = normalize_ticker(row.get("ticker"))
+    if ticker is None:
+        return json_error("position.ticker must be a ticker-like string")
+
+    try:
+        payload = load_open_positions_payload()
+    except Exception as exc:
+        return json_error(f"failed to read open_positions.json: {exc}", 500)
+    if find_position_index(payload, section, ticker) is not None:
+        return json_error(f"{ticker} already exists in {section}", 409)
+
+    payload.setdefault(section, [])
+    payload[section].append(row)
+    normalized, errors, backup_path = save_open_positions_payload(
+        payload,
+        action="create_position",
+        detail={"section": section, "ticker": ticker},
+    )
+    if errors or normalized is None:
+        return json_error("open_positions validation failed", 400, errors=errors)
+    index = find_position_index(normalized, section, ticker)
+    return jsonify(
+        {
+            "status": "created",
+            "backup_path": backup_path,
+            "position": normalized[section][index] if index is not None else None,
+            "field_audit": open_positions_field_audit(normalized),
+        }
+    )
+
+
+@app.route("/open-positions/<section>/<ticker>", methods=["PATCH", "DELETE"])
+def edit_open_position(section: str, ticker: str) -> Any:
+    ok, response = require_token()
+    if not ok:
+        return response
+    if section not in OPEN_POSITIONS_SECTIONS:
+        return json_error(f"section must be one of {', '.join(OPEN_POSITIONS_SECTIONS)}", 404)
+    normalized_ticker = normalize_ticker(ticker)
+    if normalized_ticker is None:
+        return json_error("ticker must be ticker-like", 404)
+
+    try:
+        payload = load_open_positions_payload()
+    except Exception as exc:
+        return json_error(f"failed to read open_positions.json: {exc}", 500)
+
+    index = find_position_index(payload, section, normalized_ticker)
+    if index is None:
+        return json_error(f"{normalized_ticker} not found in {section}", 404)
+
+    if request.method == "DELETE":
+        removed = payload[section].pop(index)
+        normalized, errors, backup_path = save_open_positions_payload(
+            payload,
+            action="delete_position",
+            detail={"section": section, "ticker": normalized_ticker, "removed": removed},
+        )
+        if errors or normalized is None:
+            return json_error("open_positions validation failed", 400, errors=errors)
+        return jsonify(
+            {
+                "status": "deleted",
+                "backup_path": backup_path,
+                "field_audit": open_positions_field_audit(normalized),
+            }
+        )
+
+    updates = request.get_json(silent=True)
+    if not isinstance(updates, dict):
+        return json_error("request body must be an object")
+    if "ticker" in updates and normalize_ticker(updates.get("ticker")) != normalized_ticker:
+        return json_error("ticker cannot be changed through the patch endpoint")
+
+    payload[section][index] = {**payload[section][index], **updates, "ticker": normalized_ticker}
+    normalized, errors, backup_path = save_open_positions_payload(
+        payload,
+        action="patch_position",
+        detail={"section": section, "ticker": normalized_ticker, "updated_fields": sorted(updates.keys())},
+    )
+    if errors or normalized is None:
+        return json_error("open_positions validation failed", 400, errors=errors)
+    new_index = find_position_index(normalized, section, normalized_ticker)
+    return jsonify(
+        {
+            "status": "saved",
+            "backup_path": backup_path,
+            "position": normalized[section][new_index] if new_index is not None else None,
+            "field_audit": open_positions_field_audit(normalized),
+        }
+    )
+
+
 @app.route("/")
 def index() -> str:
     return INDEX_HTML
@@ -578,6 +1001,15 @@ INDEX_HTML = """<!doctype html>
     .meta { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 16px 0; }
     .box { border: 1px solid #2b313d; border-radius: 6px; padding: 10px; background: #171b22; min-height: 42px; overflow-wrap: anywhere; }
     .label { color: #9aa7b7; font-size: 12px; margin-bottom: 5px; }
+    h2 { font-size: 16px; margin: 0; }
+    .panel { border: 1px solid #2b313d; border-radius: 6px; padding: 12px; background: #151922; margin: 16px 0; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+    .positions-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    #positionsJson { width: 100%; min-height: 220px; max-height: 44vh; box-sizing: border-box; resize: vertical; border: 1px solid #2b313d; border-radius: 6px; padding: 10px; background: #0b0d10; color: #e8edf2; font: inherit; line-height: 1.45; }
+    #positionsStatus { margin-top: 8px; min-height: 18px; overflow-wrap: anywhere; }
+    .ok { color: #7bd88f; }
+    .warn { color: #ffd166; }
+    .bad { color: #ff7b86; }
     #log { min-height: 65vh; max-height: 72vh; overflow: auto; white-space: pre-wrap; border: 1px solid #2b313d; border-radius: 6px; padding: 12px; background: #0b0d10; line-height: 1.45; overflow-anchor: none; contain: content; }
     .muted { color: #9aa7b7; }
   </style>
@@ -599,6 +1031,21 @@ INDEX_HTML = """<!doctype html>
       <div class="box"><div class="label">prompt</div><div id="prompt" class="muted">loading</div></div>
       <div class="box"><div class="label">log file</div><div id="logfile" class="muted">none</div></div>
     </section>
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Open Positions</h2>
+          <div class="label" id="positionsPath">operator_inputs/open_positions.json</div>
+        </div>
+        <div class="positions-actions">
+          <button id="loadPositions">Load</button>
+          <button id="formatPositions">Format</button>
+          <button class="primary" id="savePositions">Save</button>
+        </div>
+      </div>
+      <textarea id="positionsJson" spellcheck="false" placeholder="Load open_positions.json to edit it here"></textarea>
+      <div id="positionsStatus" class="muted">not loaded</div>
+    </section>
     <pre id="log"></pre>
   </main>
   <script>
@@ -607,6 +1054,9 @@ INDEX_HTML = """<!doctype html>
     const statusEl = document.getElementById("status");
     const promptEl = document.getElementById("prompt");
     const logfileEl = document.getElementById("logfile");
+    const positionsPathEl = document.getElementById("positionsPath");
+    const positionsJsonEl = document.getElementById("positionsJson");
+    const positionsStatusEl = document.getElementById("positionsStatus");
     const MAX_RENDERED_LINES = 1200;
     let source = null;
     let reconnectTimer = null;
@@ -706,11 +1156,79 @@ INDEX_HTML = """<!doctype html>
       }
     }
 
-    async function api(path, method = "GET") {
-      const response = await fetch(buildUrl(path), { method });
+    async function api(path, method = "GET", body = null) {
+      const options = { method };
+      if (body !== null) {
+        options.headers = { "Content-Type": "application/json" };
+        options.body = JSON.stringify(body);
+      }
+      const response = await fetch(buildUrl(path), options);
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || response.statusText);
+      if (!response.ok) {
+        const err = new Error(data.error || response.statusText);
+        err.errors = data.errors || [];
+        throw err;
+      }
       return data;
+    }
+
+    function renderPositionsStatus(data, prefix = "loaded") {
+      const audit = data.field_audit || {};
+      const counts = audit.counts || {};
+      const missing = audit.missing || {};
+      const missingRows = [
+        ...(missing.positions || []).map(text => `positions ${text}`),
+        ...(missing.observations || []).map(text => `observations ${text}`)
+      ];
+      positionsPathEl.textContent = data.path || positionsPathEl.textContent;
+      positionsStatusEl.className = audit.passed ? "ok" : "warn";
+      positionsStatusEl.textContent = missingRows.length
+        ? `${prefix}; ${counts.positions || 0} positions, ${counts.observations || 0} observations; missing ${missingRows.join("; ")}`
+        : `${prefix}; ${counts.positions || 0} positions, ${counts.observations || 0} observations; required fields present`;
+    }
+
+    async function loadOpenPositions() {
+      try {
+        const data = await api("/open-positions");
+        positionsJsonEl.value = JSON.stringify(data.payload, null, 4) + "\\n";
+        renderPositionsStatus(data);
+      } catch (err) {
+        positionsStatusEl.className = "bad";
+        positionsStatusEl.textContent = err.message;
+      }
+    }
+
+    function parsePositionsEditor() {
+      try {
+        return JSON.parse(positionsJsonEl.value);
+      } catch (err) {
+        positionsStatusEl.className = "bad";
+        positionsStatusEl.textContent = `JSON parse error: ${err.message}`;
+        return null;
+      }
+    }
+
+    async function saveOpenPositions() {
+      const payload = parsePositionsEditor();
+      if (payload === null) return;
+      try {
+        const data = await api("/open-positions", "PUT", payload);
+        positionsJsonEl.value = JSON.stringify(data.payload, null, 4) + "\\n";
+        renderPositionsStatus(data, "saved");
+        if (data.backup_path) appendLog(`[server] open_positions backup: ${data.backup_path}`);
+      } catch (err) {
+        positionsStatusEl.className = "bad";
+        positionsStatusEl.textContent = err.message;
+        if (err.errors && err.errors.length) appendLog(`[browser] ${err.errors.join("; ")}`);
+      }
+    }
+
+    function formatOpenPositions() {
+      const payload = parsePositionsEditor();
+      if (payload === null) return;
+      positionsJsonEl.value = JSON.stringify(payload, null, 4) + "\\n";
+      positionsStatusEl.className = "muted";
+      positionsStatusEl.textContent = "formatted locally; not saved";
     }
 
     async function refreshStatus() {
@@ -813,8 +1331,14 @@ INDEX_HTML = """<!doctype html>
 
     document.getElementById("reconnect").addEventListener("click", connect);
     document.getElementById("copy").addEventListener("click", copyLog);
+    document.getElementById("loadPositions").addEventListener("click", loadOpenPositions);
+    document.getElementById("savePositions").addEventListener("click", saveOpenPositions);
+    document.getElementById("formatPositions").addEventListener("click", formatOpenPositions);
     refreshStatus();
-    if (tokenInput.value) connect();
+    if (tokenInput.value) {
+      connect();
+      loadOpenPositions();
+    }
   </script>
 </body>
 </html>
