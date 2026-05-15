@@ -24,4 +24,4 @@ Selected multiplier: `1.125`.
 | mid_weak | 2.0103 | 2.0900 | +0.0797 | $73,104.97 | $74,906.73 | $+1,801.76 | +0.0000 | 0.7925 | 7 |
 | old_thin | 0.5099 | 0.5245 | +0.0146 | $35,657.24 | $36,942.11 | $+1,284.87 | +0.0047 | 0.9000 | 7 |
 
-Production impact: promoted into shared `portfolio_engine.py`, `backtester.py` attribution keys, `docs/production_backtest_parity.md`, and focused parity tests. `run.py` and `backtester.py` both use the shared sizing path; the experiment runner remains a research artifact.
+Production impact: promoted into shared `portfolio_engine.py`, `backtester.py` attribution keys, `docs/production_backtest_parity.md`, and focused parity tests. `run.py` and `backtester.py` both use the shared sizing path; the experiment runner explicitly disables the promoted constant while replaying its own baseline and variant wrapper.

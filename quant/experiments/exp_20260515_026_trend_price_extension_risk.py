@@ -419,7 +419,7 @@ def _markdown(payload: dict[str, Any]) -> str:
             "",
             *result_rows,
             "",
-            "Production impact: promoted into shared `portfolio_engine.py`, `backtester.py` attribution keys, `docs/production_backtest_parity.md`, and focused parity tests. The experiment runner explicitly disables the promoted constant while replaying its own baseline and variant wrapper.",
+            "Production impact: promoted into shared `portfolio_engine.py`, `backtester.py` attribution keys, `docs/production_backtest_parity.md`, and focused parity tests. `run.py` and `backtester.py` both use the shared sizing path; the experiment runner explicitly disables the promoted constant while replaying its own baseline and variant wrapper.",
             "",
         ]
     )
@@ -438,12 +438,13 @@ def run() -> dict[str, Any]:
     selected = _select_candidate(candidates)
     passed = selected["passed"]
     decision = (
-        "accepted_for_shared_policy_implementation"
+        "accepted_and_promoted_to_shared_policy"
         if passed
         else "rejected_trend_price_extension_risk"
     )
+    status = "promoted" if passed else decision
     interpretation = (
-        "Trend-only price-vs-200MA extension cleared the canonical three-window gate and should be promoted only through shared production/backtest sizing policy."
+        "Trend-only price-vs-200MA extension cleared the canonical three-window gate and should be promoted only through shared production/backtest sizing policy. Promotion complete: the selected 1.125x trend-only extension top-up now lives in shared portfolio_engine.py, is attributed by backtester.py, and is covered by production parity tests."
         if passed
         else "Trend-only price-vs-200MA extension did not clear the canonical three-window gate."
     )
@@ -452,7 +453,7 @@ def run() -> dict[str, Any]:
         "experiment_id": EXPERIMENT_ID,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "lane": "alpha_search",
-        "status": decision,
+        "status": status,
         "decision": decision,
         "hypothesis": (
             "The accepted price-vs-200MA extension state is fundamentally a slow-trend quality field. "
@@ -565,6 +566,8 @@ def run() -> dict[str, Any]:
             "run_adapter_changed": True,
             "replay_only": False,
             "parity_test_added": True,
+            "parity_test": "quant/test_production_parity.py::test_trend_price_vs_200ma_extension_topup_is_shared_sizing_policy",
+            "promotion_requirement": "Implemented in shared portfolio_engine.py sizing policy; backtester records attribution and production run.py uses the same shared sizing path.",
             "notes": (
                 "Promoted through shared portfolio_engine.size_signals; run.py and backtester.py both use the shared sizing policy. "
                 "backtester.py only adds attribution for the applied multiplier."
@@ -621,7 +624,7 @@ def main() -> None:
             "title": "Trend price-vs-200MA extension risk",
             "decision": payload["decision"],
             "summary": (
-                f"Selected {payload['parameters']['selected_risk_multiplier']}x; "
+                f"Promoted {payload['parameters']['selected_risk_multiplier']}x; "
                 f"Gate4={payload['gate4']['passed']}; "
                 f"dEV={payload['expected_value_score_delta']:+.4f}; "
                 f"dPnL=${payload['total_pnl_delta']:+,.2f}"
