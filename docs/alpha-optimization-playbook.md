@@ -109,6 +109,10 @@ Current practical interpretation:
   windows; `exp-20260515-020` improved aggregate EV/PnL but every sweep
   regressed `late_strong`, so the overlap needs a new drawdown discriminator
   before it is worth revisiting.
+- do not retry the simple complementary RS60-but-not-price-extension top-up on
+  the frozen windows; `exp-20260515-022` touched only two signals and produced
+  zero EV/PnL movement, so the branch needs a wider cohort or a new
+  production-visible state before further work.
 
 ### SEC Financial-Report Sleeve
 
@@ -362,6 +366,8 @@ field:
 - global slot, heat, or capacity sweeps;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby RS20 / RS60 / own-candle / clean-SPY scalar tuning;
+- simple RS60 x price-vs-200MA overlap or complement scalars without a new
+  drawdown, catalyst-quality, or wider-cohort discriminator;
 - nearby cap retries after a sleeve-specific cap has already been accepted,
   unless forward cap-room evidence exists;
 - one-ticker cap scouts on already-accepted core sleeves;
