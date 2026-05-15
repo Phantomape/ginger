@@ -1,7 +1,7 @@
 """
 News T1-negative replay for backtester.
 
-Reads data/clean_trade_news_YYYYMMDD.json (written by run.py / run_pipeline.py)
+Reads the dated clean_trade_news archive (written by run.py / run_pipeline.py)
 and identifies tickers with T1-negative news on a given date.  Used by the
 backtester's --replay-news path to partially close the news-veto parity gap:
 in production, signals for tickers with T1 negative news on the signal date are

@@ -21,6 +21,10 @@ cd D:\Github\ginger
 .\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT>
 ```
 
+New backtest result files are written under `data\backtests\`. Legacy
+root-level `data\backtest_results_*.json` artifacts remain readable and are
+kept in place for historical experiment compatibility.
+
 ## 试点子组合回测
 
 试点子组合回测（pilot sleeve replay）是显式开启的 point-in-time

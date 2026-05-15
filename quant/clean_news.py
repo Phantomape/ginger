@@ -9,7 +9,8 @@ Applies filtering rules to collected news:
 Usage:
     python clean_news.py [input_file]
 
-If no input file is provided, uses today's news file: data/news_YYYYMMDD.json
+If no input file is provided, uses today's news file via quant/data_paths.py
+(normally data/daily/news/raw/news_YYYYMMDD.json, with legacy root fallback).
 """
 
 import json

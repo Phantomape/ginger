@@ -67,6 +67,7 @@ docs/experiment_log_format.md
 docs/production_backtest_parity.md
 docs/alpha-optimization-playbook.md
 data/backtest_results_*.json
+data/backtests/backtest_results_*.json
 ```
 
 其中，`docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。

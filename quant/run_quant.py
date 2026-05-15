@@ -9,8 +9,9 @@ Usage:
 
 Output:
     - Console: formatted daily report
-    - data/report_YYYYMMDD.txt
-    - data/quant_signals_YYYYMMDD.json  (full signal + feature data)
+    - data/daily/reports/report_YYYYMMDD.txt
+    - data/daily/signals/quant/quant_signals_YYYYMMDD.json
+      (full signal + feature data)
 """
 
 import os

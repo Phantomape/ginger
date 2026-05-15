@@ -1,13 +1,13 @@
 """
 LLM decision replay for backtester.
 
-Reads data/llm_prompt_resp_YYYYMMDD.json and returns the LLM's approved tickers
+Reads the dated llm_prompt_resp archive and returns the LLM's approved tickers
 for new entries on that date. Used by backtester's --replay-llm path to close
 the §6.1 parity gap between production (LLM gates new trades) and backtest
 (historically accepted all code-surviving signals).
 
 Files are written by import_advice.py (which copies investment_advice_YYYYMMDD.json
-to llm_prompt_resp_YYYYMMDD.json) or manually. Both bare JSON and the
+to the llm_prompt_resp_YYYYMMDD.json archive) or manually. Both bare JSON and the
 {advice_raw, advice_parsed, ...} wrapper format are accepted.
 
 Only `new_trade` is replayed. `position_actions` are ignored because exits in

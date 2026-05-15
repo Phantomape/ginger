@@ -433,7 +433,7 @@ def save_trend_signals(signals, filepath=None):
 
     Args:
         signals (dict): Trend signals data
-        filepath (str): Output file path (default: data/trend_signals_YYYYMMDD.json)
+        filepath (str): Output file path (default: data/daily/signals/trend/trend_signals_YYYYMMDD.json)
 
     Returns:
         str: Path to saved file

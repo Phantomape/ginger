@@ -1552,7 +1552,7 @@ def save_report(report_text, filepath=None):
     """
     Save the report to a dated text file.
 
-    Default path: data/report_YYYYMMDD.txt
+    Default path: data/daily/reports/report_YYYYMMDD.txt
 
     Returns:
         str: Saved file path, or None on error
