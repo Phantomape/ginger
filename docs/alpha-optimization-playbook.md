@@ -105,6 +105,10 @@ Current practical interpretation:
   production-visible quality state.
 - do not retry nearby price-vs-200MA extension scalars on the frozen windows
   without forward evidence or a materially different production-visible state.
+- do not retry simple RS60 x price-vs-200MA overlap top-ups on the frozen
+  windows; `exp-20260515-020` improved aggregate EV/PnL but every sweep
+  regressed `late_strong`, so the overlap needs a new drawdown discriminator
+  before it is worth revisiting.
 
 ### SEC Financial-Report Sleeve
 
