@@ -160,6 +160,16 @@ SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE = 0.0
 SPACE_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_BENCHMARK_SAME_THEME_STRENGTH_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_BENCHMARK_BREADTH_IWM_LEADER_TREND_RISK_SCALAR = 1.0125
+SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET = (
+    "defense_budget_theme"
+)
+SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD = (
+    "government_space_contract"
+)
+SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL = 0.0
+SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE = 0.0
+SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR = 1.025
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -523,6 +533,40 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_benchmark_breadth_peer_nonleader_trend_state": "nonleader",
     "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
         SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
+    ),
+    "space_benchmark_breadth_iwm_leader_trend_experiment_id": (
+        "exp-20260514-053"
+    ),
+    "space_benchmark_breadth_iwm_leader_trend_definition": (
+        "official Space trend_long with closed broad benchmark-positive 10d "
+        "event-state profiles and IWM 20d momentum above SPY 20d momentum"
+    ),
+    "space_benchmark_breadth_iwm_leader_trend_state": "smallcap_leader",
+    "space_benchmark_breadth_iwm_leader_trend_risk_scalar": (
+        SPACE_CATALYST_BENCHMARK_BREADTH_IWM_LEADER_TREND_RISK_SCALAR
+    ),
+    "space_defense_budget_delayed_benchmark_trend_experiment_id": (
+        "exp-20260514-051"
+    ),
+    "space_defense_budget_delayed_benchmark_trend_definition": (
+        "official Space trend_long with defense_budget_theme / "
+        "government_space_contract rows that have weak 5d cash absorption and "
+        "broad positive 10d cash, SPY, QQQ, UFO, and ARKX confirmation"
+    ),
+    "space_defense_budget_delayed_benchmark_semantic_bucket": (
+        SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET
+    ),
+    "space_defense_budget_delayed_benchmark_event_field": (
+        SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD
+    ),
+    "space_defense_budget_delayed_benchmark_max_5d_cash_pnl": (
+        SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL
+    ),
+    "space_defense_budget_delayed_benchmark_min_10d_value": (
+        SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+    ),
+    "space_defense_budget_delayed_benchmark_trend_risk_scalar": (
+        SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
     ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
@@ -899,6 +943,25 @@ def space_catalyst_forward_risk_scalar(
         scalar *= (
             SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
         )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_benchmark_breadth_profile(forward_replacement_profile)
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    ):
+        scalar *= (
+            SPACE_CATALYST_BENCHMARK_BREADTH_IWM_LEADER_TREND_RISK_SCALAR
+        )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_defense_budget_delayed_benchmark_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
+        )
     return scalar
 
 
@@ -1174,6 +1237,24 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
+            ),
+            "space_benchmark_breadth_iwm_leader_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_IWM_LEADER_TREND_RISK_SCALAR
+            ),
+            "space_defense_budget_delayed_benchmark_semantic_bucket": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET
+            ),
+            "space_defense_budget_delayed_benchmark_event_field": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD
+            ),
+            "space_defense_budget_delayed_benchmark_max_5d_cash_pnl": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL
+            ),
+            "space_defense_budget_delayed_benchmark_min_10d_value": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+            ),
+            "space_defense_budget_delayed_benchmark_trend_risk_scalar": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -2331,6 +2412,24 @@ def build_space_catalyst_observation_slot(
             "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": (
                 SPACE_CATALYST_BENCHMARK_BREADTH_PEER_NONLEADER_TREND_RISK_SCALAR
             ),
+            "space_benchmark_breadth_iwm_leader_trend_risk_scalar": (
+                SPACE_CATALYST_BENCHMARK_BREADTH_IWM_LEADER_TREND_RISK_SCALAR
+            ),
+            "space_defense_budget_delayed_benchmark_semantic_bucket": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET
+            ),
+            "space_defense_budget_delayed_benchmark_event_field": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD
+            ),
+            "space_defense_budget_delayed_benchmark_max_5d_cash_pnl": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL
+            ),
+            "space_defense_budget_delayed_benchmark_min_10d_value": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+            ),
+            "space_defense_budget_delayed_benchmark_trend_risk_scalar": (
+                SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -3280,6 +3379,26 @@ def _observation_slot_row(
         if benchmark_breadth_peer_nonleader_trend_bucket
         else 1.0
     )
+    benchmark_breadth_iwm_leader_trend_bucket = (
+        benchmark_breadth_trend_bucket
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    )
+    benchmark_breadth_iwm_leader_trend_risk_scalar = (
+        SPACE_CATALYST_BENCHMARK_BREADTH_IWM_LEADER_TREND_RISK_SCALAR
+        if benchmark_breadth_iwm_leader_trend_bucket
+        else 1.0
+    )
+    defense_budget_delayed_benchmark_trend_bucket = (
+        benchmark_breadth_trend_bucket
+        and _is_space_defense_budget_delayed_benchmark_profile(
+            forward_replacement_profile
+        )
+    )
+    defense_budget_delayed_benchmark_trend_risk_scalar = (
+        SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
+        if defense_budget_delayed_benchmark_trend_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -3326,6 +3445,16 @@ def _observation_slot_row(
         "space_benchmark_breadth_peer_nonleader_profile": (
             forward_replacement_profile
             if benchmark_breadth_peer_nonleader_trend_bucket
+            else None
+        ),
+        "space_benchmark_breadth_iwm_leader_profile": (
+            forward_replacement_profile
+            if benchmark_breadth_iwm_leader_trend_bucket
+            else None
+        ),
+        "space_defense_budget_delayed_benchmark_profile": (
+            forward_replacement_profile
+            if defense_budget_delayed_benchmark_trend_bucket
             else None
         ),
         "sector": signal.get("sector"),
@@ -3580,6 +3709,33 @@ def _observation_slot_row(
         "space_benchmark_breadth_peer_nonleader_trend_state": "nonleader",
         "space_benchmark_breadth_peer_nonleader_trend_risk_scalar": _round(
             benchmark_breadth_peer_nonleader_trend_risk_scalar,
+            6,
+        ),
+        "space_benchmark_breadth_iwm_leader_trend_bucket": (
+            benchmark_breadth_iwm_leader_trend_bucket
+        ),
+        "space_benchmark_breadth_iwm_leader_trend_state": "smallcap_leader",
+        "space_benchmark_breadth_iwm_leader_trend_risk_scalar": _round(
+            benchmark_breadth_iwm_leader_trend_risk_scalar,
+            6,
+        ),
+        "space_defense_budget_delayed_benchmark_trend_bucket": (
+            defense_budget_delayed_benchmark_trend_bucket
+        ),
+        "space_defense_budget_delayed_benchmark_semantic_bucket": (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET
+        ),
+        "space_defense_budget_delayed_benchmark_event_field": (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD
+        ),
+        "space_defense_budget_delayed_benchmark_max_5d_cash_pnl": (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL
+        ),
+        "space_defense_budget_delayed_benchmark_min_10d_value": (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+        ),
+        "space_defense_budget_delayed_benchmark_trend_risk_scalar": _round(
+            defense_budget_delayed_benchmark_trend_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -3976,6 +4132,67 @@ def _is_space_benchmark_breadth_profile(profile: dict[str, Any] | None) -> bool:
         and avg_ufo > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_UFO_VALUE
         and avg_arkx is not None
         and avg_arkx > SPACE_CATALYST_BENCHMARK_BREADTH_MIN_10D_ARKX_VALUE
+    )
+
+
+def _is_space_defense_budget_delayed_benchmark_profile(
+    profile: dict[str, Any] | None,
+) -> bool:
+    if not _is_space_benchmark_breadth_profile(profile):
+        return False
+    matching_rows: list[dict[str, Any]] = []
+    for row in (profile or {}).get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        event_fields = row.get("event_fields") or []
+        if isinstance(event_fields, str):
+            event_field_set = {event_fields}
+        else:
+            event_field_set = {str(item) for item in event_fields}
+        if (
+            str(row.get("semantic_bucket") or "")
+            != SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET
+        ):
+            continue
+        if (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD
+            not in event_field_set
+        ):
+            continue
+        required_values = [
+            _as_float(row.get("5d_cash_relative_pnl")),
+            _as_float(row.get("cash_relative_pnl")),
+            _as_float(row.get("spy_relative_value")),
+            _as_float(row.get("qqq_relative_value")),
+            _as_float(row.get("ufo_relative_value")),
+            _as_float(row.get("arkx_relative_value")),
+        ]
+        if any(value is None for value in required_values):
+            continue
+        matching_rows.append(row)
+    if not matching_rows:
+        return False
+    avg_5d_cash = mean(
+        float(row["5d_cash_relative_pnl"]) for row in matching_rows
+    )
+    avg_10d_cash = mean(float(row["cash_relative_pnl"]) for row in matching_rows)
+    avg_10d_spy = mean(float(row["spy_relative_value"]) for row in matching_rows)
+    avg_10d_qqq = mean(float(row["qqq_relative_value"]) for row in matching_rows)
+    avg_10d_ufo = mean(float(row["ufo_relative_value"]) for row in matching_rows)
+    avg_10d_arkx = mean(float(row["arkx_relative_value"]) for row in matching_rows)
+    return (
+        avg_5d_cash
+        <= SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL
+        and avg_10d_cash
+        > SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+        and avg_10d_spy
+        > SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+        and avg_10d_qqq
+        > SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+        and avg_10d_ufo
+        > SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
+        and avg_10d_arkx
+        > SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
     )
 
 

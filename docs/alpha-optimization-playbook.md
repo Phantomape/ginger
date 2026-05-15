@@ -136,7 +136,7 @@ SEC interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted official-catalyst Space stack through
-`exp-20260514-047`.
+`exp-20260514-053`.
 
 Mechanism summary:
 
@@ -164,6 +164,14 @@ Mechanism summary:
   accepted same-theme replacement-strength floor: `exp-20260514-047` accepted
   a conservative `1.025x` helper for broad benchmark-positive `trend_long`
   signals with average 10d same-theme replacement value >= $500;
+- defense-budget / government-contract catalyst timing is now a validated
+  semantic allocation layer inside the same benchmark-breadth trend cohort:
+  `exp-20260514-051` accepted a conservative `1.025x` helper when official
+  Space `trend_long` signals have weak average 5d cash absorption but broad
+  positive 10d cash, SPY, QQQ, UFO, and ARKX confirmation;
+- the broad benchmark-positive `trend_long` cohort also supports a tiny
+  small-cap participation interaction: `exp-20260514-053` accepted a
+  conservative `1.0125x` helper only when IWM 20d momentum leads SPY;
 - the best use is semantic risk allocation inside a quarantined sleeve.
 
 Space interpretation:
@@ -174,8 +182,9 @@ Space interpretation:
 - future progress should come from closed forward outcomes and better catalyst
   semantics, not from nearby scalar retunes on the frozen snapshots.
 - do not retry nearby source-diversity, company-source, delayed-absorption,
-  broad benchmark-breadth, benchmark-breadth same-theme strength, or
-  benchmark-breadth peer-state scalars without new closed forward rows or a new
+  broad benchmark-breadth, benchmark-breadth same-theme strength,
+  benchmark-breadth peer-state, defense-budget delayed-benchmark, or
+  benchmark-breadth IWM-leader scalars without new closed forward rows or a new
   production-visible catalyst-quality field.
 
 ## Durable Laws From Repository Evidence
