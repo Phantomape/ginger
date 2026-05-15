@@ -538,6 +538,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         ]
         == 1.0125
     )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_defense_budget_same_theme_winner_trend_experiment_id"
+        ]
+        == "exp-20260515-021"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_defense_budget_same_theme_winner_trend_risk_scalar"
+        ]
+        == 1.05
+    )
     assert snapshot["forward_hypothesis"]["live_slots"] == 0
 
 
@@ -2937,6 +2949,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_delayed_absorption_trend_risk_scalar": 1.025,
                 "space_benchmark_breadth_trend_risk_scalar": 1.025,
                 "space_benchmark_breadth_iwm_leader_trend_risk_scalar": 1.0125,
+                "space_defense_budget_same_theme_winner_trend_risk_scalar": 1.05,
             },
             "promotion_gates": {"minimum_closed_decisions": 10},
         },
@@ -2982,6 +2995,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_delayed_absorption_trend_bucket": True,
                     "space_benchmark_breadth_trend_bucket": True,
                     "space_benchmark_breadth_iwm_leader_trend_bucket": True,
+                    "space_defense_budget_same_theme_winner_trend_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
@@ -3050,7 +3064,8 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "forward replacement-strength company-source trend @ 1.025x; "
         "delayed-absorption trend @ 1.025x; "
         "benchmark-breadth trend @ 1.025x; "
-        "benchmark-breadth IWM-leader trend @ 1.0125x)"
+        "benchmark-breadth IWM-leader trend @ 1.0125x; "
+        "defense-budget same-theme winner trend @ 1.05x)"
     ) in report
     assert "SPACE CATALYST EVENT LEDGER" in report
     assert "SPACE CATALYST PRODUCTION OBSERVATION SLOT" in report
@@ -3077,6 +3092,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "delayed_absorption_trend=True "
         "benchmark_breadth_trend=True"
         " benchmark_breadth_iwm_leader_trend=True"
+        " defense_budget_same_theme_winner_trend=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

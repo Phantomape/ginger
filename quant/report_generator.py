@@ -615,6 +615,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "benchmark-breadth IWM-leader trend @ "
                     f"{benchmark_breadth_iwm_leader_trend_scalar}x"
                 )
+            defense_budget_same_theme_winner_trend_scalar = forward.get(
+                "space_defense_budget_same_theme_winner_trend_risk_scalar"
+            )
+            if defense_budget_same_theme_winner_trend_scalar is not None:
+                extra_policies.append(
+                    "defense-budget same-theme winner trend @ "
+                    f"{defense_budget_same_theme_winner_trend_scalar}x"
+                )
             extra_policy = ""
             if extra_policies:
                 extra_policy = "; " + "; ".join(extra_policies)
@@ -792,6 +800,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_benchmark_breadth_iwm_leader_trend_bucket")
                 else ""
             )
+            defense_budget_same_theme_winner_trend_text = (
+                " defense_budget_same_theme_winner_trend=True"
+                if plan.get("space_defense_budget_same_theme_winner_trend_bucket")
+                else ""
+            )
             perfect_tqs_text = (
                 " perfect_tqs=True" if plan.get("space_perfect_tqs_bucket") else ""
             )
@@ -829,6 +842,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{benchmark_breadth_trend_text}"
                 f"{benchmark_breadth_peer_nonleader_trend_text}"
                 f"{benchmark_breadth_iwm_leader_trend_text}"
+                f"{defense_budget_same_theme_winner_trend_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"

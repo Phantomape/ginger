@@ -135,7 +135,7 @@ Current practical interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted default-off Space stack through
-`exp-20260514-053`.
+`exp-20260515-021`.
 
 Mechanism-level summary:
 
@@ -155,6 +155,10 @@ Current practical interpretation:
 - 2026-05-15 `exp-20260515-019` rejected promoting ARKX/UFO theme-beta
   benchmark ETFs into the Space trade candidate pool: all three standard
   windows lost EV and aggregate PnL fell by $180,752.89;
+- 2026-05-15 `exp-20260515-021` accepted a fixed-pool defense-budget
+  same-theme winner `trend_long` allocation scalar at `1.05x`: two windows
+  improved, the old thin window was unchanged, and trade count/survival stayed
+  unchanged;
 - the next valid Space step is either a broader mature cohort or a genuinely
   new production-visible catalyst-quality field.
 

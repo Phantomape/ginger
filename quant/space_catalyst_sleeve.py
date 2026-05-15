@@ -170,6 +170,9 @@ SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD = (
 SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MAX_5D_CASH_PNL = 0.0
 SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE = 0.0
 SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL = 0.0
+SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE = 0.0
+SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR = 1.05
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -568,6 +571,24 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_defense_budget_delayed_benchmark_trend_risk_scalar": (
         SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
     ),
+    "space_defense_budget_same_theme_winner_trend_experiment_id": (
+        "exp-20260515-021"
+    ),
+    "space_defense_budget_same_theme_winner_trend_definition": (
+        "official Space trend_long with broad benchmark-positive 10d "
+        "event-state profiles and defense_budget_theme / "
+        "government_space_contract rows that beat cash and same-theme "
+        "replacement over 10d"
+    ),
+    "space_defense_budget_same_theme_winner_min_10d_cash_pnl": (
+        SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL
+    ),
+    "space_defense_budget_same_theme_winner_min_10d_same_theme_value": (
+        SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE
+    ),
+    "space_defense_budget_same_theme_winner_trend_risk_scalar": (
+        SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR
+    ),
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -962,6 +983,17 @@ def space_catalyst_forward_risk_scalar(
         scalar *= (
             SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
         )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_benchmark_breadth_profile(forward_replacement_profile)
+        and _is_space_defense_budget_same_theme_winner_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= (
+            SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR
+        )
     return scalar
 
 
@@ -1255,6 +1287,15 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_defense_budget_delayed_benchmark_trend_risk_scalar": (
                 SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
+            ),
+            "space_defense_budget_same_theme_winner_min_10d_cash_pnl": (
+                SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL
+            ),
+            "space_defense_budget_same_theme_winner_min_10d_same_theme_value": (
+                SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE
+            ),
+            "space_defense_budget_same_theme_winner_trend_risk_scalar": (
+                SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR
             ),
             "live_slots": 0,
         },
@@ -2430,6 +2471,15 @@ def build_space_catalyst_observation_slot(
             "space_defense_budget_delayed_benchmark_trend_risk_scalar": (
                 SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR
             ),
+            "space_defense_budget_same_theme_winner_min_10d_cash_pnl": (
+                SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL
+            ),
+            "space_defense_budget_same_theme_winner_min_10d_same_theme_value": (
+                SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE
+            ),
+            "space_defense_budget_same_theme_winner_trend_risk_scalar": (
+                SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR
+            ),
             "live_slots": 0,
         },
         "production_impact": _observation_slot_production_impact(),
@@ -3399,6 +3449,17 @@ def _observation_slot_row(
         if defense_budget_delayed_benchmark_trend_bucket
         else 1.0
     )
+    defense_budget_same_theme_winner_trend_bucket = (
+        benchmark_breadth_trend_bucket
+        and _is_space_defense_budget_same_theme_winner_profile(
+            forward_replacement_profile
+        )
+    )
+    defense_budget_same_theme_winner_trend_risk_scalar = (
+        SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR
+        if defense_budget_same_theme_winner_trend_bucket
+        else 1.0
+    )
     effective_risk_scalar = (
         _round(risk_budget_scalar * sleeve_risk_scalar, 6)
         if risk_budget_scalar is not None
@@ -3455,6 +3516,11 @@ def _observation_slot_row(
         "space_defense_budget_delayed_benchmark_profile": (
             forward_replacement_profile
             if defense_budget_delayed_benchmark_trend_bucket
+            else None
+        ),
+        "space_defense_budget_same_theme_winner_profile": (
+            forward_replacement_profile
+            if defense_budget_same_theme_winner_trend_bucket
             else None
         ),
         "sector": signal.get("sector"),
@@ -3736,6 +3802,19 @@ def _observation_slot_row(
         ),
         "space_defense_budget_delayed_benchmark_trend_risk_scalar": _round(
             defense_budget_delayed_benchmark_trend_risk_scalar,
+            6,
+        ),
+        "space_defense_budget_same_theme_winner_trend_bucket": (
+            defense_budget_same_theme_winner_trend_bucket
+        ),
+        "space_defense_budget_same_theme_winner_min_10d_cash_pnl": (
+            SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL
+        ),
+        "space_defense_budget_same_theme_winner_min_10d_same_theme_value": (
+            SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE
+        ),
+        "space_defense_budget_same_theme_winner_trend_risk_scalar": _round(
+            defense_budget_same_theme_winner_trend_risk_scalar,
             6,
         ),
         "effective_risk_scalar": effective_risk_scalar,
@@ -4194,6 +4273,44 @@ def _is_space_defense_budget_delayed_benchmark_profile(
         and avg_10d_arkx
         > SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_MIN_10D_VALUE
     )
+
+
+def _is_space_defense_budget_same_theme_winner_profile(
+    profile: dict[str, Any] | None,
+) -> bool:
+    if not profile:
+        return False
+    matching_rows: list[dict[str, Any]] = []
+    for row in profile.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        event_fields = row.get("event_fields") or []
+        if isinstance(event_fields, str):
+            event_field_set = {event_fields}
+        else:
+            event_field_set = {str(item) for item in event_fields}
+        if (
+            str(row.get("semantic_bucket") or "")
+            != SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_SEMANTIC_BUCKET
+        ):
+            continue
+        if (
+            SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_EVENT_FIELD
+            not in event_field_set
+        ):
+            continue
+        cash = _as_float(row.get("cash_relative_pnl"))
+        same_theme = _as_float(row.get("same_theme_replacement_value"))
+        if cash is None or same_theme is None:
+            continue
+        if (
+            cash
+            > SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL
+            and same_theme
+            > SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE
+        ):
+            matching_rows.append(row)
+    return bool(matching_rows)
 
 
 def _round(value: Any, digits: int = 6) -> Any:
