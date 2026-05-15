@@ -844,6 +844,55 @@ def test_price_vs_200ma_extension_topup_is_shared_sizing_policy():
     assert sizing["price_vs_200ma_extension_state"] is True
 
 
+def test_trend_price_vs_200ma_extension_topup_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "UNH",
+            "strategy": "trend_long",
+            "sector": "Healthcare",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 0.95,
+            "price_vs_200ma_pct": 0.40,
+            "price_vs_200ma_extension_cutoff": 0.30,
+            "price_vs_200ma_extension_state": True,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "PFE",
+            "strategy": "breakout_long",
+            "sector": "Healthcare",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 0.95,
+            "price_vs_200ma_pct": 0.40,
+            "price_vs_200ma_extension_cutoff": 0.30,
+            "price_vs_200ma_extension_state": True,
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    trend_sizing = sized[0]["sizing"]
+    breakout_sizing = sized[1]["sizing"]
+    assert trend_sizing["price_vs_200ma_extension_new_shares"] == 94
+    assert trend_sizing["trend_price_vs_200ma_extension_baseline_shares"] == 94
+    assert trend_sizing["trend_price_vs_200ma_extension_desired_shares"] == 105
+    assert trend_sizing["trend_price_vs_200ma_extension_new_shares"] == 105
+    assert trend_sizing["shares_to_buy"] == 105
+    assert trend_sizing[
+        "trend_price_vs_200ma_extension_risk_multiplier_applied"
+    ] == constants.TREND_PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER
+
+    assert breakout_sizing["price_vs_200ma_extension_new_shares"] == 94
+    assert breakout_sizing["shares_to_buy"] == 94
+    assert (
+        breakout_sizing["trend_price_vs_200ma_extension_risk_multiplier_applied"]
+        == 1.0
+    )
+
+
 def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
     signals = [
         {

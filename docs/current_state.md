@@ -2,8 +2,10 @@
 
 Last updated: 2026-05-15.
 
-The current accepted core stack includes the 2026-05-15 price-vs-200MA
-extension sizing promotion from `exp-20260515-018`, layered on top of the
+The current accepted core stack includes the 2026-05-15 trend-only
+price-vs-200MA extension sizing promotion from `exp-20260515-026`, layered on
+top of the 2026-05-15 broad price-vs-200MA extension sizing promotion from
+`exp-20260515-018`, layered on top of the
 2026-05-15 clean-SPY cap-only RS20 leader cap promotion from
 `exp-20260515-013`,
 the 2026-05-15 clean-SPY cap-only leader cap promotion from
@@ -26,16 +28,30 @@ documented in `docs/backtesting.md` and
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
 | `late_strong` | 5.0334 | 115.18% | 4.37 | 6.68% | 19 | 80.39% |
-| `mid_weak` | 2.0103 | 73.10% | 2.75 | 10.14% | 21 | 79.25% |
-| `old_thin` | 0.5099 | 35.66% | 1.43 | 9.34% | 22 | 91.67% |
+| `mid_weak` | 2.0900 | 74.91% | 2.79 | 10.14% | 21 | 79.25% |
+| `old_thin` | 0.5245 | 36.94% | 1.42 | 9.81% | 22 | 90.00% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260515-018/price_vs_200ma_extension_risk.json`.
-Aggregate core EV is now `7.5536`; aggregate PnL is `$223,945.26`.
-Latest saved single-window backtest artifact on disk may predate this
-promotion; canonical acceptance evidence is the three-window artifact above.
+`data/experiments/exp-20260515-026/trend_price_extension_risk.json`.
+Aggregate core EV is now `7.6479`; aggregate PnL is `$227,031.89`.
+Latest saved single-window backtest artifacts can reflect only the most recent
+command; canonical acceptance evidence is the three-window artifact above.
 
-Latest accepted alpha result: core `exp-20260515-018` keeps entries, exits,
+Latest accepted alpha result: core `exp-20260515-026` keeps entries, exits,
+ranking, universe, filters, targets, slots, heat, LLM, and news logic
+unchanged, but gives already-qualified `trend_long` non-ETF/non-commodity
+stock signals with `price_vs_200ma_extension_state=true` an additional 1.125x
+cap-aware post-sizing top-up after the accepted broad extension top-up.
+Aggregate EV improved `+0.0943` and aggregate PnL improved `+$3,086.63`
+across the three canonical windows: `late_strong` EV stayed `5.0334`,
+`mid_weak` EV improved `2.0103 -> 2.0900`, and `old_thin` EV improved
+`0.5099 -> 0.5245`. Max drawdown drift stayed inside Gate 4 (`+0.47 pp` worst
+window), trade count stayed `62`, minimum survival stayed `79.25%`, and
+`old_thin` survival moved `91.67% -> 90.00%`. The rule lives in shared
+`portfolio_engine.py`, backtester attribution keys, and focused
+production-parity tests. Larger 1.15x+ values failed the drawdown guardrail.
+
+Previous accepted alpha result: core `exp-20260515-018` keeps entries, exits,
 ranking, universe, filters, targets, slots, heat, LLM, and news logic
 unchanged, but tags already-qualified `trend_long` / `breakout_long`
 non-ETF/non-commodity stock signals whose `price_vs_200ma_pct` is in the

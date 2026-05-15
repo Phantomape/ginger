@@ -78,33 +78,51 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260515-018`
-(`price_vs_200ma_extension_risk`) promoted the top-quartile price-vs-200MA
+Current accepted fixed-window metrics after core `exp-20260515-026`
+(`trend_price_extension_risk`) promoted the trend-only price-vs-200MA
 extension sizing top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `late_strong` | 5.0334 | 4.37 | $115,183.05 | 115.18% | 6.68% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 2.0103 | 2.75 | $73,104.97 | 73.10% | 10.14% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.5099 | 1.43 | $35,657.24 | 35.66% | 9.34% | 40.91% | 22 | 91.67% |
+| `mid_weak` | 2.0900 | 2.79 | $74,906.73 | 74.91% | 10.14% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.5245 | 1.42 | $36,942.11 | 36.94% | 9.81% | 40.91% | 22 | 90.00% |
 
 Artifact note:
-`data/experiments/exp-20260515-018/price_vs_200ma_extension_risk.json`
+`data/experiments/exp-20260515-026/trend_price_extension_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `7.5536`; aggregate PnL is `$223,945.26`.
+EV is `7.6479`; aggregate PnL is `$227,031.89`.
 
-Latest accepted core-sizing result: core `exp-20260515-018` keeps entries,
+Latest accepted core-sizing result: core `exp-20260515-026` keeps entries,
+exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
+unchanged, but gives already-qualified `trend_long` non-ETF/non-commodity
+stock signals with `price_vs_200ma_extension_state=true` an additional 1.125x
+cap-aware post-sizing top-up after the existing broad extension top-up in
+shared `portfolio_engine.py`. The change improved EV/PnL in `mid_weak` and
+`old_thin`, left `late_strong` unchanged, and produced no regressed windows:
+aggregate EV `+0.0943`, aggregate PnL `+$3,086.63`, trade count stayed `62`,
+minimum survival stayed `79.25%`, and worst-window max drawdown drift stayed
+inside Gate 4 at `+0.47 pp`. `old_thin` survival moved from `91.67%` to
+`90.00%` (`signals_survived -1`), so the accepted interpretation is a
+conservative allocation top-up, not a survival improvement. There is no
+production/backtest split because both adapters call the same shared sizing
+module; the backtester only adds attribution for the applied multiplier. 1.15x+
+variants failed the drawdown guardrail, so do not retry nearby trend-only
+price-vs-200MA extension scalars without forward evidence or a materially
+different production-visible discriminator.
+
+Previous accepted core-sizing result: core `exp-20260515-018` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but tags already-qualified `trend_long` / `breakout_long`
 non-ETF/non-commodity stock signals whose `price_vs_200ma_pct` is in the
 same-day top quartile and applies a 1.025x cap-aware post-sizing top-up in
 shared `risk_engine.py` and `portfolio_engine.py`. The change improved EV and
-PnL in all three canonical windows and kept trade count and survival
-unchanged: aggregate EV `+0.0208`, aggregate PnL `+$882.67`, max drawdown drift
-stayed inside Gate 4 at `+0.10 pp`, and there is no production/backtest split
-because both adapters call the same shared risk/sizing modules. Only 15
-signals adjusted, and 1.05x+ variants regressed `late_strong` or drawdown, so
-do not retry nearby price-vs-200MA extension scalars on these frozen windows
+PnL in all three canonical windows and kept trade count and survival unchanged:
+aggregate EV `+0.0208`, aggregate PnL `+$882.67`, max drawdown drift stayed
+inside Gate 4 at `+0.10 pp`, and there is no production/backtest split because
+both adapters call the same shared risk/sizing modules. Only 15 signals
+adjusted, and 1.05x+ variants regressed `late_strong` or drawdown, so do not
+retry nearby broad price-vs-200MA extension scalars on these frozen windows
 without forward evidence or a materially different production-visible
 discriminator.
 

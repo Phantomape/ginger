@@ -74,7 +74,7 @@ Keep only anchor states here. Full metrics live in `docs/backtesting.md` and
 ### Core
 
 Current accepted core checkpoint is the 2026-05-15 stack ending at
-`exp-20260515-018`.
+`exp-20260515-026`.
 
 Mechanism-level summary:
 
@@ -86,8 +86,11 @@ Mechanism-level summary:
   subset remained cap-bound after the broad 60% cap; `exp-20260515-013`
   promoted only that subset to a 70% cap;
 - top-quartile price-vs-200MA extension is a small but robust allocation state
-  on already-qualified stocks; `exp-20260515-018` promoted only the 1.025x
-  top-up because nearby 1.05x+ values regressed `late_strong` or drawdown;
+  on already-qualified stocks; `exp-20260515-018` promoted only the broad
+  1.025x top-up because nearby 1.05x+ values regressed `late_strong` or
+  drawdown, and `exp-20260515-026` promoted a trend-only 1.125x follow-on
+  because it improved `mid_weak` and `old_thin` without regressing
+  `late_strong`;
 - the useful core edge is post-selection allocation, not broader filtering;
 - small data/taxonomy fixes can matter when they change real routing.
 
@@ -103,8 +106,10 @@ Current practical interpretation:
 - do not retry nearby clean-SPY cap-only or clean-SPY cap-only RS20 cap values
   on the frozen windows without forward cap-room evidence or a different
   production-visible quality state.
-- do not retry nearby price-vs-200MA extension scalars on the frozen windows
-  without forward evidence or a materially different production-visible state.
+- do not retry nearby broad or trend-only price-vs-200MA extension scalars on
+  the frozen windows without forward evidence or a materially different
+  production-visible state; the trend-only 1.15x+ variants failed the drawdown
+  guardrail.
 - do not retry simple RS60 x price-vs-200MA overlap top-ups on the frozen
   windows; `exp-20260515-020` improved aggregate EV/PnL but every sweep
   regressed `late_strong`, so the overlap needs a new drawdown discriminator
