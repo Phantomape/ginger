@@ -10,6 +10,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import resolve_daily_artifact_path
 from sec_submissions import fetch_submission
 from sec_ticker_map import normalize_cik
 
@@ -112,7 +113,7 @@ def _ticker_to_cik_map() -> dict[str, str]:
 
 
 def _universe_tickers(segments: tuple[str, ...]) -> list[str]:
-    state = _load_json(DATA_DIR / "universe_state_20260501.json", {})
+    state = _load_json(resolve_daily_artifact_path("universe_state", "20260501", DATA_DIR), {})
     segment_to_key = {
         "core": "core_trade_universe",
         "pilot": "pilot_trade_universe",

@@ -3,6 +3,8 @@ import logging
 import os
 from datetime import datetime, timedelta
 
+from data_paths import daily_artifact_path
+
 
 SNAPSHOT_SCHEMA_VERSION = 2
 SNAPSHOT_FIELDS = (
@@ -154,7 +156,7 @@ def persist_earnings_snapshot(
     if logger is None:
         logger = logging.getLogger(__name__)
     if base_dir is None:
-        base_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+        base_dir = daily_artifact_path("earnings_snapshot", as_of.strftime("%Y%m%d")).parent
 
     date_str = as_of.strftime("%Y%m%d")
     snapshot_path = os.path.join(base_dir, f"earnings_snapshot_{date_str}.json")

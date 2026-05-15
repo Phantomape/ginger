@@ -16,12 +16,12 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
+from data_paths import daily_artifact_glob
 from position_intent import INTENDED_SHARE_FIELDS, resolve_intended_shares
 
 
 DATE_RE = re.compile(r"(20\d{6})")
-ADVICE_GLOBS = ("llm_prompt_resp_*.json", "investment_advice_*.json")
-SIGNAL_GLOB = "quant_signals_*.json"
+ADVICE_KINDS = ("llm_prompt_resp", "investment_advice")
 
 
 def _safe_load_json(path: Path) -> Any:
@@ -130,8 +130,8 @@ def _collect_advice_evidence(data_dir: Path, target_tickers: set[str]) -> tuple[
     evidence_by_ticker: dict[str, list[dict]] = defaultdict(list)
     actions_by_ticker: dict[str, list[dict]] = defaultdict(list)
 
-    for pattern in ADVICE_GLOBS:
-        for path in sorted(data_dir.glob(pattern)):
+    for kind in ADVICE_KINDS:
+        for path in daily_artifact_glob(kind, data_dir):
             source_date = _date_from_path(path)
             parsed = _unwrap_advice(_safe_load_json(path))
             if not parsed:
@@ -197,7 +197,7 @@ def _collect_advice_evidence(data_dir: Path, target_tickers: set[str]) -> tuple[
 
 def _collect_quant_signal_evidence(data_dir: Path, target_tickers: set[str]) -> dict:
     evidence_by_ticker: dict[str, list[dict]] = defaultdict(list)
-    for path in sorted(data_dir.glob(SIGNAL_GLOB)):
+    for path in daily_artifact_glob("quant_signals", data_dir):
         source_date = _date_from_path(path)
         payload = _safe_load_json(path)
         if not isinstance(payload, dict):

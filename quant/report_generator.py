@@ -31,6 +31,8 @@ import os
 import logging
 from datetime import datetime
 
+from data_paths import daily_artifact_path
+
 logger = logging.getLogger(__name__)
 
 
@@ -1529,9 +1531,7 @@ def save_report(report_text, filepath=None):
     """
     if filepath is None:
         today    = datetime.now().strftime("%Y%m%d")
-        filepath = os.path.join(
-            os.path.dirname(__file__), '..', 'data', f'report_{today}.txt'
-        )
+        filepath = str(daily_artifact_path("report", today))
 
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     try:

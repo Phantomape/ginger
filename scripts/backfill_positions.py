@@ -12,7 +12,6 @@ Usage:
     python scripts/backfill_positions.py --dry-run   # preview only
 """
 
-import glob
 import json
 import os
 import sys
@@ -22,11 +21,12 @@ import yfinance as yf
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "quant"))
 from constants import ATR_STOP_MULT, ATR_TARGET_MULT, ATR_PERIOD
+from data_paths import daily_artifact_glob
 from operator_input_paths import open_positions_path
 
 
 POSITIONS_PATH = str(open_positions_path())
-SIGNALS_GLOB   = os.path.join(os.path.dirname(__file__), "..", "data", "quant_signals_*.json")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 
 def _compute_atr(data, period=ATR_PERIOD):
@@ -53,7 +53,7 @@ def _load_signal_index():
     Returns dict of {ticker: {entry_price, target_price, stop_price, strategy, date}}.
     """
     index = {}
-    for path in sorted(glob.glob(SIGNALS_GLOB)):
+    for path in daily_artifact_glob("quant_signals", DATA_DIR):
         basename = os.path.basename(path)
         date_str = basename.replace("quant_signals_", "").replace(".json", "")
         try:

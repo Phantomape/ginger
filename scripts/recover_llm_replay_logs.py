@@ -14,20 +14,21 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 from import_advice import normalize_replay_file, recover_advice_from_raw_output  # noqa: E402
+from data_paths import daily_artifact_glob, resolve_daily_artifact_path  # noqa: E402
 
 
 def _candidate_raw_files(data_dir: Path, date: str | None):
     if date:
-        yield data_dir / f"llm_output_{date}.json"
+        yield resolve_daily_artifact_path("llm_output", date, data_dir)
         return
-    yield from sorted(data_dir.glob("llm_output_*.json"))
+    yield from daily_artifact_glob("llm_output", data_dir)
 
 
 def _candidate_replay_files(data_dir: Path, date: str | None):
     if date:
-        yield data_dir / f"llm_prompt_resp_{date}.json"
+        yield resolve_daily_artifact_path("llm_prompt_resp", date, data_dir)
         return
-    yield from sorted(data_dir.glob("llm_prompt_resp_*.json"))
+    yield from daily_artifact_glob("llm_prompt_resp", data_dir)
 
 
 def main() -> None:

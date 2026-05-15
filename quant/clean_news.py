@@ -18,6 +18,7 @@ import os
 import sys
 from datetime import datetime
 
+from data_paths import daily_artifact_path, resolve_daily_artifact_path
 from filter import apply_hygiene_filters, apply_trade_filters
 
 
@@ -117,7 +118,7 @@ def main():
     else:
         # Use today's news file
         today = datetime.now().strftime("%Y%m%d")
-        input_file = f"data/news_{today}.json"
+        input_file = str(resolve_daily_artifact_path("news", today))
 
     logger.info("=" * 60)
     logger.info("Starting News Filtering Pipeline")
@@ -140,8 +141,8 @@ def main():
     else:
         date_part = datetime.now().strftime("%Y%m%d")
 
-    hygiene_output = f"data/clean_news_{date_part}.json"
-    trade_output = f"data/clean_trade_news_{date_part}.json"
+    hygiene_output = str(daily_artifact_path("clean_news", date_part))
+    trade_output = str(daily_artifact_path("clean_trade_news", date_part))
 
     # Apply hygiene filters (inst_2.txt)
     logger.info("")

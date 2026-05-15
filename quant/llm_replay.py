@@ -19,9 +19,11 @@ import json
 import os
 from datetime import datetime
 
+from data_paths import resolve_daily_artifact_path
+
 
 def _response_path(date_str, data_dir):
-    return os.path.join(data_dir, f"llm_prompt_resp_{date_str}.json")
+    return str(resolve_daily_artifact_path("llm_prompt_resp", date_str, data_dir))
 
 
 def _extract_advice_body(raw):

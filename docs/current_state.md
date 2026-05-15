@@ -2,14 +2,16 @@
 
 Last updated: 2026-05-15.
 
-The current accepted core stack includes the 2026-05-14 Gold trend near-high
-cap promotion from core `exp-20260514-050`, layered on top of the 2026-05-14
-Commodity breakout cap promotion from core `exp-20260514-049`, the 2026-05-14
-Financials mid-dispersion sector-leader cap promotion from core
-`exp-20260514-030`, the 2026-05-14 clean SPY-relative leader signal-day cap
-promotion from `exp-20260514-027`, the 2026-05-14 Financials sector-leader
-trend cap promotion from `exp-20260514-023`, the 2026-05-14 commodity
-near-high trend cap promotion from `exp-20260514-018`,
+The current accepted core stack includes the 2026-05-15 clean-SPY cap-only
+RS20 leader cap promotion from `exp-20260515-013`, layered on top of the
+2026-05-15 clean-SPY cap-only leader cap promotion from `exp-20260515-008`,
+the 2026-05-14 Gold trend near-high cap promotion from core
+`exp-20260514-050`, the 2026-05-14 Commodity breakout cap promotion from core
+`exp-20260514-049`, the 2026-05-14 Financials mid-dispersion sector-leader
+cap promotion from core `exp-20260514-030`, the 2026-05-14 clean SPY-relative
+leader signal-day cap promotion from `exp-20260514-027`, the 2026-05-14
+Financials sector-leader trend cap promotion from `exp-20260514-023`, the
+2026-05-14 commodity near-high trend cap promotion from `exp-20260514-018`,
 the 2026-05-13 clean SPY-relative leader signal-day sizing promotion from `exp-20260513-036`,
 the RS60 top-quintile stock sizing promotion from `exp-20260513-030`, the
 signal-day own-green candle sizing promotion from `exp-20260513-007`, the
@@ -20,26 +22,39 @@ documented in `docs/backtesting.md` and
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 4.5715 | 104.61% | 4.37 | 6.06% | 19 | 80.39% |
-| `mid_weak` | 1.9019 | 70.44% | 2.70 | 10.14% | 21 | 79.25% |
-| `old_thin` | 0.4920 | 34.65% | 1.42 | 8.98% | 22 | 91.67% |
+| `late_strong` | 5.0322 | 114.89% | 4.38 | 6.58% | 19 | 80.39% |
+| `mid_weak` | 1.9947 | 72.80% | 2.74 | 10.14% | 21 | 79.25% |
+| `old_thin` | 0.5059 | 35.38% | 1.43 | 9.26% | 22 | 91.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260514-050/gold_trend_near_high_cap.json`.
-Aggregate core EV is now `6.9654`; aggregate PnL is `$209,695.69`.
+`data/experiments/exp-20260515-013/clean_spy_cap_only_rs20_cap.json`.
+Aggregate core EV is now `7.5328`; aggregate PnL is `$223,062.59`.
 Latest saved single-window backtest artifact on disk may predate this
 promotion; canonical acceptance evidence is the three-window artifact above.
 
-Latest accepted alpha result: core `exp-20260514-050` keeps entries, exits,
+Latest accepted alpha result: core `exp-20260515-013` keeps entries, exits,
+ranking, universe, raw clean-SPY and RS20 risk multipliers, heat, slots, and
+LLM/news logic unchanged, but allows already-qualified clean-SPY cap-only
+leaders with `rs20_entry_state_leader=true` to use a 70% single-position cap.
+Aggregate EV improved `+0.3865` and aggregate PnL improved `+$8,878.68` across
+the three canonical windows: `late_strong` EV `4.7144 -> 5.0322`, `mid_weak`
+EV `1.9376 -> 1.9947`, and `old_thin` EV `0.4943 -> 0.5059`. Max drawdown
+drift stayed inside Gate 4 (`+0.30 pp` worst window), trade count and survival
+were unchanged, and the rule lives in shared `portfolio_engine.py` with focused
+production-parity tests.
+
+Previous accepted alpha result: core `exp-20260515-008` keeps entries, exits,
+ranking, universe, raw clean-SPY risk, heat, slots, and LLM/news logic
+unchanged, but allows clean-SPY cap-only leaders to use a 60% single-position
+cap. Aggregate EV improved `+0.1809` and aggregate PnL improved `+$4,488.22`
+across the three canonical windows, with unchanged trade count and survival.
+
+Previous accepted alpha result: core `exp-20260514-050` keeps entries, exits,
 ranking, universe, raw Commodity risk, heat, slots, and LLM/news logic
 unchanged, but allows already-qualified `trend_long` GLD/IAU Commodity
 near-high signals to use a 57.5% single-position cap. Aggregate EV improved
 `+0.0380` and aggregate PnL improved `+$1,472.29` across the three canonical
-windows: `late_strong` EV `4.5701 -> 4.5715`, `mid_weak` EV
-`1.8824 -> 1.9019`, and `old_thin` EV `0.4749 -> 0.4920`. Max drawdown drift
-stayed inside Gate 4 (`+0.09 pp` worst window), trade count and survival were
-unchanged, and the rule lives in shared `portfolio_engine.py` with focused
-production-parity tests.
+windows.
 
 Previous accepted alpha result: core `exp-20260514-049` keeps entries, exits,
 ranking, universe, raw Commodity risk, heat, slots, and LLM/news logic

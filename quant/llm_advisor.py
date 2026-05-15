@@ -8,7 +8,9 @@ import os
 import json
 import logging
 from datetime import datetime
+from pathlib import Path
 from openai import OpenAI
+from data_paths import DATA_ROOT, daily_artifact_path, resolve_daily_artifact_path
 from operator_input_paths import open_positions_path, repo_relative
 
 logger = logging.getLogger(__name__)
@@ -26,6 +28,27 @@ def _load_json_if_exists(path):
         return None
 
 
+def _archive_root_for_output(filepath: str) -> str:
+    """Use data root for organized daily files, else keep caller's directory."""
+    path = Path(filepath).resolve()
+    data_root = DATA_ROOT.resolve()
+    try:
+        path.relative_to(data_root / "daily")
+        return str(data_root)
+    except ValueError:
+        return str(path.parent)
+
+
+def _replay_log_path_for_output(filepath: str, date_str: str) -> str:
+    path = Path(filepath).resolve()
+    data_root = DATA_ROOT.resolve()
+    try:
+        path.relative_to(data_root / "daily")
+        return str(daily_artifact_path("llm_prompt_resp", date_str))
+    except ValueError:
+        return str(path.parent / f"llm_prompt_resp_{date_str}.json")
+
+
 def _build_archive_context(date_str, data_dir):
     """Attach prompt-time production context to dated advice / replay archives.
 
@@ -38,10 +61,10 @@ def _build_archive_context(date_str, data_dir):
       - days with no prompt candidates at all
     """
     decision_log = _load_json_if_exists(
-        os.path.join(data_dir, f"llm_decision_log_{date_str}.json")
+        resolve_daily_artifact_path("llm_decision_log", date_str, data_dir)
     )
     quant_signals = _load_json_if_exists(
-        os.path.join(data_dir, f"quant_signals_{date_str}.json")
+        resolve_daily_artifact_path("quant_signals", date_str, data_dir)
     )
 
     signal_details = []
@@ -639,8 +662,8 @@ def _save_decision_log(date_str, trade_news, trend_signals):
             "manual_trade_conflicts": manual_trade_conflicts,
         }
 
-        log_file = f"data/llm_decision_log_{date_str}.json"
-        os.makedirs("data", exist_ok=True)
+        log_file = str(daily_artifact_path("llm_decision_log", date_str))
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
         with open(log_file, "w", encoding="utf-8") as f:
             json.dump(log_entry, f, indent=2, ensure_ascii=False)
         logger.info(f"Decision log saved to {log_file}")
@@ -651,9 +674,9 @@ def _save_decision_log(date_str, trade_news, trend_signals):
 
 def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_signals):
     """Persist the rendered prompt for auditability, regardless of API usage."""
-    prompt_file = f"data/llm_prompt_{date_str}.txt"
+    prompt_file = str(daily_artifact_path("llm_prompt", date_str))
 
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(os.path.dirname(prompt_file), exist_ok=True)
 
     with open(prompt_file, "w", encoding="utf-8") as f:
         f.write("=" * 80 + "\n")
@@ -848,7 +871,7 @@ def save_advice(advice, filepath, token_usage=None):
         # Try to parse structured JSON from advice
         parsed_advice = parse_json_advice(advice)
         basename = os.path.basename(filepath)
-        data_dir = os.path.dirname(filepath) or "data"
+        data_dir = _archive_root_for_output(filepath)
         advice_date = None
         if basename.startswith("investment_advice_") and basename.endswith(".json"):
             advice_date = basename[len("investment_advice_"):-len(".json")]
@@ -902,7 +925,7 @@ def save_advice(advice, filepath, token_usage=None):
         if basename.startswith("investment_advice_") and basename.endswith(".json"):
             date_str = basename[len("investment_advice_"):-len(".json")]
             if len(date_str) == 8 and date_str.isdigit():
-                archive_context = _build_archive_context(date_str, os.path.dirname(filepath))
+                archive_context = _build_archive_context(date_str, data_dir)
                 if archive_context:
                     output["archive_context"] = archive_context
 
@@ -937,11 +960,12 @@ def _maybe_write_replay_log(filepath, output):
         )
         return
 
-    replay_path = os.path.join(os.path.dirname(filepath), f"llm_prompt_resp_{date_str}.json")
+    replay_path = _replay_log_path_for_output(filepath, date_str)
     if os.path.exists(replay_path):
         logger.info("LLM replay log already exists, skipping: %s", replay_path)
         return
 
+    os.makedirs(os.path.dirname(replay_path), exist_ok=True)
     with open(replay_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     logger.info("Saved LLM replay log to %s", replay_path)

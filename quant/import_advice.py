@@ -41,16 +41,35 @@ import os
 import re
 import sys
 from datetime import datetime
+from pathlib import Path
 
 # Reuse existing parsing + writing helpers — do not duplicate.
 # parse_json_advice handles markdown-fenced, leading-commentary, and clean JSON.
 # save_advice writes the {advice_raw, advice_parsed, token_usage, timestamp} wrapper
 # that forward_tester.evaluate_file() expects.
 from llm_advisor import _build_archive_context, parse_json_advice, save_advice
+from data_paths import (
+    daily_artifact_path,
+    is_default_data_dir,
+    legacy_daily_artifact_path,
+    resolve_daily_artifact_path,
+)
 
 logger = logging.getLogger(__name__)
 
 DATA_DIR = "data"
+
+
+def _artifact_path_for_write(kind: str, date_str: str, output_dir: str) -> Path:
+    if is_default_data_dir(output_dir):
+        return daily_artifact_path(kind, date_str)
+    return legacy_daily_artifact_path(kind, date_str, output_dir)
+
+
+def _artifact_path_for_read(kind: str, date_str: str, output_dir: str) -> Path:
+    if is_default_data_dir(output_dir):
+        return resolve_daily_artifact_path(kind, date_str)
+    return legacy_daily_artifact_path(kind, date_str, output_dir)
 
 
 def _parse_date_arg(raw: str | None) -> str:
@@ -171,13 +190,13 @@ def normalize_replay_archive(
     """
     Rewrite llm_prompt_resp_YYYYMMDD.json into canonical wrapper form.
     """
-    replay_path = os.path.join(output_dir, f"llm_prompt_resp_{date_str}.json")
-    existing_text = raw_text if raw_text is not None else _load_text_file(replay_path)
+    replay_path = _artifact_path_for_read("llm_prompt_resp", date_str, output_dir)
+    existing_text = raw_text if raw_text is not None else _load_text_file(str(replay_path))
     if not existing_text or not existing_text.strip():
         return {
             "date_str": date_str,
             "status": "missing_replay_text",
-            "replay_path": replay_path,
+            "replay_path": str(replay_path),
         }
 
     payload = _normalize_replay_payload(existing_text, date_str, output_dir)
@@ -186,16 +205,17 @@ def normalize_replay_archive(
         return {
             "date_str": date_str,
             "status": "skipped_non_response",
-            "replay_path": replay_path,
+            "replay_path": str(replay_path),
         }
 
+    replay_path.parent.mkdir(parents=True, exist_ok=True)
     with open(replay_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
 
     return {
         "date_str": date_str,
         "status": "normalized",
-        "replay_path": replay_path,
+        "replay_path": str(replay_path),
         "has_archive_context": "archive_context" in payload,
         "signals_presented_count": (
             (payload.get("archive_context") or {}).get("signals_presented_count")
@@ -259,13 +279,13 @@ def import_advice(
     parsed = parse_json_advice(raw_text)
     _validate_structure(parsed, raw_text)
 
-    os.makedirs(output_dir, exist_ok=True)
-    out_path = os.path.join(output_dir, f"investment_advice_{date_str}.json")
+    out_path = _artifact_path_for_write("investment_advice", date_str, output_dir)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
     # save_advice rebuilds the wrapper (advice_raw / advice_parsed / token_usage
     # / timestamp) that forward_tester.evaluate_file expects.  Pass token_usage=None
     # because we don't know usage from a pasted response.
-    ok = save_advice(raw_text, out_path, token_usage=None)
+    ok = save_advice(raw_text, str(out_path), token_usage=None)
     if not ok:
         raise SystemExit(f"Failed to write {out_path}")
 
@@ -275,10 +295,11 @@ def import_advice(
     # Guard: only write if this is a real LLM response (has parseable new_trade or
     # explicit NO NEW TRADE), not a "Prompt saved to..." acknowledgment message.
     _is_real_response = (isinstance(parsed, dict) and "new_trade" in parsed)
-    replay_path = os.path.join(output_dir, f"llm_prompt_resp_{date_str}.json")
+    replay_path = _artifact_path_for_write("llm_prompt_resp", date_str, output_dir)
     if _is_real_response and not os.path.exists(replay_path):
         try:
             import shutil
+            replay_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(out_path, replay_path)
             logger.info("LLM replay log written → %s", replay_path)
         except Exception as e:
@@ -306,7 +327,7 @@ def import_advice(
     else:
         logger.info("Imported raw text (no parsed JSON) → %s", out_path)
 
-    return out_path
+    return str(out_path)
 
 
 def recover_advice_from_raw_output(
@@ -335,17 +356,16 @@ def recover_advice_from_raw_output(
     with open(raw_output_path, "r", encoding="utf-8") as f:
         raw_text = f.read()
 
-    os.makedirs(output_dir, exist_ok=True)
-    advice_path = os.path.join(output_dir, f"investment_advice_{resolved_date}.json")
-    replay_path = os.path.join(output_dir, f"llm_prompt_resp_{resolved_date}.json")
+    advice_path = _artifact_path_for_read("investment_advice", resolved_date, output_dir)
+    replay_path = _artifact_path_for_read("llm_prompt_resp", resolved_date, output_dir)
 
-    existing = _load_json_file(advice_path)
+    existing = _load_json_file(str(advice_path))
     if _is_real_saved_advice(existing):
         return {
             "date_str": resolved_date,
             "status": "skipped_existing_real_advice",
-            "advice_path": advice_path,
-            "replay_path": replay_path,
+            "advice_path": str(advice_path),
+            "replay_path": str(replay_path),
         }
 
     out_path = import_advice(resolved_date, raw_text, output_dir=output_dir)
@@ -353,7 +373,7 @@ def recover_advice_from_raw_output(
         "date_str": resolved_date,
         "status": "recovered",
         "advice_path": out_path,
-        "replay_path": replay_path,
+        "replay_path": str(_artifact_path_for_write("llm_prompt_resp", resolved_date, output_dir)),
     }
 
 

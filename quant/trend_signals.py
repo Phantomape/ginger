@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Import the watchlist from filter module
 from filter import WATCHLIST
+from data_paths import daily_artifact_path
 from operator_input_paths import open_positions_path, repo_relative
 from position_manager import compute_atr, compute_exit_levels, evaluate_exit_signals
 from regime import compute_market_regime
@@ -439,7 +440,7 @@ def save_trend_signals(signals, filepath=None):
     """
     if filepath is None:
         today = datetime.now().strftime("%Y%m%d")
-        filepath = f"data/trend_signals_{today}.json"
+        filepath = str(daily_artifact_path("trend_signals", today))
 
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)

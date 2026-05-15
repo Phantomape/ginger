@@ -13,6 +13,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import daily_artifact_glob, resolve_daily_artifact_path
 
 SNAPSHOT_RE = re.compile(r"earnings_snapshot_(\d{8})\.json$")
 SCHEMA_VERSION = 2
@@ -74,7 +75,7 @@ def load_snapshot_records(
     end_date = _coerce_date(end) if end is not None else None
     records: list[dict[str, Any]] = []
 
-    for path in sorted(root.glob("earnings_snapshot_*.json")):
+    for path in daily_artifact_glob("earnings_snapshot", root):
         payload = _read_json(path)
         as_of_date = parse_snapshot_date(path, payload)
         if start_date and as_of_date < start_date:
@@ -204,12 +205,12 @@ def load_daily_signal_match_records(
     tag = as_of_date.strftime("%Y%m%d")
     records: list[dict[str, Any]] = []
 
-    quant_path = root / f"quant_signals_{tag}.json"
+    quant_path = resolve_daily_artifact_path("quant_signals", tag, root)
     if quant_path.exists():
         payload = _read_json(quant_path)
         records.extend(_records_from_quant_signals(payload, quant_path, as_of_date))
 
-    trend_path = root / f"trend_signals_{tag}.json"
+    trend_path = resolve_daily_artifact_path("trend_signals", tag, root)
     if trend_path.exists():
         payload = _read_json(trend_path)
         records.extend(_records_from_trend_signals(payload, trend_path, as_of_date))

@@ -26,6 +26,7 @@ from constants import (
     REGIME_AWARE_EXIT,
 )
 from earnings_snapshot import persist_earnings_snapshot
+from data_paths import daily_artifact_path
 from operator_input_paths import open_positions_path, repo_relative
 from regime_exit import compute_regime_exit_profile
 
@@ -273,9 +274,7 @@ def main():
 
     # ── Save full signals JSON ───────────────────────────────────────────────
     today        = datetime.now().strftime("%Y%m%d")
-    signals_path = os.path.join(
-        os.path.dirname(__file__), '..', 'data', f'quant_signals_{today}.json'
-    )
+    signals_path = str(daily_artifact_path("quant_signals", today))
     _save_json({
         "generated_at":   datetime.now().isoformat(),
         "market_regime":  market_regime,

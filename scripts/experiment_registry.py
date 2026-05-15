@@ -6,6 +6,7 @@ import argparse
 import os
 import json
 import re
+import sys
 import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -18,6 +19,12 @@ else:
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+QUANT_DIR = REPO_ROOT / "quant"
+if str(QUANT_DIR) not in sys.path:
+    sys.path.insert(0, str(QUANT_DIR))
+
+from data_paths import backtest_result_glob  # noqa: E402
+
 DEFAULT_REGISTRY = REPO_ROOT / "docs" / "experiment_registry.json"
 DEFAULT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 DEFAULT_EXPERIMENTS_DIR = REPO_ROOT / "docs" / "experiments"
@@ -233,7 +240,7 @@ def locked_registry_update(path, mutator, *, timeout_seconds=DEFAULT_LOCK_TIMEOU
 
 def latest_backtest_result(data_dir=None):
     data_dir = Path(data_dir or (REPO_ROOT / "data"))
-    files = sorted(data_dir.glob("backtest_results_*.json"))
+    files = backtest_result_glob(data_dir)
     if not files:
         return None
     return _repo_relative(files[-1])

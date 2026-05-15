@@ -35,6 +35,7 @@ from llm_advisor import get_investment_advice, save_advice
 from operator_input_paths import open_positions_path, repo_relative
 from trend_signals import generate_trend_signals, save_trend_signals
 from earnings_snapshot import persist_earnings_snapshot
+from data_paths import daily_artifact_path
 
 
 # Configure logging
@@ -194,9 +195,9 @@ def main():
 
     # Generate filenames with today's date
     today = datetime.now().strftime("%Y%m%d")
-    raw_output = f"data/news_{today}.json"
-    hygiene_output = f"data/clean_news_{today}.json"
-    trade_output = f"data/clean_trade_news_{today}.json"
+    raw_output = str(daily_artifact_path("news", today))
+    hygiene_output = str(daily_artifact_path("clean_news", today))
+    trade_output = str(daily_artifact_path("clean_trade_news", today))
 
     try:
         # =====================================================
@@ -223,7 +224,10 @@ def main():
         if not save_to_file(sorted_items, raw_output):
             logger.error("Failed to save raw news")
             return 1
-        if not save_to_file(source_stats, f"data/news_source_stats_{today}.json"):
+        if not save_to_file(
+            source_stats,
+            str(daily_artifact_path("news_source_stats", today)),
+        ):
             logger.error("Failed to save source stats")
             return 1
 
@@ -277,7 +281,7 @@ def main():
         logger.info("STEP 4: Generating Signals (quant pipeline + position context)")
         logger.info("=" * 60)
 
-        trend_output = f"data/trend_signals_{today}.json"
+        trend_output = str(daily_artifact_path("trend_signals", today))
         trend_signals = None
 
         try:
@@ -459,7 +463,7 @@ def main():
         logger.info("STEP 5: Getting Investment Advice from LLM")
         logger.info("=" * 60)
 
-        advice_output = f"data/investment_advice_{today}.json"
+        advice_output = str(daily_artifact_path("investment_advice", today))
 
         # Run LLM if there are either trade news items OR standalone quant signals
         # (confidence ≥ 0.85 signals don't require news confirmation).
@@ -543,8 +547,8 @@ def main():
             print(f"  Trend signals:         {trend_output}")
             print(f"                         ({len(trend_signals.get('signals', {}))} tickers)")
             print()
-        if len(trade_items) > 0 and os.path.exists(f"data/investment_advice_{today}.json"):
-            print(f"  Investment advice:     data/investment_advice_{today}.json")
+        if len(trade_items) > 0 and os.path.exists(advice_output):
+            print(f"  Investment advice:     {advice_output}")
         print("=" * 60)
         print()
 

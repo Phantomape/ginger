@@ -6,6 +6,8 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from data_paths import daily_artifact_path, resolve_daily_artifact_path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = REPO_ROOT / "data"
@@ -126,6 +128,15 @@ def _load_json(path: Path):
 
 
 def _archive_path(prefix: str, date_key: str, data_dir: Path) -> Path:
+    kind_by_prefix = {
+        "news": "news",
+        "clean_news": "clean_news",
+        "clean_trade_news": "clean_trade_news",
+        "earnings_snapshot": "earnings_snapshot",
+    }
+    kind = kind_by_prefix.get(prefix)
+    if kind:
+        return resolve_daily_artifact_path(kind, date_key, data_dir)
     return data_dir / f"{prefix}_{date_key}.json"
 
 
@@ -462,7 +473,9 @@ def _build_sec_event(
 
 
 def event_snapshot_path(date_key: str, data_dir: Path | str | None = None) -> Path:
-    data_dir = Path(data_dir or DEFAULT_DATA_DIR)
+    if data_dir is None:
+        return daily_artifact_path("event_snapshot", date_key)
+    data_dir = Path(data_dir)
     return data_dir / f"event_snapshot_{date_key}.json"
 
 

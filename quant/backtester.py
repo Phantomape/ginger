@@ -92,6 +92,12 @@ from constants import (
     TRAILING_STOP_PCT,
 )
 from regime_exit import compute_regime_exit_profile
+from data_paths import (
+    backtest_result_path,
+    daily_artifact_glob,
+    resolve_daily_artifact_path,
+    ohlcv_snapshot_path,
+)
 from production_parity import (
     TRAILING_PARTIAL_REDUCE_ENABLED,
     build_early_relative_weakness_exit_actions,
@@ -497,6 +503,7 @@ SIZING_MULTIPLIER_KEYS = (
     "clean_spy_leader_signal_day_risk_multiplier_applied",
     "clean_spy_leader_signal_day_max_position_pct_applied",
     "clean_spy_cap_only_leader_max_position_pct_applied",
+    "clean_spy_cap_only_rs20_leader_max_position_pct_applied",
     "trend_mid_sector_dispersion_risk_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
     "trend_financials_risk_multiplier_applied",
@@ -754,7 +761,7 @@ def _summarize_entry_decision_events(events):
 
 def _load_saved_quant_signal_tickers(data_dir, date_str):
     """Return saved production quant-signal tickers for a date when present."""
-    path = os.path.join(data_dir, f"quant_signals_{date_str}.json")
+    path = str(resolve_daily_artifact_path("quant_signals", date_str, data_dir))
     if not os.path.exists(path):
         return None
     try:
@@ -1018,7 +1025,12 @@ class BacktestEngine:
         """Resolve snapshot paths relative to the current working directory."""
         if not raw_path:
             return None
-        return raw_path if os.path.isabs(raw_path) else os.path.abspath(raw_path)
+        if os.path.isabs(raw_path):
+            return raw_path
+        candidate = os.path.abspath(raw_path)
+        if os.path.exists(candidate):
+            return candidate
+        return str(ohlcv_snapshot_path(raw_path))
 
     def _write_entry_candidate_events(self, path, events, result):
         """Persist post-gate entry candidate decisions for shadow attribution."""
@@ -1125,19 +1137,15 @@ class BacktestEngine:
         snaps = {}
         if not os.path.isdir(self.data_dir):
             return snaps
-        for fname in os.listdir(self.data_dir):
-            if not fname.startswith("earnings_snapshot_") or not fname.endswith(".json"):
-                continue
+        for path_obj in daily_artifact_glob("earnings_snapshot", self.data_dir):
+            fname = path_obj.name
             date_str = fname[len("earnings_snapshot_"):-len(".json")]
-            if len(date_str) != 8 or not date_str.isdigit():
-                continue
-            path = os.path.join(self.data_dir, fname)
             try:
-                with open(path, encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
                 snaps[date_str] = data.get("earnings", {})
             except Exception as e:
-                logger.debug(f"earnings snapshot {fname} skipped: {e}")
+                logger.debug(f"earnings snapshot {path_obj} skipped: {e}")
         if snaps:
             logger.info(f"Loaded {len(snaps)} earnings snapshots: "
                         f"{sorted(snaps)[:3]}{'...' if len(snaps) > 3 else ''}")
@@ -2540,8 +2548,9 @@ class BacktestEngine:
 
             # News-archive presence check (§6.1 measurement instrumentation).
             _today_str = today.strftime("%Y%m%d")
-            _news_archive_path = os.path.join(
-                self.data_dir, f"clean_trade_news_{_today_str}.json")
+            _news_archive_path = str(
+                resolve_daily_artifact_path("clean_trade_news", _today_str, self.data_dir)
+            )
             news_archive_present = os.path.exists(_news_archive_path)
             if news_archive_present:
                 news_archive_dates_covered.append(_today_str)
@@ -4523,8 +4532,7 @@ def main():
 
         # Save results. Combined layout when secondary is present; flat when not
         # (preserves the historical shape consumed by downstream readers).
-        out_path = os.path.join(script_dir, "..", "data",
-                                f"backtest_results_{datetime.now().strftime('%Y%m%d')}.json")
+        out_path = str(backtest_result_path(datetime.now().strftime("%Y%m%d")))
         os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 
         primary_save = {k: v for k, v in results.items() if k != "equity_curve"}

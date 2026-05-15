@@ -1,326 +1,376 @@
-﻿# Alpha Optimization Playbook
+# Alpha Optimization Playbook
 
-Last reviewed: 2026-05-14.
+Last reviewed: 2026-05-15.
 
-This file is the durable alpha synthesis for Ginger. It is not an experiment
-diary. It should compress many runs into a smaller set of mechanism rules:
+This file is Ginger's compressed alpha doctrine. It is not an experiment diary.
+It should summarize:
 
-- where alpha currently comes from;
-- which idea families deserve more cycles;
-- which families are structurally weak on this system;
-- which fields are missing and therefore block valid experiments;
-- which external research is worth translating into replayable fields.
+- where the system has repeatedly made money;
+- where repeated experiments failed for structural reasons;
+- which missing fields are blocking valid next experiments;
+- which recent research is worth translating into replayable fields.
 
-Detailed sweeps, per-window artifacts, and date-by-date records belong in:
+Detailed runs belong in:
 
 - `docs/experiment_log.jsonl`
 - `docs/experiments/logs/*.json`
 - `data/experiments/**`
 - `docs/current_state.md`
+- `docs/backtesting.md`
 
-Use `docs/backtesting.md` as the source of truth for windows, commands, and
-acceptance protocol. If this file conflicts with `AGENTS.md`, `AGENTS.md`
-wins.
+If this file conflicts with `AGENTS.md`, `AGENTS.md` wins. If this file
+conflicts with `docs/backtesting.md` on windows or acceptance rules,
+`docs/backtesting.md` wins.
 
 ## How To Use This Playbook
 
-Before starting a new alpha search:
+Before any new alpha search:
 
-1. Pick one mechanism family below.
-2. Check whether the proposed change adds a genuinely new state variable, not a
-   nearby retry.
-3. Prefer allocation/routing tests before entry/exit redesign.
+1. Choose one mechanism family from this file.
+2. Confirm the proposal adds a new state variable, new cohort, or new field,
+   not a nearby scalar retry.
+3. Prefer allocation/routing experiments before entry/exit redesign.
 4. Prefer production-visible fields over prompt-only heuristics.
-5. Update this file only if the result changes a durable conclusion.
+5. If the branch is field-blocked, stop tuning thresholds and build the field.
+6. Update this file only when a durable conclusion changed.
 
 Good updates:
 
-- "This branch is blocked by missing PIT-safe fields."
 - "This family works only as allocation, not as entry."
-- "This research direction moved into the top queue."
-- "This repeated failure now becomes an anti-repeat rule."
+- "This branch is blocked by missing PIT-safe fields."
+- "A repeated failure now becomes an anti-repeat rule."
+- "A new paper changes which field family should be built next."
 
 Bad updates:
 
 - appending every accepted scalar;
-- pasting full before/after tables already logged elsewhere;
-- turning this file into a dated status log;
-- restating single-run details without a mechanism-level conclusion.
+- copying full result tables already stored elsewhere;
+- using the playbook as a date-by-date status log;
+- writing narrative without a mechanism conclusion.
 
-## Current Doctrine
+## System Doctrine
 
-Ginger remains an event-enhanced intermediate-term trend / breakout system.
-Current alpha is not broad stock picking. It is mostly:
+Ginger is an event-enhanced medium-horizon trend / breakout system. The core
+engine is not trying to forecast everything. It is trying to:
 
-1. Better sizing on already-qualified trend/breakout candidates.
-2. Better slot/risk routing on scarce capital.
-3. Default-off event sleeves that first prove replacement value.
-4. Semantic allocation inside narrow sleeves using production-visible fields.
-5. Measurement repairs that unlock trustworthy future alpha tests.
+1. identify already-good trend/breakout candidates;
+2. allocate more capital to the best observable states inside that candidate
+   set;
+3. keep event ideas default-off until replacement value is proven;
+4. use LLMs as structured semantic compilers, not portfolio managers.
 
-The most stable repo-wide lesson is unchanged:
+The highest-confidence repo-wide lesson remains:
 
 - broad filters usually destroy survival;
-- broad capacity increases usually add noise, not alpha;
-- broad lifecycle retunes usually fail to generalize;
-- narrow state-conditioned allocation beats intuitive but generic "safer"
-  rules.
+- broad capacity increases usually add noise;
+- broad lifecycle retunes usually overfit;
+- narrow state-conditioned allocation beats generic "safer" rules.
 
-## Canonical Checkpoints
+## Minimal Checkpoints
 
-Keep only the minimal anchor points here. Full metrics stay in
-`docs/backtesting.md` and the experiment log.
+Keep only anchor states here. Full metrics live in `docs/backtesting.md` and
+`docs/current_state.md`.
 
-### Core Stack
+### Core
 
-Current core checkpoint is the 2026-05-14 accepted stack ending at core
-`exp-20260514-050` (`gold_trend_near_high_cap`).
+Current accepted core checkpoint is the 2026-05-15 stack ending at
+`exp-20260515-013`.
 
-Mechanism summary:
+Mechanism-level summary:
 
-- RS20 leader state helps as a modest sizing top-up.
-- Signal-day own-green state helps as a modest sizing top-up.
-- RS60 top-quintile stock state helps as a modest sizing top-up.
-- Clean SPY-relative signal-day confirmation helps as a final top-up.
-- The same clean SPY-relative signal-day sleeve is modestly cap-bound; a
-  sleeve-specific 52.5% position cap worked, while nearby 55%+ caps regressed
-  the old window.
-- The accepted commodity near-high trend sleeve is cap-bound alpha; a
-  sleeve-specific 50% position cap worked better than more raw commodity
-  multiplier tuning.
-- Commodity breakout signals are a separate cap-bound allocation sleeve; a
-  57.5% cap worked without changing entries, ranking, exits, or raw commodity
-  multipliers.
-- Gold trend near-high signals are a narrower cap-bound sleeve inside the
-  accepted Commodity near-high trend policy. A 57.5% GLD/IAU-only cap improved
-  all three windows while leaving SLV and raw Commodity multipliers unchanged.
-- The accepted Financials sector-leader trend sleeve is also cap-bound alpha;
-  a sleeve-specific 50% position cap improved weak and old windows without
-  changing the raw Financials multipliers.
-- The narrower Financials sector-leader plus mid-sector-dispersion
-  intersection is modestly cap-bound; a 55% cap improved weak and old windows
-  without changing entries, ranking, or raw Financials multipliers, but only 3
-  signals adjusted.
-- Small taxonomy/data repairs can matter when they change real routing.
+- alpha comes from shared sizing on already-qualified candidates;
+- accepted positive states are mostly RS leadership, signal-day confirmation,
+  sector-relative leadership, and narrow cap-room release on sleeves that were
+  already winning;
+- clean-SPY cap-only leaders are a real cap-bound sleeve, and the RS20-confirmed
+  subset remained cap-bound after the broad 60% cap; `exp-20260515-013`
+  promoted only that subset to a 70% cap;
+- the useful core edge is post-selection allocation, not broader filtering;
+- small data/taxonomy fixes can matter when they change real routing.
 
-Core interpretation:
+Current practical interpretation:
 
-- the edge lives in shared allocation on already-qualified signals;
-- the edge does not justify new broad entry filters;
-- the edge does not justify broad slot expansion;
-- commodity, Gold, Financials, or clean-SPY signal-day cap follow-up should require
-  a new production-visible state and forward cap-room attribution, not another
-  raw multiplier/cap retry after the accepted sleeve caps;
-- the edge does not justify broad lifecycle redesign.
+- the candidate set is good enough that nearby cap/multiplier retunes are now
+  a low-priority branch;
+- 2026-05-15 nearby cap scouts on Healthcare clean-SPY leader and SLV
+  trend-near-high did not create a new mechanism;
+- after a sleeve-specific cap has already been accepted, the next valid step is
+  a new production-visible discriminator or forward cap-room attribution, not
+  another local cap sweep.
+- do not retry nearby clean-SPY cap-only or clean-SPY cap-only RS20 cap values
+  on the frozen windows without forward cap-room evidence or a different
+  production-visible quality state.
 
-### SEC Financial-Report Default-Off Sleeve
+### SEC Financial-Report Sleeve
 
-Current checkpoint is the accepted financial-report T+1 paper sleeve ending at
-`exp-20260512-020`.
+Current checkpoint is the accepted default-off financial-report T+1 sleeve
+ending at `exp-20260512-020`.
 
-Mechanism summary:
+Mechanism-level summary:
 
-- useful edge appears after strong T+1 relative reaction;
-- semantic notional sizing is better than queue-order retuning;
+- strong T+1 relative reaction matters more than raw filing presence;
+- semantic notional sizing worked better than queue-order retuning;
 - non-platform filtering improved observation quality;
-- 10-Q / periodic-report distinctions can matter when they map to a cleaner
-  economic interpretation.
+- 10-Q / periodic-report distinctions are useful because they map to economic
+  differences, not because they are more specific labels.
 
-SEC interpretation:
+Current practical interpretation:
 
-- the sleeve is useful as a paper replacement-value surface;
-- further progress needs richer semantic fields, not nearby threshold sweeps;
-- filing-shock alpha remains blocked by missing PIT-safe same-accession
-  surprise/guidance fields.
+- the sleeve is useful as a replacement-value surface, not yet as promoted core
+  alpha;
+- the next valid branch is richer filing semantics;
+- 2026-05-15 data audit evidence says fresh PIT directional filing-shock fields
+  are still missing, so more queue-order or threshold retuning is invalid until
+  those fields exist.
 
 ### Space Default-Off Sleeve
 
-Current checkpoint is the accepted official-catalyst Space stack through
+Current checkpoint is the accepted default-off Space stack through
 `exp-20260514-053`.
 
-Mechanism summary:
+Mechanism-level summary:
 
-- catalyst-quality fields matter;
-- peer-relative strength matters;
-- small-cap tape participation matters;
-- source diversity and forward replacement-strength matter;
-- the latest accepted forward-strength interactions are `trend_long` plus
-  IWM-leader tape at a conservative `1.025x`, then `trend_long` plus
-  company-release customer-win confirmation at a conservative `1.025x`;
-- source-diverse official Space catalysts also work best when the executed
-  setup is `trend_long`, but only at a conservative `1.025x`;
-  stronger nearby or ticker-only retries require new closed forward evidence;
-- closed forward-outcome timing matters: the first useful new state after
-  source diversity was delayed absorption, defined as weak average 5d cash
-  reaction but strong 10d same-theme replacement value, again only as a
-  conservative `trend_long` allocation helper;
-- broad closed-forward benchmark confirmation now matters too: `exp-20260514-041`
-  accepted a conservative `1.025x` `trend_long` helper when 10d event-state
-  profiles are positive versus cash, SPY, QQQ, UFO, and ARKX;
-- the benchmark-breadth trend cohort improves again only when paired with a
-  production-visible peer state: `exp-20260514-044` accepted an additional
-  conservative `1.025x` helper for peer-`nonleader` `trend_long` signals;
-- the same benchmark-breadth cohort also improves when paired with the already
-  accepted same-theme replacement-strength floor: `exp-20260514-047` accepted
-  a conservative `1.025x` helper for broad benchmark-positive `trend_long`
-  signals with average 10d same-theme replacement value >= $500;
-- defense-budget / government-contract catalyst timing is now a validated
-  semantic allocation layer inside the same benchmark-breadth trend cohort:
-  `exp-20260514-051` accepted a conservative `1.025x` helper when official
-  Space `trend_long` signals have weak average 5d cash absorption but broad
-  positive 10d cash, SPY, QQQ, UFO, and ARKX confirmation;
-- the broad benchmark-positive `trend_long` cohort also supports a tiny
-  small-cap participation interaction: `exp-20260514-053` accepted a
-  conservative `1.0125x` helper only when IWM 20d momentum leads SPY;
-- the best use is semantic risk allocation inside a quarantined sleeve.
+- repeated wins came from catalyst-quality allocation, not universe expansion;
+- source quality, source diversity, peer-relative state, small-cap tape
+  participation, and closed forward replacement strength all helped, but only
+  as conservative incremental allocation inside a quarantined sleeve;
+- forward outcome semantics were useful only after they touched a real runtime
+  cohort.
 
-Space interpretation:
+Current practical interpretation:
 
-- this is a research/default-off sleeve, not a live universe expansion;
-- repeated wins came from stacking production-visible quality states, not from
-  adding more tickers;
-- future progress should come from closed forward outcomes and better catalyst
-  semantics, not from nearby scalar retunes on the frozen snapshots.
-- do not retry nearby source-diversity, company-source, delayed-absorption,
-  broad benchmark-breadth, benchmark-breadth same-theme strength,
-  benchmark-breadth peer-state, defense-budget delayed-benchmark, or
-  benchmark-breadth IWM-leader scalars without new closed forward rows or a new
-  production-visible catalyst-quality field.
+- Space remains research infrastructure, not a live sleeve;
+- nearby interaction retries are now sample-limited;
+- 2026-05-15 confirmed that one mature forward row or one ticker-specific
+  interaction is not enough to justify promotion;
+- the next valid Space step is either a broader mature cohort or a genuinely
+  new production-visible catalyst-quality field.
 
 ## Durable Laws From Repository Evidence
 
 ### 1. Allocation Beats Filtering
 
-This is the strongest repeated result in the repository.
+This is the strongest repeated repo result.
 
 What keeps working:
 
 - modest post-sizing top-ups on already-qualified signals;
-- narrow state-conditioned risk promotion;
-- scarce-slot routing on a fixed candidate set;
-- default-off sleeves that do not contaminate core slots.
+- narrow cap-room release on sleeves that already win;
+- state-conditioned risk promotion;
+- fixed candidate set plus better routing;
+- default-off event sleeves with replacement-value accounting.
 
 What keeps failing:
 
 - broad "quality" filters;
-- broad confidence/TQS/ranking overlays;
-- broad capacity/heat increases;
-- broad sector or strategy priority rules.
+- broad confidence/TQS overlays;
+- generic slot or sector priority changes;
+- capacity expansion for broad groups.
 
-Operational rule: if the idea can be phrased as "trade fewer things" or
-"expand capacity for a broad group," assume low prior unless the new rule is
-backed by a production-visible field and multi-window evidence.
+Default prior:
 
-### 2. Candidate Set Quality Matters More Than Rule Cleverness
+- if the idea says "trade fewer names" or "let more names in" across a broad
+  class, it probably has low expected value in this system;
+- if the idea says "on an already-good slice, allocate differently," it has a
+  meaningfully better prior.
 
-Many failed experiments were trying to rescue a noisy candidate pool with more
-logic. That is usually the wrong direction.
+### 2. Candidate Quality Matters More Than Rule Cleverness
 
-Implications:
+Trying to rescue a noisy candidate pool with extra logic usually failed.
+
+Practical rule:
 
 - keep the candidate set fixed when possible;
-- add one ex-ante state variable instead of one more generic filter;
-- prefer better ranking/allocation on proven candidates over new low-quality
-  entries.
+- add one ex-ante state variable before adding one more generic guardrail;
+- if a proposal needs many caveats to work, it is usually already overfit.
 
-### 3. Replacement Value Matters More Than Narrative Quality
+### 3. Replacement Value Beats Narrative Quality
 
-Event sleeves improved only when the event changed replacement value versus the
-next best candidate or paper slot. "Interesting story" alone was not enough.
+Event sleeves improved only when they improved replacement value versus the
+next candidate or paper slot. Interesting stories alone did not help.
 
-Implications:
+Practical rule:
 
-- every event branch should begin as paper/default-off;
-- event fields should explain why this candidate deserves capital over the next
-  alternative;
-- source quality, peer state, and post-event relative strength are usually more
-  useful than a bare event label.
+- every event branch starts paper/default-off;
+- every new field should answer "why this deserves capital instead of the next
+  slot competitor";
+- source quality, peer state, and post-event relative strength have been more
+  useful than bare event labels.
 
-### 4. Lifecycle Alpha Is Narrow And Fragile
+### 4. Lifecycle Alpha Is Narrow
 
-Broad exit retunes repeatedly failed in core and sleeve experiments.
+Broad exit redesigns have repeatedly failed.
 
-Implications:
+Practical rule:
 
-- do not widen targets broadly because one trade felt early;
-- do not treat stronger sizing states as automatic wider-target states;
-- do not add runner logic without a new state variable and lifecycle
+- do not widen targets because one winner felt early;
+- do not assume a strong sizing state deserves a wider target;
+- do not add runner logic without a new state variable and explicit lifecycle
   attribution.
 
 Valid lifecycle work needs a new discriminator, not a nearby ATR retune.
 
-### 5. Semantic Fields Block More Alpha Than Threshold Choice
+### 5. Missing Fields Block More Alpha Than Bad Thresholds
 
-Several branches are not parameter problems. They are missing-field problems.
+Many stalled branches are not parameter problems. They are field problems.
 
 Current blockers:
 
-- SEC filing shock lacks PIT-safe same-accession surprise and guidance fields;
-- earnings/call branches still lack richer structured text fields;
-- some event sleeves lack enough closed forward outcomes for promotion;
-- LLM branches still need denser downstream attribution on produced fields.
+- PIT-safe SEC semantic surprise and guidance fields;
+- richer same-accession filing-quality deltas;
+- denser closed forward outcomes in Space and other event sleeves;
+- better downstream attribution for LLM-produced semantics;
+- richer insider / buyback / short-interest context before those sleeves can be
+  taken seriously.
 
-Operational rule: when a branch is field-blocked, stop sweeping nearby
-parameters and go build the missing field.
+Practical rule:
+
+- if the branch cannot yet be expressed as stable logged fields, it is not
+  ready for promotion;
+- when blocked by fields, stop sweeping scalars.
 
 ### 6. Production Visibility Is Part Of Alpha Quality
 
 Backtester-only alpha does not count.
 
-Implications:
+Practical rule:
 
-- prefer shared features and shared sizing markers;
-- use replay-only logic only for unavoidable archive gaps;
+- prefer shared features, shared sizing tags, and shared adapters;
+- replay-only is acceptable only for unavoidable archive coverage gaps;
 - default-off sleeves are valid only when they improve future decision quality
-  without distorting core metrics.
+  without contaminating core metrics.
 
-### 7. LLM Is A Semantic Compiler, Not A Portfolio Manager
+### 7. LLM Is A Semantic Compiler, Not A Risk Engine
 
-The repo evidence and current research point to the same boundary.
+The repo evidence and recent research agree on the boundary.
 
-LLM is well-suited for:
+Use LLMs for:
 
 - event classification;
 - source-quality tagging;
-- management-tone and narrative-change extraction;
+- management-tone and semantic-change extraction;
 - ontology growth;
-- structured reason fields for later replay.
+- structured explanation fields for later replay.
 
-LLM is not suited for:
+Do not use LLMs for:
 
 - hard sizing decisions;
 - stop/target ownership;
 - slot ownership;
-- prompt-only numeric rules;
-- opaque vetoes without attribution.
+- prompt-only numeric thresholds;
+- opaque vetoes without structured attribution.
+
+### 8. Mature-Cohort Coverage Is A Hard Gate
+
+A theoretically good state is still invalid if it touches too few runtime rows.
+
+Repeated pattern:
+
+- nearby cap retries on already-accepted sleeves often touch one or two trades;
+- mature forward Space interactions can look plausible but remain inert or
+  fragile when only one ticker/cohort exists;
+- positive intuition without runtime cohort breadth usually becomes null alpha.
+
+Practical rule:
+
+- do not promote a field or interaction that lacks nontrivial runtime-touch
+  coverage;
+- if a branch moves only one adjusted signal, demand forward evidence before
+  spending more cycles on nearby scalars.
+
+## Practical Technical Rules
+
+These are implementation habits the system should keep.
+
+### 1. New alpha ideas should first become fields
+
+Preferred sequence:
+
+1. define the field;
+2. log it in production;
+3. verify PIT safety and replayability;
+4. measure replacement value or allocation value;
+5. only then consider promotion.
+
+### 2. Fields should be compact and interpretable
+
+Preferred field shapes:
+
+- direction: `up/down/neutral`;
+- strength bucket: `low/med/high` or percentile;
+- source bucket: `official/company/regulatory/secondary`;
+- cohort flags: `true/false`;
+- one or two scalar diagnostics only when unavoidable.
+
+Avoid giant prompt prose or dozens of thin floats with no semantic meaning.
+
+### 3. Every LLM field should carry evidence and provenance
+
+Minimum desirable metadata:
+
+- source document id;
+- accession or event id;
+- timestamp known to system;
+- extracted span or chunk reference;
+- confidence or consistency tag;
+- ontology label version.
+
+### 4. Closed-forward fields are useful only if they remain quarantined
+
+Closed-forward outcome fields are valid for:
+
+- default-off paper sleeves;
+- replacement-value ranking;
+- cohort research;
+- future field selection.
+
+They are not valid as hidden core lookahead features.
+
+### 5. Research translation should end in one experimentable object
+
+Every external paper should map to one of:
+
+- a new field family;
+- a new paper sleeve;
+- a new allocation state on an existing sleeve;
+- an anti-repeat rule that saves future time.
+
+If a paper does not map cleanly to one of those, it is research noise for now.
 
 ## Anti-Repeat Rules
 
-Do not retry these without new evidence or a genuinely new field:
+Do not retry the following without new evidence, a wider cohort, or a new
+field:
 
 - broad core filters and broad sector/strategy gates;
-- global slot/heat/capacity sweeps;
+- global slot, heat, or capacity sweeps;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
-- nearby RS20 / RS60 / own-candle / clean-SPY-leader scalar tuning;
-- generic event-source pruning;
+- nearby RS20 / RS60 / own-candle / clean-SPY scalar tuning;
+- nearby cap retries after a sleeve-specific cap has already been accepted,
+  unless forward cap-room evidence exists;
+- one-ticker cap scouts on already-accepted core sleeves;
 - Space ticker-breadth expansion;
-- SEC sleeve retunes that do not add a new semantic field;
-- public-archive buyback keyword ladders that do not add credibility/completion
-  fields;
-- LLM ranking or veto expansion without structured attribution.
+- Space interaction retries supported by only one mature forward row or one
+  ticker-level cohort;
+- SEC sleeve retunes that do not add a new filing semantic field;
+- public-archive buyback keyword ladders that do not add credibility,
+  completion, or cash-support fields;
+- LLM veto or ranking expansion without structured downstream attribution.
 
-## What Recent Logs Say At A Higher Level
+## What Recent Logs Mean At A Higher Level
 
-Compressing the recent high-frequency experiment set:
+Compressing recent daily experiments:
 
-- accepted core changes were mostly modest, production-visible allocation
-  states layered on a fixed candidate set;
-- accepted sleeve changes were mostly catalyst-quality, source-quality,
-  peer-relative, or forward-replacement allocation states;
-- rejected changes were usually broad entry/exit changes, broad quality
-  overlays, or retries of a nearby accepted scalar;
-- once a family starts requiring multiple interacting caveats to work, it is
-  usually already overfit.
+- accepted core changes kept adding small, production-visible allocation states
+  on a fixed candidate set;
+- accepted sleeve changes mostly came from catalyst-quality, source-quality,
+  peer-relative, or closed-forward replacement states;
+- rejected changes were usually broad overlays, nearby retunes, or sample-thin
+  interactions;
+- core cap-based alpha is still real, but the easy cap-room wins are getting
+  exhausted;
+- the next wave of alpha is more likely to come from better fields than from
+  more scalar tuning.
 
 Default search style should therefore be:
 
@@ -328,153 +378,159 @@ Default search style should therefore be:
 2. keep the candidate set fixed;
 3. test allocation before entry/exit redesign;
 4. keep event ideas default-off until replacement value closes;
-5. convert repeated wins into shared fields, not prompt prose.
+5. convert repeated wins into shared fields, not more prompt prose.
 
 ## Research Refresh: 2024-2025 Ideas Worth Translating
 
-This section is not acceptance evidence. It is a filter for implementation
-effort. Each idea should map to fields, sleeves, and attribution.
+This section is not acceptance evidence. It is a research filter. Each item
+must translate into fields, sleeves, or attribution.
 
-### 1. Earnings Drift Needs Semantic Surprise, Not Another Numeric Threshold
-
-Recent work suggests the drift edge is stronger when the system captures the
-meaning of the announcement, not just the raw number.
+### 1. PEAD Is Stronger When Surprise Conflicts With Prior Belief
 
 Research signal:
 
-- `PEAD.txt` shows transcript-derived surprise can produce stronger drift than
-  classic numeric surprise, including in more recent periods.
-- McCarthy (2025) shows drift is much stronger when the surprise conflicts with
-  prior market belief.
-- Xiao (2024) shows topic-attention divergence in earnings calls predicts worse
-  information quality and higher future friction.
+- McCarthy (2025) argues post-earnings drift is much stronger when the surprise
+  conflicts with prior recommendation-implied belief.
 
 Translation for Ginger:
 
-- add `semantic_surprise_direction`, `semantic_surprise_strength`,
-  `belief_conflict_flag`, and `topic_attention_divergence_bucket`;
-- treat these as sleeve qualifiers or notional scalers, not as standalone core
-  entry signals;
-- prefer a small set of interpretable text fields over a giant feature zoo.
+- add `belief_conflict_flag`, `belief_prior_bucket`,
+  `semantic_surprise_direction`, and `semantic_surprise_strength`;
+- treat these as sleeve qualifiers or notional scalers inside SEC /
+  earnings-related branches;
+- do not turn them into a generic core filter.
 
-### 2. Forecast Completeness Is A Field, Not A Narrative Detail
+### 2. Earnings-Call Information Quality Depends On Topic Misalignment
 
 Research signal:
 
-- Perotti and Windisch (2025) show the drift after forecast revisions is
-  smaller when cash-flow forecasts accompany earnings forecast revisions.
+- Xiao (2025) shows topic attention divergence between management remarks and
+  analyst questions is informative about information quality.
+- Tabatabaei (2025) suggests tonal inconsistency can recover drift where
+  communication is strategically mixed.
 
 Translation for Ginger:
 
-- if revision data becomes available, add fields such as
-  `cash_flow_forecast_present`, `revision_completeness_bucket`, and
-  `forecast_bundle_consistency`;
-- use them to scale follow-through expectations, not to create a raw analyst
-  sleeve immediately.
+- add `topic_attention_divergence_bucket`,
+  `manager_analyst_topic_gap_flag`, and `tone_consistency_bucket`;
+- use them as paper-sleeve quality fields or allocation state, not as broad
+  vetoes.
 
-### 3. Buyback Alpha Is About Credibility Ladders
+### 3. Forecast Completeness Matters More Than Revision Magnitude Alone
 
 Research signal:
 
-- Bargeron et al. (2024) show voluntary repurchase status updates are common
-  and value-relevant, and relate to later completion behavior.
-- recent buyback work points toward credibility, completion, and disclosure
-  quality, not generic authorization announcements.
+- Perotti and Windisch (2025) show underreaction to earnings forecast revisions
+  is smaller when cash-flow forecasts accompany the revision.
 
 Translation for Ginger:
 
-- build fields such as `buyback_disclosure_type`,
-  `buyback_completion_signal`, `buyback_remaining_capacity_signal`,
-  `cash_support_bucket`, and `buyback_history_credibility`;
-- use a default-off sleeve first;
-- combine buyback credibility with post-event relative strength rather than
-  treating every authorization as drift-positive.
+- add `cash_flow_forecast_present`,
+  `revision_completeness_bucket`, and `forecast_bundle_consistency`;
+- use these only when the data source is PIT-safe;
+- default use case is follow-through expectation, not a new standalone sleeve.
+
+### 4. Buyback Alpha Is About Credibility And Commitment
+
+Research signal:
+
+- Bargeron et al. show repurchase status updates such as suspension, resumption,
+  and completion are common and value-relevant.
+- Kaplan et al. (2025) show buyback guidance is a commitment signal, not just a
+  generic payout announcement.
+
+Translation for Ginger:
+
+- add `buyback_disclosure_type`, `buyback_status_update_type`,
+  `buyback_guidance_present`, `buyback_completion_signal`,
+  `buyback_remaining_capacity_signal`, and `cash_support_bucket`;
+- keep this default-off first;
+- combine credibility fields with post-event relative strength or replacement
+  value before any promotion.
 
 Repository interaction:
 
-- the 2026-05-14 buyback credibility replay rejected the first keyword ladder;
-- do not retry that public-archive ladder without richer credibility fields or
-  forward closed evidence.
+- the first public-archive buyback credibility ladder already failed;
+- the next valid buyback branch requires richer fields, not a better keyword
+  list.
 
-### 4. Insider Buying Needs Market-Structure Context
+### 5. Insider Buying Needs Options-Market And Trade-Quality Context
 
 Research signal:
 
-- Jeon and Sulaeman (2024) show insider purchase informativeness is much weaker
-  in names with more active options trading.
+- Jeon and Sulaeman (2024) show insider purchase informativeness weakens in
+  names with more active options trading.
+- newer insider work still points to trade quality, trader identity, and market
+  structure as the real edge rather than the raw filing itself.
 
 Translation for Ginger:
 
-- if Form 4 resumes, add `options_activity_bucket`,
-  `cluster_buying_flag`, `open_market_only_flag`,
-  `officer_seniority_bucket`, `non_10b5_1_flag`, and
-  `dollar_size_bucket`;
-- default experiment should be a paper queue plus replacement-value tracking,
-  not direct promotion.
+- add `options_activity_bucket`, `cluster_buying_flag`,
+  `open_market_only_flag`, `officer_seniority_bucket`,
+  `non_10b5_1_flag`, and `dollar_size_bucket`;
+- keep Form 4 branches as paper / replacement-value queues first.
 
-### 5. Short Squeeze Alpha Should Be Narrow And Catalyst-Conditioned
+### 6. Short-Squeeze Alpha Must Be Narrow And Catalyst-Conditioned
 
 Research signal:
 
 - Svoboda, Kapounek, and Albrecht (2025) show squeeze likelihood rises with
-  high short interest and attention spikes, while institutional ownership
+  elevated short interest and attention spikes, while institutional ownership
   stabilizes outcomes.
 
 Translation for Ginger:
 
-- build a default-off sleeve only when there is an official positive catalyst,
-  crowded shorting, and attention acceleration;
-- add `short_interest_bucket`, `attention_spike_bucket`, and
-  `institutional_ownership_brake`;
-- treat it as a conservative overlay, not a meme-stock sleeve.
+- add `short_interest_bucket`, `attention_spike_bucket`,
+  `institutional_ownership_brake`, and `catalyst_officiality_bucket`;
+- only test this as a narrow default-off sleeve when an official positive
+  catalyst is already present;
+- do not build a broad meme-stock branch.
 
-### 6. Index Inclusion / Rebalance Is Attractive Because It Is Mechanical
-
-Research signal:
-
-- Limburg (2024) finds Russell 1000/2000 assignment is effectively random near
-  the cutoff.
-
-Translation for Ginger:
-
-- this supports a paper sleeve around official announce-to-effective index
-  flows;
-- required fields are `index_event_type`, `effective_date`,
-  `pre_event_rank_distance`, and `rebalance_flow_window`;
-- this should remain event-mechanical, not story-driven.
-
-### 7. Accounting/Accrual Signals Should Be Used Selectively
+### 7. Mechanical Index Events Are Attractive Because They Are Less Narrative
 
 Research signal:
 
-- Oler, Coyne, and Talakai (2024) show the accrual anomaly survives more in
-  neglected, lower-attention settings.
+- index inclusion / assignment work continues to support mechanical event flow
+  edges near index cutoffs.
 
 Translation for Ginger:
 
-- do not add a broad accrual factor to the core;
-- treat accounting-quality as a targeted risk haircut or paper-only veto in
-  lower-attention names;
-- this fits Ginger's targeted allocation style better than a standalone factor
-  sleeve.
+- add `index_event_type`, `effective_date`, `pre_event_rank_distance`, and
+  `rebalance_flow_window`;
+- this belongs in a paper sleeve first because it is mechanically interpretable
+  and easy to audit.
 
-### 8. LLM Research Supports Structured Extraction And Ontology Growth
+### 8. Accounting Quality Should Be Selective, Not A Global Factor
 
 Research signal:
 
-- recent extraction work shows generative LLMs are useful when forced into
-  schema-like structured output;
-- recent earnings-call topic work shows LLM agents can maintain a hierarchical
-  ontology of emerging topics.
+- recent accrual / information-quality work still supports conditional use in
+  lower-attention or lower-quality settings rather than as a broad factor.
 
 Translation for Ginger:
 
-- every new LLM workflow should emit JSON fields first;
-- store topic/entity outputs as replayable artifacts;
-- grow a stable event/topic ontology rather than repeatedly changing prompt
-  prose;
-- evaluate each field on downstream replacement value, routing value, or drift
-  attribution.
+- treat accounting-quality or accrual quality as a targeted haircut / veto in
+  weaker-information cohorts;
+- do not add a broad accrual factor to the core.
+
+### 9. Financial LLM Research Supports Schema-First Extraction
+
+Research signal:
+
+- `FinTagging` (2025) shows financial extraction should be evaluated as
+  structured fact extraction plus taxonomy alignment across text and tables.
+- `Agentic Retrieval of Topics and Insights from Earnings Calls` (2025) supports
+  hierarchical topic ontology construction instead of flat keyword buckets.
+- `QuantMind` (2025) emphasizes point-in-time correctness and evidence
+  attribution for financial knowledge systems.
+
+Translation for Ginger:
+
+- every new LLM workflow should emit schema-bound JSON fields first;
+- ontology growth should be versioned and replayable;
+- text and table extraction should be treated as separate failure modes;
+- evidence spans and source ids should be logged with the field, not added
+  later by hand.
 
 ## Field-Building Roadmap
 
@@ -483,28 +539,31 @@ not a live rule.
 
 Highest-priority field families:
 
-1. Earnings semantics:
+1. SEC / earnings semantics:
    `semantic_surprise_direction`, `semantic_surprise_strength`,
-   `belief_conflict_flag`, `topic_attention_divergence_bucket`,
-   `guidance_delta_direction`.
-2. Buyback credibility:
-   `buyback_disclosure_type`, `buyback_completion_signal`,
-   `buyback_remaining_capacity_signal`, `cash_support_bucket`,
-   `buyback_history_credibility`.
-3. Insider quality:
+   `belief_conflict_flag`, `guidance_delta_direction`,
+   `topic_attention_divergence_bucket`, `tone_consistency_bucket`.
+2. Filing completeness and quality:
+   `cash_flow_forecast_present`, `revision_completeness_bucket`,
+   `forecast_bundle_consistency`, `same_accession_financial_quality_delta`.
+3. Buyback credibility:
+   `buyback_status_update_type`, `buyback_guidance_present`,
+   `buyback_completion_signal`, `buyback_remaining_capacity_signal`,
+   `cash_support_bucket`.
+4. Insider quality:
    `options_activity_bucket`, `cluster_buying_flag`,
    `officer_seniority_bucket`, `non_10b5_1_flag`, `dollar_size_bucket`.
-4. Short-squeeze context:
+5. Short-squeeze context:
    `short_interest_bucket`, `attention_spike_bucket`,
    `institutional_ownership_brake`, `catalyst_officiality_bucket`.
-5. Event ontology:
+6. Event ontology:
    `event_family_v2`, `event_source_quality`, `event_novelty_bucket`,
    `topic_path`, `topic_conflict_flag`.
 
 Field-building rule:
 
-- if a new idea cannot yet be expressed as a stable, logged, replayable field,
-  it is probably not ready for alpha promotion.
+- if a new idea cannot yet be turned into stable, logged, PIT-safe fields, it
+  is probably not ready for alpha work.
 
 ## Current Research Queue
 
@@ -512,64 +571,67 @@ Priority is ordered by expected value, replayability, and implementation
 clarity.
 
 1. SEC earnings semantic expansion.
-   Build transcript/guidance/belief-conflict fields before any more
-   financial-report sleeve threshold tuning.
+   Build belief-conflict, guidance, topic-divergence, and same-accession
+   quality fields before any more financial-report sleeve threshold work.
 2. Buyback credibility sleeve v2.
-   Resume only with completion/status/cash-support fields, not another keyword
-   ladder.
-3. Space forward replacement cohorts.
-   Continue only when new closed outcomes add evidence on catalyst/source/peer
-   interactions.
+   Resume only with status-update, guidance, completion, and cash-support
+   fields.
+3. Space mature-cohort expansion.
+   Continue only when closed outcomes create broader catalyst/source/peer
+   cohorts or a new production-visible catalyst-quality field.
 4. High-quality insider buying.
-   Resume only with options-activity and purchase-quality context fields.
+   Resume only with options-activity and purchase-quality context.
 5. Short-interest plus official catalyst sleeve.
-   Build as a narrow default-off event overlay with ownership braking.
-6. Index inclusion / rebalance flow sleeve.
+   Build as a narrow default-off overlay with ownership braking.
+6. Index inclusion / rebalance sleeve.
    Paper-only until replacement value closes.
-7. LLM ontology and event extraction.
-   Improve field quality first; do not expand LLM authority first.
+7. LLM ontology and field quality.
+   Improve extraction, provenance, and attribution before expanding LLM
+   authority.
 
 ## Exploratory Backlog
 
-These remain valid ideas, but not the top queue:
+Valid but lower-priority ideas:
 
-- analyst estimate revision momentum;
-- fundamental inflection surfaces;
+- analyst revision momentum beyond earnings / SEC sleeves;
 - spin-offs, asset sales, and capital-structure events;
-- second-order thematic supply chains;
+- fundamental inflection surfaces;
+- thematic second-order supply chains;
 - volatility-state lifecycle allocation;
 - market-breadth deployment state;
 - accounting-quality downside filters;
 - slow-moving profitability overlays;
-- defensive/low-beta portfolio state.
+- defensive / low-beta deployment overlays.
 
-Backlog rule: prefer a new replayable behavioral field over a nearby retune of
-an already-accepted scalar.
+Backlog rule:
+
+- prefer one new replayable field over one more retune of an already-accepted
+  scalar.
 
 ## Measurement And Parity Reminders
 
-Measurement work should outrank alpha search only when it unblocks a better
+Measurement work should outrank alpha search only when it unblocks a stronger
 experiment. Valid blockers include:
 
 - missing runtime fields;
 - missing PIT-safe semantic features;
 - production/backtest divergence;
-- missing forward closed outcomes;
+- missing mature forward outcomes;
 - missing prompt/log/replay fields for LLM-derived semantics.
 
 If a branch is blocked by fields, say so explicitly and move to the next valid
-alpha family rather than sweeping nearby thresholds.
+family rather than sweeping nearby thresholds.
 
 ## Update Discipline
 
-This file should stay much shorter than the experiment log. Update it only when
-one of these changes:
+This file should remain much shorter than the experiment log. Update it only
+when one of these changes:
 
 - a new checkpoint changes the canonical stack at the mechanism level;
-- a family changes from promising to blocked/rejected/accepted;
+- a family changes from promising to blocked, rejected, or accepted;
 - a new anti-repeat rule becomes durable;
 - new research changes the field-building queue;
-- a measurement blocker becomes the main constraint on a high-value alpha idea.
+- a measurement blocker becomes the main constraint on a high-value idea.
 
-Write synthesis first. Cite only the minimum experiment IDs needed to anchor
-the conclusion.
+Write synthesis first. Cite only the minimum experiment IDs needed to anchor a
+durable conclusion.

@@ -2,13 +2,13 @@
 
 import argparse
 import logging
-import os
 from datetime import datetime
 
 import pandas as pd
 import yfinance as yf
 
 from data_layer import get_earnings_data, get_universe
+from data_paths import daily_artifact_path
 from earnings_snapshot import persist_earnings_snapshot
 from yfinance_bootstrap import configure_yfinance_runtime
 
@@ -32,9 +32,7 @@ def backfill_earnings_snapshots(start, end, universe=None, data_dir=None):
     """Write one earnings_snapshot_YYYYMMDD.json per trading day in [start, end]."""
     configure_yfinance_runtime()
     universe = universe or get_universe()
-    data_dir = data_dir or os.path.normpath(
-        os.path.join(os.path.dirname(__file__), "..", "data")
-    )
+    data_dir = data_dir or str(daily_artifact_path("earnings_snapshot", "YYYYMMDD").parent)
     trading_days = _iter_trading_days(start, end)
 
     logger.info(

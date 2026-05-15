@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from event_shocks import build_event_snapshot
+from event_shocks import build_event_snapshot, event_snapshot_path
 from data_layer import get_universe
 
 
@@ -36,7 +36,7 @@ def backfill_event_shocks(start: str, end: str, *, data_dir: str | None = None) 
             persist=True,
         )
         if payload.get("coverage", {}).get("event_rows_total", 0) > 0:
-            path = (data_root or Path(__file__).resolve().parents[1] / "data") / f"event_snapshot_{date_key}.json"
+            path = event_snapshot_path(date_key, data_dir=data_root)
             written.append(path)
             logger.info(
                 "event snapshot %s rows=%s earnings=%s sec=%s",

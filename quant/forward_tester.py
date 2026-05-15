@@ -63,6 +63,7 @@ from fill_model import (
 # way.
 from portfolio_engine import ROUND_TRIP_COST_PCT as ROUND_TRIP_COST
 from operator_input_paths import open_positions_path as resolve_open_positions_path
+from data_paths import daily_artifact_glob, daily_artifact_path, is_default_data_dir, legacy_daily_artifact_path
 
 
 def get_next_open_price(ticker, rec_date):
@@ -870,9 +871,11 @@ def aggregate_forward_tests(pattern=None):
     """
     from strategy_attribution import aggregate_by_strategy
     if pattern is None:
-        pattern = os.path.join(DATA_DIR, "forward_test_*.json")
+        files = daily_artifact_glob("forward_test", DATA_DIR)
+    else:
+        files = glob.glob(pattern)
     trades = []
-    for fp in sorted(glob.glob(pattern)):
+    for fp in sorted(files):
         try:
             with open(fp, "r", encoding="utf-8") as f:
                 r = json.load(f)
@@ -892,7 +895,11 @@ def aggregate_forward_tests(pattern=None):
 def save_report(results, output_dir=DATA_DIR):
     """Save evaluation results to JSON."""
     date_str  = results["rec_date"].replace("-", "")
-    out_path  = os.path.join(output_dir, f"forward_test_{date_str}.json")
+    if is_default_data_dir(output_dir):
+        out_path = daily_artifact_path("forward_test", date_str)
+    else:
+        out_path = legacy_daily_artifact_path("forward_test", date_str, output_dir)
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     logger.info(f"Saved forward test report to {out_path}")
@@ -927,9 +934,10 @@ def main():
         print("=" * 72)
         print(format_attribution_table(by_strategy))
         print("=" * 72)
-        out_path = os.path.join(
-            DATA_DIR,
-            f"strategy_attribution_{date.today().strftime('%Y%m%d')}.json")
+        out_path = daily_artifact_path(
+            "strategy_attribution",
+            date.today().strftime("%Y%m%d"),
+        )
         def _jsonable(v):
             if v == math.inf:
                 return "inf"
@@ -940,6 +948,7 @@ def main():
             k: {m: _jsonable(v) for m, v in mv.items()}
             for k, mv in by_strategy.items()
         }
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(serialisable, f, indent=2, ensure_ascii=False)
         print(f"  Saved -> {out_path}\n")
@@ -949,8 +958,7 @@ def main():
         files = [args.file]
     else:
         # Pipeline saves advice as investment_advice_YYYYMMDD.json
-        pattern = os.path.join(DATA_DIR, "investment_advice_*.json")
-        files   = sorted(glob.glob(pattern))
+        files = daily_artifact_glob("investment_advice", DATA_DIR)
         if not files:
             print(f"No investment_advice_*.json files found in {DATA_DIR}/")
             return

@@ -34,6 +34,7 @@ from constants import (
     BREAKOUT_RANK_BY_52W_HIGH,
     REGIME_AWARE_EXIT,
 )
+from data_paths import daily_artifact_path
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
 from operator_input_paths import open_positions_path, repo_relative
@@ -243,7 +244,7 @@ def main():
         )
         save_universe_state_report(
             universe_governance_state,
-            f"data/universe_state_{today}.json",
+            str(daily_artifact_path("universe_state", today)),
         )
         pilot_records = pilot_records_as_of(today_iso)
         pilot_universe = sorted(set(pilot_records) - set(universe))
@@ -260,7 +261,7 @@ def main():
             universe_governance_state["pilot_trade_universe"] = pilot_universe
             save_universe_state_report(
                 universe_governance_state,
-                f"data/universe_state_{today}.json",
+                str(daily_artifact_path("universe_state", today)),
             )
         log.info(
             "Universe governance: core=%s pilot=%s trade-enabled-pilot=%s research=%s specialist=%s quarantine=%s",
@@ -281,7 +282,7 @@ def main():
             universe_governance_state["space_catalyst_shadow"] = space_catalyst_shadow
             save_universe_state_report(
                 universe_governance_state,
-                f"data/universe_state_{today}.json",
+                str(daily_artifact_path("universe_state", today)),
             )
         if space_catalyst_shadow.get("candidate_count", 0) > 0:
             log.info(
@@ -597,7 +598,7 @@ def main():
 
     # Save trend signals JSON (backward-compatible output)
     # quant_signals will be attached after Step 6 enrichment
-    trend_output = f"data/trend_signals_{today}.json"
+    trend_output = str(daily_artifact_path("trend_signals", today))
     save_trend_signals(trend_signals_dict, trend_output)
 
     # ── Step 6: Quant signals ─────────────────────────────────────────────────
@@ -1563,7 +1564,7 @@ def main():
         "heat_blocked_pilot_signals": heat_blocked_pilot_signals,
         "universe_governance": universe_governance_state,
         "features":       features_dict,
-    }, f"data/quant_signals_{today}.json")
+    }, str(daily_artifact_path("quant_signals", today)))
 
     # ── Step 8: Fetch & filter news ───────────────────────────────────────────
     _print_section("STEP 8 — News collection")
@@ -1607,10 +1608,10 @@ def main():
             watchlist=trade_watchlist,
         )["items"]
 
-        _save_json(sorted_items,  f"data/news_{today}.json")
-        _save_json(source_stats,  f"data/news_source_stats_{today}.json")
-        _save_json(hygiene_items, f"data/clean_news_{today}.json")
-        _save_json(trade_items,   f"data/clean_trade_news_{today}.json")
+        _save_json(sorted_items,  str(daily_artifact_path("news", today)))
+        _save_json(source_stats,  str(daily_artifact_path("news_source_stats", today)))
+        _save_json(hygiene_items, str(daily_artifact_path("clean_news", today)))
+        _save_json(trade_items,   str(daily_artifact_path("clean_trade_news", today)))
 
         log.info(f"News: {len(sorted_items)} raw → {len(hygiene_items)} hygiene "
                  f"→ {len(trade_items)} trade-filtered")
@@ -1645,7 +1646,7 @@ def main():
         if result["success"]:
             log.info(result["advice"])
             if not save_prompt_only:
-                advice_output = f"data/investment_advice_{today}.json"
+                advice_output = str(daily_artifact_path("investment_advice", today))
                 save_advice(result["advice"], advice_output, result["token_usage"])
         else:
             log.error(f"LLM advisor: {result['error']}")

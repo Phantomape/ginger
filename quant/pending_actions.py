@@ -10,11 +10,12 @@ rules.
 
 from __future__ import annotations
 
-import glob
 import json
 import os
 from datetime import datetime
 from typing import Any
+
+from data_paths import daily_artifact_glob
 
 PENDING_ACTIONS_FILENAME = "pending_actions.json"
 ACTIONABLE = {"ADD", "REDUCE", "EXIT"}
@@ -230,8 +231,8 @@ def bootstrap_pending_actions_from_archives(
     """Reconstruct pending actions from saved advice files if no ledger exists yet."""
     through = _normalize_date(through_date)
     paths = []
-    paths.extend(glob.glob(os.path.join(data_dir, "investment_advice_*.json")))
-    paths.extend(glob.glob(os.path.join(data_dir, "llm_prompt_resp_*.json")))
+    paths.extend(str(path) for path in daily_artifact_glob("investment_advice", data_dir))
+    paths.extend(str(path) for path in daily_artifact_glob("llm_prompt_resp", data_dir))
     dated_paths = []
     for path in paths:
         date_str = _advice_path_date(path)

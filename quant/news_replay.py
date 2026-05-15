@@ -22,6 +22,8 @@ this is a slight over-veto, erring on the pessimistic side.)
 import json
 import os
 
+from data_paths import resolve_daily_artifact_path
+
 
 _T1_NEGATIVE_KEYWORDS = [
     # Earnings misses
@@ -41,7 +43,7 @@ _T1_NEGATIVE_KEYWORDS = [
 
 
 def _archive_path(date_str, data_dir):
-    return os.path.join(data_dir, f"clean_trade_news_{date_str}.json")
+    return str(resolve_daily_artifact_path("clean_trade_news", date_str, data_dir))
 
 
 def _is_t1_negative(item):

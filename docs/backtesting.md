@@ -78,33 +78,50 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260514-050`
-(`gold_trend_near_high_cap`) promoted the GLD/IAU trend-near-high 57.5%
-sleeve-specific position cap:
+Current accepted fixed-window metrics after core `exp-20260515-013`
+(`clean_spy_cap_only_rs20_cap`) promoted the clean-SPY cap-only RS20 leader
+70% sleeve-specific position cap:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 4.5715 | 4.37 | $104,612.99 | 104.61% | 6.06% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.9019 | 2.70 | $70,437.12 | 70.44% | 10.14% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.4920 | 1.42 | $34,645.58 | 34.65% | 8.98% | 40.91% | 22 | 91.67% |
+| `late_strong` | 5.0322 | 4.38 | $114,886.19 | 114.89% | 6.58% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 1.9947 | 2.74 | $72,796.75 | 72.80% | 10.14% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.5059 | 1.43 | $35,379.65 | 35.38% | 9.26% | 40.91% | 22 | 91.67% |
 
 Artifact note:
-`data/experiments/exp-20260514-050/gold_trend_near_high_cap.json`
+`data/experiments/exp-20260515-013/clean_spy_cap_only_rs20_cap.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `6.9654`; aggregate PnL is `$209,695.69`.
+EV is `7.5328`; aggregate PnL is `$223,062.59`.
 
-Latest accepted core-sizing result: core `exp-20260514-050` keeps entries,
+Latest accepted core-sizing result: core `exp-20260515-013` keeps entries,
+exits, ranking, universe, raw clean-SPY and RS20 multipliers, heat, slots, and
+LLM/news logic unchanged, but lets only already-qualified clean-SPY cap-only
+leaders with `rs20_entry_state_leader=true` use a 70% single-position cap in
+shared `portfolio_engine.py`. The change improved EV and PnL in all three
+canonical windows and kept trade count and survival unchanged: aggregate EV
+`+0.3865`, aggregate PnL `+$8,878.68`, max drawdown drift stayed inside Gate 4
+at `+0.30 pp`, and there is no production/backtest split because both adapters
+call the same shared sizing module. Only 10 signals adjusted, so do not retry
+nearby clean-SPY cap-only RS20 cap values on these frozen windows without
+forward cap-room attribution or a materially different production-visible
+discriminator.
+
+Previous accepted core-sizing result: core `exp-20260515-008` keeps entries,
+exits, ranking, universe, raw clean-SPY multipliers, heat, slots, and LLM/news
+logic unchanged, but lets clean-SPY cap-only leaders use a 60%
+single-position cap in shared `portfolio_engine.py`. The change improved EV
+and PnL in all three canonical windows and kept trade count and survival
+unchanged: aggregate EV `+0.1809`, aggregate PnL `+$4,488.22`, and max
+drawdown drift stayed inside Gate 4 at `+0.22 pp`.
+
+Previous accepted core-sizing result: core `exp-20260514-050` keeps entries,
 exits, ranking, universe, raw Commodity multipliers, heat, slots, and LLM/news
 logic unchanged, but lets only already-qualified `trend_long` GLD/IAU
 Commodity near-high signals use a 57.5% single-position cap in shared
 `portfolio_engine.py`. The change improved EV and PnL in all three canonical
 windows and kept trade count and survival unchanged: aggregate EV `+0.0380`,
 aggregate PnL `+$1,472.29`, max drawdown drift stayed inside Gate 4 at
-`+0.09 pp`, and there is no production/backtest split because both adapters
-call the same shared sizing module. Only 5 signals adjusted, so do not retry
-nearby Gold trend-near-high cap
-values on these frozen windows without forward cap-room attribution or a
-materially different production-visible discriminator.
+`+0.09 pp`.
 
 Previous accepted core-sizing result: core `exp-20260514-049` keeps entries,
 exits, ranking, universe, raw Commodity multipliers, heat, slots, and LLM/news

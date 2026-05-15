@@ -10,10 +10,19 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+QUANT_DIR = REPO_ROOT / "quant"
+if str(QUANT_DIR) not in sys.path:
+    sys.path.insert(0, str(QUANT_DIR))
+
+from data_paths import backtest_result_glob  # noqa: E402
 
 
 FIXED_WINDOWS = {
@@ -161,15 +170,16 @@ def parse_backtesting_doc(path: Path) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--results-glob", default="data/backtest_results_*.json")
+    parser.add_argument("--results-glob", default=None)
     parser.add_argument("--ticket", default="docs/experiments/tickets/exp-20260428-015.json")
     parser.add_argument("--backtesting-doc", default="docs/backtesting.md")
-    parser.add_argument("--output", default="data/exp_baseline_reproducibility_audit.json")
+    parser.add_argument("--output", default="data/diagnostics/exp_baseline_reproducibility_audit.json")
     args = parser.parse_args()
 
     result_artifacts = []
     unreadable = []
-    for path in sorted(Path().glob(args.results_glob)):
+    result_paths = sorted(Path().glob(args.results_glob)) if args.results_glob else backtest_result_glob()
+    for path in result_paths:
         data = load_json(path)
         if data is None:
             unreadable.append(path.as_posix())
@@ -256,6 +266,7 @@ def main() -> int:
     }
 
     out_path = Path(args.output)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(out_path.as_posix())
     print(json.dumps({"measurement_status": output["measurement_status"], "issues": issues}, ensure_ascii=False))

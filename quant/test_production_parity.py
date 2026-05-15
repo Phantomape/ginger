@@ -819,6 +819,57 @@ def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
     assert unconfirmed["shares_to_buy"] == 500
 
 
+def test_clean_spy_cap_only_rs20_leader_cap_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "spy_relative_leader": True,
+            "signal_day_ticker_outperformed_spy": True,
+            "rs20_entry_state_leader": True,
+            "conditions_met": {"pct_from_52w_high": -0.10},
+        },
+        {
+            "ticker": "NVDA",
+            "strategy": "breakout_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "regime_exit_bucket": "risk_on",
+            "spy_relative_leader": True,
+            "signal_day_ticker_outperformed_spy": True,
+            "rs20_entry_state_leader": False,
+            "conditions_met": {"pct_from_52w_high": -0.10},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    rs20_leader = sized[0]["sizing"]
+    non_rs20 = sized[1]["sizing"]
+    assert rs20_leader["clean_spy_cap_only_leader_max_position_pct_applied"] == (
+        constants.CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT
+    )
+    assert rs20_leader[
+        "clean_spy_cap_only_rs20_leader_max_position_pct_applied"
+    ] == constants.CLEAN_SPY_CAP_ONLY_RS20_LEADER_MAX_POSITION_PCT
+    assert rs20_leader["max_position_pct_applied"] == (
+        constants.CLEAN_SPY_CAP_ONLY_RS20_LEADER_MAX_POSITION_PCT
+    )
+    assert non_rs20["max_position_pct_applied"] == (
+        constants.CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT
+    )
+    assert "clean_spy_cap_only_rs20_leader_max_position_pct_applied" not in non_rs20
+    assert rs20_leader["shares_to_buy"] == 700
+    assert non_rs20["shares_to_buy"] == 600
+
+
 def test_risk_on_unmodified_risk_lift_does_not_stack_on_other_sizing_rules():
     signals = [
         {

@@ -12,6 +12,8 @@ import json
 import os
 from collections import Counter
 
+from data_paths import resolve_daily_artifact_path
+
 
 def _safe_load_json(path):
     if not os.path.exists(path):
@@ -25,13 +27,13 @@ def _safe_load_json(path):
 
 def _load_replay_archive_context(data_dir, date_str):
     """Load prompt-time context from replay archive or decision-log sidecar."""
-    payload = _safe_load_json(os.path.join(data_dir, f"llm_prompt_resp_{date_str}.json"))
+    payload = _safe_load_json(resolve_daily_artifact_path("llm_prompt_resp", date_str, data_dir))
     if isinstance(payload, dict):
         context = payload.get("archive_context")
         if isinstance(context, dict):
             return context
 
-    decision_log = _safe_load_json(os.path.join(data_dir, f"llm_decision_log_{date_str}.json"))
+    decision_log = _safe_load_json(resolve_daily_artifact_path("llm_decision_log", date_str, data_dir))
     if not isinstance(decision_log, dict):
         return None
 
@@ -98,7 +100,7 @@ def _saved_quant_signal_tickers(data_dir, date_str):
         None  -> quant_signals_YYYYMMDD.json missing or unreadable
         list  -> parsed ticker list (possibly empty)
     """
-    payload = _safe_load_json(os.path.join(data_dir, f"quant_signals_{date_str}.json"))
+    payload = _safe_load_json(resolve_daily_artifact_path("quant_signals", date_str, data_dir))
     if not isinstance(payload, dict):
         return None
 
@@ -118,7 +120,7 @@ def _saved_quant_signal_tickers(data_dir, date_str):
 
 def _load_saved_quant_payload(data_dir, date_str):
     """Return the raw saved production quant payload when available."""
-    payload = _safe_load_json(os.path.join(data_dir, f"quant_signals_{date_str}.json"))
+    payload = _safe_load_json(resolve_daily_artifact_path("quant_signals", date_str, data_dir))
     return payload if isinstance(payload, dict) else None
 
 
@@ -142,15 +144,15 @@ def build_llm_archive_backlog(data_dir, candidate_dates_missing, candidate_signa
     queue = []
 
     for date_str in missing_dates:
-        prompt_path = os.path.join(data_dir, f"llm_prompt_{date_str}.txt")
-        response_path = os.path.join(data_dir, f"llm_prompt_resp_{date_str}.json")
-        raw_response_path = os.path.join(data_dir, f"llm_output_{date_str}.json")
-        advice_path = os.path.join(data_dir, f"investment_advice_{date_str}.json")
-        decision_log_path = os.path.join(data_dir, f"llm_decision_log_{date_str}.json")
-        news_path = os.path.join(data_dir, f"clean_trade_news_{date_str}.json")
-        quant_signals_path = os.path.join(data_dir, f"quant_signals_{date_str}.json")
-        trend_signals_path = os.path.join(data_dir, f"trend_signals_{date_str}.json")
-        earnings_snapshot_path = os.path.join(data_dir, f"earnings_snapshot_{date_str}.json")
+        prompt_path = resolve_daily_artifact_path("llm_prompt", date_str, data_dir)
+        response_path = resolve_daily_artifact_path("llm_prompt_resp", date_str, data_dir)
+        raw_response_path = resolve_daily_artifact_path("llm_output", date_str, data_dir)
+        advice_path = resolve_daily_artifact_path("investment_advice", date_str, data_dir)
+        decision_log_path = resolve_daily_artifact_path("llm_decision_log", date_str, data_dir)
+        news_path = resolve_daily_artifact_path("clean_trade_news", date_str, data_dir)
+        quant_signals_path = resolve_daily_artifact_path("quant_signals", date_str, data_dir)
+        trend_signals_path = resolve_daily_artifact_path("trend_signals", date_str, data_dir)
+        earnings_snapshot_path = resolve_daily_artifact_path("earnings_snapshot", date_str, data_dir)
 
         decision_log = _safe_load_json(decision_log_path)
         quant_payload = _load_saved_quant_payload(data_dir, date_str) or {}
