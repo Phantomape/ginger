@@ -16,6 +16,7 @@ from pathlib import Path
 from statistics import mean, median
 from typing import Any
 
+from data_paths import data_artifact_path
 from pilot_sleeve import (
     SPACE_CATALYST_SHADOW_SLEEVE_NAME,
     SPACE_CATALYST_THEME_SEGMENTS,
@@ -137,6 +138,9 @@ SPACE_CATALYST_SOURCE_DIVERSITY_IWM_LEADER_RISK_SCALAR = 1.05
 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_IWM_LEADER_RISK_SCALAR = 1.05
 SPACE_CATALYST_SOURCE_DIVERSITY_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_NEAR_PERFECT_TREND_RISK_SCALAR = (
+    1.025
+)
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON = "10d"
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL = 0.0
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE = 0.0
@@ -425,6 +429,16 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_source_diversity_peer_nonleader_trend_risk_scalar": (
         SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_TREND_RISK_SCALAR
     ),
+    "space_source_diversity_peer_nonleader_near_perfect_trend_experiment_id": (
+        "exp-20260515-044"
+    ),
+    "space_source_diversity_peer_nonleader_near_perfect_trend_definition": (
+        "source-diverse official non-attention evidence on trend_long signals "
+        "while Space peer momentum state is nonleader and TQS is near-perfect"
+    ),
+    "space_source_diversity_peer_nonleader_near_perfect_trend_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_NEAR_PERFECT_TREND_RISK_SCALAR
+    ),
     "space_forward_replacement_positive_experiment_id": "exp-20260513-113",
     "space_forward_replacement_positive_definition": (
         "official non-attention Space tickers with closed event-state profiles "
@@ -627,22 +641,22 @@ SPACE_CATALYST_NON_OPERATING_SEGMENTS = (
     "quarantine_meme",
     "theme_beta_benchmark",
 )
-DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH = Path("data/space_catalyst_event_seeds.jsonl")
-DEFAULT_SPACE_CATALYST_EVENT_LEDGER_PATH = Path(
-    "data/space_catalyst_event_state_shadow_ledger.jsonl"
+DEFAULT_SPACE_CATALYST_EVENT_SEED_PATH = data_artifact_path("space_catalyst_event_seeds")
+DEFAULT_SPACE_CATALYST_EVENT_LEDGER_PATH = data_artifact_path(
+    "space_catalyst_event_state_shadow_ledger"
 )
-DEFAULT_SPACE_CATALYST_EVENT_SUMMARY_PATH = Path(
-    "data/space_catalyst_event_state_shadow_summary.json"
+DEFAULT_SPACE_CATALYST_EVENT_SUMMARY_PATH = data_artifact_path(
+    "space_catalyst_event_state_shadow_summary"
 )
 SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION = 1
 SPACE_CATALYST_OBSERVATION_SLOT_NAME = "SPACE_CATALYST_PRODUCTION_OBSERVATION_SLOT"
 SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION = "space_catalyst_observation_slot_v2"
 SPACE_CATALYST_OBSERVATION_SLOT_COUNT = 1
-DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_LEDGER_PATH = Path(
-    "data/space_catalyst_observation_slot_ledger.jsonl"
+DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_LEDGER_PATH = data_artifact_path(
+    "space_catalyst_observation_slot_ledger"
 )
-DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_SUMMARY_PATH = Path(
-    "data/space_catalyst_observation_slot_summary.json"
+DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_SUMMARY_PATH = data_artifact_path(
+    "space_catalyst_observation_slot_summary"
 )
 
 
@@ -904,6 +918,16 @@ def space_catalyst_forward_risk_scalar(
         and (peer_momentum_state or {}).get("state") == "nonleader"
     ):
         scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_TREND_RISK_SCALAR
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_source_diversity_profile(source_diversity_profile)
+        and (peer_momentum_state or {}).get("state") == "nonleader"
+        and _is_space_near_perfect_tqs(trade_quality_score)
+    ):
+        scalar *= (
+            SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_NEAR_PERFECT_TREND_RISK_SCALAR
+        )
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_forward_replacement_positive_profile(
@@ -1230,6 +1254,9 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_source_diversity_peer_nonleader_trend_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_TREND_RISK_SCALAR
+            ),
+            "space_source_diversity_peer_nonleader_near_perfect_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_NEAR_PERFECT_TREND_RISK_SCALAR
             ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
@@ -2417,6 +2444,9 @@ def build_space_catalyst_observation_slot(
             "space_source_diversity_peer_nonleader_trend_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_TREND_RISK_SCALAR
             ),
+            "space_source_diversity_peer_nonleader_near_perfect_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_NEAR_PERFECT_TREND_RISK_SCALAR
+            ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
             ),
@@ -3379,6 +3409,15 @@ def _observation_slot_row(
         if source_diversity_peer_nonleader_trend_bucket
         else 1.0
     )
+    source_diversity_peer_nonleader_near_perfect_trend_bucket = (
+        source_diversity_peer_nonleader_trend_bucket
+        and _is_space_near_perfect_tqs(signal.get("trade_quality_score"))
+    )
+    source_diversity_peer_nonleader_near_perfect_trend_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_PEER_NONLEADER_NEAR_PERFECT_TREND_RISK_SCALAR
+        if source_diversity_peer_nonleader_near_perfect_trend_bucket
+        else 1.0
+    )
     forward_replacement_positive_bucket = (
         _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
@@ -3728,6 +3767,13 @@ def _observation_slot_row(
         ),
         "space_source_diversity_peer_nonleader_trend_risk_scalar": _round(
             source_diversity_peer_nonleader_trend_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": (
+            source_diversity_peer_nonleader_near_perfect_trend_bucket
+        ),
+        "space_source_diversity_peer_nonleader_near_perfect_trend_risk_scalar": _round(
+            source_diversity_peer_nonleader_near_perfect_trend_risk_scalar,
             6,
         ),
         "space_forward_replacement_positive_bucket": (
