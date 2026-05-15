@@ -72,6 +72,7 @@ from constants import (
     RISK_ON_SPY_RELATIVE_LEADER_RISK_MULTIPLIER,
     RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     RS20_ENTRY_STATE_RISK_MULTIPLIER,
+    CORE_CONFIRMED_QUALITY_RISK_MULTIPLIER,
     RS60_TOP_QUINTILE_RISK_MULTIPLIER,
     PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER,
     TREND_PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER,
@@ -365,6 +366,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             spy_relative_leader_risk_on_multiplier = 1.0
             trend_mid_sector_dispersion_risk_multiplier = 1.0
             rs20_entry_state_risk_multiplier = 1.0
+            core_confirmed_quality_risk_multiplier = 1.0
             signal_day_ticker_green_risk_multiplier = 1.0
             rs60_top_quintile_risk_multiplier = 1.0
             price_vs_200ma_extension_risk_multiplier = 1.0
@@ -1219,6 +1221,52 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                         sizing[
                             "trend_price_vs_200ma_extension_new_shares"
                         ] = new_shares
+                if (
+                    sig.get("core_confirmed_quality_state") is True
+                    and strategy in {"trend_long", "breakout_long"}
+                    and sizing.get("shares_to_buy")
+                    and sizing.get("net_risk_per_share")
+                    and signal_risk_pct > 0
+                    and CORE_CONFIRMED_QUALITY_RISK_MULTIPLIER > 1.0
+                ):
+                    old_shares = int(sizing.get("shares_to_buy") or 0)
+                    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+                    cap_pct = float(
+                        sizing.get("max_position_pct_applied") or max_position_pct
+                    )
+                    cap_shares = int(math.floor(portfolio_value * cap_pct / entry))
+                    desired_shares = max(
+                        old_shares,
+                        int(
+                            math.floor(
+                                old_shares
+                                * CORE_CONFIRMED_QUALITY_RISK_MULTIPLIER
+                            )
+                        ),
+                    )
+                    new_shares = min(desired_shares, cap_shares)
+                    if new_shares > old_shares:
+                        risk_amount = new_shares * net_risk_per_share
+                        position_value = new_shares * entry
+                        core_confirmed_quality_risk_multiplier = (
+                            CORE_CONFIRMED_QUALITY_RISK_MULTIPLIER
+                        )
+                        sizing["shares_to_buy"] = new_shares
+                        sizing["position_value_usd"] = round(position_value, 2)
+                        sizing["position_pct_of_portfolio"] = round(
+                            position_value / portfolio_value,
+                            4,
+                        )
+                        sizing["risk_amount_usd"] = round(risk_amount, 2)
+                        sizing["risk_pct"] = (
+                            risk_amount / portfolio_value if portfolio_value else 0.0
+                        )
+                        sizing["core_confirmed_quality_baseline_shares"] = old_shares
+                        sizing["core_confirmed_quality_desired_shares"] = (
+                            desired_shares
+                        )
+                        sizing["core_confirmed_quality_cap_shares"] = cap_shares
+                        sizing["core_confirmed_quality_new_shares"] = new_shares
                 sizing["base_risk_pct"] = effective_risk_pct
                 sizing["max_position_pct_applied"] = max(
                     max_position_pct,
@@ -1254,6 +1302,15 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["rs20_entry_state_risk_multiplier_applied"] = (
                     rs20_entry_state_risk_multiplier
+                )
+                sizing["core_confirmed_quality_risk_multiplier_applied"] = (
+                    core_confirmed_quality_risk_multiplier
+                )
+                sizing["core_confirmed_quality_state"] = sig.get(
+                    "core_confirmed_quality_state"
+                )
+                sizing["core_confirmed_quality_tqs_min"] = sig.get(
+                    "core_confirmed_quality_tqs_min"
                 )
                 sizing["signal_day_ticker_green_risk_multiplier_applied"] = (
                     signal_day_ticker_green_risk_multiplier

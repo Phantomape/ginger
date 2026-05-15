@@ -893,6 +893,106 @@ def test_trend_price_vs_200ma_extension_topup_is_shared_sizing_policy():
     )
 
 
+def test_core_confirmed_quality_state_is_shared_risk_enrichment():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 1.0,
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 1.0,
+        },
+    ]
+    features = {
+        "AMD": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.10,
+            "momentum_20d_pct": 0.12,
+            "signal_day_ticker_open_close_return_pct": 0.01,
+        },
+        "MSFT": {
+            "atr": 2.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.10,
+            "momentum_20d_pct": 0.12,
+            "signal_day_ticker_open_close_return_pct": -0.01,
+        },
+        "SPY": {
+            "atr": 2.0,
+            "momentum_20d_pct": 0.05,
+            "signal_day_ticker_open_close_return_pct": 0.0,
+        },
+    }
+
+    enriched = enrich_signals(signals, features)
+
+    by_ticker = {sig["ticker"]: sig for sig in enriched}
+    assert by_ticker["AMD"]["trade_quality_score"] == 1.0
+    assert by_ticker["AMD"]["rs20_entry_state_leader"] is True
+    assert by_ticker["AMD"]["signal_day_ticker_green_candle"] is True
+    assert by_ticker["AMD"]["core_confirmed_quality_tqs_min"] == (
+        constants.CORE_CONFIRMED_QUALITY_TQS_MIN
+    )
+    assert by_ticker["AMD"]["core_confirmed_quality_state"] is True
+    assert by_ticker["MSFT"]["core_confirmed_quality_state"] is False
+
+
+def test_core_confirmed_quality_topup_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 1.0,
+            "rs20_entry_state_leader": True,
+            "signal_day_ticker_green_candle": True,
+            "core_confirmed_quality_state": True,
+            "core_confirmed_quality_tqs_min": constants.CORE_CONFIRMED_QUALITY_TQS_MIN,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 1.0,
+            "rs20_entry_state_leader": True,
+            "signal_day_ticker_green_candle": True,
+            "core_confirmed_quality_state": False,
+            "core_confirmed_quality_tqs_min": constants.CORE_CONFIRMED_QUALITY_TQS_MIN,
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    confirmed = sized[0]["sizing"]
+    unconfirmed = sized[1]["sizing"]
+    assert unconfirmed["shares_to_buy"] == 106
+    assert confirmed["core_confirmed_quality_baseline_shares"] == 106
+    assert confirmed["core_confirmed_quality_desired_shares"] == 113
+    assert confirmed["core_confirmed_quality_new_shares"] == 113
+    assert confirmed["shares_to_buy"] == 113
+    assert confirmed["core_confirmed_quality_risk_multiplier_applied"] == (
+        constants.CORE_CONFIRMED_QUALITY_RISK_MULTIPLIER
+    )
+    assert confirmed["core_confirmed_quality_state"] is True
+    assert unconfirmed["core_confirmed_quality_risk_multiplier_applied"] == 1.0
+
+
 def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
     signals = [
         {

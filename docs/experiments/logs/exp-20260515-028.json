@@ -1416,7 +1416,7 @@
     }
   },
   "changed_variable": "core_confirmed_quality_risk_multiplier",
-  "decision": "accepted_for_shared_policy_implementation",
+  "decision": "accepted_and_promoted_to_shared_policy",
   "delta_metrics": {
     "aggregate_after": {
       "expected_value_score_sum": 7.7345,
@@ -1613,7 +1613,7 @@
     "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260515_028_current_stack_core_confirmed_quality_risk.py"
   },
   "hypothesis": "The old confirmed-quality core state improved aggregate EV but failed drawdown on the 2026-05-13 stack. After the accepted cap-aware leader and price-vs-200MA allocation layers, the same fixed production-visible state may support a smaller incremental top-up without breaching drawdown.",
-  "interpretation": "Confirmed-quality core risk allocation cleared the canonical three-window gate and requires shared policy implementation before production use.",
+  "interpretation": "Confirmed-quality core risk allocation cleared the canonical three-window gate and is promoted through shared risk/sizing policy.",
   "lane": "alpha_search",
   "llm_metrics": {
     "used_llm": false
@@ -1653,11 +1653,24 @@
     }
   },
   "production_impact": {
-    "backtester_adapter_changed": false,
-    "parity_test_added": false,
-    "replay_only": true,
-    "run_adapter_changed": false,
-    "shared_policy_changed": false
+    "backtester_adapter_changed": true,
+    "notes": "Promoted through shared risk_engine.enrich_signals and portfolio_engine.size_signals; run.py and backtester.py both use the shared risk/sizing policy. backtester.py only adds attribution for the applied multiplier.",
+    "parity_test": [
+      "quant/test_production_parity.py::test_core_confirmed_quality_state_is_shared_risk_enrichment",
+      "quant/test_production_parity.py::test_core_confirmed_quality_topup_is_shared_sizing_policy"
+    ],
+    "parity_test_added": true,
+    "promotion_requirement": "Implemented in shared risk_engine.py enrichment and portfolio_engine.py sizing policy; backtester records attribution and production run.py uses the same shared path.",
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "production_impact_closeout": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
   },
   "rejection_reason": null,
   "related_files": [
@@ -1666,6 +1679,15 @@
     "docs/experiments/logs/exp-20260515-028.json",
     "docs/experiments/tickets/exp-20260515-028.json",
     "docs/experiments/artifacts/exp-20260515-028_current_stack_core_confirmed_quality_risk.md",
+    "quant/constants.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/test_production_parity.py",
+    "docs/backtesting.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/production_backtest_parity.md",
     "docs/experiment_log.jsonl"
   ],
   "single_causal_variable": "cap-aware post-sizing risk top-up multiplier for a fixed confirmed-quality core state",
@@ -1761,7 +1783,7 @@
       }
     }
   },
-  "status": "accepted_for_shared_policy_implementation",
+  "status": "accepted_and_promoted_to_shared_policy",
   "sweep_summary": [
     {
       "adjusted_signal_count": 14,

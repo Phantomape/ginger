@@ -74,7 +74,7 @@ Keep only anchor states here. Full metrics live in `docs/backtesting.md` and
 ### Core
 
 Current accepted core checkpoint is the 2026-05-15 stack ending at
-`exp-20260515-026`.
+`exp-20260515-028`.
 
 Mechanism-level summary:
 
@@ -91,6 +91,10 @@ Mechanism-level summary:
   drawdown, and `exp-20260515-026` promoted a trend-only 1.125x follow-on
   because it improved `mid_weak` and `old_thin` without regressing
   `late_strong`;
+- confirmed-quality core state (`trade_quality_score >= 0.95`, RS20 leader,
+  own signal-day green candle) is now an accepted current-stack allocation
+  discriminator at 1.075x; `exp-20260515-028` improved all three canonical
+  windows, while 1.08x+ failed the drawdown guardrail;
 - the useful core edge is post-selection allocation, not broader filtering;
 - small data/taxonomy fixes can matter when they change real routing.
 
@@ -110,6 +114,8 @@ Current practical interpretation:
   the frozen windows without forward evidence or a materially different
   production-visible state; the trend-only 1.15x+ variants failed the drawdown
   guardrail.
+- do not retry nearby confirmed-quality top-up scalars on the frozen windows;
+  the accepted 1.075x value sits directly below the drawdown failure boundary.
 - do not retry simple RS60 x price-vs-200MA overlap top-ups on the frozen
   windows; `exp-20260515-020` improved aggregate EV/PnL but every sweep
   regressed `late_strong`, so the overlap needs a new drawdown discriminator

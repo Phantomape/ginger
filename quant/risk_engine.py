@@ -27,6 +27,7 @@ from constants import (
     EXEC_LAG_PCT,
     PRICE_VS_200MA_EXTENSION_EXCLUDED_SECTORS,
     PRICE_VS_200MA_EXTENSION_FRACTION,
+    CORE_CONFIRMED_QUALITY_TQS_MIN,
     RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN,
     RS60_TOP_QUINTILE_EXCLUDED_SECTORS,
     RS60_TOP_QUINTILE_FRACTION,
@@ -459,6 +460,17 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
             enriched_sig["rs20_entry_state_leader"] = (
                 rel_spy_ret20 >= RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN
             )
+        tqs = enriched_sig.get("trade_quality_score")
+        enriched_sig["core_confirmed_quality_tqs_min"] = (
+            CORE_CONFIRMED_QUALITY_TQS_MIN
+        )
+        enriched_sig["core_confirmed_quality_state"] = (
+            enriched_sig.get("strategy") in {"trend_long", "breakout_long"}
+            and isinstance(tqs, (int, float))
+            and float(tqs) >= CORE_CONFIRMED_QUALITY_TQS_MIN
+            and enriched_sig.get("rs20_entry_state_leader") is True
+            and enriched_sig.get("signal_day_ticker_green_candle") is True
+        )
         if enriched_sig["sector"] == "Financials":
             if (
                 isinstance(ticker_ret20, (int, float))

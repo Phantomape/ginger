@@ -498,6 +498,7 @@ SIZING_MULTIPLIER_KEYS = (
     "risk_on_unmodified_risk_multiplier_applied",
     "spy_relative_leader_risk_on_multiplier_applied",
     "rs20_entry_state_risk_multiplier_applied",
+    "core_confirmed_quality_risk_multiplier_applied",
     "signal_day_ticker_green_risk_multiplier_applied",
     "rs60_top_quintile_risk_multiplier_applied",
     "price_vs_200ma_extension_risk_multiplier_applied",

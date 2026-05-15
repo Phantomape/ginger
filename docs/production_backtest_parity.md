@@ -40,6 +40,7 @@ in shared modules such as:
 | RS60 top-quintile stock sizing top-up | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Price-vs-200MA extension sizing top-up | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Trend-only price-vs-200MA extension sizing top-up | `feature_layer.py`, `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
+| Core confirmed-quality sizing top-up | `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Clean SPY-relative signal-day sizing top-up | `risk_engine.py`, `portfolio_engine.py` | required | required | data date only |
 | Clean SPY-relative signal-day position cap | `portfolio_engine.py` | required | required | data date only |
 | Clean SPY cap-only leader position cap | `portfolio_engine.py` | required | required | data date only |
