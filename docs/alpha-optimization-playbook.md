@@ -182,6 +182,12 @@ Current practical interpretation:
   source-diversity peer-nonleader `trend_long` allocation scalar at `1.025x`:
   two windows improved, the old thin window was unchanged, and
   trade count/survival stayed unchanged;
+- 2026-05-15 `exp-20260515-031` rejected a stricter VSAT-only mature-satcom
+  candidate admission that required all-positive 5d evidence plus positive 10d
+  same-theme replacement value: aggregate EV/PnL improved, but `old_thin`
+  still regressed and late-window drawdown worsened, so mature-satcom pool
+  expansion remains blocked without additional closed rows or a non-displacing
+  production-visible design;
 - the next valid Space step is either a broader mature cohort or a genuinely
   new production-visible catalyst-quality field.
 

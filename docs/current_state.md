@@ -398,7 +398,20 @@ signals; stronger nearby values had higher raw EV but failed the drawdown
 guardrail, so do not retry adjacent source-diversity peer-nonleader trend
 scalars without new closed forward evidence.
 
-Latest rejected Space alpha search: `exp-20260513-019` tested whether the
+Latest rejected Space alpha search: `exp-20260515-031` tested a stricter
+VSAT-only mature-satcom candidate-pool extension on top of `exp-20260515-024`.
+The single changed variable was
+`space_fast_5d_10d_same_theme_satcom_trend_pool_membership`: VSAT passed the
+all-positive 5d forward gate and positive 10d same-theme replacement-value
+gate, and added tickers were restricted to `trend_long`. The current
+three-window rerun improved aggregate EV by `+5.0217` and PnL by
+`$105,371.20`, but Gate 4 rejected it because `old_thin` regressed by
+`-0.0306` EV and `-$1,229.23`, while late-window drawdown worsened by
+`+2.98 pp`. Do not retry VSAT-only, IRDM/VSAT, or nearby mature-satcom
+candidate admission on these frozen windows without new closed forward rows or
+a production-visible design that avoids old-window displacement.
+
+Prior rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space
 signals. Aggregate EV improved `+0.1320`, but the result did not clear the
 Space three-window gate, so customer-source allocation should stay tied to
