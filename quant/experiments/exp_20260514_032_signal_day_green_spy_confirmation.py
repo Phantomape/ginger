@@ -1,0 +1,599 @@
+"""exp-20260514-032: signal-day green SPY-confirmation scout.
+
+Tests one production-visible allocation variable on the accepted core stack:
+the existing signal-day green-candle 1.05x post-sizing top-up only remains
+eligible when the ticker also outperformed SPY on the same signal day.
+
+This is a shadow experiment only unless Gate 4 passes. It does not change
+entries, filters, ranking, exits, target widths, universe, LLM/news logic,
+Space sleeves, heat, or slot limits.
+"""
+
+from __future__ import annotations
+
+import copy
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable
+
+import exp_20260512_106_signal_day_sector_tape_risk as base
+
+
+EXPERIMENT_ID = "exp-20260514-032"
+EXPERIMENT_SLUG = "signal_day_green_spy_confirmation"
+MAX_DRAWDOWN_WORSE_GUARDRAIL = 0.005
+
+ADJUSTMENTS: list[dict[str, Any]] = []
+FIELD_AUDIT: dict[str, Any] = {}
+
+
+def _upsert_jsonl(path: Path, payload: dict[str, Any]) -> None:
+    line = json.dumps(base._safe(payload), ensure_ascii=False, sort_keys=True)
+    rows: list[str] = []
+    replaced = False
+    if path.exists():
+        for existing in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if not existing.strip():
+                continue
+            try:
+                row = json.loads(existing)
+            except json.JSONDecodeError:
+                rows.append(existing)
+                continue
+            if row.get("experiment_id") == EXPERIMENT_ID:
+                if not replaced:
+                    rows.append(line)
+                    replaced = True
+                continue
+            rows.append(existing)
+    if not replaced:
+        rows.append(line)
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+
+
+def _fresh_field_audit() -> dict[str, Any]:
+    return {
+        "signals_seen": 0,
+        "missing_signal_day_ticker_green_candle": 0,
+        "missing_signal_day_ticker_outperformed_spy": 0,
+        "green_signals_seen": 0,
+        "green_not_spy_confirmed_seen": 0,
+        "baseline_green_topup_nonconfirmed_seen": 0,
+        "baseline_green_topup_nonconfirmed_changed_shares": 0,
+    }
+
+
+def _make_size_wrapper(
+    original: Callable[..., list[dict[str, Any]]],
+) -> Callable[..., list[dict[str, Any]]]:
+    def wrapped(
+        signals: list[dict[str, Any]],
+        portfolio_value: float,
+        risk_pct: float | None = None,
+    ) -> list[dict[str, Any]]:
+        baseline_input = copy.deepcopy(signals)
+        variant_input = copy.deepcopy(signals)
+
+        for sig in variant_input:
+            FIELD_AUDIT["signals_seen"] += 1
+            if "signal_day_ticker_green_candle" not in sig:
+                FIELD_AUDIT["missing_signal_day_ticker_green_candle"] += 1
+            if "signal_day_ticker_outperformed_spy" not in sig:
+                FIELD_AUDIT["missing_signal_day_ticker_outperformed_spy"] += 1
+
+            if sig.get("signal_day_ticker_green_candle") is True:
+                FIELD_AUDIT["green_signals_seen"] += 1
+                if sig.get("signal_day_ticker_outperformed_spy") is not True:
+                    FIELD_AUDIT["green_not_spy_confirmed_seen"] += 1
+                    sig["signal_day_ticker_green_candle"] = False
+                    sig["signal_day_green_spy_confirmation_removed_candidate"] = True
+
+        baseline_sized = original(
+            baseline_input,
+            portfolio_value,
+            risk_pct=risk_pct,
+        )
+        variant_sized = original(
+            variant_input,
+            portfolio_value,
+            risk_pct=risk_pct,
+        )
+
+        for before, after in zip(baseline_sized, variant_sized):
+            before_sizing = before.get("sizing") or {}
+            after_sizing = after.get("sizing") or {}
+            baseline_green_topup = (
+                before_sizing.get("signal_day_ticker_green_risk_multiplier_applied")
+                == base.portfolio_engine.SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER
+            )
+            nonconfirmed = before.get("signal_day_ticker_outperformed_spy") is not True
+            if baseline_green_topup and nonconfirmed:
+                FIELD_AUDIT["baseline_green_topup_nonconfirmed_seen"] += 1
+                before_shares = int(before_sizing.get("shares_to_buy") or 0)
+                after_shares = int(after_sizing.get("shares_to_buy") or 0)
+                if before_shares != after_shares:
+                    FIELD_AUDIT[
+                        "baseline_green_topup_nonconfirmed_changed_shares"
+                    ] += 1
+                    ADJUSTMENTS.append(
+                        {
+                            "ticker": before.get("ticker"),
+                            "strategy": before.get("strategy"),
+                            "sector": before.get("sector"),
+                            "baseline_shares": before_shares,
+                            "new_shares": after_shares,
+                            "shares_delta": after_shares - before_shares,
+                            "entry_price": before.get("entry_price"),
+                            "trade_quality_score": before.get("trade_quality_score"),
+                            "regime_exit_bucket": before.get("regime_exit_bucket"),
+                            "regime_exit_score": before.get("regime_exit_score"),
+                            "signal_day_ticker_green_candle": before.get(
+                                "signal_day_ticker_green_candle"
+                            ),
+                            "signal_day_ticker_outperformed_spy": before.get(
+                                "signal_day_ticker_outperformed_spy"
+                            ),
+                            "ticker_minus_spy_signal_day_open_close_return_pct": before.get(
+                                "ticker_minus_spy_signal_day_open_close_return_pct"
+                            ),
+                            "baseline_green_multiplier": before_sizing.get(
+                                "signal_day_ticker_green_risk_multiplier_applied"
+                            ),
+                            "new_green_multiplier": after_sizing.get(
+                                "signal_day_ticker_green_risk_multiplier_applied"
+                            ),
+                            "max_position_pct_applied": before_sizing.get(
+                                "max_position_pct_applied"
+                            ),
+                        }
+                    )
+
+        return variant_sized
+
+    return wrapped
+
+
+def _run_window(label: str, *, variant: bool) -> dict[str, Any]:
+    spec = base.WINDOWS[label]
+    universe = base.get_universe()
+    original_size = base.portfolio_engine.size_signals
+
+    global ADJUSTMENTS, FIELD_AUDIT
+    ADJUSTMENTS = []
+    FIELD_AUDIT = _fresh_field_audit()
+
+    if variant:
+        base.portfolio_engine.size_signals = _make_size_wrapper(original_size)
+
+    try:
+        engine = base.BacktestEngine(
+            universe,
+            start=spec["start"],
+            end=spec["end"],
+            config={"REGIME_AWARE_EXIT": True, "REPLAY_PARTIAL_REDUCES": True},
+            ohlcv_snapshot_path=str(base.REPO_ROOT / spec["snapshot"]),
+        )
+        result = engine.run()
+    finally:
+        base.portfolio_engine.size_signals = original_size
+
+    if result.get("error"):
+        kind = "variant" if variant else "baseline"
+        raise RuntimeError(f"{label} {kind} failed: {result['error']}")
+    return {
+        "metrics": base._metrics(result),
+        "trades": result.get("trades") or [],
+        "adjustments": list(ADJUSTMENTS),
+        "field_audit": dict(FIELD_AUDIT),
+        "sizing_rule_signal_attribution": result.get("sizing_rule_signal_attribution")
+        or {},
+        "sizing_rule_trade_attribution": result.get("sizing_rule_trade_attribution")
+        or {},
+    }
+
+
+def _candidate_payload(
+    before_runs: dict[str, dict[str, Any]],
+    *,
+    include_details: bool = False,
+) -> dict[str, Any]:
+    before_metrics = {label: before_runs[label]["metrics"] for label in base.WINDOWS}
+    after_metrics: dict[str, dict[str, Any]] = {}
+    adjustments: dict[str, list[dict[str, Any]]] = {}
+    changed_trades: dict[str, dict[str, Any]] = {}
+    field_audit: dict[str, dict[str, Any]] = {}
+    green_attribution: dict[str, Any] = {}
+
+    for label in base.WINDOWS:
+        variant = _run_window(label, variant=True)
+        after_metrics[label] = variant["metrics"]
+        adjustments[label] = variant["adjustments"]
+        field_audit[label] = variant["field_audit"]
+        green_attribution[label] = {
+            "baseline_signal": before_runs[label][
+                "sizing_rule_signal_attribution"
+            ].get("signal_day_ticker_green_risk_multiplier_applied"),
+            "variant_signal": variant["sizing_rule_signal_attribution"].get(
+                "signal_day_ticker_green_risk_multiplier_applied"
+            ),
+            "baseline_trade": before_runs[label][
+                "sizing_rule_trade_attribution"
+            ].get("signal_day_ticker_green_risk_multiplier_applied"),
+            "variant_trade": variant["sizing_rule_trade_attribution"].get(
+                "signal_day_ticker_green_risk_multiplier_applied"
+            ),
+        }
+        if include_details:
+            changed_trades[label] = base._changed_trades(
+                before_runs[label]["trades"],
+                variant["trades"],
+            )
+
+    by_window_delta = {
+        label: base._delta(after_metrics[label], before_metrics[label])
+        for label in base.WINDOWS
+    }
+    aggregate_before = base._aggregate(before_metrics)
+    aggregate_after = base._aggregate(after_metrics)
+    aggregate_delta = base._aggregate_delta(aggregate_after, aggregate_before)
+    improved = [
+        label
+        for label in base.WINDOWS
+        if after_metrics[label]["expected_value_score"]
+        > before_metrics[label]["expected_value_score"]
+    ]
+    regressed = [
+        label
+        for label in base.WINDOWS
+        if after_metrics[label]["expected_value_score"]
+        < before_metrics[label]["expected_value_score"]
+    ]
+    adjusted_count = sum(len(rows) for rows in adjustments.values())
+    max_drawdown_worse = max(
+        float(by_window_delta[label].get("max_drawdown_pct") or 0.0)
+        for label in base.WINDOWS
+    )
+    drawdown_guardrail_passed = (
+        max_drawdown_worse <= MAX_DRAWDOWN_WORSE_GUARDRAIL
+    )
+    missing_field_count = sum(
+        audit["missing_signal_day_ticker_green_candle"]
+        + audit["missing_signal_day_ticker_outperformed_spy"]
+        for audit in field_audit.values()
+    )
+    passed = (
+        aggregate_delta["expected_value_score_sum"] > 0
+        and aggregate_delta["total_pnl_sum"] > 0
+        and len(improved) >= 2
+        and not regressed
+        and aggregate_after["survival_rate_min"] >= 0.05
+        and adjusted_count > 0
+        and missing_field_count == 0
+        and drawdown_guardrail_passed
+    )
+    return {
+        "passed": passed,
+        "before_metrics": before_metrics,
+        "after_metrics": after_metrics,
+        "delta_metrics": {
+            "by_window": by_window_delta,
+            "aggregate_before": aggregate_before,
+            "aggregate_after": aggregate_after,
+            "aggregate_delta": aggregate_delta,
+        },
+        "gate4": {
+            "passed": passed,
+            "improved_windows": improved,
+            "regressed_windows": regressed,
+            "adjusted_signal_count": adjusted_count,
+            "missing_runtime_field_count": missing_field_count,
+            "max_drawdown_worse": round(max_drawdown_worse, 6),
+            "max_drawdown_worse_guardrail": MAX_DRAWDOWN_WORSE_GUARDRAIL,
+            "drawdown_guardrail_passed": drawdown_guardrail_passed,
+        },
+        "adjustments": adjustments if include_details else None,
+        "changed_trades": changed_trades if include_details else None,
+        "field_audit": field_audit,
+        "green_topup_attribution": green_attribution,
+        "expected_value_score_delta": aggregate_delta["expected_value_score_sum"],
+        "total_pnl_delta": aggregate_delta["total_pnl_sum"],
+    }
+
+
+def _markdown(payload: dict[str, Any]) -> str:
+    window_rows = [
+        "| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for label in base.WINDOWS:
+        before = payload["before_metrics"][label]
+        after = payload["after_metrics"][label]
+        delta = payload["delta_metrics"]["by_window"][label]
+        window_rows.append(
+            "| {label} | {bev:.4f} | {aev:.4f} | {dev:+.4f} | ${bpnl:,.2f} | ${apnl:,.2f} | ${dpnl:+,.2f} | {ddd:+.4f} | {surv:.4f} | {adj} |".format(
+                label=label,
+                bev=before["expected_value_score"],
+                aev=after["expected_value_score"],
+                dev=delta.get("expected_value_score", 0.0),
+                bpnl=before["total_pnl"],
+                apnl=after["total_pnl"],
+                dpnl=delta.get("total_pnl", 0.0),
+                ddd=delta.get("max_drawdown_pct", 0.0),
+                surv=after["survival_rate"],
+                adj=len(payload["adjustments"][label]),
+            )
+        )
+    audit_rows = [
+        "| Window | Signals | Green | Green Not SPY-Confirmed | Removed Topups Changed Shares | Missing Fields |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for label in base.WINDOWS:
+        audit = payload["field_audit"][label]
+        missing = (
+            audit["missing_signal_day_ticker_green_candle"]
+            + audit["missing_signal_day_ticker_outperformed_spy"]
+        )
+        audit_rows.append(
+            "| {label} | {signals} | {green} | {nonconfirmed} | {changed} | {missing} |".format(
+                label=label,
+                signals=audit["signals_seen"],
+                green=audit["green_signals_seen"],
+                nonconfirmed=audit["green_not_spy_confirmed_seen"],
+                changed=audit[
+                    "baseline_green_topup_nonconfirmed_changed_shares"
+                ],
+                missing=missing,
+            )
+        )
+    return "\n".join(
+        [
+            f"# {EXPERIMENT_ID} Signal-Day Green SPY Confirmation",
+            "",
+            f"Decision: `{payload['decision']}`.",
+            "",
+            "Single variable: the accepted signal-day green-candle 1.05x post-sizing top-up is removed when the ticker did not outperform SPY on that same signal day. Entries, ranking, exits, targets, universe, LLM/news, heat, slots, and all other sizing rules stayed fixed.",
+            "",
+            "## Three-Window Result",
+            "",
+            *window_rows,
+            "",
+            "## Runtime Field Audit",
+            "",
+            *audit_rows,
+            "",
+            "Production impact: replay-only scout unless Gate 4 passes and the same condition is promoted into shared `portfolio_engine.py` with production/backtest parity tests.",
+        ]
+    )
+
+
+def run() -> dict[str, Any]:
+    gate2 = base._audit_open_positions()
+    if not gate2["passed"]:
+        raise RuntimeError(f"Gate 2 failed: {gate2}")
+
+    before_runs = {
+        label: _run_window(label, variant=False)
+        for label in base.WINDOWS
+    }
+    selected = _candidate_payload(before_runs, include_details=True)
+    passed = selected["passed"]
+    decision = (
+        "accepted_for_shared_policy_implementation"
+        if passed
+        else "rejected_signal_day_green_spy_confirmation"
+    )
+    interpretation = (
+        "Signal-day green-candle top-up needs same-day SPY outperformance and should be promoted through shared production/backtest policy."
+        if passed
+        else "Requiring same-day SPY outperformance for the green-candle top-up did not clear the canonical three-window Gate 4."
+    )
+
+    payload = {
+        "experiment_id": EXPERIMENT_ID,
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "lane": "alpha_search",
+        "status": decision,
+        "decision": decision,
+        "hypothesis": (
+            "The accepted signal-day green-candle top-up may be too broad: green "
+            "absolute candles that still lag SPY can be weak participation. "
+            "Keep the 1.05x top-up only when same-day ticker-vs-SPY confirmation "
+            "is positive."
+        ),
+        "change_type": "risk_allocation_shadow",
+        "changed_variable": "signal_day_green_topup_requires_spy_outperformance",
+        "single_causal_variable": (
+            "eligibility condition for the existing signal_day_ticker_green 1.05x post-sizing top-up"
+        ),
+        "parameters": {
+            "state_definition": {
+                "old_condition": "signal_day_ticker_green_candle is True",
+                "new_condition": "signal_day_ticker_green_candle is True and signal_day_ticker_outperformed_spy is True",
+                "strategies": ["trend_long", "breakout_long"],
+                "risk_multiplier": base.portfolio_engine.SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
+            },
+            "locked_variables": [
+                "core universe",
+                "candidate pool",
+                "entry filters",
+                "candidate ranking",
+                "stop and target logic",
+                "all other sizing multipliers and caps",
+                "portfolio heat",
+                "MAX_POSITIONS",
+                "LLM/news replay",
+                "pilot/event sleeves",
+            ],
+            "anti_js": "No JavaScript was used.",
+        },
+        "gate_questions": {
+            "1_alpha_hypothesis": (
+                "risk allocation: same-day absolute green candles only deserve the accepted top-up when they also beat SPY."
+            ),
+            "2_history_check": {
+                "exp-20260513-009": (
+                    "Close-location top-up failed because old_thin regressed; this uses ticker-vs-SPY relative participation instead of intraday close location."
+                ),
+                "exp-20260514-028": (
+                    "Replacing green candle with strong-close confirmation failed; this keeps green candle but removes non-SPY-confirmed weak participation."
+                ),
+                "exp-20260513-031/037": (
+                    "Range compression/expansion already failed or belongs to Space-specific surface; this does not use range."
+                ),
+                "llm_soft_ranking": (
+                    "Avoided because production-aligned LLM soft-ranking outcome joins remain too sparse."
+                ),
+            },
+            "3_single_causal_variable": (
+                "signal_day_green_topup_requires_spy_outperformance; the 1.05x multiplier and all other policies stay fixed."
+            ),
+            "4_acceptance_standard": (
+                "docs/backtesting.md three fixed windows; aggregate EV/PnL positive, at least two EV-improved windows, no EV-regressed windows, survival >= 5%, runtime fields present, max drawdown drift <= 0.5 pp."
+            ),
+            "5_reproducibility": (
+                ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260514_032_signal_day_green_spy_confirmation.py"
+            ),
+        },
+        "backtest_protocol": {
+            "source": "docs/backtesting.md canonical fixed-snapshot three-window replay",
+            "windows": base.WINDOWS,
+            "config": {"REGIME_AWARE_EXIT": True, "REPLAY_PARTIAL_REDUCES": True},
+        },
+        "gate1": {
+            "baseline_metrics": selected["before_metrics"],
+            "baseline_aggregate": selected["delta_metrics"]["aggregate_before"],
+        },
+        "gate2": {
+            "open_positions": gate2,
+            "runtime_fields": [
+                "operator_inputs/open_positions.json entry_date",
+                "operator_inputs/open_positions.json target_price",
+                "risk_engine signal_day_ticker_green_candle",
+                "risk_engine signal_day_ticker_outperformed_spy",
+            ],
+            "runtime_field_audit": selected["field_audit"],
+            "passed": gate2["passed"]
+            and selected["gate4"]["missing_runtime_field_count"] == 0,
+        },
+        "gate3": {
+            "new_filter_added": False,
+            "entry_filter_added": False,
+            "signals_generated_delta": selected["delta_metrics"]["aggregate_delta"][
+                "signals_generated_sum"
+            ],
+            "signals_survived_delta": selected["delta_metrics"]["aggregate_delta"][
+                "signals_survived_sum"
+            ],
+            "minimum_after_survival_rate": selected["delta_metrics"][
+                "aggregate_after"
+            ]["survival_rate_min"],
+            "passed": selected["delta_metrics"]["aggregate_after"][
+                "survival_rate_min"
+            ]
+            >= 0.05,
+        },
+        "gate4": selected["gate4"],
+        "before_metrics": selected["before_metrics"],
+        "after_metrics": selected["after_metrics"],
+        "delta_metrics": selected["delta_metrics"],
+        "adjustments": selected["adjustments"],
+        "changed_trades": selected["changed_trades"],
+        "field_audit": selected["field_audit"],
+        "green_topup_attribution": selected["green_topup_attribution"],
+        "expected_value_score_delta": selected["expected_value_score_delta"],
+        "total_pnl_delta": selected["total_pnl_delta"],
+        "llm_metrics": {"used_llm": False},
+        "production_impact": {
+            "shared_policy_changed": False,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": False,
+            "replay_only": True,
+            "parity_test_added": False,
+            "promotion_requirement": (
+                "If accepted, update the shared portfolio_engine green top-up condition. Both run.py and backtester.py already call size_signals."
+            ),
+        },
+        "interpretation": interpretation,
+        "rejection_reason": None if passed else interpretation,
+        "next_evidence_needed": None
+        if passed
+        else (
+            "A retry needs a different participation discriminator; do not re-test green-candle eligibility without new forward attribution."
+        ),
+        "related_files": [
+            "quant/experiments/exp_20260514_032_signal_day_green_spy_confirmation.py",
+            "data/experiments/exp-20260514-032/signal_day_green_spy_confirmation.json",
+            "docs/experiments/logs/exp-20260514-032.json",
+            "docs/experiments/tickets/exp-20260514-032.json",
+            "docs/experiments/artifacts/exp-20260514-032_signal_day_green_spy_confirmation.md",
+            "docs/experiment_log.jsonl",
+        ],
+    }
+    payload["artifact_markdown"] = _markdown(payload)
+    return payload
+
+
+def persist(payload: dict[str, Any]) -> None:
+    artifact_path = (
+        base.REPO_ROOT
+        / "data"
+        / "experiments"
+        / EXPERIMENT_ID
+        / f"{EXPERIMENT_SLUG}.json"
+    )
+    log_path = (
+        base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    )
+    ticket_path = (
+        base.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    )
+    md_path = (
+        base.REPO_ROOT
+        / "docs"
+        / "experiments"
+        / "artifacts"
+        / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
+    )
+    ticket = {
+        "experiment_id": EXPERIMENT_ID,
+        "status": payload["status"],
+        "decision": payload["decision"],
+        "changed_variable": payload["changed_variable"],
+        "expected_value_score_delta": payload["expected_value_score_delta"],
+        "total_pnl_delta": payload["total_pnl_delta"],
+        "gate4_passed": payload["gate4"]["passed"],
+        "summary": payload["interpretation"],
+        "artifact": str(artifact_path.relative_to(base.REPO_ROOT)),
+    }
+    base._write_json(artifact_path, payload)
+    base._write_json(log_path, payload)
+    base._write_json(ticket_path, ticket)
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+    md_path.write_text(_markdown(payload) + "\n", encoding="utf-8")
+    _upsert_jsonl(base.REPO_ROOT / "docs" / "experiment_log.jsonl", payload)
+
+
+if __name__ == "__main__":
+    result = run()
+    persist(result)
+    print(
+        json.dumps(
+            {
+                "experiment_id": result["experiment_id"],
+                "decision": result["decision"],
+                "expected_value_score_delta": result["expected_value_score_delta"],
+                "total_pnl_delta": result["total_pnl_delta"],
+                "gate4_passed": result["gate4"]["passed"],
+                "improved_windows": result["gate4"]["improved_windows"],
+                "regressed_windows": result["gate4"]["regressed_windows"],
+                "max_drawdown_worse": result["gate4"]["max_drawdown_worse"],
+                "adjusted_signal_count": result["gate4"]["adjusted_signal_count"],
+                "missing_runtime_field_count": result["gate4"][
+                    "missing_runtime_field_count"
+                ],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )

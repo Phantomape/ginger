@@ -1,0 +1,711 @@
+{
+  "adjustments": {
+    "late_strong": [],
+    "mid_weak": [
+      {
+        "baseline_shares": 10,
+        "breakout_financials_dte_risk_multiplier": 0.25,
+        "days_to_earnings": 9,
+        "financials_sector_leader": true,
+        "max_position_pct": 0.55,
+        "new_cap_shares": 170,
+        "new_shares": 11,
+        "old_cap_shares": 124,
+        "raw_shares": 11,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.0969,
+        "rs20_entry_state_leader": true,
+        "rs60_top_quintile_state": true,
+        "sector": "Financials",
+        "signal_day_ticker_green_candle": false,
+        "signal_day_ticker_outperformed_spy": true,
+        "strategy": "breakout_long",
+        "ticker": "COIN",
+        "trade_quality_score": 0.873
+      }
+    ],
+    "old_thin": [
+      {
+        "baseline_shares": 271,
+        "breakout_financials_dte_risk_multiplier": 1.0,
+        "days_to_earnings": 62,
+        "financials_sector_leader": true,
+        "max_position_pct": 0.55,
+        "new_cap_shares": 284,
+        "new_shares": 284,
+        "old_cap_shares": 271,
+        "raw_shares": 551,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.0798,
+        "rs20_entry_state_leader": true,
+        "rs60_top_quintile_state": false,
+        "sector": "Financials",
+        "signal_day_ticker_green_candle": true,
+        "signal_day_ticker_outperformed_spy": true,
+        "strategy": "breakout_long",
+        "ticker": "JPM",
+        "trade_quality_score": 0.879
+      }
+    ]
+  },
+  "after_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.5715,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0606,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.37,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5115,
+      "total_pnl": 104612.99,
+      "total_return_pct": 1.0461,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.9008,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1014,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.7,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4853,
+      "total_pnl": 70395.92,
+      "total_return_pct": 0.704,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.4934,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0898,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.42,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4458,
+      "total_pnl": 34747.44,
+      "total_return_pct": 0.3475,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "artifact_markdown": "# exp-20260514-052 Financials Breakout Sector-Leader Cap\n\nDecision: `rejected_financials_breakout_leader_cap`.\n\nSingle variable: max position cap for already-qualified `breakout_long` Financials signals with `financials_sector_leader=true`. Entries, exits, ranking, universe, LLM/news logic, earnings DTE multiplier, heat, and slots were unchanged.\n\n## Sweep\n\n| Cap | Gate 4 | dEV sum | dPnL sum | Improved | Regressed | Adjusted | Max DD worse |\n|---:|:---:|---:|---:|---|---|---:|---:|\n| 0.500 | FAIL | -0.0011 | $-41.20 | - | mid_weak | 1 | +0.0000 |\n| 0.525 | FAIL | -0.0011 | $-41.20 | - | mid_weak | 1 | +0.0000 |\n| 0.550 | FAIL | +0.0003 | $+60.66 | old_thin | mid_weak | 2 | +0.0000 |\n\nSelected cap: `0.55`.\n\n## Selected Three-Window Result\n\n| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| late_strong | 4.5715 | 4.5715 | +0.0000 | $104,612.99 | $104,612.99 | $+0.00 | +0.0000 | 0.8039 | 0 |\n| mid_weak | 1.9019 | 1.9008 | -0.0011 | $70,437.12 | $70,395.92 | $-41.20 | +0.0000 | 0.7925 | 1 |\n| old_thin | 0.4920 | 0.4934 | +0.0014 | $34,645.58 | $34,747.44 | $+101.86 | +0.0000 | 0.9167 | 1 |\n\nProduction impact: shadow scout only unless promoted into shared `constants.py`, `portfolio_engine.py`, backtest attribution, and focused parity tests.",
+  "backtest_protocol": {
+    "config": {
+      "REGIME_AWARE_EXIT": true,
+      "REPLAY_PARTIAL_REDUCES": true
+    },
+    "source": "docs/backtesting.md canonical fixed-snapshot three-window replay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.5715,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0606,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.37,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5115,
+      "total_pnl": 104612.99,
+      "total_return_pct": 1.0461,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.9019,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1014,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.7,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4934,
+      "total_pnl": 70437.12,
+      "total_return_pct": 0.7044,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.492,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0898,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.42,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4461,
+      "total_pnl": 34645.58,
+      "total_return_pct": 0.3465,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "change_type": "capital_allocation_shadow",
+  "changed_trades": {
+    "late_strong": {
+      "added_count": 0,
+      "added_keys": [],
+      "common_pnl_changed": [],
+      "common_pnl_changed_count": 0,
+      "removed_count": 0,
+      "removed_keys": []
+    },
+    "mid_weak": {
+      "added_count": 0,
+      "added_keys": [],
+      "common_pnl_changed": [
+        {
+          "after": {
+            "entry_date": "2025-07-21",
+            "exit_date": "2025-07-23",
+            "pnl": -418.45,
+            "sector": "Financials",
+            "shares": 11,
+            "sizing_multipliers": {
+              "breakout_financials_dte_risk_multiplier_applied": 0.25,
+              "breakout_financials_sector_leader_max_position_pct_applied": 0.55,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "ticker": "COIN"
+          },
+          "before": {
+            "entry_date": "2025-07-21",
+            "exit_date": "2025-07-23",
+            "pnl": -380.41,
+            "sector": "Financials",
+            "shares": 10,
+            "sizing_multipliers": {
+              "breakout_financials_dte_risk_multiplier_applied": 0.25,
+              "rs60_top_quintile_risk_multiplier_applied": 1.15
+            },
+            "ticker": "COIN"
+          },
+          "key": "COIN|2025-07-21|breakout_long|425.76"
+        },
+        {
+          "after": {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-22",
+            "pnl": 5991.69,
+            "sector": "Commodities",
+            "shares": 1896,
+            "sizing_multipliers": {
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_commodities_near_high_risk_multiplier_applied": 1.5
+            },
+            "ticker": "SLV"
+          },
+          "before": {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-22",
+            "pnl": 5994.85,
+            "sector": "Commodities",
+            "shares": 1897,
+            "sizing_multipliers": {
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_commodities_near_high_risk_multiplier_applied": 1.5
+            },
+            "ticker": "SLV"
+          },
+          "key": "SLV|2025-09-02|trend_long|36.65"
+        }
+      ],
+      "common_pnl_changed_count": 2,
+      "removed_count": 0,
+      "removed_keys": []
+    },
+    "old_thin": {
+      "added_count": 1,
+      "added_keys": [
+        "JPM|2025-01-16|breakout_long|248.16"
+      ],
+      "common_pnl_changed": [
+        {
+          "after": {
+            "entry_date": "2025-03-14",
+            "exit_date": "2025-03-21",
+            "pnl": -992.38,
+            "sector": "Commodities",
+            "shares": 845,
+            "sizing_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "SLV"
+          },
+          "before": {
+            "entry_date": "2025-03-14",
+            "exit_date": "2025-03-21",
+            "pnl": -991.2,
+            "sector": "Commodities",
+            "shares": 844,
+            "sizing_multipliers": {
+              "rs20_entry_state_risk_multiplier_applied": 1.1,
+              "signal_day_ticker_green_risk_multiplier_applied": 1.05,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "SLV"
+          },
+          "key": "SLV|2025-03-14|trend_long|30.93"
+        },
+        {
+          "after": {
+            "entry_date": "2025-03-03",
+            "exit_date": "2025-03-04",
+            "pnl": -2099.6,
+            "sector": "Financials",
+            "shares": 206,
+            "sizing_multipliers": {
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+              "trend_financials_mid_dispersion_leader_max_position_pct_applied": 0.55,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "V"
+          },
+          "before": {
+            "entry_date": "2025-03-03",
+            "exit_date": "2025-03-04",
+            "pnl": -2089.4,
+            "sector": "Financials",
+            "shares": 205,
+            "sizing_multipliers": {
+              "financials_sector_leader_risk_multiplier_applied": 1.6666666666666667,
+              "trend_financials_mid_dispersion_leader_max_position_pct_applied": 0.55,
+              "trend_financials_risk_multiplier_applied": 1.5,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25
+            },
+            "ticker": "V"
+          },
+          "key": "V|2025-03-03|trend_long|360.48"
+        }
+      ],
+      "common_pnl_changed_count": 2,
+      "removed_count": 1,
+      "removed_keys": [
+        "JPM|2025-01-16|breakout_long|248.54"
+      ]
+    }
+  },
+  "changed_variable": "max_position_pct_for_financials_breakout_sector_leaders",
+  "decision": "rejected_financials_breakout_leader_cap",
+  "decision_reason": "Financials breakout sector-leader cap expansion did not clear the canonical three-window gate.",
+  "delta_metrics": {
+    "aggregate_after": {
+      "expected_value_score_sum": 6.9657,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 209756.35,
+      "trade_count_sum": 62
+    },
+    "aggregate_before": {
+      "expected_value_score_sum": 6.9654,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 209695.69,
+      "trade_count_sum": 62
+    },
+    "aggregate_delta": {
+      "expected_value_score_sum": 0.0003,
+      "max_drawdown_pct_max": 0.0,
+      "signals_generated_sum": 0,
+      "signals_survived_sum": 0,
+      "survival_rate_min": 0.0,
+      "total_pnl_sum": 60.66,
+      "trade_count_sum": 0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": -0.0011,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": -0.0081,
+        "total_pnl": -41.2,
+        "total_return_pct": -0.0004,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0014,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": -0.0003,
+        "total_pnl": 101.86,
+        "total_return_pct": 0.001,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0003,
+  "experiment_id": "exp-20260514-052",
+  "gate1": {
+    "baseline_aggregate": {
+      "expected_value_score_sum": 6.9654,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 209695.69,
+      "trade_count_sum": 62
+    },
+    "baseline_metrics": {
+      "late_strong": {
+        "converged": true,
+        "expected_value_score": 4.5715,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0606,
+        "qqq_buy_hold_return_pct": 0.058,
+        "sharpe_daily": 4.37,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "spy_buy_hold_return_pct": 0.0541,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5115,
+        "total_pnl": 104612.99,
+        "total_return_pct": 1.0461,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.060734
+      },
+      "mid_weak": {
+        "converged": true,
+        "expected_value_score": 1.9019,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1014,
+        "qqq_buy_hold_return_pct": 0.3351,
+        "sharpe_daily": 2.7,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "spy_buy_hold_return_pct": 0.2544,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4934,
+        "total_pnl": 70437.12,
+        "total_return_pct": 0.7044,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.089651
+      },
+      "old_thin": {
+        "converged": true,
+        "expected_value_score": 0.492,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0898,
+        "qqq_buy_hold_return_pct": -0.0749,
+        "sharpe_daily": 1.42,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "spy_buy_hold_return_pct": -0.0672,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4461,
+        "total_pnl": 34645.58,
+        "total_return_pct": 0.3465,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.063499
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "checked_rows": 14,
+      "missing_required_fields": [],
+      "passed": true,
+      "path": "operator_inputs\\open_positions.json",
+      "required_fields": [
+        "entry_date",
+        "target_price"
+      ]
+    },
+    "passed": true,
+    "runtime_fields": [
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price",
+      "risk_engine financials_sector_leader",
+      "portfolio_engine strategy",
+      "portfolio_engine sector",
+      "portfolio_engine sizing entry_price",
+      "portfolio_engine sizing net_risk_per_share",
+      "portfolio_engine sizing base_risk_pct",
+      "portfolio_engine breakout_financials_dte_risk_multiplier_applied"
+    ]
+  },
+  "gate3": {
+    "minimum_after_survival_rate": 0.7925,
+    "new_filter_added": false,
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "adjusted_signal_count": 2,
+    "drawdown_guardrail_passed": true,
+    "improved_windows": [
+      "old_thin"
+    ],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "passed": false,
+    "regressed_windows": [
+      "mid_weak"
+    ]
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "capital allocation: breakout_long Financials sector leaders may be cap-bound like the accepted trend Financials sector-leader sleeve.",
+    "2_history_check": "Trend Financials sector-leader caps were accepted; broad non-Financials sector-relative top-up and Energy pair-state allocation were rejected. No prior Financials breakout sector-leader cap was found.",
+    "3_single_causal_variable": "breakout Financials sector-leader max_position_pct only",
+    "4_acceptance_standard": "docs/backtesting.md three fixed windows; aggregate EV/PnL positive, at least two EV-improved windows, no EV-regressed windows, survival >= 5%, max DD worse <= 0.5pp, nonzero adjustments",
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260514_052_financials_breakout_leader_cap.py"
+  },
+  "historical_experiment_check": {
+    "similar_prior_results": {
+      "exp-20260511-024": "Rejected Energy pair-state core risk; this run avoids broad sector pair-state allocation.",
+      "exp-20260514-012": "Rejected broad non-Financials sector-relative leader top-up; this run stays inside the proven Financials field.",
+      "exp-20260514-023": "Accepted Financials sector-leader trend cap at 50%; this run tests the separate breakout path.",
+      "exp-20260514-030": "Accepted Financials sector-leader plus mid-dispersion trend cap at 55%; this run leaves that trend sleeve unchanged."
+    },
+    "why_not_llm_or_space": "LLM soft-ranking, SEC/Form4 semantics, and more Space same-sample refinements are field/outcome limited; this run uses deterministic production-visible fields."
+  },
+  "hypothesis": "Financials sector-leader effects have survived as narrow allocation rules in trend signals. The separate breakout path may also be cap-bound when the same production-visible sector-leader field is true.",
+  "interpretation": "Financials breakout sector-leader cap expansion did not clear the canonical three-window gate.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "next_evidence_needed": "Do not retry nearby Financials breakout leader cap values without forward cap-room evidence or a new production-visible breakout-quality discriminator.",
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "baseline_generic_max_position_pct": 0.4,
+    "cap_sweep": [
+      0.5,
+      0.525,
+      0.55
+    ],
+    "locked_variables": [
+      "core universe",
+      "candidate pool",
+      "entry filters",
+      "candidate ranking",
+      "stop and target logic",
+      "raw Financials risk multipliers",
+      "breakout Financials earnings DTE multiplier",
+      "all other sizing multipliers",
+      "portfolio heat",
+      "slot limits",
+      "LLM/news replay",
+      "Space sleeves",
+      "event sleeves"
+    ],
+    "selected_max_position_pct": 0.55,
+    "target_sleeve": {
+      "financials_sector_leader": true,
+      "sector": "Financials",
+      "strategy": "breakout_long"
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, add a shared constant and cap branch in portfolio_engine.size_signals, include the attribution key in backtester.py, and add focused production/backtest parity tests before live orders change.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "production_impact_closeout": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Financials breakout sector-leader cap expansion did not clear the canonical three-window gate.",
+  "related_files": [
+    "quant/experiments/exp_20260514_052_financials_breakout_leader_cap.py",
+    "data/experiments/exp-20260514-052/financials_breakout_leader_cap.json",
+    "docs/experiments/logs/exp-20260514-052.json",
+    "docs/experiments/tickets/exp-20260514-052.json",
+    "docs/experiments/artifacts/exp-20260514-052_financials_breakout_leader_cap.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "single_causal_variable": "max_position_pct for breakout_long Financials signals with financials_sector_leader=true",
+  "sizing_attribution": {
+    "late_strong": {
+      "signal": null,
+      "trade": null
+    },
+    "mid_weak": {
+      "signal": {
+        "avg_risk_pct_after": 0.002857,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 1,
+        "risk_pct_reduced_sum": 0.007143,
+        "sectors": {
+          "Financials": 1
+        },
+        "signals_seen": 1,
+        "strategies": {
+          "breakout_long": 1
+        },
+        "zero_risk_signals": 0
+      },
+      "trade": {
+        "avg_pnl_usd": -418.45,
+        "losses": 1,
+        "multipliers": {
+          "0.55": 1
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": -418.45,
+        "trade_count": 1,
+        "win_rate": 0.0,
+        "wins": 0
+      }
+    },
+    "old_thin": {
+      "signal": {
+        "avg_risk_pct_after": 0.020596,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 1,
+        "risk_pct_reduced_sum": 0.0,
+        "sectors": {
+          "Financials": 1
+        },
+        "signals_seen": 1,
+        "strategies": {
+          "breakout_long": 1
+        },
+        "zero_risk_signals": 0
+      },
+      "trade": {
+        "avg_pnl_usd": 5432.74,
+        "losses": 0,
+        "multipliers": {
+          "0.55": 1
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 5432.74,
+        "trade_count": 1,
+        "win_rate": 1.0,
+        "wins": 1
+      }
+    }
+  },
+  "status": "rejected_financials_breakout_leader_cap",
+  "sweep_summary": [
+    {
+      "adjusted_signal_count": 1,
+      "expected_value_score_delta": -0.0011,
+      "improved_windows": [],
+      "max_drawdown_worse": 0.0,
+      "max_position_pct": 0.5,
+      "passed": false,
+      "regressed_windows": [
+        "mid_weak"
+      ],
+      "total_pnl_delta": -41.2
+    },
+    {
+      "adjusted_signal_count": 1,
+      "expected_value_score_delta": -0.0011,
+      "improved_windows": [],
+      "max_drawdown_worse": 0.0,
+      "max_position_pct": 0.525,
+      "passed": false,
+      "regressed_windows": [
+        "mid_weak"
+      ],
+      "total_pnl_delta": -41.2
+    },
+    {
+      "adjusted_signal_count": 2,
+      "expected_value_score_delta": 0.0003,
+      "improved_windows": [
+        "old_thin"
+      ],
+      "max_drawdown_worse": 0.0,
+      "max_position_pct": 0.55,
+      "passed": false,
+      "regressed_windows": [
+        "mid_weak"
+      ],
+      "total_pnl_delta": 60.66
+    }
+  ],
+  "timestamp": "2026-05-14T23:17:13+00:00",
+  "total_pnl_delta": 60.66
+}

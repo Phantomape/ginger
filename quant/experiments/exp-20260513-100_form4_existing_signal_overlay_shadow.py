@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import argparse
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -51,6 +52,25 @@ REQUIRED_FIELDS = [
     "usable_trade_date",
     "pit_safe_flag",
 ]
+
+
+def configure_run(
+    *,
+    experiment_id: str = EXP_ID,
+    report_date: str = "20260513",
+    baseline_artifact: str | Path | None = None,
+) -> None:
+    global EXP_ID, OUT_DIR, ARTIFACT, LOG_PATH, TICKET_PATH, REPORT, BASELINE_ARTIFACT
+
+    EXP_ID = experiment_id
+    OUT_DIR = DATA_DIR / "experiments" / EXP_ID
+    ARTIFACT = OUT_DIR / "form4_existing_signal_overlay_shadow.json"
+    LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
+    TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+    REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / f"form4_existing_signal_overlay_{EXP_ID}_{report_date}.md"
+    if baseline_artifact:
+        path = Path(baseline_artifact)
+        BASELINE_ARTIFACT = path if path.is_absolute() else ROOT / path
 
 
 def load_json(path: Path, default: Any = None) -> Any:
@@ -268,7 +288,7 @@ def add_fresh_event_context(events: list[dict[str, Any]], historical_events: lis
 
 def historical_reference() -> dict[str, Any]:
     outcomes = load_json(HISTORICAL_OUTCOMES, {}) or {}
-    prior_overlay = load_json(ROOT / "docs" / "experiments" / "logs" / "exp-20260512-042.json", {}) or {}
+    prior_overlay = load_json(ROOT / "docs" / "experiments" / "logs" / "exp-20260513-100.json", {}) or {}
     prior_single_owner = load_json(DATA_DIR / "experiments" / "exp-20260512-108" / "form4_single_owner_preentry_rs.json", {}) or {}
     prior_cluster = load_json(ROOT / "docs" / "experiments" / "logs" / "exp-20260512-017.json", {}) or {}
     overlay_hist = (
@@ -480,6 +500,7 @@ def build_record() -> dict[str, Any]:
                 "exp-20260512-042",
                 "exp-20260512-101",
                 "exp-20260512-108",
+                "exp-20260513-100",
             ],
             "prior_result_summary": (
                 "Form 4 data is available and PIT-dateable. Historical meaningful buys "
@@ -663,7 +684,21 @@ def finalize_ticket(record: dict[str, Any]) -> dict[str, Any]:
     return ticket
 
 
-def main() -> int:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run Form 4 existing-signal overlay shadow audit.")
+    parser.add_argument("--experiment-id", default=EXP_ID)
+    parser.add_argument("--report-date", default="20260513")
+    parser.add_argument("--baseline-artifact", default=None)
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    configure_run(
+        experiment_id=args.experiment_id,
+        report_date=args.report_date,
+        baseline_artifact=args.baseline_artifact,
+    )
     record = build_record()
     write_json(ARTIFACT, record)
     write_json(LOG_PATH, record)
