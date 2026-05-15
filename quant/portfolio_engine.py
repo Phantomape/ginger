@@ -76,6 +76,7 @@ from constants import (
     SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
     CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER,
     CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT,
+    CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT,
     TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER,
     HARD_STOP_PCT,
     TRAILING_STOP_PCT,
@@ -608,6 +609,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             ):
                 max_position_pct = RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
             clean_spy_leader_signal_day_cap_applied = False
+            clean_spy_cap_only_leader_cap_applied = False
             breakout_commodities_cap_applied = False
             financials_mid_dispersion_leader_cap_applied = False
             trend_gold_near_high_cap_applied = False
@@ -923,8 +925,106 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                             new_cap_shares
                         )
                         sizing["trend_gold_near_high_cap_new_shares"] = new_shares
+                if (
+                    clean_spy_leader_signal_day_cap_applied
+                    and clean_spy_leader_signal_day_risk_multiplier <= 1.0
+                    and sizing.get("shares_to_buy")
+                    and sizing.get("net_risk_per_share")
+                    and signal_risk_pct > 0
+                ):
+                    old_shares = int(sizing.get("shares_to_buy") or 0)
+                    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+                    old_cap_pct = float(max_position_pct)
+                    new_cap_pct = max(
+                        old_cap_pct,
+                        CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT,
+                    )
+                    if new_cap_pct > old_cap_pct:
+                        pre_sizing_risk_pct = effective_risk_pct
+                        for multiplier in (
+                            tqs_risk_multiplier,
+                            trend_industrials_risk_multiplier,
+                            trend_financials_risk_multiplier,
+                            financials_sector_leader_risk_multiplier,
+                            risk_on_unmodified_risk_multiplier,
+                            spy_relative_leader_risk_on_multiplier,
+                            trend_mid_sector_dispersion_risk_multiplier,
+                            trend_tech_tight_gap_risk_multiplier,
+                            trend_tech_gap_risk_multiplier,
+                            trend_tech_near_high_risk_multiplier,
+                            trend_tech_dte_risk_multiplier,
+                            breakout_industrials_gap_risk_multiplier,
+                            breakout_comms_near_high_risk_multiplier,
+                            breakout_comms_gap_risk_multiplier,
+                            breakout_financials_dte_risk_multiplier,
+                            breakout_tech_dte_risk_multiplier,
+                            breakout_healthcare_dte_risk_multiplier,
+                            trend_healthcare_dte_risk_multiplier,
+                            trend_consumer_near_high_dte_risk_multiplier,
+                            trend_commodities_near_high_risk_multiplier,
+                        ):
+                            pre_sizing_risk_pct *= multiplier
+                        raw_shares = max(
+                            1,
+                            int(
+                                math.floor(
+                                    (portfolio_value * pre_sizing_risk_pct)
+                                    / net_risk_per_share
+                                )
+                            ),
+                        )
+                        old_cap_shares = max(
+                            1,
+                            int(math.floor(portfolio_value * old_cap_pct / entry)),
+                        )
+                        new_cap_shares = max(
+                            1,
+                            int(math.floor(portfolio_value * new_cap_pct / entry)),
+                        )
+                        new_shares = min(raw_shares, new_cap_shares)
+                        if new_shares > old_shares:
+                            risk_amount = new_shares * net_risk_per_share
+                            position_value = new_shares * entry
+                            sizing["shares_to_buy"] = new_shares
+                            sizing["position_value_usd"] = round(position_value, 2)
+                            sizing["position_pct_of_portfolio"] = round(
+                                position_value / portfolio_value,
+                                4,
+                            )
+                            sizing["risk_amount_usd"] = round(risk_amount, 2)
+                            sizing["risk_pct"] = (
+                                risk_amount / portfolio_value
+                                if portfolio_value
+                                else 0.0
+                            )
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_baseline_shares"
+                            ] = old_shares
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_raw_shares"
+                            ] = raw_shares
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_old_cap_pct"
+                            ] = old_cap_pct
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_new_cap_pct"
+                            ] = new_cap_pct
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_old_cap_shares"
+                            ] = old_cap_shares
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_new_cap_shares"
+                            ] = new_cap_shares
+                            sizing[
+                                "clean_spy_cap_only_leader_cap_new_shares"
+                            ] = new_shares
+                            sizing["max_position_pct_applied"] = new_cap_pct
+                            clean_spy_cap_only_leader_cap_applied = True
                 sizing["base_risk_pct"] = effective_risk_pct
-                sizing["max_position_pct_applied"] = max_position_pct
+                sizing["max_position_pct_applied"] = max(
+                    max_position_pct,
+                    float(sizing.get("max_position_pct_applied") or 0.0),
+                )
                 sizing["trade_quality_score"] = trade_quality_score
                 sizing["low_tqs_haircut_exempt_sector"] = (
                     sector if sector in LOW_TQS_HAIRCUT_EXEMPT_SECTORS else None
@@ -968,6 +1068,10 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 if clean_spy_leader_signal_day_cap_applied:
                     sizing["clean_spy_leader_signal_day_max_position_pct_applied"] = (
                         CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
+                    )
+                if clean_spy_cap_only_leader_cap_applied:
+                    sizing["clean_spy_cap_only_leader_max_position_pct_applied"] = (
+                        CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT
                     )
                 if breakout_commodities_cap_applied:
                     sizing["breakout_commodities_max_position_pct_applied"] = (

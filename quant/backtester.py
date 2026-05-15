@@ -496,6 +496,7 @@ SIZING_MULTIPLIER_KEYS = (
     "rs60_top_quintile_risk_multiplier_applied",
     "clean_spy_leader_signal_day_risk_multiplier_applied",
     "clean_spy_leader_signal_day_max_position_pct_applied",
+    "clean_spy_cap_only_leader_max_position_pct_applied",
     "trend_mid_sector_dispersion_risk_multiplier_applied",
     "trend_industrials_risk_multiplier_applied",
     "trend_financials_risk_multiplier_applied",
