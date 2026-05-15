@@ -1,0 +1,354 @@
+{
+  "experiment_id": "exp-20260515-043",
+  "date": "2026-05-15T21:18:33.711664+00:00",
+  "hypothesis": "Default-off Space exposure may be over-allocated on days with multiple official Space candidates. Allowing only the top already-ranked official Space signal per sizing batch may improve replacement value and tail behavior without adding tickers or new LLM/rule fields.",
+  "change_type": "alpha_search",
+  "changed_variable": "space_official_daily_sizing_slots",
+  "parameters": {
+    "accepted_before_experiment": "exp-20260515-024",
+    "official_space_pool": [
+      "ASTS",
+      "BKSY",
+      "LUNR",
+      "PL",
+      "RDW",
+      "RKLB"
+    ],
+    "before_daily_slots": "unbounded_for_qualified_official_space_signals",
+    "after_daily_slots": 1,
+    "routing_basis": "first_already_ranked_signal_per_sizing_batch",
+    "accepted_source_diversity_peer_nonleader_trend_scalar": 1.025,
+    "anti_js": "No JavaScript was used."
+  },
+  "backtest_protocol": "docs/backtesting.md fixed 3-window Space protocol using frozen Space augmented snapshots",
+  "date_range": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "core_snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "space_snapshot": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_late_strong_with_space_catalyst.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "core_snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "space_snapshot": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_mid_weak_with_space_catalyst.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "core_snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "space_snapshot": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_old_thin_with_space_catalyst.json"
+    }
+  },
+  "before_metrics": {
+    "expected_value_score_sum": 26.4644,
+    "total_pnl_sum": 730466.28,
+    "trade_count_sum": 65,
+    "signals_generated_sum": 207,
+    "signals_survived_sum": 144,
+    "min_survival_rate": 0.64,
+    "max_drawdown_pct_max": 0.2147
+  },
+  "after_metrics": {
+    "expected_value_score_sum": 15.6874,
+    "total_pnl_sum": 481297.15,
+    "trade_count_sum": 63,
+    "signals_generated_sum": 201,
+    "signals_survived_sum": 143,
+    "min_survival_rate": 0.6552,
+    "max_drawdown_pct_max": 0.2147
+  },
+  "by_window_before_metrics": {
+    "late_strong": {
+      "expected_value_score": 8.3752,
+      "strategy_total_return_pct": 2.3136,
+      "sharpe_daily": 3.62,
+      "total_pnl": 231359.59,
+      "max_drawdown_pct": 0.2147,
+      "win_rate": 0.7778,
+      "trade_count": 18,
+      "signals_generated": 58,
+      "signals_survived": 38,
+      "survival_rate": 0.6552,
+      "worst_trade_pct": -0.0607,
+      "max_consecutive_losses": 2,
+      "tail_loss_share": 0.5231
+    },
+    "mid_weak": {
+      "expected_value_score": 16.5198,
+      "strategy_total_return_pct": 4.1094,
+      "sharpe_daily": 4.02,
+      "total_pnl": 410936.45,
+      "max_drawdown_pct": 0.1744,
+      "win_rate": 0.5417,
+      "trade_count": 24,
+      "signals_generated": 75,
+      "signals_survived": 48,
+      "survival_rate": 0.64,
+      "worst_trade_pct": -0.0875,
+      "max_consecutive_losses": 5,
+      "tail_loss_share": 0.9134
+    },
+    "old_thin": {
+      "expected_value_score": 1.5694,
+      "strategy_total_return_pct": 0.8817,
+      "sharpe_daily": 1.78,
+      "total_pnl": 88170.24,
+      "max_drawdown_pct": 0.1828,
+      "win_rate": 0.4348,
+      "trade_count": 23,
+      "signals_generated": 74,
+      "signals_survived": 58,
+      "survival_rate": 0.7838,
+      "worst_trade_pct": -0.0718,
+      "max_consecutive_losses": 4,
+      "tail_loss_share": 0.4505
+    }
+  },
+  "by_window_after_metrics": {
+    "late_strong": {
+      "expected_value_score": 8.3752,
+      "strategy_total_return_pct": 2.3136,
+      "sharpe_daily": 3.62,
+      "total_pnl": 231359.59,
+      "max_drawdown_pct": 0.2147,
+      "win_rate": 0.7778,
+      "trade_count": 18,
+      "signals_generated": 58,
+      "signals_survived": 38,
+      "survival_rate": 0.6552,
+      "worst_trade_pct": -0.0607,
+      "max_consecutive_losses": 2,
+      "tail_loss_share": 0.5231
+    },
+    "mid_weak": {
+      "expected_value_score": 5.7428,
+      "strategy_total_return_pct": 1.6177,
+      "sharpe_daily": 3.55,
+      "total_pnl": 161767.32,
+      "max_drawdown_pct": 0.1065,
+      "win_rate": 0.5455,
+      "trade_count": 22,
+      "signals_generated": 69,
+      "signals_survived": 50,
+      "survival_rate": 0.7246,
+      "worst_trade_pct": -0.0875,
+      "max_consecutive_losses": 5,
+      "tail_loss_share": 0.9136
+    },
+    "old_thin": {
+      "expected_value_score": 1.5694,
+      "strategy_total_return_pct": 0.8817,
+      "sharpe_daily": 1.78,
+      "total_pnl": 88170.24,
+      "max_drawdown_pct": 0.1828,
+      "win_rate": 0.4348,
+      "trade_count": 23,
+      "signals_generated": 74,
+      "signals_survived": 55,
+      "survival_rate": 0.7432,
+      "worst_trade_pct": -0.0718,
+      "max_consecutive_losses": 4,
+      "tail_loss_share": 0.4505
+    }
+  },
+  "by_window_delta": {
+    "late_strong": {
+      "expected_value_score": 0.0,
+      "strategy_total_return_pct": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0.0,
+      "signals_generated": 0.0,
+      "signals_survived": 0.0,
+      "survival_rate": 0.0,
+      "worst_trade_pct": 0.0,
+      "tail_loss_share": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": -10.777,
+      "strategy_total_return_pct": -2.4917,
+      "sharpe_daily": -0.47,
+      "total_pnl": -249169.13,
+      "max_drawdown_pct": -0.0679,
+      "win_rate": 0.0038,
+      "trade_count": -2.0,
+      "signals_generated": -6.0,
+      "signals_survived": 2.0,
+      "survival_rate": 0.0846,
+      "worst_trade_pct": 0.0,
+      "tail_loss_share": 0.0002
+    },
+    "old_thin": {
+      "expected_value_score": 0.0,
+      "strategy_total_return_pct": 0.0,
+      "sharpe_daily": 0.0,
+      "total_pnl": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0.0,
+      "signals_generated": 0.0,
+      "signals_survived": -3.0,
+      "survival_rate": -0.0406,
+      "worst_trade_pct": 0.0,
+      "tail_loss_share": 0.0
+    }
+  },
+  "expected_value_score_delta": -10.777,
+  "total_pnl_delta": -249169.13,
+  "risk_distribution": {
+    "before": {
+      "late_strong": {
+        "worst_trade_pct": -0.0607,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5231
+      },
+      "mid_weak": {
+        "worst_trade_pct": -0.0875,
+        "max_consecutive_losses": 5,
+        "tail_loss_share": 0.9134
+      },
+      "old_thin": {
+        "worst_trade_pct": -0.0718,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.4505
+      }
+    },
+    "after": {
+      "late_strong": {
+        "worst_trade_pct": -0.0607,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5231
+      },
+      "mid_weak": {
+        "worst_trade_pct": -0.0875,
+        "max_consecutive_losses": 5,
+        "tail_loss_share": 0.9136
+      },
+      "old_thin": {
+        "worst_trade_pct": -0.0718,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.4505
+      }
+    }
+  },
+  "gate_answers": {
+    "1_alpha_hypothesis": "Capital allocation/routing: the default-off Space sleeve may have better EV if daily official Space exposure is reserved for the top already-ranked candidate instead of allowing multiple same-batch official Space signals.",
+    "2_prior_similar_experiments": [
+      "exp-20260515-019 rejected ARKX/UFO theme-beta admission across all windows.",
+      "exp-20260515-021 accepted a defense-budget same-theme winner trend scalar.",
+      "exp-20260515-024 accepted source-diversity peer-nonleader trend allocation.",
+      "exp-20260515-031/035 rejected VSAT/mature-satcom admission due old_thin regression and drawdown.",
+      "exp-20260515-037 rejected GSAT satellite-connectivity admission due aggregate EV loss and old_thin regression.",
+      "No prior current-stack experiment found that isolates official Space one-slot daily routing."
+    ],
+    "3_single_causal_variable": "Only official Space daily sizing capacity changes from all qualified signals to one first-ranked official signal per sizing batch.",
+    "4_success_criteria": "Routing must touch signals, aggregate EV/PnL must improve, at least two windows must improve, no window may regress, max drawdown drift <= 0.5 pp, survival >= 5%, and trade count >= 50.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260515_043_space_one_slot_official_routing.py"
+  },
+  "gate_results": {
+    "aggregate_delta_vs_before": {
+      "expected_value_score_sum": -10.777,
+      "total_pnl_sum": -249169.13,
+      "trade_count_sum": -2,
+      "signals_generated_sum": -6,
+      "signals_survived_sum": -1,
+      "min_survival_rate": 0.0152,
+      "max_drawdown_pct_max": 0.0
+    },
+    "by_window_delta_vs_before": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "strategy_total_return_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0,
+        "survival_rate": 0.0,
+        "worst_trade_pct": 0.0,
+        "tail_loss_share": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": -10.777,
+        "strategy_total_return_pct": -2.4917,
+        "sharpe_daily": -0.47,
+        "total_pnl": -249169.13,
+        "max_drawdown_pct": -0.0679,
+        "win_rate": 0.0038,
+        "trade_count": -2.0,
+        "signals_generated": -6.0,
+        "signals_survived": 2.0,
+        "survival_rate": 0.0846,
+        "worst_trade_pct": 0.0,
+        "tail_loss_share": 0.0002
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "strategy_total_return_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": -3.0,
+        "survival_rate": -0.0406,
+        "worst_trade_pct": 0.0,
+        "tail_loss_share": 0.0
+      }
+    },
+    "passed": false,
+    "improved_windows": {},
+    "regressed_windows": {
+      "mid_weak": -10.777
+    },
+    "kept_official_space_signal_count": 20,
+    "filtered_official_space_signal_count": 4,
+    "routing_counts": {
+      "filtered_ASTS": 1,
+      "filtered_LUNR": 1,
+      "filtered_RKLB": 2,
+      "filtered_official_space_signal": 4,
+      "kept_ASTS": 5,
+      "kept_BKSY": 2,
+      "kept_LUNR": 1,
+      "kept_PL": 5,
+      "kept_RDW": 3,
+      "kept_RKLB": 4,
+      "kept_official_space_signal": 20,
+      "official_space_batch_size_1": 16,
+      "official_space_batch_size_2": 4,
+      "official_space_signals_seen": 24,
+      "sizing_batches_with_official_space_signal": 20
+    },
+    "reasons": {
+      "routing_touched_signals": true,
+      "aggregate_ev_delta_positive": false,
+      "aggregate_pnl_delta_positive": false,
+      "at_least_two_windows_improved": false,
+      "no_window_regressed": false,
+      "drawdown_delta_within_limit": true,
+      "survival_rate_ok": true,
+      "trade_count_ok": true
+    }
+  },
+  "decision": "reject",
+  "rejection_reason": "Gate 4 failed: one-slot official Space routing did not improve the fixed three-window protocol without regression.",
+  "next_evidence_needed": "Do not promote historical one-slot Space routing on these frozen windows. Next Space alpha should use a new production-visible catalyst-quality field or a broader mature cohort, not ticker breadth.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "live_slots": 0,
+    "notes": "Experiment-only size_signals monkey patch; no live policy promoted."
+  },
+  "why_not_other_changes": "LLM soft-ranking remains attribution-limited, Space ticker breadth and ETF admission repeatedly failed cross-window gates, and recent single-event scalars were sample-thin. This tests allocation among already-qualified official candidates."
+}
