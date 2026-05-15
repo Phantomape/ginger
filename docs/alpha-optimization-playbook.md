@@ -163,6 +163,10 @@ Current practical interpretation:
   same-theme winner `trend_long` allocation scalar at `1.05x`: two windows
   improved, the old thin window was unchanged, and trade count/survival stayed
   unchanged;
+- 2026-05-15 `exp-20260515-023` rejected an early-RS60 follow-on top-up
+  inside that accepted defense-budget same-theme winner cohort: aggregate
+  EV/PnL improved, but only `late_strong` moved, the cohort was two RKLB
+  signals, and max drawdown worsened by 1.27 pp;
 - the next valid Space step is either a broader mature cohort or a genuinely
   new production-visible catalyst-quality field.
 
@@ -376,6 +380,8 @@ field:
   evidence shows cross-window replacement value rather than benchmark utility;
 - Space interaction retries supported by only one mature forward row or one
   ticker-level cohort;
+- Space defense-budget early-RS60 scalar retries without a wider non-RKLB cohort
+  or a new catalyst-quality discriminator;
 - SEC sleeve retunes that do not add a new filing semantic field;
 - public-archive buyback keyword ladders that do not add credibility,
   completion, or cash-support fields;
