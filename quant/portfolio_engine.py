@@ -73,6 +73,7 @@ from constants import (
     RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
     RS20_ENTRY_STATE_RISK_MULTIPLIER,
     RS60_TOP_QUINTILE_RISK_MULTIPLIER,
+    PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER,
     SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
     CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER,
     CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT,
@@ -365,6 +366,7 @@ def size_signals(signals, portfolio_value, risk_pct=None):
             rs20_entry_state_risk_multiplier = 1.0
             signal_day_ticker_green_risk_multiplier = 1.0
             rs60_top_quintile_risk_multiplier = 1.0
+            price_vs_200ma_extension_risk_multiplier = 1.0
             clean_spy_leader_signal_day_risk_multiplier = 1.0
             trend_tech_tight_gap_risk_multiplier = 1.0
             if (
@@ -1117,6 +1119,51 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                             ] = new_shares
                             sizing["max_position_pct_applied"] = new_cap_pct
                             clean_spy_cap_only_rs20_leader_cap_applied = True
+                if (
+                    sig.get("price_vs_200ma_extension_state") is True
+                    and strategy in {"trend_long", "breakout_long"}
+                    and sizing.get("shares_to_buy")
+                    and sizing.get("net_risk_per_share")
+                    and signal_risk_pct > 0
+                    and PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER > 1.0
+                ):
+                    old_shares = int(sizing.get("shares_to_buy") or 0)
+                    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+                    cap_pct = float(
+                        sizing.get("max_position_pct_applied") or max_position_pct
+                    )
+                    cap_shares = int(math.floor(portfolio_value * cap_pct / entry))
+                    desired_shares = max(
+                        old_shares,
+                        int(
+                            math.floor(
+                                old_shares * PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER
+                            )
+                        ),
+                    )
+                    new_shares = min(desired_shares, cap_shares)
+                    if new_shares > old_shares:
+                        risk_amount = new_shares * net_risk_per_share
+                        position_value = new_shares * entry
+                        price_vs_200ma_extension_risk_multiplier = (
+                            PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER
+                        )
+                        sizing["shares_to_buy"] = new_shares
+                        sizing["position_value_usd"] = round(position_value, 2)
+                        sizing["position_pct_of_portfolio"] = round(
+                            position_value / portfolio_value,
+                            4,
+                        )
+                        sizing["risk_amount_usd"] = round(risk_amount, 2)
+                        sizing["risk_pct"] = (
+                            risk_amount / portfolio_value if portfolio_value else 0.0
+                        )
+                        sizing["price_vs_200ma_extension_baseline_shares"] = old_shares
+                        sizing["price_vs_200ma_extension_desired_shares"] = (
+                            desired_shares
+                        )
+                        sizing["price_vs_200ma_extension_cap_shares"] = cap_shares
+                        sizing["price_vs_200ma_extension_new_shares"] = new_shares
                 sizing["base_risk_pct"] = effective_risk_pct
                 sizing["max_position_pct_applied"] = max(
                     max_position_pct,
@@ -1159,6 +1206,9 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 sizing["rs60_top_quintile_risk_multiplier_applied"] = (
                     rs60_top_quintile_risk_multiplier
                 )
+                sizing["price_vs_200ma_extension_risk_multiplier_applied"] = (
+                    price_vs_200ma_extension_risk_multiplier
+                )
                 sizing["clean_spy_leader_signal_day_risk_multiplier_applied"] = (
                     clean_spy_leader_signal_day_risk_multiplier
                 )
@@ -1191,6 +1241,13 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                 )
                 sizing["signal_day_ticker_outperformed_spy"] = sig.get(
                     "signal_day_ticker_outperformed_spy"
+                )
+                sizing["price_vs_200ma_pct"] = sig.get("price_vs_200ma_pct")
+                sizing["price_vs_200ma_extension_cutoff"] = sig.get(
+                    "price_vs_200ma_extension_cutoff"
+                )
+                sizing["price_vs_200ma_extension_state"] = sig.get(
+                    "price_vs_200ma_extension_state"
                 )
                 sizing["sector_ret20_dispersion"] = sig.get("sector_ret20_dispersion")
                 sizing["mid_sector_dispersion"] = sig.get("mid_sector_dispersion")

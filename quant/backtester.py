@@ -500,6 +500,7 @@ SIZING_MULTIPLIER_KEYS = (
     "rs20_entry_state_risk_multiplier_applied",
     "signal_day_ticker_green_risk_multiplier_applied",
     "rs60_top_quintile_risk_multiplier_applied",
+    "price_vs_200ma_extension_risk_multiplier_applied",
     "clean_spy_leader_signal_day_risk_multiplier_applied",
     "clean_spy_leader_signal_day_max_position_pct_applied",
     "clean_spy_cap_only_leader_max_position_pct_applied",

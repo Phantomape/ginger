@@ -1,0 +1,660 @@
+"""exp-20260515-019: Space theme-beta candidate pool.
+
+Tests one candidate-pool variable on top of the accepted exp-20260514-053
+Space stack: whether the existing Space theme-beta benchmark ETFs (ARKX/UFO)
+have enough replacement value to act as default-off shadow Space candidates.
+
+This is not broad ticker expansion. It uses only registry-defined
+`theme_beta_benchmark` records that already exist in the frozen Space snapshots,
+keeps entries, exits, ranking, LLM/news, and live Space slots fixed, and does
+not use JavaScript.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+
+THIS = Path(__file__).resolve()
+ROOT = THIS.parents[2]
+EXPERIMENTS_DIR = THIS.parent
+for path in (str(ROOT), str(EXPERIMENTS_DIR)):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+import exp_20260515_012_space_fast_5d_benchmark_trend_risk as exp012
+import exp_20260515_013_space_fast_5d_satcom_candidate_pool as exp013
+
+
+EXPERIMENT_ID = "exp-20260515-019"
+STEM = "space_theme_beta_candidate_pool"
+BEFORE_EXPERIMENT_ID = "exp-20260514-053"
+BEFORE_STEM = "space_benchmark_breadth_iwm_leader_trend_risk"
+
+DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
+DOCS_DIR = ROOT / "docs" / "experiments"
+LOG_DIR = DOCS_DIR / "logs"
+TICKET_DIR = DOCS_DIR / "tickets"
+ARTIFACT_DIR = DOCS_DIR / "artifacts"
+EXPERIMENT_LOG = ROOT / "docs" / "experiment_log.jsonl"
+REGISTRY_PATH = ROOT / "data" / "universe_registry.json"
+SPACE_SNAPSHOT_DIR = (
+    ROOT / "data" / "experiments" / "exp-20260510-028" / "ohlcv"
+)
+
+THEME_BETA_CANDIDATES = ("ARKX", "UFO")
+MIN_SURVIVAL_RATE = 0.05
+MIN_TRADE_COUNT = 50
+MAX_DRAWDOWN_DAMAGE_VS_BEFORE = 0.005
+
+
+def _safe(value: Any) -> Any:
+    return exp013._safe(value)
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    exp013._write_json(path, payload)
+
+
+def _append_jsonl_for_this_experiment(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines: list[str] = []
+    if path.exists():
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                lines.append(line)
+                continue
+            if row.get("experiment_id") != EXPERIMENT_ID:
+                lines.append(line)
+    lines.append(json.dumps(_safe(payload), ensure_ascii=False, sort_keys=True))
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _load_registry() -> dict[str, Any]:
+    return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+
+
+def _window_snapshot_path(label: str) -> Path:
+    return SPACE_SNAPSHOT_DIR / f"exp-20260510-028_{label}_with_space_catalyst.json"
+
+
+def _ohlcv_coverage(ticker: str) -> dict[str, Any]:
+    windows: dict[str, Any] = {}
+    for label, spec in exp012.exp041.source_diversity_exp.WINDOWS.items():
+        path = _window_snapshot_path(label)
+        if not path.exists():
+            windows[label] = {
+                "passed": False,
+                "reason": "missing_space_augmented_snapshot",
+                "path": str(path.relative_to(ROOT)),
+            }
+            continue
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows = (data.get("ohlcv") or {}).get(ticker)
+        if not isinstance(rows, list) or not rows:
+            windows[label] = {
+                "passed": False,
+                "reason": "missing_ticker_ohlcv",
+                "path": str(path.relative_to(ROOT)),
+            }
+            continue
+        in_window = [
+            row
+            for row in rows
+            if spec["start"] <= str(row.get("Date") or "")[:10] <= spec["end"]
+        ]
+        nonzero_volume = [
+            row for row in in_window if float(row.get("Volume") or 0.0) > 0.0
+        ]
+        windows[label] = {
+            "passed": bool(in_window and nonzero_volume),
+            "path": str(path.relative_to(ROOT)),
+            "row_count": len(rows),
+            "in_window_row_count": len(in_window),
+            "nonzero_volume_row_count": len(nonzero_volume),
+            "first_date": str(rows[0].get("Date") or ""),
+            "last_date": str(rows[-1].get("Date") or ""),
+            "window_start": spec["start"],
+            "window_end": spec["end"],
+        }
+    return {
+        "passed": all(row["passed"] for row in windows.values()),
+        "windows": windows,
+    }
+
+
+def _theme_beta_candidate_gate() -> dict[str, Any]:
+    registry = _load_registry()
+    tickers = registry.get("tickers") or {}
+    profiles: dict[str, Any] = {}
+    skipped: Counter[str] = Counter()
+
+    for ticker in THEME_BETA_CANDIDATES:
+        record = tickers.get(ticker)
+        if not isinstance(record, dict):
+            skipped["missing_registry_record"] += 1
+            continue
+        checks = {
+            "status_is_research": record.get("status") == "research",
+            "pilot_sleeve_is_space_shadow": (
+                record.get("pilot_sleeve") == "SPACE_CATALYST_SHADOW"
+            ),
+            "theme_segment_is_theme_beta_benchmark": (
+                record.get("theme_segment") == "theme_beta_benchmark"
+            ),
+            "requires_event_guard_false": record.get("requires_event_guard") is False,
+            "max_capital_scalar_zero_before_experiment": (
+                float(record.get("max_capital_scalar") or 0.0) == 0.0
+            ),
+            "non_live_candidate_before_experiment": (
+                record.get("first_trade_allowed_as_of") is None
+            ),
+        }
+        coverage = _ohlcv_coverage(ticker)
+        checks["ohlcv_all_windows_present"] = coverage["passed"]
+        passed = all(checks.values())
+        if not passed:
+            for key, value in checks.items():
+                if not value:
+                    skipped[key] += 1
+        profiles[ticker] = {
+            "passed": passed,
+            "ticker": ticker,
+            "registry": {
+                key: record.get(key)
+                for key in (
+                    "status",
+                    "theme",
+                    "pilot_sleeve",
+                    "theme_segment",
+                    "history_class",
+                    "liquidity_tier",
+                    "max_capital_scalar",
+                    "max_risk_scalar",
+                    "requires_event_guard",
+                    "event_guard_profile",
+                    "first_trade_allowed_as_of",
+                    "notes",
+                )
+            },
+            "checks": checks,
+            "ohlcv_coverage": coverage,
+        }
+
+    target_tickers = sorted(
+        ticker for ticker, profile in profiles.items() if profile["passed"]
+    )
+    return {
+        "passed": bool(target_tickers),
+        "source_gate": "space_theme_beta_registry_and_snapshot_profile",
+        "registry_path": str(REGISTRY_PATH.relative_to(ROOT)),
+        "snapshot_dir": str(SPACE_SNAPSHOT_DIR.relative_to(ROOT)),
+        "candidate_universe": list(THEME_BETA_CANDIDATES),
+        "target_definition": (
+            "SPACE_CATALYST_SHADOW research records with theme_segment "
+            "theme_beta_benchmark, no event guard, max_capital_scalar=0 before "
+            "the experiment, and full frozen Space OHLCV coverage"
+        ),
+        "target_tickers": target_tickers,
+        "profiles": profiles,
+        "skipped_counts": dict(sorted(skipped.items())),
+    }
+
+
+def _collect_gates_with_pool(tickers: tuple[str, ...]) -> dict[str, Any]:
+    with exp013._official_space_pool(tickers):
+        gates = exp012._collect_gates()
+    gates["official_space_pool"] = list(tickers)
+    gates["theme_beta_candidate_gate"] = _theme_beta_candidate_gate()
+    return gates
+
+
+def _run_with_pool(
+    label: str,
+    tickers: tuple[str, ...],
+    gates: dict[str, Any],
+    added_tickers: tuple[str, ...],
+) -> dict[str, Any]:
+    with exp013._official_space_pool(tickers):
+        variant = exp012._run_exp053_stack_variant(
+            label,
+            fast_5d_scalar=1.0,
+            gates=gates,
+        )
+    variant["parameters"] = {
+        **variant["parameters"],
+        "official_space_pool": list(tickers),
+        "theme_beta_added_tickers": list(added_tickers),
+        "space_theme_beta_candidate_pool_rule": (
+            "add registry-defined theme_beta_benchmark ETFs ARKX/UFO as "
+            "default-off shadow Space candidates"
+        ),
+    }
+    return variant
+
+
+def _aggregate_delta(after: dict[str, Any], before: dict[str, Any]) -> dict[str, Any]:
+    return exp012.exp041.source_diversity_exp._aggregate_delta(
+        after["aggregate"],
+        before["aggregate"],
+    )
+
+
+def _by_window_delta(after: dict[str, Any], before: dict[str, Any]) -> dict[str, Any]:
+    return {
+        label: exp012.exp041.source_diversity_exp._delta(
+            row["metrics"],
+            before["by_window"][label]["metrics"],
+        )
+        for label, row in after["by_window"].items()
+    }
+
+
+def _space_trades_by_extension(
+    variant: dict[str, Any],
+    added_tickers: tuple[str, ...],
+) -> dict[str, Any]:
+    targets = {ticker.upper() for ticker in added_tickers}
+    by_window: dict[str, Any] = {}
+    for label, row in variant["by_window"].items():
+        attribution = row.get("official_space_trade_attribution") or row.get(
+            "space_trade_attribution"
+        ) or {}
+        trades = [
+            trade
+            for trade in attribution.get("trades") or []
+            if str(trade.get("ticker") or "").upper() in targets
+        ]
+        by_window[label] = {
+            "trade_count": len(trades),
+            "total_pnl": round(sum(float(trade.get("pnl") or 0.0) for trade in trades), 2),
+            "wins": sum(1 for trade in trades if float(trade.get("pnl") or 0.0) > 0.0),
+            "losses": sum(1 for trade in trades if float(trade.get("pnl") or 0.0) < 0.0),
+            "trades": trades,
+        }
+    return by_window
+
+
+def _gate(
+    after: dict[str, Any],
+    before: dict[str, Any],
+    added_tickers: tuple[str, ...],
+) -> dict[str, Any]:
+    aggregate_delta = _aggregate_delta(after, before)
+    by_window_delta = _by_window_delta(after, before)
+    ev_improved = {
+        label: row["expected_value_score"]
+        for label, row in by_window_delta.items()
+        if row["expected_value_score"] > 1e-9
+    }
+    ev_regressed = {
+        label: row["expected_value_score"]
+        for label, row in by_window_delta.items()
+        if row["expected_value_score"] < -1e-9
+    }
+    extension_trade_count = sum(
+        row["trade_count"]
+        for row in _space_trades_by_extension(after, added_tickers).values()
+    )
+    passed = bool(
+        extension_trade_count > 0
+        and aggregate_delta["expected_value_score_sum"] > 0.0
+        and aggregate_delta["total_pnl_sum"] > 0.0
+        and len(ev_improved) >= 2
+        and not ev_regressed
+        and aggregate_delta["max_drawdown_pct_max"] <= MAX_DRAWDOWN_DAMAGE_VS_BEFORE
+        and after["aggregate"].get("min_survival_rate", 0.0) >= MIN_SURVIVAL_RATE
+        and after["aggregate"].get("trade_count_sum", 0) >= MIN_TRADE_COUNT
+    )
+    return {
+        "aggregate_delta_vs_before": aggregate_delta,
+        "by_window_delta_vs_before": by_window_delta,
+        "passed": passed,
+        "improved_windows": ev_improved,
+        "regressed_windows": ev_regressed,
+        "extension_trade_count": extension_trade_count,
+        "reasons": {
+            "extension_trades_present": extension_trade_count > 0,
+            "aggregate_ev_delta_positive": aggregate_delta["expected_value_score_sum"]
+            > 0.0,
+            "aggregate_pnl_delta_positive": aggregate_delta["total_pnl_sum"] > 0.0,
+            "at_least_two_windows_improved": len(ev_improved) >= 2,
+            "no_window_regressed": not ev_regressed,
+            "drawdown_delta_within_limit": (
+                aggregate_delta["max_drawdown_pct_max"]
+                <= MAX_DRAWDOWN_DAMAGE_VS_BEFORE
+            ),
+            "survival_rate_ok": after["aggregate"].get("min_survival_rate", 0.0)
+            >= MIN_SURVIVAL_RATE,
+            "trade_count_ok": after["aggregate"].get("trade_count_sum", 0)
+            >= MIN_TRADE_COUNT,
+        },
+    }
+
+
+def _risk_distribution(variant: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    keys = ("worst_trade_pct", "max_consecutive_losses", "tail_loss_share")
+    return {
+        label: {key: row["metrics"].get(key) for key in keys}
+        for label, row in variant["by_window"].items()
+    }
+
+
+def _experiment_record(payload: dict[str, Any]) -> dict[str, Any]:
+    promoted = payload["decision"] == "accept"
+    before = payload["before_variant"]
+    after = payload["after_variant"]
+    gate = payload["gate_results"]
+    return {
+        "experiment_id": EXPERIMENT_ID,
+        "date": payload["completed_at"],
+        "hypothesis": payload["hypothesis"],
+        "change_type": "alpha_search",
+        "changed_variable": "space_theme_beta_candidate_pool_membership",
+        "parameters": {
+            "accepted_before_experiment": BEFORE_EXPERIMENT_ID,
+            "base_official_space_pool": payload["base_official_space_pool"],
+            "added_tickers": payload["added_tickers"],
+            "candidate_universe": list(THEME_BETA_CANDIDATES),
+            "theme_beta_candidate_gate": payload["theme_beta_candidate_gate"],
+            "anti_js": "No JavaScript was used.",
+        },
+        "backtest_protocol": (
+            "docs/backtesting.md fixed 3-window Space protocol using frozen "
+            "Space augmented snapshots"
+        ),
+        "date_range": {
+            label: spec
+            for label, spec in exp012.exp041.source_diversity_exp.WINDOWS.items()
+        },
+        "before_metrics": before["aggregate"],
+        "after_metrics": after["aggregate"],
+        "by_window_before_metrics": {
+            label: row["metrics"] for label, row in before["by_window"].items()
+        },
+        "by_window_after_metrics": {
+            label: row["metrics"] for label, row in after["by_window"].items()
+        },
+        "by_window_delta": gate["by_window_delta_vs_before"],
+        "expected_value_score_delta": gate["aggregate_delta_vs_before"][
+            "expected_value_score_sum"
+        ],
+        "total_pnl_delta": gate["aggregate_delta_vs_before"]["total_pnl_sum"],
+        "risk_distribution": {
+            "before": _risk_distribution(before),
+            "after": _risk_distribution(after),
+        },
+        "extension_trade_attribution": payload["extension_trade_attribution"],
+        "gate_results": gate,
+        "decision": payload["decision"],
+        "rejection_reason": None
+        if promoted
+        else (
+            "Gate 4 failed: Space theme-beta ETF candidate admission did not "
+            "improve enough fixed windows without regression."
+        ),
+        "next_evidence_needed": None
+        if promoted
+        else (
+            "Do not promote ARKX/UFO from benchmark records into Space trade "
+            "candidates without stronger cross-window replacement evidence."
+        ),
+        "production_impact": {
+            "shared_policy_changed": False,
+            "backtester_adapter_changed": False,
+            "run_adapter_changed": False,
+            "replay_only": True,
+            "parity_test_added": False,
+            "live_slots": 0,
+            "notes": (
+                "Experiment-only official-pool monkey patch; registry still "
+                "marks ARKX/UFO as max_capital_scalar=0 observe-only benchmark "
+                "records, so no production trading path changed."
+            ),
+        },
+        "why_not_other_changes": (
+            "LLM soft-ranking is still data-limited; recent 5d satcom, "
+            "attention+benchmark, company-release 1d, and benchmark-breakout "
+            "Space branches were rejected or sample-limited. This tests the "
+            "cleanest remaining Space pool variable: existing theme-beta "
+            "benchmark candidates with full frozen OHLCV."
+        ),
+    }
+
+
+def _artifact_markdown(payload: dict[str, Any]) -> str:
+    before = payload["before_variant"]
+    after = payload["after_variant"]
+    gate = payload["gate_results"]
+    lines = [
+        f"# {EXPERIMENT_ID} Space theme-beta candidate pool",
+        "",
+        "## Hypothesis",
+        payload["hypothesis"],
+        "",
+        "## Single Changed Variable",
+        "`space_theme_beta_candidate_pool_membership` on top of accepted "
+        f"`{BEFORE_EXPERIMENT_ID}`. Entries, exits, ranking, stops, LLM/news, "
+        "and live Space slots stay fixed.",
+        "",
+        "## Gate 1 Baseline",
+        f"- before experiment: `{BEFORE_EXPERIMENT_ID}` / `{BEFORE_STEM}`",
+        f"- aggregate before EV: `{before['aggregate']['expected_value_score_sum']}`",
+        f"- aggregate before PnL: `{before['aggregate']['total_pnl_sum']}`",
+        f"- aggregate before max drawdown pct max: `{before['aggregate']['max_drawdown_pct_max']}`",
+        "",
+        "## Gate 2 Field Check",
+        f"- open position field check passed: `{payload['field_check']['passed']}`",
+        f"- theme-beta candidate gate passed: `{payload['theme_beta_candidate_gate']['passed']}`",
+        f"- added tickers: `{payload['added_tickers']}`",
+        "",
+        "## Gate 3 Survival Audit",
+        f"- min survival before: `{before['aggregate']['min_survival_rate']}`",
+        f"- min survival after: `{after['aggregate']['min_survival_rate']}`",
+        "- no new filter was added; this is candidate membership under a registry/OHLCV gate.",
+        "",
+        "## Gate 4 Three-Window Result",
+        "| window | EV before | EV after | EV delta | PnL delta | DD delta | trades before | trades after | extension trades |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for label, delta in gate["by_window_delta_vs_before"].items():
+        before_metrics = before["by_window"][label]["metrics"]
+        after_metrics = after["by_window"][label]["metrics"]
+        extension = payload["extension_trade_attribution"][label]["trade_count"]
+        lines.append(
+            "| {label} | {ev_before:.6f} | {ev_after:.6f} | {ev_delta:.6f} | {pnl_delta:.2f} | {dd_delta:.6f} | {trades_before} | {trades_after} | {extension} |".format(
+                label=label,
+                ev_before=before_metrics.get("expected_value_score", 0.0),
+                ev_after=after_metrics.get("expected_value_score", 0.0),
+                ev_delta=delta.get("expected_value_score", 0.0),
+                pnl_delta=delta.get("total_pnl", 0.0),
+                dd_delta=delta.get("max_drawdown_pct", 0.0),
+                trades_before=before_metrics.get("trade_count", ""),
+                trades_after=after_metrics.get("trade_count", ""),
+                extension=extension,
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Decision",
+            f"- decision: `{payload['decision']}`",
+            f"- Gate 4 passed: `{gate['passed']}`",
+            f"- aggregate EV delta: `{gate['aggregate_delta_vs_before']['expected_value_score_sum']}`",
+            f"- aggregate PnL delta: `{gate['aggregate_delta_vs_before']['total_pnl_sum']}`",
+            f"- improved windows: `{gate['improved_windows']}`",
+            f"- regressed windows: `{gate['regressed_windows']}`",
+            f"- extension trades: `{gate['extension_trade_count']}`",
+            "",
+            "## Production Impact",
+            "```text",
+            "production_impact:",
+            "  shared_policy_changed: false",
+            "  backtester_adapter_changed: false",
+            "  run_adapter_changed: false",
+            "  replay_only: true",
+            "  parity_test_added: false",
+            "  live_slots: 0",
+            "```",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _ticket(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "experiment_id": EXPERIMENT_ID,
+        "status": payload["decision"],
+        "summary": (
+            "Theme-beta Space candidate pool "
+            f"{payload['decision']} with EV delta "
+            f"{payload['gate_results']['aggregate_delta_vs_before']['expected_value_score_sum']}."
+        ),
+        "artifact": str(ARTIFACT_DIR / f"{EXPERIMENT_ID}_{STEM}.md"),
+        "json": str(DATA_DIR / f"{STEM}.json"),
+    }
+
+
+def run() -> dict[str, Any]:
+    completed_at = datetime.now(timezone.utc).isoformat()
+    base_pool = tuple(exp012.exp041.source_diversity_exp.OFFICIAL_SPACE_TICKERS)
+    theme_beta_gate = _theme_beta_candidate_gate()
+    added = tuple(
+        ticker for ticker in theme_beta_gate["target_tickers"] if ticker not in base_pool
+    )
+    extended_pool = tuple(sorted(set(base_pool) | set(added)))
+
+    base_gates = _collect_gates_with_pool(base_pool)
+    extended_gates = _collect_gates_with_pool(extended_pool)
+    before = _run_with_pool("accepted_exp053_base_pool", base_pool, base_gates, ())
+    after = _run_with_pool(
+        "theme_beta_extended_pool",
+        extended_pool,
+        extended_gates,
+        added,
+    )
+    extension_trades = _space_trades_by_extension(after, added)
+    gate = _gate(after, before, added)
+    field_check = exp012.exp051._open_position_field_check()
+    decision = (
+        "accept"
+        if field_check["passed"] and theme_beta_gate["passed"] and gate["passed"]
+        else "reject"
+    )
+    payload = {
+        "experiment_id": EXPERIMENT_ID,
+        "completed_at": completed_at,
+        "hypothesis": (
+            "Existing Space theme-beta benchmark ETFs ARKX/UFO may be a cleaner "
+            "candidate-pool extension than another small operating Space ticker: "
+            "lower idiosyncratic risk, full frozen OHLCV coverage, and direct "
+            "same-theme replacement relevance."
+        ),
+        "base_official_space_pool": list(base_pool),
+        "extended_official_space_pool": list(extended_pool),
+        "added_tickers": list(added),
+        "theme_beta_candidate_gate": theme_beta_gate,
+        "field_check": field_check,
+        "base_gates": base_gates,
+        "extended_gates": extended_gates,
+        "before_variant": before,
+        "after_variant": after,
+        "extension_trade_attribution": extension_trades,
+        "gate_results": gate,
+        "decision": decision,
+        "protocol": "docs/backtesting.md fixed 3-window Space protocol",
+        "gate_questions": {
+            "1_alpha_hypothesis": (
+                "candidate pool: registry-defined Space theme beta ETFs may "
+                "add replacement value without single-name Space noise."
+            ),
+            "2_history_check": {
+                "exp-20260515-013": (
+                    "Rejected forward-qualified IRDM/VSAT/SATS satcom pool: "
+                    "aggregate positive but old_thin regressed and drawdown worsened."
+                ),
+                "exp-20260515-016": (
+                    "Rejected fast-5d benchmark breakout scalar: only mid_weak "
+                    "improved despite positive aggregate EV/PnL."
+                ),
+            "exp-20260515-017": (
+                "Rejected non-Space ETF/core pool candidates; this run is "
+                "restricted to Space registry theme-beta benchmark records."
+            ),
+            },
+            "3_single_causal_variable": (
+                "space_theme_beta_candidate_pool_membership. Accepted Space "
+                "risk stack, entries, exits, ranking, LLM/news, and live slots "
+                "stay fixed."
+            ),
+            "4_acceptance_standard": (
+                "docs/backtesting.md three fixed Space windows; require positive "
+                "aggregate EV and PnL, at least two EV-improved windows, no "
+                "EV-regressed window, max drawdown drift <= 0.5 pp, survival >= "
+                "5%, >=50 trades, and nonzero extension trades."
+            ),
+            "5_reproducibility": (
+                f".venv\\Scripts\\python.exe quant\\experiments\\{Path(__file__).name}"
+            ),
+        },
+    }
+    payload["experiment_log_record"] = _experiment_record(payload)
+    return payload
+
+
+def persist(payload: dict[str, Any]) -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    TICKET_DIR.mkdir(parents=True, exist_ok=True)
+    ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
+    artifact = _artifact_markdown(payload)
+    payload["artifact_markdown"] = artifact
+    _write_json(DATA_DIR / f"{STEM}.json", payload)
+    _write_json(LOG_DIR / f"{EXPERIMENT_ID}.json", payload["experiment_log_record"])
+    _write_json(TICKET_DIR / f"{EXPERIMENT_ID}.json", _ticket(payload))
+    (ARTIFACT_DIR / f"{EXPERIMENT_ID}_{STEM}.md").write_text(
+        artifact,
+        encoding="utf-8",
+    )
+    _append_jsonl_for_this_experiment(EXPERIMENT_LOG, payload["experiment_log_record"])
+
+
+def main() -> None:
+    payload = run()
+    persist(payload)
+    print(
+        json.dumps(
+            _safe(
+                {
+                    "experiment_id": EXPERIMENT_ID,
+                    "decision": payload["decision"],
+                    "added_tickers": payload["added_tickers"],
+                    "extension_trade_count": payload["gate_results"][
+                        "extension_trade_count"
+                    ],
+                    "aggregate_ev_delta": payload["gate_results"][
+                        "aggregate_delta_vs_before"
+                    ]["expected_value_score_sum"],
+                    "aggregate_pnl_delta": payload["gate_results"][
+                        "aggregate_delta_vs_before"
+                    ]["total_pnl_sum"],
+                    "improved_windows": payload["gate_results"]["improved_windows"],
+                    "regressed_windows": payload["gate_results"]["regressed_windows"],
+                }
+            ),
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

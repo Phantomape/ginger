@@ -21,6 +21,7 @@ from production_parity import (  # noqa: E402
 import backtester  # noqa: E402
 import constants  # noqa: E402
 from portfolio_engine import size_signals  # noqa: E402
+from risk_engine import enrich_signals  # noqa: E402
 
 
 def _ohlcv(closes):
@@ -35,6 +36,19 @@ def _ohlcv(closes):
         },
         index=idx,
     )
+
+
+def _feature_row(price_vs_200ma, momentum_20d=0.10, momentum_60d=0.20):
+    return {
+        "atr": 5.0,
+        "trend_score": 0.8,
+        "volume_spike_ratio": 1.5,
+        "momentum_10d_pct": 0.05,
+        "momentum_20d_pct": momentum_20d,
+        "momentum_60d_pct": momentum_60d,
+        "price_vs_200ma_pct": price_vs_200ma,
+        "signal_day_ticker_open_close_return_pct": 0.01,
+    }
 
 
 def test_plan_entry_candidates_defers_breakouts_when_slots_are_scarce():
@@ -766,6 +780,68 @@ def test_mid_sector_dispersion_trend_boost_is_shared_sizing_policy():
     assert boosted["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.25
     assert unboosted["trend_mid_sector_dispersion_risk_multiplier_applied"] == 1.0
     assert boosted["risk_pct"] > unboosted["risk_pct"]
+
+
+def test_price_vs_200ma_extension_state_is_shared_risk_enrichment():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "confidence_score": 0.9,
+        },
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 95.0,
+            "confidence_score": 0.9,
+        },
+    ]
+    features = {
+        "AMD": _feature_row(0.40, momentum_60d=0.30),
+        "NVDA": _feature_row(0.30, momentum_60d=0.25),
+        "MSFT": _feature_row(0.20, momentum_60d=0.20),
+        "AAPL": _feature_row(0.10, momentum_60d=0.15),
+        "SPY": _feature_row(0.99, momentum_20d=0.05, momentum_60d=0.05),
+    }
+
+    enriched = enrich_signals(signals, features)
+
+    by_ticker = {sig["ticker"]: sig for sig in enriched}
+    assert by_ticker["AMD"]["price_vs_200ma_extension_cutoff"] == 0.3
+    assert by_ticker["AMD"]["price_vs_200ma_extension_state"] is True
+    assert by_ticker["AAPL"]["price_vs_200ma_extension_state"] is False
+
+
+def test_price_vs_200ma_extension_topup_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "UNH",
+            "strategy": "breakout_long",
+            "sector": "Healthcare",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 0.95,
+            "price_vs_200ma_pct": 0.40,
+            "price_vs_200ma_extension_cutoff": 0.30,
+            "price_vs_200ma_extension_state": True,
+            "conditions_met": {},
+        }
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    sizing = sized[0]["sizing"]
+    assert sizing["price_vs_200ma_extension_risk_multiplier_applied"] == (
+        constants.PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER
+    )
+    assert sizing["price_vs_200ma_extension_baseline_shares"] == 92
+    assert sizing["price_vs_200ma_extension_desired_shares"] == 94
+    assert sizing["price_vs_200ma_extension_new_shares"] == 94
+    assert sizing["shares_to_buy"] == 94
+    assert sizing["price_vs_200ma_extension_state"] is True
 
 
 def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():

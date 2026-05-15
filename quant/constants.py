@@ -75,6 +75,9 @@ SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER = 1.05
 RS60_TOP_QUINTILE_FRACTION = 0.20
 RS60_TOP_QUINTILE_EXCLUDED_SECTORS = ("ETF", "Commodities")
 RS60_TOP_QUINTILE_RISK_MULTIPLIER = 1.15
+PRICE_VS_200MA_EXTENSION_FRACTION = 0.25
+PRICE_VS_200MA_EXTENSION_EXCLUDED_SECTORS = ("ETF", "Commodities")
+PRICE_VS_200MA_EXTENSION_RISK_MULTIPLIER = 1.025
 CLEAN_SPY_LEADER_SIGNAL_DAY_RISK_MULTIPLIER = 1.10
 CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT = 0.525
 CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT = 0.60
@@ -187,6 +190,9 @@ TREND_MID_SECTOR_DISPERSION_RISK_MULTIPLIER = 1.25
 # feature-complete non-ETF/non-commodity stocks deserves a 1.15x cap-aware
 # post-sizing top-up. This stays allocation-only; do not use it as a filter or
 # slot-priority key without separate three-window evidence.
+# exp-20260515-018: top-quartile price-vs-200MA extension among feature-complete
+# non-ETF/non-commodity stocks adds a small all-window allocation edge. Keep it
+# at 1.025x only; nearby 1.05x+ values regressed late_strong or drawdown.
 MAX_POSITION_PCT        = 0.40       # Initial position cap; exp-20260428-025
 MAX_PORTFOLIO_HEAT      = 0.08       # Total portfolio heat ceiling (per inst_5.txt)
 MAX_POSITIONS           = 5          # Concurrent open positions cap

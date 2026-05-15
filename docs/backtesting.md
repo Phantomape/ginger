@@ -78,22 +78,37 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260515-013`
-(`clean_spy_cap_only_rs20_cap`) promoted the clean-SPY cap-only RS20 leader
-70% sleeve-specific position cap:
+Current accepted fixed-window metrics after core `exp-20260515-018`
+(`price_vs_200ma_extension_risk`) promoted the top-quartile price-vs-200MA
+extension sizing top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 5.0322 | 4.38 | $114,886.19 | 114.89% | 6.58% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 1.9947 | 2.74 | $72,796.75 | 72.80% | 10.14% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.5059 | 1.43 | $35,379.65 | 35.38% | 9.26% | 40.91% | 22 | 91.67% |
+| `late_strong` | 5.0334 | 4.37 | $115,183.05 | 115.18% | 6.68% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 2.0103 | 2.75 | $73,104.97 | 73.10% | 10.14% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.5099 | 1.43 | $35,657.24 | 35.66% | 9.34% | 40.91% | 22 | 91.67% |
 
 Artifact note:
-`data/experiments/exp-20260515-013/clean_spy_cap_only_rs20_cap.json`
+`data/experiments/exp-20260515-018/price_vs_200ma_extension_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `7.5328`; aggregate PnL is `$223,062.59`.
+EV is `7.5536`; aggregate PnL is `$223,945.26`.
 
-Latest accepted core-sizing result: core `exp-20260515-013` keeps entries,
+Latest accepted core-sizing result: core `exp-20260515-018` keeps entries,
+exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
+unchanged, but tags already-qualified `trend_long` / `breakout_long`
+non-ETF/non-commodity stock signals whose `price_vs_200ma_pct` is in the
+same-day top quartile and applies a 1.025x cap-aware post-sizing top-up in
+shared `risk_engine.py` and `portfolio_engine.py`. The change improved EV and
+PnL in all three canonical windows and kept trade count and survival
+unchanged: aggregate EV `+0.0208`, aggregate PnL `+$882.67`, max drawdown drift
+stayed inside Gate 4 at `+0.10 pp`, and there is no production/backtest split
+because both adapters call the same shared risk/sizing modules. Only 15
+signals adjusted, and 1.05x+ variants regressed `late_strong` or drawdown, so
+do not retry nearby price-vs-200MA extension scalars on these frozen windows
+without forward evidence or a materially different production-visible
+discriminator.
+
+Previous accepted core-sizing result: core `exp-20260515-013` keeps entries,
 exits, ranking, universe, raw clean-SPY and RS20 multipliers, heat, slots, and
 LLM/news logic unchanged, but lets only already-qualified clean-SPY cap-only
 leaders with `rs20_entry_state_leader=true` use a 70% single-position cap in

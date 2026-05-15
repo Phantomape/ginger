@@ -74,7 +74,7 @@ Keep only anchor states here. Full metrics live in `docs/backtesting.md` and
 ### Core
 
 Current accepted core checkpoint is the 2026-05-15 stack ending at
-`exp-20260515-013`.
+`exp-20260515-018`.
 
 Mechanism-level summary:
 
@@ -85,6 +85,9 @@ Mechanism-level summary:
 - clean-SPY cap-only leaders are a real cap-bound sleeve, and the RS20-confirmed
   subset remained cap-bound after the broad 60% cap; `exp-20260515-013`
   promoted only that subset to a 70% cap;
+- top-quartile price-vs-200MA extension is a small but robust allocation state
+  on already-qualified stocks; `exp-20260515-018` promoted only the 1.025x
+  top-up because nearby 1.05x+ values regressed `late_strong` or drawdown;
 - the useful core edge is post-selection allocation, not broader filtering;
 - small data/taxonomy fixes can matter when they change real routing.
 
@@ -100,6 +103,8 @@ Current practical interpretation:
 - do not retry nearby clean-SPY cap-only or clean-SPY cap-only RS20 cap values
   on the frozen windows without forward cap-room evidence or a different
   production-visible quality state.
+- do not retry nearby price-vs-200MA extension scalars on the frozen windows
+  without forward evidence or a materially different production-visible state.
 
 ### SEC Financial-Report Sleeve
 
@@ -143,6 +148,9 @@ Current practical interpretation:
 - nearby interaction retries are now sample-limited;
 - 2026-05-15 confirmed that one mature forward row or one ticker-specific
   interaction is not enough to justify promotion;
+- 2026-05-15 `exp-20260515-019` rejected promoting ARKX/UFO theme-beta
+  benchmark ETFs into the Space trade candidate pool: all three standard
+  windows lost EV and aggregate PnL fell by $180,752.89;
 - the next valid Space step is either a broader mature cohort or a genuinely
   new production-visible catalyst-quality field.
 
@@ -350,6 +358,8 @@ field:
   unless forward cap-room evidence exists;
 - one-ticker cap scouts on already-accepted core sleeves;
 - Space ticker-breadth expansion;
+- Space theme-beta benchmark ETF admission as trade candidates, unless new
+  evidence shows cross-window replacement value rather than benchmark utility;
 - Space interaction retries supported by only one mature forward row or one
   ticker-level cohort;
 - SEC sleeve retunes that do not add a new filing semantic field;

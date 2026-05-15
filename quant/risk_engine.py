@@ -25,6 +25,8 @@ from constants import (
     TREND_GOLD_TARGET_TICKERS,
     ROUND_TRIP_COST_PCT,
     EXEC_LAG_PCT,
+    PRICE_VS_200MA_EXTENSION_EXCLUDED_SECTORS,
+    PRICE_VS_200MA_EXTENSION_FRACTION,
     RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN,
     RS60_TOP_QUINTILE_EXCLUDED_SECTORS,
     RS60_TOP_QUINTILE_FRACTION,
@@ -267,6 +269,30 @@ def _rs60_top_quintile_cutoff(features_dict):
     return values[index]
 
 
+def _price_vs_200ma_extension_cutoff(features_dict):
+    """Return the same-day top-quartile price-vs-200MA cutoff for stocks."""
+    values = []
+    for ticker, features in (features_dict or {}).items():
+        if not features:
+            continue
+        sector = SECTOR_MAP.get(ticker, "Unknown")
+        price_vs_200ma = features.get("price_vs_200ma_pct")
+        if sector in PRICE_VS_200MA_EXTENSION_EXCLUDED_SECTORS:
+            continue
+        if isinstance(price_vs_200ma, (int, float)):
+            values.append(float(price_vs_200ma))
+
+    if not values:
+        return None
+
+    values.sort()
+    index = max(
+        0,
+        math.ceil(len(values) * (1.0 - PRICE_VS_200MA_EXTENSION_FRACTION)) - 1,
+    )
+    return values[index]
+
+
 def enrich_signals(signals, features_dict, atr_target_mult=None):
     """
     Enrich all signals with risk parameters and Trade Quality Score.
@@ -304,6 +330,7 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         < TREND_MID_SECTOR_DISPERSION_MAX
     )
     rs60_top_quintile_cutoff = _rs60_top_quintile_cutoff(features_dict)
+    price_vs_200ma_extension_cutoff = _price_vs_200ma_extension_cutoff(features_dict)
 
     for sig in signals:
         ticker   = sig["ticker"]
@@ -405,6 +432,20 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
             and isinstance(ticker_ret60, (int, float))
             and isinstance(rs60_top_quintile_cutoff, (int, float))
             and ticker_ret60 >= rs60_top_quintile_cutoff
+        )
+        price_vs_200ma = features.get("price_vs_200ma_pct")
+        enriched_sig["price_vs_200ma_pct"] = price_vs_200ma
+        enriched_sig["price_vs_200ma_extension_cutoff"] = (
+            round(price_vs_200ma_extension_cutoff, 6)
+            if isinstance(price_vs_200ma_extension_cutoff, (int, float))
+            else None
+        )
+        enriched_sig["price_vs_200ma_extension_state"] = (
+            enriched_sig.get("strategy") in {"trend_long", "breakout_long"}
+            and enriched_sig["sector"] not in PRICE_VS_200MA_EXTENSION_EXCLUDED_SECTORS
+            and isinstance(price_vs_200ma, (int, float))
+            and isinstance(price_vs_200ma_extension_cutoff, (int, float))
+            and price_vs_200ma >= price_vs_200ma_extension_cutoff
         )
         if sector_ret20_dispersion is not None:
             enriched_sig["sector_ret20_dispersion"] = round(sector_ret20_dispersion, 4)
