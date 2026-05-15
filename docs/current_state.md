@@ -398,18 +398,49 @@ signals; stronger nearby values had higher raw EV but failed the drawdown
 guardrail, so do not retry adjacent source-diversity peer-nonleader trend
 scalars without new closed forward evidence.
 
-Latest rejected Space alpha search: `exp-20260515-031` tested a stricter
-VSAT-only mature-satcom candidate-pool extension on top of `exp-20260515-024`.
+Latest rejected core allocation alpha search: `exp-20260515-041` tested an
+unreduced high-R:R refinement on top of the accepted core stack. The single
+changed variable was `exec_lag_rr_unreduced_leadership_risk_multiplier`:
+already-qualified `trend_long` / `breakout_long` non-ETF/non-commodity stock
+signals had to be in the same-day top quartile of `exec_lag_adj_net_rr` and
+also have no existing shared sizing haircut (`*_risk_multiplier_applied < 1`)
+before receiving a cap-aware post-sizing top-up. The best scalar was the
+smallest tested value, `1.0125x`, but Gate 4 rejected it: aggregate EV moved
+`7.7345 -> 7.7102`, PnL moved `$229,636.73 -> $227,890.27`, only `mid_weak`
+improved (`+0.0011` EV / `+$44.71`), and `old_thin` regressed by `-0.0254` EV
+/ `-$1,791.17`. No shared production policy was changed. Do not retry simple
+`exec_lag_adj_net_rr` top-quartile allocation or no-prior-haircut R:R scalars
+on the frozen windows without a genuinely new production-visible drawdown or
+catalyst-quality discriminator.
+
+Prior rejected core allocation alpha search: `exp-20260515-032` tested a
+confirmed-quality sector-thrust interaction on top of the accepted core stack.
 The single changed variable was
-`space_fast_5d_10d_same_theme_satcom_trend_pool_membership`: VSAT passed the
-all-positive 5d forward gate and positive 10d same-theme replacement-value
-gate, and added tickers were restricted to `trend_long`. The current
-three-window rerun improved aggregate EV by `+5.0217` and PnL by
+`confirmed_sector_thrust_risk_multiplier`: already-qualified
+`trend_long` / `breakout_long` non-ETF/non-commodity stock signals had to
+satisfy both `core_confirmed_quality_state=true` and same-day top-quartile
+ticker-minus-sector-proxy thrust before receiving a cap-aware post-sizing
+top-up. The best scalar was `1.025x`, with aggregate EV only `+0.0019` and PnL
+`+$309.65`; Gate 4 rejected it because only `mid_weak` improved while
+`old_thin` regressed by `-0.0010` EV / `-$77.24`. Do not retry this exact
+confirmed sector-thrust interaction on the frozen windows without forward
+attribution or a materially different production-visible state.
+
+Latest rejected Space alpha search: `exp-20260515-035` tested the remaining
+non-displacing mature-satcom admission design on top of `exp-20260515-024`.
+The single changed variable was
+`space_fast_5d_10d_same_theme_satcom_trend_fallback_pool_membership`: VSAT
+still had to pass the all-positive 5d forward gate and positive 10d same-theme
+replacement-value gate, but it was admitted only as a `trend_long` fallback
+when no base official Space signal existed on the same signal date. The
+fallback rule filtered `2` non-trend VSAT signals and `0` official-same-day
+trend signals, so the three-window result remained effectively the stricter
+VSAT-only admission result: aggregate EV improved `+5.0217` and PnL improved
 `$105,371.20`, but Gate 4 rejected it because `old_thin` regressed by
 `-0.0306` EV and `-$1,229.23`, while late-window drawdown worsened by
-`+2.98 pp`. Do not retry VSAT-only, IRDM/VSAT, or nearby mature-satcom
+`+2.98 pp`. Do not retry VSAT-only, IRDM/VSAT, or mature-satcom fallback
 candidate admission on these frozen windows without new closed forward rows or
-a production-visible design that avoids old-window displacement.
+a genuinely new production-visible catalyst-quality field.
 
 Prior rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

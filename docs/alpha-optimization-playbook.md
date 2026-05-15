@@ -116,6 +116,9 @@ Current practical interpretation:
   guardrail.
 - do not retry nearby confirmed-quality top-up scalars on the frozen windows;
   the accepted 1.075x value sits directly below the drawdown failure boundary.
+- do not retry the simple confirmed-quality x top-quartile sector-thrust
+  interaction on the frozen windows; `exp-20260515-032` was directionally
+  positive only in `mid_weak` and still regressed `old_thin`.
 - do not retry simple RS60 x price-vs-200MA overlap top-ups on the frozen
   windows; `exp-20260515-020` improved aggregate EV/PnL but every sweep
   regressed `late_strong`, so the overlap needs a new drawdown discriminator
@@ -124,6 +127,13 @@ Current practical interpretation:
   the frozen windows; `exp-20260515-022` touched only two signals and produced
   zero EV/PnL movement, so the branch needs a wider cohort or a new
   production-visible state before further work.
+- do not retry simple `exec_lag_adj_net_rr` top-quartile allocation scalars or
+  the no-prior-haircut variant on the frozen windows; `exp-20260515-038` was
+  directionally positive but old-window fragile, `exp-20260515-039` was
+  underpowered after breakout narrowing, and `exp-20260515-041` regressed
+  aggregate EV/PnL even after requiring no existing risk haircut. Future R:R
+  work needs a genuinely new production-visible drawdown or catalyst-quality
+  discriminator.
 
 ### SEC Financial-Report Sleeve
 
@@ -186,8 +196,12 @@ Current practical interpretation:
   candidate admission that required all-positive 5d evidence plus positive 10d
   same-theme replacement value: aggregate EV/PnL improved, but `old_thin`
   still regressed and late-window drawdown worsened, so mature-satcom pool
-  expansion remains blocked without additional closed rows or a non-displacing
-  production-visible design;
+  expansion remained blocked;
+- 2026-05-15 `exp-20260515-035` then rejected the non-displacing VSAT fallback
+  design: admitting VSAT only as a `trend_long` fallback on base-official-Space
+  empty dates still left `old_thin` negative and late drawdown worse. Do not
+  retry mature-satcom admission on the frozen windows without new closed
+  forward rows or a genuinely new production-visible catalyst-quality field;
 - the next valid Space step is either a broader mature cohort or a genuinely
   new production-visible catalyst-quality field.
 
@@ -393,6 +407,9 @@ field:
 - nearby RS20 / RS60 / own-candle / clean-SPY scalar tuning;
 - simple RS60 x price-vs-200MA overlap or complement scalars without a new
   drawdown, catalyst-quality, or wider-cohort discriminator;
+- simple `exec_lag_adj_net_rr` allocation scalars, including no-prior-haircut
+  variants, without a genuinely new production-visible drawdown or
+  catalyst-quality discriminator;
 - nearby cap retries after a sleeve-specific cap has already been accepted,
   unless forward cap-room evidence exists;
 - one-ticker cap scouts on already-accepted core sleeves;
