@@ -26,6 +26,7 @@ Execution memory rule: if section 4 has pending_unexecuted_actions for a ticker,
 | position_state  | 动作                                        |
 |-----------------|---------------------------------------------|
 | TARGET_EXIT     | EXIT full target_price exit (code-decided)  |
+| ATR_EXIT        | EXIT full ATR stop exit (code-decided)       |
 | CRITICAL_EXIT   | EXIT 全仓（代码已决定）                     |
 | HIGH_REDUCE     | REDUCE（用 suggested_reduce_pct，代码已决定）|
 | HOLD            | HOLD（代码已决定）                          |
@@ -81,9 +82,10 @@ USER:
 
 任务 B — 现有持仓审查（全部照搬代码决策）：
 - 读第 4 节 position_states 和 suggested_reduce_pct
-- 若第 4 节 manual_trade_conflicts 含某 ticker，除 TARGET_EXIT / HARD_STOP / ATR_STOP 外，不得输出 REDUCE
+- 若第 4 节 manual_trade_conflicts 含某 ticker，除 TARGET_EXIT / ATR_EXIT / HARD_STOP / ATR_STOP 外，不得输出 REDUCE
 - CRITICAL_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
 - TARGET_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- ATR_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
 - HIGH_REDUCE → REDUCE，shares_to_sell = 总股数 × suggested_reduce_pct / 100（向下取整），decision_mode = "forced_rule"
 - HOLD → HOLD，shares_to_sell = null，decision_mode = "forced_rule"
 - pending_unexecuted_actions overrides HOLD: repeat the prior REDUCE/EXIT with decision_mode = "pending_unexecuted_action"

@@ -365,6 +365,13 @@ def test_approaching_hard_stop_no_longer_maps_to_reduce():
     assert suggested_reduce_pct_for_rules(rules, 0.02) == 0
 
 
+def test_atr_stop_no_longer_maps_to_partial_reduce():
+    rules = [{"rule": "ATR_STOP", "urgency": "HIGH"}]
+
+    assert suggested_reduce_pct_for_rules(rules, -0.06) == 0
+    assert suggested_reduce_pct_for_rules(rules, -0.02) == 0
+
+
 def test_profit_lock_rules_no_longer_map_to_partial_reduce():
     assert suggested_reduce_pct_for_rules(
         [{"rule": "SIGNAL_TARGET", "urgency": "HIGH"}],
@@ -481,7 +488,7 @@ def test_backtester_addon_and_slot_defaults_share_constants():
 def test_commodity_near_high_trend_risk_boost_is_shared_sizing_policy():
     signals = [
         {
-            "ticker": "GLD",
+            "ticker": "SLV",
             "strategy": "trend_long",
             "sector": "Commodities",
             "entry_price": 100.0,
@@ -514,6 +521,94 @@ def test_commodity_near_high_trend_risk_boost_is_shared_sizing_policy():
         constants.TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
     )
     assert boosted["risk_pct"] > unboosted["risk_pct"]
+
+
+def test_commodity_breakout_cap_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "GLD",
+            "strategy": "breakout_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 99.5,
+            "trade_quality_score": 0.95,
+            "conditions_met": {},
+        },
+        {
+            "ticker": "IAU",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 99.5,
+            "trade_quality_score": 0.95,
+            "conditions_met": {"pct_from_52w_high": -0.04},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    breakout = sized[0]["sizing"]
+    trend = sized[1]["sizing"]
+    assert breakout["max_position_pct_applied"] == (
+        constants.BREAKOUT_COMMODITIES_MAX_POSITION_PCT
+    )
+    assert breakout["breakout_commodities_max_position_pct_applied"] == (
+        constants.BREAKOUT_COMMODITIES_MAX_POSITION_PCT
+    )
+    assert trend["max_position_pct_applied"] == constants.MAX_POSITION_PCT
+    assert "breakout_commodities_max_position_pct_applied" not in trend
+    assert breakout["shares_to_buy"] == int(
+        100_000 * constants.BREAKOUT_COMMODITIES_MAX_POSITION_PCT / 100.0
+    )
+    assert trend["shares_to_buy"] == int(
+        100_000 * constants.MAX_POSITION_PCT / 100.0
+    )
+
+
+def test_gold_near_high_trend_cap_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "GLD",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "conditions_met": {"pct_from_52w_high": -0.02},
+        },
+        {
+            "ticker": "SLV",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "entry_price": 100.0,
+            "stop_price": 99.0,
+            "trade_quality_score": 0.95,
+            "conditions_met": {"pct_from_52w_high": -0.02},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    gold = sized[0]["sizing"]
+    silver = sized[1]["sizing"]
+    assert gold["max_position_pct_applied"] == (
+        constants.TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT
+    )
+    assert gold["trend_gold_near_high_max_position_pct_applied"] == (
+        constants.TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT
+    )
+    assert silver["max_position_pct_applied"] == (
+        constants.TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
+    )
+    assert "trend_gold_near_high_max_position_pct_applied" not in silver
+    assert gold["shares_to_buy"] == int(
+        100_000 * constants.TREND_GOLD_NEAR_HIGH_MAX_POSITION_PCT / 100.0
+    )
+    assert silver["shares_to_buy"] == int(
+        100_000
+        * constants.TREND_COMMODITIES_NEAR_HIGH_MAX_POSITION_PCT
+        / 100.0
+    )
 
 
 def test_financials_trend_risk_boost_is_shared_sizing_policy():
@@ -708,7 +803,7 @@ def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
     assert confirmed["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
     assert unconfirmed["spy_relative_leader_risk_on_multiplier_applied"] == 2.0
     assert confirmed["max_position_pct_applied"] == (
-        constants.CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
+        constants.CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT
     )
     assert unconfirmed["max_position_pct_applied"] == (
         constants.RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT
@@ -716,8 +811,11 @@ def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
     assert confirmed["clean_spy_leader_signal_day_max_position_pct_applied"] == (
         constants.CLEAN_SPY_LEADER_SIGNAL_DAY_MAX_POSITION_PCT
     )
+    assert confirmed["clean_spy_cap_only_leader_max_position_pct_applied"] == (
+        constants.CLEAN_SPY_CAP_ONLY_LEADER_MAX_POSITION_PCT
+    )
     assert "clean_spy_leader_signal_day_max_position_pct_applied" not in unconfirmed
-    assert confirmed["shares_to_buy"] == 525
+    assert confirmed["shares_to_buy"] == 600
     assert unconfirmed["shares_to_buy"] == 500
 
 

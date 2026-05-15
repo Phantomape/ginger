@@ -168,7 +168,9 @@ def compute_account_state(
             decision_state = "CRITICAL_EXIT"
             has_critical = True
         elif "ATR_STOP" in rule_names:
-            decision_state = "HIGH_REDUCE"
+            # Canonical backtests execute ATR stop_price breaches as full exits.
+            # Keep production preflight aligned with that lifecycle.
+            decision_state = "ATR_EXIT"
         elif "SIGNAL_TARGET" in rule_names:
             decision_state = "TARGET_EXIT"
         elif max_urgency == "HIGH":

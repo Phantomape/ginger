@@ -459,6 +459,44 @@ def test_spy_relative_leader_uses_leader_position_cap():
     assert sized["shares_to_buy"] > int(100000.0 * MAX_POSITION_PCT / 100.0)
 
 
+def test_size_signals_commodity_breakout_uses_sleeve_cap():
+    from constants import BREAKOUT_COMMODITIES_MAX_POSITION_PCT, MAX_POSITION_PCT
+    from portfolio_engine import size_signals
+
+    commodity_breakout = {
+        "ticker": "GLD",
+        "strategy": "breakout_long",
+        "sector": "Commodities",
+        "entry_price": 100.0,
+        "stop_price": 99.5,
+        "trade_quality_score": 0.95,
+    }
+    non_commodity_breakout = {
+        **commodity_breakout,
+        "ticker": "XOM",
+        "sector": "Energy",
+    }
+
+    sized_commodity, sized_non_commodity = size_signals(
+        [commodity_breakout, non_commodity_breakout],
+        portfolio_value=100_000.0,
+    )
+
+    commodity_sizing = sized_commodity["sizing"]
+    non_commodity_sizing = sized_non_commodity["sizing"]
+    assert commodity_sizing["max_position_pct_applied"] == (
+        BREAKOUT_COMMODITIES_MAX_POSITION_PCT
+    )
+    assert commodity_sizing["breakout_commodities_max_position_pct_applied"] == (
+        BREAKOUT_COMMODITIES_MAX_POSITION_PCT
+    )
+    assert commodity_sizing["shares_to_buy"] == int(
+        100_000.0 * BREAKOUT_COMMODITIES_MAX_POSITION_PCT / 100.0
+    )
+    assert non_commodity_sizing["max_position_pct_applied"] == MAX_POSITION_PCT
+    assert "breakout_commodities_max_position_pct_applied" not in non_commodity_sizing
+
+
 def test_trade_quality_score_negative_momentum_not_boosted():
     """Negative momentum must not boost TQS — long-only system should not reward falling stocks."""
     from risk_engine import _trade_quality_score
@@ -4676,7 +4714,7 @@ def test_preflight_outputs_required_fields():
 def test_preflight_trailing_stop_only_no_longer_forces_reduce():
     """
     Contract: pure TRAILING_STOP no longer creates a daily HIGH_REDUCE loop.
-    Other HIGH_REDUCE rules still require pre-computed reduce percentages.
+    ATR_STOP aligns with canonical backtest stop semantics and exits full size.
     """
     from preflight_validator import compute_account_state, enrich_positions_with_breach_status
     ts = _make_preflight_trend_signals(pnl=0.15)  # TRAILING_STOP → HIGH_REDUCE
@@ -4694,9 +4732,10 @@ def test_preflight_trailing_stop_only_no_longer_forces_reduce():
         {"rule": "ATR_STOP", "urgency": "HIGH", "message": "ATR stop hit"}
     ]
     result = compute_account_state(ts, heat_data={}, regime_data={"regime": "NORMAL"})
-    assert result["position_states"].get("TEST") == "HIGH_REDUCE"
-    pct = result["suggested_reduce_pct"]["TEST"]
-    assert pct in (25, 33, 50, 100), f"suggested_reduce_pct={pct} is not a valid percentage"
+    assert result["position_states"].get("TEST") == "ATR_EXIT"
+    assert "TEST" not in result["suggested_reduce_pct"]
+    assert result["account_state"] == "NORMAL"
+    assert result["new_trade_locked"] is False
 
 
 def test_preflight_bear_emergency_stops_populated_when_bear():
@@ -4837,7 +4876,7 @@ PROMPT_FIELD_REGISTRY = {
             "new_trade_locked",        # Task A step 0 shortcut
             "lock_reason",             # explains why trading is locked
             "account_state",           # FIRE | DEFENSIVE | NORMAL
-            "position_states",         # {ticker: CRITICAL_EXIT|HIGH_REDUCE|HOLD}
+            "position_states",         # {ticker: CRITICAL_EXIT|ATR_EXIT|TARGET_EXIT|HIGH_REDUCE|HOLD}
             "manual_trade_conflicts",  # same-day manual BUY guardrail
             "suggested_reduce_pct",    # {ticker: int} — pre-computed reduce %
             "bear_emergency_stops",    # {ticker: float} — current_price × 0.95 in BEAR

@@ -269,16 +269,17 @@ def suggested_reduce_pct_for_rules(
 ):
     """Return the shared production reduce percentage for executable reduce rules.
 
-    Full-position target exits are represented by TARGET_EXIT in preflight, not
-    by a partial REDUCE percentage. Profit-lock ladders are diagnostic only
-    until a shared backtest/production policy proves they add value.
+    Full-position target and ATR stop exits are represented by TARGET_EXIT /
+    ATR_EXIT in preflight, not by partial REDUCE percentages. Profit-lock
+    ladders are diagnostic only until a shared backtest/production policy
+    proves they add value.
     """
     rule_names = {r.get("rule", "") for r in triggered_rules or []}
 
     if "HARD_STOP" in rule_names:
         return 100
     if "ATR_STOP" in rule_names:
-        return 100 if (unrealized_pnl_pct or 0) < -0.05 else 50
+        return 0
     if "TRAILING_STOP" in rule_names and trailing_partial_reduce_enabled:
         return 25 if (unrealized_pnl_pct or 0) > 0.30 else 50
     if "TRAILING_STOP" in rule_names and len(rule_names) == 1:

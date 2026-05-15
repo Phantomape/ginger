@@ -458,7 +458,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "account_state":    preflight["account_state"],
         "new_trade_locked": preflight["new_trade_locked"],
         "lock_reason":      preflight["lock_reason"],
-        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | TARGET_EXIT | HIGH_REDUCE | HOLD}
+        "position_states":      preflight["position_states"],   # {ticker: CRITICAL_EXIT | ATR_EXIT | TARGET_EXIT | HIGH_REDUCE | HOLD}
         "manual_trade_conflicts": preflight.get("manual_trade_conflicts", {}),
         "pending_unexecuted_actions": pending_actions,
         "entry_intent_audit": entry_intent_audit,
@@ -513,6 +513,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1, "LOW": 0}
     _min_surface_rank = 1   # MEDIUM and above always surfaced
     _action_required_low_rules = {"SIGNAL_TARGET"}   # target full exit visibility
+    _review_surface_rules = {"LEGACY_TARGET_REVIEW"}  # visible, but not executable
     if trend_signals and trend_signals.get('signals'):
         for ticker, sig in trend_signals['signals'].items():
             pos_ctx   = sig.get('position', {})
@@ -521,11 +522,19 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             if not (exit_sigs.get('any_triggered') and rules):
                 continue
             max_urgency = max(rules, key=lambda r: _urgency_rank.get(r['urgency'], 0))['urgency']
-            # Include if MEDIUM+ urgency OR if an action-required LOW rule fired
+            # Include if MEDIUM+ urgency, if an action-required LOW rule fired,
+            # or if a non-executable review rule needs operator visibility.
             has_action_required_low = any(
                 r["rule"] in _action_required_low_rules for r in rules
             )
-            if _urgency_rank.get(max_urgency, 0) < _min_surface_rank and not has_action_required_low:
+            has_review_surface_rule = any(
+                r["rule"] in _review_surface_rules for r in rules
+            )
+            if (
+                _urgency_rank.get(max_urgency, 0) < _min_surface_rank
+                and not has_action_required_low
+                and not has_review_surface_rule
+            ):
                 continue
             entry = {
                 "ticker":                      ticker,

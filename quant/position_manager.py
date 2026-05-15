@@ -426,28 +426,45 @@ def evaluate_exit_signals(current_price, avg_cost, exit_levels,
                 ),
             })
 
-    if (
-        not legacy_basis
-        and "signal_target_price" in exit_levels
-        and avg_cost > 0
-    ):
+    if "signal_target_price" in exit_levels and avg_cost > 0:
         sig_target = exit_levels["signal_target_price"]
         target_probe = current_high if current_high is not None else current_price
         target_source = "daily_high" if current_high is not None else "close_fallback"
         if target_probe >= sig_target:
-            triggered.append({
-                "rule": "SIGNAL_TARGET",
-                "urgency": "HIGH",
-                "message": (
-                    f"{target_source} {target_probe:.2f} >= signal target "
-                    f"{sig_target:.2f} "
-                    f"(+{exit_levels['signal_target_pct']*100:.1f}%) - "
-                    "full-position target exit"
-                ),
-                "target_price": sig_target,
-                "price_source": target_source,
-                "trigger_price": round(target_probe, 2),
-            })
+            target_vs_trigger_pct = (
+                (sig_target / target_probe) - 1 if target_probe else 0
+            )
+            if legacy_basis:
+                triggered.append({
+                    "rule": "LEGACY_TARGET_REVIEW",
+                    "urgency": "REVIEW",
+                    "message": (
+                        f"{target_source} {target_probe:.2f} >= signal target "
+                        f"{sig_target:.2f}; legacy basis position requires "
+                        "manual target review, not automatic target exit"
+                    ),
+                    "target_price": sig_target,
+                    "price_source": target_source,
+                    "trigger_price": round(target_probe, 2),
+                    "target_vs_trigger_pct": round(target_vs_trigger_pct, 4),
+                    "stale_target_10pct_below_trigger": (
+                        target_vs_trigger_pct <= -0.10
+                    ),
+                })
+            else:
+                triggered.append({
+                    "rule": "SIGNAL_TARGET",
+                    "urgency": "HIGH",
+                    "message": (
+                        f"{target_source} {target_probe:.2f} >= signal target "
+                        f"{sig_target:.2f} "
+                        f"(+{exit_levels['signal_target_pct']*100:.1f}%) - "
+                        "full-position target exit"
+                    ),
+                    "target_price": sig_target,
+                    "price_source": target_source,
+                    "trigger_price": round(target_probe, 2),
+                })
 
     if days_held is not None and days_held >= TIME_STOP_DAYS:
         profit_target = exit_levels.get("profit_target_price", float("inf"))
