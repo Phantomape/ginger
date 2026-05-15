@@ -104,17 +104,16 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260515-021` keeps live
+Latest accepted default-off Space alpha result: `exp-20260515-024` keeps live
 Space slots at zero and adds only the shared
-`space_defense_budget_same_theme_winner_trend_risk_scalar=1.05` helper on top
-of the accepted `exp-20260514-053` benchmark-breadth / IWM-leader stack. It
-applies to official Space `trend_long` signals tied to defense-budget
-`government_space_contract` rows whose mature 10d profile beat cash and the
-same-theme basket. Against `exp053`, aggregate EV improved `+0.2769` and
-aggregate PnL improved `+$12,791.00` across the three frozen Space replay
-windows: `late_strong` EV `+0.1033`, `mid_weak` EV `+0.1736`, and `old_thin`
+`space_source_diversity_peer_nonleader_trend_risk_scalar=1.025` helper on top
+of the accepted `exp-20260515-021` Space stack. It applies only to
+source-diverse official Space `trend_long` signals whose Space peer momentum
+state is `nonleader`. Against `exp021`, aggregate EV improved `+0.2071` and
+aggregate PnL improved `+$7,097.29` across the three frozen Space replay
+windows: `late_strong` EV `+0.0571`, `mid_weak` EV `+0.1500`, and `old_thin`
 unchanged. Trade count and survival were unchanged; aggregate max drawdown
-ceiling drift stayed inside Gate 4 (`+0.34 pp`). The helper lives in shared
+ceiling drift stayed inside Gate 4 (`+0.42 pp`). The helper lives in shared
 `space_catalyst_sleeve.py`, is surfaced in the production observation
 slot/report, has focused parity tests, and remains observe-only/default-off.
 
@@ -204,7 +203,8 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `exp-20260514-002`, `exp-20260514-009`, `exp-20260514-024`,
 `exp-20260514-026`, `exp-20260514-028`, `exp-20260514-030`,
 `exp-20260514-041`, `exp-20260514-044`, `exp-20260514-047`,
-`exp-20260514-051`, `exp-20260514-053`, and `exp-20260515-021`.
+`exp-20260514-051`, `exp-20260514-053`, `exp-20260515-021`, and
+`exp-20260515-024`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -238,7 +238,9 @@ get `1.05x` extra default-off risk when IWM 20d momentum beats SPY 20d
 momentum, and source-diverse official Space signals that also lead the Space
 peer basket while IWM beats SPY get a further `1.05x` extra default-off risk,
 and source-diverse official Space `trend_long` signals get a further
-`1.025x` extra default-off risk,
+`1.025x` extra default-off risk, and that source-diverse trend bucket gets a
+further `1.025x` extra default-off risk when Space peer momentum state is
+`nonleader`,
 and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward
@@ -354,6 +356,15 @@ drawdown ceiling drift inside Gate 4 at `+0.34 pp`, and kept trade count `68`
 signals), so do not retry nearby defense-budget same-theme winner scalars on
 these frozen windows without new closed forward evidence or a materially
 different production-visible catalyst-quality field.
+`exp-20260515-024` then accepted a source-diversity peer-nonleader trend
+interaction at `1.025x`: current three-window replay moved aggregate EV from
+`24.9753` to `25.1824`, PnL from `$665,315.40` to `$672,412.69`, improved
+`late_strong` and `mid_weak`, left `old_thin` unchanged, kept aggregate max
+drawdown ceiling drift inside Gate 4 at `+0.42 pp`, and kept trade count `68`
+/ minimum survival `64.00%`. The adjusted slice was `ASTS` and `RKLB`, 4
+signals; stronger nearby values had higher raw EV but failed the drawdown
+guardrail, so do not retry adjacent source-diversity peer-nonleader trend
+scalars without new closed forward evidence.
 
 Latest rejected Space alpha search: `exp-20260513-019` tested whether the
 accepted customer-source edge should also top up peer-nonleader official Space

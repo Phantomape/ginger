@@ -450,6 +450,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     )
     assert (
         snapshot["forward_hypothesis"][
+            "space_source_diversity_peer_nonleader_trend_experiment_id"
+        ]
+        == "exp-20260515-024"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_peer_nonleader_trend_risk_scalar"
+        ]
+        == 1.025
+    )
+    assert (
+        snapshot["forward_hypothesis"][
             "space_forward_replacement_positive_experiment_id"
         ]
         == "exp-20260513-113"
@@ -1834,14 +1846,16 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
     assert plan["space_source_diversity_peer_iwm_leader_risk_scalar"] == 1.0
     assert plan["space_source_diversity_trend_bucket"] is True
     assert plan["space_source_diversity_trend_risk_scalar"] == 1.025
+    assert plan["space_source_diversity_peer_nonleader_trend_bucket"] is True
+    assert plan["space_source_diversity_peer_nonleader_trend_risk_scalar"] == 1.025
     assert plan["space_event_source_profile"]["event_fields"] == ["customer_win"]
     assert plan["space_multi_event_depth_profile"]["event_count"] == 2
     assert plan["space_attention_overlay_profile"]["attention_event_ids"] == [
         "spacex_ipo_proxy"
     ]
     assert plan["space_source_diversity_profile"]["event_count"] == 2
-    assert plan["effective_risk_scalar"] == 2.840274
-    assert plan["paper_sizing"]["scaled_position_value_usd"] == 2840.27
+    assert plan["effective_risk_scalar"] == 2.91128
+    assert plan["paper_sizing"]["scaled_position_value_usd"] == 2911.28
     assert plan["blocked_reason"] == "live_slots_zero_forward_gate_pending"
     assert plan["same_day_core_alternative_count"] == 1
     assert snapshot["production_impact"]["alters_orders"] is False
@@ -1966,6 +1980,8 @@ def test_space_catalyst_observation_slot_marks_source_diversity_peer_leader():
     assert plan["space_source_diversity_peer_iwm_leader_risk_scalar"] == 1.0
     assert plan["space_source_diversity_trend_bucket"] is True
     assert plan["space_source_diversity_trend_risk_scalar"] == 1.025
+    assert plan["space_source_diversity_peer_nonleader_trend_bucket"] is False
+    assert plan["space_source_diversity_peer_nonleader_trend_risk_scalar"] == 1.0
     assert plan["effective_risk_scalar"] == 1.045404
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 1045.4
 
@@ -2037,6 +2053,8 @@ def test_space_catalyst_observation_slot_marks_source_diversity_peer_iwm_leader(
     assert plan["space_source_diversity_peer_iwm_leader_risk_scalar"] == 1.05
     assert plan["space_source_diversity_trend_bucket"] is True
     assert plan["space_source_diversity_trend_risk_scalar"] == 1.025
+    assert plan["space_source_diversity_peer_nonleader_trend_bucket"] is False
+    assert plan["space_source_diversity_peer_nonleader_trend_risk_scalar"] == 1.0
     assert plan["effective_risk_scalar"] == 1.457986
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 1457.99
 
@@ -2939,6 +2957,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_source_diversity_iwm_leader_risk_scalar": 1.05,
                 "space_source_diversity_peer_iwm_leader_risk_scalar": 1.05,
                 "space_source_diversity_trend_risk_scalar": 1.025,
+                "space_source_diversity_peer_nonleader_trend_risk_scalar": 1.025,
                 "space_forward_replacement_positive_horizon": "10d",
                 "space_forward_replacement_positive_risk_scalar": 1.05,
                 "space_forward_replacement_same_theme_strength_min_value": 500.0,
@@ -2987,6 +3006,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_source_diversity_iwm_leader_bucket": True,
                     "space_source_diversity_peer_iwm_leader_bucket": True,
                     "space_source_diversity_trend_bucket": True,
+                    "space_source_diversity_peer_nonleader_trend_bucket": True,
                     "space_forward_replacement_positive_bucket": True,
                     "space_forward_replacement_same_theme_strength_bucket": True,
                     "space_forward_replacement_trend_strength_bucket": True,
@@ -3057,6 +3077,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source-diversity IWM-leader @ 1.05x; "
         "source-diversity peer+IWM leader @ 1.05x; "
         "source-diversity trend @ 1.025x; "
+        "source-diversity peer-nonleader trend @ 1.025x; "
         "forward replacement-positive 10d @ 1.05x; "
         "forward same-theme replacement-strength >=500.0 @ 1.05x; "
         "forward replacement-strength trend @ 1.05x; "
@@ -3084,6 +3105,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source_diversity_iwm_leader=True "
         "source_diversity_peer_iwm_leader=True "
         "source_diversity_trend=True "
+        "source_diversity_peer_nonleader_trend=True "
         "forward_replacement_positive=True "
         "forward_replacement_same_theme_strength=True "
         "forward_replacement_trend_strength=True "

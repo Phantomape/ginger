@@ -139,7 +139,7 @@ Current practical interpretation:
 ### Space Default-Off Sleeve
 
 Current checkpoint is the accepted default-off Space stack through
-`exp-20260515-021`.
+`exp-20260515-024`.
 
 Mechanism-level summary:
 
@@ -167,6 +167,10 @@ Current practical interpretation:
   inside that accepted defense-budget same-theme winner cohort: aggregate
   EV/PnL improved, but only `late_strong` moved, the cohort was two RKLB
   signals, and max drawdown worsened by 1.27 pp;
+- 2026-05-15 `exp-20260515-024` accepted a broader
+  source-diversity peer-nonleader `trend_long` allocation scalar at `1.025x`:
+  two windows improved, the old thin window was unchanged, and
+  trade count/survival stayed unchanged;
 - the next valid Space step is either a broader mature cohort or a genuinely
   new production-visible catalyst-quality field.
 
