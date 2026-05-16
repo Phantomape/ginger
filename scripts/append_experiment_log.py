@@ -181,8 +181,8 @@ rows.append({
         "quant/llm_replay.py",
         "quant/backtester.py",
         "quant/test_quant.py",
-        "data/backtest_results_20260417_baseline.json",
-        "data/backtest_results_20260417_replay.json",
+        "data/backtests/backtest_results_20260417_baseline.json",
+        "data/backtests/backtest_results_20260417_replay.json",
     ],
     "notes": "Off-mode numerics identical to baseline (code path is pure passthrough when replay_llm=False). On-mode attribution is statistically immaterial at n=5 covered days — value is the mechanism, not the current delta.",
 })

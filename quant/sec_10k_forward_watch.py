@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import data_artifact_path
+
 
 SCHEMA_VERSION = 1
 WATCH_NAME = "SEC_10K_LIQUIDITY_FORWARD_WATCH"
@@ -23,8 +25,8 @@ ADV_GE_20M = 20_000_000
 ADV_LOOKBACK_DAYS = 20
 MIN_ADV_OBSERVATIONS = 20
 
-DEFAULT_LEDGER_PATH = Path("data/sec_10k_liquidity_forward_watch.jsonl")
-DEFAULT_SUMMARY_PATH = Path("data/sec_10k_liquidity_forward_watch_summary.json")
+DEFAULT_LEDGER_PATH = data_artifact_path("sec_10k_liquidity_forward_watch")
+DEFAULT_SUMMARY_PATH = data_artifact_path("sec_10k_liquidity_forward_watch_summary")
 
 
 def utc_now_iso() -> str:

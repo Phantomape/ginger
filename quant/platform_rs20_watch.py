@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import data_artifact_path
+
 
 SCHEMA_VERSION = 1
 WATCH_NAME = "PLATFORM_RS20_NO_GAP_FORWARD_WATCH"
@@ -22,8 +24,8 @@ PLATFORM_POOL = ("META", "NFLX", "GOOG", "AMZN", "SPOT", "DIS", "APP")
 RS20_EXCESS_THRESHOLD = 0.05
 GAP_UP_THRESHOLD = 0.03
 
-DEFAULT_LEDGER_PATH = Path("data/platform_rs20_no_gap_forward_watch.jsonl")
-DEFAULT_SUMMARY_PATH = Path("data/platform_rs20_no_gap_forward_watch_summary.json")
+DEFAULT_LEDGER_PATH = data_artifact_path("platform_rs20_no_gap_forward_watch")
+DEFAULT_SUMMARY_PATH = data_artifact_path("platform_rs20_no_gap_forward_watch_summary")
 
 
 def utc_now_iso() -> str:

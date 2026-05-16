@@ -7,6 +7,111 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = REPO_ROOT / "data"
 
 
+DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
+    "crypto_positions": ("state/crypto/crypto_positions.json", "crypto_positions.json"),
+    "pending_actions": ("state/execution/pending_actions.json", "pending_actions.json"),
+    "pilot_competition_decisions": (
+        "ledgers/pilot_competition_decisions.jsonl",
+        "pilot_competition_decisions.jsonl",
+    ),
+    "platform_rs20_no_gap_forward_watch": (
+        "paper_sleeves/platform_rs20_no_gap/forward_watch.jsonl",
+        "platform_rs20_no_gap_forward_watch.jsonl",
+    ),
+    "platform_rs20_no_gap_forward_watch_summary": (
+        "paper_sleeves/platform_rs20_no_gap/summary.json",
+        "platform_rs20_no_gap_forward_watch_summary.json",
+    ),
+    "sec_company_tickers": ("reference/sec_company_tickers.json", "sec_company_tickers.json"),
+    "universe_events": ("state/universe/universe_events.jsonl", "universe_events.jsonl"),
+    "universe_registry": ("state/universe/universe_registry.json", "universe_registry.json"),
+    "form4_event_sleeve_paper_snapshots": (
+        "paper_sleeves/form4/snapshots.jsonl",
+        "form4_event_sleeve_paper_snapshots.jsonl",
+    ),
+    "form4_event_sleeve_paper_state": (
+        "paper_sleeves/form4/state.json",
+        "form4_event_sleeve_paper_state.json",
+    ),
+    "low_deployment_etf_overlay_snapshots": (
+        "paper_sleeves/low_deployment_etf/snapshots.jsonl",
+        "low_deployment_etf_overlay_snapshots.jsonl",
+    ),
+    "low_deployment_etf_overlay_state": (
+        "paper_sleeves/low_deployment_etf/state.json",
+        "low_deployment_etf_overlay_state.json",
+    ),
+    "sec_10k_liquidity_forward_watch": (
+        "paper_sleeves/sec_10k_liquidity/forward_watch.jsonl",
+        "sec_10k_liquidity_forward_watch.jsonl",
+    ),
+    "sec_10k_liquidity_forward_watch_summary": (
+        "paper_sleeves/sec_10k_liquidity/summary.json",
+        "sec_10k_liquidity_forward_watch_summary.json",
+    ),
+    "sec_financial_report_event_sleeve_paper_snapshots": (
+        "paper_sleeves/sec_financial_report/snapshots.jsonl",
+        "sec_financial_report_event_sleeve_paper_snapshots.jsonl",
+    ),
+    "sec_financial_report_event_sleeve_paper_state": (
+        "paper_sleeves/sec_financial_report/state.json",
+        "sec_financial_report_event_sleeve_paper_state.json",
+    ),
+    "sec_governance_event_sleeve_paper_snapshots": (
+        "paper_sleeves/sec_governance/snapshots.jsonl",
+        "sec_governance_event_sleeve_paper_snapshots.jsonl",
+    ),
+    "sec_governance_event_sleeve_paper_state": (
+        "paper_sleeves/sec_governance/state.json",
+        "sec_governance_event_sleeve_paper_state.json",
+    ),
+    "sec_leadership_event_sleeve_paper_snapshots": (
+        "paper_sleeves/sec_leadership/snapshots.jsonl",
+        "sec_leadership_event_sleeve_paper_snapshots.jsonl",
+    ),
+    "sec_leadership_event_sleeve_paper_state": (
+        "paper_sleeves/sec_leadership/state.json",
+        "sec_leadership_event_sleeve_paper_state.json",
+    ),
+    "sec_negative_event_sleeve_paper_snapshots": (
+        "paper_sleeves/sec_negative/snapshots.jsonl",
+        "sec_negative_event_sleeve_paper_snapshots.jsonl",
+    ),
+    "sec_negative_event_sleeve_paper_state": (
+        "paper_sleeves/sec_negative/state.json",
+        "sec_negative_event_sleeve_paper_state.json",
+    ),
+    "space_catalyst_event_seeds": (
+        "paper_sleeves/space_catalyst/event_seeds.jsonl",
+        "space_catalyst_event_seeds.jsonl",
+    ),
+    "space_catalyst_event_state_shadow_ledger": (
+        "paper_sleeves/space_catalyst/event_state_shadow_ledger.jsonl",
+        "space_catalyst_event_state_shadow_ledger.jsonl",
+    ),
+    "space_catalyst_event_state_shadow_summary": (
+        "paper_sleeves/space_catalyst/event_state_shadow_summary.json",
+        "space_catalyst_event_state_shadow_summary.json",
+    ),
+    "space_catalyst_observation_slot_ledger": (
+        "paper_sleeves/space_catalyst/observation_slot_ledger.jsonl",
+        "space_catalyst_observation_slot_ledger.jsonl",
+    ),
+    "space_catalyst_observation_slot_summary": (
+        "paper_sleeves/space_catalyst/observation_slot_summary.json",
+        "space_catalyst_observation_slot_summary.json",
+    ),
+    "state_surface_sleeve_paper_snapshots": (
+        "paper_sleeves/state_surface/snapshots.jsonl",
+        "state_surface_sleeve_paper_snapshots.jsonl",
+    ),
+    "state_surface_sleeve_paper_state": (
+        "paper_sleeves/state_surface/state.json",
+        "state_surface_sleeve_paper_state.json",
+    ),
+}
+
+
 DAILY_ARTIFACTS: dict[str, tuple[str, str]] = {
     "news": ("daily/news/raw", "news_{date}.json"),
     "news_source_stats": ("daily/news/source_stats", "news_source_stats_{date}.json"),
@@ -38,6 +143,21 @@ def is_default_data_dir(data_dir: str | Path | None = None) -> bool:
         return root.resolve() == DATA_ROOT.resolve()
     except OSError:
         return False
+
+
+def data_artifact_path(key: str, data_dir: str | Path | None = None) -> Path:
+    """Return the organized path for a named durable data artifact.
+
+    If a custom checkout still has the legacy root-level file and no organized
+    file yet, the legacy path is returned for read/write compatibility.
+    """
+    organized_rel, legacy_name = DATA_ARTIFACTS[key]
+    root = _root(data_dir)
+    organized = root / organized_rel
+    legacy = root / legacy_name
+    if organized.exists() or not legacy.exists():
+        return organized
+    return legacy
 
 
 def daily_artifact_path(

@@ -15,7 +15,7 @@ import os
 from datetime import datetime
 from typing import Any
 
-from data_paths import daily_artifact_glob
+from data_paths import daily_artifact_glob, data_artifact_path
 
 PENDING_ACTIONS_FILENAME = "pending_actions.json"
 ACTIONABLE = {"ADD", "REDUCE", "EXIT"}
@@ -74,7 +74,7 @@ def _unwrap_advice(payload: Any) -> dict | None:
 
 
 def load_pending_actions(data_dir: str = "data") -> list[dict]:
-    path = os.path.join(data_dir, PENDING_ACTIONS_FILENAME)
+    path = data_artifact_path("pending_actions", data_dir)
     payload = _load_json(path)
     if isinstance(payload, dict):
         actions = payload.get("pending_actions", [])
@@ -85,15 +85,15 @@ def load_pending_actions(data_dir: str = "data") -> list[dict]:
 
 
 def save_pending_actions(actions: list[dict], data_dir: str = "data") -> str:
-    os.makedirs(data_dir, exist_ok=True)
-    path = os.path.join(data_dir, PENDING_ACTIONS_FILENAME)
+    path = data_artifact_path("pending_actions", data_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "updated_at": datetime.now().isoformat(),
         "pending_actions": actions,
     }
-    with open(path, "w", encoding="utf-8") as f:
+    with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
-    return path
+    return str(path)
 
 
 def _make_pending_record(

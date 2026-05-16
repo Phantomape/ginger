@@ -19,13 +19,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import data_artifact_path
+
 
 SLEEVE_NAME = "LOW_DEPLOYMENT_DYNAMIC_ETF_OVERLAY_PAPER"
 RULE_VERSION = "low_deployment_dynamic_etf_overlay_v1"
 STATE_SCHEMA_VERSION = 1
 
-DEFAULT_STATE_PATH = Path("data/low_deployment_etf_overlay_state.json")
-DEFAULT_SNAPSHOT_LOG_PATH = Path("data/low_deployment_etf_overlay_snapshots.jsonl")
+DEFAULT_STATE_PATH = data_artifact_path("low_deployment_etf_overlay_state")
+DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("low_deployment_etf_overlay_snapshots")
 
 DEFAULT_CONFIG = {
     "enabled": False,

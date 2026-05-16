@@ -17,6 +17,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import data_artifact_path
+
 try:
     from constants import ROUND_TRIP_COST_PCT
 except ImportError:  # pragma: no cover - package-style imports in tests
@@ -30,8 +32,8 @@ BENCHMARK_MOMENTUM_GATE_RULE_VERSION = "state_surface_benchmark_momentum_gate_v1
 STATE_SCHEMA_VERSION = 1
 INDEX_TICKERS = {"SPY", "QQQ", "IWM"}
 
-DEFAULT_STATE_PATH = Path("data/state_surface_sleeve_paper_state.json")
-DEFAULT_SNAPSHOT_LOG_PATH = Path("data/state_surface_sleeve_paper_snapshots.jsonl")
+DEFAULT_STATE_PATH = data_artifact_path("state_surface_sleeve_paper_state")
+DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("state_surface_sleeve_paper_snapshots")
 
 DEFAULT_CONFIG = {
     "enabled": False,

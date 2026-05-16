@@ -45,7 +45,7 @@ large shared JSON document.
   "hypothesis": "Breakout losses cluster in one reproducible follow-through failure mode.",
   "change_type": "analysis_only",
   "single_causal_variable": "breakout follow-through taxonomy",
-  "baseline_result_file": "data/backtest_results_20260425.json",
+  "baseline_result_file": "data/backtests/backtest_results_20260425.json",
   "allowed_write_scope": [
     "quant/experiments/exp_20260425_001_breakout_follow_through_taxonomy.py",
     "data/experiments/exp-20260425-001/exp_20260425_001_breakout_follow_through_taxonomy.json",
@@ -119,8 +119,8 @@ Example observed-only closeout:
 ```powershell
 python scripts\judge_experiment.py `
   --experiment-id exp-20260425-001 `
-  --before data\backtest_results_20260424.json `
-  --after data\backtest_results_20260425.json `
+  --before data\backtests\backtest_results_20260424.json `
+  --after data\backtests\backtest_results_20260425.json `
   --status-override observed_only `
   --change-summary "Recorded a reproducible loss taxonomy." `
   --append-log `

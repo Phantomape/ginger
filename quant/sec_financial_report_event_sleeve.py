@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import data_artifact_path
+
 try:
     from constants import ROUND_TRIP_COST_PCT
     from sec_event_queue import (
@@ -33,9 +35,9 @@ DEFAULT_EVENT_NOTIONAL_USD = 15_000.0
 DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR = 1.25
 DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR = 2.0
 DEFAULT_MAX_POSITIONS = 3
-DEFAULT_STATE_PATH = Path("data/sec_financial_report_event_sleeve_paper_state.json")
-DEFAULT_SNAPSHOT_LOG_PATH = Path(
-    "data/sec_financial_report_event_sleeve_paper_snapshots.jsonl"
+DEFAULT_STATE_PATH = data_artifact_path("sec_financial_report_event_sleeve_paper_state")
+DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path(
+    "sec_financial_report_event_sleeve_paper_snapshots"
 )
 
 DEFAULT_CONFIG = {

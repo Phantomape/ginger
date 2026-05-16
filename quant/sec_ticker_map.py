@@ -6,9 +6,11 @@ import urllib.request
 import gzip
 from pathlib import Path
 
+from data_paths import data_artifact_path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CACHE_PATH = REPO_ROOT / "data" / "sec_company_tickers.json"
+DEFAULT_CACHE_PATH = data_artifact_path("sec_company_tickers")
 SEC_COMPANY_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 SEC_TITLE_RE = re.compile(
     r"^\s*(?P<form>[A-Z0-9/-]+)\s+-\s+(?P<company>.*?)\s+\((?P<cik>\d{1,10})\)\s+\((?P<role>[^)]*)\)",

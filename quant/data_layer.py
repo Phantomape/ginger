@@ -56,6 +56,51 @@ def get_universe():
     return sorted(universe)
 
 
+def _normalize_ohlcv_frame(ticker, data):
+    if data is None or data.empty:
+        logger.warning("%s: no OHLCV data returned", ticker)
+        return None
+
+    if isinstance(data.columns, pd.MultiIndex):
+        ticker_key = str(ticker).upper()
+        level0_key = next(
+            (
+                value
+                for value in data.columns.get_level_values(0)
+                if str(value).upper() == ticker_key
+            ),
+            None,
+        )
+        level1_key = next(
+            (
+                value
+                for value in data.columns.get_level_values(1)
+                if str(value).upper() == ticker_key
+            ),
+            None,
+        )
+        if level0_key is not None:
+            data = data[level0_key]
+        elif level1_key is not None:
+            data = data.xs(level1_key, axis=1, level=1)
+        else:
+            logger.warning("%s: no OHLCV slice in bulk download", ticker)
+            return None
+
+    required = ["Open", "High", "Low", "Close", "Volume"]
+    missing = [c for c in required if c not in data.columns]
+    if missing:
+        logger.warning("%s: missing columns %s", ticker, missing)
+        return None
+
+    data = data[required].dropna(how="all")
+    if data.empty:
+        logger.warning("%s: OHLCV slice empty after dropping blank rows", ticker)
+        return None
+
+    return data
+
+
 def get_ohlcv(ticker, lookback_days=400):
     """
     Download daily OHLCV data for a ticker.
@@ -75,25 +120,65 @@ def get_ohlcv(ticker, lookback_days=400):
             auto_adjust=True,
         )
 
-        if data is None or data.empty:
-            logger.warning("%s: no OHLCV data returned", ticker)
+        normalized = _normalize_ohlcv_frame(ticker, data)
+        if normalized is None:
             return None
 
-        if isinstance(data.columns, pd.MultiIndex):
-            data.columns = data.columns.get_level_values(0)
-
-        required = ["Open", "High", "Low", "Close", "Volume"]
-        missing = [c for c in required if c not in data.columns]
-        if missing:
-            logger.warning("%s: missing columns %s", ticker, missing)
-            return None
-
-        logger.info("%s: %s trading days downloaded", ticker, len(data))
-        return data
+        logger.info("%s: %s trading days downloaded", ticker, len(normalized))
+        return normalized
 
     except Exception as e:
         logger.error("%s: OHLCV download failed - %s", ticker, e)
         return None
+
+
+def get_ohlcv_many(tickers, lookback_days=400):
+    """
+    Download daily OHLCV data for many tickers in one vendor call.
+
+    Missing or malformed slices fall back to the single-ticker path so callers
+    keep the same best-effort behavior as repeated get_ohlcv() calls.
+    """
+    unique_tickers = list(dict.fromkeys(str(t).upper() for t in tickers if t))
+    if not unique_tickers:
+        return {}
+
+    try:
+        end = datetime.now()
+        start = end - timedelta(days=lookback_days)
+        ticker_arg = unique_tickers if len(unique_tickers) > 1 else unique_tickers[0]
+        bulk = yf.download(
+            ticker_arg,
+            start=start,
+            end=end,
+            progress=False,
+            auto_adjust=True,
+            group_by="ticker",
+            threads=True,
+        )
+    except Exception as e:
+        logger.error("Bulk OHLCV download failed - %s", e)
+        bulk = None
+
+    results = {}
+    for ticker in unique_tickers:
+        normalized = _normalize_ohlcv_frame(ticker, bulk)
+        if normalized is not None:
+            logger.info("%s: %s trading days downloaded", ticker, len(normalized))
+        results[ticker] = normalized
+
+    missing = [ticker for ticker, data in results.items() if data is None]
+    if missing:
+        logger.warning(
+            "Bulk OHLCV missing %d/%d ticker(s); falling back individually: %s",
+            len(missing),
+            len(unique_tickers),
+            missing,
+        )
+        for ticker in missing:
+            results[ticker] = get_ohlcv(ticker, lookback_days=lookback_days)
+
+    return results
 
 
 def _coerce_as_of_date(as_of):

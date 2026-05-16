@@ -1,8 +1,8 @@
 # Data Directory Layout
 
 `data/` is organized by artifact role. Daily production archives live under
-`data/daily/`; long-lived state, caches, and fixed historical compatibility
-anchors may remain at the root.
+`data/daily/`; durable state, ledgers, snapshots, and experiment outputs live
+in named subdirectories. The root should stay limited to this README.
 
 ## Daily Archives
 
@@ -31,25 +31,28 @@ legacy root filename for older checkouts or custom test directories.
 ## Other Directories
 
 - `backtests/`: new `backtest_results_*.json` outputs.
+- `cache/`: local API/vendor caches, grouped by provider/domain and ignored
+  by git.
 - `diagnostics/`: ad hoc audits and oracle/diagnostic artifacts.
 - `experiments/`: experiment outputs keyed by experiment id.
-- `experiments/legacy-root/`: old root-level `exp*` files moved out of the
-  data root without changing their contents.
+- `experiments/current/`: current aggregate experiment/audit views that are
+  not tied to one experiment id.
+- `ledgers/`: append-only operational ledgers, such as pilot competition
+  decisions.
 - `non_ohlcv/`: SEC, Form 4, companyfacts, and other external data.
+- `ohlcv/`: deterministic OHLCV snapshots used by standard replay windows.
+- `paper_sleeves/`: default-off paper sleeve state and snapshot logs, grouped
+  by sleeve name.
+- `reference/`: reusable static or cached reference data, such as SEC ticker
+  maps.
+- `state/`: durable operator or production state, grouped by domain.
 - `tmp/`: local temporary indexes and scratch files; ignored by git.
-- `*_cache/`: local fetch/cache directories; ignored by git where appropriate.
 
 ## Root Compatibility Anchors
 
-Keep root-level files that are shared state or heavily referenced by historical
-experiments, including:
-
-- `pending_actions.json`
-- `universe_registry.json`
-- `universe_events.jsonl`
-- `sec_company_tickers.json`
-- `ohlcv_snapshot_*.json`
-- existing `backtest_results_*.json`
+Do not add new root-level data artifacts. Production/replay code should use
+`quant/data_paths.py`, whose resolvers prefer the organized paths and fall
+back to legacy root filenames for older checkouts or custom test directories.
 
 Manual operator-maintained inputs live in `../operator_inputs/`, especially
 `open_positions.json` and `manual_trades.jsonl`.

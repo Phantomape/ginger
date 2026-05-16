@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import pandas as pd
 import yfinance as yf
 
+from data_paths import data_artifact_path
 from yfinance_bootstrap import configure_yfinance_runtime
 
 logger = logging.getLogger(__name__)
@@ -34,14 +35,9 @@ DEFAULT_CRYPTO_CONFIG = {
 
 
 def load_crypto_config(path=None):
-    """Load optional crypto sleeve settings from data/crypto_positions.json."""
+    """Load optional crypto sleeve settings from data/state/crypto/crypto_positions.json."""
     if path is None:
-        path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "data",
-            "crypto_positions.json",
-        )
+        path = data_artifact_path("crypto_positions")
 
     config = dict(DEFAULT_CRYPTO_CONFIG)
     if not os.path.exists(path):

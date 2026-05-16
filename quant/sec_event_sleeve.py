@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from data_paths import data_artifact_path
+
 try:
     from constants import ROUND_TRIP_COST_PCT
     from sec_event_queue import (
@@ -32,8 +34,8 @@ SLEEVE_NAME = "SEC_GOVERNANCE_EVENT_SLEEVE_PAPER"
 STATE_SCHEMA_VERSION = 1
 DEFAULT_EVENT_NOTIONAL_USD = 10_000.0
 DEFAULT_MAX_POSITIONS = 1
-DEFAULT_STATE_PATH = Path("data/sec_governance_event_sleeve_paper_state.json")
-DEFAULT_SNAPSHOT_LOG_PATH = Path("data/sec_governance_event_sleeve_paper_snapshots.jsonl")
+DEFAULT_STATE_PATH = data_artifact_path("sec_governance_event_sleeve_paper_state")
+DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("sec_governance_event_sleeve_paper_snapshots")
 
 DEFAULT_CONFIG = {
     "enabled": False,
