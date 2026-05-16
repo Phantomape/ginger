@@ -57,6 +57,34 @@ production default. Do not retry nearby Industrials trend risk scalars without
 a materially new production-visible discriminator or forward replacement-value
 evidence.
 
+Latest rejected sample-thin Technology / semiconductor scout:
+`exp-20260516-012` tested a replay-only post-sizing haircut for existing
+`trend_long` semiconductor / AI-chip signals whose signal-day candle was not
+green. The best scalar was `0.00x` and the result was directionally positive
+across the canonical windows without a regressed window: aggregate EV
+`+0.0044` and aggregate PnL `+$143.90`, with `late_strong` `+0.0017` EV /
+`+$40.86`, `mid_weak` `+0.0027` EV / `+$103.04`, and `old_thin` unchanged.
+However, the adjusted cohort was only two `TSM` signals, below the mature-
+cohort guardrail, so no shared policy was promoted. Treat this as a forward
+attribution clue, not a production rule; do not retry nearby hand-bounded
+semiconductor non-green trend haircuts without a broader industry field or
+forward ticker-level contribution evidence.
+
+Latest promising replay-only event allocation result: `exp-20260516-013`
+revalidated the `rotation_breakout_leadership` surface after the accepted
+`exp-20260516-009` core stack. It changed only default-off paper event notional
+inside the event bundle; core entries, sizing, exits, ranking, LLM/news, and
+live orders were unchanged. The best variant was a `3.0x`
+`rotation_breakout_leadership` scalar above the current `2.0x` non-generic
+positive event-surface add-on. Versus the current paper lead, aggregate EV
+improved `+0.5237` and aggregate PnL improved `+$7,987.90`, with all three
+windows positive (`late_strong +0.3002`, `mid_weak +0.2159`, `old_thin
++0.0076` EV). The sample guard passed with 7 rotation-surface trades across all
+three windows, 85.71% win rate, and max single positive PnL share `0.531`.
+This remains replay-only: do not route live/default capital until a shared
+trade-enabled event adapter, parity tests, and closed forward replacement-value
+evidence exist.
+
 Latest rejected execution alpha scout: `exp-20260516-007` tested a replay-only
 delayed open-pullback entry for rank-1 `trade_quality_score >= 0.95`
 `gap_cancel` candidates. It did not change production logic. Aggregate EV

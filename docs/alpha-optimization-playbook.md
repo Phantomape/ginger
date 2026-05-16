@@ -67,6 +67,10 @@ These checkpoints anchor the current playbook. They are not daily notes.
   overkill after `exp-20260516-011`: restoring even `0.10x` risk improved only
   `late_strong`, regressed both weaker validation windows, cut aggregate EV by
   `0.8913`, and worsened the drawdown ceiling by `1.84 pp`.
+- Semiconductor false-trend work has a small positive clue but not a tradable
+  rule after `exp-20260516-012`: zeroing non-green `trend_long` semiconductor
+  signals improved EV by `0.0044` with no regressed window, but it touched only
+  two `TSM` signals. Treat this as forward attribution, not a promoted alpha.
 
 Current interpretation:
 
@@ -84,6 +88,12 @@ Current interpretation:
   source quality, peer-relative state, and mature forward replacement evidence
   can help as quarantined allocation states, but broad ticker admission and
   sample-thin interaction retries usually fail.
+- The default-off event bundle remains the strongest non-core replay family
+  after `exp-20260516-013`: `rotation_breakout_leadership` at a bounded `3.0x`
+  paper notional improved all three current-stack windows versus the `2.0x`
+  non-generic positive event-surface lead, with 7 rotation-surface trades and a
+  passing sample-concentration guard. This is still paper-only until a shared
+  trade-enabled adapter and forward replacement-value evidence exist.
 - Recent Space accepts were still allocation-only. Recent Space rejects were
   mostly pool-expansion, ticker-expansion, slot-compression, or one-ticker
   interaction stories.
@@ -289,6 +299,8 @@ production-visible field:
 - nearby `price_vs_200ma` extension and green-deceleration scalar tuning;
 - nearby `trend_long` Industrials zero-risk restoration scalars; future work
   needs a new production-visible discriminator, not another partial restore;
+- nearby hand-bounded semiconductor non-green trend haircuts; future work needs
+  a broader industry field or forward ticker-level contribution evidence;
 - simple `exec_lag_adj_net_rr` allocation scalars without a new drawdown or
   catalyst-quality discriminator;
 - nearby cap retries after a sleeve-specific cap was already accepted;
