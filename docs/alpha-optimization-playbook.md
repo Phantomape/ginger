@@ -119,6 +119,14 @@ Current practical interpretation:
 - do not retry the simple confirmed-quality x top-quartile sector-thrust
   interaction on the frozen windows; `exp-20260515-032` was directionally
   positive only in `mid_weak` and still regressed `old_thin`.
+- do not retry simple high-quality `gap_cancel` delayed open-pullback entry on
+  the frozen windows; `exp-20260516-007` improved aggregate EV/PnL only because
+  of one late-window `CRDO` recovery trade, while `old_thin` regressed on
+  `CRDO`/`AVGO` pullbacks and the sample-concentration guard failed.
+- do not retry simple prior-red/current-green reversal confirmation top-ups on
+  the frozen windows; `exp-20260515-045` had positive aggregate EV/PnL but
+  still regressed `old_thin`, so reversal work needs a materially different
+  production-visible quality state.
 - do not retry simple RS60 x price-vs-200MA overlap top-ups on the frozen
   windows; `exp-20260515-020` improved aggregate EV/PnL but every sweep
   regressed `late_strong`, so the overlap needs a new drawdown discriminator

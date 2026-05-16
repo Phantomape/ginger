@@ -38,6 +38,15 @@ Aggregate core EV is now `7.7345`; aggregate PnL is `$229,636.73`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+Latest rejected execution alpha scout: `exp-20260516-007` tested a replay-only
+delayed open-pullback entry for rank-1 `trade_quality_score >= 0.95`
+`gap_cancel` candidates. It did not change production logic. Aggregate EV
+improved `+0.6019` and aggregate PnL improved `+$7,876.57`, but Gate 4 failed:
+only `late_strong` improved, `old_thin` regressed, replacement trades were only
+3 across 2 windows, and the positive PnL was concentrated in one `CRDO` trade.
+Do not promote or retry the simple open-pullback variant without a materially
+different production-visible execution discriminator.
+
 Latest accepted alpha result: core `exp-20260515-028` keeps entries, exits,
 ranking, universe, filters, targets, slots, heat, LLM, and news logic
 unchanged, but gives already-qualified `trend_long` / `breakout_long` signals
