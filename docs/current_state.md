@@ -223,7 +223,23 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260516-024` keeps live
+Latest accepted default-off Space alpha result: `exp-20260516-029` keeps live
+Space slots at zero and adds only the shared
+`space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar=1.0125`
+helper on top of accepted `exp-20260516-024`. It applies only to
+source-diverse official Space `trend_long` signals whose event profile contains
+both `customer_win` and `government_space_contract` and whose closed
+event-state replacement rows are cash-, SPY-, QQQ-, UFO-, and ARKX-positive.
+Aggregate EV improved `+0.1868` and aggregate PnL improved `+$5,124.39` across
+the three frozen Space replay windows: `late_strong` EV `+0.0476`,
+`mid_weak` EV `+0.1392`, and `old_thin` unchanged. Trade count and survival
+were unchanged; aggregate max drawdown ceiling drift stayed inside Gate 4 at
+`+0.27 pp`. The changed slice was 4 LUNR/RKLB signals across late/mid windows.
+The helper lives in shared `space_catalyst_sleeve.py`, is surfaced in the
+production observation slot/report, has focused parity tests, and remains
+observe-only/default-off.
+
+Previous accepted default-off Space alpha result: `exp-20260516-024` keeps live
 Space slots at zero and adds only the shared
 `space_source_diversity_dual_catalyst_financing_profile_trend_risk_scalar=1.0125`
 helper on top of accepted `exp-20260516-023`. It applies only to

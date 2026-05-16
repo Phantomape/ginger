@@ -95,7 +95,7 @@ Current interpretation:
   can help as quarantined allocation states, but broad ticker admission and
   sample-thin interaction retries usually fail.
 - `exp-20260516-014`, `exp-20260516-015`, `exp-20260516-019`,
-  `exp-20260516-023`, and `exp-20260516-024` add accepted
+  `exp-20260516-023`, `exp-20260516-024`, and `exp-20260516-029` add accepted
   Space exceptions to the "sample-thin interactions usually fail" rule:
   source-diverse `trend_long` profiles with both `customer_win` and
   `government_space_contract` improved two windows, nested IWM-leader
@@ -107,16 +107,20 @@ Current interpretation:
   PnL `+$1,777.65`, and no regressed windows. The production registry
   financing/dilution event-guard overlay then added another `1.0125x` on
   ASTS/RKLB with EV `+0.2847`, PnL `+$8,154.32`, and no regressed windows.
+  The benchmark-breadth replacement-quality overlay then added another
+  `1.0125x` on LUNR/RKLB with EV `+0.1868`, PnL `+$5,124.39`, and no regressed
+  windows.
   Treat this as catalyst-quality plus small-cap risk-appetite / mature
-  replacement / setup-quality / event-guard evidence, not permission to
-  broaden the Space pool. The peer-state refinements in `exp-20260516-017` and
+  replacement / setup-quality / event-guard / broad benchmark-replacement
+  evidence, not permission to broaden the Space pool. The peer-state
+  refinements in `exp-20260516-017` and
   `exp-20260516-018` failed on the true `exp-20260516-015` baseline with zero
   incremental EV/PnL, so do not retry nearby dual-catalyst peer-state scalars
   without new closed forward rows or a materially different production-visible
   catalyst-quality field; also avoid stronger nearby same-theme-winner,
-  near-perfect, or financing-profile dual-catalyst scalars because higher
-  nearby variants created too much drawdown drift or lacked incremental
-  evidence.
+  near-perfect, financing-profile, or benchmark-breadth dual-catalyst scalars
+  because higher nearby variants created too much drawdown drift or lack
+  incremental evidence.
 - The default-off event bundle remains the strongest non-core replay family
   after `exp-20260516-013`: `rotation_breakout_leadership` at a bounded `3.0x`
   paper notional improved all three current-stack windows versus the `2.0x`
