@@ -17,7 +17,7 @@ from sec_ticker_map import normalize_cik
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = REPO_ROOT / "data"
-DEFAULT_CACHE_DIR = DATA_DIR / "sec_submissions_cache"
+DEFAULT_CACHE_DIR = DATA_DIR / "cache" / "sec" / "submissions"
 DEFAULT_OUT_DIR = DATA_DIR / "non_ohlcv"
 DEFAULT_START = "2024-10-02"
 DEFAULT_END = "2026-04-21"

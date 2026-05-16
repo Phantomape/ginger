@@ -10,7 +10,7 @@ from sec_ticker_map import normalize_cik
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CACHE_DIR = REPO_ROOT / "data" / "sec_submissions_cache"
+DEFAULT_CACHE_DIR = REPO_ROOT / "data" / "cache" / "sec" / "submissions"
 SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
 DEFAULT_FORMS = {"8-K", "10-Q", "10-K"}
 

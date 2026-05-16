@@ -25,7 +25,7 @@ tradable strategy rule or as a direct Gate 4 acceptance metric.
 
 ```bash
 python quant/oracle_diagnostics.py \
-  --backtest data/backtest_results_20260426.json \
+  --backtest data/backtests/backtest_results_20260426.json \
   --out data/oracle_diagnostics_20260426.json
 ```
 
@@ -33,7 +33,7 @@ Optional:
 
 ```bash
 python quant/oracle_diagnostics.py \
-  --backtest data/backtest_results_20260426.json \
+  --backtest data/backtests/backtest_results_20260426.json \
   --candidate-horizon-days 20
 ```
 

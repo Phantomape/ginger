@@ -19,7 +19,7 @@ from sec_ticker_map import load_company_ticker_map, normalize_cik
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = REPO_ROOT / "data"
-DEFAULT_XML_CACHE_DIR = DATA_DIR / "sec_form4_xml_cache"
+DEFAULT_XML_CACHE_DIR = DATA_DIR / "cache" / "sec" / "form4_xml"
 DEFAULT_OUT_DIR = DATA_DIR / "non_ohlcv"
 DEFAULT_USER_AGENT = "ginger-research/1.0 contact: research@example.com"
 DEFAULT_START = "2024-10-02"

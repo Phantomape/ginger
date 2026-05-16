@@ -52,8 +52,8 @@ universe on any historical day.
 
 | File | Role |
 | --- | --- |
-| `data/universe_registry.json` | Current universe state snapshot. |
-| `data/universe_events.jsonl` | Append-only universe event ledger. |
+| `data/state/universe/universe_registry.json` | Current universe state snapshot. |
+| `data/state/universe/universe_events.jsonl` | Append-only universe event ledger. |
 | `quant/universe_manager.py` | Point-in-time replay, validation, and hashing helpers. |
 | `quant/candidate_competition_logger.py` | Pre-trade counterfactual snapshot, outcome logging, and replacement-value rollups. |
 | `quant/pilot_sleeve.py` | Shared real-money pilot sleeve policy, risk scalar application, slot limits, and snapshot construction. |

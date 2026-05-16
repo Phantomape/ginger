@@ -42,19 +42,19 @@ WINDOWS = [
         "label": "late_strong",
         "start": "2025-10-23",
         "end": "2026-04-21",
-        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
     },
     {
         "label": "mid_weak",
         "start": "2025-04-23",
         "end": "2025-10-22",
-        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
     },
     {
         "label": "old_thin",
         "start": "2024-10-02",
         "end": "2025-04-22",
-        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
     },
 ]
 

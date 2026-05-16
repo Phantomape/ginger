@@ -56,8 +56,8 @@ Already added:
 | File | Role |
 | --- | --- |
 | `docs/universe_promotion_protocol.md` | Lifecycle, PIT, promotion, kill-switch rules. |
-| `data/universe_registry.json` | Current registry snapshot. |
-| `data/universe_events.jsonl` | Append-only universe event ledger. |
+| `data/state/universe/universe_registry.json` | Current registry snapshot. |
+| `data/state/universe/universe_events.jsonl` | Append-only universe event ledger. |
 | `quant/universe_manager.py` | Replay, validation, and hashing helpers. |
 | `quant/candidate_competition_logger.py` | Pre-trade counterfactual, outcome logger, and replacement-value rollup. |
 | `quant/test_universe_manager.py` | Tests for PIT replay, eligibility gates, and counterfactual logging. |
@@ -276,7 +276,7 @@ Rules:
 - Pilot positions do not consume core `MAX_POSITIONS` slots.
 - Pilot positions do count toward portfolio heat and true equity risk.
 - Counterfactual snapshots and outcomes are in-memory during backtests; the
-  replay must not write `data/pilot_competition_decisions.jsonl`.
+  replay must not write `data/ledgers/pilot_competition_decisions.jsonl`.
 
 Result evidence lives under:
 

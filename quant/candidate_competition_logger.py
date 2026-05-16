@@ -12,9 +12,11 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from data_paths import data_artifact_path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DECISION_LOG = REPO_ROOT / "data" / "pilot_competition_decisions.jsonl"
+DEFAULT_DECISION_LOG = data_artifact_path("pilot_competition_decisions")
 
 REQUIRED_DECISION_FIELDS = {
     "decision_id",

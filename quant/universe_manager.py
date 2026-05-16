@@ -14,10 +14,12 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable
 
+from data_paths import data_artifact_path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_REGISTRY_PATH = REPO_ROOT / "data" / "universe_registry.json"
-DEFAULT_EVENTS_PATH = REPO_ROOT / "data" / "universe_events.jsonl"
+DEFAULT_REGISTRY_PATH = data_artifact_path("universe_registry")
+DEFAULT_EVENTS_PATH = data_artifact_path("universe_events")
 
 VALID_STATUSES = {
     "research",

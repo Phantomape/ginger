@@ -109,7 +109,7 @@
   ],
   "related_files": [
     "quant/signal_engine.py",
-    "data/backtest_results_20260417.json"
+    "data/backtests/backtest_results_20260417.json"
   ],
   "notes": "失败尝试保留，禁止简单重复"
 }

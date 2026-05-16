@@ -10,7 +10,7 @@
 
 - `2026-04-14`：MCD 曾被建议 `REDUCE 11`，触发规则是 `TRAILING_STOP`
 - 当前 `operator_inputs/open_positions.json` 仍显示 MCD `shares=22`
-- 因此 `data/pending_actions.json` 里保留一条 open pending action
+- 因此 `data/state/execution/pending_actions.json` 里保留一条 open pending action
 - 之后每日建议里，如果 MCD 被 fresh rule 写成 `HOLD`，保存层会改回 `REDUCE 11`
 
 ## 日常怎么用
@@ -38,7 +38,7 @@ python quant\import_advice.py --date YYYY-MM-DD --input response.txt
 
 ```text
 data\investment_advice_YYYYMMDD.json
-data\pending_actions.json
+data\state\execution\pending_actions.json
 ```
 
 ## 系统会自动做什么

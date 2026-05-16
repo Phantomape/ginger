@@ -251,7 +251,7 @@ def run(args) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment-id", default="exp-20260427-012")
-    parser.add_argument("--backtest", default="data/backtest_results_20260426.json")
+    parser.add_argument("--backtest", default="data/backtests/backtest_results_20260426.json")
     parser.add_argument("--output", default="data/entry_extension_failure_audit_exp-20260427-012.json")
     parser.add_argument("--lookback-calendar-days", type=int, default=140)
     args = parser.parse_args()

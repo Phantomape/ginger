@@ -473,10 +473,7 @@ def _build_sec_event(
 
 
 def event_snapshot_path(date_key: str, data_dir: Path | str | None = None) -> Path:
-    if data_dir is None:
-        return daily_artifact_path("event_snapshot", date_key)
-    data_dir = Path(data_dir)
-    return data_dir / f"event_snapshot_{date_key}.json"
+    return daily_artifact_path("event_snapshot", date_key, data_dir)
 
 
 def build_event_snapshot(

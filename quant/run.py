@@ -6,7 +6,7 @@ Replaces both run_quant.py (technical signals) and run_pipeline.py (news + LLM).
 Steps:
   1.  Load config (open_positions, universe)
   2.  Market regime           — SPY/QQQ vs 200-day MA        (single call)
-  3.  OHLCV + earnings data   — 350 calendar days per ticker  (single download)
+  3.  OHLCV + earnings data   — 400 calendar days per ticker  (batched OHLCV)
   4.  Feature layer           — trend score, breakout, ATR, earnings features
   5.  Position context        — exit levels / exit signals for held tickers
   6.  Quant signals           — 3 strategies, risk enrichment, position sizing
@@ -113,7 +113,7 @@ def main():
     _print_section("STEP 1 — Loading config")
 
     # Imports are inside main() so the module can be imported without side-effects
-    from data_layer         import get_universe, get_ohlcv, get_earnings_data
+    from data_layer         import get_universe, get_ohlcv, get_ohlcv_many, get_earnings_data
     from feature_layer      import compute_features
     from trend_signals      import compute_position_context, save_trend_signals
     from signal_engine      import generate_signals, rank_signals_for_allocation
@@ -299,6 +299,21 @@ def main():
         )
 
     data_universe = sorted(set(universe) | set(pilot_universe))
+    ohlcv_cache = {}
+    earnings_cache = {}
+
+    def _cached_ohlcv(ticker):
+        key = str(ticker).upper()
+        if key not in ohlcv_cache:
+            ohlcv_cache[key] = get_ohlcv(key)
+        return ohlcv_cache.get(key)
+
+    def _cached_earnings(ticker):
+        key = str(ticker).upper()
+        if key not in earnings_cache:
+            earnings_cache[key] = get_earnings_data(key)
+        return earnings_cache.get(key)
+
     try:
         non_ohlcv_catchup_summary = catch_up_missing_non_ohlcv(
             as_of=today_iso,
@@ -337,16 +352,16 @@ def main():
         log.warning(f"Regime unavailable: {e}")
         market_regime = {"regime": "UNKNOWN", "note": str(e), "indices": {}}
 
-    # ── Step 3: OHLCV + Earnings (single download per ticker) ────────────────
+    # ── Step 3: OHLCV + Earnings (batched OHLCV + cached fallbacks) ─────────
     _print_section("STEP 3 — OHLCV + earnings data")
-    ohlcv_dict    = {}
+    ohlcv_dict    = get_ohlcv_many(data_universe)
     earnings_dict = {}
     for ticker in data_universe:
-        ohlcv_dict[ticker]    = get_ohlcv(ticker)        # 350 calendar days
-        earnings_dict[ticker] = get_earnings_data(ticker)
+        ohlcv_cache[str(ticker).upper()] = ohlcv_dict.get(ticker)
+        earnings_dict[ticker] = _cached_earnings(ticker)
     spy_ohlcv = ohlcv_dict.get("SPY")
     if spy_ohlcv is None:
-        spy_ohlcv = get_ohlcv("SPY")
+        spy_ohlcv = _cached_ohlcv("SPY")
     option_underlying_prices = {}
     for ticker, ohlcv in ohlcv_dict.items():
         if ohlcv is None or ohlcv.empty:
@@ -514,6 +529,12 @@ def main():
 
     # ── Step 5: Position context (exit signals for held tickers) ─────────────
     _print_section("STEP 5 — Position context")
+    positions_by_ticker = {}
+    for pos in (open_positions or {}).get("positions", []):
+        ticker = pos.get("ticker")
+        if ticker and ticker not in positions_by_ticker:
+            positions_by_ticker[ticker] = pos
+
     # Build trend_signals dict with key names that llm_advisor.build_prompt() expects:
     #   breakout_20d → breakout,  breakdown_20d → breakdown,
     #   high_20d     → 20d_high,  low_20d       → 20d_low
@@ -554,21 +575,19 @@ def main():
         # high_since_entry=$150 → trailing=$138.00 (correct, would have triggered).
         high_since_entry = None
         if open_positions and ohlcv is not None:
-            for pos in open_positions.get('positions', []):
-                if pos.get('ticker') == ticker:
-                    entry_date_str = pos.get('entry_date')
-                    if entry_date_str:
-                        try:
-                            entry_dt    = pd.Timestamp(entry_date_str)
-                            data_since  = ohlcv[ohlcv.index >= entry_dt]
-                            if not data_since.empty:
-                                raw_high         = data_since['High'].max()
-                                high_since_entry = float(
-                                    raw_high.item() if hasattr(raw_high, 'item') else raw_high
-                                )
-                        except Exception:
-                            pass
-                    break
+            pos = positions_by_ticker.get(ticker)
+            entry_date_str = pos.get('entry_date') if pos else None
+            if entry_date_str:
+                try:
+                    entry_dt    = pd.Timestamp(entry_date_str)
+                    data_since  = ohlcv[ohlcv.index >= entry_dt]
+                    if not data_since.empty:
+                        raw_high         = data_since['High'].max()
+                        high_since_entry = float(
+                            raw_high.item() if hasattr(raw_high, 'item') else raw_high
+                        )
+                except Exception:
+                    pass
 
         # Add exit-level position context for held tickers
         pos_ctx = compute_position_context(
@@ -853,8 +872,8 @@ def main():
                 space_observation_features[ticker] = features_dict[ticker]
                 continue
             try:
-                ticker_ohlcv = get_ohlcv(ticker)
-                ticker_earnings = get_earnings_data(ticker)
+                ticker_ohlcv = _cached_ohlcv(ticker)
+                ticker_earnings = _cached_earnings(ticker)
                 ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
                 if ticker_features:
                     space_observation_features[ticker] = ticker_features
@@ -1059,7 +1078,7 @@ def main():
                 space_event_ohlcv[ticker] = spy_ohlcv
                 continue
             try:
-                space_event_ohlcv[ticker] = get_ohlcv(ticker)
+                space_event_ohlcv[ticker] = _cached_ohlcv(ticker)
             except Exception as ticker_error:
                 log.warning(
                     "Space catalyst event OHLCV unavailable for %s: %s",

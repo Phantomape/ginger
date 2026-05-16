@@ -36,19 +36,19 @@ WINDOWS = {
     "late_strong": {
         "start": "2025-10-23",
         "end": "2026-04-21",
-        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
         "regime": "slow-melt bull / accepted-stack dominant tape",
     },
     "mid_weak": {
         "start": "2025-04-23",
         "end": "2025-10-22",
-        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
         "regime": "rotation-heavy bull after accepted allocation stack",
     },
     "old_thin": {
         "start": "2024-10-02",
         "end": "2025-04-22",
-        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
         "regime": "mixed-to-weak older tape with the weakest win rate",
     },
 }

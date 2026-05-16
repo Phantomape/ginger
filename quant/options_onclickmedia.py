@@ -21,7 +21,7 @@ from typing import Any, Callable
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = REPO_ROOT / "data" / "non_ohlcv"
-DEFAULT_CACHE_DIR = REPO_ROOT / "data" / "options_onclickmedia_cache"
+DEFAULT_CACHE_DIR = REPO_ROOT / "data" / "cache" / "options" / "onclickmedia"
 BASE_URL = "https://api.onclickmedia.com/options/"
 SOURCE_NAME = "onclickmedia_options"
 DEFAULT_USER_AGENT = "ginger-research/1.0 contact: research@example.com"

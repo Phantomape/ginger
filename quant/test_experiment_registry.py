@@ -42,7 +42,7 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
         hypothesis="Find repeated bad trade family.",
         change_type="analysis_only",
         single_causal_variable="bad trade taxonomy",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
         allowed_write_scope=["docs/"],
         evaluation_windows=[{"start": "2025-10-23", "end": "2026-04-21"}],
         exclusive_scope_ok=True,
@@ -53,7 +53,7 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
         hypothesis="Make replay coverage measurable.",
         change_type="measurement_instrumentation",
         single_causal_variable="replay coverage bucket",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
         allowed_write_scope=["scripts/"],
         exclusive_scope_ok=True,
     )
@@ -61,7 +61,7 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
     assert first["experiment_id"].endswith("-001")
     assert second["experiment_id"].endswith("-002")
     assert first["status"] == "proposed"
-    assert first["baseline_result_file"] == "data/backtest_results_20260425.json"
+    assert first["baseline_result_file"] == "data/backtests/backtest_results_20260425.json"
 
     path = tmp_path / "registry.json"
     save_registry(registry, path)
@@ -86,7 +86,7 @@ def test_create_ticket_auto_generates_per_experiment_write_scope(tmp_path):
         hypothesis="Find one reproducible failure family.",
         change_type="failure_taxonomy",
         single_causal_variable="hold quality taxonomy",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
     )
 
     scopes = ticket["allowed_write_scope"]
@@ -107,7 +107,7 @@ def test_create_ticket_file_slug_overrides_auto_generated_file_stem():
         hypothesis="Find one reproducible failure family.",
         change_type="failure_taxonomy",
         single_causal_variable="bad trade hold-quality taxonomy",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
         file_slug="hold_quality_audit",
     )
 
@@ -135,7 +135,7 @@ def test_create_ticket_rejects_broad_directory_scope_without_exclusive_flag():
             hypothesis="Find one reproducible failure family.",
             change_type="failure_taxonomy",
             single_causal_variable="hold quality taxonomy",
-            baseline_result_file="data/backtest_results_20260425.json",
+            baseline_result_file="data/backtests/backtest_results_20260425.json",
             allowed_write_scope=["quant/exp_loss_attribution_runner.py", "data/"],
         )
     except ValueError as exc:
@@ -154,7 +154,7 @@ def test_create_ticket_expands_scope_templates():
         hypothesis="Test one shadow source.",
         change_type="new_strategy_shadow",
         single_causal_variable="shadow source",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
         allowed_write_scope=[
             "quant/experiments/{experiment_id}_{lane}.py",
             "data/experiments/{experiment_id}/{change_type}.json",
@@ -319,7 +319,7 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
         hypothesis="Record a measurement artifact without strategy acceptance.",
         change_type="measurement_instrumentation",
         single_causal_variable="log append path",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
         allowed_write_scope=["scripts/"],
         exclusive_scope_ok=True,
     )
@@ -401,7 +401,7 @@ def test_locked_registry_update_serializes_read_modify_write(tmp_path):
             hypothesis="Create ticket under lock.",
             change_type="logging_fix",
             single_causal_variable="locked registry update",
-            baseline_result_file="data/backtest_results_20260425.json",
+            baseline_result_file="data/backtests/backtest_results_20260425.json",
         )
 
     ticket = locked_registry_update(registry_path, add_ticket)
@@ -430,7 +430,7 @@ def test_concurrent_locked_registry_updates_do_not_duplicate_ids(tmp_path):
                 hypothesis=f"Create concurrent ticket {i}.",
                 change_type="logging_fix",
                 single_causal_variable=f"locked registry update {i}",
-                baseline_result_file="data/backtest_results_20260425.json",
+                baseline_result_file="data/backtests/backtest_results_20260425.json",
             )
 
         tickets.append(locked_registry_update(registry_path, add_ticket))
@@ -458,7 +458,7 @@ def test_update_result_honors_status_override():
         hypothesis="Close an analysis ticket as observed only.",
         change_type="analysis_only",
         single_causal_variable="loss taxonomy",
-        baseline_result_file="data/backtest_results_20260425.json",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
     )
     judgement = {
         "decision": "rejected",
