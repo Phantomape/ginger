@@ -51,7 +51,7 @@ These checkpoints anchor the current playbook. They are not daily notes.
 
 ### Core
 
-- The accepted core stack through `exp-20260516-009` still says the same thing:
+- The accepted core stack through `exp-20260516-019` still says the same thing:
   modest, cap-aware, state-conditioned top-ups on an already-good candidate set
   have a much better prior than new broad filters or broad routing changes.
 - Recent accepted states were all small allocation refinements on production-
@@ -71,6 +71,12 @@ These checkpoints anchor the current playbook. They are not daily notes.
   rule after `exp-20260516-012`: zeroing non-green `trend_long` semiconductor
   signals improved EV by `0.0044` with no regressed window, but it touched only
   two `TSM` signals. Treat this as forward attribution, not a promoted alpha.
+- The residual Technology trend DTE sleeve is now narrower after
+  `exp-20260516-019`: halving the existing 44-64 DTE risk multiplier from
+  `0.25x` to `0.125x` improved aggregate EV by `+0.0039` with no regressed
+  window and no trade/survival/DD drift; zeroing the sleeve regressed
+  `old_thin`. Treat this as a small accepted cleanup of an existing state, not
+  permission to keep mining nearby DTE scalars.
 
 Current interpretation:
 
@@ -88,12 +94,21 @@ Current interpretation:
   source quality, peer-relative state, and mature forward replacement evidence
   can help as quarantined allocation states, but broad ticker admission and
   sample-thin interaction retries usually fail.
-- `exp-20260516-014` adds one accepted Space exception to the "sample-thin
-  interactions usually fail" rule: source-diverse `trend_long` profiles with
-  both `customer_win` and `government_space_contract` improved two windows,
-  left `old_thin` unchanged, and stayed inside drawdown with only a `1.025x`
-  default-off scalar. Treat this as a catalyst-quality field, not permission to
-  broaden the Space pool.
+- `exp-20260516-014`, `exp-20260516-015`, and `exp-20260516-019` add accepted
+  Space exceptions to the "sample-thin interactions usually fail" rule:
+  source-diverse `trend_long` profiles with both `customer_win` and
+  `government_space_contract` improved two windows, nested IWM-leader
+  confirmation improved the same family again with only a `1.0125x`
+  incremental default-off scalar, and mature defense-budget same-theme winner
+  evidence added another `1.0125x` on LUNR/RKLB with EV `+0.1421`, PnL
+  `+$4,954.90`, and no regressed windows. Treat this as catalyst-quality plus
+  small-cap risk-appetite / mature replacement evidence, not permission to
+  broaden the Space pool. The peer-state refinements in `exp-20260516-017` and
+  `exp-20260516-018` failed on the true `exp-20260516-015` baseline with zero
+  incremental EV/PnL, so do not retry nearby dual-catalyst peer-state scalars
+  without new closed forward rows or a materially different production-visible
+  catalyst-quality field; also avoid stronger nearby same-theme-winner scalars
+  because `1.025x`/`1.05x` created too much drawdown drift.
 - The default-off event bundle remains the strongest non-core replay family
   after `exp-20260516-013`: `rotation_breakout_leadership` at a bounded `3.0x`
   paper notional improved all three current-stack windows versus the `2.0x`

@@ -2,8 +2,10 @@
 
 Last updated: 2026-05-16.
 
-The current accepted core stack includes the 2026-05-16 green-deceleration
-quality non-consumer core sizing promotion from `exp-20260516-009`, layered on
+The current accepted core stack includes the 2026-05-16 Technology trend DTE
+residual risk promotion from `exp-20260516-019`, layered on top of the
+2026-05-16 green-deceleration quality non-consumer core sizing promotion from
+`exp-20260516-009`, layered on
 top of the 2026-05-15 confirmed-quality core sizing promotion from
 `exp-20260515-028`, layered on top of the 2026-05-15
 trend-only price-vs-200MA extension sizing promotion from `exp-20260515-026`,
@@ -31,14 +33,28 @@ documented in `docs/backtesting.md` and
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
 | `late_strong` | 5.1344 | 116.69% | 4.40 | 6.65% | 19 | 80.39% |
-| `mid_weak` | 2.1016 | 76.42% | 2.75 | 10.83% | 21 | 79.25% |
-| `old_thin` | 0.5294 | 37.28% | 1.42 | 10.01% | 22 | 86.67% |
+| `mid_weak` | 2.1054 | 76.56% | 2.75 | 10.83% | 21 | 79.25% |
+| `old_thin` | 0.5295 | 37.29% | 1.42 | 10.01% | 22 | 86.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260516-009/green_decel_quality_nonconsumer_risk.json`.
-Aggregate core EV is now `7.7654`; aggregate PnL is `$230,390.92`.
+`data/experiments/exp-20260516-019/trend_tech_dte_residual_risk.json`.
+Aggregate core EV is now `7.7693`; aggregate PnL is `$230,542.53`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
+
+Latest accepted alpha result: core `exp-20260516-019` keeps entries, exits,
+ranking, universe, filters, targets, slots, heat, LLM, and news logic
+unchanged, but reduces the existing shared `trend_long` Technology 44-64 DTE
+risk multiplier from `0.25x` to `0.125x`. Aggregate EV improved `+0.0039` and
+aggregate PnL improved `+$151.61` across the three canonical windows:
+`late_strong` stayed at EV `5.1344`, `mid_weak` improved `2.1016 -> 2.1054`,
+and `old_thin` improved `0.5294 -> 0.5295`. Trade count, survival, and max
+drawdown were unchanged, and 13 signals were affected across all three
+windows. The rule lives in the shared `portfolio_engine.py` constant path used
+by both `quant/backtester.py` and `quant/run.py`; the focused sizing test was
+updated. The `0.0x` variant failed by regressing `old_thin`, so do not retry
+nearby Technology trend DTE scalars without a new production-visible
+discriminator or forward evidence.
 
 Latest rejected core risk-allocation scout: `exp-20260516-011` tested whether
 the existing `trend_long` / Industrials zero-risk rule was over-killing
@@ -207,7 +223,45 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260516-014` keeps live
+Latest accepted default-off Space alpha result: `exp-20260516-019` keeps live
+Space slots at zero and adds only the shared
+`space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar=1.0125`
+helper on top of accepted `exp-20260516-015`. It applies only to source-diverse
+official Space `trend_long` signals whose event profile contains both
+`customer_win` and `government_space_contract` and whose closed defense-budget
+`government_space_contract` event rows are cash- and same-theme
+replacement-positive. Aggregate EV improved `+0.1421` and aggregate PnL
+improved `+$4,954.90` across the three frozen Space replay windows:
+`late_strong` EV `+0.0399`, `mid_weak` EV `+0.1022`, and `old_thin`
+unchanged. Trade count and survival were unchanged; aggregate max drawdown
+ceiling drift stayed inside Gate 4 at `+0.26 pp`. The helper lives in shared
+`space_catalyst_sleeve.py`, is surfaced in the production observation
+slot/report, has focused parity tests, and remains observe-only/default-off.
+
+Latest rejected default-off Space alpha search: `exp-20260516-017` and
+`exp-20260516-018` tested dual-catalyst peer-leader and peer-nonleader scalars
+on top of accepted `exp-20260516-015`. After retaining the accepted IWM-leader
+helper in the true baseline, both produced zero incremental EV/PnL across the
+three frozen Space replay windows. `exp-20260516-017` selected the identity
+scalar (`1.0`); `exp-20260516-018` selected `0.95` for four ASTS/RKLB signals
+across two windows but still had aggregate EV/PnL delta `0.0`. No shared helper
+was promoted, and live Space slots remain zero/default-off.
+
+Previous accepted default-off Space alpha result: `exp-20260516-015` keeps live
+Space slots at zero and adds only the shared
+`space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar=1.0125`
+helper on top of accepted `exp-20260516-014`. It applies only to source-diverse
+official Space `trend_long` signals whose event profile contains both
+`customer_win` and `government_space_contract` while IWM 20d momentum is above
+SPY 20d momentum. Aggregate EV improved `+0.2377` and aggregate PnL improved
+`+$6,670.29` across the three frozen Space replay windows: `late_strong` EV
+`+0.0125`, `mid_weak` EV `+0.2252`, and `old_thin` unchanged. Trade count and
+survival were unchanged; aggregate max drawdown ceiling drift stayed inside Gate
+4 at `+0.25 pp`. The helper lives in shared `space_catalyst_sleeve.py`, is
+surfaced in the production observation slot/report, has focused parity tests,
+and remains observe-only/default-off.
+
+Previous accepted default-off Space alpha result: `exp-20260516-014` keeps live
 Space slots at zero and adds only the shared
 `space_source_diversity_dual_catalyst_trend_risk_scalar=1.025` helper on top
 of the accepted `exp-20260515-044` Space stack. It applies only to
@@ -345,7 +399,10 @@ and source-diverse official Space `trend_long` signals get a further
 further `1.025x` extra default-off risk when Space peer momentum state is
 `nonleader`, a further `1.025x` when that nonleader bucket has near-perfect
 TQS, and a further `1.025x` when the source-diverse trend profile contains
-both `customer_win` and `government_space_contract`,
+both `customer_win` and `government_space_contract`, a further `1.0125x` when
+that dual-catalyst trend profile also has IWM 20d momentum above SPY, and a
+further `1.0125x` when that dual-catalyst trend profile also has closed
+defense-budget same-theme winner evidence,
 and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward

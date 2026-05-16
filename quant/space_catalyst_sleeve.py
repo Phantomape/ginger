@@ -146,6 +146,12 @@ SPACE_CATALYST_DUAL_CATALYST_EVENT_FIELDS = (
     "government_space_contract",
 )
 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_TREND_RISK_SCALAR = 1.025
+SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR = (
+    1.0125
+)
+SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR = (
+    1.0125
+)
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON = "10d"
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL = 0.0
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE = 0.0
@@ -456,6 +462,32 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_source_diversity_dual_catalyst_trend_risk_scalar": (
         SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_TREND_RISK_SCALAR
+    ),
+    "space_source_diversity_dual_catalyst_iwm_leader_trend_experiment_id": (
+        "exp-20260516-015"
+    ),
+    "space_source_diversity_dual_catalyst_iwm_leader_trend_definition": (
+        "source-diverse official non-attention evidence on trend_long signals "
+        "with both customer_win and government_space_contract event fields "
+        "while IWM 20d momentum is above SPY 20d momentum"
+    ),
+    "space_source_diversity_dual_catalyst_iwm_leader_trend_state": (
+        "smallcap_leader"
+    ),
+    "space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR
+    ),
+    "space_source_diversity_dual_catalyst_same_theme_winner_trend_experiment_id": (
+        "exp-20260516-019"
+    ),
+    "space_source_diversity_dual_catalyst_same_theme_winner_trend_definition": (
+        "source-diverse official non-attention trend_long signals with both "
+        "customer_win and government_space_contract event fields while closed "
+        "defense-budget government_space_contract rows are cash- and "
+        "same-theme replacement-positive"
+    ),
+    "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
     ),
     "space_forward_replacement_positive_experiment_id": "exp-20260513-113",
     "space_forward_replacement_positive_definition": (
@@ -956,6 +988,30 @@ def space_catalyst_forward_risk_scalar(
         scalar *= SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_TREND_RISK_SCALAR
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+        and _is_space_dual_catalyst_source_diversity_profile(
+            source_diversity_profile
+        )
+    ):
+        scalar *= (
+            SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR
+        )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_dual_catalyst_source_diversity_profile(
+            source_diversity_profile
+        )
+        and _is_space_defense_budget_same_theme_winner_profile(
+            forward_replacement_profile
+        )
+    ):
+        scalar *= (
+            SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
+        )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
         )
@@ -1289,6 +1345,15 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_source_diversity_dual_catalyst_trend_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_TREND_RISK_SCALAR
+            ),
+            "space_source_diversity_dual_catalyst_iwm_leader_trend_state": (
+                "smallcap_leader"
+            ),
+            "space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR
+            ),
+            "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
             ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
@@ -2485,6 +2550,15 @@ def build_space_catalyst_observation_slot(
             "space_source_diversity_dual_catalyst_trend_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_TREND_RISK_SCALAR
             ),
+            "space_source_diversity_dual_catalyst_iwm_leader_trend_state": (
+                "smallcap_leader"
+            ),
+            "space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR
+            ),
+            "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
+            ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
             ),
@@ -3467,6 +3541,26 @@ def _observation_slot_row(
         if source_diversity_dual_catalyst_trend_bucket
         else 1.0
     )
+    source_diversity_dual_catalyst_iwm_leader_trend_bucket = (
+        source_diversity_dual_catalyst_trend_bucket
+        and (iwm_relative_momentum_state or {}).get("state") == "smallcap_leader"
+    )
+    source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR
+        if source_diversity_dual_catalyst_iwm_leader_trend_bucket
+        else 1.0
+    )
+    source_diversity_dual_catalyst_same_theme_winner_trend_bucket = (
+        source_diversity_dual_catalyst_trend_bucket
+        and _is_space_defense_budget_same_theme_winner_profile(
+            forward_replacement_profile
+        )
+    )
+    source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
+        if source_diversity_dual_catalyst_same_theme_winner_trend_bucket
+        else 1.0
+    )
     forward_replacement_positive_bucket = (
         _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
@@ -3642,6 +3736,11 @@ def _observation_slot_row(
         "space_defense_budget_same_theme_winner_profile": (
             forward_replacement_profile
             if defense_budget_same_theme_winner_trend_bucket
+            else None
+        ),
+        "space_source_diversity_dual_catalyst_same_theme_winner_profile": (
+            forward_replacement_profile
+            if source_diversity_dual_catalyst_same_theme_winner_trend_bucket
             else None
         ),
         "sector": signal.get("sector"),
@@ -3833,6 +3932,23 @@ def _observation_slot_row(
         ),
         "space_source_diversity_dual_catalyst_trend_risk_scalar": _round(
             source_diversity_dual_catalyst_trend_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_dual_catalyst_iwm_leader_trend_bucket": (
+            source_diversity_dual_catalyst_iwm_leader_trend_bucket
+        ),
+        "space_source_diversity_dual_catalyst_iwm_leader_trend_state": (
+            "smallcap_leader"
+        ),
+        "space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar": _round(
+            source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_dual_catalyst_same_theme_winner_trend_bucket": (
+            source_diversity_dual_catalyst_same_theme_winner_trend_bucket
+        ),
+        "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": _round(
+            source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar,
             6,
         ),
         "space_forward_replacement_positive_bucket": (

@@ -560,6 +560,27 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "source-diversity dual-catalyst trend @ "
                     f"{source_diversity_dual_catalyst_trend_scalar}x"
                 )
+            source_diversity_dual_catalyst_iwm_leader_trend_scalar = forward.get(
+                "space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar"
+            )
+            if source_diversity_dual_catalyst_iwm_leader_trend_scalar is not None:
+                extra_policies.append(
+                    "source-diversity dual-catalyst IWM-leader trend @ "
+                    f"{source_diversity_dual_catalyst_iwm_leader_trend_scalar}x"
+                )
+            source_diversity_dual_catalyst_same_theme_winner_trend_scalar = (
+                forward.get(
+                    "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar"
+                )
+            )
+            if (
+                source_diversity_dual_catalyst_same_theme_winner_trend_scalar
+                is not None
+            ):
+                extra_policies.append(
+                    "source-diversity dual-catalyst same-theme winner trend @ "
+                    f"{source_diversity_dual_catalyst_same_theme_winner_trend_scalar}x"
+                )
             forward_replacement_scalar = forward.get(
                 "space_forward_replacement_positive_risk_scalar"
             )
@@ -796,6 +817,20 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_source_diversity_dual_catalyst_trend_bucket")
                 else ""
             )
+            source_diversity_dual_catalyst_iwm_leader_trend_text = (
+                " source_diversity_dual_catalyst_iwm_leader_trend=True"
+                if plan.get(
+                    "space_source_diversity_dual_catalyst_iwm_leader_trend_bucket"
+                )
+                else ""
+            )
+            source_diversity_dual_catalyst_same_theme_winner_trend_text = (
+                " source_diversity_dual_catalyst_same_theme_winner_trend=True"
+                if plan.get(
+                    "space_source_diversity_dual_catalyst_same_theme_winner_trend_bucket"
+                )
+                else ""
+            )
             forward_replacement_text = (
                 " forward_replacement_positive=True"
                 if plan.get("space_forward_replacement_positive_bucket")
@@ -877,6 +912,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{source_diversity_peer_nonleader_trend_text}"
                 f"{source_diversity_peer_nonleader_near_perfect_trend_text}"
                 f"{source_diversity_dual_catalyst_trend_text}"
+                f"{source_diversity_dual_catalyst_iwm_leader_trend_text}"
+                f"{source_diversity_dual_catalyst_same_theme_winner_trend_text}"
                 f"{forward_replacement_text}"
                 f"{forward_replacement_same_theme_strength_text}"
                 f"{forward_replacement_trend_strength_text}"

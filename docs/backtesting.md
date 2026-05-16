@@ -91,15 +91,30 @@ quality non-consumer core sizing top-up:
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `late_strong` | 5.1344 | 4.40 | $116,686.40 | 116.69% | 6.65% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 2.1016 | 2.75 | $76,421.93 | 76.42% | 10.83% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.5294 | 1.42 | $37,282.59 | 37.28% | 10.01% | 40.91% | 22 | 86.67% |
+| `mid_weak` | 2.1054 | 2.75 | $76,563.68 | 76.56% | 10.83% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.5295 | 1.42 | $37,292.45 | 37.29% | 10.01% | 40.91% | 22 | 86.67% |
 
 Artifact note:
-`data/experiments/exp-20260516-009/green_decel_quality_nonconsumer_risk.json`
+`data/experiments/exp-20260516-019/trend_tech_dte_residual_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `7.7654`; aggregate PnL is `$230,390.92`.
+EV is `7.7693`; aggregate PnL is `$230,542.53`.
 
-Latest accepted core-sizing result: core `exp-20260516-009` keeps entries,
+Latest accepted core-sizing result: core `exp-20260516-019` keeps entries,
+exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
+unchanged, but reduces the existing `trend_long` Technology 44-64 DTE risk
+multiplier from `0.25x` to `0.125x` in shared `portfolio_engine.py` constants.
+The accepted non-control sweep value improved the current stack by aggregate
+EV `+0.0039` and aggregate PnL `+$151.61`: `late_strong` stayed unchanged,
+`mid_weak` improved EV `+0.0038` / PnL `+$141.75`, and `old_thin` improved EV
+`+0.0001` / PnL `+$9.86`. Trade count and minimum survival stayed unchanged,
+max drawdown did not worsen, and 13 signals were affected across all three
+windows. There is no production/backtest split because both adapters call the
+same shared sizing module; the focused sizing test now expects the 0.125x
+multiplier. The `0.0x` sweep failed by regressing `old_thin`, so do not retry
+nearby Technology trend DTE scalar changes on these frozen windows without a
+new production-visible discriminator or forward evidence.
+
+Previous accepted core-sizing result: core `exp-20260516-009` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but tags already-qualified `trend_long` / `breakout_long` signals
 whose own signal-day candle is green, `momentum_10d_pct` and `momentum_20d_pct`
@@ -249,7 +264,55 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260516-014` adds only
+Latest accepted default-off Space replay result: `exp-20260516-019` adds only
+the shared Space metadata/helper
+`space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar=1.0125`
+on top of accepted `exp-20260516-015`, for source-diverse official Space
+`trend_long` signals whose event profile contains both `customer_win` and
+`government_space_contract` and whose closed defense-budget
+`government_space_contract` rows are cash- and same-theme
+replacement-positive. It uses the same three window labels above with frozen
+Space snapshots and keeps live Space slots at zero. Aggregate default-off Space
+EV improved `+0.1421` and PnL improved `+$4,954.90`; window EV deltas were
+`late_strong +0.0399`, `mid_weak +0.1022`, and `old_thin` unchanged. Aggregate
+max drawdown ceiling drift was `+0.26 pp`, trade count stayed `64`, minimum
+survival stayed `62.67%`, and the changed slice was LUNR/RKLB dual-catalyst
+same-theme-winner trend evidence across 4 signals. Do not retry stronger
+nearby same-theme-winner Space scalars on these frozen windows without new
+closed forward rows or a materially different production-visible
+catalyst-quality field.
+
+Latest rejected default-off Space peer-state alpha search: `exp-20260516-017`
+and `exp-20260516-018` tested dual-catalyst peer-leader and peer-nonleader
+scalars on top of accepted `exp-20260516-015`. After preserving the accepted
+IWM-leader helper in the true baseline, neither candidate produced incremental
+EV or PnL across the same three frozen Space replay windows. `exp-20260516-017`
+selected the identity scalar (`1.0`) with aggregate EV/PnL delta `0.0`; the
+non-identity peer-leader variants stayed sample-thin. `exp-20260516-018`
+selected `0.95` for four ASTS/RKLB signals across two windows, but aggregate
+EV/PnL delta was still `0.0`. No shared helper was promoted. Do not retry
+nearby dual-catalyst peer-state Space scalars on these frozen windows without
+new closed forward rows or a materially different production-visible
+catalyst-quality field.
+
+Previous accepted default-off Space replay result: `exp-20260516-015` adds only
+the shared Space metadata/helper
+`space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar=1.0125` on
+top of accepted `exp-20260516-014`, for official Space `trend_long` signals
+whose source-diverse profile has both `customer_win` and
+`government_space_contract` while IWM 20d momentum is above SPY 20d momentum.
+It uses the same three window labels above with frozen Space snapshots and
+keeps live Space slots at zero. Aggregate default-off Space EV improved
+`+0.2377` and PnL improved `+$6,670.29`; window EV deltas were
+`late_strong +0.0125`, `mid_weak +0.2252`, and `old_thin` unchanged. Aggregate
+max drawdown ceiling drift was `+0.25 pp`, trade count stayed `64`, and
+minimum survival stayed `62.67%`. The changed slice was ASTS/LUNR/RKLB
+dual-catalyst trend evidence with small-cap risk appetite confirmed (5 adjusted
+signals), so do not retry nearby dual-catalyst IWM-leader Space scalars on these
+frozen windows without new closed forward rows or a materially different
+production-visible catalyst-quality field.
+
+Previous accepted default-off Space replay result: `exp-20260516-014` adds only
 the shared Space metadata/helper
 `space_source_diversity_dual_catalyst_trend_risk_scalar=1.025` on top of the
 accepted `exp-20260515-044` source-diversity / peer-nonleader / near-perfect
