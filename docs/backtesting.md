@@ -84,9 +84,9 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260516-009`
-(`green_decel_quality_nonconsumer_risk`) promoted the green-deceleration
-quality non-consumer core sizing top-up:
+Current accepted fixed-window metrics after core `exp-20260516-020`
+(`trend_tech_dte_residual_risk`) promoted the Technology trend DTE residual
+risk sizing update:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -95,11 +95,11 @@ quality non-consumer core sizing top-up:
 | `old_thin` | 0.5295 | 1.42 | $37,292.45 | 37.29% | 10.01% | 40.91% | 22 | 86.67% |
 
 Artifact note:
-`data/experiments/exp-20260516-019/trend_tech_dte_residual_risk.json`
+`data/experiments/exp-20260516-020/trend_tech_dte_residual_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
 EV is `7.7693`; aggregate PnL is `$230,542.53`.
 
-Latest accepted core-sizing result: core `exp-20260516-019` keeps entries,
+Latest accepted core-sizing result: core `exp-20260516-020` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but reduces the existing `trend_long` Technology 44-64 DTE risk
 multiplier from `0.25x` to `0.125x` in shared `portfolio_engine.py` constants.

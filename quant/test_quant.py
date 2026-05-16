@@ -2723,7 +2723,7 @@ def test_size_signals_derisks_breakout_healthcare_dte_20_65():
 
 
 def test_size_signals_derisks_trend_technology_dte_44_64():
-    """Technology trends 44-64 DTE should keep only 25% of normal risk."""
+    """Technology trends 44-64 DTE should keep only 12.5% of normal risk."""
     from portfolio_engine import size_signals
 
     sig = {
@@ -2743,12 +2743,12 @@ def test_size_signals_derisks_trend_technology_dte_44_64():
     sized = size_signals([sig], 100_000.0)[0]["sizing"]
 
     assert sized["base_risk_pct"] == 0.01
-    assert sized["risk_pct"] == 0.0025
+    assert sized["risk_pct"] == 0.00125
     assert sized["shares_to_buy"] > 0
     assert sized["trend_tech_tight_gap_risk_multiplier_applied"] == 1.0
     assert sized["trend_tech_gap_risk_multiplier_applied"] == 1.0
     assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
-    assert sized["trend_tech_dte_risk_multiplier_applied"] == 0.25
+    assert sized["trend_tech_dte_risk_multiplier_applied"] == 0.125
     assert sized["breakout_tech_dte_risk_multiplier_applied"] == 1.0
 
 

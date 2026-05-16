@@ -3,7 +3,7 @@
 Last updated: 2026-05-16.
 
 The current accepted core stack includes the 2026-05-16 Technology trend DTE
-residual risk promotion from `exp-20260516-019`, layered on top of the
+residual risk promotion from `exp-20260516-020`, layered on top of the
 2026-05-16 green-deceleration quality non-consumer core sizing promotion from
 `exp-20260516-009`, layered on
 top of the 2026-05-15 confirmed-quality core sizing promotion from
@@ -37,12 +37,12 @@ documented in `docs/backtesting.md` and
 | `old_thin` | 0.5295 | 37.29% | 1.42 | 10.01% | 22 | 86.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260516-019/trend_tech_dte_residual_risk.json`.
+`data/experiments/exp-20260516-020/trend_tech_dte_residual_risk.json`.
 Aggregate core EV is now `7.7693`; aggregate PnL is `$230,542.53`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-Latest accepted alpha result: core `exp-20260516-019` keeps entries, exits,
+Latest accepted alpha result: core `exp-20260516-020` keeps entries, exits,
 ranking, universe, filters, targets, slots, heat, LLM, and news logic
 unchanged, but reduces the existing shared `trend_long` Technology 44-64 DTE
 risk multiplier from `0.25x` to `0.125x`. Aggregate EV improved `+0.0039` and

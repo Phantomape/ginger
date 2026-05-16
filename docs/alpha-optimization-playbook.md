@@ -51,7 +51,7 @@ These checkpoints anchor the current playbook. They are not daily notes.
 
 ### Core
 
-- The accepted core stack through `exp-20260516-019` still says the same thing:
+- The accepted core stack through `exp-20260516-020` still says the same thing:
   modest, cap-aware, state-conditioned top-ups on an already-good candidate set
   have a much better prior than new broad filters or broad routing changes.
 - Recent accepted states were all small allocation refinements on production-
@@ -72,7 +72,7 @@ These checkpoints anchor the current playbook. They are not daily notes.
   signals improved EV by `0.0044` with no regressed window, but it touched only
   two `TSM` signals. Treat this as forward attribution, not a promoted alpha.
 - The residual Technology trend DTE sleeve is now narrower after
-  `exp-20260516-019`: halving the existing 44-64 DTE risk multiplier from
+  `exp-20260516-020`: halving the existing 44-64 DTE risk multiplier from
   `0.25x` to `0.125x` improved aggregate EV by `+0.0039` with no regressed
   window and no trade/survival/DD drift; zeroing the sleeve regressed
   `old_thin`. Treat this as a small accepted cleanup of an existing state, not
