@@ -152,6 +152,9 @@ SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_IWM_LEADER_TREND_RISK_SCALAR = (
 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR = (
     1.0125
 )
+SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_NEAR_PERFECT_TREND_RISK_SCALAR = (
+    1.0125
+)
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON = "10d"
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL = 0.0
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_SAME_THEME_VALUE = 0.0
@@ -488,6 +491,23 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     ),
     "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": (
         SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
+    ),
+    "space_source_diversity_dual_catalyst_near_perfect_trend_experiment_id": (
+        "exp-20260516-023"
+    ),
+    "space_source_diversity_dual_catalyst_near_perfect_trend_definition": (
+        "source-diverse official non-attention trend_long signals with both "
+        "customer_win and government_space_contract event fields while TQS is "
+        "near-perfect but not perfect"
+    ),
+    "space_source_diversity_dual_catalyst_near_perfect_trend_score_floor": (
+        SPACE_CATALYST_NEAR_PERFECT_TQS_SCORE_FLOOR
+    ),
+    "space_source_diversity_dual_catalyst_near_perfect_trend_score_ceiling": (
+        SPACE_CATALYST_NEAR_PERFECT_TQS_SCORE_CEILING
+    ),
+    "space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar": (
+        SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_NEAR_PERFECT_TREND_RISK_SCALAR
     ),
     "space_forward_replacement_positive_experiment_id": "exp-20260513-113",
     "space_forward_replacement_positive_definition": (
@@ -1012,6 +1032,17 @@ def space_catalyst_forward_risk_scalar(
         )
     if (
         ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
+        and strategy_key == "trend_long"
+        and _is_space_dual_catalyst_source_diversity_profile(
+            source_diversity_profile
+        )
+        and _is_space_near_perfect_tqs(trade_quality_score)
+    ):
+        scalar *= (
+            SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_NEAR_PERFECT_TREND_RISK_SCALAR
+        )
+    if (
+        ticker_upper in SPACE_CATALYST_FORWARD_HYPOTHESIS["included_tickers"]
         and _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
         )
@@ -1354,6 +1385,9 @@ def empty_space_catalyst_observation_slot(
             ),
             "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
+            ),
+            "space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_NEAR_PERFECT_TREND_RISK_SCALAR
             ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
@@ -2559,6 +2593,9 @@ def build_space_catalyst_observation_slot(
             "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": (
                 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_SAME_THEME_WINNER_TREND_RISK_SCALAR
             ),
+            "space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar": (
+                SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_NEAR_PERFECT_TREND_RISK_SCALAR
+            ),
             "space_forward_replacement_positive_horizon": (
                 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON
             ),
@@ -3561,6 +3598,15 @@ def _observation_slot_row(
         if source_diversity_dual_catalyst_same_theme_winner_trend_bucket
         else 1.0
     )
+    source_diversity_dual_catalyst_near_perfect_trend_bucket = (
+        source_diversity_dual_catalyst_trend_bucket
+        and _is_space_near_perfect_tqs(signal.get("trade_quality_score"))
+    )
+    source_diversity_dual_catalyst_near_perfect_trend_risk_scalar = (
+        SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_NEAR_PERFECT_TREND_RISK_SCALAR
+        if source_diversity_dual_catalyst_near_perfect_trend_bucket
+        else 1.0
+    )
     forward_replacement_positive_bucket = (
         _is_space_forward_replacement_positive_profile(
             forward_replacement_profile
@@ -3949,6 +3995,13 @@ def _observation_slot_row(
         ),
         "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": _round(
             source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar,
+            6,
+        ),
+        "space_source_diversity_dual_catalyst_near_perfect_trend_bucket": (
+            source_diversity_dual_catalyst_near_perfect_trend_bucket
+        ),
+        "space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar": _round(
+            source_diversity_dual_catalyst_near_perfect_trend_risk_scalar,
             6,
         ),
         "space_forward_replacement_positive_bucket": (

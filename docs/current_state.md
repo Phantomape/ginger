@@ -223,7 +223,21 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260516-019` keeps live
+Latest accepted default-off Space alpha result: `exp-20260516-023` keeps live
+Space slots at zero and adds only the shared
+`space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar=1.0125`
+helper on top of accepted `exp-20260516-019`. It applies only to source-diverse
+official Space `trend_long` signals whose event profile contains both
+`customer_win` and `government_space_contract` and whose TQS is near-perfect
+but not perfect (`0.95 <= TQS < 1.0`). Aggregate EV improved `+0.0809` and
+aggregate PnL improved `+$1,777.65` across the three frozen Space replay
+windows: `late_strong` EV `+0.0345`, `mid_weak` EV `+0.0464`, and `old_thin`
+unchanged. Trade count and survival were unchanged; aggregate max drawdown
+ceiling drift stayed inside Gate 4 at `+0.26 pp`. The helper lives in shared
+`space_catalyst_sleeve.py`, is surfaced in the production observation
+slot/report, has focused parity tests, and remains observe-only/default-off.
+
+Previous accepted default-off Space alpha result: `exp-20260516-019` keeps live
 Space slots at zero and adds only the shared
 `space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar=1.0125`
 helper on top of accepted `exp-20260516-015`. It applies only to source-diverse
@@ -402,7 +416,8 @@ TQS, and a further `1.025x` when the source-diverse trend profile contains
 both `customer_win` and `government_space_contract`, a further `1.0125x` when
 that dual-catalyst trend profile also has IWM 20d momentum above SPY, and a
 further `1.0125x` when that dual-catalyst trend profile also has closed
-defense-budget same-theme winner evidence,
+defense-budget same-theme winner evidence, and a further `1.0125x` when that
+dual-catalyst trend profile has near-perfect but not perfect TQS,
 and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward
