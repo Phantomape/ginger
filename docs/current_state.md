@@ -223,7 +223,23 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260516-023` keeps live
+Latest accepted default-off Space alpha result: `exp-20260516-024` keeps live
+Space slots at zero and adds only the shared
+`space_source_diversity_dual_catalyst_financing_profile_trend_risk_scalar=1.0125`
+helper on top of accepted `exp-20260516-023`. It applies only to
+source-diverse official Space `trend_long` signals whose event profile contains
+both `customer_win` and `government_space_contract` and whose production
+registry `event_guard_profile` is financing/dilution sensitive. Aggregate EV
+improved `+0.2847` and aggregate PnL improved `+$8,154.32` across the three
+frozen Space replay windows: `late_strong` EV `+0.0413`, `mid_weak` EV
+`+0.2434`, and `old_thin` unchanged. Trade count and survival were unchanged;
+aggregate max drawdown ceiling drift stayed inside Gate 4 at `+0.25 pp`. The
+helper lives in shared `space_catalyst_sleeve.py`, is surfaced in the
+production observation slot/report, has focused parity tests, and remains
+observe-only/default-off. Stronger nearby `1.025x`/`1.05x` variants had higher
+raw EV but failed the drawdown guardrail.
+
+Previous accepted default-off Space alpha result: `exp-20260516-023` keeps live
 Space slots at zero and adds only the shared
 `space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar=1.0125`
 helper on top of accepted `exp-20260516-019`. It applies only to source-diverse
@@ -416,8 +432,10 @@ TQS, and a further `1.025x` when the source-diverse trend profile contains
 both `customer_win` and `government_space_contract`, a further `1.0125x` when
 that dual-catalyst trend profile also has IWM 20d momentum above SPY, and a
 further `1.0125x` when that dual-catalyst trend profile also has closed
-defense-budget same-theme winner evidence, and a further `1.0125x` when that
-dual-catalyst trend profile has near-perfect but not perfect TQS,
+defense-budget same-theme winner evidence, a further `1.0125x` when that
+dual-catalyst trend profile has near-perfect but not perfect TQS, and a
+further `1.0125x` when that dual-catalyst trend profile also has a production
+registry financing/dilution event-guard profile,
 and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward

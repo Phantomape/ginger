@@ -264,7 +264,26 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260516-023` adds only
+Latest accepted default-off Space replay result: `exp-20260516-024` adds only
+the shared Space metadata/helper
+`space_source_diversity_dual_catalyst_financing_profile_trend_risk_scalar=1.0125`
+on top of accepted `exp-20260516-023`, for source-diverse official Space
+`trend_long` signals whose event profile contains both `customer_win` and
+`government_space_contract` and whose production registry `event_guard_profile`
+is financing/dilution sensitive. It uses the same three window labels above
+with frozen Space snapshots and keeps live Space slots at zero. Aggregate
+default-off Space EV improved `+0.2847` and PnL improved `+$8,154.32`; window
+EV deltas were `late_strong +0.0413`, `mid_weak +0.2434`, and `old_thin`
+unchanged. Aggregate max drawdown ceiling drift was `+0.25 pp`, trade count
+stayed `64`, minimum survival stayed `62.67%`, and the changed slice was
+ASTS/RKLB dual-catalyst financing-profile trend evidence across 5 signals.
+Stronger nearby `1.025x`/`1.05x` variants had higher raw EV but failed the
+drawdown guardrail, so do not retry stronger nearby dual-catalyst
+financing-profile Space scalars on these frozen windows without new closed
+forward rows or a materially different production-visible catalyst-quality
+field.
+
+Previous accepted default-off Space replay result: `exp-20260516-023` adds only
 the shared Space metadata/helper
 `space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar=1.0125`
 on top of accepted `exp-20260516-019`, for source-diverse official Space

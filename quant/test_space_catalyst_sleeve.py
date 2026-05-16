@@ -531,6 +531,18 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     )
     assert (
         snapshot["forward_hypothesis"][
+            "space_source_diversity_dual_catalyst_financing_profile_trend_experiment_id"
+        ]
+        == "exp-20260516-024"
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_source_diversity_dual_catalyst_financing_profile_trend_risk_scalar"
+        ]
+        == 1.0125
+    )
+    assert (
+        snapshot["forward_hypothesis"][
             "space_forward_replacement_positive_experiment_id"
         ]
         == "exp-20260513-113"
@@ -3083,6 +3095,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_source_diversity_dual_catalyst_iwm_leader_trend_risk_scalar": 1.0125,
                 "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": 1.0125,
                 "space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar": 1.0125,
+                "space_source_diversity_dual_catalyst_financing_profile_trend_risk_scalar": 1.0125,
                 "space_forward_replacement_positive_horizon": "10d",
                 "space_forward_replacement_positive_risk_scalar": 1.05,
                 "space_forward_replacement_same_theme_strength_min_value": 500.0,
@@ -3136,6 +3149,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_source_diversity_dual_catalyst_iwm_leader_trend_bucket": True,
                     "space_source_diversity_dual_catalyst_same_theme_winner_trend_bucket": True,
                     "space_source_diversity_dual_catalyst_near_perfect_trend_bucket": True,
+                    "space_source_diversity_dual_catalyst_financing_profile_trend_bucket": True,
                     "space_forward_replacement_positive_bucket": True,
                     "space_forward_replacement_same_theme_strength_bucket": True,
                     "space_forward_replacement_trend_strength_bucket": True,
@@ -3212,6 +3226,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source-diversity dual-catalyst IWM-leader trend @ 1.0125x; "
         "source-diversity dual-catalyst same-theme winner trend @ 1.0125x; "
         "source-diversity dual-catalyst near-perfect trend @ 1.0125x; "
+        "source-diversity dual-catalyst financing-profile trend @ 1.0125x; "
         "forward replacement-positive 10d @ 1.05x; "
         "forward same-theme replacement-strength >=500.0 @ 1.05x; "
         "forward replacement-strength trend @ 1.05x; "
@@ -3244,6 +3259,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source_diversity_dual_catalyst_iwm_leader_trend=True "
         "source_diversity_dual_catalyst_same_theme_winner_trend=True "
         "source_diversity_dual_catalyst_near_perfect_trend=True "
+        "source_diversity_dual_catalyst_financing_profile_trend=True "
         "forward_replacement_positive=True "
         "forward_replacement_same_theme_strength=True "
         "forward_replacement_trend_strength=True "
