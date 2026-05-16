@@ -22,8 +22,9 @@ cd D:\Github\ginger
 ```
 
 New backtest result files are written under `data\backtests\`. Legacy
-root-level `data\backtest_results_*.json` artifacts remain readable and are
-kept in place for historical experiment compatibility.
+root-level `data\backtest_results_*.json` references remain readable through
+`quant/data_paths.py` compatibility resolvers when older checkouts still have
+those files.
 
 ## 试点子组合回测
 
@@ -36,11 +37,12 @@ kept in place for historical experiment compatibility.
 ```
 
 开启后，`AI_INFRA_PILOT`（AI 基建试点子组合）会使用
-`data\universe_registry.json` 和 `data\universe_events.jsonl` 做每日
+`data\state\universe\universe_registry.json` 和
+`data\state\universe\universe_events.jsonl` 做每日
 PIT 资格判断。backtester 会预加载截至回测结束日已经允许交易的 pilot
 OHLCV，但每天是否能交易仍取决于当日 `first_trade_allowed_as_of` 和状态
 回放结果。这个模式不会写入生产 append-only 日志
-`data\pilot_competition_decisions.jsonl`；counterfactual snapshot 与 outcome
+`data\ledgers\pilot_competition_decisions.jsonl`；counterfactual snapshot 与 outcome
 attribution 只保存在本次回测的 `result["pilot_sleeve_replay"]` 里。
 
 历史三窗口均早于 `2026-05-01`，因此加上 `--include-pilot-sleeve` 后
@@ -78,26 +80,44 @@ Window labels used in experiment logs:
 
 | Label | Date range | Snapshot |
 | --- | --- | --- |
-| `late_strong` | `2025-10-23 -> 2026-04-21` | `data\ohlcv_snapshot_20251023_20260421.json` |
-| `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv_snapshot_20250423_20251022.json` |
-| `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv_snapshot_20241002_20250422.json` |
+| `late_strong` | `2025-10-23 -> 2026-04-21` | `data\ohlcv\ohlcv_snapshot_20251023_20260421.json` |
+| `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv\ohlcv_snapshot_20250423_20251022.json` |
+| `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260515-028`
-(`current_stack_core_confirmed_quality_risk`) promoted the confirmed-quality
-core sizing top-up:
+Current accepted fixed-window metrics after core `exp-20260516-009`
+(`green_decel_quality_nonconsumer_risk`) promoted the green-deceleration
+quality non-consumer core sizing top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 5.1064 | 4.39 | $116,319.10 | 116.32% | 6.65% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 2.0987 | 2.76 | $76,035.04 | 76.04% | 10.63% | 52.38% | 21 | 79.25% |
+| `late_strong` | 5.1344 | 4.40 | $116,686.40 | 116.69% | 6.65% | 78.95% | 19 | 80.39% |
+| `mid_weak` | 2.1016 | 2.75 | $76,421.93 | 76.42% | 10.83% | 52.38% | 21 | 79.25% |
 | `old_thin` | 0.5294 | 1.42 | $37,282.59 | 37.28% | 10.01% | 40.91% | 22 | 86.67% |
 
 Artifact note:
-`data/experiments/exp-20260515-028/current_stack_core_confirmed_quality_risk.json`
+`data/experiments/exp-20260516-009/green_decel_quality_nonconsumer_risk.json`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `7.7345`; aggregate PnL is `$229,636.73`.
+EV is `7.7654`; aggregate PnL is `$230,390.92`.
 
-Latest accepted core-sizing result: core `exp-20260515-028` keeps entries,
+Latest accepted core-sizing result: core `exp-20260516-009` keeps entries,
+exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
+unchanged, but tags already-qualified `trend_long` / `breakout_long` signals
+whose own signal-day candle is green, `momentum_10d_pct` and `momentum_20d_pct`
+are both positive, `momentum_10d_pct < momentum_20d_pct`,
+`trade_quality_score >= 0.95`, and sector is not Consumer Discretionary or
+Communication Services. Those signals get an additional 1.025x cap-aware
+post-sizing top-up in shared `risk_engine.py` and `portfolio_engine.py`. The
+change improved EV/PnL in `late_strong` and `mid_weak` and left `old_thin`
+unchanged: aggregate EV `+0.0309`, aggregate PnL `+$754.19`, trade count stayed
+`62`, minimum survival stayed `79.25%`, and worst-window max drawdown drift
+stayed inside Gate 4 at `+0.20 pp`. There is no production/backtest split
+because both adapters call the same shared risk/sizing modules; the backtester
+only adds attribution for the applied multiplier. 1.05x+ variants regressed
+`old_thin`, and 1.075x failed drawdown, so do not retry nearby
+green-deceleration scalars on these frozen windows without forward evidence or
+a materially different production-visible discriminator.
+
+Previous accepted core-sizing result: core `exp-20260515-028` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but gives already-qualified `trend_long` / `breakout_long` signals
 with `trade_quality_score >= 0.95`, `rs20_entry_state_leader=true`, and

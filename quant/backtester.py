@@ -95,6 +95,7 @@ from regime_exit import compute_regime_exit_profile
 from data_paths import (
     backtest_result_path,
     daily_artifact_glob,
+    data_artifact_path,
     resolve_daily_artifact_path,
     ohlcv_snapshot_path,
 )
@@ -256,11 +257,11 @@ def build_exit_policy_replay_bias(
 
 def build_pending_action_replay_bias(data_dir):
     """Describe the production pending-action ledger gap without using it."""
-    path = os.path.join(data_dir, "pending_actions.json")
+    path = data_artifact_path("pending_actions", data_dir)
     payload = None
-    if os.path.exists(path):
+    if path.exists():
         try:
-            with open(path, encoding="utf-8") as f:
+            with path.open(encoding="utf-8") as f:
                 payload = json.load(f)
         except Exception:
             payload = None
@@ -284,8 +285,8 @@ def build_pending_action_replay_bias(data_dir):
 
     return {
         "gap_present": True,
-        "ledger_present": os.path.exists(path),
-        "ledger_path": path if os.path.exists(path) else None,
+        "ledger_present": path.exists(),
+        "ledger_path": str(path) if path.exists() else None,
         "ledger_updated_at": payload.get("updated_at") if isinstance(payload, dict) else None,
         "open_actions_count": len(open_actions),
         "open_reduce_actions_count": _count_action("REDUCE"),
@@ -499,6 +500,7 @@ SIZING_MULTIPLIER_KEYS = (
     "spy_relative_leader_risk_on_multiplier_applied",
     "rs20_entry_state_risk_multiplier_applied",
     "core_confirmed_quality_risk_multiplier_applied",
+    "green_decel_quality_nonconsumer_risk_multiplier_applied",
     "signal_day_ticker_green_risk_multiplier_applied",
     "rs60_top_quintile_risk_multiplier_applied",
     "price_vs_200ma_extension_risk_multiplier_applied",
@@ -1368,7 +1370,7 @@ class BacktestEngine:
             "decisions": [],
             "notes": [
                 "PIT pilot replay is enabled only with --include-pilot-sleeve.",
-                "Replay is in-memory and does not write data/pilot_competition_decisions.jsonl.",
+                "Replay is in-memory and does not write data/ledgers/pilot_competition_decisions.jsonl.",
             ],
         }
         pilot_eligible_tickers_seen = set()
@@ -4037,7 +4039,7 @@ class BacktestEngine:
                 [
                     "pilot_sleeve_replay_enabled: PIT multi-sleeve pilot replay "
                     "ran in memory; it did not write "
-                    "data/pilot_competition_decisions.jsonl."
+                    "data/ledgers/pilot_competition_decisions.jsonl."
                 ]
                 if self.include_pilot_sleeve
                 else []

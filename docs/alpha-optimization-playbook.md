@@ -73,8 +73,8 @@ Keep only anchor states here. Full metrics live in `docs/backtesting.md` and
 
 ### Core
 
-Current accepted core checkpoint is the 2026-05-15 stack ending at
-`exp-20260515-028`.
+Current accepted core checkpoint is the 2026-05-16 stack ending at
+`exp-20260516-009`.
 
 Mechanism-level summary:
 
@@ -95,6 +95,11 @@ Mechanism-level summary:
   own signal-day green candle) is now an accepted current-stack allocation
   discriminator at 1.075x; `exp-20260515-028` improved all three canonical
   windows, while 1.08x+ failed the drawdown guardrail;
+- green-deceleration quality non-consumer state (own green candle, positive
+  10d/20d momentum with 10d below 20d, `trade_quality_score >= 0.95`, and no
+  Consumer Discretionary / Communication Services exposure) is accepted at
+  1.025x in `exp-20260516-009`; larger nearby scalars regressed `old_thin` or
+  failed drawdown;
 - the useful core edge is post-selection allocation, not broader filtering;
 - small data/taxonomy fixes can matter when they change real routing.
 
@@ -116,6 +121,10 @@ Current practical interpretation:
   guardrail.
 - do not retry nearby confirmed-quality top-up scalars on the frozen windows;
   the accepted 1.075x value sits directly below the drawdown failure boundary.
+- do not retry nearby green-deceleration quality non-consumer scalars on the
+  frozen windows; the accepted 1.025x value is the only tested scalar with no
+  EV-regressed window, while 1.05x+ regressed `old_thin` and 1.075x failed
+  drawdown.
 - do not retry the simple confirmed-quality x top-quartile sector-thrust
   interaction on the frozen windows; `exp-20260515-032` was directionally
   positive only in `mid_weak` and still regressed `old_thin`.
@@ -415,6 +424,9 @@ field:
 - nearby RS20 / RS60 / own-candle / clean-SPY scalar tuning;
 - simple RS60 x price-vs-200MA overlap or complement scalars without a new
   drawdown, catalyst-quality, or wider-cohort discriminator;
+- nearby green-deceleration quality non-consumer scalars; future work needs a
+  materially different production-visible drawdown, catalyst-quality, or
+  cohort-breadth field;
 - simple `exec_lag_adj_net_rr` allocation scalars, including no-prior-haircut
   variants, without a genuinely new production-visible drawdown or
   catalyst-quality discriminator;

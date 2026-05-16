@@ -293,6 +293,54 @@ def test_enrich_signals_marks_signal_day_green_candle():
     assert msft["signal_day_ticker_green_candle"] is False
 
 
+def test_enrich_signals_marks_green_decel_quality_nonconsumer_state():
+    from risk_engine import enrich_signals
+
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 1.0,
+        },
+        {
+            "ticker": "DIS",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 1.0,
+        },
+    ]
+    features = {
+        "AMD": {
+            "atr": 3.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.10,
+            "momentum_20d_pct": 0.20,
+            "signal_day_ticker_open_close_return_pct": 0.01,
+        },
+        "DIS": {
+            "atr": 3.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.10,
+            "momentum_20d_pct": 0.20,
+            "signal_day_ticker_open_close_return_pct": 0.01,
+        },
+        "SPY": {"momentum_20d_pct": 0.0},
+    }
+
+    amd, dis = enrich_signals(signals, features)
+
+    assert amd["green_decel_quality_nonconsumer_state"] is True
+    assert amd["momentum_10d_minus_20d_pct"] == -0.10
+    assert dis["sector"] == "Communication Services"
+    assert dis["green_decel_quality_nonconsumer_excluded_sector"] is True
+    assert dis["green_decel_quality_nonconsumer_state"] is False
+
+
 def test_enrich_signals_marks_signal_day_spy_outperformance():
     from risk_engine import enrich_signals
 
@@ -457,6 +505,48 @@ def test_spy_relative_leader_uses_leader_position_cap():
         100000.0 * RISK_ON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT / 100.0
     )
     assert sized["shares_to_buy"] > int(100000.0 * MAX_POSITION_PCT / 100.0)
+
+
+def test_green_decel_quality_nonconsumer_topup_is_cap_aware():
+    from constants import (
+        EXEC_LAG_PCT,
+        GREEN_DECEL_QUALITY_NONCONSUMER_RISK_MULTIPLIER,
+        ROUND_TRIP_COST_PCT,
+        SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER,
+    )
+    from portfolio_engine import size_signals
+
+    signal = {
+        "ticker": "AMD",
+        "strategy": "trend_long",
+        "sector": "Technology",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "trade_quality_score": 1.0,
+        "signal_day_ticker_green_candle": True,
+        "green_decel_quality_nonconsumer_state": True,
+    }
+
+    sizing = size_signals([signal], portfolio_value=100_000.0)[0]["sizing"]
+
+    net_risk_per_share = 5.0 + 100.0 * ROUND_TRIP_COST_PCT + 100.0 * EXEC_LAG_PCT
+    base_shares = int(math.floor(100_000.0 * 0.01 / net_risk_per_share))
+    green_shares = int(
+        math.floor(base_shares * SIGNAL_DAY_TICKER_GREEN_RISK_MULTIPLIER)
+    )
+    expected_shares = int(
+        math.floor(
+            green_shares * GREEN_DECEL_QUALITY_NONCONSUMER_RISK_MULTIPLIER
+        )
+    )
+
+    assert sizing["signal_day_ticker_green_baseline_shares"] == base_shares
+    assert sizing["green_decel_quality_nonconsumer_baseline_shares"] == green_shares
+    assert sizing["shares_to_buy"] == expected_shares
+    assert sizing["green_decel_quality_nonconsumer_risk_multiplier_applied"] == (
+        GREEN_DECEL_QUALITY_NONCONSUMER_RISK_MULTIPLIER
+    )
+    assert sizing["green_decel_quality_nonconsumer_state"] is True
 
 
 def test_size_signals_commodity_breakout_uses_sleeve_cap():
@@ -3815,6 +3905,89 @@ def test_data_layer_lookback_sufficient_for_52w_high():
         "With 350 days (~241 trading days), pct_from_52w_high is always None "
         "and the near_52w_high quality bonus (+0.40) never fires."
     )
+
+
+def test_get_ohlcv_many_splits_yfinance_ticker_group(monkeypatch):
+    import data_layer
+
+    idx = pd.bdate_range("2026-01-02", periods=2)
+    aaa = pd.DataFrame(
+        {
+            "Open": [10.0, 11.0],
+            "High": [12.0, 13.0],
+            "Low": [9.0, 10.0],
+            "Close": [11.0, 12.0],
+            "Volume": [1000, 1100],
+        },
+        index=idx,
+    )
+    bbb = pd.DataFrame(
+        {
+            "Open": [20.0, 21.0],
+            "High": [22.0, 23.0],
+            "Low": [19.0, 20.0],
+            "Close": [21.0, 22.0],
+            "Volume": [2000, 2100],
+        },
+        index=idx,
+    )
+    bulk = pd.concat({"AAA": aaa, "BBB": bbb}, axis=1)
+    calls = []
+
+    def fake_download(tickers, **kwargs):
+        calls.append((tickers, kwargs))
+        return bulk
+
+    monkeypatch.setattr(data_layer.yf, "download", fake_download)
+
+    result = data_layer.get_ohlcv_many(["AAA", "BBB"])
+
+    assert calls[0][0] == ["AAA", "BBB"]
+    assert calls[0][1]["group_by"] == "ticker"
+    pd.testing.assert_frame_equal(result["AAA"], aaa)
+    pd.testing.assert_frame_equal(result["BBB"], bbb)
+
+
+def test_get_ohlcv_many_falls_back_for_missing_bulk_slice(monkeypatch):
+    import data_layer
+
+    idx = pd.bdate_range("2026-01-02", periods=2)
+    aaa = pd.DataFrame(
+        {
+            "Open": [10.0, 11.0],
+            "High": [12.0, 13.0],
+            "Low": [9.0, 10.0],
+            "Close": [11.0, 12.0],
+            "Volume": [1000, 1100],
+        },
+        index=idx,
+    )
+    bbb = pd.DataFrame(
+        {
+            "Open": [20.0, 21.0],
+            "High": [22.0, 23.0],
+            "Low": [19.0, 20.0],
+            "Close": [21.0, 22.0],
+            "Volume": [2000, 2100],
+        },
+        index=idx,
+    )
+    bulk = pd.concat({"AAA": aaa}, axis=1)
+    fallback_calls = []
+
+    monkeypatch.setattr(data_layer.yf, "download", lambda *args, **kwargs: bulk)
+
+    def fake_get_ohlcv(ticker, lookback_days=400):
+        fallback_calls.append((ticker, lookback_days))
+        return bbb if ticker == "BBB" else None
+
+    monkeypatch.setattr(data_layer, "get_ohlcv", fake_get_ohlcv)
+
+    result = data_layer.get_ohlcv_many(["AAA", "BBB"])
+
+    pd.testing.assert_frame_equal(result["AAA"], aaa)
+    pd.testing.assert_frame_equal(result["BBB"], bbb)
+    assert fallback_calls == [("BBB", 400)]
 
 
 def test_feature_layer_52w_high_computed_with_adequate_data():

@@ -1,0 +1,26 @@
+{
+  "artifact": "data\\experiments\\exp-20260516-009\\green_decel_quality_nonconsumer_risk.json",
+  "changed_variable": "green_decel_quality_nonconsumer_risk_multiplier",
+  "decision": "accepted_and_promoted_shared_policy",
+  "expected_value_score_delta": 0.0309,
+  "experiment_id": "exp-20260516-009",
+  "gate4_passed": true,
+  "next_evidence_needed": "Do not retry nearby green-deceleration scalars on these frozen windows; future work needs a materially different production-visible drawdown, catalyst-quality, or cohort-breadth field.",
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "notes": "Promoted through shared risk_engine.enrich_signals and portfolio_engine.size_signals; run.py and backtester.py both use the shared risk/sizing policy. backtester.py only adds attribution for the applied multiplier.",
+    "parity_test": [
+      "quant/test_production_parity.py::test_green_decel_quality_nonconsumer_state_is_shared_risk_enrichment",
+      "quant/test_production_parity.py::test_green_decel_quality_nonconsumer_topup_is_shared_sizing_policy",
+      "quant/test_quant.py::test_enrich_signals_marks_green_decel_quality_nonconsumer_state",
+      "quant/test_quant.py::test_green_decel_quality_nonconsumer_topup_is_cap_aware"
+    ],
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "status": "accepted_and_promoted_shared_policy",
+  "summary": "Green-deceleration high-quality non-consumer core sizing top-up cleared the canonical three-window gate and was promoted into shared risk/sizing policy at 1.025x.",
+  "total_pnl_delta": 754.19
+}

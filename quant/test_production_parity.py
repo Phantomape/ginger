@@ -993,6 +993,107 @@ def test_core_confirmed_quality_topup_is_shared_sizing_policy():
     assert unconfirmed["core_confirmed_quality_risk_multiplier_applied"] == 1.0
 
 
+def test_green_decel_quality_nonconsumer_state_is_shared_risk_enrichment():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 1.0,
+        },
+        {
+            "ticker": "DIS",
+            "strategy": "trend_long",
+            "entry_price": 100.0,
+            "stop_price": 97.0,
+            "confidence_score": 1.0,
+        },
+    ]
+    features = {
+        "AMD": {
+            "atr": 3.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.10,
+            "momentum_20d_pct": 0.20,
+            "signal_day_ticker_open_close_return_pct": 0.01,
+        },
+        "DIS": {
+            "atr": 3.0,
+            "trend_score": 1.0,
+            "volume_spike_ratio": 2.0,
+            "momentum_10d_pct": 0.10,
+            "momentum_20d_pct": 0.20,
+            "signal_day_ticker_open_close_return_pct": 0.01,
+        },
+        "SPY": {
+            "atr": 3.0,
+            "momentum_20d_pct": 0.0,
+            "signal_day_ticker_open_close_return_pct": 0.0,
+        },
+    }
+
+    enriched = enrich_signals(signals, features)
+    by_ticker = {sig["ticker"]: sig for sig in enriched}
+
+    assert by_ticker["AMD"]["green_decel_quality_nonconsumer_state"] is True
+    assert by_ticker["AMD"]["momentum_10d_minus_20d_pct"] == -0.10
+    assert by_ticker["DIS"]["sector"] == "Communication Services"
+    assert by_ticker["DIS"]["green_decel_quality_nonconsumer_state"] is False
+
+
+def test_green_decel_quality_nonconsumer_topup_is_shared_sizing_policy():
+    signals = [
+        {
+            "ticker": "AMD",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 1.0,
+            "signal_day_ticker_green_candle": True,
+            "green_decel_quality_nonconsumer_state": True,
+            "green_decel_quality_nonconsumer_tqs_min": (
+                constants.GREEN_DECEL_QUALITY_NONCONSUMER_TQS_MIN
+            ),
+            "conditions_met": {},
+        },
+        {
+            "ticker": "MSFT",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "entry_price": 100.0,
+            "stop_price": 90.0,
+            "trade_quality_score": 1.0,
+            "signal_day_ticker_green_candle": True,
+            "green_decel_quality_nonconsumer_state": False,
+            "green_decel_quality_nonconsumer_tqs_min": (
+                constants.GREEN_DECEL_QUALITY_NONCONSUMER_TQS_MIN
+            ),
+            "conditions_met": {},
+        },
+    ]
+
+    sized = size_signals(signals, portfolio_value=100_000, risk_pct=0.01)
+
+    confirmed = sized[0]["sizing"]
+    unconfirmed = sized[1]["sizing"]
+    assert unconfirmed["shares_to_buy"] == 96
+    assert confirmed["green_decel_quality_nonconsumer_baseline_shares"] == 96
+    assert confirmed["green_decel_quality_nonconsumer_desired_shares"] == 98
+    assert confirmed["green_decel_quality_nonconsumer_new_shares"] == 98
+    assert confirmed["shares_to_buy"] == 98
+    assert confirmed["green_decel_quality_nonconsumer_risk_multiplier_applied"] == (
+        constants.GREEN_DECEL_QUALITY_NONCONSUMER_RISK_MULTIPLIER
+    )
+    assert confirmed["green_decel_quality_nonconsumer_state"] is True
+    assert (
+        unconfirmed["green_decel_quality_nonconsumer_risk_multiplier_applied"]
+        == 1.0
+    )
+
+
 def test_clean_spy_leader_signal_day_cap_is_shared_sizing_policy():
     signals = [
         {

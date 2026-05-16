@@ -28,6 +28,8 @@ from constants import (
     PRICE_VS_200MA_EXTENSION_EXCLUDED_SECTORS,
     PRICE_VS_200MA_EXTENSION_FRACTION,
     CORE_CONFIRMED_QUALITY_TQS_MIN,
+    GREEN_DECEL_QUALITY_NONCONSUMER_EXCLUDED_SECTORS,
+    GREEN_DECEL_QUALITY_NONCONSUMER_TQS_MIN,
     RS20_ENTRY_STATE_LEADER_MIN_REL_RETURN,
     RS60_TOP_QUINTILE_EXCLUDED_SECTORS,
     RS60_TOP_QUINTILE_FRACTION,
@@ -420,7 +422,9 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         else:
             enriched_sig["ticker_minus_spy_signal_day_open_close_return_pct"] = None
             enriched_sig["signal_day_ticker_outperformed_spy"] = False
+        ticker_ret10 = features.get("momentum_10d_pct")
         ticker_ret60 = features.get("momentum_60d_pct")
+        enriched_sig["momentum_10d_pct"] = ticker_ret10
         enriched_sig["momentum_60d_pct"] = ticker_ret60
         enriched_sig["rs60_top_quintile_cutoff"] = (
             round(rs60_top_quintile_cutoff, 6)
@@ -452,6 +456,16 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
             enriched_sig["sector_ret20_dispersion"] = round(sector_ret20_dispersion, 4)
             enriched_sig["mid_sector_dispersion"] = mid_sector_dispersion
         ticker_ret20 = features.get("momentum_20d_pct")
+        enriched_sig["momentum_20d_pct"] = ticker_ret20
+        if isinstance(ticker_ret10, (int, float)) and isinstance(
+            ticker_ret20, (int, float)
+        ):
+            enriched_sig["momentum_10d_minus_20d_pct"] = round(
+                ticker_ret10 - ticker_ret20,
+                6,
+            )
+        else:
+            enriched_sig["momentum_10d_minus_20d_pct"] = None
         if isinstance(ticker_ret20, (int, float)) and isinstance(spy_ret20, (int, float)):
             rel_spy_ret20 = ticker_ret20 - spy_ret20
             enriched_sig["spy_ret20_pct"] = round(spy_ret20, 4)
@@ -470,6 +484,25 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
             and float(tqs) >= CORE_CONFIRMED_QUALITY_TQS_MIN
             and enriched_sig.get("rs20_entry_state_leader") is True
             and enriched_sig.get("signal_day_ticker_green_candle") is True
+        )
+        enriched_sig["green_decel_quality_nonconsumer_tqs_min"] = (
+            GREEN_DECEL_QUALITY_NONCONSUMER_TQS_MIN
+        )
+        enriched_sig["green_decel_quality_nonconsumer_excluded_sector"] = (
+            enriched_sig["sector"] in GREEN_DECEL_QUALITY_NONCONSUMER_EXCLUDED_SECTORS
+        )
+        enriched_sig["green_decel_quality_nonconsumer_state"] = (
+            enriched_sig.get("strategy") in {"trend_long", "breakout_long"}
+            and enriched_sig.get("signal_day_ticker_green_candle") is True
+            and isinstance(tqs, (int, float))
+            and float(tqs) >= GREEN_DECEL_QUALITY_NONCONSUMER_TQS_MIN
+            and enriched_sig["sector"]
+            not in GREEN_DECEL_QUALITY_NONCONSUMER_EXCLUDED_SECTORS
+            and isinstance(ticker_ret10, (int, float))
+            and isinstance(ticker_ret20, (int, float))
+            and ticker_ret10 > 0
+            and ticker_ret20 > 0
+            and ticker_ret10 < ticker_ret20
         )
         if enriched_sig["sector"] == "Financials":
             if (
