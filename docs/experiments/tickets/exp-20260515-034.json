@@ -1,0 +1,61 @@
+{
+  "acceptance_rule": "Data audit/shadow only: report coverage, PIT risk, missingness, field readiness, overlap with existing signals, forward-return availability, and slot value; no production change.",
+  "allowed_write_scope": [
+    "docs/experiments/tickets",
+    "docs/experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "data/experiments",
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260515-028/current_stack_core_confirmed_quality_risk.json",
+  "change_type": "data_audit_shadow_overlay",
+  "claimed_at": null,
+  "completed_at": "2026-05-15T17:20:00+00:00",
+  "created_at": "2026-05-15T17:19:50+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260515-034",
+  "hypothesis": "Public-market insider Form 4 buying, especially CEO/CFO large buys, cluster buying, first buys, and post-drawdown buys, may confirm existing trend_long/breakout_long candidates. This run only audits local PIT-safe availability and tags existing signal surfaces; it does not create entries.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "entries",
+    "exits",
+    "ranking",
+    "sizing",
+    "portfolio_heat",
+    "LLM_news",
+    "production_orders",
+    "Form4_thresholds",
+    "core_universe"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "owner": "codex-automation",
+  "result": {
+    "artifact": "data/experiments/exp-20260515-034/form4_existing_signal_overlay_shadow.json",
+    "candidate_count": 0,
+    "cik_mapping_report": "docs/non_ohlcv_data_audit/form4_cik_mapping_exp-20260515-034_20260515.md",
+    "decision": "shadow_only",
+    "log": "docs/experiments/logs/exp-20260515-034.json",
+    "production_core_overlap_count": 0,
+    "report": "docs/non_ohlcv_data_audit/form4_existing_signal_overlay_exp-20260515-034_20260515.md",
+    "summary": "Data is present and PIT-dateable, but the latest snapshot adds no production-core overlay hit, no mature tagged-candidate forward return, and no measurable scarce-slot value. Prior Form 4 promotion variants remain rejected for sample and materiality."
+  },
+  "single_causal_variable": "latest PIT-safe Form 4 meaningful insider-buy overlay coverage on existing signals",
+  "status": "observed_only"
+}

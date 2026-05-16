@@ -4140,7 +4140,7 @@
     },
     {
       "experiment_id": "exp-20260509-021",
-      "hypothesis": "\u8fd1\u671f\u574f\u4ea4\u6613\u96c6\u4e2d\u5728\u4e00\u79cd\u53ef\u590d\u73b0\u7684 hold-quality \u6216 follow-through \u5931\u8d25\u65cf\u7fa4\u4e2d\u3002",
+      "hypothesis": "近期坏交易集中在一种可复现的 hold-quality 或 follow-through 失败族群中。",
       "lane": "loss_attribution",
       "owner": "codex-all-in-one-loss",
       "status": "observed_only",
@@ -4149,7 +4149,7 @@
     },
     {
       "experiment_id": "exp-20260509-022",
-      "hypothesis": "\u5728 LLM/event ranking alpha \u53ef\u88ab\u8bc4\u4f30\u524d\uff0c\u5fc5\u987b\u7a33\u5b9a\u6301\u4e45\u5316 replay coverage \u548c attribution\u3002",
+      "hypothesis": "在 LLM/event ranking alpha 可被评估前，必须稳定持久化 replay coverage 和 attribution。",
       "lane": "measurement_repair",
       "owner": "codex-all-in-one-measurement",
       "status": "observed_only",
@@ -4158,7 +4158,7 @@
     },
     {
       "experiment_id": "exp-20260509-023",
-      "hypothesis": "\u4e00\u4e2a\u6d41\u52a8\u6027\u8fc7\u6ee4\u540e\u7684\u4e8b\u4ef6\u654f\u611f universe \u53ef\u4ee5\u5728\u5f53\u524d trend/breakout \u8986\u76d6\u4e4b\u5916\u4ea7\u751f\u975e\u91cd\u53e0\u9ad8\u8d28\u91cf\u5019\u9009\u3002",
+      "hypothesis": "一个流动性过滤后的事件敏感 universe 可以在当前 trend/breakout 覆盖之外产生非重叠高质量候选。",
       "lane": "universe_scout",
       "owner": "codex-all-in-one-universe",
       "status": "observed_only",
@@ -4708,8 +4708,71 @@
       "status": "data_gap",
       "ticket_file": "docs/experiments/tickets/exp-20260515-002.json",
       "updated_at": "2026-05-15T01:31:06+00:00"
+    },
+    {
+      "experiment_id": "exp-20260515-033",
+      "hypothesis": "EOD options IV, skew, term structure, open-interest concentration, and put/call structure may add explanatory value only as a default-off overlay on existing Ginger breakout, event, and earnings candidates.",
+      "lane": "alpha_discovery",
+      "log_file": "docs/experiments/logs/exp-20260515-033.json",
+      "owner": "universe-scout",
+      "status": "observed_only",
+      "ticket_file": "docs/experiments/tickets/exp-20260515-033.json",
+      "updated_at": "2026-05-15T17:26:04+00:00"
+    },
+    {
+      "experiment_id": "exp-20260515-034",
+      "hypothesis": "Public-market insider Form 4 buying, especially CEO/CFO large buys, cluster buying, first buys, and post-drawdown buys, may confirm existing trend_long/breakout_long candidates. This run only audits local PIT-safe availability and tags existing signal surfaces; it does not create entries.",
+      "lane": "alpha_discovery",
+      "log_file": "docs/experiments/logs/exp-20260515-034.json",
+      "owner": "codex-automation",
+      "status": "observed_only",
+      "ticket_file": "docs/experiments/tickets/exp-20260515-034.json",
+      "updated_at": "2026-05-15T17:20:00+00:00"
+    },
+    {
+      "experiment_id": "exp-20260515-035",
+      "hypothesis": "VSAT's mature satcom profile may be useful only as a non-displacing trend fallback: admit VSAT only when it passes the 5d+10d same-theme gate and no base official Space signal exists on that signal date.",
+      "lane": "alpha_search",
+      "log_file": "docs/experiments/logs/exp-20260515-035.json",
+      "owner": "universe-scout",
+      "status": "rejected",
+      "ticket_file": "docs/experiments/tickets/exp-20260515-035.json",
+      "updated_at": "2026-05-15T17:33:52Z"
+    },
+    {
+      "experiment_id": "exp-20260515-099",
+      "hypothesis": "EOD options IV, skew, term structure, open-interest concentration, and put/call structure may add explanatory value only as a default-off overlay on existing Ginger breakout, event, and earnings candidates.",
+      "lane": "alpha_discovery",
+      "log_file": "docs/experiments/logs/exp-20260515-099.json",
+      "owner": "universe-scout",
+      "result": {
+        "artifact": "data/experiments/exp-20260515-099/options_forward_candidate_ledger_report.json",
+        "decision": "shadow_only",
+        "report": "docs/non_ohlcv_data_audit/options_onclickmedia_exp-20260515-099_20260515.md",
+        "summary": "Forward options coverage remains shadow-only: no closed outcomes, no slot-conflict value, no earnings-IV or PIT short-interest join."
+      },
+      "status": "observed_only",
+      "ticket_file": "docs/experiments/tickets/exp-20260515-099.json",
+      "updated_at": "2026-05-15T18:21:13Z"
+    },
+    {
+      "experiment_id": "exp-20260516-003",
+      "hypothesis": "SEC filing shock, financial surprise, 8-K/10-Q/10-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but only if the 2026-05-14 SEC refresh adds PIT directional fields that touch candidates.",
+      "lane": "alpha_discovery",
+      "log_file": "docs/experiments/logs/exp-20260516-003.json",
+      "owner": "codex-alpha-discovery",
+      "result": {
+        "artifact": "data/experiments/exp-20260516-003/sec_earnings_filing_shock_20260514_data_audit.json",
+        "decision": "data_gap",
+        "report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_latest_exp-20260516-003_20260515.md",
+        "shadow_event_table": "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260516-003.json",
+        "summary": "`data_gap`: the 2026-05-14 SEC refresh has PIT timestamp/text/feature coverage and two more feature rows than the prior audit, but still has zero same-accession rows, zero directional rows, and no B/C candidate-touch cohort. Do not enter a default-off C grading harness yet."
+      },
+      "status": "data_gap",
+      "ticket_file": "docs/experiments/tickets/exp-20260516-003.json",
+      "updated_at": "2026-05-16T01:30:53+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-05-15T01:31:06+00:00"
+  "updated_at": "2026-05-16T01:30:53+00:00"
 }
