@@ -40,6 +40,23 @@ Aggregate core EV is now `7.7654`; aggregate PnL is `$230,390.92`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+Latest rejected core risk-allocation scout: `exp-20260516-011` tested whether
+the existing `trend_long` / Industrials zero-risk rule was over-killing
+qualified candidates. The replay-only sweep changed only
+`TREND_INDUSTRIALS_RISK_MULTIPLIER` (`0.10x`, `0.25x`, `0.50x`) and left
+entries, ranking, exits, targets, universe, LLM/news, heat, slots, and the
+separate Industrials breakout-gap rule unchanged. Gate 4 failed decisively:
+even the best `0.10x` variant moved aggregate EV `7.7654 -> 6.8741`
+(`-0.8913`) and aggregate PnL `$230,390.92 -> $194,601.06`
+(`-$35,789.86`). Only `late_strong` improved slightly (`+0.0079` EV /
+`+$180.42`), while `mid_weak` regressed `-0.4788` EV / `-$13,029.54` and
+`old_thin` regressed `-0.4204` EV / `-$22,940.74`; max drawdown drift breached
+the guardrail at `+1.84 pp`. The adjusted tickers were `CAT`, `DE`, `RTX`, and
+`GE`; the weak/old-window losses mean the current zero-risk rule remains the
+production default. Do not retry nearby Industrials trend risk scalars without
+a materially new production-visible discriminator or forward replacement-value
+evidence.
+
 Latest rejected execution alpha scout: `exp-20260516-007` tested a replay-only
 delayed open-pullback entry for rank-1 `trade_quality_score >= 0.95`
 `gap_cancel` candidates. It did not change production logic. Aggregate EV

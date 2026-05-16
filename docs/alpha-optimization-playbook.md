@@ -63,6 +63,10 @@ These checkpoints anchor the current playbook. They are not daily notes.
   sector-thrust overlays, close-location / gap-absorption overlays,
   slot-priority reroutes, nearby `exec_lag_adj_net_rr` scalars, and pullback
   re-entry designs.
+- The current `trend_long` / Industrials zero-risk rule is not an obvious
+  overkill after `exp-20260516-011`: restoring even `0.10x` risk improved only
+  `late_strong`, regressed both weaker validation windows, cut aggregate EV by
+  `0.8913`, and worsened the drawdown ceiling by `1.84 pp`.
 
 Current interpretation:
 
@@ -283,6 +287,8 @@ production-visible field:
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20` / `RS60` / own-candle / `clean_spy` scalar tuning;
 - nearby `price_vs_200ma` extension and green-deceleration scalar tuning;
+- nearby `trend_long` Industrials zero-risk restoration scalars; future work
+  needs a new production-visible discriminator, not another partial restore;
 - simple `exec_lag_adj_net_rr` allocation scalars without a new drawdown or
   catalyst-quality discriminator;
 - nearby cap retries after a sleeve-specific cap was already accepted;
