@@ -1,0 +1,623 @@
+{
+  "experiment_id": "exp-20260516-005",
+  "date": "2026-05-16T02:35:14.946528+00:00",
+  "hypothesis": "VSAT's mature satcom profile may be useful only in a favorable small-cap appetite regime: admit VSAT into the official Space pool only for trend_long signals where space_iwm_relative_state is smallcap_leader.",
+  "change_type": "alpha_search",
+  "changed_variable": "space_vsat_smallcap_leader_trend_pool_membership",
+  "parameters": {
+    "accepted_before_experiment": "exp-20260515-044",
+    "base_official_space_pool": [
+      "ASTS",
+      "BKSY",
+      "LUNR",
+      "PL",
+      "RDW",
+      "RKLB"
+    ],
+    "extended_official_space_pool": [
+      "ASTS",
+      "BKSY",
+      "LUNR",
+      "PL",
+      "RDW",
+      "RKLB",
+      "VSAT"
+    ],
+    "added_tickers": [
+      "VSAT"
+    ],
+    "candidate_universe": [
+      "IRDM",
+      "VSAT",
+      "SATS"
+    ],
+    "allowed_strategy_for_added_tickers": "trend_long",
+    "required_iwm_state_for_added_tickers": "smallcap_leader",
+    "forward_gate": {
+      "passed": true,
+      "source_gate": "space_fast_5d_same_theme_satcom_candidate_profile",
+      "path": "data\\space_catalyst_event_state_shadow_ledger.jsonl",
+      "candidate_universe": [
+        "IRDM",
+        "VSAT",
+        "SATS"
+      ],
+      "target_definition": "satcom extension ticker with mature 5d profile positive versus cash, same-theme replacement, SPY, QQQ, UFO, and ARKX, plus mature 10d cash-relative PnL and same-theme replacement value both positive",
+      "target_tickers": [
+        "VSAT"
+      ],
+      "target_profile_row_count": 1,
+      "profiles": {
+        "VSAT": {
+          "passed": true,
+          "ticker": "VSAT",
+          "closed_event_count": 1,
+          "avg_5d_cash_relative_pnl": 879.65,
+          "avg_5d_same_theme_replacement_value": 804.03,
+          "avg_10d_cash_relative_pnl": 2456.53,
+          "avg_10d_same_theme_replacement_value": 528.77,
+          "semantic_buckets": [
+            "defense_budget_theme"
+          ],
+          "source_types": [
+            "official_government_release"
+          ],
+          "event_ids": [
+            "golden_dome_sbi_awards_20260424"
+          ],
+          "rows": [
+            {
+              "ticker": "VSAT",
+              "event_id": "golden_dome_sbi_awards_20260424",
+              "event_date": "2026-04-24",
+              "asof_date": "2026-05-14",
+              "logged_at": "2026-05-15T04:07:14+00:00",
+              "closed_decision": true,
+              "source_type": "official_government_release",
+              "semantic_bucket": "defense_budget_theme",
+              "theme_segment": "satellite_connectivity",
+              "event_fields": [
+                "government_space_contract"
+              ],
+              "5d_values": {
+                "cash_relative_pnl": 879.65,
+                "same_theme_replacement_value": 804.03,
+                "spy_relative_value": 839.94,
+                "qqq_relative_value": 749.42,
+                "ufo_relative_value": 747.34,
+                "arkx_relative_value": 1099.27
+              },
+              "10d_values": {
+                "cash_relative_pnl": 2456.53,
+                "same_theme_replacement_value": 528.77
+              }
+            }
+          ]
+        }
+      },
+      "thresholds": {
+        "min_5d_cash_relative_pnl": 0.0,
+        "min_5d_same_theme_replacement_value": 0.0,
+        "min_5d_spy_relative_value": 0.0,
+        "min_5d_qqq_relative_value": 0.0,
+        "min_5d_ufo_relative_value": 0.0,
+        "min_5d_arkx_relative_value": 0.0,
+        "min_10d_cash_relative_pnl": 0.0,
+        "min_10d_same_theme_replacement_value": 0.0
+      },
+      "skipped_counts": {
+        "not_10d_cash_and_same_theme_positive": 1,
+        "not_all_5d_positive": 1,
+        "not_satcom_extension_candidate": 15
+      }
+    },
+    "accepted_near_perfect_scalar": 1.025,
+    "anti_js": "No JavaScript was used."
+  },
+  "backtest_protocol": "docs/backtesting.md fixed 3-window Space protocol using frozen Space augmented snapshots",
+  "date_range": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "core_snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "space_snapshot": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_late_strong_with_space_catalyst.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "core_snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "space_snapshot": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_mid_weak_with_space_catalyst.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "core_snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "space_snapshot": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_old_thin_with_space_catalyst.json"
+    }
+  },
+  "before_metrics": {
+    "expected_value_score_sum": 26.5438,
+    "total_pnl_sum": 733923.08,
+    "trade_count_sum": 65,
+    "signals_generated_sum": 207,
+    "signals_survived_sum": 144,
+    "min_survival_rate": 0.64,
+    "max_drawdown_pct_max": 0.2196
+  },
+  "after_metrics": {
+    "expected_value_score_sum": 26.8776,
+    "total_pnl_sum": 753403.05,
+    "trade_count_sum": 66,
+    "signals_generated_sum": 212,
+    "signals_survived_sum": 144,
+    "min_survival_rate": 0.6203,
+    "max_drawdown_pct_max": 0.2501
+  },
+  "by_window_before_metrics": {
+    "late_strong": {
+      "expected_value_score": 8.4442,
+      "strategy_total_return_pct": 2.3456,
+      "sharpe_daily": 3.6,
+      "total_pnl": 234557.69,
+      "max_drawdown_pct": 0.2196,
+      "win_rate": 0.7778,
+      "trade_count": 18,
+      "signals_generated": 58,
+      "signals_survived": 38,
+      "survival_rate": 0.6552,
+      "worst_trade_pct": -0.0607,
+      "max_consecutive_losses": 2,
+      "tail_loss_share": 0.5242
+    },
+    "mid_weak": {
+      "expected_value_score": 16.5302,
+      "strategy_total_return_pct": 4.112,
+      "sharpe_daily": 4.02,
+      "total_pnl": 411195.15,
+      "max_drawdown_pct": 0.1743,
+      "win_rate": 0.5417,
+      "trade_count": 24,
+      "signals_generated": 75,
+      "signals_survived": 48,
+      "survival_rate": 0.64,
+      "worst_trade_pct": -0.0875,
+      "max_consecutive_losses": 5,
+      "tail_loss_share": 0.9135
+    },
+    "old_thin": {
+      "expected_value_score": 1.5694,
+      "strategy_total_return_pct": 0.8817,
+      "sharpe_daily": 1.78,
+      "total_pnl": 88170.24,
+      "max_drawdown_pct": 0.1828,
+      "win_rate": 0.4348,
+      "trade_count": 23,
+      "signals_generated": 74,
+      "signals_survived": 58,
+      "survival_rate": 0.7838,
+      "worst_trade_pct": -0.0718,
+      "max_consecutive_losses": 4,
+      "tail_loss_share": 0.4505
+    }
+  },
+  "by_window_after_metrics": {
+    "late_strong": {
+      "expected_value_score": 8.7937,
+      "strategy_total_return_pct": 2.5489,
+      "sharpe_daily": 3.45,
+      "total_pnl": 254888.42,
+      "max_drawdown_pct": 0.2501,
+      "win_rate": 0.7368,
+      "trade_count": 19,
+      "signals_generated": 59,
+      "signals_survived": 37,
+      "survival_rate": 0.6271,
+      "worst_trade_pct": -0.0961,
+      "max_consecutive_losses": 3,
+      "tail_loss_share": 0.49
+    },
+    "mid_weak": {
+      "expected_value_score": 16.5451,
+      "strategy_total_return_pct": 4.1157,
+      "sharpe_daily": 4.02,
+      "total_pnl": 411573.62,
+      "max_drawdown_pct": 0.1743,
+      "win_rate": 0.5417,
+      "trade_count": 24,
+      "signals_generated": 79,
+      "signals_survived": 49,
+      "survival_rate": 0.6203,
+      "worst_trade_pct": -0.0875,
+      "max_consecutive_losses": 5,
+      "tail_loss_share": 0.919
+    },
+    "old_thin": {
+      "expected_value_score": 1.5388,
+      "strategy_total_return_pct": 0.8694,
+      "sharpe_daily": 1.77,
+      "total_pnl": 86941.01,
+      "max_drawdown_pct": 0.1804,
+      "win_rate": 0.4348,
+      "trade_count": 23,
+      "signals_generated": 74,
+      "signals_survived": 58,
+      "survival_rate": 0.7838,
+      "worst_trade_pct": -0.0718,
+      "max_consecutive_losses": 4,
+      "tail_loss_share": 0.4661
+    }
+  },
+  "by_window_delta": {
+    "late_strong": {
+      "expected_value_score": 0.3495,
+      "strategy_total_return_pct": 0.2033,
+      "sharpe_daily": -0.15,
+      "total_pnl": 20330.73,
+      "max_drawdown_pct": 0.0305,
+      "win_rate": -0.041,
+      "trade_count": 1.0,
+      "signals_generated": 1.0,
+      "signals_survived": -1.0,
+      "survival_rate": -0.0281,
+      "worst_trade_pct": -0.0354,
+      "tail_loss_share": -0.0342
+    },
+    "mid_weak": {
+      "expected_value_score": 0.0149,
+      "strategy_total_return_pct": 0.0037,
+      "sharpe_daily": 0.0,
+      "total_pnl": 378.47,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0.0,
+      "signals_generated": 4.0,
+      "signals_survived": 1.0,
+      "survival_rate": -0.0197,
+      "worst_trade_pct": 0.0,
+      "tail_loss_share": 0.0055
+    },
+    "old_thin": {
+      "expected_value_score": -0.0306,
+      "strategy_total_return_pct": -0.0123,
+      "sharpe_daily": -0.01,
+      "total_pnl": -1229.23,
+      "max_drawdown_pct": -0.0024,
+      "win_rate": 0.0,
+      "trade_count": 0.0,
+      "signals_generated": 0.0,
+      "signals_survived": 0.0,
+      "survival_rate": 0.0,
+      "worst_trade_pct": 0.0,
+      "tail_loss_share": 0.0156
+    }
+  },
+  "expected_value_score_delta": 0.3338,
+  "total_pnl_delta": 19479.97,
+  "risk_distribution": {
+    "before": {
+      "late_strong": {
+        "worst_trade_pct": -0.0607,
+        "max_consecutive_losses": 2,
+        "tail_loss_share": 0.5242
+      },
+      "mid_weak": {
+        "worst_trade_pct": -0.0875,
+        "max_consecutive_losses": 5,
+        "tail_loss_share": 0.9135
+      },
+      "old_thin": {
+        "worst_trade_pct": -0.0718,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.4505
+      }
+    },
+    "after": {
+      "late_strong": {
+        "worst_trade_pct": -0.0961,
+        "max_consecutive_losses": 3,
+        "tail_loss_share": 0.49
+      },
+      "mid_weak": {
+        "worst_trade_pct": -0.0875,
+        "max_consecutive_losses": 5,
+        "tail_loss_share": 0.919
+      },
+      "old_thin": {
+        "worst_trade_pct": -0.0718,
+        "max_consecutive_losses": 4,
+        "tail_loss_share": 0.4661
+      }
+    }
+  },
+  "extension_trade_attribution": {
+    "late_strong": {
+      "trade_count": 0,
+      "total_pnl": 0,
+      "wins": 0,
+      "losses": 0,
+      "trades": []
+    },
+    "mid_weak": {
+      "trade_count": 0,
+      "total_pnl": 0,
+      "wins": 0,
+      "losses": 0,
+      "trades": []
+    },
+    "old_thin": {
+      "trade_count": 0,
+      "total_pnl": 0,
+      "wins": 0,
+      "losses": 0,
+      "trades": []
+    }
+  },
+  "extension_filter": {
+    "counts": {
+      "extension_signal_seen": 6,
+      "filtered_VSAT": 5,
+      "filtered_extension_non_trend_signal": 2,
+      "filtered_extension_not_smallcap_leader_signal": 3,
+      "filtered_extension_signal": 5,
+      "kept_VSAT": 1,
+      "kept_extension_signal": 1,
+      "seen_VSAT": 6,
+      "seen_iwm_state_smallcap_laggard": 4,
+      "seen_iwm_state_smallcap_leader": 2,
+      "seen_strategy_breakout_long": 2,
+      "seen_strategy_trend_long": 4
+    },
+    "records": [
+      {
+        "ticker": "VSAT",
+        "strategy": "breakout_long",
+        "date": "",
+        "window": null,
+        "action": "filtered",
+        "reason": "non_trend",
+        "space_iwm_relative_state": "smallcap_leader",
+        "space_peer_momentum_state": "nonleader",
+        "trade_quality_score": 0.93,
+        "confidence_score": 1.0,
+        "space_source_diversity_peer_nonleader_trend_bucket": null,
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": null
+      },
+      {
+        "ticker": "VSAT",
+        "strategy": "breakout_long",
+        "date": "",
+        "window": null,
+        "action": "filtered",
+        "reason": "non_trend",
+        "space_iwm_relative_state": "smallcap_laggard",
+        "space_peer_momentum_state": "leader",
+        "trade_quality_score": 0.936,
+        "confidence_score": 1.0,
+        "space_source_diversity_peer_nonleader_trend_bucket": null,
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": null
+      },
+      {
+        "ticker": "VSAT",
+        "strategy": "trend_long",
+        "date": "",
+        "window": null,
+        "action": "filtered",
+        "reason": "not_smallcap_leader",
+        "space_iwm_relative_state": "smallcap_laggard",
+        "space_peer_momentum_state": "nonleader",
+        "trade_quality_score": 0.956,
+        "confidence_score": 0.89,
+        "space_source_diversity_peer_nonleader_trend_bucket": null,
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": null
+      },
+      {
+        "ticker": "VSAT",
+        "strategy": "trend_long",
+        "date": "",
+        "window": null,
+        "action": "filtered",
+        "reason": "not_smallcap_leader",
+        "space_iwm_relative_state": "smallcap_laggard",
+        "space_peer_momentum_state": "leader",
+        "trade_quality_score": 0.956,
+        "confidence_score": 0.89,
+        "space_source_diversity_peer_nonleader_trend_bucket": null,
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": null
+      },
+      {
+        "ticker": "VSAT",
+        "strategy": "trend_long",
+        "date": "",
+        "window": null,
+        "action": "filtered",
+        "reason": "not_smallcap_leader",
+        "space_iwm_relative_state": "smallcap_laggard",
+        "space_peer_momentum_state": "leader",
+        "trade_quality_score": 1.0,
+        "confidence_score": 1.0,
+        "space_source_diversity_peer_nonleader_trend_bucket": null,
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": null
+      },
+      {
+        "ticker": "VSAT",
+        "strategy": "trend_long",
+        "date": "",
+        "window": null,
+        "action": "kept",
+        "reason": "trend_smallcap_leader",
+        "space_iwm_relative_state": "smallcap_leader",
+        "space_peer_momentum_state": "leader",
+        "trade_quality_score": 1.0,
+        "confidence_score": 1.0,
+        "space_source_diversity_peer_nonleader_trend_bucket": null,
+        "space_source_diversity_peer_nonleader_near_perfect_trend_bucket": null
+      }
+    ],
+    "by_window": {
+      "unknown": {
+        "count": 6,
+        "tickers": {
+          "VSAT": 6
+        },
+        "actions": {
+          "filtered": 5,
+          "kept": 1
+        },
+        "reasons": {
+          "non_trend": 2,
+          "not_smallcap_leader": 3,
+          "trend_smallcap_leader": 1
+        },
+        "iwm_states": {
+          "smallcap_laggard": 4,
+          "smallcap_leader": 2
+        },
+        "strategies": {
+          "breakout_long": 2,
+          "trend_long": 4
+        }
+      }
+    },
+    "rule": "Added VSAT signals are allowed only when strategy=trend_long and space_iwm_relative_state=smallcap_leader."
+  },
+  "gate_answers": {
+    "1_alpha_hypothesis": "Candidate-pool alpha: VSAT's mature satcom profile may add Space trend continuation value only when small-cap appetite is confirmed by space_iwm_relative_state=smallcap_leader.",
+    "2_prior_similar_experiments": [
+      "exp-20260515-029 rejected current-stack IRDM/VSAT trend-only admission because old_thin regressed and drawdown worsened.",
+      "exp-20260515-031 rejected stricter VSAT-only trend admission because old_thin still regressed and late drawdown worsened.",
+      "exp-20260515-035 rejected VSAT trend fallback admission; this run changes the discriminator to the production-visible smallcap_leader state.",
+      "exp-20260516-001 rejected nearby current-stack Space setup-quality scalar work, and LLM soft-ranking remains data-limited."
+    ],
+    "3_single_causal_variable": "Only VSAT candidate-pool membership changes, and only under trend_long plus smallcap_leader. Entries, exits, ranking, stops, LLM/news, risk scalars, and live slots stay fixed.",
+    "4_success_criteria": "Kept VSAT extension signals and trades present, aggregate EV/PnL positive, at least two EV-improved windows, no EV-regressed window, max drawdown drift <= 0.5 pp, survival >= 5%, and trade count >= 50.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260516_005_space_vsat_smallcap_leader_trend_pool.py"
+  },
+  "gate_results": {
+    "aggregate_delta_vs_before": {
+      "expected_value_score_sum": 0.3338,
+      "total_pnl_sum": 19479.97,
+      "trade_count_sum": 1,
+      "signals_generated_sum": 5,
+      "signals_survived_sum": 0,
+      "min_survival_rate": -0.0197,
+      "max_drawdown_pct_max": 0.0305
+    },
+    "by_window_delta_vs_before": {
+      "late_strong": {
+        "expected_value_score": 0.3495,
+        "strategy_total_return_pct": 0.2033,
+        "sharpe_daily": -0.15,
+        "total_pnl": 20330.73,
+        "max_drawdown_pct": 0.0305,
+        "win_rate": -0.041,
+        "trade_count": 1.0,
+        "signals_generated": 1.0,
+        "signals_survived": -1.0,
+        "survival_rate": -0.0281,
+        "worst_trade_pct": -0.0354,
+        "tail_loss_share": -0.0342
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0149,
+        "strategy_total_return_pct": 0.0037,
+        "sharpe_daily": 0.0,
+        "total_pnl": 378.47,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "signals_generated": 4.0,
+        "signals_survived": 1.0,
+        "survival_rate": -0.0197,
+        "worst_trade_pct": 0.0,
+        "tail_loss_share": 0.0055
+      },
+      "old_thin": {
+        "expected_value_score": -0.0306,
+        "strategy_total_return_pct": -0.0123,
+        "sharpe_daily": -0.01,
+        "total_pnl": -1229.23,
+        "max_drawdown_pct": -0.0024,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0,
+        "survival_rate": 0.0,
+        "worst_trade_pct": 0.0,
+        "tail_loss_share": 0.0156
+      }
+    },
+    "passed": false,
+    "improved_windows": {
+      "late_strong": 0.3495,
+      "mid_weak": 0.0149
+    },
+    "regressed_windows": {
+      "old_thin": -0.0306
+    },
+    "extension_trade_attribution": {
+      "late_strong": {
+        "trade_count": 0,
+        "total_pnl": 0,
+        "wins": 0,
+        "losses": 0,
+        "trades": []
+      },
+      "mid_weak": {
+        "trade_count": 0,
+        "total_pnl": 0,
+        "wins": 0,
+        "losses": 0,
+        "trades": []
+      },
+      "old_thin": {
+        "trade_count": 0,
+        "total_pnl": 0,
+        "wins": 0,
+        "losses": 0,
+        "trades": []
+      }
+    },
+    "extension_trade_count": 0,
+    "extension_filter_counts": {
+      "extension_signal_seen": 6,
+      "filtered_VSAT": 5,
+      "filtered_extension_non_trend_signal": 2,
+      "filtered_extension_not_smallcap_leader_signal": 3,
+      "filtered_extension_signal": 5,
+      "kept_VSAT": 1,
+      "kept_extension_signal": 1,
+      "seen_VSAT": 6,
+      "seen_iwm_state_smallcap_laggard": 4,
+      "seen_iwm_state_smallcap_leader": 2,
+      "seen_strategy_breakout_long": 2,
+      "seen_strategy_trend_long": 4
+    },
+    "kept_extension_signal_count": 1,
+    "filtered_not_smallcap_leader_signal_count": 3,
+    "filtered_non_trend_signal_count": 2,
+    "reasons": {
+      "kept_extension_signals_present": true,
+      "extension_trades_present": false,
+      "aggregate_ev_delta_positive": true,
+      "aggregate_pnl_delta_positive": true,
+      "at_least_two_windows_improved": true,
+      "no_window_regressed": false,
+      "drawdown_delta_within_limit": false,
+      "survival_rate_ok": true,
+      "trade_count_ok": true
+    }
+  },
+  "decision": "reject",
+  "rejection_reason": "Gate 4 failed: VSAT smallcap-leader trend admission did not improve the fixed three-window protocol without regression and drawdown damage.",
+  "next_evidence_needed": "Do not retry VSAT or mature-satcom admission on these frozen windows without additional closed forward rows or a genuinely new production-visible catalyst-quality discriminator.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "live_slots": 0,
+    "notes": "Experiment-only official-pool monkey patch; no live policy promoted."
+  },
+  "why_not_other_changes": "LLM soft-ranking lacks dense downstream attribution, recent Space source/TQS/benchmark scalar branches are sample-limited, and broad satcom admission added noise. This run tests one production-visible candidate-pool discriminator instead of adding generic tickers."
+}
