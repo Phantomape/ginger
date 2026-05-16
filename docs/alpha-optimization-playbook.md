@@ -88,6 +88,12 @@ Current interpretation:
   source quality, peer-relative state, and mature forward replacement evidence
   can help as quarantined allocation states, but broad ticker admission and
   sample-thin interaction retries usually fail.
+- `exp-20260516-014` adds one accepted Space exception to the "sample-thin
+  interactions usually fail" rule: source-diverse `trend_long` profiles with
+  both `customer_win` and `government_space_contract` improved two windows,
+  left `old_thin` unchanged, and stayed inside drawdown with only a `1.025x`
+  default-off scalar. Treat this as a catalyst-quality field, not permission to
+  broaden the Space pool.
 - The default-off event bundle remains the strongest non-core replay family
   after `exp-20260516-013`: `rotation_breakout_leadership` at a bounded `3.0x`
   paper notional improved all three current-stack windows versus the `2.0x`

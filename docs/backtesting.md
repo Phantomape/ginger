@@ -249,27 +249,21 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260515-021` adds only
+Latest accepted default-off Space replay result: `exp-20260516-014` adds only
 the shared Space metadata/helper
-`space_defense_budget_same_theme_winner_trend_risk_scalar=1.05` on top of the
-accepted `exp-20260514-053` benchmark-breadth / IWM-leader stack, for official
-Space `trend_long` signals tied to defense-budget `government_space_contract`
-rows whose mature 10d profile beat cash and the same-theme basket. It uses the
-same three window labels above with frozen Space snapshots and keeps live Space
-slots at zero. Aggregate default-off Space EV improved `+0.2769` and PnL
-improved `+$12,791.00` versus `exp053`; window EV deltas were
-`late_strong +0.1033`, `mid_weak +0.1736`, and `old_thin` unchanged. Aggregate max drawdown
-ceiling drift was `+0.34 pp`, trade count stayed `68`, and minimum survival
-stayed `64.00%`. The changed slice was defense-budget same-theme winner trend
-evidence (`LUNR` and `RKLB`, 4 adjusted signals), so do not retry nearby
-defense-budget same-theme winner Space scalars on these frozen windows without
-new closed forward rows or a materially different production-visible
-catalyst-quality field. The previous accepted `exp-20260514-053`
-benchmark-breadth IWM-leader helper remains part of the default-off Space stack
-at `1.0125x`, `exp-20260514-051` defense-budget delayed benchmark remains at
-`1.025x`, `exp-20260514-047` benchmark-breadth same-theme strength remains at
-`1.025x`, and `exp-20260514-044` benchmark-breadth peer-nonleader remains at
-`1.025x`.
+`space_source_diversity_dual_catalyst_trend_risk_scalar=1.025` on top of the
+accepted `exp-20260515-044` source-diversity / peer-nonleader / near-perfect
+stack, for official Space `trend_long` signals whose source-diverse profile has
+both `customer_win` and `government_space_contract`. It uses the same three
+window labels above with frozen Space snapshots and keeps live Space slots at
+zero. Aggregate default-off Space EV improved `+0.5574` and PnL improved
+`+$14,086.09`; window EV deltas were `late_strong +0.0804`,
+`mid_weak +0.4770`, and `old_thin` unchanged. Aggregate max drawdown ceiling drift was
+`+0.50 pp`, trade count stayed `64`, and minimum survival stayed `62.67%`. The
+changed slice was dual-catalyst source-diversity trend evidence (`ASTS`,
+`LUNR`, and `RKLB`, 6 adjusted signals), so do not retry nearby
+dual-catalyst Space scalars on these frozen windows without new closed forward
+rows or a materially different production-visible catalyst-quality field.
 
 Previous accepted core-sizing result: `exp-20260514-018` keeps the existing
 `trend_long + Commodities + pct_from_52w_high >= -3%` risk boost unchanged but

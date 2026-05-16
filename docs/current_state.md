@@ -207,17 +207,17 @@ stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
 
-Latest accepted default-off Space alpha result: `exp-20260515-024` keeps live
+Latest accepted default-off Space alpha result: `exp-20260516-014` keeps live
 Space slots at zero and adds only the shared
-`space_source_diversity_peer_nonleader_trend_risk_scalar=1.025` helper on top
-of the accepted `exp-20260515-021` Space stack. It applies only to
-source-diverse official Space `trend_long` signals whose Space peer momentum
-state is `nonleader`. Against `exp021`, aggregate EV improved `+0.2071` and
-aggregate PnL improved `+$7,097.29` across the three frozen Space replay
-windows: `late_strong` EV `+0.0571`, `mid_weak` EV `+0.1500`, and `old_thin`
-unchanged. Trade count and survival were unchanged; aggregate max drawdown
-ceiling drift stayed inside Gate 4 (`+0.42 pp`). The helper lives in shared
-`space_catalyst_sleeve.py`, is surfaced in the production observation
+`space_source_diversity_dual_catalyst_trend_risk_scalar=1.025` helper on top
+of the accepted `exp-20260515-044` Space stack. It applies only to
+source-diverse official Space `trend_long` signals whose event profile contains
+both `customer_win` and `government_space_contract`. Aggregate EV improved
+`+0.5574` and aggregate PnL improved `+$14,086.09` across the three frozen
+Space replay windows: `late_strong` EV `+0.0804`, `mid_weak` EV `+0.4770`, and
+`old_thin` unchanged. Trade count and survival were unchanged; aggregate max
+drawdown ceiling drift stayed inside Gate 4 at `+0.50 pp`. The helper lives in
+shared `space_catalyst_sleeve.py`, is surfaced in the production observation
 slot/report, has focused parity tests, and remains observe-only/default-off.
 
 Previous accepted alpha result: `exp-20260514-023` keeps entries, exits, ranking,
@@ -307,7 +307,7 @@ now extends through `exp-20260512-004`, `008`, `013`, `031`, `032`, `037`,
 `exp-20260514-026`, `exp-20260514-028`, `exp-20260514-030`,
 `exp-20260514-041`, `exp-20260514-044`, `exp-20260514-047`,
 `exp-20260514-051`, `exp-20260514-053`, `exp-20260515-021`, and
-`exp-20260515-024`.
+`exp-20260515-024`, `exp-20260515-044`, and `exp-20260516-014`.
 The supported direction is quality-conditioned risk allocation, peer-relative
 breakout leadership, small-cap risk-appetite allocation, and production-visible
 catalyst-quality allocation: perfect-TQS official Space signals get a `1.5x`
@@ -343,7 +343,9 @@ peer basket while IWM beats SPY get a further `1.05x` extra default-off risk,
 and source-diverse official Space `trend_long` signals get a further
 `1.025x` extra default-off risk, and that source-diverse trend bucket gets a
 further `1.025x` extra default-off risk when Space peer momentum state is
-`nonleader`,
+`nonleader`, a further `1.025x` when that nonleader bucket has near-perfect
+TQS, and a further `1.025x` when the source-diverse trend profile contains
+both `customer_win` and `government_space_contract`,
 and official non-attention Space tickers whose closed 10d event-state profiles
 are both cash-positive and same-theme replacement-positive get a further
 `1.05x` extra default-off risk, and the narrower BKSY/RDW/RKLB closed-forward
