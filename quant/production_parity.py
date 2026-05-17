@@ -18,11 +18,16 @@ from constants import (
     ADDON_MIN_RS_VS_SPY,
     ADDON_MIN_UNREALIZED_PCT,
     ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT,
+    AMPLE_SLOT_STOCK_RANK1_AVAILABLE_SLOTS_MIN,
+    AMPLE_SLOT_STOCK_RANK1_EXCLUDED_SECTORS,
+    AMPLE_SLOT_STOCK_RANK1_RISK_MULTIPLIER,
     DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
     DEFER_BREAKOUT_WHEN_SLOTS_LTE,
+    MAX_POSITION_PCT,
     MAX_PER_SECTOR,
     MAX_PORTFOLIO_HEAT,
     MAX_POSITIONS,
+    SCARCE_SLOT_RANK1_RISK_MULTIPLIER,
     SECOND_ADDON_CHECKPOINT_DAYS,
     SECOND_ADDON_ENABLED,
     SECOND_ADDON_FRACTION_OF_ORIGINAL_SHARES,
@@ -156,6 +161,136 @@ def risk_pct_for_market_state(
     return None
 
 
+def _apply_scarce_slot_rank1_topup(
+    signals,
+    available_slots,
+    multiplier=None,
+):
+    if multiplier is None:
+        multiplier = SCARCE_SLOT_RANK1_RISK_MULTIPLIER
+    if available_slots != 1 or not signals or multiplier <= 1.0:
+        return signals, []
+
+    planned = list(signals)
+    sig = dict(planned[0])
+    sizing = dict(sig.get("sizing") or {})
+    old_shares = int(sizing.get("shares_to_buy") or 0)
+    if old_shares <= 0:
+        return signals, []
+
+    entry = float(sizing.get("entry_price") or sig.get("entry_price") or 0.0)
+    portfolio_value = float(sizing.get("portfolio_value_usd") or 0.0)
+    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+    if entry <= 0 or portfolio_value <= 0 or net_risk_per_share <= 0:
+        return signals, []
+
+    cap_pct = float(sizing.get("max_position_pct_applied") or MAX_POSITION_PCT)
+    desired_shares = max(old_shares, int(math.floor(old_shares * multiplier)))
+    cap_shares = int(math.floor(portfolio_value * cap_pct / entry))
+    new_shares = min(desired_shares, cap_shares)
+    if new_shares <= old_shares:
+        return signals, []
+
+    risk_amount = new_shares * net_risk_per_share
+    position_value = new_shares * entry
+    sizing["shares_to_buy"] = new_shares
+    sizing["position_value_usd"] = round(position_value, 2)
+    sizing["position_pct_of_portfolio"] = round(position_value / portfolio_value, 4)
+    sizing["risk_amount_usd"] = round(risk_amount, 2)
+    sizing["risk_pct"] = risk_amount / portfolio_value
+    sizing["scarce_slot_rank1_state"] = True
+    sizing["scarce_slot_rank1_available_slots"] = available_slots
+    sizing["scarce_slot_rank1_baseline_shares"] = old_shares
+    sizing["scarce_slot_rank1_desired_shares"] = desired_shares
+    sizing["scarce_slot_rank1_cap_shares"] = cap_shares
+    sizing["scarce_slot_rank1_new_shares"] = new_shares
+    sizing["scarce_slot_rank1_risk_multiplier_applied"] = multiplier
+    sig["sizing"] = sizing
+    planned[0] = sig
+    return planned, [
+        {
+            "ticker": sig.get("ticker"),
+            "strategy": sig.get("strategy"),
+            "sector": sig.get("sector", "Unknown"),
+            "available_slots": available_slots,
+            "baseline_shares": old_shares,
+            "desired_shares": desired_shares,
+            "cap_shares": cap_shares,
+            "new_shares": new_shares,
+            "multiplier": multiplier,
+        }
+    ]
+
+
+def _apply_ample_slot_stock_rank1_topup(
+    signals,
+    available_slots,
+    multiplier=None,
+):
+    if multiplier is None:
+        multiplier = AMPLE_SLOT_STOCK_RANK1_RISK_MULTIPLIER
+    if (
+        available_slots < AMPLE_SLOT_STOCK_RANK1_AVAILABLE_SLOTS_MIN
+        or not signals
+        or multiplier <= 1.0
+    ):
+        return signals, []
+
+    planned = list(signals)
+    sig = dict(planned[0])
+    sector = sig.get("sector")
+    if not sector or sector in AMPLE_SLOT_STOCK_RANK1_EXCLUDED_SECTORS:
+        return signals, []
+
+    sizing = dict(sig.get("sizing") or {})
+    old_shares = int(sizing.get("shares_to_buy") or 0)
+    if old_shares <= 0:
+        return signals, []
+
+    entry = float(sizing.get("entry_price") or sig.get("entry_price") or 0.0)
+    portfolio_value = float(sizing.get("portfolio_value_usd") or 0.0)
+    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+    if entry <= 0 or portfolio_value <= 0 or net_risk_per_share <= 0:
+        return signals, []
+
+    cap_pct = float(sizing.get("max_position_pct_applied") or MAX_POSITION_PCT)
+    desired_shares = max(old_shares, int(math.floor(old_shares * multiplier)))
+    cap_shares = int(math.floor(portfolio_value * cap_pct / entry))
+    new_shares = min(desired_shares, cap_shares)
+    if new_shares <= old_shares:
+        return signals, []
+
+    risk_amount = new_shares * net_risk_per_share
+    position_value = new_shares * entry
+    sizing["shares_to_buy"] = new_shares
+    sizing["position_value_usd"] = round(position_value, 2)
+    sizing["position_pct_of_portfolio"] = round(position_value / portfolio_value, 4)
+    sizing["risk_amount_usd"] = round(risk_amount, 2)
+    sizing["risk_pct"] = risk_amount / portfolio_value
+    sizing["ample_slot_stock_rank1_state"] = True
+    sizing["ample_slot_stock_rank1_available_slots"] = available_slots
+    sizing["ample_slot_stock_rank1_baseline_shares"] = old_shares
+    sizing["ample_slot_stock_rank1_desired_shares"] = desired_shares
+    sizing["ample_slot_stock_rank1_cap_shares"] = cap_shares
+    sizing["ample_slot_stock_rank1_new_shares"] = new_shares
+    sizing["ample_slot_stock_rank1_risk_multiplier_applied"] = multiplier
+    sig["sizing"] = sizing
+    planned[0] = sig
+    return planned, [
+        {
+            "ticker": sig.get("ticker"),
+            "strategy": sig.get("strategy"),
+            "sector": sector,
+            "available_slots": available_slots,
+            "baseline_shares": old_shares,
+            "desired_shares": desired_shares,
+            "cap_shares": cap_shares,
+            "new_shares": new_shares,
+            "multiplier": multiplier,
+        }
+    ]
+
+
 def plan_entry_candidates(
     signals,
     open_positions,
@@ -216,6 +351,14 @@ def plan_entry_candidates(
     signals_after_deferral = len(planned)
     slot_sliced = planned[slots:] if slots >= 0 else planned
     planned = planned[:slots]
+    planned, scarce_slot_rank1_topups = _apply_scarce_slot_rank1_topup(
+        planned,
+        slots,
+    )
+    planned, ample_slot_stock_rank1_topups = _apply_ample_slot_stock_rank1_topup(
+        planned,
+        slots,
+    )
 
     return planned, {
         "active_positions": active_positions,
@@ -226,6 +369,8 @@ def plan_entry_candidates(
         "signals_after_entry_plan": len(planned),
         "deferred_breakout_signals": deferred_breakouts,
         "slot_sliced_signals": slot_sliced,
+        "scarce_slot_rank1_topups": scarce_slot_rank1_topups,
+        "ample_slot_stock_rank1_topups": ample_slot_stock_rank1_topups,
         "defer_breakout_when_slots_lte": defer_breakout_when_slots_lte,
         "defer_breakout_max_min_index_pct_from_ma": (
             defer_breakout_max_min_index_pct_from_ma

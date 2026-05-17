@@ -2727,7 +2727,7 @@ def test_size_signals_derisks_trend_technology_dte_44_64():
     from portfolio_engine import size_signals
 
     sig = {
-        "ticker": "TSM",
+        "ticker": "NVDA",
         "strategy": "trend_long",
         "entry_price": 300.0,
         "stop_price": 288.0,
@@ -2750,6 +2750,110 @@ def test_size_signals_derisks_trend_technology_dte_44_64():
     assert sized["trend_tech_near_high_risk_multiplier_applied"] == 1.0
     assert sized["trend_tech_dte_risk_multiplier_applied"] == 0.125
     assert sized["breakout_tech_dte_risk_multiplier_applied"] == 1.0
+    assert sized["tsm_core_risk_multiplier_applied"] == 1.0
+    assert sized["isrg_core_risk_multiplier_applied"] == 1.0
+
+
+def test_size_signals_derisks_tsm_core_longs_only():
+    """TSM core long signals get the accepted post-sizing scalar only."""
+    from constants import TSM_CORE_RISK_MULTIPLIER
+    from portfolio_engine import size_signals
+
+    base_signal = {
+        "strategy": "trend_long",
+        "entry_price": 100.0,
+        "stop_price": 95.0,
+        "trade_quality_score": 0.96,
+        "sector": "Technology",
+        "gap_vulnerability_pct": 0.01,
+        "days_to_earnings": 90,
+        "conditions_met": {"pct_from_52w_high": -0.10},
+    }
+    tsm_signal = {**base_signal, "ticker": "TSM"}
+    peer_signal = {**base_signal, "ticker": "NVDA"}
+    tsm_breakout = {**base_signal, "ticker": "TSM", "strategy": "breakout_long"}
+    peer_breakout = {**base_signal, "ticker": "NVDA", "strategy": "breakout_long"}
+
+    tsm_sizing, peer_sizing, tsm_breakout_sizing, peer_breakout_sizing = [
+        row["sizing"]
+        for row in size_signals(
+            [tsm_signal, peer_signal, tsm_breakout, peer_breakout],
+            100_000.0,
+        )
+    ]
+
+    assert tsm_sizing["tsm_core_risk_multiplier_applied"] == (
+        TSM_CORE_RISK_MULTIPLIER
+    )
+    assert peer_sizing["tsm_core_risk_multiplier_applied"] == 1.0
+    assert tsm_sizing["isrg_core_risk_multiplier_applied"] == 1.0
+    assert peer_sizing["isrg_core_risk_multiplier_applied"] == 1.0
+    assert tsm_sizing["tsm_core_baseline_shares"] == peer_sizing["shares_to_buy"]
+    assert tsm_sizing["shares_to_buy"] == math.floor(
+        peer_sizing["shares_to_buy"] * TSM_CORE_RISK_MULTIPLIER
+    )
+    assert tsm_sizing["tsm_core_new_shares"] == tsm_sizing["shares_to_buy"]
+    assert peer_sizing["position_value_usd"] > tsm_sizing["position_value_usd"]
+    assert tsm_breakout_sizing["tsm_core_risk_multiplier_applied"] == (
+        TSM_CORE_RISK_MULTIPLIER
+    )
+    assert peer_breakout_sizing["tsm_core_risk_multiplier_applied"] == 1.0
+    assert tsm_breakout_sizing["isrg_core_risk_multiplier_applied"] == 1.0
+    assert peer_breakout_sizing["isrg_core_risk_multiplier_applied"] == 1.0
+    assert tsm_breakout_sizing["shares_to_buy"] == math.floor(
+        peer_breakout_sizing["shares_to_buy"] * TSM_CORE_RISK_MULTIPLIER
+    )
+
+
+def test_size_signals_derisks_isrg_core_longs_only():
+    """ISRG core long signals get the accepted post-sizing scalar only."""
+    from constants import ISRG_CORE_RISK_MULTIPLIER
+    from portfolio_engine import size_signals
+
+    base_signal = {
+        "strategy": "trend_long",
+        "entry_price": 500.0,
+        "stop_price": 475.0,
+        "trade_quality_score": 0.96,
+        "sector": "Healthcare",
+        "gap_vulnerability_pct": 0.01,
+        "days_to_earnings": 90,
+        "conditions_met": {"pct_from_52w_high": -0.10},
+    }
+    isrg_signal = {**base_signal, "ticker": "ISRG"}
+    peer_signal = {**base_signal, "ticker": "NVO"}
+    isrg_breakout = {**base_signal, "ticker": "ISRG", "strategy": "breakout_long"}
+    peer_breakout = {**base_signal, "ticker": "NVO", "strategy": "breakout_long"}
+
+    isrg_sizing, peer_sizing, isrg_breakout_sizing, peer_breakout_sizing = [
+        row["sizing"]
+        for row in size_signals(
+            [isrg_signal, peer_signal, isrg_breakout, peer_breakout],
+            100_000.0,
+        )
+    ]
+
+    assert isrg_sizing["isrg_core_risk_multiplier_applied"] == (
+        ISRG_CORE_RISK_MULTIPLIER
+    )
+    assert peer_sizing["isrg_core_risk_multiplier_applied"] == 1.0
+    assert isrg_sizing["tsm_core_risk_multiplier_applied"] == 1.0
+    assert peer_sizing["tsm_core_risk_multiplier_applied"] == 1.0
+    assert isrg_sizing["isrg_core_baseline_shares"] == peer_sizing["shares_to_buy"]
+    assert isrg_sizing["shares_to_buy"] == math.floor(
+        peer_sizing["shares_to_buy"] * ISRG_CORE_RISK_MULTIPLIER
+    )
+    assert isrg_sizing["isrg_core_new_shares"] == isrg_sizing["shares_to_buy"]
+    assert peer_sizing["position_value_usd"] > isrg_sizing["position_value_usd"]
+    assert isrg_breakout_sizing["isrg_core_risk_multiplier_applied"] == (
+        ISRG_CORE_RISK_MULTIPLIER
+    )
+    assert peer_breakout_sizing["isrg_core_risk_multiplier_applied"] == 1.0
+    assert isrg_breakout_sizing["tsm_core_risk_multiplier_applied"] == 1.0
+    assert peer_breakout_sizing["tsm_core_risk_multiplier_applied"] == 1.0
+    assert isrg_breakout_sizing["shares_to_buy"] == math.floor(
+        peer_breakout_sizing["shares_to_buy"] * ISRG_CORE_RISK_MULTIPLIER
+    )
 
 
 def test_size_signals_zeroes_trend_healthcare_near_earnings():

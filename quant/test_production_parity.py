@@ -20,6 +20,7 @@ from production_parity import (  # noqa: E402
 )
 import backtester  # noqa: E402
 import constants  # noqa: E402
+import production_parity  # noqa: E402
 from portfolio_engine import size_signals  # noqa: E402
 from risk_engine import enrich_signals  # noqa: E402
 
@@ -87,6 +88,188 @@ def test_plan_entry_candidates_accepts_backtester_position_count():
     assert [s["ticker"] for s in planned] == ["AAPL"]
     assert [s["ticker"] for s in plan["slot_sliced_signals"]] == ["NVDA"]
     assert plan["available_slots"] == 1
+
+
+def test_plan_entry_candidates_topups_rank1_when_single_slot(monkeypatch):
+    monkeypatch.setattr(
+        production_parity,
+        "SCARCE_SLOT_RANK1_RISK_MULTIPLIER",
+        1.10,
+    )
+    signals = [
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "sizing": {
+                "shares_to_buy": 100,
+                "entry_price": 100.0,
+                "portfolio_value_usd": 100_000.0,
+                "net_risk_per_share": 4.0,
+                "max_position_pct_applied": 0.40,
+            },
+        },
+        {
+            "ticker": "NVDA",
+            "strategy": "trend_long",
+            "sizing": {
+                "shares_to_buy": 50,
+                "entry_price": 100.0,
+                "portfolio_value_usd": 100_000.0,
+                "net_risk_per_share": 5.0,
+            },
+        },
+    ]
+
+    planned, plan = plan_entry_candidates(
+        signals,
+        open_positions=None,
+        max_positions=3,
+        active_positions_count=2,
+    )
+
+    sizing = planned[0]["sizing"]
+    assert [s["ticker"] for s in planned] == ["AAPL"]
+    assert [s["ticker"] for s in plan["slot_sliced_signals"]] == ["NVDA"]
+    assert sizing["shares_to_buy"] == 110
+    assert sizing["risk_amount_usd"] == 440.0
+    assert sizing["risk_pct"] == 0.0044
+    assert sizing["scarce_slot_rank1_risk_multiplier_applied"] == 1.10
+    assert plan["scarce_slot_rank1_topups"][0]["new_shares"] == 110
+
+
+def test_plan_entry_candidates_does_not_topup_when_multiple_slots(monkeypatch):
+    monkeypatch.setattr(
+        production_parity,
+        "SCARCE_SLOT_RANK1_RISK_MULTIPLIER",
+        1.10,
+    )
+    signals = [
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "sizing": {
+                "shares_to_buy": 100,
+                "entry_price": 100.0,
+                "portfolio_value_usd": 100_000.0,
+                "net_risk_per_share": 4.0,
+            },
+        }
+    ]
+
+    planned, plan = plan_entry_candidates(
+        signals,
+        open_positions=None,
+        max_positions=3,
+        active_positions_count=1,
+    )
+
+    assert plan["available_slots"] == 2
+    assert planned[0]["sizing"]["shares_to_buy"] == 100
+    assert plan["scarce_slot_rank1_topups"] == []
+
+
+def test_plan_entry_candidates_topups_stock_rank1_when_slots_are_ample(monkeypatch):
+    monkeypatch.setattr(
+        production_parity,
+        "AMPLE_SLOT_STOCK_RANK1_RISK_MULTIPLIER",
+        1.10,
+    )
+    signals = [
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "sector": "Technology",
+            "sizing": {
+                "shares_to_buy": 100,
+                "entry_price": 100.0,
+                "portfolio_value_usd": 100_000.0,
+                "net_risk_per_share": 4.0,
+                "max_position_pct_applied": 0.40,
+            },
+        }
+    ]
+
+    planned, plan = plan_entry_candidates(
+        signals,
+        open_positions=None,
+        max_positions=5,
+        active_positions_count=1,
+    )
+
+    sizing = planned[0]["sizing"]
+    assert plan["available_slots"] == 4
+    assert sizing["shares_to_buy"] == 110
+    assert sizing["risk_amount_usd"] == 440.0
+    assert sizing["risk_pct"] == 0.0044
+    assert sizing["ample_slot_stock_rank1_state"] is True
+    assert sizing["ample_slot_stock_rank1_risk_multiplier_applied"] == 1.10
+    assert plan["ample_slot_stock_rank1_topups"][0]["new_shares"] == 110
+
+
+def test_plan_entry_candidates_does_not_ample_topup_commodity_rank1(monkeypatch):
+    monkeypatch.setattr(
+        production_parity,
+        "AMPLE_SLOT_STOCK_RANK1_RISK_MULTIPLIER",
+        1.10,
+    )
+    signals = [
+        {
+            "ticker": "SLV",
+            "strategy": "trend_long",
+            "sector": "Commodities",
+            "sizing": {
+                "shares_to_buy": 100,
+                "entry_price": 100.0,
+                "portfolio_value_usd": 100_000.0,
+                "net_risk_per_share": 4.0,
+                "max_position_pct_applied": 0.50,
+            },
+        }
+    ]
+
+    planned, plan = plan_entry_candidates(
+        signals,
+        open_positions=None,
+        max_positions=5,
+        active_positions_count=1,
+    )
+
+    assert plan["available_slots"] == 4
+    assert planned[0]["sizing"]["shares_to_buy"] == 100
+    assert plan["ample_slot_stock_rank1_topups"] == []
+
+
+def test_plan_entry_candidates_does_not_ample_topup_unknown_sector(monkeypatch):
+    monkeypatch.setattr(
+        production_parity,
+        "AMPLE_SLOT_STOCK_RANK1_RISK_MULTIPLIER",
+        1.10,
+    )
+    signals = [
+        {
+            "ticker": "AAPL",
+            "strategy": "trend_long",
+            "sizing": {
+                "shares_to_buy": 100,
+                "entry_price": 100.0,
+                "portfolio_value_usd": 100_000.0,
+                "net_risk_per_share": 4.0,
+                "max_position_pct_applied": 0.50,
+            },
+        }
+    ]
+
+    planned, plan = plan_entry_candidates(
+        signals,
+        open_positions=None,
+        max_positions=5,
+        active_positions_count=1,
+    )
+
+    assert plan["available_slots"] == 4
+    assert planned[0]["sizing"]["shares_to_buy"] == 100
+    assert plan["ample_slot_stock_rank1_topups"] == []
 
 
 def test_filter_entry_signal_candidates_matches_shared_entry_gates():

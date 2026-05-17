@@ -1,0 +1,114 @@
+{
+  "after_metrics": {
+    "core_order_path_changed": false,
+    "default_off_paper_adapter_added": true,
+    "live_short_enabled": false
+  },
+  "backtest_protocol": {
+    "source": "docs/backtesting.md canonical core metrics remain owned by exp-20260516-042; this run adds production-visible paper tracking only",
+    "run_adapter": "quant/run.py emits CORE_MISFIT_PAPER into trend_signals, quant_signals, and the daily report"
+  },
+  "before_metrics": {
+    "core_order_path_changed": false,
+    "default_off_paper_adapter_added": false,
+    "live_short_enabled": false
+  },
+  "change_type": "measurement_repair",
+  "changed_variable": "core_misfit_paper_ledger_adapter",
+  "decision": "accepted_production_visible_default_off_paper_adapter",
+  "delta_metrics": {
+    "core_order_path_changed": false,
+    "default_off_paper_adapter_added": true,
+    "live_short_enabled": false
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260517-002",
+  "gate1": {
+    "baseline_artifact": "data/experiments/exp-20260516-043/core_misfit_paper_sleeve.json",
+    "baseline_interpretation": "Core-misfit historical attribution supports forward paper tracking, not live shorting."
+  },
+  "gate2": {
+    "passed": true,
+    "runtime_fields": [
+      "core signal ticker",
+      "core signal strategy",
+      "signal sizing.shares_to_buy",
+      "signal sizing.entry_price",
+      "signal sizing.position_value_usd",
+      "current open price",
+      "current close price"
+    ]
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "passed": true
+  },
+  "gate4": {
+    "passed": true,
+    "validation": [
+      "quant/test_core_misfit_paper_sleeve.py: 3 passed",
+      "focused TSM/ISRG sizing tests: 3 passed, 321 deselected",
+      "run/report/module import check passed"
+    ]
+  },
+  "hypothesis": "Historical negative-for-core ticker signals should be tracked forward in a production-visible default-off paper sleeve before any live exclusion or short-side experiment.",
+  "known_risks": [
+    "Forward sample will mature slowly because the ticker cohort is narrow.",
+    "Inverse paper outcomes still ignore borrow and short locate costs.",
+    "This adapter is observation-only and should not be interpreted as live short permission."
+  ],
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "next_evidence_needed": "At least 20 closed 10-day CORE_MISFIT_PAPER outcomes with positive no-trade value and inverse paper PnL before any separate live exclusion or short experiment.",
+  "parameters": {
+    "horizons_trading_days": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "primary_horizon_days": 10,
+    "target_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "target_tickers": [
+      "TSM",
+      "ISRG",
+      "V",
+      "DDOG"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_short_enabled": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "related_files": [
+    "quant/core_misfit_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/data_paths.py",
+    "quant/test_core_misfit_paper_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "rejection_reason": null,
+  "single_causal_variable": "production-visible default-off CORE_MISFIT_PAPER ledger adapter only",
+  "status": "accepted_production_visible_default_off_paper_adapter",
+  "timestamp": "2026-05-17T01:30:00+00:00",
+  "total_pnl_delta": 0.0,
+  "why_not_other_changes": "No live short adapter, no core exclusion, and no ticker scalar changes were added because exp-20260516-043 only justified forward paper tracking."
+}

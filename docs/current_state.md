@@ -1,9 +1,15 @@
 ﻿# Current State
 
-Last updated: 2026-05-16.
+Last updated: 2026-05-17.
 
-The current accepted core stack includes the 2026-05-16 Technology trend DTE
-residual risk promotion from `exp-20260516-020`, layered on top of the
+The current accepted core stack includes the 2026-05-17 stock-only ample-slot
+rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
+2026-05-17 scarce-slot rank-1 post-sizing top-up from `exp-20260517-004`,
+layered on top of the 2026-05-16 ISRG core long risk promotion from
+`exp-20260516-042`, layered on top of the
+2026-05-16 TSM core
+long risk promotion from `exp-20260516-039`, layered on top of the 2026-05-16
+Technology trend DTE residual risk promotion from `exp-20260516-020`, layered on top of the
 2026-05-16 green-deceleration quality non-consumer core sizing promotion from
 `exp-20260516-009`, layered on
 top of the 2026-05-15 confirmed-quality core sizing promotion from
@@ -32,29 +38,150 @@ documented in `docs/backtesting.md` and
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 5.1344 | 116.69% | 4.40 | 6.65% | 19 | 80.39% |
-| `mid_weak` | 2.1054 | 76.56% | 2.75 | 10.83% | 21 | 79.25% |
-| `old_thin` | 0.5295 | 37.29% | 1.42 | 10.01% | 22 | 86.67% |
+| `late_strong` | 5.1628 | 117.07% | 4.41 | 6.65% | 18 | 80.39% |
+| `mid_weak` | 2.1402 | 78.11% | 2.74 | 11.19% | 21 | 79.25% |
+| `old_thin` | 0.5911 | 39.67% | 1.49 | 10.01% | 22 | 86.67% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260516-020/trend_tech_dte_residual_risk.json`.
-Aggregate core EV is now `7.7693`; aggregate PnL is `$230,542.53`.
+`data/experiments/exp-20260517-009/`.
+Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-Latest accepted alpha result: core `exp-20260516-020` keeps entries, exits,
+Latest core-misfit replay-only paper-sleeve result: `exp-20260516-043` accepted a
+default-off core-misfit paper attribution surface for `TSM`, `ISRG`, `V`, and
+`DDOG` without changing core metrics. Identity control passed with zero metric
+delta versus the accepted `exp-20260516-042` core stack. Across the 9 primary
+misfit core trades, actual core PnL was `-$6,469.57`, so the no-trade avoided
+value was `+$6,469.57`; inverse paper held to the actual long exit was
+`+$4,385.29`. The 1/3/5/10-day fast-long surfaces were all negative, while
+inverse paper horizons were positive. This supports treating the cohort as
+negative-for-core and tracking it in a default-off paper sleeve, not live
+shorting or immediate full core exclusion. Live short/exclusion promotion
+requires closed forward paper outcomes and a separate Gate 1-4 experiment.
+
+Latest production-visible paper adapter: `exp-20260517-002` implements the
+`CORE_MISFIT_PAPER` sleeve as a daily default-off ledger and report block. It
+copies only selected or slot-sliced `TSM` / `ISRG` / `V` / `DDOG` core long
+signals into no-trade, fast-long, and inverse-short paper outcomes at 1/3/5/10
+trading-day horizons. It does not change core entries, exits, ranking, sizing,
+slots, heat, LLM/news, or orders, and it does not enable live shorts. The
+forward gate requires at least 20 closed 10-day paper outcomes plus positive
+no-trade and inverse evidence before any separate live exclusion/short
+experiment is allowed.
+
+Latest rejected short-shadow scout: `exp-20260517-003` tested whether the same
+`TSM` / `ISRG` / `V` / `DDOG` core-misfit signals are true short alpha rather
+than only no-trade alpha. The best replay-only policy was a simple 10-trading-
+day short hold, with 9 trades, PnL `+$6,079.66`, win rate `66.67%`, worst trade
+`-4.53%`, and max drawdown `0.73%`. Gate 4 still rejected live/paper promotion
+because only `old_thin` was positive (`+$6,855.82`) while `mid_weak` was
+negative (`-$776.16`), and the sample still lacks borrow/locate costs plus the
+20 closed forward outcomes required by `CORE_MISFIT_PAPER`. Interpretation:
+there is a real inverse clue, but not a live short rule.
+
+Latest accepted alpha result: core `exp-20260517-009` keeps entries, exits,
+filters, universe, targets, heat, LLM, news, and pre-slot ranking unchanged,
+but applies a shared cap-aware `1.05x` post-sizing top-up to the already
+selected rank-1 stock signal only when entry planning has at least four
+available slots. ETF and Commodity sectors are excluded; this preserves the
+positive `late_strong` / `mid_weak` allocation clue from rejected broad
+ample-slot scout `exp-20260517-008` while avoiding its `old_thin` Commodity
+regression. The top-up lives in `production_parity.py`, so `backtester.py` and
+`run.py` use the same planner. Aggregate EV improved `+0.0356` and aggregate
+PnL improved `+$1,232.90`; `late_strong` improved EV `+0.0267` / PnL
+`+$345.66`, `mid_weak` improved EV `+0.0089` / PnL `+$887.24`, and `old_thin`
+was unchanged. Trade count, survival, worst trade, and loss streak did not
+worsen; `mid_weak` max drawdown rose from `10.83%` to `11.19%`, inside the
+Gate 4 guardrail. This is not a slot-priority rule: it does not rescue sliced
+candidates or change ranking.
+
+Previous accepted default-off paper alpha result: `exp-20260517-014` tested a
+rotation-only state-surface satellite candidate pool. It restricts the
+default-off `STATE_SURFACE_SATELLITE` paper candidates to
+`rotation_breakout_leadership` while retaining full scored-candidate audit and
+leaving live/default orders disabled. Three-window replay improved every
+window: aggregate EV `+1.0486`, aggregate PnL `+$26,129.58`, selected sleeve
+trades `22`, and single-ticker positive contribution share `31.17%`. The
+shared policy lives in `state_surface_sleeve.py`; `run.py` continues to use
+that shared default-off paper path, and core backtests / live orders are not
+changed.
+
+Latest accepted state-surface paper refinement: `exp-20260517-016` keeps the
+rotation-only paper sleeve from `exp-20260517-014`, but requires
+`features.ret20_excess_spy >= 0.0` before a candidate can enter the
+default-off paper queue. The three-window sweep accepted the least restrictive
+passing floor: aggregate EV `+0.2234`, aggregate PnL `+$2,449.90`, selected
+sleeve trades stayed `22`, and single-ticker positive contribution share fell
+from `31.17%` to `29.72%`. `late_strong` improved EV `+0.1739` / PnL
+`+$1,733.03`, `mid_weak` improved EV `+0.0495` / PnL `+$716.87`, and
+`old_thin` was unchanged. The shared policy and test live in
+`state_surface_sleeve.py` / `test_state_surface_sleeve.py`; live/default
+orders remain disabled.
+
+Latest rejected default-off paper alpha result: `exp-20260517-015` tested
+whether the rotation-only state-surface sleeve should require a stronger
+`max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The
+current shared `0.0` threshold remains best. The `0.5%` non-control threshold
+was identical to the current policy (`0.0000` EV / `$0.00` PnL delta), while
+`1.0%+` thresholds regressed aggregate EV/PnL by removing useful old-window
+paper trades. No shared policy changed; do not retune this benchmark gate again
+on the frozen windows without forward paper outcomes or a new production-visible
+state field.
+
+Latest rejected alpha result: core `exp-20260517-008` tested the opposite slot
+regime after the accepted one-slot rank-1 top-up: a replay-only cap-aware
+top-up to the already selected rank-1 signal only when entry planning had at
+least four available slots. The best non-control scalar was `1.05x`, with
+aggregate EV `+0.0919` and aggregate PnL `+$2,205.88`, but Gate 4 rejected
+promotion because `old_thin` regressed (`0.5911 -> 0.5902` EV / `-$55.19`)
+while `late_strong` and `mid_weak` improved. No shared production policy
+changed. This means the accepted scarce-slot top-up remains scoped to exactly
+one remaining slot; do not generalize slot-availability top-ups without a new
+production-visible discriminator.
+
+Latest rejected sample-thin alpha result: core `exp-20260517-007` tested a
+replay-only haircut of the existing `breakout_long` Financials 8-14 DTE risk
+pocket. The best non-control scalar was `0.125x`, improving aggregate EV
+`+0.0274` and aggregate PnL `+$566.73` with no regressed window, but only two
+signals were affected across the three canonical windows, below the Gate 4
+sample guard. No shared production policy changed. Treat it as a clue that the
+current Financials breakout DTE pocket deserves forward attribution, not as a
+reason to keep sweeping nearby DTE scalars on the frozen sample.
+
+Previous rejected scarce-slot scout: core `exp-20260517-006` tested the
+adjacent scarce-slot generalization after `exp-20260517-005`: a replay-only
+cap-aware top-up to the already selected rank-2 core signal when entry planning
+had exactly two remaining slots. The best non-control scalar was `1.025x`, but
+Gate 4 rejected promotion: aggregate EV moved only `+0.0019`, aggregate PnL
+fell `-$0.55`, only `late_strong` improved, `old_thin` regressed, `mid_weak`
+was unchanged, and only 2 signals were adjusted across two windows. No shared
+production policy changed.
+
+Previous accepted alpha result: core `exp-20260516-042` keeps entries, exits,
 ranking, universe, filters, targets, slots, heat, LLM, and news logic
-unchanged, but reduces the existing shared `trend_long` Technology 44-64 DTE
-risk multiplier from `0.25x` to `0.125x`. Aggregate EV improved `+0.0039` and
-aggregate PnL improved `+$151.61` across the three canonical windows:
-`late_strong` stayed at EV `5.1344`, `mid_weak` improved `2.1016 -> 2.1054`,
-and `old_thin` improved `0.5294 -> 0.5295`. Trade count, survival, and max
-drawdown were unchanged, and 13 signals were affected across all three
-windows. The rule lives in the shared `portfolio_engine.py` constant path used
-by both `quant/backtester.py` and `quant/run.py`; the focused sizing test was
-updated. The `0.0x` variant failed by regressing `old_thin`, so do not retry
-nearby Technology trend DTE scalars without a new production-visible
-discriminator or forward evidence.
+unchanged, but applies a ticker-specific `0.25x` post-sizing scalar to existing
+`ISRG` core long signals. Aggregate EV improved `+0.0512` and aggregate PnL
+improved `+$1,857.98` across the three canonical windows after the TSM
+promotion. `late_strong` was unchanged; `mid_weak` and `old_thin` improved.
+The lifecycle diagnostic found no fast-target rescue support, and the `0.0x`
+variant failed by regressing `old_thin`. The rule lives in the shared
+`portfolio_engine.py` constant path used by both `quant/backtester.py` and
+`quant/run.py`; focused sizing tests cover ISRG and non-ISRG Healthcare
+behavior. This is a ticker-specific exception, not a Healthcare rule.
+
+Previous accepted alpha result: core `exp-20260516-039` keeps entries, exits,
+ranking, universe, filters, targets, slots, heat, LLM, and news logic
+unchanged, but applies a ticker-specific `0.25x` post-sizing scalar to existing
+`TSM` core long signals. Aggregate EV improved `+0.0143` and aggregate PnL
+improved `+$607.71` across the three canonical windows. The lifecycle
+diagnostic found no fast-target rescue support: all 1/3/5-day net windows were
+negative and no TSM trade had close-to-close profit available before stop. The
+rule lives in the shared `portfolio_engine.py` constant path used by both
+`quant/backtester.py` and `quant/run.py`; focused sizing tests cover TSM and
+non-TSM Technology behavior. The `0.0x` variant failed by regressing
+`old_thin`, so do not generalize this into a semiconductor rule or retry nearby
+TSM scalar/target changes without new evidence.
 
 Latest rejected core risk-allocation scout: `exp-20260516-011` tested whether
 the existing `trend_long` / Industrials zero-risk rule was over-killing
@@ -86,20 +213,31 @@ attribution clue, not a production rule; do not retry nearby hand-bounded
 semiconductor non-green trend haircuts without a broader industry field or
 forward ticker-level contribution evidence.
 
-Latest promising replay-only event allocation result: `exp-20260516-013`
+Latest promising replay-only event allocation result: `exp-20260517-010`
 revalidated the `rotation_breakout_leadership` surface after the accepted
-`exp-20260516-009` core stack. It changed only default-off paper event notional
+`exp-20260517-009` core stack. It changed only default-off paper event notional
 inside the event bundle; core entries, sizing, exits, ranking, LLM/news, and
 live orders were unchanged. The best variant was a `3.0x`
 `rotation_breakout_leadership` scalar above the current `2.0x` non-generic
 positive event-surface add-on. Versus the current paper lead, aggregate EV
-improved `+0.5237` and aggregate PnL improved `+$7,987.90`, with all three
-windows positive (`late_strong +0.3002`, `mid_weak +0.2159`, `old_thin
-+0.0076` EV). The sample guard passed with 7 rotation-surface trades across all
-three windows, 85.71% win rate, and max single positive PnL share `0.531`.
-This remains replay-only: do not route live/default capital until a shared
-trade-enabled event adapter, parity tests, and closed forward replacement-value
-evidence exist.
+improved `+0.5389` and aggregate PnL improved `+$7,987.90`, with all three
+windows positive (`late_strong +0.3138`, `mid_weak +0.2171`, `old_thin
++0.0080` EV). The sample guard passed and there were no EV-regressed windows.
+The default-off paper attribution path is shared in `quant/event_sleeve_bundle.py`,
+but this remains replay-only: do not route live/default capital until closed
+forward replacement-value evidence and explicit trade-enabled adapter
+configuration exist. Prior supporting revalidations: `exp-20260517-001` and
+`exp-20260516-044`.
+
+Latest rejected SEC completeness alpha search: `exp-20260516-045` tested a new
+cash-flow forecast/guidance/outlook context field inside the accepted
+default-off SEC financial-report T+1 paper sleeve. The best scalar was a
+`0.50x` haircut, but Gate 4 failed: aggregate EV improved only `+0.0470` while
+aggregate PnL fell `-$395.04`, only `late_strong` improved, `mid_weak` and
+`old_thin` regressed, and the target field had only 8 closed sleeve trades
+versus the 20-trade guard. Do not retry cash-flow forecast notional scalars on
+the frozen sample; future SEC completeness work needs broader production-visible
+forecast fields, better text coverage, or forward replacement-value evidence.
 
 Latest rejected execution alpha scout: `exp-20260516-007` tested a replay-only
 delayed open-pullback entry for rank-1 `trade_quality_score >= 0.95`

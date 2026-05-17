@@ -29,6 +29,7 @@ SLEEVE_NAME = "STATE_SURFACE_SATELLITE_PAPER"
 QUEUE_NAME = "STATE_SURFACE_SATELLITE_QUEUE"
 RULE_VERSION = "state_surface_full_v1"
 BENCHMARK_MOMENTUM_GATE_RULE_VERSION = "state_surface_benchmark_momentum_gate_v1"
+RET20_EXCESS_SPY_GATE_RULE_VERSION = "state_surface_ret20_excess_spy_gate_v1"
 STATE_SCHEMA_VERSION = 1
 INDEX_TICKERS = {"SPY", "QQQ", "IWM"}
 
@@ -39,6 +40,7 @@ DEFAULT_CONFIG = {
     "enabled": False,
     "paper_enabled": True,
     "trade_enabled": False,
+    "allowed_surfaces": ["rotation_breakout_leadership"],
     "max_candidates": 3,
     "max_positions": 3,
     "event_notional_usd": 10_000.0,
@@ -50,6 +52,8 @@ DEFAULT_CONFIG = {
     "forward_gate_positive_net_pnl": True,
     "benchmark_momentum_gate_enabled": True,
     "benchmark_momentum_gate_min_return": 0.0,
+    "ret20_excess_spy_gate_enabled": True,
+    "ret20_excess_spy_min": 0.0,
 }
 
 
@@ -72,6 +76,10 @@ def empty_state_surface_queue(as_of: str, reason: str) -> dict[str, Any]:
         "scored_candidates": [],
         "blocked_candidate_count": 0,
         "blocked_candidates": [],
+        "surface_blocked_candidate_count": 0,
+        "surface_blocked_candidates": [],
+        "surface_eligibility": _surface_eligibility_payload(DEFAULT_CONFIG),
+        "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(DEFAULT_CONFIG),
         "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
         "state": {},
         "data_source": {"status": reason},
@@ -131,13 +139,26 @@ def build_state_surface_queue(
     benchmark_momentum_gate = evaluate_benchmark_momentum_gate(state, cfg)
     for row in scored_candidates:
         row["benchmark_momentum_gate"] = deepcopy(benchmark_momentum_gate)
+        row["ret20_excess_spy_gate"] = evaluate_ret20_excess_spy_gate(row, cfg)
 
     candidates = []
     blocked_candidates = []
+    surface_blocked_candidates = []
     if benchmark_momentum_gate["allowed"]:
         for row in scored_candidates:
             ticker = str(row.get("ticker") or "").upper()
             if ticker in core_tickers:
+                continue
+            if not _surface_allowed(row, cfg):
+                surface_blocked_candidates.append(
+                    _surface_blocked_candidate_payload(row, cfg)
+                )
+                continue
+            ret20_gate = row.get("ret20_excess_spy_gate") or evaluate_ret20_excess_spy_gate(row, cfg)
+            if not ret20_gate["allowed"]:
+                blocked_candidates.append(
+                    _ret20_excess_spy_blocked_candidate_payload(row, cfg, ret20_gate)
+                )
                 continue
             candidate = deepcopy(row)
             candidate["queue_rank"] = len(candidates) + 1
@@ -145,7 +166,20 @@ def build_state_surface_queue(
             if len(candidates) >= int(cfg["max_candidates"]):
                 break
     else:
-        for row in scored_candidates[: int(cfg["max_candidates"])]:
+        for row in scored_candidates:
+            if not _surface_allowed(row, cfg):
+                surface_blocked_candidates.append(
+                    _surface_blocked_candidate_payload(row, cfg)
+                )
+                continue
+            ret20_gate = row.get("ret20_excess_spy_gate") or evaluate_ret20_excess_spy_gate(row, cfg)
+            if not ret20_gate["allowed"]:
+                blocked_candidates.append(
+                    _ret20_excess_spy_blocked_candidate_payload(row, cfg, ret20_gate)
+                )
+                if len(blocked_candidates) >= int(cfg["max_candidates"]):
+                    break
+                continue
             blocked_candidates.append(
                 {
                     "ticker": str(row.get("ticker") or "").upper(),
@@ -158,6 +192,8 @@ def build_state_surface_queue(
                     "alters_orders": False,
                 }
             )
+            if len(blocked_candidates) >= int(cfg["max_candidates"]):
+                break
 
     return {
         "queue_name": QUEUE_NAME,
@@ -174,6 +210,10 @@ def build_state_surface_queue(
         "candidates": candidates,
         "blocked_candidate_count": len(blocked_candidates),
         "blocked_candidates": blocked_candidates,
+        "surface_blocked_candidate_count": len(surface_blocked_candidates),
+        "surface_blocked_candidates": surface_blocked_candidates,
+        "surface_eligibility": _surface_eligibility_payload(cfg),
+        "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(cfg),
         "benchmark_momentum_gate": benchmark_momentum_gate,
         "excluded_core_tickers": sorted(core_tickers),
         "state": state,
@@ -305,12 +345,16 @@ def empty_state_surface_sleeve_snapshot(as_of: str, reason: str) -> dict[str, An
         "paper_enabled": False,
         "trade_enabled": False,
         "candidate_count": 0,
+        "blocked_candidate_count": 0,
+        "surface_blocked_candidate_count": 0,
         "pending_count": 0,
         "open_position_count": 0,
         "closed_position_count": 0,
         "realized_pnl_to_date": 0.0,
         "unrealized_pnl": 0.0,
         "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
+        "surface_eligibility": _surface_eligibility_payload(DEFAULT_CONFIG),
+        "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(DEFAULT_CONFIG),
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "data_source": {"status": reason},
         "production_impact": _production_impact(),
@@ -355,6 +399,38 @@ def evaluate_benchmark_momentum_gate(
     }
 
 
+def evaluate_ret20_excess_spy_gate(
+    candidate: dict[str, Any],
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    enabled = bool(cfg.get("ret20_excess_spy_gate_enabled", True))
+    threshold = float(cfg.get("ret20_excess_spy_min", 0.0))
+    features = candidate.get("features") or {}
+    ret20_excess_spy = _float_or_none(features.get("ret20_excess_spy"))
+
+    reasons: list[str] = []
+    if enabled:
+        if ret20_excess_spy is None:
+            reasons.append("ret20_excess_spy_unavailable")
+        elif ret20_excess_spy < threshold:
+            reasons.append("ret20_excess_spy_below_floor")
+
+    allowed = (not enabled) or not reasons
+    return {
+        "rule_version": RET20_EXCESS_SPY_GATE_RULE_VERSION,
+        "enabled": enabled,
+        "allowed": allowed,
+        "status": "allowed" if allowed else "blocked",
+        "reasons": reasons,
+        "ret20_excess_spy": _round(ret20_excess_spy, 6),
+        "threshold": _round(threshold, 6),
+        "scope": "default_off_state_surface_paper_candidate_queue",
+        "trade_enabled_after_gate": False,
+        "production_impact": _production_impact(),
+    }
+
+
 def _blocked_benchmark_momentum_gate(reason: str) -> dict[str, Any]:
     return {
         "rule_version": BENCHMARK_MOMENTUM_GATE_RULE_VERSION,
@@ -365,6 +441,18 @@ def _blocked_benchmark_momentum_gate(reason: str) -> dict[str, Any]:
         "benchmark_returns_20d": {"SPY": None, "QQQ": None},
         "benchmark_return_max_20d": None,
         "threshold": _round(DEFAULT_CONFIG["benchmark_momentum_gate_min_return"], 6),
+        "scope": "default_off_state_surface_paper_candidate_queue",
+        "trade_enabled_after_gate": False,
+        "production_impact": _production_impact(),
+    }
+
+
+def _ret20_excess_spy_gate_payload(config: dict[str, Any]) -> dict[str, Any]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    return {
+        "rule_version": RET20_EXCESS_SPY_GATE_RULE_VERSION,
+        "enabled": bool(cfg.get("ret20_excess_spy_gate_enabled", True)),
+        "threshold": _round(float(cfg.get("ret20_excess_spy_min", 0.0)), 6),
         "scope": "default_off_state_surface_paper_candidate_queue",
         "trade_enabled_after_gate": False,
         "production_impact": _production_impact(),
@@ -671,6 +759,70 @@ def _candidate_payload(
     }
 
 
+def _allowed_surface_set(config: dict[str, Any]) -> set[str] | None:
+    raw = config.get("allowed_surfaces")
+    if raw in (None, "", []):
+        return None
+    if isinstance(raw, str):
+        values = [raw]
+    else:
+        values = list(raw)
+    allowed = {str(value) for value in values if str(value or "")}
+    return allowed or None
+
+
+def _surface_allowed(row: dict[str, Any], config: dict[str, Any]) -> bool:
+    allowed = _allowed_surface_set(config)
+    if allowed is None:
+        return True
+    return str(row.get("surface") or "") in allowed
+
+
+def _surface_eligibility_payload(config: dict[str, Any]) -> dict[str, Any]:
+    allowed = _allowed_surface_set(config)
+    return {
+        "rule_version": "state_surface_allowed_surfaces_v1",
+        "allowed_surfaces": sorted(allowed) if allowed is not None else None,
+        "scope": "default_off_state_surface_paper_candidate_queue",
+        "trade_enabled_after_gate": False,
+        "production_impact": _production_impact(),
+    }
+
+
+def _surface_blocked_candidate_payload(
+    row: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "ticker": str(row.get("ticker") or "").upper(),
+        "rank": row.get("rank"),
+        "score": row.get("score"),
+        "surface": row.get("surface"),
+        "reason": "surface_not_allowed",
+        "surface_eligibility": _surface_eligibility_payload(config),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+
+
+def _ret20_excess_spy_blocked_candidate_payload(
+    row: dict[str, Any],
+    config: dict[str, Any],
+    gate: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    payload = gate or evaluate_ret20_excess_spy_gate(row, config)
+    return {
+        "ticker": str(row.get("ticker") or "").upper(),
+        "rank": row.get("rank"),
+        "score": row.get("score"),
+        "surface": row.get("surface"),
+        "reason": "ret20_excess_spy_gate_blocked",
+        "ret20_excess_spy_gate": deepcopy(payload),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+
+
 def _counterfactual_alternatives(core_signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
     alternatives = []
     for signal in sorted(
@@ -864,6 +1016,9 @@ def _snapshot_payload(
         "trade_enabled": False,
         "candidate_count": int(queue.get("candidate_count") or 0),
         "blocked_candidate_count": int(queue.get("blocked_candidate_count") or 0),
+        "surface_blocked_candidate_count": int(
+            queue.get("surface_blocked_candidate_count") or 0
+        ),
         "new_pending_count": len(new_pending),
         "filled_count": len(filled_today),
         "closed_count_today": len(closed_today),
@@ -879,6 +1034,17 @@ def _snapshot_payload(
         "data_source": queue.get("data_source") or {},
         "candidates": deepcopy(queue.get("candidates") or []),
         "blocked_candidates": deepcopy(queue.get("blocked_candidates") or []),
+        "surface_blocked_candidates": deepcopy(
+            queue.get("surface_blocked_candidates") or []
+        ),
+        "surface_eligibility": deepcopy(
+            queue.get("surface_eligibility")
+            or _surface_eligibility_payload(config)
+        ),
+        "ret20_excess_spy_gate": deepcopy(
+            queue.get("ret20_excess_spy_gate")
+            or _ret20_excess_spy_gate_payload(config)
+        ),
         "benchmark_momentum_gate": deepcopy(
             queue.get("benchmark_momentum_gate")
             or _blocked_benchmark_momentum_gate("missing_state_surface_queue")

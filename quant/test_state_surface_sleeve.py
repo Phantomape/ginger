@@ -41,11 +41,22 @@ def _ohlcv():
     }
 
 
-def _ohlcv_negative_benchmarks():
+def _ohlcv_broad_rotation():
     return {
-        "SPY": _rows(100.0, -0.0005),
-        "QQQ": _rows(100.0, -0.0006),
-        "IWM": _rows(100.0, -0.0004),
+        "SPY": _rows(100.0, 0.0002),
+        "QQQ": _rows(100.0, 0.0003),
+        "IWM": _rows(100.0, 0.0020),
+        "AAA": _rows(50.0, 0.0020),
+        "BBB": _rows(50.0, 0.0016),
+        "CCC": _rows(50.0, 0.0012),
+    }
+
+
+def _ohlcv_flat_benchmarks_broad_rotation():
+    return {
+        "SPY": _rows(100.0, 0.0),
+        "QQQ": _rows(100.0, 0.0),
+        "IWM": _rows(100.0, 0.0020),
         "AAA": _rows(50.0, 0.0020),
         "BBB": _rows(50.0, 0.0016),
         "CCC": _rows(50.0, 0.0012),
@@ -55,7 +66,7 @@ def _ohlcv_negative_benchmarks():
 def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
-        ohlcv_by_ticker=_ohlcv(),
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
         core_signals=[{"ticker": "AAA", "strategy": "trend_long", "confidence_score": 0.91}],
     )
@@ -66,17 +77,35 @@ def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
     assert queue["scored_candidate_count"] == 3
     assert {row["ticker"] for row in queue["scored_candidates"]} == {"AAA", "BBB", "CCC"}
     assert queue["benchmark_momentum_gate"]["allowed"] is True
+    assert queue["surface_eligibility"]["allowed_surfaces"] == ["rotation_breakout_leadership"]
     assert queue["candidate_count"] == 2
     assert {row["ticker"] for row in queue["candidates"]} == {"BBB", "CCC"}
+    assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
     assert all(row["benchmark_momentum_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["candidates"][0]["counterfactuals"]["alternatives"][-1]["type"] == "cash"
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_defaults_to_rotation_surface_candidates_only():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv(),
+        universe=["AAA", "BBB", "CCC"],
+    )
+
+    assert queue["scored_candidate_count"] == 3
+    assert queue["candidate_count"] == 0
+    assert queue["surface_blocked_candidate_count"] == 3
+    assert {
+        row["reason"] for row in queue["surface_blocked_candidates"]
+    } == {"surface_not_allowed"}
     assert queue["production_impact"]["alters_orders"] is False
 
 
 def test_state_surface_benchmark_momentum_gate_blocks_paper_candidates_without_orders():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
-        ohlcv_by_ticker=_ohlcv_negative_benchmarks(),
+        ohlcv_by_ticker=_ohlcv_flat_benchmarks_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
         config={"max_candidates": 2},
     )
@@ -86,6 +115,7 @@ def test_state_surface_benchmark_momentum_gate_blocks_paper_candidates_without_o
     assert queue["scored_candidate_count"] == 3
     assert queue["candidate_count"] == 0
     assert queue["blocked_candidate_count"] == 2
+    assert queue["surface_blocked_candidate_count"] == 0
     assert queue["benchmark_momentum_gate"]["allowed"] is False
     assert queue["benchmark_momentum_gate"]["reasons"] == ["benchmark_momentum_nonpositive"]
     assert queue["benchmark_momentum_gate"]["trade_enabled_after_gate"] is False
@@ -101,14 +131,44 @@ def test_state_surface_benchmark_momentum_gate_blocks_paper_candidates_without_o
     assert snapshot["candidate_count"] == 0
     assert snapshot["new_pending_count"] == 0
     assert snapshot["blocked_candidate_count"] == 2
+    assert snapshot["surface_blocked_candidate_count"] == 0
     assert snapshot["benchmark_momentum_gate"]["allowed"] is False
     assert snapshot["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_ret20_excess_spy_gate_blocks_weak_relative_candidates():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
+        universe=["AAA", "BBB", "CCC"],
+        config={"max_candidates": 3, "ret20_excess_spy_min": 0.03},
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["ret20_excess_spy_gate"]["enabled"] is True
+    assert queue["ret20_excess_spy_gate"]["threshold"] == 0.03
+    assert queue["candidate_count"] == 1
+    assert queue["candidates"][0]["ticker"] == "AAA"
+    assert all(
+        row["ret20_excess_spy_gate"]["allowed"] is True
+        for row in queue["candidates"]
+    )
+    assert queue["blocked_candidate_count"] == 2
+    assert {
+        row["reason"] for row in queue["blocked_candidates"]
+    } == {"ret20_excess_spy_gate_blocked"}
+    assert all(
+        "ret20_excess_spy_below_floor" in row["ret20_excess_spy_gate"]["reasons"]
+        for row in queue["blocked_candidates"]
+    )
+    assert queue["production_impact"]["alters_orders"] is False
 
 
 def test_state_surface_sleeve_tracks_paper_entries_without_orders():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
-        ohlcv_by_ticker=_ohlcv(),
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
         config={"max_candidates": 1},
     )
@@ -143,7 +203,7 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
 def test_report_generator_renders_state_surface_without_orders():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
-        ohlcv_by_ticker=_ohlcv(),
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
         config={"max_candidates": 1},
     )

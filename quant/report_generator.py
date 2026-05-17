@@ -55,6 +55,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            event_sleeve_bundle=None,
                            state_surface_sleeve=None,
                            low_deployment_etf_overlay=None,
+                           core_misfit_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -89,6 +90,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         event_sleeve_bundle (dict):     Default-off aggregate event overlay attribution
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
+        core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -1580,6 +1582,65 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"mom20={candidate.get('prior_momentum20')} "
                 f"decision={candidate.get('decision_date')} "
                 f"trade_date={candidate.get('trade_date')} (paper only)"
+            )
+
+    if core_misfit_paper_sleeve and (
+        core_misfit_paper_sleeve.get("candidate_count", 0) > 0
+        or core_misfit_paper_sleeve.get("pending_count", 0) > 0
+        or core_misfit_paper_sleeve.get("open_position_count", 0) > 0
+        or core_misfit_paper_sleeve.get("closed_count_today", 0) > 0
+        or core_misfit_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("CORE MISFIT PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {core_misfit_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {core_misfit_paper_sleeve.get('trade_enabled', False)}  |  "
+            "Live short: False"
+        )
+        if core_misfit_paper_sleeve.get("error"):
+            lines.append(f"  Source status: {core_misfit_paper_sleeve.get('error')}")
+        lines.append(
+            f"  Candidates: {core_misfit_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {core_misfit_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {core_misfit_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {core_misfit_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper: "
+            f"no-trade=${core_misfit_paper_sleeve.get('realized_no_trade_value_to_date', 0.0):,.2f}  |  "
+            f"fast-long=${core_misfit_paper_sleeve.get('realized_fast_long_pnl_to_date', 0.0):,.2f}  |  "
+            f"inverse=${core_misfit_paper_sleeve.get('realized_inverse_pnl_to_date', 0.0):,.2f}"
+        )
+        if core_misfit_paper_sleeve.get("open_position_count", 0) > 0:
+            lines.append(
+                "  If closed now: "
+                f"no-trade=${core_misfit_paper_sleeve.get('unrealized_no_trade_value', 0.0):,.2f}  |  "
+                f"fast-long=${core_misfit_paper_sleeve.get('unrealized_fast_long_pnl', 0.0):,.2f}  |  "
+                f"inverse=${core_misfit_paper_sleeve.get('unrealized_inverse_pnl', 0.0):,.2f}"
+            )
+        gate = core_misfit_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed10d={metrics.get('closed_primary_outcomes', 0)} "
+                f"inverse=${metrics.get('inverse_short_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (core_misfit_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('strategy', '?')} "
+                f"{candidate.get('source_kind', 'core_signal')} "
+                f"notional={notional_text} (paper only)"
             )
 
     lines.append("\n" + "-" * 60)

@@ -28,6 +28,10 @@ REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / f"form4_existing_signal_overla
 JSONL_PATH = ROOT / "docs" / "experiment_log.jsonl"
 BASELINE_ARTIFACT = DATA_DIR / "experiments" / "exp-20260513-036" / "clean_spy_leader_signal_day_risk.json"
 HISTORICAL_OUTCOMES = DATA_DIR / "non_ohlcv" / "form4_purchase_shadow_outcomes_20241002_20260421.json"
+SEC_COMPANY_TICKERS_CANDIDATES = [
+    DATA_DIR / "reference" / "sec_company_tickers.json",
+    DATA_DIR / "sec_company_tickers.json",
+]
 
 NON_COMPANY = {"SPY", "QQQ", "IWM", "GLD", "IAU", "SLV", "ARKX", "UFO"}
 REQUIRED_FIELDS = [
@@ -124,6 +128,14 @@ def companion_json(tag: str, stem: str) -> Path:
 
 
 def daily_json(tag: str, stem: str) -> Path:
+    current_paths = {
+        "quant_signals": DATA_DIR / "daily" / "signals" / "quant" / f"quant_signals_{tag}.json",
+        "trend_signals": DATA_DIR / "daily" / "signals" / "trend" / f"trend_signals_{tag}.json",
+        "universe_state": DATA_DIR / "daily" / "universe" / f"universe_state_{tag}.json",
+    }
+    current_path = current_paths.get(stem)
+    if current_path is not None and current_path.exists():
+        return current_path
     return DATA_DIR / f"{stem}_{tag}.json"
 
 
@@ -156,7 +168,8 @@ def field_coverage(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
 
 
 def load_sec_map() -> dict[str, str]:
-    payload = load_json(DATA_DIR / "sec_company_tickers.json", {}) or {}
+    map_path = next((path for path in SEC_COMPANY_TICKERS_CANDIDATES if path.exists()), SEC_COMPANY_TICKERS_CANDIDATES[-1])
+    payload = load_json(map_path, {}) or {}
     rows = payload.values() if isinstance(payload, dict) else payload
     mapping: dict[str, str] = {}
     for row in rows or []:
@@ -171,6 +184,7 @@ def load_sec_map() -> dict[str, str]:
 
 def mapping_report(universe: dict[str, Any], summary: dict[str, Any]) -> dict[str, Any]:
     mapping = load_sec_map()
+    map_path = next((path for path in SEC_COMPANY_TICKERS_CANDIDATES if path.exists()), SEC_COMPANY_TICKERS_CANDIDATES[-1])
 
     def segment(key: str) -> dict[str, Any]:
         tickers = [str(ticker).upper() for ticker in universe.get(key, [])]
@@ -186,7 +200,7 @@ def mapping_report(universe: dict[str, Any], summary: dict[str, Any]) -> dict[st
 
     pilot_key = "pilot_trade_universe" if universe.get("pilot_trade_universe") else "governance_tradeable_universe"
     return {
-        "mapping_source": repo_rel(DATA_DIR / "sec_company_tickers.json"),
+        "mapping_source": repo_rel(map_path),
         "core_trade_universe": segment("core_trade_universe"),
         "pilot_universe": segment(pilot_key),
         "observation_universe": segment("observation_universe"),

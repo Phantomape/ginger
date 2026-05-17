@@ -1,0 +1,71 @@
+{
+  "experiment_id": "exp-20260517-004",
+  "timestamp": "2026-05-17T02:34:00Z",
+  "hypothesis": "Already selected core signals in a one-remaining-slot state represent scarce-slot conviction; a small cap-aware post-sizing top-up can improve expected value without changing the candidate set or slot priority.",
+  "change_type": "capital_allocation",
+  "changed_variable": "SCARCE_SLOT_RANK1_RISK_MULTIPLIER",
+  "parameters": {
+    "baseline": 1.0,
+    "sweep": [1.025, 1.05, 1.075],
+    "selected": 1.075,
+    "condition": "available_slots == 1 after shared entry deferral and slot slicing; apply only to selected rank-1 core signal"
+  },
+  "gate_answers": {
+    "alpha_hypothesis": "capital_allocation: scarce-slot rank-1 selected signals deserve a small sizing top-up",
+    "prior_similar_experiments": "Nearby slot-priority and routing experiments failed, so this experiment does not rerank, rescue sliced signals, or add slots. It only changes post-selection sizing.",
+    "single_causal_variable": "Only SCARCE_SLOT_RANK1_RISK_MULTIPLIER changes.",
+    "acceptance_criteria": "Three-window aggregate expected_value_score improves without max drawdown, worst trade, trade count, survival, or loss-streak deterioration; tail-loss changes are explicitly audited.",
+    "reproducibility": "All baseline and sweep results are saved under data/experiments/exp-20260517-004/."
+  },
+  "field_check": {
+    "operator_inputs_open_positions_count": 9,
+    "missing_entry_date_or_target_price": 0,
+    "runtime_fields_used": ["available_slots", "shares_to_buy", "entry_price", "portfolio_value_usd", "net_risk_per_share", "max_position_pct_applied"],
+    "ghost_rule_check": "passed"
+  },
+  "before_metrics": {
+    "late_strong": {"expected_value_score": 5.1361, "total_pnl": 116727.26, "sharpe_daily": 4.40, "max_drawdown_pct": 0.0665, "trades": 18, "survival_rate": 0.8039, "worst_trade_pct": -0.039653, "max_consecutive_losses": 2, "tail_loss_share": 0.5146},
+    "mid_weak": {"expected_value_score": 2.1084, "total_pnl": 76665.80, "sharpe_daily": 2.75, "max_drawdown_pct": 0.1083, "trades": 21, "survival_rate": 0.7925, "worst_trade_pct": -0.089651, "max_consecutive_losses": 6, "tail_loss_share": 0.5421},
+    "old_thin": {"expected_value_score": 0.5903, "total_pnl": 39615.16, "sharpe_daily": 1.49, "max_drawdown_pct": 0.1001, "trades": 22, "survival_rate": 0.8667, "worst_trade_pct": -0.063499, "max_consecutive_losses": 4, "tail_loss_share": 0.5193},
+    "aggregate": {"expected_value_score": 7.8348, "total_pnl": 233008.22}
+  },
+  "sweep_results": {
+    "1.025": {"aggregate_expected_value_score": 7.8530, "aggregate_total_pnl": 233391.57},
+    "1.05": {"aggregate_expected_value_score": 7.8580, "aggregate_total_pnl": 233591.20},
+    "1.075": {"aggregate_expected_value_score": 7.8585, "aggregate_total_pnl": 233618.09}
+  },
+  "after_metrics": {
+    "late_strong": {"expected_value_score": 5.1361, "total_pnl": 116727.26, "sharpe_daily": 4.40, "max_drawdown_pct": 0.0665, "trades": 18, "survival_rate": 0.8039, "worst_trade_pct": -0.039653, "max_consecutive_losses": 2, "tail_loss_share": 0.5146},
+    "mid_weak": {"expected_value_score": 2.1313, "total_pnl": 77222.87, "sharpe_daily": 2.76, "max_drawdown_pct": 0.1083, "trades": 21, "survival_rate": 0.7925, "worst_trade_pct": -0.089651, "max_consecutive_losses": 6, "tail_loss_share": 0.5495},
+    "old_thin": {"expected_value_score": 0.5911, "total_pnl": 39667.96, "sharpe_daily": 1.49, "max_drawdown_pct": 0.1001, "trades": 22, "survival_rate": 0.8667, "worst_trade_pct": -0.063499, "max_consecutive_losses": 4, "tail_loss_share": 0.5193},
+    "aggregate": {"expected_value_score": 7.8585, "total_pnl": 233618.09}
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0229,
+    "old_thin": 0.0008,
+    "aggregate": 0.0237
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true
+  },
+  "why_not_other_changes": "No candidate-pool expansion, filter, ranking, slot priority, exit, LLM/news, heat, target, or broad cap change was made.",
+  "known_risks": "Only two realized trades received an actual share increase at the selected scalar because most one-slot states were cap-bound or rounded away; treat this as a small allocation edge, not a broad scarce-slot doctrine.",
+  "decision": "accepted",
+  "validation": [
+    "python -m pytest quant/test_production_parity.py",
+    "docs/backtesting.md canonical three-window backtests for baseline and 1.025/1.05/1.075 variants"
+  ],
+  "artifacts": [
+    "data/experiments/exp-20260517-004/baseline_late_strong_result.json",
+    "data/experiments/exp-20260517-004/baseline_mid_weak_result.json",
+    "data/experiments/exp-20260517-004/baseline_old_thin_result.json",
+    "data/experiments/exp-20260517-004/variant_1075_late_strong_result.json",
+    "data/experiments/exp-20260517-004/variant_1075_mid_weak_result.json",
+    "data/experiments/exp-20260517-004/variant_1075_old_thin_result.json"
+  ]
+}

@@ -52,6 +52,8 @@ from constants import (
     TREND_TECH_DTE_MIN,
     TREND_TECH_DTE_MAX,
     TREND_TECH_DTE_RISK_MULTIPLIER,
+    TSM_CORE_RISK_MULTIPLIER,
+    ISRG_CORE_RISK_MULTIPLIER,
     TREND_HEALTHCARE_DTE_MIN,
     TREND_HEALTHCARE_DTE_MAX,
     TREND_HEALTHCARE_DTE_RISK_MULTIPLIER,
@@ -102,6 +104,76 @@ logger = logging.getLogger(__name__)
 # The ATR stop is still displayed to the user for order-placement reference;
 # only the SIZING uses this gap-risk floor.
 EARNINGS_GAP_RISK_PCT   = 0.08     # 8% conservative floor for earnings-gap adverse scenario
+
+
+def _apply_ticker_core_risk_multiplier(
+        sig,
+        sizing,
+        portfolio_value,
+        *,
+        target_ticker,
+        multiplier,
+        key_prefix):
+    """Apply an accepted ticker-specific core long risk scalar after sizing."""
+    ticker = str(sig.get("ticker") or "").upper()
+    strategy = sig.get("strategy")
+    multiplier_key = f"{key_prefix}_core_risk_multiplier_applied"
+    sizing[multiplier_key] = 1.0
+    if (
+        ticker != target_ticker
+        or strategy not in {"trend_long", "breakout_long"}
+        or multiplier >= 1.0
+    ):
+        return sizing
+
+    old_shares = int(sizing.get("shares_to_buy") or 0)
+    if old_shares <= 0:
+        return sizing
+
+    entry = float(sizing.get("entry_price") or sig.get("entry_price") or 0.0)
+    if entry <= 0:
+        return sizing
+
+    new_shares = int(math.floor(old_shares * multiplier))
+    if new_shares >= old_shares:
+        return sizing
+
+    net_risk_per_share = float(sizing.get("net_risk_per_share") or 0.0)
+    position_value = entry * new_shares
+    risk_amount = net_risk_per_share * new_shares
+    sizing[f"{key_prefix}_core_baseline_shares"] = old_shares
+    sizing[f"{key_prefix}_core_new_shares"] = new_shares
+    sizing["shares_to_buy"] = new_shares
+    sizing["position_value_usd"] = round(position_value, 2)
+    sizing["position_pct_of_portfolio"] = (
+        round(position_value / portfolio_value, 4) if portfolio_value else 0.0
+    )
+    sizing["risk_amount_usd"] = round(risk_amount, 2)
+    sizing["risk_pct"] = risk_amount / portfolio_value if portfolio_value else 0.0
+    sizing[multiplier_key] = multiplier
+    return sizing
+
+
+def _apply_tsm_core_risk_multiplier(sig, sizing, portfolio_value):
+    return _apply_ticker_core_risk_multiplier(
+        sig,
+        sizing,
+        portfolio_value,
+        target_ticker="TSM",
+        multiplier=TSM_CORE_RISK_MULTIPLIER,
+        key_prefix="tsm",
+    )
+
+
+def _apply_isrg_core_risk_multiplier(sig, sizing, portfolio_value):
+    return _apply_ticker_core_risk_multiplier(
+        sig,
+        sizing,
+        portfolio_value,
+        target_ticker="ISRG",
+        multiplier=ISRG_CORE_RISK_MULTIPLIER,
+        key_prefix="isrg",
+    )
 
 
 def compute_position_size(
@@ -1321,6 +1393,16 @@ def size_signals(signals, portfolio_value, risk_pct=None):
                         sizing[
                             "green_decel_quality_nonconsumer_new_shares"
                         ] = new_shares
+                sizing = _apply_tsm_core_risk_multiplier(
+                    sig,
+                    sizing,
+                    portfolio_value,
+                )
+                sizing = _apply_isrg_core_risk_multiplier(
+                    sig,
+                    sizing,
+                    portfolio_value,
+                )
                 sizing["base_risk_pct"] = effective_risk_pct
                 sizing["max_position_pct_applied"] = max(
                     max_position_pct,

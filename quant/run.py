@@ -188,6 +188,10 @@ def main():
         build_low_deployment_etf_overlay_snapshot,
         empty_low_deployment_etf_overlay_snapshot,
     )
+    from core_misfit_paper_sleeve import (
+        build_core_misfit_paper_sleeve_snapshot,
+        empty_core_misfit_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_observation_slot,
@@ -1451,6 +1455,35 @@ def main():
         )
 
     try:
+        core_misfit_paper_sleeve = build_core_misfit_paper_sleeve_snapshot(
+            as_of=today_iso,
+            candidate_signals=signals,
+            entry_execution_plan=entry_execution_plan,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            core_misfit_paper_sleeve.get("candidate_count", 0) > 0
+            or core_misfit_paper_sleeve.get("pending_count", 0) > 0
+            or core_misfit_paper_sleeve.get("open_position_count", 0) > 0
+            or core_misfit_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Core-misfit paper sleeve: candidates=%d pending=%d open=%d closed_today=%d inverse_pnl=$%s",
+                core_misfit_paper_sleeve.get("candidate_count", 0),
+                core_misfit_paper_sleeve.get("pending_count", 0),
+                core_misfit_paper_sleeve.get("open_position_count", 0),
+                core_misfit_paper_sleeve.get("closed_count_today", 0),
+                core_misfit_paper_sleeve.get("realized_inverse_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Core-misfit paper sleeve unavailable: {e}")
+        core_misfit_paper_sleeve = empty_core_misfit_paper_sleeve_snapshot(
+            today_iso,
+            "core_misfit_paper_sleeve_build_failed",
+        )
+
+    try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
             crypto_action = crypto_sleeve.get("action", {}).get("action")
@@ -1496,6 +1529,7 @@ def main():
     trend_signals_dict["state_surface_queue"] = state_surface_queue
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
     trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
+    trend_signals_dict["core_misfit_paper_sleeve"] = core_misfit_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -1531,6 +1565,7 @@ def main():
         event_sleeve_bundle = event_sleeve_bundle,
         state_surface_sleeve = state_surface_sleeve,
         low_deployment_etf_overlay = low_deployment_etf_overlay,
+        core_misfit_paper_sleeve = core_misfit_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -1572,6 +1607,7 @@ def main():
         "state_surface_queue": state_surface_queue,
         "state_surface_sleeve": state_surface_sleeve,
         "low_deployment_etf_overlay": low_deployment_etf_overlay,
+        "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,

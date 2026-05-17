@@ -41,6 +41,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/low_deployment_etf/state.json",
         "low_deployment_etf_overlay_state.json",
     ),
+    "core_misfit_paper_snapshots": (
+        "paper_sleeves/core_misfit/snapshots.jsonl",
+        "core_misfit_paper_snapshots.jsonl",
+    ),
+    "core_misfit_paper_state": (
+        "paper_sleeves/core_misfit/state.json",
+        "core_misfit_paper_state.json",
+    ),
     "sec_10k_liquidity_forward_watch": (
         "paper_sleeves/sec_10k_liquidity/forward_watch.jsonl",
         "sec_10k_liquidity_forward_watch.jsonl",

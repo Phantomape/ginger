@@ -84,35 +84,90 @@ Window labels used in experiment logs:
 | `mid_weak` | `2025-04-23 -> 2025-10-22` | `data\ohlcv\ohlcv_snapshot_20250423_20251022.json` |
 | `old_thin` | `2024-10-02 -> 2025-04-22` | `data\ohlcv\ohlcv_snapshot_20241002_20250422.json` |
 
-Current accepted fixed-window metrics after core `exp-20260516-020`
-(`trend_tech_dte_residual_risk`) promoted the Technology trend DTE residual
-risk sizing update:
+Current accepted fixed-window metrics after core `exp-20260517-009`
+(`ample_slot_stock_rank1_topup`) promoted the stock-only ample-slot rank-1
+post-sizing top-up on top of the accepted scarce-slot rank-1 top-up:
 
 | Label | EV score | Sharpe daily | Total PnL | Return | Max DD | Win rate | Trades | Survival |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `late_strong` | 5.1344 | 4.40 | $116,686.40 | 116.69% | 6.65% | 78.95% | 19 | 80.39% |
-| `mid_weak` | 2.1054 | 2.75 | $76,563.68 | 76.56% | 10.83% | 52.38% | 21 | 79.25% |
-| `old_thin` | 0.5295 | 1.42 | $37,292.45 | 37.29% | 10.01% | 40.91% | 22 | 86.67% |
+| `late_strong` | 5.1628 | 4.41 | $117,072.92 | 117.07% | 6.65% | 83.33% | 18 | 80.39% |
+| `mid_weak` | 2.1402 | 2.74 | $78,110.11 | 78.11% | 11.19% | 52.38% | 21 | 79.25% |
+| `old_thin` | 0.5911 | 1.49 | $39,667.96 | 39.67% | 10.01% | 40.91% | 22 | 86.67% |
 
 Artifact note:
-`data/experiments/exp-20260516-020/trend_tech_dte_residual_risk.json`
+`data/experiments/exp-20260517-009/`
 records the latest accepted three-window comparison. Aggregate accepted-stack
-EV is `7.7693`; aggregate PnL is `$230,542.53`.
+EV is `7.8941`; aggregate PnL is `$234,850.99`.
 
-Latest accepted core-sizing result: core `exp-20260516-020` keeps entries,
+Latest accepted core-sizing result: core `exp-20260517-009` keeps entries,
+exits, filters, universe, targets, heat, LLM, news, and pre-slot ranking
+unchanged, but applies a shared cap-aware `1.05x` post-sizing top-up to the
+already selected rank-1 stock signal when entry planning has at least four
+available slots. ETF and Commodity sectors are excluded because broad
+ample-slot promotion regressed `old_thin` through Commodity exposure in
+`exp-20260517-008`. The sweep (`1.0125x`, `1.025x`, `1.05x`) improved
+aggregate EV by `+0.0356` and aggregate PnL by `+$1,232.90`: `late_strong`
+improved EV `+0.0267` / PnL `+$345.66`, `mid_weak` improved EV `+0.0089` /
+PnL `+$887.24`, and `old_thin` stayed unchanged. Trade count, survival, worst
+trade, loss streak, and `old_thin` drawdown did not worsen; `mid_weak` max
+drawdown rose from `10.83%` to `11.19%` while staying within the Gate 4
+guardrail. The rule lives in shared `production_parity.py`, used by both
+`backtester.py` and `run.py`; focused parity tests cover the stock top-up and
+Commodity exclusion.
+
+Previous accepted core-sizing result: core `exp-20260517-004` keeps entries,
+exits, filters, universe, targets, heat, LLM, news, and pre-slot ranking
+unchanged, but applies a shared cap-aware `1.075x` post-sizing top-up to the
+already selected rank-1 core signal only when entry planning has exactly one
+remaining slot. The sweep (`1.025x`, `1.05x`, `1.075x`) improved aggregate EV
+by `+0.0237` and aggregate PnL by `+$609.87`.
+
+Previous accepted core-sizing result: core `exp-20260516-042` keeps entries,
+exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
+unchanged, but applies an ISRG-specific post-sizing core long scalar of `0.25x`
+in shared `portfolio_engine.py` constants. The accepted non-control sweep value
+improved the current stack by aggregate EV `+0.0512` and aggregate PnL
+`+$1,857.98`: `late_strong` stayed unchanged, `mid_weak` improved EV `+0.0019`
+/ PnL `+$70.72`, and `old_thin` improved EV `+0.0493` / PnL `+$1,787.26`.
+The affected sample was two ISRG core long signals across `mid_weak` and
+`old_thin`, trade count stayed `61`, minimum survival stayed `79.25%`, and max
+drawdown did not worsen. The lifecycle diagnostic did not support a fast-target
+rescue. The `0.0x` quarantine failed by regressing `old_thin`, so do not
+generalize this into a Healthcare rule or retry nearby ISRG scalar/target
+changes without new forward evidence.
+
+Previous accepted core-sizing result: core `exp-20260516-039` keeps entries,
+exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
+unchanged, but applies a TSM-specific post-sizing core long scalar of `0.25x`
+in shared `portfolio_engine.py` constants. The accepted non-control sweep value
+improved the current stack by aggregate EV `+0.0143` and aggregate PnL
+`+$607.71`: `late_strong` improved EV `+0.0017` / PnL `+$40.86`,
+`mid_weak` improved EV `+0.0011` / PnL `+$31.40`, and `old_thin` improved EV
+`+0.0115` / PnL `+$535.45`. The affected sample was four TSM core long signals
+across all three windows, trade count moved `62 -> 61`, minimum survival stayed
+`79.25%`, and max drawdown drift was only `+0.01 pp`. The lifecycle diagnostic
+did not support a fast-target rescue: no TSM trade had close-to-close profit
+available before stop, and the 1/3/5-day net holding windows were all negative.
+The `0.0x` quarantine failed by regressing `old_thin` and aggregate PnL, so do
+not generalize this into a semiconductor rule or retry nearby TSM scalar/target
+changes without new forward evidence.
+
+Latest promising replay-only default-off event allocation result:
+`exp-20260517-010` keeps the canonical core baseline unchanged but revalidates
+the event bundle's `rotation_breakout_leadership` paper allocation after the
+accepted core `exp-20260517-009` stock-only ample-slot top-up. The best variant
+remains `3.0x` paper notional for rotation-surface rows versus the current
+`2.0x` non-generic positive event paper lead. Aggregate paper-overlay EV
+improved `+0.5389` and aggregate PnL improved `+$7,987.90`, with all three
+fixed windows EV-positive (`late_strong +0.3138`, `mid_weak +0.2171`,
+`old_thin +0.0080`) and no EV regression. This is not a live/default order
+change; promotion still requires a shared trade-enabled adapter,
+run/backtester parity tests, and closed forward replacement-value evidence.
+
+Previous accepted core-sizing result: core `exp-20260516-020` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but reduces the existing `trend_long` Technology 44-64 DTE risk
 multiplier from `0.25x` to `0.125x` in shared `portfolio_engine.py` constants.
-The accepted non-control sweep value improved the current stack by aggregate
-EV `+0.0039` and aggregate PnL `+$151.61`: `late_strong` stayed unchanged,
-`mid_weak` improved EV `+0.0038` / PnL `+$141.75`, and `old_thin` improved EV
-`+0.0001` / PnL `+$9.86`. Trade count and minimum survival stayed unchanged,
-max drawdown did not worsen, and 13 signals were affected across all three
-windows. There is no production/backtest split because both adapters call the
-same shared sizing module; the focused sizing test now expects the 0.125x
-multiplier. The `0.0x` sweep failed by regressing `old_thin`, so do not retry
-nearby Technology trend DTE scalar changes on these frozen windows without a
-new production-visible discriminator or forward evidence.
 
 Previous accepted core-sizing result: core `exp-20260516-009` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
