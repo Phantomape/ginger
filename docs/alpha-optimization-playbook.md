@@ -47,6 +47,14 @@ Current evidence says the stack works best when it is split this way:
 4. LLMs are most useful as structured field builders, not as final risk or
    execution owners.
 
+`alpha_search` is broader than tuning the current strategy rules. It includes:
+
+- governance of the current ticker pool;
+- splitting noisy cohorts into paper/default-off sleeves before promotion;
+- all-market candidate discovery when the universe construction is PIT-safe;
+- diagnostic oracle analysis that estimates the opportunity gap and turns it
+  into production-visible fields.
+
 The latest accepted core stack still reinforces the same message:
 
 - the accepted scarce-slot rank-1 top-up (`available_slots == 1`) is an
@@ -229,6 +237,86 @@ Default search style should therefore be:
 4. keep event ideas default-off until replacement value closes;
 5. convert repeated wins into shared fields, not more prompt prose.
 
+## Candidate-Pool Alpha Search
+
+Candidate-pool work is valid alpha search when it is treated as capital
+governance, not as casual ticker picking.
+
+### Current Ticker Pool Governance
+
+Use this lane to decide whether existing tickers should remain core, be
+down-sized, be moved into a paper sleeve, or be removed from live eligibility.
+
+Required evidence:
+
+- ticker-level and setup-level contribution across all canonical windows;
+- replacement value versus the next selected or sliced candidate;
+- no-trade avoided value for suspected negative contributors;
+- forward paper outcomes for any proposed quarantine, removal, or inverse
+  sleeve;
+- exposure concentration and tail-loss contribution.
+
+Valid outputs:
+
+- keep in core;
+- keep but down-size through a shared production-visible rule;
+- move to default-off paper sleeve;
+- require more forward evidence;
+- remove only after a separate Gate 1-4 experiment proves the removal is not
+  a frozen-window overfit.
+
+Do not remove a ticker only because one to three historical trades were bad.
+The useful unit is ticker + setup + market state + replacement value.
+
+### Sleeve Segmentation
+
+Sleeves are the right place for ideas that are plausible but not mature enough
+to compete for core capital.
+
+Preferred sleeve boundaries:
+
+- `CORE`
+- `CORE_MISFIT_PAPER`
+- `STATE_SURFACE_SATELLITE`
+- SEC / earnings event sleeves
+- Form 4 sleeves
+- buyback credibility sleeves
+- mechanical index / passive-flow sleeves
+- Space / thematic pilot sleeves
+
+Each sleeve needs:
+
+- its own candidate definition;
+- its own capital and slot semantics;
+- paper/live status;
+- forward gate;
+- replacement-value metric;
+- promotion and kill criteria.
+
+### All-Market Candidate Discovery
+
+All-market search is valid, but it must start outside core.
+
+Required constraints:
+
+- PIT universe membership and delisting/survivorship handling;
+- stable liquidity and price filters;
+- sector/industry/theme attribution;
+- no leakage from future index membership, future fundamentals, or future
+  news coverage;
+- direct comparison to existing core replacement candidates.
+
+Valid first deliverables:
+
+- a research-only broad universe snapshot;
+- a daily default-off candidate queue;
+- a paper sleeve with no live orders;
+- a field that explains why the all-market candidate beats an existing core
+  competitor.
+
+Do not mix all-market candidates into core until the paper sleeve has enough
+closed outcomes to show replacement value and drawdown behavior.
+
 ## Current High-Value Search Priorities
 
 Priority is ordered by expected value, replayability, implementation clarity,
@@ -252,7 +340,25 @@ Default use:
 - next useful work is forward maturation, trade-enabled adapter design, and
   parity tests for any future live/default promotion.
 
-### 2. SEC / Earnings Semantic Expansion
+### 2. Current Ticker Pool Governance
+
+This is now a formal alpha lane because the accepted core stack is dense enough
+that ticker-level negative contribution and replacement value matter.
+
+Preferred deliverables:
+
+- ticker/setup contribution table across canonical windows;
+- core no-trade and replacement-value diagnostics;
+- default-off paper routing for suspected misfit cohorts;
+- sleeve-specific promotion and kill rules.
+
+Default use:
+
+- start with attribution and paper queues;
+- only promote removal, quarantine, or down-sizing after a separate Gate 1-4
+  experiment.
+
+### 3. SEC / Earnings Semantic Expansion
 
 This remains the highest-value field-building research lane because:
 
@@ -278,7 +384,25 @@ Default use:
 - allocation states second;
 - never a broad core veto first.
 
-### 3. Buyback Credibility Sleeve v2
+### 4. All-Market Candidate Discovery
+
+This is a high-upside but high-bias-risk lane.
+
+Preferred deliverables:
+
+- PIT all-market universe construction;
+- liquidity, price, and data-quality gates;
+- default-off broad-universe paper queue;
+- replacement-value comparison against existing core candidates;
+- feature attribution explaining why selected names deserve a sleeve.
+
+Default use:
+
+- research-only or paper-only first;
+- never directly expand core until survivorship, PIT membership, and
+  replacement value are audited.
+
+### 5. Buyback Credibility Sleeve v2
 
 Buyback work should resume only as a credibility-field branch, not as a
 keyword-coverage branch.
@@ -297,7 +421,7 @@ Default use:
 - default-off paper sleeve first;
 - promote only after replacement-value evidence closes.
 
-### 4. High-Quality Insider Buying
+### 6. High-Quality Insider Buying
 
 Form 4 ideas remain attractive, but current evidence says raw filing presence
 is not enough.
@@ -316,7 +440,7 @@ Default use:
 - default-off queue or paper sleeve first;
 - do not resume scalar tuning on sparse filing fields.
 
-### 5. Mechanical Index / Passive Flow Event Sleeve
+### 7. Mechanical Index / Passive Flow Event Sleeve
 
 This is attractive because it is interpretable, easy to audit, and less
 dependent on LLM ambiguity.
@@ -334,7 +458,7 @@ Default use:
 - paper sleeve first;
 - use deterministic sources and PIT timestamps.
 
-### 6. Core-Misfit Paper Maturation
+### 8. Core-Misfit Paper Maturation
 
 This is not a new live rule search yet. It is a forward evidence program.
 
@@ -345,7 +469,29 @@ What matters next:
 - segment-level clustering by ticker, setup family, and market state;
 - proof that any future exclusion or short rule is not just one bad window.
 
-### 7. Event Taxonomy / Ontology Quality
+### 9. Diagnostic Oracle Gap Analysis
+
+Oracle analysis is a hypothesis generator, not acceptance evidence.
+
+Preferred deliverables:
+
+- fixed-entry exit-oracle gap:
+  current exit PnL versus best possible PIT-impossible exit after the same
+  entry;
+- entry-oracle labels:
+  future return/MFE/MAE buckets for candidates that were selected, sliced, and
+  rejected;
+- feature mining:
+  which production-visible fields explain the gap without using future data at
+  decision time.
+
+Default use:
+
+- run diagnostics to find where the system leaks opportunity;
+- convert any promising oracle pattern into one production-visible field or
+  paper sleeve before testing it through Gate 1-4.
+
+### 10. Event Taxonomy / Ontology Quality
 
 The repo is increasingly constrained by ontology quality, not just by missing
 news text.
@@ -686,6 +832,9 @@ production-visible field:
 - nearby `TSM` and `ISRG` residual retunes without new forward evidence;
 - broad Space ticker-breadth expansion;
 - Space interaction retries supported by one ticker or one mature row;
+- VSAT/satcom fallback pool membership or risk-scalar retries on the frozen
+  Space windows; `exp-20260517-018` showed every tested scalar still regressed
+  `old_thin` and breached the drawdown guardrail despite positive aggregate EV;
 - SEC sleeve retunes that do not add new filing or call semantics;
 - buyback work that only adds keyword coverage;
 - Form 4 work that ignores options-market context;

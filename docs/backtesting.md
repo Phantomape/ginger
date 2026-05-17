@@ -560,6 +560,159 @@ The backtester emits these extra measurement fields for alpha experiments:
 | `single_window_quality` | Summarizes whether the current window is positive on EV, return, daily Sharpe, and drawdown guardrails. |
 | `multi_window_robustness` | Added to cross-window diagnostics; summarizes positive windows, EV spread, worst drawdown, and an observation-only robustness score. |
 
+## Diagnostic / Oracle Analysis
+
+Diagnostic analyses are allowed and encouraged, but they are not acceptance
+evidence by themselves. They answer "where is the opportunity gap?" and "what
+production-visible field might explain it?" They do not prove that a live rule
+works until the idea is converted into a shared policy, paper sleeve, or field
+and then tested through the standard Gate 1-4 protocol.
+
+Any oracle artifact must include:
+
+- the canonical baseline artifact it was run against;
+- the exact windows and snapshots;
+- the candidate universe used;
+- whether the analysis is fixed-entry, entry-oracle, ticker-pool, sleeve, or
+  all-market;
+- a clear `diagnostic_only: true` flag;
+- the production-visible fields that could explain the oracle gap without
+  using future data.
+
+### Fixed-Entry Exit Oracle
+
+Use this analysis to measure how far the current strategy is from better exits
+when entries are held fixed.
+
+Allowed diagnostic questions:
+
+- With the same entries, what was the best achievable exit over the realized
+  holding window?
+- How much PnL did the current exit policy capture versus the best future
+  price path?
+- Were losses caused by bad entries, late exits, early exits, or avoidable
+  giveback?
+- Does the opportunity gap cluster by ticker, sector, strategy, sleeve,
+  market state, DTE bucket, event family, or sizing rule?
+
+Minimum metrics:
+
+| Field | Meaning |
+| --- | --- |
+| `current_trade_pnl` | PnL under the canonical backtest exit. |
+| `oracle_best_exit_pnl` | Best future exit PnL after the same entry under the diagnostic path. |
+| `oracle_exit_gap_pnl` | `oracle_best_exit_pnl - current_trade_pnl`. |
+| `profit_capture_ratio` | Current realized profit divided by oracle best profit when oracle best profit is positive. |
+| `max_favorable_excursion_pct` | Best post-entry favorable move before final exit horizon. |
+| `max_adverse_excursion_pct` | Worst post-entry adverse move before final exit horizon. |
+| `giveback_pct` | Difference between max favorable move and realized exit result. |
+| `oracle_best_exit_day` | Trading-day offset of the diagnostic best exit. |
+| `exit_error_bucket` | `bad_entry`, `early_exit`, `late_exit`, `giveback`, or `no_oracle_edge`. |
+
+Acceptance boundary:
+
+- fixed-entry oracle output can justify a new exit hypothesis;
+- it cannot justify a live exit change until that hypothesis is implemented as
+  shared production/backtest logic and passes the same fixed-window protocol;
+- do not use future-only best-exit timing as a rule input.
+
+### Entry Oracle
+
+Use this analysis to ask whether the current entry system is missing better
+entries or selecting weak ones.
+
+Allowed diagnostic questions:
+
+- Among generated, selected, sliced, and rejected candidates, which future
+  paths were actually attractive?
+- Which production-known features distinguish selected winners from missed
+  winners?
+- Did ranking, slot pressure, filters, or universe membership cause the missed
+  opportunity?
+- Does a candidate's future edge cluster by ticker, sector, strategy, event
+  family, relative strength, liquidity, volatility, market state, or news /
+  filing field?
+
+Minimum labels:
+
+| Field | Meaning |
+| --- | --- |
+| `future_5d_return_pct` | Candidate forward return over 5 trading days. |
+| `future_10d_return_pct` | Candidate forward return over 10 trading days. |
+| `future_20d_return_pct` | Candidate forward return over 20 trading days. |
+| `future_max_favorable_excursion_pct` | Best forward favorable move inside the diagnostic horizon. |
+| `future_max_adverse_excursion_pct` | Worst forward adverse move inside the diagnostic horizon. |
+| `selected_by_current_policy` | Whether the canonical policy selected the candidate. |
+| `slot_sliced_by_current_policy` | Whether the candidate was qualified but lost to slot pressure. |
+| `blocked_by_filter` | Filter or rule that blocked the candidate, when available. |
+| `oracle_entry_quality_bucket` | Diagnostic label such as `strong`, `mixed`, `weak`, or `tail_risk`. |
+
+Acceptance boundary:
+
+- entry oracle output can only generate hypotheses about new fields, ranking,
+  or sleeves;
+- any promoted rule must use only fields known at decision time;
+- broad filter or ranking changes still need full Gate 1-4 evidence.
+
+### Ticker Pool And Sleeve Diagnostics
+
+Use this analysis to decide whether current tickers belong in core, a smaller
+risk budget, a default-off sleeve, or a removal watchlist.
+
+Minimum metrics:
+
+| Field | Meaning |
+| --- | --- |
+| `ticker_contribution_pnl` | Total realized PnL by ticker. |
+| `ticker_contribution_ev` | EV contribution by ticker when available. |
+| `tail_loss_contribution_pct` | Share of loss tail attributable to the ticker or cohort. |
+| `replacement_value_pnl` | PnL versus the next selected or sliced candidate. |
+| `no_trade_avoided_value_pnl` | Value of not taking the current-policy trade. |
+| `sleeve_candidate` | Suggested sleeve destination, if any. |
+| `forward_outcome_count` | Number of closed forward paper outcomes available. |
+
+Acceptance boundary:
+
+- ticker governance diagnostics can nominate keep, down-size, sleeve, observe,
+  or remove candidates;
+- live removal, quarantine, or down-sizing requires a separate Gate 1-4
+  experiment unless it is explicitly paper/default-off;
+- never remove a ticker solely from one to three bad trades.
+
+### All-Market Candidate Discovery
+
+Use this analysis to explore whether alpha exists outside the current ticker
+pool.
+
+Required controls:
+
+- PIT universe membership;
+- delisting and survivorship handling;
+- stable price, liquidity, and data-quality gates;
+- sector, industry, and theme attribution;
+- no future index membership, future fundamentals, or future news availability
+  as decision-time inputs;
+- comparison against the existing core replacement candidate for the same day.
+
+Minimum metrics:
+
+| Field | Meaning |
+| --- | --- |
+| `research_universe_size` | Number of PIT-eligible securities considered. |
+| `liquidity_pass_count` | Number that passed liquidity and price gates. |
+| `paper_candidate_count` | Number emitted into the default-off queue. |
+| `replacement_value_pnl` | Paper candidate PnL versus the displaced core candidate or cash. |
+| `sector_concentration` | Exposure concentration by sector or theme. |
+| `survivorship_controls_passed` | Whether PIT and delisting controls were documented. |
+
+Acceptance boundary:
+
+- all-market discovery starts as research-only or paper-only;
+- it cannot expand core until the universe construction and replacement-value
+  evidence are audited;
+- all-market wins should first become a sleeve, field, or explicit ticker
+  promotion protocol.
+
 ## Exit Policy Replay Scope
 
 The canonical backtest currently executes full-position `stop_price` and
