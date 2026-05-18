@@ -52,6 +52,20 @@ def _ohlcv_broad_rotation():
     }
 
 
+def _ohlcv_broad_rotation_many():
+    return {
+        "SPY": _rows(100.0, 0.0002),
+        "QQQ": _rows(100.0, 0.0003),
+        "IWM": _rows(100.0, 0.0020),
+        "AAA": _rows(50.0, 0.0024),
+        "BBB": _rows(50.0, 0.0022),
+        "CCC": _rows(50.0, 0.0020),
+        "DDD": _rows(50.0, 0.0018),
+        "EEE": _rows(50.0, 0.0016),
+        "FFF": _rows(50.0, 0.0014),
+    }
+
+
 def _ohlcv_flat_benchmarks_broad_rotation():
     return {
         "SPY": _rows(100.0, 0.0),
@@ -83,6 +97,24 @@ def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
     assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
     assert all(row["benchmark_momentum_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["candidates"][0]["counterfactuals"]["alternatives"][-1]["type"] == "cash"
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["parameters"]["max_candidates"] == 5
+    assert queue["scored_candidate_count"] == 6
+    assert queue["candidate_count"] == 5
+    assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
+    assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
+    assert all(row["ret20_excess_spy_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["production_impact"]["alters_orders"] is False
 
 

@@ -107,7 +107,7 @@ shared policy lives in `state_surface_sleeve.py`; `run.py` continues to use
 that shared default-off paper path, and core backtests / live orders are not
 changed.
 
-Latest accepted state-surface paper refinement: `exp-20260517-016` keeps the
+Previous accepted state-surface paper refinement: `exp-20260517-016` keeps the
 rotation-only paper sleeve from `exp-20260517-014`, but requires
 `features.ret20_excess_spy >= 0.0` before a candidate can enter the
 default-off paper queue. The three-window sweep accepted the least restrictive
@@ -118,6 +118,18 @@ from `31.17%` to `29.72%`. `late_strong` improved EV `+0.1739` / PnL
 `old_thin` was unchanged. The shared policy and test live in
 `state_surface_sleeve.py` / `test_state_surface_sleeve.py`; live/default
 orders remain disabled.
+
+Latest accepted state-surface paper refinement: `exp-20260517-025` keeps the
+rotation-only sleeve and `ret20_excess_spy >= 0.0` gate from
+`exp-20260517-016`, but expands the shared default-off daily paper queue from
+top 3 to top 5 ranked candidates. The 3-window replay improved aggregate EV by
+`+0.3995` and aggregate PnL by `+$5,321.49`: `late_strong` improved EV
+`+0.2004` / PnL `+$1,979.75`, `mid_weak` improved EV `+0.1991` / PnL
+`+$3,341.74`, and `old_thin` was unchanged. Selected state-surface paper
+trades rose from `22` to `24`, single-ticker positive share stayed controlled
+at `34.04%`, and live/default orders remain disabled. The accepted production
+path is the shared default-off `state_surface_sleeve.py` queue with parity
+coverage in `test_state_surface_sleeve.py`.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
@@ -360,6 +372,19 @@ canonical windows: `late_strong` EV `4.4313 -> 4.4853`, `mid_weak` EV
 stayed inside Gate 4 (`+0.11 pp` worst window), trade count and survival were
 unchanged, and the rule lives in shared `portfolio_engine.py` with focused
 production-parity tests.
+
+Latest rejected Space alpha search: `exp-20260517-018` swept only
+`space_vsat_forward_benchmark_same_theme_satcom_fallback_risk_scalar`
+(`0.125x`, `0.25x`, `0.5x`, `0.75x`, `1.0x`) on top of the accepted
+`exp-20260516-029` Space stack. The best raw variant was `1.0x`: aggregate EV
+improved `+5.1468` and aggregate PnL improved `+$101,063.13`, but Gate 4 still
+rejected it because `old_thin` regressed by EV `-0.0408` / PnL `-$1,520.10`
+and the max drawdown ceiling worsened by `+3.22 pp`. Smaller risk scalars kept
+the same `old_thin` regression and the same drawdown breach. No shared policy,
+backtester adapter, run adapter, or live Space slot changed. Do not retry
+VSAT/satcom fallback membership or risk scalars on these frozen windows without
+new closed forward rows or a production-visible field that prevents peer-basket
+contamination.
 
 Latest accepted default-off Space alpha result: `exp-20260516-029` keeps live
 Space slots at zero and adds only the shared

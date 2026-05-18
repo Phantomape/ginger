@@ -41,7 +41,7 @@ DEFAULT_CONFIG = {
     "paper_enabled": True,
     "trade_enabled": False,
     "allowed_surfaces": ["rotation_breakout_leadership"],
-    "max_candidates": 3,
+    "max_candidates": 5,
     "max_positions": 3,
     "event_notional_usd": 10_000.0,
     "hold_days": 20,
