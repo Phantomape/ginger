@@ -6,6 +6,10 @@ from sec_financial_report_event_sleeve import (
     DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR,
     DEFAULT_CONFIG,
     DEFAULT_MAX_POSITIONS,
+    DEFAULT_NEUTRAL_UNDERREACTION_MAX_T1_EXCESS,
+    DEFAULT_NEUTRAL_UNDERREACTION_NOTIONAL_SCALAR,
+    DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR,
+    DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN,
     DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
     SLEEVE_NAME,
     build_sec_financial_report_event_sleeve_snapshot,
@@ -30,6 +34,8 @@ def _candidate(
     date: str = "2026-05-04",
     event_family: str = "earnings_8k",
     form_base: str | None = None,
+    language_bucket: str | None = None,
+    spy_t1_return: float | None = None,
 ) -> dict[str, object]:
     candidate = {
         "ticker": ticker,
@@ -42,6 +48,10 @@ def _candidate(
     }
     if form_base:
         candidate["form_base"] = form_base
+    if language_bucket:
+        candidate["language_bucket"] = language_bucket
+    if spy_t1_return is not None:
+        candidate["spy_t1_return"] = spy_t1_return
     return candidate
 
 
@@ -214,6 +224,142 @@ def test_financial_report_sleeve_scales_periodic_report_notional_without_orders(
     assert by_ticker["TENQ"]["event_notional_rule"] == "periodic_report_10q_scalar"
     assert second["trade_enabled"] is False
     assert all(position["trade_enabled"] is False for position in second["open_positions"])
+
+
+def test_financial_report_sleeve_scales_neutral_underreaction_without_orders():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate(
+                "NTRL",
+                "0001",
+                0.02,
+                language_bucket="neutral_or_mixed_language",
+            ),
+            _candidate(
+                "HOT",
+                "0002",
+                0.03,
+                language_bucket="neutral_or_mixed_language",
+            ),
+            _candidate(
+                "POS",
+                "0003",
+                0.02,
+                language_bucket="positive_language",
+            ),
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"NTRL": 100.0, "HOT": 100.0, "POS": 100.0},
+        current_prices={"NTRL": 100.0, "HOT": 100.0, "POS": 100.0},
+        state=_state_from_snapshot(first),
+        persist=False,
+    )
+
+    by_ticker = {position["ticker"]: position for position in second["open_positions"]}
+
+    assert DEFAULT_NEUTRAL_UNDERREACTION_NOTIONAL_SCALAR == 2.0
+    assert DEFAULT_NEUTRAL_UNDERREACTION_MAX_T1_EXCESS == 0.02
+    assert second["parameters"]["neutral_underreaction_notional_enabled"] is True
+    assert by_ticker["NTRL"]["notional"] == 30_000.0
+    assert by_ticker["NTRL"]["event_notional_scalar"] == 2.0
+    assert by_ticker["NTRL"]["event_notional_rule"] == "base+neutral_underreaction_scalar"
+    assert by_ticker["HOT"]["notional"] == 15_000.0
+    assert by_ticker["HOT"]["event_notional_rule"] == "base"
+    assert by_ticker["POS"]["notional"] == 15_000.0
+    assert by_ticker["POS"]["event_notional_rule"] == "base"
+    assert second["trade_enabled"] is False
+    assert all(position["trade_enabled"] is False for position in second["open_positions"])
+
+
+def test_financial_report_sleeve_scales_neutral_underreaction_market_context_without_orders():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate(
+                "CONF",
+                "0001",
+                0.018,
+                language_bucket="neutral_or_mixed_language",
+                spy_t1_return=-0.004,
+            ),
+            _candidate(
+                "ADVR",
+                "0002",
+                0.018,
+                language_bucket="neutral_or_mixed_language",
+                spy_t1_return=-0.006,
+            ),
+            _candidate(
+                "MISS",
+                "0003",
+                0.018,
+                language_bucket="neutral_or_mixed_language",
+            ),
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"CONF": 100.0, "ADVR": 100.0, "MISS": 100.0},
+        current_prices={"CONF": 100.0, "ADVR": 100.0, "MISS": 100.0},
+        state=_state_from_snapshot(first),
+        persist=False,
+    )
+
+    by_ticker = {position["ticker"]: position for position in second["open_positions"]}
+
+    assert DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR == 1.5
+    assert DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN == -0.005
+    assert second["parameters"]["neutral_underreaction_spy_t1_context_enabled"] is True
+    assert by_ticker["CONF"]["notional"] == 45_000.0
+    assert by_ticker["CONF"]["event_notional_scalar"] == 3.0
+    assert by_ticker["CONF"]["event_notional_rule"] == (
+        "base+neutral_underreaction_scalar"
+        "+neutral_underreaction_spy_t1_context_scalar"
+    )
+    assert by_ticker["ADVR"]["notional"] == 30_000.0
+    assert by_ticker["ADVR"]["event_notional_rule"] == "base+neutral_underreaction_scalar"
+    assert by_ticker["MISS"]["notional"] == 30_000.0
+    assert by_ticker["MISS"]["event_notional_rule"] == "base+neutral_underreaction_scalar"
+    assert second["trade_enabled"] is False
+    assert all(position["trade_enabled"] is False for position in second["open_positions"])
+
+
+def test_financial_report_sleeve_can_disable_neutral_underreaction_scalar():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate(
+                "NTRL",
+                "0001",
+                0.02,
+                language_bucket="neutral_or_mixed_language",
+            ),
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"NTRL": 100.0},
+        current_prices={"NTRL": 100.0},
+        state=_state_from_snapshot(first),
+        config={"neutral_underreaction_notional_enabled": False},
+        persist=False,
+    )
+
+    assert second["open_positions"][0]["notional"] == 15_000.0
+    assert second["open_positions"][0]["event_notional_rule"] == "base"
+    assert second["production_impact"]["alters_orders"] is False
 
 
 def test_report_generator_renders_financial_report_sleeve_without_orders():

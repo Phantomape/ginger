@@ -958,9 +958,14 @@ def build_oracle_diagnostics(backtest_path, snapshot_path=None, candidate_horizo
     snapshot = _load_json(snapshot_path)
 
     return {
+        "diagnostic_only": True,
         "source_backtest": os.path.abspath(backtest_path),
         "source_snapshot": os.path.abspath(snapshot_path),
         "period": backtest.get("period"),
+        "acceptance_boundary": (
+            "Oracle diagnostics use future prices. They may generate hypotheses "
+            "or field ideas, but they are not Gate 4 acceptance evidence."
+        ),
         "oracle_metrics": {
             "perfect_exit": build_perfect_exit_oracle(backtest, snapshot),
             "candidate_forward": build_candidate_forward_oracle(

@@ -24,13 +24,33 @@ try:
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.constants import ROUND_TRIP_COST_PCT
 
+try:
+    from regime_engine import classify_market_regime
+except ImportError:  # pragma: no cover - package-style imports in tests
+    from quant.regime_engine import classify_market_regime
+
+try:
+    from evaluator_gates import GateThresholds, evaluate_metrics
+except ImportError:  # pragma: no cover - package-style imports in tests
+    from quant.evaluator_gates import GateThresholds, evaluate_metrics
+
 
 SLEEVE_NAME = "STATE_SURFACE_SATELLITE_PAPER"
 QUEUE_NAME = "STATE_SURFACE_SATELLITE_QUEUE"
 RULE_VERSION = "state_surface_full_v1"
 BENCHMARK_MOMENTUM_GATE_RULE_VERSION = "state_surface_benchmark_momentum_gate_v1"
 RET20_EXCESS_SPY_GATE_RULE_VERSION = "state_surface_ret20_excess_spy_gate_v1"
-RANK_NOTIONAL_RULE_VERSION = "state_surface_rank_notional_v1"
+RANK_NOTIONAL_RULE_VERSION = "state_surface_rank_notional_v2"
+RANK_NOTIONAL_REGIME_RULE_VERSION = "state_surface_regime_rank_notional_v1"
+RANK_NOTIONAL_CANDIDATE_BREADTH_RULE_VERSION = (
+    "state_surface_candidate_breadth_rank_notional_v1"
+)
+RANK_NOTIONAL_SCORE_COMPRESSION_RULE_VERSION = (
+    "state_surface_score_compression_rank_notional_v1"
+)
+RANK_NOTIONAL_RANK2_RET20_LEAD_RULE_VERSION = (
+    "state_surface_rank2_ret20_lead_rank_notional_v1"
+)
 STATE_SCHEMA_VERSION = 1
 INDEX_TICKERS = {"SPY", "QQQ", "IWM"}
 
@@ -46,12 +66,28 @@ DEFAULT_CONFIG = {
     "max_positions": 3,
     "event_notional_usd": 10_000.0,
     "rank_notional_multipliers": [1.5, 1.25, 1.0, 0.75, 0.5],
+    "rank_notional_regime_profiles_enabled": True,
+    "rank_notional_regime_profiles": {
+        "chop": [1.625, 1.3, 1.0, 0.7, 0.375],
+    },
+    "rank_notional_candidate_breadth_profiles_enabled": True,
+    "rank_notional_candidate_breadth_min": 4,
+    "rank_notional_candidate_breadth_profile": [1.6625, 1.315, 1.0, 0.675, 0.35],
+    "rank_notional_score_compression_profiles_enabled": True,
+    "rank_notional_score_compression_min_candidate_breadth": 3,
+    "rank_notional_score_compression_max_top3_spread": 0.40,
+    "rank_notional_score_compression_profile": [1.35, 1.45, 1.05, 0.675, 0.35],
+    "rank_notional_rank2_ret20_lead_profiles_enabled": True,
+    "rank_notional_rank2_ret20_lead_min": 0.005,
+    "rank_notional_rank2_ret20_lead_profile": [1.3, 1.55, 1.1, 0.675, 0.35],
     "hold_days": 20,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
     "forward_gate_min_closed_trades": 15,
     "forward_gate_min_win_rate": 0.55,
     "forward_gate_positive_net_pnl": True,
+    "forward_gate_max_top_5_contribution_pct": 0.60,
+    "forward_gate_max_hhi_concentration": 0.35,
     "benchmark_momentum_gate_enabled": True,
     "benchmark_momentum_gate_min_return": 0.0,
     "ret20_excess_spy_gate_enabled": True,
@@ -83,6 +119,7 @@ def empty_state_surface_queue(as_of: str, reason: str) -> dict[str, Any]:
         "surface_eligibility": _surface_eligibility_payload(DEFAULT_CONFIG),
         "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(DEFAULT_CONFIG),
         "rank_notional_profile": _rank_notional_profile_payload(DEFAULT_CONFIG),
+        "market_regime": _market_regime_for_state({}, signal_count=0),
         "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
         "state": {},
         "data_source": {"status": reason},
@@ -165,7 +202,6 @@ def build_state_surface_queue(
                 continue
             candidate = deepcopy(row)
             candidate["queue_rank"] = len(candidates) + 1
-            _apply_rank_notional(candidate, cfg)
             candidates.append(candidate)
             if len(candidates) >= int(cfg["max_candidates"]):
                 break
@@ -199,6 +235,17 @@ def build_state_surface_queue(
             if len(blocked_candidates) >= int(cfg["max_candidates"]):
                 break
 
+    regime_signal_count = len(candidates) if candidates else len(blocked_candidates)
+    market_regime = _market_regime_for_state(state, signal_count=regime_signal_count)
+    candidate_breadth = len(candidates)
+    score_dispersion = _score_dispersion_for_candidates(candidates)
+    rank2_ret20_lead = _rank2_ret20_lead_for_candidates(candidates)
+    for candidate in candidates:
+        candidate["candidate_breadth"] = candidate_breadth
+        candidate.update(score_dispersion)
+        candidate.update(rank2_ret20_lead)
+        _apply_rank_notional(candidate, cfg, market_regime=market_regime)
+
     return {
         "queue_name": QUEUE_NAME,
         "rule_version": RULE_VERSION,
@@ -219,6 +266,7 @@ def build_state_surface_queue(
         "surface_eligibility": _surface_eligibility_payload(cfg),
         "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(cfg),
         "rank_notional_profile": _rank_notional_profile_payload(cfg),
+        "market_regime": market_regime,
         "benchmark_momentum_gate": benchmark_momentum_gate,
         "excluded_core_tickers": sorted(core_tickers),
         "state": state,
@@ -362,6 +410,7 @@ def empty_state_surface_sleeve_snapshot(as_of: str, reason: str) -> dict[str, An
         "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(DEFAULT_CONFIG),
         "rank_notional_profile": _rank_notional_profile_payload(DEFAULT_CONFIG),
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
+        "tail_diagnostics": build_state_surface_forward_tail_diagnostics([], DEFAULT_CONFIG),
         "data_source": {"status": reason},
         "production_impact": _production_impact(),
         "error": reason,
@@ -465,8 +514,7 @@ def _ret20_excess_spy_gate_payload(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _rank_notional_multipliers(config: dict[str, Any]) -> list[float]:
-    raw = config.get("rank_notional_multipliers")
+def _positive_float_list(raw: Any) -> list[float]:
     values: list[float] = []
     if isinstance(raw, (list, tuple)):
         for item in raw:
@@ -476,8 +524,143 @@ def _rank_notional_multipliers(config: dict[str, Any]) -> list[float]:
     return values
 
 
-def _rank_notional_multiplier(queue_rank: Any, config: dict[str, Any]) -> float:
+def _rank_notional_multipliers(config: dict[str, Any]) -> list[float]:
+    return _positive_float_list(config.get("rank_notional_multipliers"))
+
+
+def _rank_notional_regime_profiles(config: dict[str, Any]) -> dict[str, list[float]]:
+    raw = config.get("rank_notional_regime_profiles")
+    if not isinstance(raw, dict):
+        return {}
+    profiles: dict[str, list[float]] = {}
+    for regime, values in raw.items():
+        profile = _positive_float_list(values)
+        if profile:
+            profiles[str(regime)] = profile
+    return profiles
+
+
+def _rank_notional_candidate_breadth_profile(config: dict[str, Any]) -> list[float]:
+    return _positive_float_list(config.get("rank_notional_candidate_breadth_profile"))
+
+
+def _rank_notional_score_compression_profile(config: dict[str, Any]) -> list[float]:
+    return _positive_float_list(config.get("rank_notional_score_compression_profile"))
+
+
+def _rank_notional_rank2_ret20_lead_profile(config: dict[str, Any]) -> list[float]:
+    return _positive_float_list(config.get("rank_notional_rank2_ret20_lead_profile"))
+
+
+def _rank2_ret20_lead_profile_name(threshold: float) -> str:
+    value = str(round(float(threshold), 6)).rstrip("0").rstrip(".")
+    return f"rank2_ret20_lead_ge_{value.replace('.', 'p')}"
+
+
+def _rank2_ret20_lead_profile_applies(
+    config: dict[str, Any],
+    candidate: dict[str, Any] | None,
+) -> tuple[str | None, list[float] | None]:
+    if not bool(config.get("rank_notional_rank2_ret20_lead_profiles_enabled", True)):
+        return None, None
+    row = candidate or {}
+    lead = _float_or_none(row.get("rank2_ret20_excess_spy_lead"))
+    threshold = _float_or_none(config.get("rank_notional_rank2_ret20_lead_min"))
+    profile = _rank_notional_rank2_ret20_lead_profile(config)
+    if lead is not None and threshold is not None and lead >= threshold and profile:
+        return _rank2_ret20_lead_profile_name(threshold), profile
+    return None, None
+
+
+def _score_compression_profile_name(threshold: float) -> str:
+    value = str(round(float(threshold), 6)).rstrip("0").rstrip(".")
+    return f"score_compression_top3_le_{value.replace('.', 'p')}"
+
+
+def _score_compression_profile_applies(
+    config: dict[str, Any],
+    candidate: dict[str, Any] | None,
+) -> tuple[str | None, list[float] | None]:
+    if not bool(config.get("rank_notional_score_compression_profiles_enabled", True)):
+        return None, None
+    row = candidate or {}
+    candidate_breadth = _float_or_none(row.get("candidate_breadth"))
+    min_breadth = _float_or_none(
+        config.get("rank_notional_score_compression_min_candidate_breadth")
+    )
+    top3_spread = _float_or_none(row.get("score_top3_spread"))
+    max_spread = _float_or_none(
+        config.get("rank_notional_score_compression_max_top3_spread")
+    )
+    profile = _rank_notional_score_compression_profile(config)
+    if (
+        candidate_breadth is not None
+        and min_breadth is not None
+        and top3_spread is not None
+        and max_spread is not None
+        and candidate_breadth >= min_breadth
+        and top3_spread <= max_spread
+        and profile
+    ):
+        return _score_compression_profile_name(max_spread), profile
+    return None, None
+
+
+def _rank_notional_profile_for_regime(
+    config: dict[str, Any],
+    market_regime: dict[str, Any] | None = None,
+    candidate: dict[str, Any] | None = None,
+) -> tuple[str, list[float]]:
+    rank2_name, rank2_profile = _rank2_ret20_lead_profile_applies(
+        config,
+        candidate,
+    )
+    if rank2_name and rank2_profile:
+        return rank2_name, rank2_profile
+
+    compression_name, compression_profile = _score_compression_profile_applies(
+        config,
+        candidate,
+    )
+    if compression_name and compression_profile:
+        return compression_name, compression_profile
+
+    if bool(config.get("rank_notional_candidate_breadth_profiles_enabled", True)):
+        candidate_breadth = _float_or_none((candidate or {}).get("candidate_breadth"))
+        min_breadth = _float_or_none(
+            config.get("rank_notional_candidate_breadth_min")
+        )
+        breadth_profile = _rank_notional_candidate_breadth_profile(config)
+        if (
+            candidate_breadth is not None
+            and min_breadth is not None
+            and candidate_breadth >= min_breadth
+            and breadth_profile
+        ):
+            return "candidate_breadth_ge4_override", breadth_profile
+
     values = _rank_notional_multipliers(config)
+    if not bool(config.get("rank_notional_regime_profiles_enabled", True)):
+        return "default", values
+    regime = str((market_regime or {}).get("regime") or "")
+    profiles = _rank_notional_regime_profiles(config)
+    override = profiles.get(regime)
+    if override:
+        return f"{regime}_override", override
+    return "default", values
+
+
+def _rank_notional_multiplier(
+    queue_rank: Any,
+    config: dict[str, Any],
+    market_regime: dict[str, Any] | None = None,
+    candidate: dict[str, Any] | None = None,
+) -> float:
+    _, values = _rank_notional_profile_for_regime(
+        config,
+        market_regime,
+        candidate,
+    )
     if not values:
         return 1.0
     try:
@@ -491,36 +674,136 @@ def _rank_notional_multiplier(queue_rank: Any, config: dict[str, Any]) -> float:
     return values[rank - 1]
 
 
-def _event_notional_for_queue_rank(queue_rank: Any, config: dict[str, Any]) -> float:
+def _event_notional_for_queue_rank(
+    queue_rank: Any,
+    config: dict[str, Any],
+    market_regime: dict[str, Any] | None = None,
+    candidate: dict[str, Any] | None = None,
+) -> float:
     base_notional = float(config.get("event_notional_usd") or 0.0)
-    return round(base_notional * _rank_notional_multiplier(queue_rank, config), 2)
+    return round(
+        base_notional
+        * _rank_notional_multiplier(queue_rank, config, market_regime, candidate),
+        2,
+    )
 
 
-def _apply_rank_notional(candidate: dict[str, Any], config: dict[str, Any]) -> None:
+def _apply_rank_notional(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    market_regime: dict[str, Any] | None = None,
+) -> None:
     queue_rank = candidate.get("queue_rank")
-    multiplier = _rank_notional_multiplier(queue_rank, config)
+    profile_name, _ = _rank_notional_profile_for_regime(
+        config,
+        market_regime,
+        candidate,
+    )
+    multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
-    candidate["event_notional_usd"] = _event_notional_for_queue_rank(queue_rank, config)
+    candidate["event_notional_usd"] = _event_notional_for_queue_rank(
+        queue_rank,
+        config,
+        market_regime,
+        candidate,
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
+    candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
+    candidate["rank_notional_candidate_breadth_rule_version"] = (
+        RANK_NOTIONAL_CANDIDATE_BREADTH_RULE_VERSION
+    )
+    candidate["rank_notional_score_compression_rule_version"] = (
+        RANK_NOTIONAL_SCORE_COMPRESSION_RULE_VERSION
+    )
+    candidate["rank_notional_rank2_ret20_lead_rule_version"] = (
+        RANK_NOTIONAL_RANK2_RET20_LEAD_RULE_VERSION
+    )
+    candidate["rank_notional_profile_name"] = profile_name
+    candidate["market_regime"] = deepcopy(market_regime or {})
 
 
 def _entry_event_notional(entry: dict[str, Any], config: dict[str, Any]) -> float:
     parsed = _float_or_none(entry.get("event_notional_usd"))
     if parsed is not None and parsed > 0:
         return parsed
-    return _event_notional_for_queue_rank(entry.get("queue_rank"), config)
+    return _event_notional_for_queue_rank(
+        entry.get("queue_rank"),
+        config,
+        entry.get("market_regime") or None,
+        entry,
+    )
 
 
 def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     cfg = {**DEFAULT_CONFIG, **(config or {})}
     values = _rank_notional_multipliers(cfg)
+    regime_profiles = _rank_notional_regime_profiles(cfg)
+    breadth_profile = _rank_notional_candidate_breadth_profile(cfg)
+    score_profile = _rank_notional_score_compression_profile(cfg)
+    rank2_profile = _rank_notional_rank2_ret20_lead_profile(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
+        "regime_rule_version": RANK_NOTIONAL_REGIME_RULE_VERSION,
+        "candidate_breadth_rule_version": RANK_NOTIONAL_CANDIDATE_BREADTH_RULE_VERSION,
+        "score_compression_rule_version": RANK_NOTIONAL_SCORE_COMPRESSION_RULE_VERSION,
+        "rank2_ret20_lead_rule_version": RANK_NOTIONAL_RANK2_RET20_LEAD_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
         "rank_event_notional_usd": [
             _round(base_notional * value, 2) for value in values
+        ],
+        "regime_profiles_enabled": bool(
+            cfg.get("rank_notional_regime_profiles_enabled", True)
+        ),
+        "regime_profiles": {
+            regime: [_round(value, 6) for value in profile]
+            for regime, profile in regime_profiles.items()
+        },
+        "regime_rank_event_notional_usd": {
+            regime: [_round(base_notional * value, 2) for value in profile]
+            for regime, profile in regime_profiles.items()
+        },
+        "candidate_breadth_profiles_enabled": bool(
+            cfg.get("rank_notional_candidate_breadth_profiles_enabled", True)
+        ),
+        "candidate_breadth_min": _round(
+            cfg.get("rank_notional_candidate_breadth_min"),
+            6,
+        ),
+        "candidate_breadth_profile": [
+            _round(value, 6) for value in breadth_profile
+        ],
+        "candidate_breadth_rank_event_notional_usd": [
+            _round(base_notional * value, 2) for value in breadth_profile
+        ],
+        "score_compression_profiles_enabled": bool(
+            cfg.get("rank_notional_score_compression_profiles_enabled", True)
+        ),
+        "score_compression_min_candidate_breadth": _round(
+            cfg.get("rank_notional_score_compression_min_candidate_breadth"),
+            6,
+        ),
+        "score_compression_max_top3_spread": _round(
+            cfg.get("rank_notional_score_compression_max_top3_spread"),
+            6,
+        ),
+        "score_compression_profile": [_round(value, 6) for value in score_profile],
+        "score_compression_rank_event_notional_usd": [
+            _round(base_notional * value, 2) for value in score_profile
+        ],
+        "rank2_ret20_lead_profiles_enabled": bool(
+            cfg.get("rank_notional_rank2_ret20_lead_profiles_enabled", True)
+        ),
+        "rank2_ret20_lead_min": _round(
+            cfg.get("rank_notional_rank2_ret20_lead_min"),
+            6,
+        ),
+        "rank2_ret20_lead_profile": [
+            _round(value, 6) for value in rank2_profile
+        ],
+        "rank2_ret20_lead_rank_event_notional_usd": [
+            _round(base_notional * value, 2) for value in rank2_profile
         ],
         "scope": "default_off_state_surface_paper_candidate_queue",
         "trade_enabled_after_profile": False,
@@ -664,6 +947,8 @@ def _state_for_date(
     universe: list[str],
     date_str: str,
 ) -> dict[str, Any]:
+    spy_ret10 = _ret(ohlcv.get("SPY") or [], date_str, 10)
+    qqq_ret10 = _ret(ohlcv.get("QQQ") or [], date_str, 10)
     spy_ret20 = _ret(ohlcv.get("SPY") or [], date_str, 20)
     qqq_ret20 = _ret(ohlcv.get("QQQ") or [], date_str, 20)
     iwm_ret20 = _ret(ohlcv.get("IWM") or [], date_str, 20)
@@ -675,6 +960,7 @@ def _state_for_date(
     pct_values = [value for value in (spy_pct200, qqq_pct200) if value is not None]
     min_index_pct200 = min(pct_values) if pct_values else None
     qqq_minus_iwm = qqq_ret20 - iwm_ret20 if qqq_ret20 is not None and iwm_ret20 is not None else None
+    qqq_minus_spy = qqq_ret20 - spy_ret20 if qqq_ret20 is not None and spy_ret20 is not None else None
     iwm_minus_spy = iwm_ret20 - spy_ret20 if iwm_ret20 is not None and spy_ret20 is not None else None
 
     if min_index_pct200 is not None and min_index_pct200 < 0:
@@ -708,15 +994,43 @@ def _state_for_date(
         "state_bucket": state_bucket,
         "breadth_bucket": breadth_bucket,
         "dispersion_bucket": dispersion_bucket,
+        "spy_ret10": _round(spy_ret10, 6),
+        "qqq_ret10": _round(qqq_ret10, 6),
         "spy_ret20": _round(spy_ret20, 6),
         "qqq_ret20": _round(qqq_ret20, 6),
         "iwm_ret20": _round(iwm_ret20, 6),
+        "qqq_minus_spy_ret20": _round(qqq_minus_spy, 6),
         "qqq_minus_iwm_ret20": _round(qqq_minus_iwm, 6),
         "iwm_minus_spy_ret20": _round(iwm_minus_spy, 6),
+        "spy_pct_from_200sma": _round(spy_pct200, 6),
+        "qqq_pct_from_200sma": _round(qqq_pct200, 6),
         "min_index_pct_from_200sma": _round(min_index_pct200, 6),
         "universe_breadth_above_50sma": _round(breadth50, 6),
         "sector_ret20_dispersion": _round(dispersion20, 6),
     }
+
+
+def _market_regime_for_state(
+    state: dict[str, Any],
+    *,
+    signal_count: int,
+) -> dict[str, Any]:
+    context = {
+        "spy_pct_from_ma": _float_or_none(state.get("spy_pct_from_200sma")),
+        "qqq_pct_from_ma": _float_or_none(state.get("qqq_pct_from_200sma")),
+        "spy_10d_return": _float_or_none(state.get("spy_ret10")),
+        "qqq_10d_return": _float_or_none(state.get("qqq_ret10")),
+        "spy_20d_return": _float_or_none(state.get("spy_ret20")),
+        "qqq_20d_return": _float_or_none(state.get("qqq_ret20")),
+        "qqq_minus_spy_ret20": _float_or_none(state.get("qqq_minus_spy_ret20")),
+        "theme_signal_count": int(signal_count or 0),
+        "breakout_signal_count": int(signal_count or 0),
+    }
+    report = deepcopy(classify_market_regime(context))
+    report["rule_version"] = "regime_engine_classify_market_regime_v1"
+    report["scope"] = "default_off_state_surface_paper_candidate_queue"
+    report["production_impact"] = _production_impact()
+    return report
 
 
 def _score_candidates_for_date(
@@ -793,6 +1107,52 @@ def _zscore_map(values: dict[str, float]) -> dict[str, float]:
     mean = statistics.mean(clean)
     stdev = statistics.pstdev(clean) or 1.0
     return {key: (value - mean) / stdev for key, value in values.items()}
+
+
+def _score_dispersion_for_candidates(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    ranked = sorted(candidates, key=_candidate_sort_key)
+    scores = [_float_or_none(row.get("score")) for row in ranked[:3]]
+    scores = [score for score in scores if score is not None]
+    top_score = scores[0] if scores else None
+    rank2_score = scores[1] if len(scores) >= 2 else None
+    rank3_score = scores[2] if len(scores) >= 3 else None
+    top_to_second = (
+        float(top_score) - float(rank2_score)
+        if top_score is not None and rank2_score is not None
+        else None
+    )
+    top3_spread = (
+        float(top_score) - float(rank3_score)
+        if top_score is not None and rank3_score is not None
+        else None
+    )
+    return {
+        "score_top": _round(top_score, 6),
+        "score_rank2": _round(rank2_score, 6),
+        "score_rank3": _round(rank3_score, 6),
+        "score_top_to_second_gap": _round(top_to_second, 6),
+        "score_top3_spread": _round(top3_spread, 6),
+        "score_dispersion_sample_size": len(scores),
+    }
+
+
+def _rank2_ret20_lead_for_candidates(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    ranked = sorted(candidates, key=_candidate_sort_key)
+    rank1 = ranked[0] if len(ranked) >= 1 else {}
+    rank2 = ranked[1] if len(ranked) >= 2 else {}
+    rank1_ret20 = _float_or_none((rank1.get("features") or {}).get("ret20_excess_spy"))
+    rank2_ret20 = _float_or_none((rank2.get("features") or {}).get("ret20_excess_spy"))
+    lead = (
+        rank2_ret20 - rank1_ret20
+        if rank1_ret20 is not None and rank2_ret20 is not None
+        else None
+    )
+    return {
+        "rank1_ret20_excess_spy": _round(rank1_ret20, 6),
+        "rank2_ret20_excess_spy": _round(rank2_ret20, 6),
+        "rank2_ret20_excess_spy_lead": _round(lead, 6),
+        "rank2_ret20_lead_sample_size": min(len(ranked), 2),
+    }
 
 
 def _candidate_payload(
@@ -1011,9 +1371,35 @@ def _fill_pending_entries(
             "notional": notional,
             "shares": round(notional / entry_open, 8),
             "hold_days": int(config["hold_days"]),
+            "candidate_breadth": entry.get("candidate_breadth"),
+            "score_top3_spread": entry.get("score_top3_spread"),
+            "score_top_to_second_gap": entry.get("score_top_to_second_gap"),
+            "score_dispersion_sample_size": entry.get("score_dispersion_sample_size"),
+            "rank1_ret20_excess_spy": entry.get("rank1_ret20_excess_spy"),
+            "rank2_ret20_excess_spy": entry.get("rank2_ret20_excess_spy"),
+            "rank2_ret20_excess_spy_lead": entry.get("rank2_ret20_excess_spy_lead"),
+            "rank2_ret20_lead_sample_size": entry.get("rank2_ret20_lead_sample_size"),
+            "candidate_breadth_profile_name": entry.get(
+                "candidate_breadth_profile_name"
+            ),
             "rank_notional_multiplier": _float_or_none(
                 entry.get("rank_notional_multiplier")
             ),
+            "rank_notional_profile_name": entry.get("rank_notional_profile_name"),
+            "rank_notional_rule_version": entry.get("rank_notional_rule_version"),
+            "rank_notional_regime_rule_version": entry.get(
+                "rank_notional_regime_rule_version"
+            ),
+            "rank_notional_candidate_breadth_rule_version": entry.get(
+                "rank_notional_candidate_breadth_rule_version"
+            ),
+            "rank_notional_score_compression_rule_version": entry.get(
+                "rank_notional_score_compression_rule_version"
+            ),
+            "rank_notional_rank2_ret20_lead_rule_version": entry.get(
+                "rank_notional_rank2_ret20_lead_rule_version"
+            ),
+            "market_regime": deepcopy(entry.get("market_regime") or {}),
             "observed_trading_days": 0,
             "last_seen_date": as_of,
             "last_price": current_prices.get(ticker),
@@ -1057,9 +1443,35 @@ def _add_queue_candidates(
             "status": "pending_next_session_open",
             "intended_entry_timing": "next_session_open",
             "event_notional_usd": _float_or_none(candidate.get("event_notional_usd")),
+            "candidate_breadth": candidate.get("candidate_breadth"),
+            "score_top3_spread": candidate.get("score_top3_spread"),
+            "score_top_to_second_gap": candidate.get("score_top_to_second_gap"),
+            "score_dispersion_sample_size": candidate.get("score_dispersion_sample_size"),
+            "rank1_ret20_excess_spy": candidate.get("rank1_ret20_excess_spy"),
+            "rank2_ret20_excess_spy": candidate.get("rank2_ret20_excess_spy"),
+            "rank2_ret20_excess_spy_lead": candidate.get("rank2_ret20_excess_spy_lead"),
+            "rank2_ret20_lead_sample_size": candidate.get("rank2_ret20_lead_sample_size"),
+            "candidate_breadth_profile_name": candidate.get(
+                "rank_notional_profile_name"
+            ),
+            "rank_notional_candidate_breadth_rule_version": candidate.get(
+                "rank_notional_candidate_breadth_rule_version"
+            ),
+            "rank_notional_score_compression_rule_version": candidate.get(
+                "rank_notional_score_compression_rule_version"
+            ),
+            "rank_notional_rank2_ret20_lead_rule_version": candidate.get(
+                "rank_notional_rank2_ret20_lead_rule_version"
+            ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")
             ),
+            "rank_notional_profile_name": candidate.get("rank_notional_profile_name"),
+            "rank_notional_rule_version": candidate.get("rank_notional_rule_version"),
+            "rank_notional_regime_rule_version": candidate.get(
+                "rank_notional_regime_rule_version"
+            ),
+            "market_regime": deepcopy(candidate.get("market_regime") or {}),
             "trade_enabled": False,
             "candidate": deepcopy(candidate),
         }
@@ -1138,6 +1550,7 @@ def _snapshot_payload(
         "pending_entries": deepcopy(state["pending_entries"]),
         "open_positions": deepcopy(state["open_positions"]),
         "forward_paper_gate": gate,
+        "tail_diagnostics": deepcopy(gate.get("tail_diagnostics") or {}),
         "production_impact": _production_impact(),
         "next_action": "paper_observe_forward_outcomes_only_no_orders",
     }
@@ -1152,10 +1565,18 @@ def _forward_paper_gate(
     wins = sum(1 for row in closed if _money(row.get("pnl")) > 0)
     win_rate = round(wins / closed_count, 4) if closed_count else None
     realized = round(sum(_money(row.get("pnl")) for row in closed), 2)
+    min_closed = int(config["forward_gate_min_closed_trades"])
+    tail_diagnostics = build_state_surface_forward_tail_diagnostics(closed, config)
+    tail_failures = [
+        reason
+        for reason in (tail_diagnostics.get("gate_report") or {}).get("hard_failures", [])
+        if reason != "insufficient_sample"
+    ]
     checks = {
-        "min_closed_trades": closed_count >= int(config["forward_gate_min_closed_trades"]),
+        "min_closed_trades": closed_count >= min_closed,
         "min_win_rate": win_rate is not None and win_rate >= float(config["forward_gate_min_win_rate"]),
         "positive_net_pnl": realized > 0,
+        "tail_gate": closed_count < min_closed or not tail_failures,
     }
     reasons = [name for name, passed in checks.items() if not passed]
     return {
@@ -1168,8 +1589,124 @@ def _forward_paper_gate(
             "realized_pnl": realized,
             "win_rate": win_rate,
         },
+        "tail_diagnostics": tail_diagnostics,
         "trade_enabled_after_gate": False,
     }
+
+
+def build_state_surface_forward_tail_diagnostics(
+    closed_positions: list[dict[str, Any]],
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return read-only tail diagnostics for forward paper sleeve promotion."""
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    closed = [row for row in closed_positions if isinstance(row, dict)]
+    pnl_values = [_money(row.get("pnl")) for row in closed]
+    wins = [value for value in pnl_values if value > 0]
+    losses = [value for value in pnl_values if value <= 0]
+    total_trades = len(pnl_values)
+    win_rate = round(len(wins) / total_trades, 4) if total_trades else None
+    avg_win = sum(wins) / len(wins) if wins else 0.0
+    avg_loss = sum(losses) / len(losses) if losses else 0.0
+    expected_value = win_rate * avg_win + (1.0 - win_rate) * avg_loss if win_rate is not None else 0.0
+    metrics = {
+        "total_trades": total_trades,
+        "win_rate": win_rate,
+        "total_pnl": round(sum(pnl_values), 2),
+        "expected_value_usd": round(expected_value, 2),
+        "pnl_skewness": _skew(pnl_values),
+        "pnl_excess_kurtosis": _excess_kurtosis(pnl_values),
+        "pnl_tail_ratio": _tail_ratio(pnl_values),
+        "pnl_top_5_contribution_pct": _top5_contribution(pnl_values),
+        "pnl_hhi_concentration": _hhi_concentration(pnl_values),
+    }
+    thresholds = GateThresholds(
+        min_trades_for_promotion=int(cfg["forward_gate_min_closed_trades"]),
+        max_top_5_contribution_pct=float(cfg["forward_gate_max_top_5_contribution_pct"]),
+        max_hhi_concentration=float(cfg["forward_gate_max_hhi_concentration"]),
+    )
+    return {
+        "schema_version": 1,
+        "read_only": True,
+        "scope": "state_surface_forward_paper_closed_positions",
+        "metrics_for_gates": metrics,
+        "gate_report": evaluate_metrics(
+            metrics,
+            thresholds=thresholds,
+            prefer_r_multiple=False,
+        ),
+        "notes": [
+            "True R-multiple is unavailable for this default-off paper sleeve; PnL distribution is used for forward promotion diagnostics.",
+            "This diagnostics block does not alter orders, candidates, rank, notional, or paper fills.",
+        ],
+    }
+
+
+def _sample_std(values: list[float]) -> float | None:
+    if len(values) < 2:
+        return None
+    mean = sum(values) / len(values)
+    variance = sum((value - mean) ** 2 for value in values) / (len(values) - 1)
+    return variance ** 0.5
+
+
+def _skew(values: list[float]) -> float | None:
+    if len(values) < 3:
+        return None
+    mean = sum(values) / len(values)
+    std = _sample_std(values)
+    if not std:
+        return None
+    return round(sum(((value - mean) / std) ** 3 for value in values) / len(values), 4)
+
+
+def _excess_kurtosis(values: list[float]) -> float | None:
+    if len(values) < 4:
+        return None
+    mean = sum(values) / len(values)
+    std = _sample_std(values)
+    if not std:
+        return None
+    return round(sum(((value - mean) / std) ** 4 for value in values) / len(values) - 3.0, 4)
+
+
+def _percentile(sorted_values: list[float], pct: float) -> float | None:
+    if not sorted_values:
+        return None
+    if len(sorted_values) == 1:
+        return sorted_values[0]
+    rank = (len(sorted_values) - 1) * pct
+    low = int(rank)
+    high = min(low + 1, len(sorted_values) - 1)
+    weight = rank - low
+    return sorted_values[low] * (1.0 - weight) + sorted_values[high] * weight
+
+
+def _tail_ratio(values: list[float]) -> float | None:
+    if len(values) < 5:
+        return None
+    ordered = sorted(values)
+    p05 = _percentile(ordered, 0.05)
+    p95 = _percentile(ordered, 0.95)
+    if p05 is None or p95 is None or p05 >= 0:
+        return None
+    return round(abs(p95) / abs(p05), 4)
+
+
+def _top5_contribution(values: list[float]) -> float | None:
+    positives = sorted([value for value in values if value > 0], reverse=True)
+    total = sum(positives)
+    if total <= 0:
+        return None
+    return round(sum(positives[:5]) / total, 4)
+
+
+def _hhi_concentration(values: list[float]) -> float | None:
+    positives = [value for value in values if value > 0]
+    total = sum(positives)
+    if total <= 0:
+        return None
+    return round(sum((value / total) ** 2 for value in positives), 4)
 
 
 def _surface_summary(state: dict[str, Any], queue: dict[str, Any]) -> dict[str, Any]:

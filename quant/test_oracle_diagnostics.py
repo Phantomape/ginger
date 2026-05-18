@@ -2,12 +2,15 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
+
 
 ROOT = Path(__file__).resolve().parents[1]
 QUANT = ROOT / "quant"
 if str(QUANT) not in sys.path:
     sys.path.insert(0, str(QUANT))
 
+from backtester import BacktestEngine  # noqa: E402
 from oracle_diagnostics import build_entry_state_oracle, build_oracle_diagnostics  # noqa: E402
 
 
@@ -56,6 +59,56 @@ def test_perfect_exit_oracle_computes_capture_and_regret(tmp_path):
     assert trade["oracle_exit_date"] == "2026-01-03"
     assert perfect_exit["oracle_pnl"] > perfect_exit["actual_pnl"]
     assert 0 < perfect_exit["capture_ratio"] < 1
+
+
+def test_backtester_inline_oracle_diagnostics_are_diagnostic_only():
+    engine = BacktestEngine(
+        ["ABC"],
+        start="2026-01-01",
+        end="2026-01-05",
+    )
+    result = {
+        "period": "2026-01-01 -> 2026-01-05",
+        "known_biases": {},
+        "trades": [
+            {
+                "ticker": "ABC",
+                "strategy": "trend_long",
+                "entry_price": 100.0,
+                "exit_price": 105.0,
+                "shares": 10,
+                "pnl": 49.0,
+                "entry_date": "2026-01-02",
+                "exit_date": "2026-01-04",
+                "exit_reason": "target",
+            }
+        ],
+    }
+    ohlcv = {
+        "ABC": pd.DataFrame(
+            [
+                {"Open": 100.0, "High": 101.0, "Low": 99.0, "Close": 100.0, "Volume": 1000.0},
+                {"Open": 101.0, "High": 103.0, "Low": 100.0, "Close": 102.0, "Volume": 1000.0},
+                {"Open": 102.0, "High": 112.0, "Low": 101.0, "Close": 110.0, "Volume": 1000.0},
+                {"Open": 109.0, "High": 108.0, "Low": 104.0, "Close": 105.0, "Volume": 1000.0},
+            ],
+            index=pd.to_datetime([
+                "2026-01-01",
+                "2026-01-02",
+                "2026-01-03",
+                "2026-01-04",
+            ]),
+        )
+    }
+
+    diagnostics = engine._build_inline_oracle_diagnostics(result, ohlcv)
+    perfect_exit = diagnostics["oracle_metrics"]["perfect_exit"]
+
+    assert engine.include_oracle_diagnostics is True
+    assert diagnostics["diagnostic_only"] is True
+    assert "not Gate 4 acceptance evidence" in diagnostics["acceptance_boundary"]
+    assert perfect_exit["trade_count"] == 1
+    assert perfect_exit["oracle_pnl"] > perfect_exit["actual_pnl"]
 
 
 def test_perfect_exit_oracle_reports_missing_snapshot_rows(tmp_path):
