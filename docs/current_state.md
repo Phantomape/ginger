@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-17.
+Last updated: 2026-05-18.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -130,6 +130,89 @@ trades rose from `22` to `24`, single-ticker positive share stayed controlled
 at `34.04%`, and live/default orders remain disabled. The accepted production
 path is the shared default-off `state_surface_sleeve.py` queue with parity
 coverage in `test_state_surface_sleeve.py`.
+
+Latest accepted state-surface paper allocation refinement:
+`exp-20260518-002` keeps the accepted rotation-only sleeve, `ret20_excess_spy
+>= 0.0` gate, top-five daily queue, active cap, and 20-day hold unchanged, but
+changes default-off paper notional by queue rank to `[1.5, 1.25, 1.0, 0.75,
+0.5]` times the $10,000 base. Versus the flat-notional top-five baseline,
+three-window EV improved `+0.4905` and PnL improved `+$10,118.13`: `late_strong`
+improved EV `+0.1324` / PnL `+$2,370.46`, `mid_weak` improved EV `+0.2653` /
+PnL `+$4,534.04`, and `old_thin` improved EV `+0.0928` / PnL `+$3,213.63`.
+Selected paper trades stayed `24`, single-ticker positive share fell to
+`32.22%`, and live/default orders remain disabled. The accepted profile lives
+in shared `state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`.
+
+Recent observed-only state-surface diagnostics: `exp-20260518-004` captured
+canonical three-window core controls plus tail-aware sidecar diagnostics for
+the flat top-five, accepted rank-notional, and rejected hold-days variants.
+Core control passed exactly against the accepted fixed-window metrics. The
+accepted rank-notional profile still improved EV by `+0.4905` and PnL by
+`+$10,118.13` versus flat notional, but the PnL top-five contribution worsened
+from `57.52%` to `60.16%`; old_thin rank-notional evidence remained only three
+paper trades. The closeout decision is
+`observed_only_no_new_strategy_variable`: keep the accepted default-off
+rank-notional policy, do not revive the 25-day hold, and require forward
+replacement-value evidence or a genuinely new production-visible
+heat/regime/rank-quality field before another allocation test.
+
+Previous accepted state-surface paper regime refinement: `exp-20260518-005`
+uses the production-visible shared market-regime classifier as that new
+discriminator. It keeps the accepted rotation-only sleeve, `ret20_excess_spy
+>= 0.0` gate, top-five queue, active cap, 20-day hold, and all-regime
+rank-notional profile unchanged, but applies a `chop` override of `[1.625, 1.3,
+1.0, 0.7, 0.375]` times the $10,000 base. Versus the accepted all-regime
+rank-notional baseline, three-window EV improved `+0.1199` and PnL improved
+`+$2,111.20`: `late_strong` improved EV `+0.0390` / PnL `+$576.22`,
+`mid_weak` improved EV `+0.0570` / PnL `+$806.91`, and `old_thin` improved EV
+`+0.0239` / PnL `+$728.07`. Selected paper trades stayed `24`, max drawdown
+worsened by only `0.08pp`, and single-ticker positive share stayed controlled
+at `31.69%`. The accepted rule lives in shared `state_surface_sleeve.py` with
+focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
+remain disabled.
+
+Recent state-surface measurement repair: `exp-20260518-006` adds a read-only
+tail-concentration diagnostic to the shared default-off state-surface forward
+paper gate and daily report. It does not change candidates, ranking, notional,
+hold days, core metrics, or live/default orders. Replaying the accepted
+`exp-20260518-005` paper outcomes as a matured closed sample showed the old
+forward gate would pass on 24 closed paper trades, `0.7917` win rate, and
+`$48,529.40` realized paper PnL, but the tail-aware gate correctly blocks
+promotion readiness because PnL top-five contribution is `61.04%`
+(`pnl_top5_concentration`) with HHI `0.0949`. Treat this as a forward promotion
+guardrail: keep collecting closed state-surface paper outcomes, and do not
+promote or retune nearby profiles until concentration improves or a genuinely
+new production-visible discriminator appears.
+
+Latest accepted state-surface paper candidate-breadth refinement:
+`exp-20260518-008` uses that new production-visible discriminator while keeping
+the rotation-only sleeve, `ret20_excess_spy >= 0.0` gate, top-five queue,
+active cap, 20-day hold, and the accepted regime-aware rank-notional profile
+otherwise unchanged. When the qualified same-day paper queue has at least four
+candidates, the shared default-off paper path uses `[1.6625, 1.315, 1.0,
+0.675, 0.35]` times the $10,000 base. Versus the accepted `exp-20260518-005`
+baseline, three-window EV improved `+0.0400` and PnL improved `+$926.94`:
+`late_strong +0.0078` EV / `+$172.87`, `mid_weak +0.0282` EV / `+$535.65`,
+and `old_thin +0.0040` EV / `+$218.42`. Selected paper trades stayed `24`,
+max drawdown worsened by only `0.03pp`, and single-ticker positive share stayed
+controlled at `31.37%`. The accepted rule lives in shared
+`state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
+
+Latest accepted state-surface paper score-dispersion refinement:
+`exp-20260518-013` keeps the accepted `exp-20260518-008` candidate-breadth
+profile fixed, but adds a production-visible top-three queue score-compression
+override. When the same-day qualified paper queue has at least three candidates
+and `score_top3_spread <= 0.40`, the shared default-off paper path uses
+`[1.35, 1.45, 1.05, 0.675, 0.35]` times the $10,000 base. Versus the accepted
+candidate-breadth baseline, three-window EV improved `+0.0422` and PnL
+improved `+$451.81`: `late_strong +0.0287` EV / `+$347.24`, `mid_weak
++0.0135` EV / `+$104.57`, and `old_thin` unchanged. Six paper trades were
+adjusted across two windows, max drawdown did not worsen, and single-ticker
+positive share stayed controlled at `31.28%`. The accepted rule lives in
+shared `state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
@@ -547,6 +630,43 @@ priority despite positive aggregate EV/PnL because only `old_thin` improved
 while `late_strong` regressed, so the next valid SEC step is forward
 replacement value or a new earnings-quality field, not another same-sample
 queue-order or lifecycle retune.
+
+Latest accepted SEC semantic paper refinement: `exp-20260518-009` keeps the
+financial-report T+1 sleeve default-off and live orders disabled, but adds a
+production-visible neutral-language underreaction notional scalar. Covered
+`neutral_or_mixed_language` candidates with `t1_excess_return_vs_spy <= 2%`
+receive an additional `2.00x` paper-notional scalar. Versus the accepted SEC
+paper baseline over the same three fixed windows, aggregate EV improved
+`+0.7177` and aggregate PnL improved `+$16,836.09`; `late_strong` improved EV
+`+0.1009` / PnL `+$1,397.31`, `mid_weak` improved EV `+0.2856` / PnL
+`+$4,293.29`, and `old_thin` improved EV `+0.3312` / PnL `+$11,145.49`.
+Max drawdown worsened by at most `0.3957` percentage points. The adjusted
+sample is thin at 7 closed paper trades and positive PnL is concentrated in
+`COIN`, so promotion still requires closed forward replacement-value evidence
+before any trade-enabled adapter.
+
+Latest accepted SEC market-context paper refinement: `exp-20260518-014` keeps
+the accepted `exp-20260518-009` neutral-underreaction rule fixed, but adds a
+production-visible SPY T+1 context override. Accepted neutral-underreaction
+rows with `spy_t1_return >= -0.5%` receive an additional `1.50x` default-off
+paper-notional scalar. Versus `exp-20260518-009`, aggregate EV improved
+`+0.6754` and aggregate PnL improved `+$16,748.28`; all three windows improved
+(`late_strong +0.0953` EV / `+$1,397.32`, `mid_weak +0.2790` EV /
+`+$4,293.30`, `old_thin +0.3011` EV / `+$11,057.66`). The adjusted sample is
+6 closed paper trades across all windows. Positive PnL is still concentrated
+in `COIN`, so this remains default-off paper and requires closed forward
+replacement-value evidence before any trade-enabled adapter.
+
+Latest rejected SEC semantic paper scout: `exp-20260518-011` tested covered
+`negative_language` financial-report rows as a separate paper-notional scalar
+on top of the accepted neutral-underreaction stack. The best non-baseline
+variant was a `1.50x` top-up: aggregate EV improved `+0.1110` and PnL improved
+`+$1,469.90`, but Gate 4 rejected it because `old_thin` regressed
+(`-0.0175` EV / `-$516.31`) while the gains came from `late_strong` and
+`mid_weak`, especially two `CRDO` rows. Haircuts also failed by hurting
+`late_strong` and `mid_weak`. Do not retry nearby negative-language notional
+scalars on these frozen windows without a new semantic field or closed forward
+replacement-value evidence.
 
 Latest rejected SEC buyback alpha search: `exp-20260514-010` tested a
 default-off event overlay for SEC text disclosures with buyback credibility

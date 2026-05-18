@@ -99,6 +99,33 @@ Artifact note:
 records the latest accepted three-window comparison. Aggregate accepted-stack
 EV is `7.8941`; aggregate PnL is `$234,850.99`.
 
+Latest accepted default-off state-surface paper result: `exp-20260518-013`
+keeps core metrics unchanged and keeps the accepted rotation-only surface,
+`ret20_excess_spy >= 0.0` gate, top-five queue, active cap, 20-day hold,
+regime-aware rank-notional profile, and accepted candidate-breadth override
+fixed, but applies a score-compression override when the same-day qualified
+paper queue has at least three candidates and its top-three score spread is
+`<= 0.40`. The accepted override profile is `[1.35, 1.45, 1.05, 0.675,
+0.35]` times the $10,000 base. Versus the accepted
+`exp-20260518-008` candidate-breadth baseline, aggregate paper-overlay EV
+improved `+0.0422` and PnL improved `+$451.81`, with two fixed windows
+EV-positive (`late_strong +0.0287`, `mid_weak +0.0135`) and no EV regression
+(`old_thin` unchanged). The rule lives in shared `state_surface_sleeve.py`, is
+surfaced by the production default-off paper path, and has focused parity
+tests; live/default orders remain disabled.
+
+Latest accepted default-off SEC paper result: `exp-20260518-014` keeps core
+metrics unchanged and keeps the accepted financial-report T+1 paper queue,
+10-trading-day hold, max position count, periodic-report scalars, and accepted
+neutral-underreaction rule fixed, but adds a production-visible SPY T+1 market
+context override. Accepted neutral-underreaction rows whose `spy_t1_return` is
+at least `-0.5%` receive an additional `1.50x` default-off paper-notional
+scalar. Versus the accepted `exp-20260518-009` SEC paper baseline, aggregate
+paper-overlay EV improved `+0.6754` and PnL improved `+$16,748.28`, with all
+three fixed windows EV-positive (`late_strong +0.0953`, `mid_weak +0.2790`,
+`old_thin +0.3011`) and no EV regression. The adjusted sample is 6 closed
+paper trades across all windows; live/default orders remain disabled.
+
 Latest accepted core-sizing result: core `exp-20260517-009` keeps entries,
 exits, filters, universe, targets, heat, LLM, news, and pre-slot ranking
 unchanged, but applies a shared cap-aware `1.05x` post-sizing top-up to the
@@ -567,6 +594,20 @@ evidence by themselves. They answer "where is the opportunity gap?" and "what
 production-visible field might explain it?" They do not prove that a live rule
 works until the idea is converted into a shared policy, paper sleeve, or field
 and then tested through the standard Gate 1-4 protocol.
+
+Oracle diagnostics are emitted by default with the canonical command. The saved
+result includes `result["oracle_diagnostics"]` with `diagnostic_only=true`; the
+block is also summarized in the console output. It does not change
+`expected_value_score`, convergence, Gate 4, or any trade behavior.
+
+To disable the diagnostic block for a smaller/debug-only run, add:
+
+```powershell
+.\.venv\Scripts\python.exe quant\backtester.py --start <START> --end <END> --ohlcv-snapshot <SNAPSHOT> --no-oracle-diagnostics
+```
+
+`--include-oracle-diagnostics` remains accepted as a backwards-compatible alias
+for explicit opt-in scripts.
 
 Any oracle artifact must include:
 
