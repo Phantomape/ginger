@@ -113,6 +113,27 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert queue["scored_candidate_count"] == 6
     assert queue["candidate_count"] == 5
     assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.5,
+        1.25,
+        1.0,
+        0.75,
+        0.5,
+    ]
+    assert [row["event_notional_usd"] for row in queue["candidates"]] == [
+        15000.0,
+        12500.0,
+        10000.0,
+        7500.0,
+        5000.0,
+    ]
+    assert queue["rank_notional_profile"]["rank_event_notional_usd"] == [
+        15000.0,
+        12500.0,
+        10000.0,
+        7500.0,
+        5000.0,
+    ]
     assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
     assert all(row["ret20_excess_spy_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["production_impact"]["alters_orders"] is False
@@ -211,6 +232,8 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
         state=state,
         persist=False,
     )
+    assert first["pending_entries"][0]["event_notional_usd"] == 15000.0
+    assert first["rank_notional_profile"]["rank_event_notional_usd"][0] == 15000.0
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = first["pending_entries"][0]["ticker"]
@@ -229,6 +252,8 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
     assert second["trade_enabled"] is False
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
+    assert second["open_positions"][0]["notional"] == 15000.0
+    assert second["open_positions"][0]["rank_notional_multiplier"] == 1.5
     assert second["production_impact"]["alters_orders"] is False
 
 

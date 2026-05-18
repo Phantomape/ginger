@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-17.
+Last updated: 2026-05-18.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -130,6 +130,19 @@ trades rose from `22` to `24`, single-ticker positive share stayed controlled
 at `34.04%`, and live/default orders remain disabled. The accepted production
 path is the shared default-off `state_surface_sleeve.py` queue with parity
 coverage in `test_state_surface_sleeve.py`.
+
+Latest accepted state-surface paper allocation refinement:
+`exp-20260518-002` keeps the accepted rotation-only sleeve, `ret20_excess_spy
+>= 0.0` gate, top-five daily queue, active cap, and 20-day hold unchanged, but
+changes default-off paper notional by queue rank to `[1.5, 1.25, 1.0, 0.75,
+0.5]` times the $10,000 base. Versus the flat-notional top-five baseline,
+three-window EV improved `+0.4905` and PnL improved `+$10,118.13`: `late_strong`
+improved EV `+0.1324` / PnL `+$2,370.46`, `mid_weak` improved EV `+0.2653` /
+PnL `+$4,534.04`, and `old_thin` improved EV `+0.0928` / PnL `+$3,213.63`.
+Selected paper trades stayed `24`, single-ticker positive share fell to
+`32.22%`, and live/default orders remain disabled. The accepted profile lives
+in shared `state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger

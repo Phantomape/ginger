@@ -30,6 +30,7 @@ QUEUE_NAME = "STATE_SURFACE_SATELLITE_QUEUE"
 RULE_VERSION = "state_surface_full_v1"
 BENCHMARK_MOMENTUM_GATE_RULE_VERSION = "state_surface_benchmark_momentum_gate_v1"
 RET20_EXCESS_SPY_GATE_RULE_VERSION = "state_surface_ret20_excess_spy_gate_v1"
+RANK_NOTIONAL_RULE_VERSION = "state_surface_rank_notional_v1"
 STATE_SCHEMA_VERSION = 1
 INDEX_TICKERS = {"SPY", "QQQ", "IWM"}
 
@@ -44,6 +45,7 @@ DEFAULT_CONFIG = {
     "max_candidates": 5,
     "max_positions": 3,
     "event_notional_usd": 10_000.0,
+    "rank_notional_multipliers": [1.5, 1.25, 1.0, 0.75, 0.5],
     "hold_days": 20,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
@@ -80,6 +82,7 @@ def empty_state_surface_queue(as_of: str, reason: str) -> dict[str, Any]:
         "surface_blocked_candidates": [],
         "surface_eligibility": _surface_eligibility_payload(DEFAULT_CONFIG),
         "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(DEFAULT_CONFIG),
+        "rank_notional_profile": _rank_notional_profile_payload(DEFAULT_CONFIG),
         "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
         "state": {},
         "data_source": {"status": reason},
@@ -162,6 +165,7 @@ def build_state_surface_queue(
                 continue
             candidate = deepcopy(row)
             candidate["queue_rank"] = len(candidates) + 1
+            _apply_rank_notional(candidate, cfg)
             candidates.append(candidate)
             if len(candidates) >= int(cfg["max_candidates"]):
                 break
@@ -214,6 +218,7 @@ def build_state_surface_queue(
         "surface_blocked_candidates": surface_blocked_candidates,
         "surface_eligibility": _surface_eligibility_payload(cfg),
         "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(cfg),
+        "rank_notional_profile": _rank_notional_profile_payload(cfg),
         "benchmark_momentum_gate": benchmark_momentum_gate,
         "excluded_core_tickers": sorted(core_tickers),
         "state": state,
@@ -355,6 +360,7 @@ def empty_state_surface_sleeve_snapshot(as_of: str, reason: str) -> dict[str, An
         "benchmark_momentum_gate": _blocked_benchmark_momentum_gate(reason),
         "surface_eligibility": _surface_eligibility_payload(DEFAULT_CONFIG),
         "ret20_excess_spy_gate": _ret20_excess_spy_gate_payload(DEFAULT_CONFIG),
+        "rank_notional_profile": _rank_notional_profile_payload(DEFAULT_CONFIG),
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "data_source": {"status": reason},
         "production_impact": _production_impact(),
@@ -455,6 +461,69 @@ def _ret20_excess_spy_gate_payload(config: dict[str, Any]) -> dict[str, Any]:
         "threshold": _round(float(cfg.get("ret20_excess_spy_min", 0.0)), 6),
         "scope": "default_off_state_surface_paper_candidate_queue",
         "trade_enabled_after_gate": False,
+        "production_impact": _production_impact(),
+    }
+
+
+def _rank_notional_multipliers(config: dict[str, Any]) -> list[float]:
+    raw = config.get("rank_notional_multipliers")
+    values: list[float] = []
+    if isinstance(raw, (list, tuple)):
+        for item in raw:
+            parsed = _float_or_none(item)
+            if parsed is not None and parsed > 0:
+                values.append(parsed)
+    return values
+
+
+def _rank_notional_multiplier(queue_rank: Any, config: dict[str, Any]) -> float:
+    values = _rank_notional_multipliers(config)
+    if not values:
+        return 1.0
+    try:
+        rank = int(queue_rank)
+    except (TypeError, ValueError):
+        rank = 1
+    if rank <= 0:
+        rank = 1
+    if rank > len(values):
+        return values[-1]
+    return values[rank - 1]
+
+
+def _event_notional_for_queue_rank(queue_rank: Any, config: dict[str, Any]) -> float:
+    base_notional = float(config.get("event_notional_usd") or 0.0)
+    return round(base_notional * _rank_notional_multiplier(queue_rank, config), 2)
+
+
+def _apply_rank_notional(candidate: dict[str, Any], config: dict[str, Any]) -> None:
+    queue_rank = candidate.get("queue_rank")
+    multiplier = _rank_notional_multiplier(queue_rank, config)
+    candidate["rank_notional_multiplier"] = _round(multiplier, 6)
+    candidate["event_notional_usd"] = _event_notional_for_queue_rank(queue_rank, config)
+    candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
+
+
+def _entry_event_notional(entry: dict[str, Any], config: dict[str, Any]) -> float:
+    parsed = _float_or_none(entry.get("event_notional_usd"))
+    if parsed is not None and parsed > 0:
+        return parsed
+    return _event_notional_for_queue_rank(entry.get("queue_rank"), config)
+
+
+def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    values = _rank_notional_multipliers(cfg)
+    base_notional = float(cfg.get("event_notional_usd") or 0.0)
+    return {
+        "rule_version": RANK_NOTIONAL_RULE_VERSION,
+        "base_event_notional_usd": _round(base_notional, 2),
+        "rank_notional_multipliers": [_round(value, 6) for value in values],
+        "rank_event_notional_usd": [
+            _round(base_notional * value, 2) for value in values
+        ],
+        "scope": "default_off_state_surface_paper_candidate_queue",
+        "trade_enabled_after_profile": False,
         "production_impact": _production_impact(),
     }
 
@@ -913,7 +982,6 @@ def _fill_pending_entries(
     filled_today = []
     skipped_today = []
     max_positions = int(config["max_positions"])
-    notional = float(config["event_notional_usd"])
     cost = float(config["round_trip_cost_pct"])
     for entry in sorted(state["pending_entries"], key=_pending_sort_key):
         if str(entry.get("created_asof") or "")[:10] >= as_of:
@@ -931,6 +999,7 @@ def _fill_pending_entries(
             entry["last_checked_asof"] = as_of
             remaining.append(entry)
             continue
+        notional = _entry_event_notional(entry, config)
         position = {
             "decision_id": entry["decision_id"],
             "sleeve": SLEEVE_NAME,
@@ -942,6 +1011,9 @@ def _fill_pending_entries(
             "notional": notional,
             "shares": round(notional / entry_open, 8),
             "hold_days": int(config["hold_days"]),
+            "rank_notional_multiplier": _float_or_none(
+                entry.get("rank_notional_multiplier")
+            ),
             "observed_trading_days": 0,
             "last_seen_date": as_of,
             "last_price": current_prices.get(ticker),
@@ -978,11 +1050,16 @@ def _add_queue_candidates(
             "ticker": str(candidate.get("ticker") or "").upper(),
             "surface": candidate.get("surface"),
             "rank": candidate.get("rank"),
+            "queue_rank": candidate.get("queue_rank"),
             "score": candidate.get("score"),
             "created_asof": as_of,
             "source_event_date": str(candidate.get("usable_trade_date") or "")[:10],
             "status": "pending_next_session_open",
             "intended_entry_timing": "next_session_open",
+            "event_notional_usd": _float_or_none(candidate.get("event_notional_usd")),
+            "rank_notional_multiplier": _float_or_none(
+                candidate.get("rank_notional_multiplier")
+            ),
             "trade_enabled": False,
             "candidate": deepcopy(candidate),
         }
@@ -1044,6 +1121,10 @@ def _snapshot_payload(
         "ret20_excess_spy_gate": deepcopy(
             queue.get("ret20_excess_spy_gate")
             or _ret20_excess_spy_gate_payload(config)
+        ),
+        "rank_notional_profile": deepcopy(
+            queue.get("rank_notional_profile")
+            or _rank_notional_profile_payload(config)
         ),
         "benchmark_momentum_gate": deepcopy(
             queue.get("benchmark_momentum_gate")

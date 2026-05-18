@@ -99,6 +99,17 @@ Artifact note:
 records the latest accepted three-window comparison. Aggregate accepted-stack
 EV is `7.8941`; aggregate PnL is `$234,850.99`.
 
+Latest accepted default-off state-surface paper result: `exp-20260518-002`
+keeps core metrics unchanged and keeps the accepted rotation-only surface,
+`ret20_excess_spy >= 0.0` gate, top-five queue, active cap, and 20-day hold
+fixed, but changes paper notional by queue rank to `[1.5, 1.25, 1.0, 0.75,
+0.5]` times the $10,000 base. Versus the flat-notional top-five paper
+baseline, aggregate paper-overlay EV improved `+0.4905` and PnL improved
+`+$10,118.13`, with all three fixed windows EV-positive (`late_strong +0.1324`,
+`mid_weak +0.2653`, `old_thin +0.0928`) and no EV regression. The rule lives
+in shared `state_surface_sleeve.py`, is surfaced by the production default-off
+paper path, and has focused parity tests; live/default orders remain disabled.
+
 Latest accepted core-sizing result: core `exp-20260517-009` keeps entries,
 exits, filters, universe, targets, heat, LLM, news, and pre-slot ranking
 unchanged, but applies a shared cap-aware `1.05x` post-sizing top-up to the

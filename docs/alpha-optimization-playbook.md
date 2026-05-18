@@ -78,6 +78,15 @@ single-ticker concentration. Treat this as a shared default-off audit/paper
 queue quality gate, not live capital permission; forward closed paper outcomes
 are still required before any trade adapter can be enabled.
 
+The newest accepted state-surface allocation evidence (`exp-20260518-002`) keeps
+that queue fixed at top five candidates and 20-day holds, then changes only
+default-off paper notional by queue rank to `[1.5, 1.25, 1.0, 0.75, 0.5]` times
+the $10,000 base. It improved all three standard windows versus flat notional
+(`aggregate EV +0.4905`, PnL `+$10,118.13`) and is now shared in
+`state_surface_sleeve.py`. Do not retry adjacent rank-notional profiles on the
+same frozen windows without forward replacement-value evidence or a new
+production-visible rank-quality field.
+
 ## Durable Laws From Repository Evidence
 
 ### 1. Allocation Beats Filtering
@@ -226,6 +235,9 @@ Compressing the recent accepted and rejected runs:
   same rotation leadership idea into default-off paper candidate eligibility:
   `rotation_breakout_leadership` only, full scored-candidate audit retained,
   and no live/default orders;
+- the state-surface rank-notional allocation (`exp-20260518-002`) is the current
+  accepted default-off refinement: it keeps the top-five queue and 20-day hold
+  fixed while front-loading paper notional by queue rank;
 - the next wave of alpha is more likely to come from better fields than from
   another round of neighboring scalar sweeps.
 
