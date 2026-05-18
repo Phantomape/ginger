@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from report_generator import generate_daily_report
 from state_surface_sleeve import (
     SLEEVE_NAME,
+    build_state_surface_forward_tail_diagnostics,
     build_state_surface_queue,
     build_state_surface_sleeve_snapshot,
     empty_state_surface_sleeve_state,
@@ -113,8 +114,139 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert queue["scored_candidate_count"] == 6
     assert queue["candidate_count"] == 5
     assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
+    assert queue["market_regime"]["regime"] == "chop"
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.6625,
+        1.315,
+        1.0,
+        0.675,
+        0.35,
+    ]
+    assert [row["event_notional_usd"] for row in queue["candidates"]] == [
+        16625.0,
+        13150.0,
+        10000.0,
+        6750.0,
+        3500.0,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"candidate_breadth_ge4_override"}
+    assert {row["candidate_breadth"] for row in queue["candidates"]} == {5}
+    assert queue["rank_notional_profile"]["rank_event_notional_usd"] == [
+        15000.0,
+        12500.0,
+        10000.0,
+        7500.0,
+        5000.0,
+    ]
+    assert queue["rank_notional_profile"]["regime_rank_event_notional_usd"]["chop"] == [
+        16250.0,
+        13000.0,
+        10000.0,
+        7000.0,
+        3750.0,
+    ]
+    assert queue["rank_notional_profile"]["candidate_breadth_min"] == 4
+    assert queue["rank_notional_profile"]["candidate_breadth_rank_event_notional_usd"] == [
+        16625.0,
+        13150.0,
+        10000.0,
+        6750.0,
+        3500.0,
+    ]
     assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
     assert all(row["ret20_excess_spy_gate"]["allowed"] is True for row in queue["candidates"])
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_can_disable_regime_rank_notional_profile():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={
+            "rank_notional_regime_profiles_enabled": False,
+            "rank_notional_candidate_breadth_profiles_enabled": False,
+        },
+    )
+
+    assert queue["market_regime"]["regime"] == "chop"
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.5,
+        1.25,
+        1.0,
+        0.75,
+        0.5,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"default"}
+    assert queue["rank_notional_profile"]["regime_profiles_enabled"] is False
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_can_disable_candidate_breadth_rank_notional_profile():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={"rank_notional_candidate_breadth_profiles_enabled": False},
+    )
+
+    assert queue["market_regime"]["regime"] == "chop"
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.625,
+        1.3,
+        1.0,
+        0.7,
+        0.375,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"chop_override"}
+    assert queue["rank_notional_profile"]["candidate_breadth_profiles_enabled"] is False
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_applies_score_compression_rank_notional_profile():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={"rank_notional_score_compression_max_top3_spread": 2.0},
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["candidate_count"] == 5
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.35,
+        1.45,
+        1.05,
+        0.675,
+        0.35,
+    ]
+    assert [row["event_notional_usd"] for row in queue["candidates"]] == [
+        13500.0,
+        14500.0,
+        10500.0,
+        6750.0,
+        3500.0,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"score_compression_top3_le_2"}
+    assert {row["score_top3_spread"] for row in queue["candidates"]} == {0.931526}
+    assert queue["rank_notional_profile"]["score_compression_profiles_enabled"] is True
+    assert queue["rank_notional_profile"]["score_compression_max_top3_spread"] == 2.0
+    assert queue["rank_notional_profile"]["score_compression_rank_event_notional_usd"] == [
+        13500.0,
+        14500.0,
+        10500.0,
+        6750.0,
+        3500.0,
+    ]
     assert queue["production_impact"]["alters_orders"] is False
 
 
@@ -211,6 +343,11 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
         state=state,
         persist=False,
     )
+    assert first["pending_entries"][0]["event_notional_usd"] == 16250.0
+    assert first["pending_entries"][0]["rank_notional_profile_name"] == "chop_override"
+    assert first["pending_entries"][0]["market_regime"]["regime"] == "chop"
+    assert first["rank_notional_profile"]["rank_event_notional_usd"][0] == 15000.0
+    assert first["rank_notional_profile"]["regime_rank_event_notional_usd"]["chop"][0] == 16250.0
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = first["pending_entries"][0]["ticker"]
@@ -229,7 +366,43 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
     assert second["trade_enabled"] is False
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
+    assert second["open_positions"][0]["notional"] == 16250.0
+    assert second["open_positions"][0]["rank_notional_multiplier"] == 1.625
+    assert second["open_positions"][0]["rank_notional_profile_name"] == "chop_override"
+    assert second["open_positions"][0]["market_regime"]["regime"] == "chop"
+    assert second["tail_diagnostics"]["read_only"] is True
     assert second["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_forward_tail_gate_blocks_top5_concentration_without_orders():
+    concentrated = [{"pnl": 100.0} for _ in range(5)]
+    concentrated.extend({"pnl": 1.0} for _ in range(15))
+
+    diagnostics = build_state_surface_forward_tail_diagnostics(concentrated)
+
+    assert diagnostics["read_only"] is True
+    assert diagnostics["metrics_for_gates"]["total_trades"] == 20
+    assert diagnostics["gate_report"]["passed"] is False
+    assert "pnl_top5_concentration" in diagnostics["gate_report"]["hard_failures"]
+
+
+def test_state_surface_forward_gate_includes_tail_failure_after_sample_matures():
+    state = empty_state_surface_sleeve_state()
+    state["closed_positions"] = [{"pnl": 100.0} for _ in range(5)]
+    state["closed_positions"].extend({"pnl": 1.0} for _ in range(15))
+
+    snapshot = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-20",
+        state=state,
+        persist=False,
+    )
+
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["forward_paper_gate"]["status"] == "blocked"
+    assert "tail_gate" in snapshot["forward_paper_gate"]["reasons"]
+    assert "pnl_top5_concentration" in snapshot["tail_diagnostics"]["gate_report"]["hard_failures"]
+    assert snapshot["production_impact"]["alters_orders"] is False
 
 
 def test_report_generator_renders_state_surface_without_orders():
@@ -255,3 +428,4 @@ def test_report_generator_renders_state_surface_without_orders():
     assert "STATE-SURFACE SATELLITE PAPER SLEEVE" in report
     assert "Trade enabled: False" in report
     assert "paper only" in report
+    assert "Tail gate:" in report
