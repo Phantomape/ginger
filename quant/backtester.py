@@ -978,7 +978,9 @@ class BacktestEngine:
                  ohlcv_snapshot_path=None, save_ohlcv_snapshot_path=None,
                  include_pilot_sleeve=False, require_non_ohlcv=False,
                  save_entry_candidate_events_path=None,
-                 include_entry_candidate_events=False):
+                 include_entry_candidate_events=False,
+                 include_oracle_diagnostics=True,
+                 oracle_candidate_horizon_days=20):
         self.universe    = universe
         self.config      = {**DEFAULT_CONFIG, **(config or {})}
         self.start       = pd.Timestamp(start) if start else None
@@ -988,6 +990,8 @@ class BacktestEngine:
         self.include_pilot_sleeve = bool(include_pilot_sleeve)
         self.require_non_ohlcv = bool(require_non_ohlcv)
         self.include_entry_candidate_events = bool(include_entry_candidate_events)
+        self.include_oracle_diagnostics = bool(include_oracle_diagnostics)
+        self.oracle_candidate_horizon_days = int(oracle_candidate_horizon_days)
         # Default data_dir = repo-root/data (one up from quant/).
         if data_dir is None:
             here = os.path.dirname(os.path.abspath(__file__))
@@ -1073,6 +1077,81 @@ class BacktestEngine:
         with open(path, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, indent=2, ensure_ascii=False, default=str)
             handle.write("\n")
+
+    def _build_inline_oracle_diagnostics(self, result, ohlcv):
+        """Attach observation-only oracle metrics to the saved backtest result."""
+        try:
+            from oracle_diagnostics import (
+                build_candidate_forward_oracle,
+                build_candidate_selection_oracle,
+                build_entry_state_oracle,
+                build_no_trade_attribution_oracle,
+                build_perfect_exit_oracle,
+            )
+
+            all_dates = [
+                pd.Timestamp(idx)
+                for frame in ohlcv.values()
+                for idx in getattr(frame, "index", [])
+                if not frame.empty
+            ]
+            if not all_dates:
+                raise ValueError("No OHLCV rows available for oracle diagnostics.")
+
+            snapshot = self._serialize_ohlcv_snapshot(
+                ohlcv,
+                min(all_dates),
+                max(all_dates),
+            )
+            horizon = self.oracle_candidate_horizon_days
+            snapshot_source = (
+                self.ohlcv_snapshot_path
+                or self.save_ohlcv_snapshot_path
+                or "in_memory_ohlcv"
+            )
+            return {
+                "diagnostic_only": True,
+                "source_backtest": "in_memory_backtest_result",
+                "source_snapshot": snapshot_source,
+                "candidate_horizon_days": horizon,
+                "acceptance_boundary": (
+                    "Oracle diagnostics use future prices. They may generate "
+                    "hypotheses or field ideas, but they are not Gate 4 "
+                    "acceptance evidence."
+                ),
+                "oracle_metrics": {
+                    "perfect_exit": build_perfect_exit_oracle(result, snapshot),
+                    "candidate_forward": build_candidate_forward_oracle(
+                        result,
+                        snapshot,
+                        horizon_days=horizon,
+                    ),
+                    "candidate_selection": build_candidate_selection_oracle(
+                        result,
+                        snapshot,
+                        horizon_days=horizon,
+                    ),
+                    "no_trade_attribution": build_no_trade_attribution_oracle(
+                        result,
+                        snapshot,
+                        horizon_days=horizon,
+                    ),
+                    "entry_state": build_entry_state_oracle(
+                        result,
+                        snapshot,
+                        horizon_days=horizon,
+                    ),
+                },
+            }
+        except Exception as exc:
+            return {
+                "diagnostic_only": True,
+                "error": str(exc),
+                "acceptance_boundary": (
+                    "Oracle diagnostics failed and did not affect canonical "
+                    "backtest metrics or convergence."
+                ),
+            }
 
     def _serialize_ohlcv_snapshot(self, ohlcv, download_start, download_end):
         """Convert OHLCV frames to a JSON-friendly payload."""
@@ -4070,6 +4149,11 @@ class BacktestEngine:
         }
         if self.include_entry_candidate_events:
             result["entry_candidate_events"] = entry_decision_events
+        if self.include_oracle_diagnostics:
+            result["oracle_diagnostics"] = self._build_inline_oracle_diagnostics(
+                result,
+                ohlcv_all,
+            )
         self._write_entry_candidate_events(
             self.save_entry_candidate_events_path,
             entry_decision_events,
@@ -4104,6 +4188,8 @@ class BacktestEngine:
                 save_ohlcv_snapshot_path=self.save_ohlcv_snapshot_path,
                 include_pilot_sleeve=self.include_pilot_sleeve,
                 require_non_ohlcv=self.require_non_ohlcv,
+                include_oracle_diagnostics=self.include_oracle_diagnostics,
+                oracle_candidate_horizon_days=self.oracle_candidate_horizon_days,
             )
             result = engine.run()
             result["param_name"]  = param_name
@@ -4221,6 +4307,21 @@ def _print_results(results):
         print(f"    sharpe_daily:              {shadow.get('sharpe_daily')}")
         print(f"    sharpe_daily would pass:   {shadow.get('sharpe_daily_would_pass')}")
         print(f"    converged if also gated:   {shadow.get('converged_if_sharpe_daily')}")
+
+    oracle = results.get("oracle_diagnostics") or {}
+    oracle_metrics = oracle.get("oracle_metrics") or {}
+    if oracle:
+        print("\n  ORACLE DIAGNOSTICS (diagnostic only):")
+        if oracle.get("error"):
+            print(f"    error:                    {oracle.get('error')}")
+        else:
+            perfect_exit = oracle_metrics.get("perfect_exit") or {}
+            candidate_forward = oracle_metrics.get("candidate_forward") or {}
+            print(f"    perfect-exit capture:     {perfect_exit.get('capture_ratio')}")
+            print(f"    regret vs perfect exit:   {perfect_exit.get('regret_vs_oracle')}")
+            print(f"    candidate horizon days:   {oracle.get('candidate_horizon_days')}")
+            print(f"    candidate count:          {candidate_forward.get('candidate_count')}")
+            print(f"    positive candidate frac:  {candidate_forward.get('positive_candidate_fraction')}")
 
     llm_attr = results.get("llm_attribution")
     if llm_attr:
@@ -4461,6 +4562,15 @@ def main():
     parser.add_argument("--save-entry-candidate-events", type=str, default=None,
                         help=("Default-off shadow audit artifact. When set, write full "
                               "post-gate entry candidate decision rows to this JSON path."))
+    parser.add_argument("--oracle-diagnostics", "--include-oracle-diagnostics",
+                        dest="include_oracle_diagnostics",
+                        action=argparse.BooleanOptionalAction,
+                        default=True,
+                        help=("Attach observation-only oracle diagnostics to the saved "
+                              "result. Default: on. Uses future prices and is not "
+                              "acceptance evidence."))
+    parser.add_argument("--oracle-candidate-horizon-days", type=int, default=20,
+                        help="Trading-day horizon for candidate-forward oracle diagnostics.")
     args = parser.parse_args()
 
     # Default: last 6 months
@@ -4489,7 +4599,9 @@ def main():
                             save_ohlcv_snapshot_path=args.save_ohlcv_snapshot,
                             include_pilot_sleeve=args.include_pilot_sleeve,
                             require_non_ohlcv=args.require_non_ohlcv,
-                            save_entry_candidate_events_path=args.save_entry_candidate_events)
+                            save_entry_candidate_events_path=args.save_entry_candidate_events,
+                            include_oracle_diagnostics=args.include_oracle_diagnostics,
+                            oracle_candidate_horizon_days=args.oracle_candidate_horizon_days)
 
     if args.sweep and len(args.sweep) >= 2:
         param_name = args.sweep[0]
@@ -4526,7 +4638,9 @@ def main():
                     replay_news=args.replay_news,
                     ohlcv_snapshot_path=args.ohlcv_snapshot,
                     include_pilot_sleeve=args.include_pilot_sleeve,
-                    require_non_ohlcv=args.require_non_ohlcv)
+                    require_non_ohlcv=args.require_non_ohlcv,
+                    include_oracle_diagnostics=args.include_oracle_diagnostics,
+                    oracle_candidate_horizon_days=args.oracle_candidate_horizon_days)
                 secondary = secondary_engine.run()
                 if "error" in secondary:
                     print(f"  (secondary run failed: {secondary['error']})")

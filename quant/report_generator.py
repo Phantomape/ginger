@@ -1523,6 +1523,18 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"closed={metrics.get('closed_trades', 0)} "
                 f"WR={metrics.get('win_rate')}  |  blocked_by={reason_text}"
             )
+            tail = gate.get("tail_diagnostics") or state_surface_sleeve.get("tail_diagnostics") or {}
+            tail_metrics = tail.get("metrics_for_gates") or {}
+            tail_report = tail.get("gate_report") or {}
+            if tail_metrics or tail_report:
+                tail_reasons = tail_report.get("hard_failures") or []
+                tail_reason_text = ", ".join(tail_reasons) if tail_reasons else "none"
+                lines.append(
+                    f"  Tail gate: {tail_report.get('passed')}  |  "
+                    f"top5={tail_metrics.get('pnl_top_5_contribution_pct')} "
+                    f"HHI={tail_metrics.get('pnl_hhi_concentration')}  |  "
+                    f"blocked_by={tail_reason_text}"
+                )
         state = state_surface_sleeve.get("state") or {}
         if state:
             lines.append(
