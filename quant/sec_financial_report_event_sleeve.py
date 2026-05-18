@@ -34,6 +34,10 @@ STATE_SCHEMA_VERSION = 1
 DEFAULT_EVENT_NOTIONAL_USD = 15_000.0
 DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR = 1.25
 DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR = 2.0
+DEFAULT_NEUTRAL_UNDERREACTION_NOTIONAL_SCALAR = 2.0
+DEFAULT_NEUTRAL_UNDERREACTION_MAX_T1_EXCESS = 0.02
+DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR = 1.5
+DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN = -0.005
 DEFAULT_MAX_POSITIONS = 3
 DEFAULT_STATE_PATH = data_artifact_path("sec_financial_report_event_sleeve_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path(
@@ -48,6 +52,12 @@ DEFAULT_CONFIG = {
     "event_notional_usd": DEFAULT_EVENT_NOTIONAL_USD,
     "periodic_report_notional_scalar": DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
     "tenq_periodic_report_notional_scalar": DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR,
+    "neutral_underreaction_notional_enabled": True,
+    "neutral_underreaction_notional_scalar": DEFAULT_NEUTRAL_UNDERREACTION_NOTIONAL_SCALAR,
+    "neutral_underreaction_max_t1_excess": DEFAULT_NEUTRAL_UNDERREACTION_MAX_T1_EXCESS,
+    "neutral_underreaction_spy_t1_context_enabled": True,
+    "neutral_underreaction_spy_t1_context_scalar": DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR,
+    "neutral_underreaction_spy_t1_return_min": DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN,
     "hold_days": PRIMARY_HORIZON_TRADING_DAYS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
@@ -343,22 +353,69 @@ def _candidate_event_notional(
     config: dict[str, Any],
 ) -> tuple[float, float, str]:
     base = float(config["event_notional_usd"])
+    scalar = 1.0
+    rule = "base"
     event_family = str(candidate.get("event_family") or "")
-    if event_family != "periodic_report":
-        return base, 1.0, "base"
-
-    if _candidate_form_base(candidate).startswith("10-Q"):
-        scalar = _float_or_none(config.get("tenq_periodic_report_notional_scalar"))
-        if scalar is None or scalar <= 0:
-            scalar = _float_or_none(config.get("periodic_report_notional_scalar"))
+    if event_family == "periodic_report" and _candidate_form_base(candidate).startswith("10-Q"):
+        parsed = _float_or_none(config.get("tenq_periodic_report_notional_scalar"))
+        if parsed is None or parsed <= 0:
+            parsed = _float_or_none(config.get("periodic_report_notional_scalar"))
+        scalar = parsed if parsed is not None and parsed > 0 else scalar
+        rule = "periodic_report_10q_scalar"
+    elif event_family == "periodic_report":
+        scalar = _float_or_none(config.get("periodic_report_notional_scalar"))
         if scalar is None or scalar <= 0:
             scalar = 1.0
-        return base * scalar, scalar, "periodic_report_10q_scalar"
+        rule = "periodic_report_scalar"
 
-    scalar = _float_or_none(config.get("periodic_report_notional_scalar"))
-    if scalar is None or scalar <= 0:
-        scalar = 1.0
-    return base * scalar, scalar, "periodic_report_scalar"
+    if _candidate_neutral_underreaction(candidate, config):
+        neutral_scalar = _float_or_none(
+            config.get("neutral_underreaction_notional_scalar")
+        )
+        if neutral_scalar is not None and neutral_scalar > 0:
+            scalar *= neutral_scalar
+            rule = f"{rule}+neutral_underreaction_scalar"
+        if _candidate_neutral_underreaction_spy_t1_context(candidate, config):
+            context_scalar = _float_or_none(
+                config.get("neutral_underreaction_spy_t1_context_scalar")
+            )
+            if context_scalar is not None and context_scalar > 0:
+                scalar *= context_scalar
+                rule = f"{rule}+neutral_underreaction_spy_t1_context_scalar"
+
+    return base * scalar, scalar, rule
+
+
+def _candidate_neutral_underreaction(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+) -> bool:
+    if not bool(config.get("neutral_underreaction_notional_enabled", True)):
+        return False
+    if str(candidate.get("language_bucket") or "") != "neutral_or_mixed_language":
+        return False
+    t1_excess = _float_or_none(candidate.get("t1_excess_return_vs_spy"))
+    max_t1_excess = _float_or_none(config.get("neutral_underreaction_max_t1_excess"))
+    if t1_excess is None or max_t1_excess is None:
+        return False
+    return t1_excess <= max_t1_excess
+
+
+def _candidate_neutral_underreaction_spy_t1_context(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+) -> bool:
+    if not bool(config.get("neutral_underreaction_spy_t1_context_enabled", True)):
+        return False
+    if not _candidate_neutral_underreaction(candidate, config):
+        return False
+    spy_t1_return = _float_or_none(candidate.get("spy_t1_return"))
+    min_spy_t1_return = _float_or_none(
+        config.get("neutral_underreaction_spy_t1_return_min")
+    )
+    if spy_t1_return is None or min_spy_t1_return is None:
+        return False
+    return spy_t1_return >= min_spy_t1_return
 
 
 def _candidate_form_base(candidate: dict[str, Any]) -> str:
