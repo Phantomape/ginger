@@ -279,6 +279,64 @@ def test_state_surface_rank3_near_high_support_persists_to_paper_ledger():
     assert second["production_impact"]["alters_orders"] is False
 
 
+def test_state_surface_rank3_volume_confirmation_persists_to_paper_ledger():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={"rank_notional_rank3_volume_confirmation_min": 0.0},
+    )
+
+    rank3 = next(row for row in queue["candidates"] if row["queue_rank"] == 3)
+    assert rank3["rank3_volume_confirmation_applied"] is True
+    assert rank3["rank3_volume_confirmation_scalar"] == 1.5
+    assert rank3["rank3_volume_confirmation_base_multiplier"] == 1.5
+    assert rank3["rank_notional_multiplier"] == 2.25
+    assert rank3["event_notional_usd"] == 22500.0
+    assert {
+        row["rank3_volume_confirmation_applied"]
+        for row in queue["candidates"]
+        if row["queue_rank"] != 3
+    } == {False}
+    assert queue["rank_notional_profile"]["rank3_volume_confirmation_enabled"] is True
+    assert queue["rank_notional_profile"]["rank3_volume_confirmation_min"] == 0.0
+    assert queue["rank_notional_profile"]["rank3_volume_confirmation_scalar"] == 1.5
+
+    state = empty_state_surface_sleeve_state()
+    first = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    pending = next(row for row in first["pending_entries"] if row["queue_rank"] == 3)
+    assert pending["rank3_volume_confirmation_applied"] is True
+    assert pending["rank3_volume_confirmation_scalar"] == 1.5
+    assert pending["event_notional_usd"] == 22500.0
+    assert pending["candidate"]["rank3_volume_confirmation_applied"] is True
+
+    next_state = empty_state_surface_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
+    second = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        state=next_state,
+        open_prices=prices,
+        current_prices=prices,
+        persist=False,
+    )
+    position = next(
+        row for row in second["open_positions"] if row["ticker"] == pending["ticker"]
+    )
+    assert position["rank3_volume_confirmation_applied"] is True
+    assert position["rank3_volume_confirmation_scalar"] == 1.5
+    assert position["rank_notional_multiplier"] == 2.25
+    assert position["notional"] == 22500.0
+    assert second["trade_enabled"] is False
+    assert second["production_impact"]["alters_orders"] is False
+
+
 def test_state_surface_rank2_near_high_support_persists_to_paper_ledger():
     queue = build_state_surface_queue(
         as_of="2026-05-04",

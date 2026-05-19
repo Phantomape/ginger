@@ -80,6 +80,9 @@ RANK_NOTIONAL_RANK2_NEAR_HIGH_SUPPORT_RULE_VERSION = (
 RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION = (
     "state_surface_rank3_near_high_support_notional_v1"
 )
+RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION = (
+    "state_surface_rank3_volume_confirmation_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -141,6 +144,9 @@ DEFAULT_CONFIG = {
     "rank_notional_rank3_near_high_support_enabled": True,
     "rank_notional_rank3_near_high_support_min": 0.98,
     "rank_notional_rank3_near_high_support_scalar": 1.5,
+    "rank_notional_rank3_volume_confirmation_enabled": True,
+    "rank_notional_rank3_volume_confirmation_min": 1.10,
+    "rank_notional_rank3_volume_confirmation_scalar": 1.5,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -665,6 +671,11 @@ def _rank3_near_high_support_profile_name(threshold: float | None) -> str:
     return f"rank3_near_high_ge_{value.replace('.', 'p')}_support"
 
 
+def _rank3_volume_confirmation_profile_name(threshold: float | None) -> str:
+    value = str(round(float(threshold or 0.0), 6)).rstrip("0").rstrip(".")
+    return f"rank3_volume_ratio_ge_{value.replace('.', 'p')}_confirmation"
+
+
 def _rank2_near_high_support_profile_name(threshold: float | None) -> str:
     value = str(round(float(threshold or 0.0), 6)).rstrip("0").rstrip(".")
     return f"rank2_near_high_ge_{value.replace('.', 'p')}_support"
@@ -711,6 +722,28 @@ def _rank3_near_high_support_settings(config: dict[str, Any]) -> dict[str, Any]:
         "scalar": scalar,
         "profile_name": _rank3_near_high_support_profile_name(threshold),
         "rule_version": RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION,
+    }
+
+
+def _rank3_volume_confirmation_settings(config: dict[str, Any]) -> dict[str, Any]:
+    threshold = _float_or_none(
+        config.get("rank_notional_rank3_volume_confirmation_min")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_rank3_volume_confirmation_scalar")
+    )
+    enabled = bool(config.get("rank_notional_rank3_volume_confirmation_enabled", True))
+    return {
+        "enabled": bool(
+            enabled
+            and threshold is not None
+            and scalar is not None
+            and scalar > 0
+        ),
+        "threshold": threshold,
+        "scalar": scalar,
+        "profile_name": _rank3_volume_confirmation_profile_name(threshold),
+        "rule_version": RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION,
     }
 
 
@@ -1178,6 +1211,29 @@ def _rank2_near_high_support_applies(
     )
 
 
+def _rank3_volume_confirmation_applies(
+    queue_rank: Any,
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _rank3_volume_confirmation_settings(config)
+    try:
+        rank = int(queue_rank)
+    except (TypeError, ValueError):
+        rank = 0
+    volume_ratio = _float_or_none(
+        ((candidate or {}).get("features") or {}).get("volume_ratio_20")
+    )
+    threshold = settings["threshold"]
+    return bool(
+        settings["enabled"]
+        and rank == 3
+        and volume_ratio is not None
+        and threshold is not None
+        and volume_ratio >= threshold
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1195,6 +1251,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _rank2_near_high_support_applies(queue_rank, candidate, config):
         settings = _rank2_near_high_support_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _rank3_volume_confirmation_applies(queue_rank, candidate, config):
+        settings = _rank3_volume_confirmation_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -1259,6 +1318,39 @@ def _rank3_near_high_support_metadata(
     }
 
 
+def _rank3_volume_confirmation_metadata(
+    queue_rank: Any,
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _rank3_volume_confirmation_settings(config)
+    volume_ratio = _float_or_none(
+        (candidate.get("features") or {}).get("volume_ratio_20")
+    )
+    applied = _rank3_volume_confirmation_applies(queue_rank, candidate, config)
+    return {
+        "rank3_volume_confirmation_applied": bool(applied),
+        "rank3_volume_confirmation_profiles_enabled": bool(settings["enabled"]),
+        "rank3_volume_confirmation_min": _round(settings["threshold"], 6),
+        "rank3_volume_confirmation_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "rank3_volume_confirmation_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "rank3_volume_confirmation_volume_ratio_20": _round(volume_ratio, 6),
+        "rank3_volume_confirmation_base_multiplier": _round(base_multiplier, 6),
+        "rank3_volume_confirmation_profile_name": settings["profile_name"],
+        "rank3_volume_confirmation_rule_version": settings["rule_version"],
+        "rank_notional_rank3_volume_confirmation_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1285,6 +1377,13 @@ def _apply_rank_notional(
         candidate,
     )
     base_multiplier = _rank_value_for_queue_rank(values, queue_rank)
+    rank3_volume_base_multiplier = base_multiplier
+    if _rank3_near_high_support_applies(queue_rank, candidate, config):
+        settings = _rank3_near_high_support_settings(config)
+        rank3_volume_base_multiplier *= float(settings["scalar"] or 1.0)
+    if _rank2_near_high_support_applies(queue_rank, candidate, config):
+        settings = _rank2_near_high_support_settings(config)
+        rank3_volume_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -1307,6 +1406,14 @@ def _apply_rank_notional(
             candidate,
             config,
             base_multiplier=base_multiplier,
+        )
+    )
+    candidate.update(
+        _rank3_volume_confirmation_metadata(
+            queue_rank,
+            candidate,
+            config,
+            base_multiplier=rank3_volume_base_multiplier,
         )
     )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
@@ -1343,6 +1450,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_rank3_near_high_support_rule_version"] = (
         RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION
+    )
+    candidate["rank_notional_rank3_volume_confirmation_rule_version"] = (
+        RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -1523,6 +1633,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     rank1_ret60_residual_profile = _rank_notional_rank1_ret60_residual_profile(cfg)
     rank2_near_high_support = _rank2_near_high_support_settings(cfg)
     rank3_near_high_support = _rank3_near_high_support_settings(cfg)
+    rank3_volume_confirmation = _rank3_volume_confirmation_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -1538,6 +1649,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank1_ret60_residual_rule_version": RANK_NOTIONAL_RANK1_RET60_RESIDUAL_RULE_VERSION,
         "rank2_near_high_support_rule_version": RANK_NOTIONAL_RANK2_NEAR_HIGH_SUPPORT_RULE_VERSION,
         "rank3_near_high_support_rule_version": RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION,
+        "rank3_volume_confirmation_rule_version": RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -1721,6 +1833,20 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "rank3_near_high_support_profile_name": rank3_near_high_support[
+            "profile_name"
+        ],
+        "rank3_volume_confirmation_enabled": bool(
+            rank3_volume_confirmation["enabled"]
+        ),
+        "rank3_volume_confirmation_min": _round(
+            rank3_volume_confirmation["threshold"],
+            6,
+        ),
+        "rank3_volume_confirmation_scalar": _round(
+            rank3_volume_confirmation["scalar"],
+            6,
+        ),
+        "rank3_volume_confirmation_profile_name": rank3_volume_confirmation[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -2445,6 +2571,36 @@ def _fill_pending_entries(
             "rank3_near_high_support_rule_version": entry.get(
                 "rank3_near_high_support_rule_version"
             ),
+            "rank_notional_rank3_volume_confirmation_rule_version": entry.get(
+                "rank_notional_rank3_volume_confirmation_rule_version"
+            ),
+            "rank3_volume_confirmation_applied": bool(
+                entry.get("rank3_volume_confirmation_applied")
+            ),
+            "rank3_volume_confirmation_profiles_enabled": bool(
+                entry.get("rank3_volume_confirmation_profiles_enabled")
+            ),
+            "rank3_volume_confirmation_min": entry.get(
+                "rank3_volume_confirmation_min"
+            ),
+            "rank3_volume_confirmation_configured_scalar": entry.get(
+                "rank3_volume_confirmation_configured_scalar"
+            ),
+            "rank3_volume_confirmation_scalar": entry.get(
+                "rank3_volume_confirmation_scalar"
+            ),
+            "rank3_volume_confirmation_volume_ratio_20": entry.get(
+                "rank3_volume_confirmation_volume_ratio_20"
+            ),
+            "rank3_volume_confirmation_base_multiplier": entry.get(
+                "rank3_volume_confirmation_base_multiplier"
+            ),
+            "rank3_volume_confirmation_profile_name": entry.get(
+                "rank3_volume_confirmation_profile_name"
+            ),
+            "rank3_volume_confirmation_rule_version": entry.get(
+                "rank3_volume_confirmation_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -2636,6 +2792,36 @@ def _add_queue_candidates(
             ),
             "rank3_near_high_support_rule_version": candidate.get(
                 "rank3_near_high_support_rule_version"
+            ),
+            "rank_notional_rank3_volume_confirmation_rule_version": candidate.get(
+                "rank_notional_rank3_volume_confirmation_rule_version"
+            ),
+            "rank3_volume_confirmation_applied": bool(
+                candidate.get("rank3_volume_confirmation_applied")
+            ),
+            "rank3_volume_confirmation_profiles_enabled": bool(
+                candidate.get("rank3_volume_confirmation_profiles_enabled")
+            ),
+            "rank3_volume_confirmation_min": candidate.get(
+                "rank3_volume_confirmation_min"
+            ),
+            "rank3_volume_confirmation_configured_scalar": candidate.get(
+                "rank3_volume_confirmation_configured_scalar"
+            ),
+            "rank3_volume_confirmation_scalar": candidate.get(
+                "rank3_volume_confirmation_scalar"
+            ),
+            "rank3_volume_confirmation_volume_ratio_20": candidate.get(
+                "rank3_volume_confirmation_volume_ratio_20"
+            ),
+            "rank3_volume_confirmation_base_multiplier": candidate.get(
+                "rank3_volume_confirmation_base_multiplier"
+            ),
+            "rank3_volume_confirmation_profile_name": candidate.get(
+                "rank3_volume_confirmation_profile_name"
+            ),
+            "rank3_volume_confirmation_rule_version": candidate.get(
+                "rank3_volume_confirmation_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")
