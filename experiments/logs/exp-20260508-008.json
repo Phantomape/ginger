@@ -1,0 +1,123 @@
+{
+  "alpha_hypothesis_category": "entry_forward_attribution",
+  "change_type": "forward_watch_adapter",
+  "decision": "accepted_measurement_adapter",
+  "decision_reason": "Adapter is data-only, explicitly observe-only in reports, and covered by tests. It creates future alpha evidence without changing live orders.",
+  "experiment_id": "exp-20260508-008",
+  "gate4": {
+    "basis": "Measurement adapter only; no strategy replay or production orders changed.",
+    "passed": null
+  },
+  "historical_experiment_check": {
+    "exp-20260507-034": "Hard platform RS20 entry gate rejected.",
+    "exp-20260507-035": "Missed platform RS20 sleeve positive but underpowered and APP-concentrated.",
+    "exp-20260508-007": "No-gap split clean in-sample but failed count and concentration gates.",
+    "mechanism_insight_conflict": "No conflict: this does not promote a rule or retry a threshold; it persists forward evidence for the next valid retry."
+  },
+  "hypothesis": "The platform RS20 no-gap missed-candidate hypothesis cannot be promoted from six frozen rows, so the correct next step is to accumulate forward observations through a default-off run adapter.",
+  "lane": "measurement_repair_supporting_alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM/news replay is outside this deterministic watch adapter.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "mechanism_family": "platform_rs20_no_gap_forward_sample_accumulation",
+  "next_action": "Let daily runs accumulate data/platform_rs20_no_gap_forward_watch.jsonl; only retry a sleeve replay after enough closed forward outcomes exist.",
+  "parameters": {
+    "forward_promotion_gate": {
+      "closed_forward_outcomes": "required before sleeve replay",
+      "no_gap_missed_candidates": ">= 8",
+      "single_ticker_positive_contribution": "<= 50%"
+    },
+    "gap_up_threshold": 0.03,
+    "platform_pool": [
+      "META",
+      "NFLX",
+      "GOOG",
+      "AMZN",
+      "SPOT",
+      "DIS",
+      "APP"
+    ],
+    "rs20_excess_threshold": 0.05,
+    "source_decisions": [
+      "scarce_slot_breakout_deferred",
+      "slot_sliced"
+    ],
+    "watch_name": "PLATFORM_RS20_NO_GAP_FORWARD_WATCH"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "report_adapter_changed": true,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/platform_rs20_watch.py",
+    "quant/test_platform_rs20_watch.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "data\\experiments\\exp-20260508-008\\platform_rs20_forward_watch_adapter.json",
+    "experiments\\logs\\exp-20260508-008.json",
+    "experiments\\tickets\\exp-20260508-008.json",
+    "experiments\\artifacts\\exp-20260508-008_platform_rs20_forward_watch_adapter.md",
+    "docs\\experiment_log.jsonl",
+    "quant\\experiments\\exp_20260508_008_platform_rs20_forward_watch_adapter.py"
+  ],
+  "single_causal_variable": "platform_rs20_no_gap_forward_watch_logging",
+  "source_metrics": {
+    "complement": {
+      "avg_pnl": -793.86,
+      "avg_return_pct": -0.081831,
+      "candidate_count": 3,
+      "decision_counts": {
+        "gap_cancel": 1,
+        "slot_sliced": 2
+      },
+      "max_single_ticker_positive_share": null,
+      "median_return_pct": -0.090505,
+      "pnl_by_ticker": {
+        "AMZN": -904.5,
+        "META": -1477.08
+      },
+      "total_pnl": -2381.58,
+      "win_rate": 0.0,
+      "windows_present": 2
+    },
+    "matched": {
+      "avg_pnl": 3451.17,
+      "avg_return_pct": 0.349484,
+      "candidate_count": 3,
+      "decision_counts": {
+        "gap_cancel": 1,
+        "scarce_slot_breakout_deferred": 2
+      },
+      "max_single_ticker_positive_share": 0.8776,
+      "median_return_pct": 0.12831,
+      "pnl_by_ticker": {
+        "APP": 9086.27,
+        "SPOT": 1267.24
+      },
+      "total_pnl": 10353.51,
+      "win_rate": 1.0,
+      "windows_present": 2
+    },
+    "observed_gate_failures": [
+      "matched_candidate_count_lt_8",
+      "single_ticker_positive_share_gt_50pct"
+    ]
+  },
+  "status": "accepted_measurement_adapter",
+  "timestamp": "2026-05-08T03:56:14.111490+00:00",
+  "verification": {
+    "ast": "AST parse OK for watch module, tests, run.py, report_generator.py, exp-007 script.",
+    "tests": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_platform_rs20_watch.py quant\\test_oracle_diagnostics.py quant\\test_entry_execution_attribution.py -q -> 12 passed"
+  }
+}

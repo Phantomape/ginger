@@ -1,0 +1,105 @@
+{
+  "alpha_hypothesis_category": "allocation_sleeve_scout",
+  "change_type": "observed_only_fixed_notional_replacement_sleeve_audit",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_underpowered",
+  "experiment_id": "exp-20260507-035",
+  "gate4": {
+    "basis": "Observed-only fixed-notional replacement-value audit; not a portfolio backtest.",
+    "passed": null
+  },
+  "historical_experiment_check": {
+    "exp-20260507-033": "Entry-state risk resize rejected.",
+    "exp-20260507-034": "Hard platform RS20 entry gate rejected.",
+    "mechanism_insight_conflict": "Avoids nearby RS20 threshold retuning; asks replacement-value question for already missed candidates."
+  },
+  "hypothesis": "Platform-pool rs20_leader candidates missed by the core entry path may have enough replacement value to justify a future default-off sleeve.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM/news replay is locked out of this deterministic sleeve scout.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "platform_rs20_missed_candidate_replacement_value",
+  "next_retry_requires": [
+    "Do not promote a platform RS20 missed-candidate sleeve from this sample alone.",
+    "A valid retry needs at least eight missed candidates with less single-ticker concentration.",
+    "Future replay must be default-off and share run.py/backtester sleeve semantics."
+  ],
+  "observed_metrics": {
+    "avg_pnl": 1328.65,
+    "avg_return_pct": 0.133827,
+    "candidate_count": 6,
+    "decision_counts": {
+      "gap_cancel": 2,
+      "scarce_slot_breakout_deferred": 2,
+      "slot_sliced": 2
+    },
+    "gate_passed": false,
+    "max_single_ticker_positive_share": 0.8776,
+    "median_return_pct": 0.085199,
+    "pnl_by_ticker": {
+      "AMZN": -904.5,
+      "APP": 9086.27,
+      "META": -1477.08,
+      "SPOT": 1267.24
+    },
+    "total_pnl": 7971.93,
+    "win_rate": 0.5,
+    "windows_with_missed_candidates": 3
+  },
+  "parameters": {
+    "hold_days": 20,
+    "notional_usd": 10000.0,
+    "platform_pool": [
+      "META",
+      "NFLX",
+      "GOOG",
+      "AMZN",
+      "SPOT",
+      "DIS",
+      "APP"
+    ],
+    "promotion_gate": {
+      "fixed_notional_total_pnl": "> 0",
+      "missed_candidate_count": ">= 8",
+      "single_ticker_positive_contribution": "<= 50%",
+      "win_rate": ">= 50%"
+    },
+    "round_trip_cost_pct": 0.0035,
+    "treatment_tag": "rs20_leader"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Missed platform RS20 sleeve audit is underpowered or too concentrated: count 6, PnL 7971.93, win rate 0.5, single ticker positive share 0.8776.",
+  "related_files": [
+    "data\\experiments\\exp-20260507-035\\platform_rs20_missed_sleeve_audit.json",
+    "experiments\\logs\\exp-20260507-035.json",
+    "experiments\\tickets\\exp-20260507-035.json",
+    "experiments\\artifacts\\exp-20260507-035_platform_rs20_missed_sleeve_audit.md",
+    "docs\\experiment_log.jsonl",
+    "quant\\experiments\\exp_20260507_035_platform_rs20_missed_sleeve_audit.py"
+  ],
+  "single_causal_variable": "missed_platform_rs20_leader_candidate_fixed_notional_20d_hold",
+  "status": "observed_only_underpowered",
+  "timestamp": "2026-05-08T02:53:15.226213+00:00"
+}

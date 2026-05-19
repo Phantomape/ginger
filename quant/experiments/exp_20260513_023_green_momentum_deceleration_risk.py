@@ -145,9 +145,9 @@ def _rewrite_payload(payload: dict[str, Any]) -> dict[str, Any]:
     payload["related_files"] = [
         "quant/experiments/exp_20260513_023_green_momentum_deceleration_risk.py",
         "data/experiments/exp-20260513-023/green_momentum_deceleration_risk.json",
-        "docs/experiments/logs/exp-20260513-023.json",
-        "docs/experiments/tickets/exp-20260513-023.json",
-        "docs/experiments/artifacts/exp-20260513-023_green_momentum_deceleration_risk.md",
+        "experiments/logs/exp-20260513-023.json",
+        "experiments/tickets/exp-20260513-023.json",
+        "experiments/artifacts/exp-20260513-023_green_momentum_deceleration_risk.md",
         "docs/experiment_log.jsonl",
     ]
     return payload

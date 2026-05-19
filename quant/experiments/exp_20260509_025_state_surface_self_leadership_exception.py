@@ -31,16 +31,15 @@ from experiments import exp_20260509_014_state_surface_benchmark_momentum_gate a
 EXPERIMENT_ID = "exp-20260509-025"
 STEM = "state_surface_self_leadership_exception"
 OUT_JSON = base.REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{STEM}.json"
-LOG_JSON = base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = base.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = base.REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     base.REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"
 )
-EXP14_LOG_JSON = base.REPO_ROOT / "docs" / "experiments" / "logs" / "exp-20260509-014.json"
+EXP14_LOG_JSON = base.REPO_ROOT / "experiments" / "logs" / "exp-20260509-014.json"
 
 
 def _load_exp14_after_metrics() -> dict[str, dict[str, Any]]:

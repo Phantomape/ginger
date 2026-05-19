@@ -32,11 +32,10 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260510-009"
 STEM = "trend_addon_upper_bound"
 OUT_JSON = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"

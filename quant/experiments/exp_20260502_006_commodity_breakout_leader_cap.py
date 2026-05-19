@@ -30,8 +30,8 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260502-006"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "commodity_breakout_leader_cap.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 
 WINDOWS = OrderedDict([
     ("late_strong", {
@@ -421,8 +421,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260502_006_commodity_breakout_leader_cap.py",
             "data/experiments/exp-20260502-006/commodity_breakout_leader_cap.json",
-            "docs/experiments/logs/exp-20260502-006.json",
-            "docs/experiments/tickets/exp-20260502-006.json",
+            "experiments/logs/exp-20260502-006.json",
+            "experiments/tickets/exp-20260502-006.json",
             "docs/experiment_log.jsonl",
         ],
     }

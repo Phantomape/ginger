@@ -52,9 +52,9 @@ EXP_ID = "exp-20260507-016"
 STEM = "state_surface_satellite_replay"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
-AUDIT_MD = REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXP_ID}_{STEM}.md"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
+AUDIT_MD = REPO_ROOT / "experiments" / "artifacts" / f"{EXP_ID}_{STEM}.md"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 
 HOLD_DAYS = 20

@@ -37,8 +37,8 @@ except Exception:  # pragma: no cover - fallback mirrors backtester CLI.
 EXP_ID = "exp-20260504-036"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / "bear_shallow_risk_budget.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
 
@@ -386,7 +386,7 @@ def build_payload() -> dict[str, Any]:
                 "docs/backtesting.md",
                 "docs/alpha-optimization-playbook.md",
                 "docs/experiment_log.jsonl",
-                "docs/experiments/logs",
+                "experiments/logs",
             ],
             "same_family_findings": (
                 "Prior accepted-stack work tuned risk-on leader and sector "

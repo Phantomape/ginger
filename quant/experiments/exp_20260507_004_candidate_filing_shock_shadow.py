@@ -34,11 +34,10 @@ EXPERIMENT_ID = "exp-20260507-004"
 STEM = "exp_20260507_004_candidate_filing_shock_shadow"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_candidate_filing_shock_shadow.md"
@@ -906,7 +905,7 @@ def _sync_registry(ticket: dict[str, Any]) -> None:
         "lane": "alpha_search",
         "owner": "alpha-discovery",
         "hypothesis": "If a `breakout_long` candidate has a PIT-safe SEC filing within the last 20 trading days, the event context may confirm the technical breakout and justify a larger risk budget.",
-        "ticket_file": "docs/experiments/tickets/exp-20260507-003.json",
+        "ticket_file": "experiments/tickets/exp-20260507-003.json",
         "updated_at": "2026-05-07T01:18:21+00:00",
     }
     exp004 = {
@@ -915,7 +914,7 @@ def _sync_registry(ticket: dict[str, Any]) -> None:
         "lane": ticket["lane"],
         "owner": ticket.get("owner"),
         "hypothesis": ticket.get("hypothesis"),
-        "ticket_file": "docs/experiments/tickets/exp-20260507-004.json",
+        "ticket_file": "experiments/tickets/exp-20260507-004.json",
         "updated_at": _utc_now_iso(),
     }
     by_id = {
@@ -1096,9 +1095,9 @@ def main() -> int:
         "related_files": [
             "quant/experiments/exp_20260507_004_candidate_filing_shock_shadow.py",
             "data/experiments/exp-20260507-004/exp_20260507_004_candidate_filing_shock_shadow.json",
-            "docs/experiments/tickets/exp-20260507-004.json",
-            "docs/experiments/logs/exp-20260507-004.json",
-            "docs/experiments/artifacts/exp-20260507-004_candidate_filing_shock_shadow.md",
+            "experiments/tickets/exp-20260507-004.json",
+            "experiments/logs/exp-20260507-004.json",
+            "experiments/artifacts/exp-20260507-004_candidate_filing_shock_shadow.md",
             "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_candidate_tags_exp-20260507-004_20260507.md",
             "docs/experiment_log.jsonl",
         ],

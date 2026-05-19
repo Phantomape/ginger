@@ -32,8 +32,8 @@ COMPANYFACTS_PATH = (
     / "sec_companyfacts_selected_20241002_20260421.jsonl"
 )
 RESULT_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_PATH = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 AUDIT_PATH = (
     ROOT
     / "docs"

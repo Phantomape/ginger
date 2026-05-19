@@ -702,9 +702,9 @@ def run() -> dict[str, Any]:
 def persist(payload: dict[str, Any]) -> None:
     exp_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
     exp_dir.mkdir(parents=True, exist_ok=True)
-    logs_dir = PROJECT_ROOT / "docs" / "experiments" / "logs"
-    tickets_dir = PROJECT_ROOT / "docs" / "experiments" / "tickets"
-    artifacts_dir = PROJECT_ROOT / "docs" / "experiments" / "artifacts"
+    logs_dir = PROJECT_ROOT / "experiments" / "logs"
+    tickets_dir = PROJECT_ROOT / "experiments" / "tickets"
+    artifacts_dir = PROJECT_ROOT / "experiments" / "artifacts"
     for directory in (logs_dir, tickets_dir, artifacts_dir):
         directory.mkdir(parents=True, exist_ok=True)
 

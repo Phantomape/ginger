@@ -53,9 +53,9 @@ STEM = "space_official_no_addons"
 RISK_SCALAR = 0.75
 
 OUT_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOC_PATH = ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
-TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}_{STEM}.md"
-LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}_{STEM}.json"
+DOC_PATH = ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
+TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}_{STEM}.md"
+LOG_PATH = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}_{STEM}.json"
 EXPERIMENT_LOG_PATH = ROOT / "docs" / "experiment_log.jsonl"
 CURRENT_STATE_PATH = ROOT / "docs" / "current_state.md"
 PLAYBOOK_PATH = ROOT / "docs" / "alpha-optimization-playbook.md"

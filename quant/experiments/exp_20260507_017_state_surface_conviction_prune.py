@@ -32,9 +32,9 @@ EXP_ID = "exp-20260507-017"
 STEM = "state_surface_conviction_prune"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
-AUDIT_MD = REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXP_ID}_{STEM}.md"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
+AUDIT_MD = REPO_ROOT / "experiments" / "artifacts" / f"{EXP_ID}_{STEM}.md"
 
 ALLOWED_SURFACES = {
     "broad_breadth_trend_persistence",

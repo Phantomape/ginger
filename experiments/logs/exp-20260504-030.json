@@ -1,0 +1,204 @@
+{
+  "experiment_id": "exp-20260504-030",
+  "timestamp": "2026-05-04T04:23:00-07:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "lifecycle_capital_allocation",
+  "alpha_hypothesis_category": "followthrough_addon_cap",
+  "hypothesis": "Existing trend_long Commodities and Financials sleeves have repeat cross-window alpha. If their day-2 follow-through add-ons are capped by the generic 35% first-add-on position cap, lifting only this sector-trend add-on sleeve to 50% should improve winner capture without changing entries, exits, ranking, or SPY-relative leader behavior.",
+  "why_not_llm_soft_ranking": "LLM soft-ranking remains data-limited by sparse production-aligned outcome joins, so this run used deterministic fields available in the production and backtest paths instead.",
+  "mechanism_insight_check": {
+    "near_repeat": "partial",
+    "not_repeated": [
+      "not a ticker-list ETF expansion",
+      "not a second add-on",
+      "not a SPY-relative leader cap above 60%",
+      "not a broad sector priority reorder"
+    ],
+    "risk": "The test was adjacent to prior sector sleeve and add-on-cap work, so it needed strict three-window proof and no production/backtest drift."
+  },
+  "parameters": {
+    "single_causal_variable": "first follow-through add-on max position cap for trend_long Commodities/Financials sleeve",
+    "old_value": {
+      "ADDON_MAX_POSITION_PCT": 0.35
+    },
+    "tested_value": {
+      "ADDON_SECTOR_TREND_CAP_SECTORS": ["Commodities", "Financials"],
+      "ADDON_SECTOR_TREND_MAX_POSITION_PCT": 0.50
+    },
+    "locked_variables": [
+      "universe",
+      "entry rules",
+      "exit rules",
+      "candidate ranking",
+      "initial risk multipliers",
+      "initial position caps",
+      "day-2 follow-through trigger",
+      "ADDON_FRACTION_OF_ORIGINAL_SHARES=0.50",
+      "ADDON_SPY_RELATIVE_LEADER_MAX_POSITION_PCT=0.60",
+      "second add-on disabled",
+      "LLM/news replay",
+      "earnings strategy"
+    ],
+    "temporary_implementation": [
+      "quant/constants.py",
+      "quant/production_parity.py",
+      "quant/backtester.py"
+    ],
+    "rollback": "Temporary shared-policy code was removed after Gate 4 because the primary metrics were exact nulls."
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "converged": true
+    }
+  },
+  "delta_metrics": {
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0,
+        "survival_rate": 0.0
+      }
+    },
+    "baseline_ev_sum": 5.1785,
+    "variant_ev_sum": 5.1785,
+    "aggregate_ev_delta": 0.0,
+    "aggregate_pnl_delta": 0.0,
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 0,
+    "max_drawdown_delta_max": 0.0,
+    "gate4_basis": "Rejected: no canonical window changed at all, so the proposed cap did not release incremental realized capital."
+  },
+  "gate4_result": {
+    "passed": false,
+    "basis": "The experiment failed every positive Gate 4 criterion because all metrics were strict nulls."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "notes": "The temporary implementation changed both production_parity and backtester paths during measurement, then was rolled back before commit."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "rejection_reason": "The current accepted add-on stack is not constrained by the generic 35% cap for this sector-trend sleeve in the fixed windows. Adding a new cap branch would add complexity with zero measured benefit.",
+  "next_retry_requires": [
+    "Do not retry sector-trend first-add-on cap lifts without an add-on event audit proving cap_no_room or clipped requested_shares in this sleeve.",
+    "If lifecycle add-on work resumes, use a different quality discriminator such as event/news context or forward-observed add-on failure attribution.",
+    "Avoid further cap-only add-on experiments unless the affected_addon_count is non-zero before the backtest run."
+  ],
+  "related_files": [
+    "experiments/logs/exp-20260504-030.json",
+    "experiments/tickets/exp-20260504-030.json"
+  ],
+  "notes": "Alpha search, not measurement repair. LLM soft-ranking and SEC/event sleeves stayed blocked or data-limited, so this tested an unblocked deterministic lifecycle allocation hypothesis. The result shows the next useful lifecycle work should be trigger quality, not another cap lift."
+}

@@ -59,21 +59,18 @@ def _artifact_paths() -> dict[str, Path]:
         ),
         "log": (
             base.REPO_ROOT
-            / "docs"
             / "experiments"
             / "logs"
             / f"{EXPERIMENT_ID}.json"
         ),
         "ticket": (
             base.REPO_ROOT
-            / "docs"
             / "experiments"
             / "tickets"
             / f"{EXPERIMENT_ID}.json"
         ),
         "markdown": (
             base.REPO_ROOT
-            / "docs"
             / "experiments"
             / "artifacts"
             / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
@@ -362,9 +359,9 @@ def _build_payload(
         "related_files": [
             "quant/experiments/exp_20260514_045_triple_momentum_leader_cap.py",
             "data/experiments/exp-20260514-045/triple_momentum_leader_cap.json",
-            "docs/experiments/logs/exp-20260514-045.json",
-            "docs/experiments/tickets/exp-20260514-045.json",
-            "docs/experiments/artifacts/exp-20260514-045_triple_momentum_leader_cap.md",
+            "experiments/logs/exp-20260514-045.json",
+            "experiments/tickets/exp-20260514-045.json",
+            "experiments/artifacts/exp-20260514-045_triple_momentum_leader_cap.md",
             "docs/experiment_log.jsonl",
         ],
     }

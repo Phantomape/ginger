@@ -21,11 +21,10 @@ CHANGED_VARIABLE = "space_vsat_forward_benchmark_same_theme_isolated_fallback_me
 
 ROOT = accepted_stack.BASE.ROOT
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOC_LOG = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-DOC_TICKET = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+DOC_LOG = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_TICKET = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 DOC_ARTIFACT = (
     ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{EXPERIMENT_NAME}.md"
@@ -311,9 +310,9 @@ def _make_record(
         "related_files": [
             "quant/experiments/exp_20260518_017_space_vsat_isolated_fallback_pool.py",
             "data/experiments/exp-20260518-017/space_vsat_isolated_fallback_pool.json",
-            "docs/experiments/logs/exp-20260518-017.json",
-            "docs/experiments/tickets/exp-20260518-017.json",
-            "docs/experiments/artifacts/exp-20260518-017_space_vsat_isolated_fallback_pool.md",
+            "experiments/logs/exp-20260518-017.json",
+            "experiments/tickets/exp-20260518-017.json",
+            "experiments/artifacts/exp-20260518-017_space_vsat_isolated_fallback_pool.md",
             "docs/experiment_log.jsonl",
         ],
     }

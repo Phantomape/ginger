@@ -556,14 +556,14 @@ def main() -> int:
             "to a new orthogonal event/news feature."
         ),
         "experiment_log_jsonl_note": (
-            "Canonical record is docs/experiments/logs because docs/experiment_log.jsonl had pre-existing unstaged changes."
+            "Canonical record is experiments/logs because docs/experiment_log.jsonl had pre-existing unstaged changes."
         ),
     }
 
     data_path = ROOT / "data" / "experiments" / EXP_ID / f"{EXP_ID}_{STEM}.json"
-    log_path = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-    ticket_path = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
-    artifact_path = ROOT / "docs" / "experiments" / "artifacts" / f"{EXP_ID}_{STEM}.md"
+    log_path = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+    ticket_path = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
+    artifact_path = ROOT / "experiments" / "artifacts" / f"{EXP_ID}_{STEM}.md"
     _write_json(data_path, payload)
     _write_json(log_path, payload)
     _write_json(

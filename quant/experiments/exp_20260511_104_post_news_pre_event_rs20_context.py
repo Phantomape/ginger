@@ -30,11 +30,10 @@ from experiments import exp_20260509_020_post_news_continuation_entry_pattern as
 EXPERIMENT_ID = "exp-20260511-104"
 STEM = "post_news_pre_event_rs20_context"
 OUT_JSON = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"

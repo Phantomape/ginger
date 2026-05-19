@@ -48,7 +48,7 @@ def main():
     parser.add_argument(
         "--append-log",
         action="store_true",
-        help="Write the generated log row to docs/experiments/logs/<experiment_id>.json.",
+        help="Write the generated log row to experiments/logs/<experiment_id>.json.",
     )
     parser.add_argument(
         "--log-path",

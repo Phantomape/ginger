@@ -35,7 +35,7 @@ import exp_20260516_015_space_dual_catalyst_iwm_leader_trend_risk as base
 
 LOGGER = logging.getLogger(__name__)
 
-DOCS_DIR = ROOT / "docs" / "experiments"
+DOCS_DIR = ROOT / "experiments"
 LOG_DIR = DOCS_DIR / "logs"
 TICKET_DIR = DOCS_DIR / "tickets"
 ARTIFACT_DIR = DOCS_DIR / "artifacts"

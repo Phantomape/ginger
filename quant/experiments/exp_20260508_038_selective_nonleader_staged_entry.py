@@ -425,16 +425,15 @@ def main() -> None:
         ),
         "experiment_log_jsonl_note": (
             "Not appended by this run because docs/experiment_log.jsonl had pre-existing unstaged "
-            "changes outside this experiment; canonical record is the docs/experiments log file."
+            "changes outside this experiment; canonical record is the experiments log file."
         ),
     }
 
     data_path = ROOT / "data" / "experiments" / EXP_ID / f"{EXP_ID}_selective_nonleader_staged_entry.json"
-    log_path = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-    ticket_path = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+    log_path = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+    ticket_path = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
     artifact_path = (
         ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXP_ID}_selective_nonleader_staged_entry.md"

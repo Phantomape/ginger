@@ -34,8 +34,8 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260507-006"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "full_candidate_filing_shock_shadow.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
 AUDIT_MD = (
@@ -497,7 +497,7 @@ def _update_registry(ticket: dict[str, Any]) -> None:
         "lane": ticket.get("lane"),
         "owner": ticket.get("owner"),
         "hypothesis": ticket.get("hypothesis"),
-        "ticket_file": f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
+        "ticket_file": f"experiments/tickets/{EXPERIMENT_ID}.json",
         "updated_at": _utc_now_iso(),
     }
     experiments = registry.setdefault("experiments", [])
@@ -678,8 +678,8 @@ def main() -> None:
             "quant/experiments/exp_20260507_006_full_candidate_filing_shock_shadow.py",
             "data/experiments/exp-20260507-006/full_candidate_filing_shock_shadow.json",
             "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_full_candidate_exp-20260507-006_20260507.md",
-            "docs/experiments/tickets/exp-20260507-006.json",
-            "docs/experiments/logs/exp-20260507-006.json",
+            "experiments/tickets/exp-20260507-006.json",
+            "experiments/logs/exp-20260507-006.json",
             "docs/experiment_log.jsonl",
         ],
     }

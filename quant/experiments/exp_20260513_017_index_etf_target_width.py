@@ -37,11 +37,10 @@ from data_layer import get_universe  # noqa: E402
 
 OUTPUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUTPUT_JSON = OUTPUT_DIR / f"{EXPERIMENT_SLUG}.json"
-DOC_LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-DOC_TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+DOC_LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 DOC_ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

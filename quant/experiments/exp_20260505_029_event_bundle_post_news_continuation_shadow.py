@@ -430,7 +430,7 @@ def main() -> None:
             "alters_sizing": False,
         },
         "related_files": [
-            "docs/experiments/tickets/exp-20260505-029.json",
+            "experiments/tickets/exp-20260505-029.json",
             "data/experiments/exp-20260504-049/default_off_event_overlay_bundle.json",
             "data/experiments/exp-20260505-025/baseline_late_strong.json",
             "data/experiments/exp-20260505-025/baseline_mid_weak.json",

@@ -64,7 +64,7 @@ import portfolio_engine  # noqa: E402
 EXPERIMENT_ID = "exp-20260513-022"
 STEM = "space_government_contract_peer_nonleader_risk"
 TIMESTAMP = "2026-05-13T09:02:00Z"
-ARTIFACT_DIR = PROJECT_ROOT / "docs" / "experiments" / EXPERIMENT_ID
+ARTIFACT_DIR = PROJECT_ROOT / "experiments" / EXPERIMENT_ID
 RESULT_JSON = ARTIFACT_DIR / f"{EXPERIMENT_ID}_{STEM}.json"
 RESULT_MD = ARTIFACT_DIR / f"{EXPERIMENT_ID}_{STEM}.md"
 TICKET_MD = ARTIFACT_DIR / f"{EXPERIMENT_ID}_{STEM}_ticket.md"

@@ -30,8 +30,8 @@ EXPERIMENT_ID = "exp-20260501-015"
 SOURCE_EXPERIMENT_ID = "exp-20260501-008"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "ai_optical_storage_watchlist.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 PLAYBOOK = REPO_ROOT / "docs" / "alpha-optimization-playbook.md"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 

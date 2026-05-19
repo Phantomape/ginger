@@ -51,11 +51,10 @@ EXP_ID = "exp-20260507-015"
 PRIMARY_VARIANT = "exclude_severe_sec_negative_text"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / "sec_negative_text_severity.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 AUDIT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / "exp-20260507-015_sec_negative_text_severity.md"
@@ -472,9 +471,9 @@ def main() -> int:
         "related_files": [
             "quant/experiments/exp_20260507_015_sec_negative_text_severity.py",
             "data/experiments/exp-20260507-015/sec_negative_text_severity.json",
-            "docs/experiments/logs/exp-20260507-015.json",
-            "docs/experiments/tickets/exp-20260507-015.json",
-            "docs/experiments/artifacts/exp-20260507-015_sec_negative_text_severity.md",
+            "experiments/logs/exp-20260507-015.json",
+            "experiments/tickets/exp-20260507-015.json",
+            "experiments/artifacts/exp-20260507-015_sec_negative_text_severity.md",
         ],
     }
 

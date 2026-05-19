@@ -51,11 +51,10 @@ EXP_ID = "exp-20260507-019"
 STEM = "satellite_shared_capacity"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXP_ID}_{STEM}.md"

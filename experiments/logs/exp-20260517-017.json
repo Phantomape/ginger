@@ -1,0 +1,588 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 8.206598,
+    "max_drawdown_pct_max": 0.16384,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 62,
+    "sleeve_total_pnl_sum": 12057.92,
+    "total_pnl_sum": 248913.05,
+    "trade_count_sum": 123
+  },
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for core baseline, plus SEC financial-report production paper-sleeve replay over the same OHLCV snapshots.",
+  "before_metrics": {
+    "expected_value_score_sum": 8.223167,
+    "max_drawdown_pct_max": 0.163135,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 62,
+    "sleeve_total_pnl_sum": 12416.68,
+    "total_pnl_sum": 249271.81,
+    "trade_count_sum": 123
+  },
+  "best_variant": "high_fact_nonhigh_vague_scalar_1.10",
+  "change_summary": "Sweep a paper-notional scalar for covered SEC financial-report rows whose filing text lands in the new high-fact / non-high-vagueness cohort.",
+  "change_type": "alpha_search_semantic_field_allocation",
+  "changed_variable": "operational_fact_density_non_high_vagueness_notional_scalar",
+  "component": "quant/experiments",
+  "decision": "rejected_operational_fact_density_notional",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": -0.016569,
+      "expected_value_score_sum_delta_pct": -0.002015,
+      "max_drawdown_pct_max_delta": 0.000705,
+      "max_drawdown_pct_max_delta_pct": 0.004322,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": 0.0,
+      "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+      "sleeve_total_pnl_sum_delta": -358.76,
+      "sleeve_total_pnl_sum_delta_pct": -0.028893,
+      "total_pnl_sum_delta": -358.76,
+      "total_pnl_sum_delta_pct": -0.001439,
+      "trade_count_sum_delta": 0.0,
+      "trade_count_sum_delta_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": -0.00665,
+        "max_drawdown_pct": 0.000584,
+        "sharpe_daily": -0.00335,
+        "total_pnl": -66.62
+      },
+      "mid_weak": {
+        "expected_value_score": -0.002235,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": -0.001498,
+        "total_pnl": -28.76
+      },
+      "old_thin": {
+        "expected_value_score": -0.007684,
+        "max_drawdown_pct": 0.000705,
+        "sharpe_daily": -0.008727,
+        "total_pnl": -263.38
+      }
+    }
+  },
+  "expected_value_score_delta": -0.016569,
+  "experiment_id": "exp-20260517-017",
+  "gate": {
+    "aggregate_delta": {
+      "expected_value_score_sum_delta": -0.016569,
+      "expected_value_score_sum_delta_pct": -0.002015,
+      "max_drawdown_pct_max_delta": 0.000705,
+      "max_drawdown_pct_max_delta_pct": 0.004322,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": 0.0,
+      "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+      "sleeve_total_pnl_sum_delta": -358.76,
+      "sleeve_total_pnl_sum_delta_pct": -0.028893,
+      "total_pnl_sum_delta": -358.76,
+      "total_pnl_sum_delta_pct": -0.001439,
+      "trade_count_sum_delta": 0.0,
+      "trade_count_sum_delta_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": -0.00665,
+        "max_drawdown_pct": 0.000584,
+        "sharpe_daily": -0.00335,
+        "total_pnl": -66.62
+      },
+      "mid_weak": {
+        "expected_value_score": -0.002235,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": -0.001498,
+        "total_pnl": -28.76
+      },
+      "old_thin": {
+        "expected_value_score": -0.007684,
+        "max_drawdown_pct": 0.000705,
+        "sharpe_daily": -0.008727,
+        "total_pnl": -263.38
+      }
+    },
+    "concentration_guard_passed": false,
+    "metric_gate_passed": false,
+    "passed": false,
+    "rules": {
+      "concentration_guard": {
+        "max_single_positive_pnl_share": 0.55
+      },
+      "metric_gate": "aggregate EV/PnL positive, all three windows EV/PnL positive, and max drawdown worsening <= 0.5 percentage points",
+      "sample_guard": {
+        "min_adjusted_trades": 8,
+        "min_windows_present": 3
+      }
+    },
+    "sample_guard_passed": true
+  },
+  "gate2_required_fields": {
+    "checked_position_count": 9,
+    "exists": true,
+    "missing_entry_date_count": 0,
+    "missing_target_price_count": 0,
+    "passed": true,
+    "path": "operator_inputs\\open_positions.json",
+    "sample_missing_entry_date": [],
+    "sample_missing_target_price": []
+  },
+  "hypothesis": "Inside the SEC financial-report T+1 paper sleeve, filings with high operational fact density and without high narrative vagueness should carry higher-quality continuation alpha than the undifferentiated sleeve.",
+  "interpretation": "This unexplored playbook branch is now tested and rejected on the current SEC sleeve. High fact density without high vagueness did not identify better continuation rows; the cohort was small, finance-heavy, and aggregate negative even before concentration became the main concern.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "Mechanical index/passive-flow events remain blocked by missing PIT history across the three standard windows, so this experiment uses deterministic SEC text fields with full archive coverage instead.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "next_evidence_needed": "Do not retry nearby operational-fact-density scalars on frozen windows. If this research lane resumes, it needs a materially new semantic field such as explicit KPI delta extraction or cross-channel inconsistency.",
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "base_event_notional_usd": 15000.0,
+    "baseline_scalar": 1.0,
+    "best_scalar": 1.1,
+    "field_definition": {
+      "narrative_vagueness_bucket": "exclude only rows with vague_term_hits >= 6",
+      "operational_fact_density_bucket": "high if fact_term_hits + min(numeric_hits,12)/3 >= 8"
+    },
+    "max_positions": 3,
+    "periodic_report_scalar": 1.25,
+    "scalar_variants": [
+      1.1,
+      1.25,
+      1.5
+    ],
+    "source_candidate_artifact": "data\\experiments\\exp-20260511-100\\exp_20260511_100_sec_financial_report_positive_t1_forward_outcome_refresh.json",
+    "tenq_periodic_report_scalar": 2.0,
+    "text_archive": "data\\non_ohlcv\\sec_filing_text_20241002_20260421.jsonl"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "Any future positive result would need shared queue fields and the same paper sleeve consumed by run.py and backtester.py before promotion.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "protocol_answers": {
+    "1_alpha_hypothesis": "SEC/earnings semantic field allocation: high operational-fact-density and non-high-vagueness filings should deserve more paper notional.",
+    "2_history_check": "No prior experiment in docs/experiment_log.jsonl or experiments used the playbook's operational_fact_density_bucket or narrative_vagueness_bucket. The nearest related runs were exp-20260516-033 neutral-language notional and exp-20260517-012 neutral-language moderate-reaction notional.",
+    "3_single_causal_variable": "operational_fact_density_non_high_vagueness_notional_scalar",
+    "4_acceptance_standard": {
+      "concentration_guard": {
+        "max_single_positive_pnl_share": 0.55
+      },
+      "metric_gate": "aggregate EV/PnL positive, all three windows EV/PnL positive, and max drawdown worsening <= 0.5 percentage points",
+      "sample_guard": {
+        "min_adjusted_trades": 8,
+        "min_windows_present": 3
+      }
+    },
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260517_017_sec_operational_fact_density_notional.py"
+  },
+  "rejection_reason": "The best scalar stayed negative on aggregate EV and PnL, with losses in late_strong and mid_weak and only small positive contribution from two JPM rows in old_thin.",
+  "related_files": [
+    "quant/experiments/exp_20260517_017_sec_operational_fact_density_notional.py",
+    "data\\experiments\\exp-20260517-017\\exp_20260517_017_sec_operational_fact_density_notional.json",
+    "experiments\\logs\\exp-20260517-017.json",
+    "experiments\\tickets\\exp-20260517-017.json",
+    "experiments\\artifacts\\exp-20260517-017_sec_operational_fact_density_notional.md",
+    "docs\\experiment_log.jsonl"
+  ],
+  "selection": {
+    "adjusted_trade_count": 9,
+    "by_ticker_count": {
+      "DE": 2,
+      "GS": 1,
+      "JPM": 4,
+      "TSLA": 2
+    },
+    "by_ticker_incremental_pnl": {
+      "DE": -125.43,
+      "GS": -21.89,
+      "JPM": 26.96,
+      "TSLA": -209.61
+    },
+    "by_window_count": {
+      "late_strong": 2,
+      "mid_weak": 2,
+      "old_thin": 5
+    },
+    "by_window_incremental_pnl": {
+      "late_strong": -37.82,
+      "mid_weak": -28.76,
+      "old_thin": -263.39
+    },
+    "max_single_positive_incremental_pnl": 40.14,
+    "max_single_positive_pnl_share": 0.8205,
+    "positive_incremental_pnl": 48.92,
+    "sample_rows": [
+      {
+        "adjusted_pnl": -240.81,
+        "baseline_pnl": -218.92,
+        "entry_date": "2026-01-13",
+        "event_family": "earnings_8k",
+        "exit_date": "2026-01-28",
+        "form_base": "8-K",
+        "incremental_pnl": -21.89,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "low",
+        "operational_fact_density_bucket": "high",
+        "ticker": "GS",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -175.25,
+        "baseline_pnl": -159.31,
+        "entry_date": "2026-01-16",
+        "event_family": "earnings_8k",
+        "exit_date": "2026-02-02",
+        "form_base": "8-K",
+        "incremental_pnl": -15.93,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "low",
+        "operational_fact_density_bucket": "high",
+        "ticker": "JPM",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -66.3,
+        "baseline_pnl": -60.27,
+        "entry_date": "2025-07-18",
+        "event_family": "earnings_8k",
+        "exit_date": "2025-08-01",
+        "form_base": "8-K",
+        "incremental_pnl": -6.03,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "low",
+        "operational_fact_density_bucket": "high",
+        "ticker": "JPM",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": -250.08,
+        "baseline_pnl": -227.35,
+        "entry_date": "2025-10-07",
+        "event_family": "earnings_8k",
+        "exit_date": "2025-10-21",
+        "form_base": "8-K",
+        "incremental_pnl": -22.73,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "low",
+        "operational_fact_density_bucket": "high",
+        "ticker": "TSLA",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": -2055.64,
+        "baseline_pnl": -1868.76,
+        "entry_date": "2024-10-07",
+        "event_family": "earnings_8k",
+        "exit_date": "2024-10-21",
+        "form_base": "8-K",
+        "incremental_pnl": -186.88,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "low",
+        "operational_fact_density_bucket": "high",
+        "ticker": "TSLA",
+        "window": "old_thin"
+      },
+      {
+        "adjusted_pnl": 96.61,
+        "baseline_pnl": 87.83,
+        "entry_date": "2024-10-16",
+        "event_family": "earnings_8k",
+        "exit_date": "2024-10-30",
+        "form_base": "8-K",
+        "incremental_pnl": 8.78,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "medium",
+        "operational_fact_density_bucket": "high",
+        "ticker": "JPM",
+        "window": "old_thin"
+      },
+      {
+        "adjusted_pnl": -368.86,
+        "baseline_pnl": -335.33,
+        "entry_date": "2024-11-26",
+        "event_family": "earnings_8k",
+        "exit_date": "2024-12-11",
+        "form_base": "8-K",
+        "incremental_pnl": -33.53,
+        "language_bucket": "negative_language",
+        "narrative_vagueness_bucket": "medium",
+        "operational_fact_density_bucket": "high",
+        "ticker": "DE",
+        "window": "old_thin"
+      },
+      {
+        "adjusted_pnl": 441.56,
+        "baseline_pnl": 401.42,
+        "entry_date": "2025-01-21",
+        "event_family": "earnings_8k",
+        "exit_date": "2025-02-04",
+        "form_base": "8-K",
+        "incremental_pnl": 40.14,
+        "language_bucket": "neutral_or_mixed_language",
+        "narrative_vagueness_bucket": "low",
+        "operational_fact_density_bucket": "high",
+        "ticker": "JPM",
+        "window": "old_thin"
+      },
+      {
+        "adjusted_pnl": -1010.85,
+        "baseline_pnl": -918.95,
+        "entry_date": "2025-02-19",
+        "event_family": "earnings_8k",
+        "exit_date": "2025-03-05",
+        "form_base": "8-K",
+        "incremental_pnl": -91.9,
+        "language_bucket": "negative_language",
+        "narrative_vagueness_bucket": "medium",
+        "operational_fact_density_bucket": "high",
+        "ticker": "DE",
+        "window": "old_thin"
+      }
+    ],
+    "windows_present": 3
+  },
+  "semantic_coverage_summary": {
+    "aggregate": {
+      "candidate_count": 164,
+      "coverage_rate": 0.5488,
+      "coverage_status": {
+        "covered": 90,
+        "missing_text_archive": 74
+      },
+      "covered_candidate_count": 90,
+      "narrative_vagueness_bucket": {
+        "high": 41,
+        "low": 38,
+        "medium": 11,
+        "uncovered": 74
+      },
+      "operational_fact_density_bucket": {
+        "high": 59,
+        "medium": 31,
+        "uncovered": 74
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "candidate_count": 55,
+        "coverage_status": {
+          "covered": 31,
+          "missing_text_archive": 24
+        },
+        "narrative_vagueness_bucket": {
+          "high": 13,
+          "low": 15,
+          "medium": 3,
+          "uncovered": 24
+        },
+        "operational_fact_density_bucket": {
+          "high": 19,
+          "medium": 12,
+          "uncovered": 24
+        }
+      },
+      "mid_weak": {
+        "candidate_count": 53,
+        "coverage_status": {
+          "covered": 29,
+          "missing_text_archive": 24
+        },
+        "narrative_vagueness_bucket": {
+          "high": 16,
+          "low": 11,
+          "medium": 2,
+          "uncovered": 24
+        },
+        "operational_fact_density_bucket": {
+          "high": 20,
+          "medium": 9,
+          "uncovered": 24
+        }
+      },
+      "old_thin": {
+        "candidate_count": 56,
+        "coverage_status": {
+          "covered": 30,
+          "missing_text_archive": 26
+        },
+        "narrative_vagueness_bucket": {
+          "high": 12,
+          "low": 12,
+          "medium": 6,
+          "uncovered": 26
+        },
+        "operational_fact_density_bucket": {
+          "high": 20,
+          "medium": 10,
+          "uncovered": 26
+        }
+      }
+    }
+  },
+  "single_causal_variable": "paper-notional scalar for the high operational-fact-density / non-high narrative-vagueness SEC financial-report cohort",
+  "status": "rejected",
+  "text_load_stats": [
+    {
+      "bytes": 12541135,
+      "path": "data\\non_ohlcv\\sec_filing_text_20241002_20260421.jsonl",
+      "rows_loaded": 306
+    }
+  ],
+  "timestamp": "2026-05-17T16:18:24Z",
+  "total_pnl_delta": -358.76,
+  "variant_summaries": {
+    "high_fact_nonhigh_vague_scalar_1.10": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.016569,
+        "expected_value_score_sum_delta_pct": -0.002015,
+        "max_drawdown_pct_max_delta": 0.000705,
+        "max_drawdown_pct_max_delta_pct": 0.004322,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -358.76,
+        "sleeve_total_pnl_sum_delta_pct": -0.028893,
+        "total_pnl_sum_delta": -358.76,
+        "total_pnl_sum_delta_pct": -0.001439,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.00665,
+          "max_drawdown_pct": 0.000584,
+          "sharpe_daily": -0.00335,
+          "total_pnl": -66.62
+        },
+        "mid_weak": {
+          "expected_value_score": -0.002235,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": -0.001498,
+          "total_pnl": -28.76
+        },
+        "old_thin": {
+          "expected_value_score": -0.007684,
+          "max_drawdown_pct": 0.000705,
+          "sharpe_daily": -0.008727,
+          "total_pnl": -263.38
+        }
+      },
+      "ev_positive_windows": 0,
+      "max_drawdown_delta_max": 0.000705,
+      "operational_fact_density_notional_scalar": 1.1,
+      "pnl_positive_windows": 0
+    },
+    "high_fact_nonhigh_vague_scalar_1.25": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.041495,
+        "expected_value_score_sum_delta_pct": -0.005046,
+        "max_drawdown_pct_max_delta": 0.001766,
+        "max_drawdown_pct_max_delta_pct": 0.010825,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -896.89,
+        "sleeve_total_pnl_sum_delta_pct": -0.072233,
+        "total_pnl_sum_delta": -896.89,
+        "total_pnl_sum_delta_pct": -0.003598,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.016751,
+          "max_drawdown_pct": 0.00146,
+          "sharpe_daily": -0.008491,
+          "total_pnl": -166.54
+        },
+        "mid_weak": {
+          "expected_value_score": -0.005617,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": -0.003778,
+          "total_pnl": -71.9
+        },
+        "old_thin": {
+          "expected_value_score": -0.019127,
+          "max_drawdown_pct": 0.001766,
+          "sharpe_daily": -0.021822,
+          "total_pnl": -658.45
+        }
+      },
+      "ev_positive_windows": 0,
+      "max_drawdown_delta_max": 0.001766,
+      "operational_fact_density_notional_scalar": 1.25,
+      "pnl_positive_windows": 0
+    },
+    "high_fact_nonhigh_vague_scalar_1.50": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.083218,
+        "expected_value_score_sum_delta_pct": -0.01012,
+        "max_drawdown_pct_max_delta": 0.003542,
+        "max_drawdown_pct_max_delta_pct": 0.021712,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -1793.78,
+        "sleeve_total_pnl_sum_delta_pct": -0.144465,
+        "total_pnl_sum_delta": -1793.78,
+        "total_pnl_sum_delta_pct": -0.007196,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.033921,
+          "max_drawdown_pct": 0.002923,
+          "sharpe_daily": -0.017363,
+          "total_pnl": -333.08
+        },
+        "mid_weak": {
+          "expected_value_score": -0.011325,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": -0.007665,
+          "total_pnl": -143.8
+        },
+        "old_thin": {
+          "expected_value_score": -0.037972,
+          "max_drawdown_pct": 0.003542,
+          "sharpe_daily": -0.043655,
+          "total_pnl": -1316.9
+        }
+      },
+      "ev_positive_windows": 0,
+      "max_drawdown_delta_max": 0.003542,
+      "operational_fact_density_notional_scalar": 1.5,
+      "pnl_positive_windows": 0
+    }
+  },
+  "why_not_other_changes": "The playbook's mechanical index/passive-flow branch is currently blocked because repo news history does not cover all three fixed windows. Rotation/event notional retunes are already anti-repeat or forward-only. This run therefore tests one fresh, fully replayable SEC semantic field branch.",
+  "windows": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  }
+}

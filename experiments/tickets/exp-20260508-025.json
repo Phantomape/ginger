@@ -1,0 +1,67 @@
+{
+  "acceptance_rule": "Data audit/shadow-only: report PIT status, coverage, forward returns, existing-signal overlap, and slot value; no production promotion.",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260508-025.json",
+    "experiments/logs/exp-20260508-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/form4_20260508.md",
+    "data/experiments/exp-20260508-025/form4_overlay_shadow_audit.json",
+    "data/experiments/exp-20260508-025/form4_overlay_shadow_audit_runner.py"
+  ],
+  "baseline_result_file": "data/backtest_results_20260507.json",
+  "change_type": "form4_shadow_overlay_audit",
+  "claimed_at": null,
+  "completed_at": "2026-05-08T17:30:28+00:00",
+  "created_at": "2026-05-08T17:19:20+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260508-025",
+  "hypothesis": "Public-market insider Form 4 buying may act as a non-OHLCV confirmation overlay for existing trend_long and breakout_long candidates, but this run only audits PIT-safe local coverage and shadow overlap without changing production.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "form4_shadow_overlay_audit",
+    "no_production_change"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "owner": "loss-attribution",
+  "result": {
+    "artifact": "data/experiments/exp-20260508-025/form4_overlay_shadow_audit.json",
+    "decision": "shadow_only",
+    "log_file": "experiments/logs/exp-20260508-025.json",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "parity_test_added": false,
+      "production_impact": "shadow_audit_only_no_production_change",
+      "production_signal_path_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    },
+    "report": "docs/non_ohlcv_data_audit/form4_20260508.md"
+  },
+  "single_causal_variable": "Insider Form 4 meaningful open-market purchase overlay tags on existing Ginger candidates",
+  "status": "observed_only"
+}

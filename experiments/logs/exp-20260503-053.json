@@ -1,0 +1,1052 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "alpha_hypothesis_category": "entry_external_event_source",
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "best_role_variant": "ge500k_not_ceo_cfo_or_president",
+  "best_variant_gate4": false,
+  "change_type": "shadow_event_owner_role_discriminator",
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "decision": "rejected",
+  "decision_rationale": "The best role filter was ge500k_not_ceo_cfo_or_president, with avg 10d excess delta +0.15 pp versus the plain >=$500k baseline and -4 valid events. That is not enough to justify a new role-gated branch: the apparent lift is small, sample count falls, and old_thin still has only one valid event.",
+  "delta_metrics": {
+    "best_role_avg_excess_delta_pct": 0.149429,
+    "best_role_valid_event_delta": -4,
+    "best_role_variant": "ge500k_not_ceo_cfo_or_president",
+    "core_trade_count_delta_sum": 0,
+    "expected_value_score_delta_sum": 0.0,
+    "total_pnl_delta_sum": 0.0
+  },
+  "experiment_id": "exp-20260503-053",
+  "gate4_basis": "No production strategy was promoted. Core before/after fixed-window metrics are unchanged; the decision is whether role filters dominate the already-known plain >=$500k Form 4 event source.",
+  "history_check": {
+    "mechanism_insight_guardrail": "Avoids recently rejected SEC reaction gates, RS/TQS slot ranking, static universe promotion, nearby SPY leader gates, and ATR trailing exits.",
+    "recent_related_results": {
+      "exp-20260503-048": "Form 4 accepted-trade overlap was too sparse.",
+      "exp-20260503-049": "Form 4 skipped-entry overlap was zero.",
+      "exp-20260503-052": "Plain >=$500k meaningful purchases were shadow-promising but not promotable."
+    },
+    "why_not_simple_repeat": "This locks the prior >=$500k event source and tests only owner-role discrimination; it does not retry near-entry joins or promote the event sleeve."
+  },
+  "hypothesis": "Within PIT-safe meaningful Form 4 purchases above $500k, simple owner-role filters may identify a cleaner standalone external-event candidate source than the plain purchase-value threshold.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "form4_standalone_external_event_source",
+  "next_retry_requires": [
+    "Do not retry simple Form 4 owner-role filters without a materially broader archive.",
+    "The next valid Form 4 step remains a default-off forward/pilot queue with frozen alternatives.",
+    "A promotion needs shared production/backtest event policy, not another shadow-only role threshold."
+  ],
+  "parameters": {
+    "baseline_event_filter": "meaningful_purchase_v1 and total_purchase_value >= 500000",
+    "locked_variables": [
+      "production universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "position sizing",
+      "add-ons",
+      "exits",
+      "LLM/news replay",
+      "core backtester behavior"
+    ],
+    "primary_horizon_trading_days": 10,
+    "round_trip_cost_pct": 0.0035,
+    "single_causal_variable": "FORM4_OWNER_ROLE_FILTER",
+    "tested_role_filters": [
+      "baseline_ge500k_any_role",
+      "ge500k_not_ceo_cfo_or_president",
+      "ge500k_director_not_officer",
+      "ge500k_not_officer",
+      "ge500k_single_owner",
+      "ge500k_ceo_cfo_or_president",
+      "ge500k_any_officer",
+      "ge500k_owner_cluster_2plus"
+    ]
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_impact": "shadow_only_no_strategy_logic_changed",
+    "promotion_requirement": "Any future positive Form 4 promotion must use a shared event-sleeve policy plus production event-queue reporting before it can rank, size, or introduce candidates.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Owner-role filters did not materially dominate the simpler >=$500k meaningful-purchase event source.",
+  "related_files": [
+    "data/non_ohlcv/form4_purchase_shadow_outcomes_20241002_20260421.json",
+    "quant/experiments/exp_20260503_053_form4_owner_role_discriminator.py",
+    "data/experiments/exp-20260503-053/form4_owner_role_discriminator.json",
+    "data/experiments/exp-20260503-053/after_core_backtests.json",
+    "docs/non_ohlcv_data_audit/form4_owner_role_discriminator_20260503.md",
+    "experiments/logs/exp-20260503-053.json",
+    "experiments/tickets/exp-20260503-053.json"
+  ],
+  "shadow_baseline": {
+    "aggregate": {
+      "all_valid_windows_positive": true,
+      "avg_excess_vs_spy_pct": 4.759438,
+      "avg_gross_return_pct": 6.100954,
+      "avg_net_return_pct": 5.750954,
+      "event_count": 17,
+      "event_level_sharpe_proxy": 2.8454,
+      "excess_win_rate": 0.8462,
+      "median_excess_vs_spy_pct": 5.6742,
+      "median_gross_return_pct": 5.5287,
+      "median_net_return_pct": 5.1787,
+      "pnl_per_10k_event_notional": 7476.24,
+      "positive_excess_windows": 3,
+      "return_on_100k_base": 0.074762,
+      "ticker_count": 10,
+      "tickers": [
+        "AMD",
+        "AVGO",
+        "CORZ",
+        "CRWV",
+        "DIS",
+        "LLY",
+        "MSFT",
+        "MU",
+        "TSLA",
+        "UNH"
+      ],
+      "valid_event_count": 13,
+      "win_rate_net": 0.8462,
+      "windows_with_valid_events": 3
+    },
+    "by_window": {
+      "late_strong": {
+        "avg_excess_vs_spy_pct": 4.838825,
+        "avg_gross_return_pct": 5.33475,
+        "avg_net_return_pct": 4.98475,
+        "event_count": 4,
+        "event_level_sharpe_proxy": 1.5415,
+        "excess_win_rate": 1.0,
+        "median_excess_vs_spy_pct": 2.23165,
+        "median_gross_return_pct": 2.39295,
+        "median_net_return_pct": 2.04295,
+        "pnl_per_10k_event_notional": 1993.9,
+        "return_on_100k_base": 0.019939,
+        "ticker_count": 3,
+        "tickers": [
+          "DIS",
+          "MSFT",
+          "MU"
+        ],
+        "valid_event_count": 4,
+        "win_rate_net": 1.0
+      },
+      "mid_weak": {
+        "avg_excess_vs_spy_pct": 5.274012,
+        "avg_gross_return_pct": 7.195288,
+        "avg_net_return_pct": 6.845287,
+        "event_count": 10,
+        "event_level_sharpe_proxy": 2.3692,
+        "excess_win_rate": 0.75,
+        "median_excess_vs_spy_pct": 7.4019,
+        "median_gross_return_pct": 9.05075,
+        "median_net_return_pct": 8.70075,
+        "pnl_per_10k_event_notional": 5476.23,
+        "return_on_100k_base": 0.054762,
+        "ticker_count": 7,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "LLY",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 8,
+        "win_rate_net": 0.75
+      },
+      "old_thin": {
+        "avg_excess_vs_spy_pct": 0.3253,
+        "avg_gross_return_pct": 0.4111,
+        "avg_net_return_pct": 0.0611,
+        "event_count": 3,
+        "event_level_sharpe_proxy": null,
+        "excess_win_rate": 1.0,
+        "median_excess_vs_spy_pct": 0.3253,
+        "median_gross_return_pct": 0.4111,
+        "median_net_return_pct": 0.0611,
+        "pnl_per_10k_event_notional": 6.11,
+        "return_on_100k_base": 6.1e-05,
+        "ticker_count": 3,
+        "tickers": [
+          "CORZ",
+          "CRWV",
+          "UNH"
+        ],
+        "valid_event_count": 1,
+        "win_rate_net": 1.0
+      }
+    },
+    "min_total_purchase_value": 500000.0,
+    "primary_horizon_trading_days": 10,
+    "round_trip_cost_pct": 0.0035
+  },
+  "shadow_variants": {
+    "baseline_ge500k_any_role": {
+      "aggregate": {
+        "all_valid_windows_positive": true,
+        "avg_excess_vs_spy_pct": 4.759438,
+        "avg_gross_return_pct": 6.100954,
+        "avg_net_return_pct": 5.750954,
+        "event_count": 17,
+        "event_level_sharpe_proxy": 2.8454,
+        "excess_win_rate": 0.8462,
+        "median_excess_vs_spy_pct": 5.6742,
+        "median_gross_return_pct": 5.5287,
+        "median_net_return_pct": 5.1787,
+        "pnl_per_10k_event_notional": 7476.24,
+        "positive_excess_windows": 3,
+        "return_on_100k_base": 0.074762,
+        "ticker_count": 10,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 13,
+        "win_rate_net": 0.8462,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 4.838825,
+          "avg_gross_return_pct": 5.33475,
+          "avg_net_return_pct": 4.98475,
+          "event_count": 4,
+          "event_level_sharpe_proxy": 1.5415,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.23165,
+          "median_gross_return_pct": 2.39295,
+          "median_net_return_pct": 2.04295,
+          "pnl_per_10k_event_notional": 1993.9,
+          "return_on_100k_base": 0.019939,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 4,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.274012,
+          "avg_gross_return_pct": 7.195288,
+          "avg_net_return_pct": 6.845287,
+          "event_count": 10,
+          "event_level_sharpe_proxy": 2.3692,
+          "excess_win_rate": 0.75,
+          "median_excess_vs_spy_pct": 7.4019,
+          "median_gross_return_pct": 9.05075,
+          "median_net_return_pct": 8.70075,
+          "pnl_per_10k_event_notional": 5476.23,
+          "return_on_100k_base": 0.054762,
+          "ticker_count": 7,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 8,
+          "win_rate_net": 0.75
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": 0.3253,
+          "avg_gross_return_pct": 0.4111,
+          "avg_net_return_pct": 0.0611,
+          "event_count": 3,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 0.3253,
+          "median_gross_return_pct": 0.4111,
+          "median_net_return_pct": 0.0611,
+          "pnl_per_10k_event_notional": 6.11,
+          "return_on_100k_base": 6.1e-05,
+          "ticker_count": 3,
+          "tickers": [
+            "CORZ",
+            "CRWV",
+            "UNH"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_any_officer": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 6.009083,
+        "avg_gross_return_pct": 7.370117,
+        "avg_net_return_pct": 7.020117,
+        "event_count": 6,
+        "event_level_sharpe_proxy": 2.8706,
+        "excess_win_rate": 0.8333,
+        "median_excess_vs_spy_pct": 7.4019,
+        "median_gross_return_pct": 9.05075,
+        "median_net_return_pct": 8.70075,
+        "pnl_per_10k_event_notional": 4212.07,
+        "positive_excess_windows": 2,
+        "return_on_100k_base": 0.042121,
+        "ticker_count": 5,
+        "tickers": [
+          "AMD",
+          "LLY",
+          "MSFT",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 6,
+        "win_rate_net": 0.8333,
+        "windows_with_valid_events": 2
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 1.0559,
+          "avg_gross_return_pct": 1.5372,
+          "avg_net_return_pct": 1.1872,
+          "event_count": 1,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 1.0559,
+          "median_gross_return_pct": 1.5372,
+          "median_net_return_pct": 1.1872,
+          "pnl_per_10k_event_notional": 118.72,
+          "return_on_100k_base": 0.001187,
+          "ticker_count": 1,
+          "tickers": [
+            "MSFT"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 6.99972,
+          "avg_gross_return_pct": 8.5367,
+          "avg_net_return_pct": 8.1867,
+          "event_count": 5,
+          "event_level_sharpe_proxy": 3.11,
+          "excess_win_rate": 0.8,
+          "median_excess_vs_spy_pct": 8.5044,
+          "median_gross_return_pct": 10.8108,
+          "median_net_return_pct": 10.4608,
+          "pnl_per_10k_event_notional": 4093.35,
+          "return_on_100k_base": 0.040933,
+          "ticker_count": 4,
+          "tickers": [
+            "AMD",
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 5,
+          "win_rate_net": 0.8
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": null,
+          "avg_gross_return_pct": null,
+          "avg_net_return_pct": null,
+          "event_count": 0,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": null,
+          "median_excess_vs_spy_pct": null,
+          "median_gross_return_pct": null,
+          "median_net_return_pct": null,
+          "pnl_per_10k_event_notional": 0,
+          "return_on_100k_base": 0.0,
+          "ticker_count": 0,
+          "tickers": [],
+          "valid_event_count": 0,
+          "win_rate_net": null
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_ceo_cfo_or_president": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 4.423225,
+        "avg_gross_return_pct": 5.1977,
+        "avg_net_return_pct": 4.8477,
+        "event_count": 4,
+        "event_level_sharpe_proxy": 1.5257,
+        "excess_win_rate": 0.75,
+        "median_excess_vs_spy_pct": 3.67765,
+        "median_gross_return_pct": 4.41395,
+        "median_net_return_pct": 4.06395,
+        "pnl_per_10k_event_notional": 1939.08,
+        "positive_excess_windows": 2,
+        "return_on_100k_base": 0.019391,
+        "ticker_count": 4,
+        "tickers": [
+          "LLY",
+          "MSFT",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 4,
+        "win_rate_net": 0.75,
+        "windows_with_valid_events": 2
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 1.0559,
+          "avg_gross_return_pct": 1.5372,
+          "avg_net_return_pct": 1.1872,
+          "event_count": 1,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 1.0559,
+          "median_gross_return_pct": 1.5372,
+          "median_net_return_pct": 1.1872,
+          "pnl_per_10k_event_notional": 118.72,
+          "return_on_100k_base": 0.001187,
+          "ticker_count": 1,
+          "tickers": [
+            "MSFT"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.545667,
+          "avg_gross_return_pct": 6.417867,
+          "avg_net_return_pct": 6.067867,
+          "event_count": 3,
+          "event_level_sharpe_proxy": 1.4625,
+          "excess_win_rate": 0.6667,
+          "median_excess_vs_spy_pct": 6.2994,
+          "median_gross_return_pct": 7.2907,
+          "median_net_return_pct": 6.9407,
+          "pnl_per_10k_event_notional": 1820.36,
+          "return_on_100k_base": 0.018204,
+          "ticker_count": 3,
+          "tickers": [
+            "LLY",
+            "TSLA",
+            "UNH"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 0.6667
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": null,
+          "avg_gross_return_pct": null,
+          "avg_net_return_pct": null,
+          "event_count": 0,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": null,
+          "median_excess_vs_spy_pct": null,
+          "median_gross_return_pct": null,
+          "median_net_return_pct": null,
+          "pnl_per_10k_event_notional": 0,
+          "return_on_100k_base": 0.0,
+          "ticker_count": 0,
+          "tickers": [],
+          "valid_event_count": 0,
+          "win_rate_net": null
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_director_not_officer": {
+      "aggregate": {
+        "all_valid_windows_positive": true,
+        "avg_excess_vs_spy_pct": 3.688314,
+        "avg_gross_return_pct": 5.0131,
+        "avg_net_return_pct": 4.6631,
+        "event_count": 11,
+        "event_level_sharpe_proxy": 1.4409,
+        "excess_win_rate": 0.8571,
+        "median_excess_vs_spy_pct": 2.8632,
+        "median_gross_return_pct": 2.4932,
+        "median_net_return_pct": 2.1432,
+        "pnl_per_10k_event_notional": 3264.17,
+        "positive_excess_windows": 3,
+        "return_on_100k_base": 0.032642,
+        "ticker_count": 9,
+        "tickers": [
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 7,
+        "win_rate_net": 0.8571,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 6.0998,
+          "avg_gross_return_pct": 6.6006,
+          "avg_net_return_pct": 6.2506,
+          "event_count": 3,
+          "event_level_sharpe_proxy": 1.4854,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.8632,
+          "median_gross_return_pct": 2.4932,
+          "median_net_return_pct": 2.1432,
+          "pnl_per_10k_event_notional": 1875.18,
+          "return_on_100k_base": 0.018752,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 2.397833,
+          "avg_gross_return_pct": 4.9596,
+          "avg_net_return_pct": 4.6096,
+          "event_count": 5,
+          "event_level_sharpe_proxy": 0.6466,
+          "excess_win_rate": 0.6667,
+          "median_excess_vs_spy_pct": 5.6742,
+          "median_gross_return_pct": 5.5287,
+          "median_net_return_pct": 5.1787,
+          "pnl_per_10k_event_notional": 1382.88,
+          "return_on_100k_base": 0.013829,
+          "ticker_count": 5,
+          "tickers": [
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 0.6667
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": 0.3253,
+          "avg_gross_return_pct": 0.4111,
+          "avg_net_return_pct": 0.0611,
+          "event_count": 3,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 0.3253,
+          "median_gross_return_pct": 0.4111,
+          "median_net_return_pct": 0.0611,
+          "pnl_per_10k_event_notional": 6.11,
+          "return_on_100k_base": 6.1e-05,
+          "ticker_count": 3,
+          "tickers": [
+            "CORZ",
+            "CRWV",
+            "UNH"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_not_ceo_cfo_or_president": {
+      "aggregate": {
+        "all_valid_windows_positive": true,
+        "avg_excess_vs_spy_pct": 4.908867,
+        "avg_gross_return_pct": 6.5024,
+        "avg_net_return_pct": 6.1524,
+        "event_count": 13,
+        "event_level_sharpe_proxy": 2.3085,
+        "excess_win_rate": 0.8889,
+        "median_excess_vs_spy_pct": 5.6742,
+        "median_gross_return_pct": 5.5287,
+        "median_net_return_pct": 5.1787,
+        "pnl_per_10k_event_notional": 5537.16,
+        "positive_excess_windows": 3,
+        "return_on_100k_base": 0.055372,
+        "ticker_count": 10,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 9,
+        "win_rate_net": 0.8889,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 6.0998,
+          "avg_gross_return_pct": 6.6006,
+          "avg_net_return_pct": 6.2506,
+          "event_count": 3,
+          "event_level_sharpe_proxy": 1.4854,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.8632,
+          "median_gross_return_pct": 2.4932,
+          "median_net_return_pct": 2.1432,
+          "pnl_per_10k_event_notional": 1875.18,
+          "return_on_100k_base": 0.018752,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.11102,
+          "avg_gross_return_pct": 7.66174,
+          "avg_net_return_pct": 7.31174,
+          "event_count": 7,
+          "event_level_sharpe_proxy": 1.7203,
+          "excess_win_rate": 0.8,
+          "median_excess_vs_spy_pct": 8.5044,
+          "median_gross_return_pct": 10.8108,
+          "median_net_return_pct": 10.4608,
+          "pnl_per_10k_event_notional": 3655.87,
+          "return_on_100k_base": 0.036559,
+          "ticker_count": 6,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA"
+          ],
+          "valid_event_count": 5,
+          "win_rate_net": 0.8
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": 0.3253,
+          "avg_gross_return_pct": 0.4111,
+          "avg_net_return_pct": 0.0611,
+          "event_count": 3,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 0.3253,
+          "median_gross_return_pct": 0.4111,
+          "median_net_return_pct": 0.0611,
+          "pnl_per_10k_event_notional": 6.11,
+          "return_on_100k_base": 6.1e-05,
+          "ticker_count": 3,
+          "tickers": [
+            "CORZ",
+            "CRWV",
+            "UNH"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_not_officer": {
+      "aggregate": {
+        "all_valid_windows_positive": true,
+        "avg_excess_vs_spy_pct": 3.688314,
+        "avg_gross_return_pct": 5.0131,
+        "avg_net_return_pct": 4.6631,
+        "event_count": 11,
+        "event_level_sharpe_proxy": 1.4409,
+        "excess_win_rate": 0.8571,
+        "median_excess_vs_spy_pct": 2.8632,
+        "median_gross_return_pct": 2.4932,
+        "median_net_return_pct": 2.1432,
+        "pnl_per_10k_event_notional": 3264.17,
+        "positive_excess_windows": 3,
+        "return_on_100k_base": 0.032642,
+        "ticker_count": 9,
+        "tickers": [
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 7,
+        "win_rate_net": 0.8571,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 6.0998,
+          "avg_gross_return_pct": 6.6006,
+          "avg_net_return_pct": 6.2506,
+          "event_count": 3,
+          "event_level_sharpe_proxy": 1.4854,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.8632,
+          "median_gross_return_pct": 2.4932,
+          "median_net_return_pct": 2.1432,
+          "pnl_per_10k_event_notional": 1875.18,
+          "return_on_100k_base": 0.018752,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 2.397833,
+          "avg_gross_return_pct": 4.9596,
+          "avg_net_return_pct": 4.6096,
+          "event_count": 5,
+          "event_level_sharpe_proxy": 0.6466,
+          "excess_win_rate": 0.6667,
+          "median_excess_vs_spy_pct": 5.6742,
+          "median_gross_return_pct": 5.5287,
+          "median_net_return_pct": 5.1787,
+          "pnl_per_10k_event_notional": 1382.88,
+          "return_on_100k_base": 0.013829,
+          "ticker_count": 5,
+          "tickers": [
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA"
+          ],
+          "valid_event_count": 3,
+          "win_rate_net": 0.6667
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": 0.3253,
+          "avg_gross_return_pct": 0.4111,
+          "avg_net_return_pct": 0.0611,
+          "event_count": 3,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 0.3253,
+          "median_gross_return_pct": 0.4111,
+          "median_net_return_pct": 0.0611,
+          "pnl_per_10k_event_notional": 6.11,
+          "return_on_100k_base": 6.1e-05,
+          "ticker_count": 3,
+          "tickers": [
+            "CORZ",
+            "CRWV",
+            "UNH"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_owner_cluster_2plus": {
+      "aggregate": {
+        "all_valid_windows_positive": false,
+        "avg_excess_vs_spy_pct": 5.1688,
+        "avg_gross_return_pct": 5.98145,
+        "avg_net_return_pct": 5.63145,
+        "event_count": 2,
+        "event_level_sharpe_proxy": 0.788,
+        "excess_win_rate": 0.5,
+        "median_excess_vs_spy_pct": 5.1688,
+        "median_gross_return_pct": 5.98145,
+        "median_net_return_pct": 5.63145,
+        "pnl_per_10k_event_notional": 1126.29,
+        "positive_excess_windows": 1,
+        "return_on_100k_base": 0.011263,
+        "ticker_count": 2,
+        "tickers": [
+          "LLY",
+          "UNH"
+        ],
+        "valid_event_count": 2,
+        "win_rate_net": 0.5,
+        "windows_with_valid_events": 1
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": null,
+          "avg_gross_return_pct": null,
+          "avg_net_return_pct": null,
+          "event_count": 0,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": null,
+          "median_excess_vs_spy_pct": null,
+          "median_gross_return_pct": null,
+          "median_net_return_pct": null,
+          "pnl_per_10k_event_notional": 0,
+          "return_on_100k_base": 0.0,
+          "ticker_count": 0,
+          "tickers": [],
+          "valid_event_count": 0,
+          "win_rate_net": null
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.1688,
+          "avg_gross_return_pct": 5.98145,
+          "avg_net_return_pct": 5.63145,
+          "event_count": 2,
+          "event_level_sharpe_proxy": 0.788,
+          "excess_win_rate": 0.5,
+          "median_excess_vs_spy_pct": 5.1688,
+          "median_gross_return_pct": 5.98145,
+          "median_net_return_pct": 5.63145,
+          "pnl_per_10k_event_notional": 1126.29,
+          "return_on_100k_base": 0.011263,
+          "ticker_count": 2,
+          "tickers": [
+            "LLY",
+            "UNH"
+          ],
+          "valid_event_count": 2,
+          "win_rate_net": 0.5
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": null,
+          "avg_gross_return_pct": null,
+          "avg_net_return_pct": null,
+          "event_count": 0,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": null,
+          "median_excess_vs_spy_pct": null,
+          "median_gross_return_pct": null,
+          "median_net_return_pct": null,
+          "pnl_per_10k_event_notional": 0,
+          "return_on_100k_base": 0.0,
+          "ticker_count": 0,
+          "tickers": [],
+          "valid_event_count": 0,
+          "win_rate_net": null
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    },
+    "ge500k_single_owner": {
+      "aggregate": {
+        "all_valid_windows_positive": true,
+        "avg_excess_vs_spy_pct": 4.685009,
+        "avg_gross_return_pct": 6.122682,
+        "avg_net_return_pct": 5.772682,
+        "event_count": 15,
+        "event_level_sharpe_proxy": 2.6174,
+        "excess_win_rate": 0.9091,
+        "median_excess_vs_spy_pct": 5.6742,
+        "median_gross_return_pct": 5.5287,
+        "median_net_return_pct": 5.1787,
+        "pnl_per_10k_event_notional": 6349.95,
+        "positive_excess_windows": 3,
+        "return_on_100k_base": 0.0635,
+        "ticker_count": 10,
+        "tickers": [
+          "AMD",
+          "AVGO",
+          "CORZ",
+          "CRWV",
+          "DIS",
+          "LLY",
+          "MSFT",
+          "MU",
+          "TSLA",
+          "UNH"
+        ],
+        "valid_event_count": 11,
+        "win_rate_net": 0.9091,
+        "windows_with_valid_events": 3
+      },
+      "by_window": {
+        "late_strong": {
+          "avg_excess_vs_spy_pct": 4.838825,
+          "avg_gross_return_pct": 5.33475,
+          "avg_net_return_pct": 4.98475,
+          "event_count": 4,
+          "event_level_sharpe_proxy": 1.5415,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 2.23165,
+          "median_gross_return_pct": 2.39295,
+          "median_net_return_pct": 2.04295,
+          "pnl_per_10k_event_notional": 1993.9,
+          "return_on_100k_base": 0.019939,
+          "ticker_count": 3,
+          "tickers": [
+            "DIS",
+            "MSFT",
+            "MU"
+          ],
+          "valid_event_count": 4,
+          "win_rate_net": 1.0
+        },
+        "mid_weak": {
+          "avg_excess_vs_spy_pct": 5.309083,
+          "avg_gross_return_pct": 7.5999,
+          "avg_net_return_pct": 7.2499,
+          "event_count": 8,
+          "event_level_sharpe_proxy": 2.0888,
+          "excess_win_rate": 0.8333,
+          "median_excess_vs_spy_pct": 7.4019,
+          "median_gross_return_pct": 9.05075,
+          "median_net_return_pct": 8.70075,
+          "pnl_per_10k_event_notional": 4349.94,
+          "return_on_100k_base": 0.043499,
+          "ticker_count": 6,
+          "tickers": [
+            "AMD",
+            "AVGO",
+            "CORZ",
+            "CRWV",
+            "LLY",
+            "TSLA"
+          ],
+          "valid_event_count": 6,
+          "win_rate_net": 0.8333
+        },
+        "old_thin": {
+          "avg_excess_vs_spy_pct": 0.3253,
+          "avg_gross_return_pct": 0.4111,
+          "avg_net_return_pct": 0.0611,
+          "event_count": 3,
+          "event_level_sharpe_proxy": null,
+          "excess_win_rate": 1.0,
+          "median_excess_vs_spy_pct": 0.3253,
+          "median_gross_return_pct": 0.4111,
+          "median_net_return_pct": 0.0611,
+          "pnl_per_10k_event_notional": 6.11,
+          "return_on_100k_base": 6.1e-05,
+          "ticker_count": 3,
+          "tickers": [
+            "CORZ",
+            "CRWV",
+            "UNH"
+          ],
+          "valid_event_count": 1,
+          "win_rate_net": 1.0
+        }
+      },
+      "min_total_purchase_value": 500000.0,
+      "primary_horizon_trading_days": 10,
+      "round_trip_cost_pct": 0.0035
+    }
+  },
+  "status": "rejected",
+  "timestamp": "2026-05-03T23:15:56+00:00",
+  "why_not_llm_soft_ranking": "Production-aligned LLM ranking samples remain too thin, so this tests a structured Form 4 event source that is not blocked by LLM replay coverage."
+}

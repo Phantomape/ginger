@@ -1,0 +1,142 @@
+{
+  "experiment_id": "exp-20260511-038",
+  "timestamp": "2026-05-11T18:15:03+00:00",
+  "status": "rejected_space_trend_target_scope",
+  "lane": "alpha_search",
+  "hypothesis": "Exit alpha: the accepted 5 ATR Space trend target may belong only to higher-convexity official-catalyst buckets, while data-vendor trend signals may be better left on the shared regime target.",
+  "change_summary": "Swept the bucket scope for the default-off Space official-catalyst 5 ATR trend target helper without changing risk, entries, ranking, candidate pool, or live slots.",
+  "change_type": "default_off_space_exit_scope",
+  "changed_variable": "space_official_trend_target_bucket_scope",
+  "single_causal_variable": "which official Space economic buckets receive the 5 ATR trend target helper",
+  "component": "data/experiments/exp-20260511-038/run_space_trend_target_bucket_scope.py",
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows. Core uses canonical snapshots; Space variants use the same exp-20260510-028 Space snapshots. The before variant reproduces the accepted exp-20260511-032 Space stack semantics.",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "parameters": {
+    "base_space_risk_scalar": 0.75,
+    "data_vendor_breakout_risk_scalar": 0.1,
+    "launch_connectivity_trend_risk_scalar": 1.25,
+    "space_trend_target_atr_mult": 5.0,
+    "tested_target_scope_variants": [
+      "exclude_data_vendor_trend",
+      "launch_connectivity_only",
+      "launch_connectivity_plus_rdw"
+    ],
+    "official_space_tickers": [
+      "ASTS",
+      "BKSY",
+      "LUNR",
+      "PL",
+      "RDW",
+      "RKLB"
+    ]
+  },
+  "before_metrics": {
+    "aggregate": {
+      "expected_value_score_sum": 8.9564,
+      "max_drawdown_pct_max": 0.1012,
+      "min_survival_rate": 0.807,
+      "signals_generated_sum": 202,
+      "signals_survived_sum": 171,
+      "total_pnl_sum": 237030.87,
+      "trade_count_sum": 71
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 4.865,
+        "total_pnl": 104403.85,
+        "sharpe_daily": 4.66,
+        "max_drawdown_pct": 0.0544,
+        "trade_count": 21,
+        "survival_rate": 0.807
+      },
+      "mid_weak": {
+        "expected_value_score": 3.322,
+        "total_pnl": 84533.74,
+        "sharpe_daily": 3.93,
+        "max_drawdown_pct": 0.0471,
+        "trade_count": 26,
+        "survival_rate": 0.831
+      },
+      "old_thin": {
+        "expected_value_score": 0.7694,
+        "total_pnl": 48093.28,
+        "sharpe_daily": 1.6,
+        "max_drawdown_pct": 0.1012,
+        "trade_count": 24,
+        "survival_rate": 0.8919
+      }
+    }
+  },
+  "after_metrics": {
+    "best_variant": "exclude_data_vendor_trend",
+    "aggregate": {
+      "expected_value_score_sum": 8.9294,
+      "max_drawdown_pct_max": 0.1012,
+      "min_survival_rate": 0.807,
+      "signals_generated_sum": 202,
+      "signals_survived_sum": 171,
+      "total_pnl_sum": 235932.28,
+      "trade_count_sum": 71
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 4.865,
+        "total_pnl": 104403.85,
+        "sharpe_daily": 4.66,
+        "max_drawdown_pct": 0.0544,
+        "trade_count": 21,
+        "survival_rate": 0.807
+      },
+      "mid_weak": {
+        "expected_value_score": 3.322,
+        "total_pnl": 84533.74,
+        "sharpe_daily": 3.93,
+        "max_drawdown_pct": 0.0471,
+        "trade_count": 26,
+        "survival_rate": 0.831
+      },
+      "old_thin": {
+        "expected_value_score": 0.7424,
+        "total_pnl": 46994.69,
+        "sharpe_daily": 1.58,
+        "max_drawdown_pct": 0.1012,
+        "trade_count": 24,
+        "survival_rate": 0.8919
+      }
+    }
+  },
+  "expected_value_score_delta": -0.027,
+  "pnl_delta": -1098.59,
+  "gate4": {
+    "passed": false,
+    "windows_ev_improved_vs_before": 0,
+    "windows_ev_regressed_vs_before": 1,
+    "max_drawdown_change_vs_before": 0.0,
+    "survival_rate_change_min": 0.0
+  },
+  "decision": "rejected_space_trend_target_scope",
+  "rejection_reason": "Narrowing the accepted 5 ATR Space trend target to launch/connectivity, launch/connectivity plus RDW, or excluding data-vendor trend exposure did not improve aggregate EV and did not improve any of the three canonical windows.",
+  "next_evidence_needed": "Do not retry nearby Space trend-target bucket-scope narrowing on the same frozen snapshots. The next Space exit refinement needs closed forward replacement-value evidence by catalyst bucket or a genuinely new ex-ante catalyst-quality field.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "daily_report_metadata_changed": false,
+    "live_slots_changed": false,
+    "live_slots": 0
+  },
+  "why_not_other_changes": "LLM soft-ranking and options/Form 4 overlays still lack enough closed forward outcomes for promotion. This test used a different deterministic Space exit alpha variable and changed only bucket scope.",
+  "related_files": [
+    "data/experiments/exp-20260511-038/run_space_trend_target_bucket_scope.py",
+    "data/experiments/exp-20260511-038/space_trend_target_bucket_scope.json",
+    "experiments/tickets/exp-20260511-038.json",
+    "experiments/logs/exp-20260511-038.json",
+    "experiments/artifacts/exp-20260511-038_space_trend_target_bucket_scope.md"
+  ]
+}

@@ -324,9 +324,9 @@ def _rewrite_payload(payload: dict[str, Any]) -> dict[str, Any]:
             "related_files": [
                 "quant/experiments/exp_20260516_046_signal_day_atr_compression_risk_scalar.py",
                 f"data/experiments/{EXPERIMENT_ID}/{EXPERIMENT_SLUG}.json",
-                f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-                f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-                f"docs/experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
+                f"experiments/logs/{EXPERIMENT_ID}.json",
+                f"experiments/tickets/{EXPERIMENT_ID}.json",
+                f"experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
                 "docs/experiment_log.jsonl",
             ],
         }

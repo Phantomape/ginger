@@ -150,7 +150,7 @@ def load_open_positions(filepath=None):
         return None
 
 
-def load_prompt_template(template_path="../instructinos/prompts/trade_advice.txt"):
+def load_prompt_template(template_path="../instructions/prompts/trade_advice.txt"):
     """
     Load the prompt template file.
 
@@ -164,7 +164,7 @@ def load_prompt_template(template_path="../instructinos/prompts/trade_advice.txt
         # Try relative path first
         if not os.path.exists(template_path):
             # Try from project root
-            template_path = "instructinos/prompts/trade_advice.txt"
+            template_path = "instructions/prompts/trade_advice.txt"
 
         if not os.path.exists(template_path):
             logger.warning(f"Prompt template file not found: {template_path}")
@@ -269,7 +269,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         user_message = user_message[:news_start] + news_section + user_message[separator_start:]
 
     # Build sections 3a (quant signals) + 3b (technical context for held positions).
-    # Only include tickers relevant to the decision — not the full 30-ticker universe.
+    # Only include tickers relevant to the decision - not the full 30-ticker universe.
     sections_3 = ""
 
     # --- 3a: Pre-computed quant signals (new trade candidates) ---
@@ -330,7 +330,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     stored_pv = open_positions.get('portfolio_value_usd') if open_positions else None
 
-    # Extract current prices + effective-stop inputs from trend signals first —
+    # Extract current prices + effective-stop inputs from trend signals first.
     # these are needed for the live portfolio value calculation below.
     current_prices   = {}
     features_for_heat = {}
@@ -361,7 +361,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             portfolio_value = account_summary["portfolio_value_usd"]
 
 
-    # Portfolio heat (using effective stops — ATR/trailing — not just avg_cost stop)
+    # Portfolio heat (using effective stops: ATR/trailing, not just avg_cost stop)
     heat = None
     if portfolio_value and open_positions:
         try:
@@ -376,8 +376,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     regime = trend_signals.get('market_regime', {}) if trend_signals else {}
 
     # Sector concentration: compute per-sector market value and weight.
-    # The LLM prompt requires ">40% sector weight → block new positions in that sector"
-    # but previously had NO sector data — rule was enforced blindly from LLM training.
+    # The LLM prompt requires ">40% sector weight -> block new positions in that sector"
+    # but previously had NO sector data; rule was enforced blindly from LLM training.
     # Now we inject pre-computed weights so the rule can actually be enforced.
     sector_weights = {}
     if open_positions and portfolio_value and portfolio_value > 0:
@@ -409,8 +409,8 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             logger.warning(f"Sector concentration calc failed: {e}")
 
     # Data quality check: detect positions missing fields required for exit rules.
-    # entry_date  → required by TIME_STOP (45-day stagnation rule)
-    # target_price → required by SIGNAL_TARGET (3.5×ATR partial-exit rule)
+    # entry_date required by TIME_STOP (45-day stagnation rule)
+    # target_price required by SIGNAL_TARGET (3.5x ATR partial-exit rule)
     # Without these, two exit rules silently never fire.
     _data_warnings = []
     if open_positions:
@@ -427,13 +427,13 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             _data_warnings.append(
                 f"SIGNAL_TARGET disabled for {_missing_target_price}: add 'target_price' "
                 "from the original entry signal to each position in open_positions.json "
-                "(3.5×ATR partial-exit rule cannot fire, +7% to +20% zone has no exit guidance)"
+                "(3.5x ATR partial-exit rule cannot fire, +7% to +20% zone has no exit guidance)"
             )
 
-    # ── Preflight: compute machine states BEFORE data reaches LLM ──────────
+    # Preflight: compute machine states before data reaches LLM.
     # This converts raw flags (BEAR? heat%? CRITICAL exists?) into a single
     # account_state verdict + per-position decision_state.  The LLM reads the
-    # verdict, not the raw flags — reducing the chance of conflicting rule
+    # verdict, not the raw flags, reducing the chance of conflicting rule
     # interpretations and "优先HOLD"/"必须EXIT" contradictions.
     from preflight_validator import enrich_positions_with_breach_status, compute_account_state
     from manual_trades import load_manual_trades
@@ -477,7 +477,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     pending_actions = get_open_pending_actions(open_positions, data_dir="data")
 
     pos_mgmt_data = {
-        # ── Machine state summary (LLM reads this first) ──────────────────
+        # Machine state summary (LLM reads this first).
         "account_state":    preflight["account_state"],
         "new_trade_locked": preflight["new_trade_locked"],
         "lock_reason":      preflight["lock_reason"],
@@ -485,12 +485,12 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         "manual_trade_conflicts": preflight.get("manual_trade_conflicts", {}),
         "pending_unexecuted_actions": pending_actions,
         "entry_intent_audit": entry_intent_audit,
-        # Pre-computed reduce % for HIGH_REDUCE positions — LLM reads directly, no table lookup needed.
+        # Pre-computed reduce % for HIGH_REDUCE positions; LLM reads directly.
         "suggested_reduce_pct": preflight["suggested_reduce_pct"],  # {ticker: int}
-        # Pre-computed BEAR emergency stops — LLM uses directly if regime=BEAR.
+        # Pre-computed BEAR emergency stops; LLM uses directly if regime=BEAR.
         "bear_emergency_stops": preflight["bear_emergency_stops"],  # {ticker: float} empty if not BEAR
-        # Current prices for ALL held tickers — required by BEAR stop-tightening rule
-        # ("收紧至 current_price × 0.95") which applies to HOLD positions not in section 3b.
+        # Current prices for ALL held tickers, required by BEAR stop-tightening rule
+        # ("收紧至 current_price x 0.95") which applies to HOLD positions not in section 3b.
         # Without this, BEAR tightening silently fails for AMD/GOOG/MCD/NFLX etc.
         "current_prices":       {t: p for t, p in current_prices.items()
                                  if open_positions and any(
@@ -502,7 +502,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             "cash_source": "stored_or_unavailable",
             "cash_is_inferred": False,
         },
-        # ── Market context ─────────────────────────────────────────────────
+        # Market context.
         "market_regime": {
             "regime":  regime.get("regime", "UNKNOWN"),
             "note":    regime.get("note", ""),
@@ -527,11 +527,11 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # MEDIUM+ urgency is always surfaced.  LOW urgency rules are skipped unless the
     # rule requires an action (REDUCE 33%) rather than monitoring (HOLD).
     #
-    # SIGNAL_TARGET (LOW urgency) requires REDUCE 33% → always surface even when it
-    # is the only triggered rule.  Without this, winners reaching the +7%–+20% dead
+    # SIGNAL_TARGET (LOW urgency) requires REDUCE 33%; always surface even when it
+    # is the only triggered rule. Without this, winners reaching the +7% to +20% dead
     # zone get no explicit LLM attention in section 4 and the REDUCE is missed.
     #
-    # PROFIT_LADDER_30 (LOW urgency, action=HOLD) is still excluded — including it
+    # PROFIT_LADDER_30 (LOW urgency, action=HOLD) is still excluded; including it
     # would flood section 4 with every +30% winner and dilute critical signals.
     _urgency_rank = {"CRITICAL": 4, "HIGH": 3, "WARNING": 2, "MEDIUM": 1, "LOW": 0}
     _min_surface_rank = 1   # MEDIUM and above always surfaced
@@ -565,7 +565,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "daily_high":                  pos_ctx.get('daily_high') or sig.get('daily_high'),
                 "urgency":                     max_urgency,
                 "triggered_rules":             rules,
-                # Pre-computed position data — LLM prompt says "直接使用" these fields
+                # Pre-computed position data; LLM prompt says "直接使用" these fields
                 "shares":                      pos_ctx.get('shares'),
                 "avg_cost":                    pos_ctx.get('avg_cost'),
                 "unrealized_pnl_pct":          pos_ctx.get('unrealized_pnl_pct'),
@@ -573,14 +573,14 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
                 "exit_levels":                 pos_ctx.get('exit_levels'),
                 "trailing_stop_from_20d_high": pos_ctx.get('trailing_stop_from_20d_high'),
                 "drawdown_from_20d_high_pct":  pos_ctx.get('drawdown_from_20d_high_pct'),
-                # Daily price change — required for post-earnings gap rules:
-                # "daily_return_pct > +8% → REDUCE 50%" and "< -5% → EXIT"
+                # Daily price change, required for post-earnings gap rules:
+                # "daily_return_pct > +8% -> REDUCE 50%" and "< -5% -> EXIT"
                 # Without this field the LLM cannot distinguish a single-day gap
                 # event from cumulative unrealised P&L since entry.
                 "daily_return_pct":            pos_ctx.get('daily_return_pct'),
                 "prev_close":                  pos_ctx.get('prev_close'),
             }
-            # Include days_to_earnings so LLM can apply the "dte ≤ 2 → reduce 50%"
+            # Include days_to_earnings so LLM can apply the "dte <= 2 -> reduce 50%"
             # earnings pre-exit rule. Sourced from qp_features injected by run_pipeline.py
             # (trend_signals.generate_trend_signals() doesn't fetch earnings data).
             _dte = pos_ctx.get('days_to_earnings') or sig.get('days_to_earnings')
@@ -590,7 +590,7 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
 
     pos_mgmt_json = json.dumps(pos_mgmt_data, indent=2)
     pos_mgmt_section = (
-        f"\n\n4) POSITION MANAGEMENT (pre-computed — use these directly):\n"
+        f"\n\n4) POSITION MANAGEMENT (pre-computed - use these directly):\n"
         f"{pos_mgmt_json}\n"
     )
 

@@ -1,0 +1,690 @@
+{
+  "adjustments": {
+    "late_strong": [],
+    "mid_weak": [],
+    "old_thin": [
+      {
+        "baseline_green_multiplier": 1.05,
+        "baseline_shares": 26,
+        "entry_price": 55.88,
+        "max_position_pct_applied": 0.4,
+        "new_green_multiplier": 1.0,
+        "new_shares": 25,
+        "regime_exit_bucket": "risk_on",
+        "regime_exit_score": 0.1349,
+        "sector": "Technology",
+        "shares_delta": -1,
+        "signal_day_ticker_green_candle": true,
+        "signal_day_ticker_outperformed_spy": false,
+        "strategy": "trend_long",
+        "ticker": "PLTR",
+        "ticker_minus_spy_signal_day_open_close_return_pct": -0.003191,
+        "trade_quality_score": 1.0
+      }
+    ]
+  },
+  "after_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.4853,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0609,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5115,
+      "total_pnl": 103112.67,
+      "total_return_pct": 1.0311,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.858,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1014,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4936,
+      "total_pnl": 69070.09,
+      "total_return_pct": 0.6907,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.4749,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0889,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.4,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4461,
+      "total_pnl": 33921.46,
+      "total_return_pct": 0.3392,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "artifact_markdown": "# exp-20260514-032 Signal-Day Green SPY Confirmation\n\nDecision: `rejected_signal_day_green_spy_confirmation`.\n\nSingle variable: the accepted signal-day green-candle 1.05x post-sizing top-up is removed when the ticker did not outperform SPY on that same signal day. Entries, ranking, exits, targets, universe, LLM/news, heat, slots, and all other sizing rules stayed fixed.\n\n## Three-Window Result\n\n| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL | Max DD d | Survival | Adjusted |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| late_strong | 4.4853 | 4.4853 | +0.0000 | $103,112.67 | $103,112.67 | $+0.00 | +0.0000 | 0.8039 | 0 |\n| mid_weak | 1.8580 | 1.8580 | +0.0000 | $69,070.09 | $69,070.09 | $+0.00 | +0.0000 | 0.7925 | 0 |\n| old_thin | 0.4749 | 0.4749 | +0.0000 | $33,921.46 | $33,921.46 | $+0.00 | +0.0000 | 0.9167 | 1 |\n\n## Runtime Field Audit\n\n| Window | Signals | Green | Green Not SPY-Confirmed | Removed Topups Changed Shares | Missing Fields |\n|---|---:|---:|---:|---:|---:|\n| late_strong | 41 | 30 | 1 | 0 | 0 |\n| mid_weak | 42 | 32 | 2 | 0 | 0 |\n| old_thin | 55 | 48 | 2 | 1 | 0 |\n\nProduction impact: replay-only scout unless Gate 4 passes and the same condition is promoted into shared `portfolio_engine.py` with production/backtest parity tests.",
+  "backtest_protocol": {
+    "config": {
+      "REGIME_AWARE_EXIT": true,
+      "REPLAY_PARTIAL_REDUCES": true
+    },
+    "source": "docs/backtesting.md canonical fixed-snapshot three-window replay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.4853,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0609,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5115,
+      "total_pnl": 103112.67,
+      "total_return_pct": 1.0311,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.858,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1014,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.69,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4936,
+      "total_pnl": 69070.09,
+      "total_return_pct": 0.6907,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.4749,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0889,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.4,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4461,
+      "total_pnl": 33921.46,
+      "total_return_pct": 0.3392,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "change_type": "risk_allocation_shadow",
+  "changed_trades": {
+    "late_strong": {
+      "added_count": 0,
+      "added_keys": [],
+      "common_pnl_changed": [],
+      "common_pnl_changed_count": 0,
+      "removed_count": 0,
+      "removed_keys": []
+    },
+    "mid_weak": {
+      "added_count": 0,
+      "added_keys": [],
+      "common_pnl_changed": [],
+      "common_pnl_changed_count": 0,
+      "removed_count": 0,
+      "removed_keys": []
+    },
+    "old_thin": {
+      "added_count": 0,
+      "added_keys": [],
+      "common_pnl_changed": [],
+      "common_pnl_changed_count": 0,
+      "removed_count": 0,
+      "removed_keys": []
+    }
+  },
+  "changed_variable": "signal_day_green_topup_requires_spy_outperformance",
+  "decision": "rejected_signal_day_green_spy_confirmation",
+  "delta_metrics": {
+    "aggregate_after": {
+      "expected_value_score_sum": 6.8182,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 206104.22,
+      "trade_count_sum": 62
+    },
+    "aggregate_before": {
+      "expected_value_score_sum": 6.8182,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 206104.22,
+      "trade_count_sum": 62
+    },
+    "aggregate_delta": {
+      "expected_value_score_sum": 0.0,
+      "max_drawdown_pct_max": 0.0,
+      "signals_generated_sum": 0,
+      "signals_survived_sum": 0,
+      "survival_rate_min": 0.0,
+      "total_pnl_sum": 0.0,
+      "trade_count_sum": 0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      }
+    }
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260514-032",
+  "field_audit": {
+    "late_strong": {
+      "baseline_green_topup_nonconfirmed_changed_shares": 0,
+      "baseline_green_topup_nonconfirmed_seen": 0,
+      "green_not_spy_confirmed_seen": 1,
+      "green_signals_seen": 30,
+      "missing_signal_day_ticker_green_candle": 0,
+      "missing_signal_day_ticker_outperformed_spy": 0,
+      "signals_seen": 41
+    },
+    "mid_weak": {
+      "baseline_green_topup_nonconfirmed_changed_shares": 0,
+      "baseline_green_topup_nonconfirmed_seen": 0,
+      "green_not_spy_confirmed_seen": 2,
+      "green_signals_seen": 32,
+      "missing_signal_day_ticker_green_candle": 0,
+      "missing_signal_day_ticker_outperformed_spy": 0,
+      "signals_seen": 42
+    },
+    "old_thin": {
+      "baseline_green_topup_nonconfirmed_changed_shares": 1,
+      "baseline_green_topup_nonconfirmed_seen": 1,
+      "green_not_spy_confirmed_seen": 2,
+      "green_signals_seen": 48,
+      "missing_signal_day_ticker_green_candle": 0,
+      "missing_signal_day_ticker_outperformed_spy": 0,
+      "signals_seen": 55
+    }
+  },
+  "gate1": {
+    "baseline_aggregate": {
+      "expected_value_score_sum": 6.8182,
+      "max_drawdown_pct_max": 0.1014,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138,
+      "survival_rate_min": 0.7925,
+      "total_pnl_sum": 206104.22,
+      "trade_count_sum": 62
+    },
+    "baseline_metrics": {
+      "late_strong": {
+        "converged": true,
+        "expected_value_score": 4.4853,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0609,
+        "qqq_buy_hold_return_pct": 0.058,
+        "sharpe_daily": 4.35,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "spy_buy_hold_return_pct": 0.0541,
+        "survival_rate": 0.8039,
+        "tail_loss_share": 0.5115,
+        "total_pnl": 103112.67,
+        "total_return_pct": 1.0311,
+        "trade_count": 19,
+        "win_rate": 0.7895,
+        "worst_trade_pct": -0.060734
+      },
+      "mid_weak": {
+        "converged": true,
+        "expected_value_score": 1.858,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1014,
+        "qqq_buy_hold_return_pct": 0.3351,
+        "sharpe_daily": 2.69,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "spy_buy_hold_return_pct": 0.2544,
+        "survival_rate": 0.7925,
+        "tail_loss_share": 0.4936,
+        "total_pnl": 69070.09,
+        "total_return_pct": 0.6907,
+        "trade_count": 21,
+        "win_rate": 0.5238,
+        "worst_trade_pct": -0.089651
+      },
+      "old_thin": {
+        "converged": true,
+        "expected_value_score": 0.4749,
+        "max_consecutive_losses": 4,
+        "max_drawdown_pct": 0.0889,
+        "qqq_buy_hold_return_pct": -0.0749,
+        "sharpe_daily": 1.4,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "spy_buy_hold_return_pct": -0.0672,
+        "survival_rate": 0.9167,
+        "tail_loss_share": 0.4461,
+        "total_pnl": 33921.46,
+        "total_return_pct": 0.3392,
+        "trade_count": 22,
+        "win_rate": 0.4091,
+        "worst_trade_pct": -0.063499
+      }
+    }
+  },
+  "gate2": {
+    "open_positions": {
+      "checked_rows": 14,
+      "missing_required_fields": [],
+      "passed": true,
+      "path": "operator_inputs\\open_positions.json",
+      "required_fields": [
+        "entry_date",
+        "target_price"
+      ]
+    },
+    "passed": true,
+    "runtime_field_audit": {
+      "late_strong": {
+        "baseline_green_topup_nonconfirmed_changed_shares": 0,
+        "baseline_green_topup_nonconfirmed_seen": 0,
+        "green_not_spy_confirmed_seen": 1,
+        "green_signals_seen": 30,
+        "missing_signal_day_ticker_green_candle": 0,
+        "missing_signal_day_ticker_outperformed_spy": 0,
+        "signals_seen": 41
+      },
+      "mid_weak": {
+        "baseline_green_topup_nonconfirmed_changed_shares": 0,
+        "baseline_green_topup_nonconfirmed_seen": 0,
+        "green_not_spy_confirmed_seen": 2,
+        "green_signals_seen": 32,
+        "missing_signal_day_ticker_green_candle": 0,
+        "missing_signal_day_ticker_outperformed_spy": 0,
+        "signals_seen": 42
+      },
+      "old_thin": {
+        "baseline_green_topup_nonconfirmed_changed_shares": 1,
+        "baseline_green_topup_nonconfirmed_seen": 1,
+        "green_not_spy_confirmed_seen": 2,
+        "green_signals_seen": 48,
+        "missing_signal_day_ticker_green_candle": 0,
+        "missing_signal_day_ticker_outperformed_spy": 0,
+        "signals_seen": 55
+      }
+    },
+    "runtime_fields": [
+      "operator_inputs/open_positions.json entry_date",
+      "operator_inputs/open_positions.json target_price",
+      "risk_engine signal_day_ticker_green_candle",
+      "risk_engine signal_day_ticker_outperformed_spy"
+    ]
+  },
+  "gate3": {
+    "entry_filter_added": false,
+    "minimum_after_survival_rate": 0.7925,
+    "new_filter_added": false,
+    "passed": true,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0
+  },
+  "gate4": {
+    "adjusted_signal_count": 1,
+    "drawdown_guardrail_passed": true,
+    "improved_windows": [],
+    "max_drawdown_worse": 0.0,
+    "max_drawdown_worse_guardrail": 0.005,
+    "missing_runtime_field_count": 0,
+    "passed": false,
+    "regressed_windows": []
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "risk allocation: same-day absolute green candles only deserve the accepted top-up when they also beat SPY.",
+    "2_history_check": {
+      "exp-20260513-009": "Close-location top-up failed because old_thin regressed; this uses ticker-vs-SPY relative participation instead of intraday close location.",
+      "exp-20260513-031/037": "Range compression/expansion already failed or belongs to Space-specific surface; this does not use range.",
+      "exp-20260514-028": "Replacing green candle with strong-close confirmation failed; this keeps green candle but removes non-SPY-confirmed weak participation.",
+      "llm_soft_ranking": "Avoided because production-aligned LLM soft-ranking outcome joins remain too sparse."
+    },
+    "3_single_causal_variable": "signal_day_green_topup_requires_spy_outperformance; the 1.05x multiplier and all other policies stay fixed.",
+    "4_acceptance_standard": "docs/backtesting.md three fixed windows; aggregate EV/PnL positive, at least two EV-improved windows, no EV-regressed windows, survival >= 5%, runtime fields present, max drawdown drift <= 0.5 pp.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260514_032_signal_day_green_spy_confirmation.py"
+  },
+  "green_topup_attribution": {
+    "late_strong": {
+      "baseline_signal": {
+        "avg_risk_pct_after": 0.022382,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 0,
+        "risk_pct_reduced_sum": 0.006128,
+        "sectors": {
+          "Commodities": 3,
+          "Consumer Discretionary": 1,
+          "Energy": 1,
+          "Healthcare": 1,
+          "Industrials": 1,
+          "Technology": 6
+        },
+        "signals_seen": 13,
+        "strategies": {
+          "breakout_long": 7,
+          "trend_long": 6
+        },
+        "zero_risk_signals": 0
+      },
+      "baseline_trade": {
+        "avg_pnl_usd": 6992.95,
+        "losses": 0,
+        "multipliers": {
+          "1.05": 7
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 48950.66,
+        "trade_count": 7,
+        "win_rate": 1.0,
+        "wins": 7
+      },
+      "variant_signal": {
+        "avg_risk_pct_after": 0.022382,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 0,
+        "risk_pct_reduced_sum": 0.006128,
+        "sectors": {
+          "Commodities": 3,
+          "Consumer Discretionary": 1,
+          "Energy": 1,
+          "Healthcare": 1,
+          "Industrials": 1,
+          "Technology": 6
+        },
+        "signals_seen": 13,
+        "strategies": {
+          "breakout_long": 7,
+          "trend_long": 6
+        },
+        "zero_risk_signals": 0
+      },
+      "variant_trade": {
+        "avg_pnl_usd": 6992.95,
+        "losses": 0,
+        "multipliers": {
+          "1.05": 7
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 48950.66,
+        "trade_count": 7,
+        "win_rate": 1.0,
+        "wins": 7
+      }
+    },
+    "mid_weak": {
+      "baseline_signal": {
+        "avg_risk_pct_after": 0.020079,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 0,
+        "risk_pct_reduced_sum": 0.019789,
+        "sectors": {
+          "Commodities": 1,
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Technology": 6
+        },
+        "signals_seen": 10,
+        "strategies": {
+          "breakout_long": 4,
+          "trend_long": 6
+        },
+        "zero_risk_signals": 0
+      },
+      "baseline_trade": {
+        "avg_pnl_usd": 4273.01,
+        "losses": 2,
+        "multipliers": {
+          "1.05": 6
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 25638.06,
+        "trade_count": 6,
+        "win_rate": 0.6667,
+        "wins": 4
+      },
+      "variant_signal": {
+        "avg_risk_pct_after": 0.020079,
+        "avg_risk_pct_before": 0.01,
+        "reduced_risk_signals": 0,
+        "risk_pct_reduced_sum": 0.019789,
+        "sectors": {
+          "Commodities": 1,
+          "Consumer Discretionary": 1,
+          "Financials": 2,
+          "Technology": 6
+        },
+        "signals_seen": 10,
+        "strategies": {
+          "breakout_long": 4,
+          "trend_long": 6
+        },
+        "zero_risk_signals": 0
+      },
+      "variant_trade": {
+        "avg_pnl_usd": 4273.01,
+        "losses": 2,
+        "multipliers": {
+          "1.05": 6
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 25638.06,
+        "trade_count": 6,
+        "win_rate": 0.6667,
+        "wins": 4
+      }
+    },
+    "old_thin": {
+      "baseline_signal": {
+        "avg_risk_pct_after": 0.017019,
+        "avg_risk_pct_before": 0.009706,
+        "reduced_risk_signals": 0,
+        "risk_pct_reduced_sum": 0.04454,
+        "sectors": {
+          "Commodities": 2,
+          "Communication Services": 2,
+          "Consumer Discretionary": 1,
+          "Healthcare": 1,
+          "Technology": 11
+        },
+        "signals_seen": 17,
+        "strategies": {
+          "breakout_long": 6,
+          "trend_long": 11
+        },
+        "zero_risk_signals": 0
+      },
+      "baseline_trade": {
+        "avg_pnl_usd": 1047.58,
+        "losses": 7,
+        "multipliers": {
+          "1.05": 10
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 10475.75,
+        "trade_count": 10,
+        "win_rate": 0.3,
+        "wins": 3
+      },
+      "variant_signal": {
+        "avg_risk_pct_after": 0.01802,
+        "avg_risk_pct_before": 0.009687,
+        "reduced_risk_signals": 0,
+        "risk_pct_reduced_sum": 0.035538,
+        "sectors": {
+          "Commodities": 2,
+          "Communication Services": 2,
+          "Consumer Discretionary": 1,
+          "Healthcare": 1,
+          "Technology": 10
+        },
+        "signals_seen": 16,
+        "strategies": {
+          "breakout_long": 6,
+          "trend_long": 10
+        },
+        "zero_risk_signals": 0
+      },
+      "variant_trade": {
+        "avg_pnl_usd": 1047.58,
+        "losses": 7,
+        "multipliers": {
+          "1.05": 10
+        },
+        "note": "Observed outcomes only; zero-risk signals do not become trades.",
+        "total_pnl_usd": 10475.75,
+        "trade_count": 10,
+        "win_rate": 0.3,
+        "wins": 3
+      }
+    }
+  },
+  "hypothesis": "The accepted signal-day green-candle top-up may be too broad: green absolute candles that still lag SPY can be weak participation. Keep the 1.05x top-up only when same-day ticker-vs-SPY confirmation is positive.",
+  "interpretation": "Requiring same-day SPY outperformance for the green-candle top-up did not clear the canonical three-window Gate 4.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "next_evidence_needed": "A retry needs a different participation discriminator; do not re-test green-candle eligibility without new forward attribution.",
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "locked_variables": [
+      "core universe",
+      "candidate pool",
+      "entry filters",
+      "candidate ranking",
+      "stop and target logic",
+      "all other sizing multipliers and caps",
+      "portfolio heat",
+      "MAX_POSITIONS",
+      "LLM/news replay",
+      "pilot/event sleeves"
+    ],
+    "state_definition": {
+      "new_condition": "signal_day_ticker_green_candle is True and signal_day_ticker_outperformed_spy is True",
+      "old_condition": "signal_day_ticker_green_candle is True",
+      "risk_multiplier": 1.05,
+      "strategies": [
+        "trend_long",
+        "breakout_long"
+      ]
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, update the shared portfolio_engine green top-up condition. Both run.py and backtester.py already call size_signals.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Requiring same-day SPY outperformance for the green-candle top-up did not clear the canonical three-window Gate 4.",
+  "related_files": [
+    "quant/experiments/exp_20260514_032_signal_day_green_spy_confirmation.py",
+    "data/experiments/exp-20260514-032/signal_day_green_spy_confirmation.json",
+    "experiments/logs/exp-20260514-032.json",
+    "experiments/tickets/exp-20260514-032.json",
+    "experiments/artifacts/exp-20260514-032_signal_day_green_spy_confirmation.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "single_causal_variable": "eligibility condition for the existing signal_day_ticker_green 1.05x post-sizing top-up",
+  "status": "rejected_signal_day_green_spy_confirmation",
+  "timestamp": "2026-05-14T14:20:13+00:00",
+  "total_pnl_delta": 0.0
+}

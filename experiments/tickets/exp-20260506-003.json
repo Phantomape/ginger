@@ -1,0 +1,65 @@
+{
+  "experiment_id": "exp-20260506-003",
+  "status": "completed",
+  "lane": "alpha_discovery",
+  "owner": "universe-scout",
+  "hypothesis": "OnclickMedia free historical EOD options chains can fill Ginger's options data gap as a default-off append-only source for daily production accumulation and historical backfill, enabling later shadow overlays without changing live trading decisions.",
+  "change_type": "default_off_data_collection_harness",
+  "single_causal_variable": "onclickmedia_options_data_collection_harness",
+  "baseline_result_file": "data/backtest_results_20260505.json",
+  "allowed_write_scope": [
+    "quant/options_onclickmedia.py",
+    "quant/test_options_onclickmedia.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "quant/run.py",
+    "experiments/tickets",
+    "experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/non_ohlcv",
+    ".gitignore"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production_signal_path",
+    "OHLCV_entry_thresholds",
+    "standalone_options_entry",
+    "candidate_ranking",
+    "sizing",
+    "orders"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data harness only: persist raw/normalized options rows with usable_trade_date and PIT caveat, wire daily production as best-effort data-only snapshot, provide historical backfill CLI, pass focused tests, and report production_impact=no signal/ranking/sizing/order change.",
+  "created_at": "2026-05-06T01:31:24+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-06T01:32:35+00:00",
+  "result": {
+    "decision": "default_off_candidate",
+    "log_file": "experiments/logs/exp-20260506-003.json",
+    "audit_file": "docs/non_ohlcv_data_audit/eod_options_onclickmedia_harness_exp-20260506-003_20260506.md",
+    "smoke_rows_written": 430,
+    "smoke_summary": "data/non_ohlcv/options_onclickmedia_summary_exp-20260506-003_smoke.json",
+    "production_impact": "run_adapter_changed=true but signal_generation/ranking/sizing/orders unchanged",
+    "next_action": "Accumulate forward daily options rows and backfill canonical windows before shadow overlay scoring."
+  }
+}

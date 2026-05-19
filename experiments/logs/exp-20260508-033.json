@@ -1,0 +1,170 @@
+{
+  "experiment_id": "exp-20260508-033",
+  "timestamp": "2026-05-08T19:15:07+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "hypothesis": "Existing trend_long and breakout_long signals tagged rs_accel_no_chase are higher-quality continuation candidates, so increasing only their post-existing-rule risk budget may improve EV without adding candidates.",
+  "change_type": "capital_allocation_sizing_replay",
+  "single_causal_variable": "rs_accel_no_chase post-sizing risk multiplier",
+  "parameters": {
+    "tag_definition": {
+      "ticker_ret20_minus_spy_pct": "> 0",
+      "rs20_accel_vs_spy_pct": "> 0 versus prior 20-day relative window",
+      "signal_day_gap_pct": "< 0.03 or unavailable"
+    },
+    "variants": {
+      "mult_1_25": {
+        "risk_multiplier": 1.25
+      },
+      "mult_1_50": {
+        "risk_multiplier": 1.5
+      }
+    },
+    "strategies": [
+      "breakout_long",
+      "trend_long"
+    ],
+    "locked_variables": [
+      "candidate generation",
+      "candidate ranking",
+      "entry filters",
+      "exits",
+      "sector caps",
+      "add-ons",
+      "LLM/news replay",
+      "universe"
+    ]
+  },
+  "date_range": {
+    "windows": [
+      {
+        "label": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+      },
+      {
+        "label": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+      },
+      {
+        "label": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+      }
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "strong late accepted-stack tape",
+    "mid_weak": "rotation-heavy weaker validation tape",
+    "old_thin": "older thin mixed-to-weak tape"
+  },
+  "before_metrics": {
+    "aggregate_ev_sum": 6.0452,
+    "aggregate_pnl": 177676.93,
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 4.0674,
+        "sharpe_daily": 4.48,
+        "max_drawdown_pct": 0.0539,
+        "total_pnl": 90788.88,
+        "win_rate": 0.7895,
+        "total_trades": 19,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6195,
+        "sharpe_daily": 2.72,
+        "max_drawdown_pct": 0.0879,
+        "total_pnl": 59540.63,
+        "win_rate": 0.5238,
+        "total_trades": 21,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "expected_value_score": 0.3583,
+        "sharpe_daily": 1.31,
+        "max_drawdown_pct": 0.0903,
+        "total_pnl": 27347.42,
+        "win_rate": 0.4091,
+        "total_trades": 22,
+        "survival_rate": 0.9167
+      }
+    }
+  },
+  "after_metrics": {
+    "best_variant": "mult_1_25",
+    "aggregate_ev_sum": 6.2008,
+    "aggregate_pnl": 181923.56,
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 4.2634,
+        "sharpe_daily": 4.43,
+        "max_drawdown_pct": 0.0565,
+        "total_pnl": 96240.75,
+        "win_rate": 0.7895,
+        "total_trades": 19,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6033,
+        "sharpe_daily": 2.7,
+        "max_drawdown_pct": 0.0879,
+        "total_pnl": 59375.21,
+        "win_rate": 0.5238,
+        "total_trades": 21,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "expected_value_score": 0.3341,
+        "sharpe_daily": 1.27,
+        "max_drawdown_pct": 0.0933,
+        "total_pnl": 26307.6,
+        "win_rate": 0.4091,
+        "total_trades": 22,
+        "survival_rate": 0.9167
+      }
+    }
+  },
+  "delta_metrics": {
+    "best_variant": "mult_1_25",
+    "aggregate_ev_delta": 0.1556,
+    "aggregate_ev_delta_pct": 0.0257,
+    "aggregate_pnl_delta": 4246.63,
+    "aggregate_pnl_delta_pct": 0.0239,
+    "ev_positive_windows": [
+      "late_strong"
+    ],
+    "pnl_positive_windows": [
+      "late_strong"
+    ],
+    "worst_drawdown_delta": 0.003,
+    "win_rate_regressions": [],
+    "trade_count_regressions": []
+  },
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false
+  },
+  "rejection_reason": "The best variant improved aggregate EV by only 2.57% and aggregate PnL by 2.39%, below Gate 4 thresholds, and EV/PnL improved only in late_strong while mid_weak and old_thin both regressed. This is a strong-tape concentration effect, not a stable allocation alpha.",
+  "next_retry_requires": [
+    "Do not retry nearby 1.1x-1.75x rs_accel_no_chase sizing multipliers on the same fixed windows.",
+    "A valid retry needs a different orthogonal qualifier that explains the old_thin failure, such as event/news confirmation or candidate replacement evidence.",
+    "If later promoted, implement the tag and sizing rule in shared production/backtest policy with run.py exposure and parity tests before acceptance."
+  ],
+  "artifact": "data/experiments/exp-20260508-033/exp-20260508-033_rs_accel_no_chase_sizing_replay.json",
+  "related_files": [
+    "quant/experiments/exp_20260508_033_rs_accel_no_chase_sizing_replay.py",
+    "experiments/artifacts/exp-20260508-033_rs_accel_no_chase_sizing_replay.md"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "experiment_id": "exp-20260503-018",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "measurement-repair",
+  "hypothesis": "Short interest / borrow pressure remains a plausible non-OHLCV overlay for existing breakout/event candidates, but the exact exp-20260503-015 audit already found no PIT short/borrow data; this run checks for new evidence and records a no-rerun guardrail if none exists.",
+  "change_type": "non_ohlcv_data_audit_duplicate_guardrail",
+  "single_causal_variable": "new point-in-time short-interest or borrow-pressure evidence since exp-20260503-015",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260503-018.json",
+    "experiments/logs/exp-20260503-018.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_duplicate_guardrail_20260503.md"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "short_interest_borrow_pressure_overlay",
+    "production_signal_path"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Planning/data audit guardrail only: if no new PIT short-interest, FINRA short-volume, or paid borrow evidence exists after exp-20260503-015, do not rerun shadow metrics and keep production unchanged.",
+  "created_at": "2026-05-03T08:04:45+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T08:05:30+00:00",
+  "result": {
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "candidate_count": {
+      "existing_survived_candidates": 138,
+      "taggable_short_borrow_candidates": 0
+    },
+    "reason": "Exact prior audit exp-20260503-015 already found no local PIT short-interest, FINRA short-volume, or paid borrow data; no new short/borrow files appeared after that audit.",
+    "prior_experiment": "exp-20260503-015",
+    "log_file": "experiments/logs/exp-20260503-018.json",
+    "audit_file": "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_duplicate_guardrail_20260503.md"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, shadow event table, candidate overlap, slot value, and next experiment; no production change.",
+  "allowed_write_scope": [
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260515-002.json",
+    "data/experiments/exp-20260515-002/sec_earnings_filing_shock_20260513_data_audit.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_latest_exp-20260515-002_20260515.md",
+    "experiments/tickets/exp-20260515-002.json",
+    "experiments/logs/exp-20260515-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260514-050/gold_trend_near_high_cap.json",
+  "change_type": "non_ohlcv_data_audit_shadow_tagging",
+  "claimed_at": null,
+  "completed_at": "2026-05-15T01:31:06+00:00",
+  "created_at": "2026-05-15T01:24:34+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260515-002",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K/10-Q/10-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but only if the 2026-05-13 SEC refresh adds PIT directional fields that touch candidates.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "SEC filing shock field availability",
+    "C-strategy grading candidate touch",
+    "production_signal_path",
+    "OHLCV_thresholds",
+    "entry_logic",
+    "risk_sizing",
+    "portfolio_slots",
+    "LLM_trade_authority"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "owner": "codex-alpha-discovery",
+  "result": {
+    "audit_file": "data/experiments/exp-20260515-002/sec_earnings_filing_shock_20260513_data_audit.json",
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "fresh_shadow_rows": 60,
+    "fresh_shadow_tag_counts": {
+      "D_unclear_or_missing_data": 60
+    },
+    "log_file": "experiments/logs/exp-20260515-002.json",
+    "production_impact": {
+      "alters_candidate_ranking": false,
+      "alters_orders": false,
+      "alters_signal_generation": false,
+      "alters_sizing": false,
+      "backtester_adapter_changed": false,
+      "default_off_harness_changed": false,
+      "must_not_touch_respected": [
+        "quant/signal_engine.py",
+        "quant/risk_engine.py",
+        "quant/portfolio_engine.py"
+      ],
+      "parity_test_added": false,
+      "production_signal_path_changed": false,
+      "replay_only": true,
+      "run_adapter_changed": false,
+      "shared_policy_changed": false
+    },
+    "report_file": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_latest_exp-20260515-002_20260515.md",
+    "shadow_event_table": "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260515-002.json"
+  },
+  "single_causal_variable": "post_exp_20260514_005_sec_filing_20260513_feature_availability",
+  "status": "data_gap"
+}

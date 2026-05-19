@@ -654,8 +654,8 @@ def build_payload() -> dict[str, Any]:
             "quant/experiments/exp_20260503_017_form4_insider_overlay_audit.py",
             "data/experiments/exp-20260503-017/exp_20260503_017_form4_insider_overlay_audit.json",
             "docs/non_ohlcv_data_audit/form4_20260503.md",
-            "docs/experiments/logs/exp-20260503-017.json",
-            "docs/experiments/tickets/exp-20260503-017.json",
+            "experiments/logs/exp-20260503-017.json",
+            "experiments/tickets/exp-20260503-017.json",
         ],
     }
     return payload

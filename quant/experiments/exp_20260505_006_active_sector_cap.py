@@ -37,11 +37,10 @@ from risk_engine import SECTOR_MAP  # noqa: E402
 EXPERIMENT_ID = "exp-20260505-006"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "active_sector_cap.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_active_sector_cap.md"
@@ -545,9 +544,9 @@ def main() -> int:
         "related_files": [
             str(Path("quant/experiments/exp_20260505_006_active_sector_cap.py")),
             str(Path("data/experiments/exp-20260505-006/active_sector_cap.json")),
-            str(Path("docs/experiments/logs/exp-20260505-006.json")),
-            str(Path("docs/experiments/tickets/exp-20260505-006.json")),
-            str(Path("docs/experiments/artifacts/exp-20260505-006_active_sector_cap.md")),
+            str(Path("experiments/logs/exp-20260505-006.json")),
+            str(Path("experiments/tickets/exp-20260505-006.json")),
+            str(Path("experiments/artifacts/exp-20260505-006_active_sector_cap.md")),
             str(Path("docs/experiment_log.jsonl")),
         ],
     }

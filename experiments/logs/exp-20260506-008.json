@@ -1,0 +1,353 @@
+{
+  "after_metrics": {
+    "candidate_count": 41,
+    "expected_value_score": 3.4191,
+    "max_drawdown_pct": 0.0541,
+    "period": "2025-10-23 → 2026-04-21",
+    "sharpe": 6.62,
+    "sharpe_daily": 4.35,
+    "signals_generated": 51,
+    "signals_survived": 41,
+    "survival_rate": 0.8039,
+    "total_pnl": 78600.33,
+    "total_return_pct": 0.786,
+    "trade_count": 19,
+    "vs_qqq_pct": 0.728,
+    "vs_spy_pct": 0.7319,
+    "win_rate": 0.7895
+  },
+  "before_metrics": {
+    "candidate_count": 41,
+    "expected_value_score": 3.4191,
+    "max_drawdown_pct": 0.0541,
+    "period": "2025-10-23 → 2026-04-21",
+    "sharpe": 6.62,
+    "sharpe_daily": 4.35,
+    "signals_generated": 51,
+    "signals_survived": 41,
+    "survival_rate": 0.8039,
+    "total_pnl": 78600.33,
+    "total_return_pct": 0.786,
+    "trade_count": 19,
+    "vs_qqq_pct": 0.728,
+    "vs_spy_pct": 0.7319,
+    "win_rate": 0.7895
+  },
+  "change_summary": "Ran a free-source regulatory short-pressure proxy shadow join (FINRA short interest + SEC FTD + Nasdaq threshold) against existing candidates.",
+  "change_type": "shadow_non_ohlcv_overlay",
+  "component": "scripts/run_free_short_pressure_shadow_experiment.py",
+  "data_coverage": {
+    "candidate_count": 66,
+    "candidate_ticker_count": 31,
+    "finra_files_attempted": 23,
+    "finra_files_ok": 23,
+    "ftd_positive_candidate_count": 56,
+    "nasdaq_threshold_candidate_count": 0,
+    "nasdaq_threshold_coverage_note": "Nasdaq historical files only; non-Nasdaq listed candidates are not covered by this source.",
+    "nasdaq_threshold_files_attempted": 53,
+    "nasdaq_threshold_files_ok": 53,
+    "sec_ftd_files_attempted": 26,
+    "sec_ftd_files_ok": 25,
+    "sec_ftd_rows_filtered": 4243,
+    "tagged_candidate_count": 66,
+    "tagged_candidate_coverage_pct": 1.0
+  },
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-28"
+  },
+  "decision": "shadow_only",
+  "delta_metrics": {
+    "expected_value_score_delta": null,
+    "production_portfolio_delta": null,
+    "shadow_high_minus_non_high_forward_20d": -0.025988
+  },
+  "experiment_id": "exp-20260506-008",
+  "hypothesis": "A free regulatory short-pressure proxy score may outperform FINRA days-to-cover alone by adding SEC FTD balances and Nasdaq Reg SHO threshold flags to existing Ginger candidates.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "primary": "same snapshot as exp-20260505-024",
+    "secondary": "same snapshot as exp-20260505-024"
+  },
+  "next_retry_requires": [
+    "Three-window shadow/replay only if free proxy beats FINRA-only on slot value",
+    "True borrow fee / availability source for production-grade squeeze pressure"
+  ],
+  "notes": "Shadow-only: the free regulatory proxy bundle adds SEC FTD and Nasdaq threshold flags to FINRA short interest, but these are indirect stress proxies rather than true borrow fee / availability data. No production rule is justified without multi-window replay and a stronger slot-value edge.",
+  "parameters": {
+    "score_weights": {
+      "ftd_stress": 0.25,
+      "nasdaq_threshold": 0.05,
+      "short_change": 0.25,
+      "short_crowding": 0.45
+    },
+    "single_causal_variable": "free_regulatory_short_pressure_proxy_score",
+    "sources": [
+      "FINRA official equity short-interest CSV",
+      "SEC fails-to-deliver zip files",
+      "Nasdaq historical Reg SHO threshold text files"
+    ],
+    "standalone_entries_generated": 0
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260506-008/free_short_pressure_shadow_results.json",
+    "docs/non_ohlcv_data_audit/free_short_pressure_proxy_exp-20260506-008_20260506.md",
+    "experiments/logs/exp-20260506-008.json",
+    "data/experiments/exp-20260506-008/backtest_results_snapshot.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-23",
+      "start": "2025-07-14"
+    }
+  ],
+  "shadow_metrics": {
+    "all_tagged": {
+      "count": 66,
+      "forward_10d_count": 66,
+      "forward_10d_mean": 0.028321,
+      "forward_10d_median": 0.02041,
+      "forward_20d_count": 62,
+      "forward_20d_mean": 0.035197,
+      "forward_20d_median": 0.024949,
+      "forward_5d_count": 66,
+      "forward_5d_mean": 0.022089,
+      "forward_5d_median": 0.025,
+      "forward_60d_count": 59,
+      "forward_60d_mean": 0.095565,
+      "forward_60d_median": 0.097932,
+      "realized_pnl_pct_mean": 0.052143,
+      "realized_trade_count": 33,
+      "realized_win_rate": 0.606061
+    },
+    "comparison_to_finra_only": {
+      "expected_value_score_delta": null,
+      "high_minus_non_high_forward_20d": -0.018666,
+      "reason_ev_delta_null": "No production replay or portfolio ordering change was made."
+    },
+    "delta_observations": {
+      "expected_value_score_delta": null,
+      "high_minus_non_high_forward_20d": -0.025988,
+      "reason_ev_delta_null": "No production replay or portfolio ordering change was made."
+    },
+    "false_positive_examples": [
+      {
+        "date": "2026-01-06",
+        "decision": "no_shares",
+        "forward_20d": -0.192899,
+        "ftd_recent_max_adv_ratio": 0.000237,
+        "pnl_pct_net": null,
+        "proxy_score": 0.6507,
+        "strategy": "breakout_long",
+        "threshold_flag": false,
+        "ticker": "ISRG",
+        "window": "primary"
+      },
+      {
+        "date": "2026-02-19",
+        "decision": "no_shares",
+        "forward_20d": -0.142628,
+        "ftd_recent_max_adv_ratio": 0.023188,
+        "pnl_pct_net": null,
+        "proxy_score": 0.8808,
+        "strategy": "trend_long",
+        "threshold_flag": false,
+        "ticker": "DE",
+        "window": "primary"
+      },
+      {
+        "date": "2026-01-16",
+        "decision": "entered",
+        "forward_20d": 0.063668,
+        "ftd_recent_max_adv_ratio": 0.003289,
+        "pnl_pct_net": -0.060734,
+        "proxy_score": 0.6654,
+        "strategy": "trend_long",
+        "threshold_flag": false,
+        "ticker": "TSM",
+        "window": "primary"
+      },
+      {
+        "date": "2026-01-06",
+        "decision": "entered",
+        "forward_20d": -0.044135,
+        "ftd_recent_max_adv_ratio": 0.003361,
+        "pnl_pct_net": -0.039653,
+        "proxy_score": 0.7669,
+        "strategy": "breakout_long",
+        "threshold_flag": false,
+        "ticker": "GS",
+        "window": "primary"
+      },
+      {
+        "date": "2025-07-18",
+        "decision": "entered",
+        "forward_20d": -0.006323,
+        "ftd_recent_max_adv_ratio": 0.002473,
+        "pnl_pct_net": -0.038208,
+        "proxy_score": 0.7023,
+        "strategy": "trend_long",
+        "threshold_flag": false,
+        "ticker": "TSM",
+        "window": "secondary"
+      },
+      {
+        "date": "2026-01-06",
+        "decision": "entered",
+        "forward_20d": 0.219248,
+        "ftd_recent_max_adv_ratio": 0.000178,
+        "pnl_pct_net": -0.030081,
+        "proxy_score": 0.6562,
+        "strategy": "breakout_long",
+        "threshold_flag": false,
+        "ticker": "XOM",
+        "window": "primary"
+      },
+      {
+        "date": "2025-10-23",
+        "decision": "entered",
+        "forward_20d": 0.001687,
+        "ftd_recent_max_adv_ratio": 8e-05,
+        "pnl_pct_net": -0.001338,
+        "proxy_score": 0.7423,
+        "strategy": "breakout_long",
+        "threshold_flag": false,
+        "ticker": "ISRG",
+        "window": "secondary"
+      }
+    ],
+    "ftd_positive_candidates": {
+      "count": 56,
+      "forward_10d_count": 56,
+      "forward_10d_mean": 0.024992,
+      "forward_10d_median": 0.02041,
+      "forward_20d_count": 53,
+      "forward_20d_mean": 0.037806,
+      "forward_20d_median": 0.028287,
+      "forward_5d_count": 56,
+      "forward_5d_mean": 0.019821,
+      "forward_5d_median": 0.025386,
+      "forward_60d_count": 51,
+      "forward_60d_mean": 0.087411,
+      "forward_60d_median": 0.093793,
+      "realized_pnl_pct_mean": 0.048307,
+      "realized_trade_count": 29,
+      "realized_win_rate": 0.586207
+    },
+    "high_free_proxy": {
+      "count": 17,
+      "forward_10d_count": 17,
+      "forward_10d_mean": 0.009763,
+      "forward_10d_median": -0.002575,
+      "forward_20d_count": 17,
+      "forward_20d_mean": 0.016335,
+      "forward_20d_median": 0.009709,
+      "forward_5d_count": 17,
+      "forward_5d_mean": 0.004765,
+      "forward_5d_median": -0.008582,
+      "forward_60d_count": 15,
+      "forward_60d_mean": 0.111681,
+      "forward_60d_median": 0.093793,
+      "realized_pnl_pct_mean": 0.014819,
+      "realized_trade_count": 8,
+      "realized_win_rate": 0.375
+    },
+    "high_free_proxy_breakout_long": {
+      "count": 7,
+      "forward_10d_count": 7,
+      "forward_10d_mean": 0.004093,
+      "forward_10d_median": -0.002575,
+      "forward_20d_count": 7,
+      "forward_20d_mean": 0.003127,
+      "forward_20d_median": 0.001687,
+      "forward_5d_count": 7,
+      "forward_5d_mean": 0.006901,
+      "forward_5d_median": -0.016767,
+      "forward_60d_count": 7,
+      "forward_60d_mean": -0.009127,
+      "forward_60d_median": -0.050082,
+      "realized_pnl_pct_mean": 0.009335,
+      "realized_trade_count": 4,
+      "realized_win_rate": 0.25
+    },
+    "high_free_proxy_definition": {
+      "method": "top_quartile_of_free_regulatory_short_pressure_proxy_score",
+      "note": "Observation-only stratification threshold, not a proposed production rule.",
+      "threshold": 0.5915
+    },
+    "nasdaq_threshold_candidates": {
+      "count": 0,
+      "forward_10d_count": 0,
+      "forward_10d_mean": null,
+      "forward_10d_median": null,
+      "forward_20d_count": 0,
+      "forward_20d_mean": null,
+      "forward_20d_median": null,
+      "forward_5d_count": 0,
+      "forward_5d_mean": null,
+      "forward_5d_median": null,
+      "forward_60d_count": 0,
+      "forward_60d_mean": null,
+      "forward_60d_median": null,
+      "realized_pnl_pct_mean": null,
+      "realized_trade_count": 0,
+      "realized_win_rate": null
+    },
+    "non_high_free_proxy": {
+      "count": 49,
+      "forward_10d_count": 49,
+      "forward_10d_mean": 0.03476,
+      "forward_10d_median": 0.026909,
+      "forward_20d_count": 45,
+      "forward_20d_mean": 0.042323,
+      "forward_20d_median": 0.031561,
+      "forward_5d_count": 49,
+      "forward_5d_mean": 0.0281,
+      "forward_5d_median": 0.026472,
+      "forward_60d_count": 44,
+      "forward_60d_mean": 0.090071,
+      "forward_60d_median": 0.105466,
+      "realized_pnl_pct_mean": 0.064086,
+      "realized_trade_count": 25,
+      "realized_win_rate": 0.68
+    },
+    "other_breakout_long": {
+      "count": 20,
+      "forward_10d_count": 20,
+      "forward_10d_mean": 0.056676,
+      "forward_10d_median": 0.029596,
+      "forward_20d_count": 18,
+      "forward_20d_mean": 0.060124,
+      "forward_20d_median": 0.067061,
+      "forward_5d_count": 20,
+      "forward_5d_mean": 0.038814,
+      "forward_5d_median": 0.031181,
+      "forward_60d_count": 18,
+      "forward_60d_mean": 0.094236,
+      "forward_60d_median": 0.11489,
+      "realized_pnl_pct_mean": 0.075378,
+      "realized_trade_count": 10,
+      "realized_win_rate": 0.9
+    },
+    "slot_conflict_audit": {
+      "entered_non_high_forward_20d_mean": 0.059584,
+      "high_free_proxy_slot_conflict_count": 1,
+      "high_free_proxy_slot_conflict_forward_20d_mean": -0.011912,
+      "scarce_slot_opportunity_cost_20d": -0.071496,
+      "slot_conflict_count": 5
+    }
+  },
+  "status": "observed_only",
+  "timestamp": "2026-05-06T06:01:53+00:00"
+}

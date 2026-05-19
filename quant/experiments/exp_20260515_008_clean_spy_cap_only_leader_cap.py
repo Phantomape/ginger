@@ -632,9 +632,9 @@ def _build_payload(
         "related_files": [
             f"quant/experiments/{Path(__file__).name}",
             f"data/experiments/{EXPERIMENT_ID}/{EXPERIMENT_SLUG}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -649,18 +649,16 @@ def _write_outputs(payload: dict[str, Any]) -> None:
         / f"{EXPERIMENT_SLUG}.json"
     )
     log_path = (
-        base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+        base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     )
     ticket_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "tickets"
         / f"{EXPERIMENT_ID}.json"
     )
     md_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

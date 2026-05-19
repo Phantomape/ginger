@@ -521,9 +521,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260513_026_green_sector_cushion_risk.py",
             "data/experiments/exp-20260513-026/green_sector_cushion_risk.json",
-            "docs/experiments/logs/exp-20260513-026.json",
-            "docs/experiments/tickets/exp-20260513-026.json",
-            "docs/experiments/artifacts/exp-20260513-026_green_sector_cushion_risk.md",
+            "experiments/logs/exp-20260513-026.json",
+            "experiments/tickets/exp-20260513-026.json",
+            "experiments/artifacts/exp-20260513-026_green_sector_cushion_risk.md",
             "docs/experiment_log.jsonl",
         ],
         "why_not_other_changes": (

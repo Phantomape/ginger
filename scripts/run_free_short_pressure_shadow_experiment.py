@@ -675,7 +675,7 @@ def main() -> None:
         / "non_ohlcv_data_audit"
         / f"free_short_pressure_proxy_{experiment_id}_20260506.md"
     )
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{experiment_id}.json"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{experiment_id}.json"
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     snapshot_path.write_text(result_path.read_text(encoding="utf-8"), encoding="utf-8")
     related_files = {
@@ -806,7 +806,7 @@ def main() -> None:
     base.upsert_jsonl(REPO_ROOT / "docs" / "experiment_log.jsonl", log_row)
     write_audit(audit_path, payload)
     update_ticket(
-        REPO_ROOT / "docs" / "experiments" / "tickets" / f"{experiment_id}.json",
+        REPO_ROOT / "experiments" / "tickets" / f"{experiment_id}.json",
         payload,
     )
     base.update_registry(

@@ -477,9 +477,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260515_046_exec_lag_rr_spy_confirmed_risk.py",
             "data/experiments/exp-20260515-046/exec_lag_rr_spy_confirmed_risk.json",
-            "docs/experiments/logs/exp-20260515-046.json",
-            "docs/experiments/tickets/exp-20260515-046.json",
-            "docs/experiments/artifacts/exp-20260515-046_exec_lag_rr_spy_confirmed_risk.md",
+            "experiments/logs/exp-20260515-046.json",
+            "experiments/tickets/exp-20260515-046.json",
+            "experiments/artifacts/exp-20260515-046_exec_lag_rr_spy_confirmed_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

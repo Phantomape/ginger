@@ -26,13 +26,13 @@ OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_RECONCILIATION = OUT_DIR / "event_source_reconciliation.json"
 OUT_MATRIX = OUT_DIR / "candidate_decision_matrix.csv"
 OUT_PREREG = OUT_DIR / "phase_b_preregistration.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
 
 PHASE_A_ID = "exp-20260507-920_gap_cancel_orthogonal_discriminator_audit"
 PHASE_A_DIR = REPO_ROOT / "data" / "experiments" / PHASE_A_ID
 PHASE_A_RANKING = PHASE_A_DIR / "discriminator_ranking.json"
 PHASE_A_CATALOG = PHASE_A_DIR / "event_catalog.json"
-PHASE_A_LOG = REPO_ROOT / "docs" / "experiments" / "logs" / f"{PHASE_A_ID}.json"
+PHASE_A_LOG = REPO_ROOT / "experiments" / "logs" / f"{PHASE_A_ID}.json"
 
 STANDARD_ORACLE_DIR = REPO_ROOT / "data" / "experiments" / "oracle_standard_3window_20260501_220042"
 NO_ENTRY_ORACLE_DIR = REPO_ROOT / "data" / "experiments" / "oracle_no_entry_restriction_3window"

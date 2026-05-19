@@ -40,11 +40,11 @@ from form4_event_queue import (  # noqa: E402
 EXP_ID = "exp-20260504-034"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / "form4_satellite_overlay.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
-AUDIT_MD = REPO_ROOT / "docs" / "experiments" / f"{EXP_ID}_form4_satellite_overlay.md"
+AUDIT_MD = REPO_ROOT / "experiments" / f"{EXP_ID}_form4_satellite_overlay.md"
 
 INITIAL_CAPITAL = 100_000.0
 EVENT_NOTIONAL = 10_000.0

@@ -27,7 +27,7 @@ from data_paths import backtest_result_glob  # noqa: E402
 
 DEFAULT_REGISTRY = REPO_ROOT / "docs" / "experiment_registry.json"
 DEFAULT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
-DEFAULT_EXPERIMENTS_DIR = REPO_ROOT / "docs" / "experiments"
+DEFAULT_EXPERIMENTS_DIR = REPO_ROOT / "experiments"
 DEFAULT_TICKETS_DIR = DEFAULT_EXPERIMENTS_DIR / "tickets"
 DEFAULT_EXPERIMENT_LOGS_DIR = DEFAULT_EXPERIMENTS_DIR / "logs"
 DEFAULT_LOCK_TIMEOUT_SECONDS = 30
@@ -309,8 +309,8 @@ def default_allowed_write_scope(
     return [
         f"quant/experiments/{stem}.py",
         f"data/experiments/{experiment_id}/{stem}.json",
-        f"docs/experiments/tickets/{experiment_id}.json",
-        f"docs/experiments/logs/{experiment_id}.json",
+        f"experiments/tickets/{experiment_id}.json",
+        f"experiments/logs/{experiment_id}.json",
         "docs/experiment_log.jsonl",
         "docs/experiment_registry.json",
     ]

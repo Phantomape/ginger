@@ -1,0 +1,127 @@
+{
+  "experiment_id": "exp-20260514-007",
+  "timestamp": "2026-05-14T01:56:36+00:00",
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "change_type": "production_advisory_visibility_fix",
+  "hypothesis": "Legacy-basis positions can reach an explicit operator target while SIGNAL_TARGET is intentionally suppressed; surfacing a non-executable review rule improves production visibility without promoting a losing full-exit policy.",
+  "alpha_hypothesis": "The next alpha lane should return to production-visible state allocation or forward replacement value; this repair only preserves the evidence surface needed to avoid silent legacy target drift.",
+  "single_causal_variable": "legacy_explicit_target_hit_visibility",
+  "changed_variable": "legacy_basis + signal_target_price hit now emits LEGACY_TARGET_REVIEW instead of remaining silent",
+  "historical_experiment_check": {
+    "exp-20260429-032": "Rejected bare SIGNAL_TARGET partial-reduce replay after EV and PnL regressed in all three fixed windows; not retried.",
+    "exp-20260513-005": "Observed-only audit found 34 legacy-basis explicit target hits suppressed by the SIGNAL_TARGET guard, including TSLA on 2026-05-11.",
+    "exp-20260513-008": "Production-position replay rejected automatic full exit or intent-aware exit/ratchet variants; silent full exit delta was -$2,332.93 and target-stop ratchet was inert."
+  },
+  "baseline_metrics": {
+    "source": "data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json",
+    "aggregate": {
+      "expected_value_score_sum": 6.4848,
+      "total_pnl_sum": 193903.95,
+      "trade_count_sum": 62,
+      "signals_generated_sum": 164,
+      "signals_survived_sum": 138
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 4.3768,
+        "total_pnl": 99695.99,
+        "max_drawdown_pct": 0.0602,
+        "trade_count": 19,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6788,
+        "total_pnl": 62644.67,
+        "max_drawdown_pct": 0.097,
+        "trade_count": 21,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "expected_value_score": 0.4292,
+        "total_pnl": 31563.29,
+        "max_drawdown_pct": 0.0836,
+        "trade_count": 22,
+        "survival_rate": 0.9167
+      }
+    }
+  },
+  "before_metrics": {
+    "legacy_target_visibility": {
+      "rule_emitted": false,
+      "suppressed_by_legacy_basis_rows": 34,
+      "suppressed_tickers": {
+        "AMD": 17,
+        "NVDA": 8,
+        "SNXX": 6,
+        "TSLA": 3
+      }
+    },
+    "legacy_target_lifecycle_replay": {
+      "silent_full_exit_next_observed_close_delta": -2332.93,
+      "silent_target_stop_ratchet_delta": 0.0,
+      "silent_intent_aware_delta": -1981.09,
+      "decision": "rejected_no_full_exit_promotion_target_ratchet_preferred_for_next_policy_test"
+    }
+  },
+  "after_metrics": {
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "reason": "No entry, exit, ranking, sizing, universe, backtester execution, or order adapter path changed.",
+    "legacy_target_visibility": {
+      "rule_emitted": true,
+      "rule_name": "LEGACY_TARGET_REVIEW",
+      "urgency": "REVIEW",
+      "preflight_decision_state": "HOLD",
+      "llm_prompt_visibility": true,
+      "automatic_order": false
+    }
+  },
+  "implementation": {
+    "position_manager": "legacy_basis + explicit signal_target_price hit emits LEGACY_TARGET_REVIEW with target freshness fields; non-legacy SIGNAL_TARGET remains unchanged.",
+    "llm_advisor": "LEGACY_TARGET_REVIEW bypasses the low-rank prompt filter so the daily workflow can see it.",
+    "preflight_validator": "unchanged; REVIEW rules fall through to HOLD unless a separate hard rule fires.",
+    "production_backtest_parity": "documents LEGACY_TARGET_REVIEW as non-executable production advisory visibility."
+  },
+  "validation": {
+    "focused_pytest_command": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_quant.py -q -k \"legacy_signal_target or preflight_legacy_target_review or legacy_target_review_in_attention or signal_target_uses_daily_high or preflight_signal_target_maps\"",
+    "focused_pytest_result": "6 passed, 310 deselected",
+    "covered_cases": [
+      "TSLA-like fresh target emits LEGACY_TARGET_REVIEW, not SIGNAL_TARGET",
+      "AMD-like stale target sets stale_target_10pct_below_trigger=true",
+      "LEGACY_TARGET_REVIEW stays HOLD in preflight",
+      "LEGACY_TARGET_REVIEW appears in positions_requiring_attention",
+      "Non-legacy SIGNAL_TARGET still maps to TARGET_EXIT"
+    ]
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": true,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_backtest_execution": false,
+    "daily_prompt_visibility_changed": true
+  },
+  "decision": "accepted_measurement_repair_non_executable_review",
+  "rejection_reason": null,
+  "next_evidence_needed": [
+    "Forward daily artifacts showing LEGACY_TARGET_REVIEW outcomes after at least one later saved close",
+    "Closed review outcomes before any reduce/exit policy is proposed",
+    "A separate shared lifecycle policy and three-window replay if future evidence supports action"
+  ],
+  "related_files": [
+    "quant/position_manager.py",
+    "quant/llm_advisor.py",
+    "quant/test_quant.py",
+    "docs/production_backtest_parity.md",
+    "data/experiments/exp-20260514-007/legacy_target_review_visibility.json",
+    "experiments/logs/exp-20260514-007.json",
+    "experiments/artifacts/exp-20260514-007_legacy_target_review_visibility.md",
+    "docs/experiment_log.jsonl"
+  ]
+}

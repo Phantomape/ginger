@@ -25,8 +25,8 @@ from event_shocks import build_event_snapshot  # noqa: E402
 EXPERIMENT_ID = "exp-20260503-002"
 OUT_DIR = os.path.join(REPO_ROOT, "data", "experiments", EXPERIMENT_ID)
 OUT_JSON = os.path.join(OUT_DIR, "earnings_sec_surprise_round1.json")
-LOG_JSON = os.path.join(REPO_ROOT, "docs", "experiments", "logs", f"{EXPERIMENT_ID}.json")
-TICKET_JSON = os.path.join(REPO_ROOT, "docs", "experiments", "tickets", f"{EXPERIMENT_ID}.json")
+LOG_JSON = os.path.join(REPO_ROOT, "experiments", "logs", f"{EXPERIMENT_ID}.json")
+TICKET_JSON = os.path.join(REPO_ROOT, "experiments", "tickets", f"{EXPERIMENT_ID}.json")
 
 WINDOWS = OrderedDict([
     ("late_strong", {

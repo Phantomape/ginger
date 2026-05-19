@@ -1,0 +1,765 @@
+{
+  "experiment_id": "exp-20260505-019",
+  "timestamp": "2026-05-05T16:19:23.012731+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_regime_qualified_trend_mid_stop_haircut",
+  "hypothesis": "Trend_long signals with 5%-7% initial stop distance may only be a fragile pocket outside risk_on tape. Haircutting that stop-width band only in balanced/defensive regime-exit buckets should reduce loser size without cutting the risk_on trend winners that drove the accepted stack.",
+  "alpha_hypothesis_category": "entry_quality_sizing",
+  "why_not_llm_soft_ranking": "LLM soft-ranking and event promotion remain limited by sparse production-aligned forward outcome joins, so this run tests an already-replayable deterministic signal field instead.",
+  "mechanism_insight_check": {
+    "near_repeat": "not_simple_repeat",
+    "notes": "exp-20260502-020 and exp-20260502-027 rejected simple 5%-7% trend initial-risk haircuts because they only helped old_thin. This run adds an orthogonal shared regime-exit discriminator, which was the required new evidence path in those rejection notes."
+  },
+  "parameters": {
+    "single_causal_variable": "regime-qualified trend_long 5%-7% initial-risk sizing haircut",
+    "tested_variants": {
+      "defensive_5_7pct_0_25x": {
+        "eligible_buckets": [
+          "defensive"
+        ],
+        "risk_multiplier": 0.25
+      },
+      "defensive_5_7pct_0_50x": {
+        "eligible_buckets": [
+          "defensive"
+        ],
+        "risk_multiplier": 0.5
+      },
+      "balanced_defensive_5_7pct_0_25x": {
+        "eligible_buckets": [
+          "balanced",
+          "defensive"
+        ],
+        "risk_multiplier": 0.25
+      },
+      "balanced_defensive_5_7pct_0_50x": {
+        "eligible_buckets": [
+          "balanced",
+          "defensive"
+        ],
+        "risk_multiplier": 0.5
+      }
+    },
+    "locked_variables": [
+      "universe",
+      "entry rules",
+      "exit rules",
+      "candidate ranking",
+      "breakout_long sizing",
+      "trend_long signals outside 5%-7% initial risk",
+      "risk_on trend signals",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "LLM/news replay",
+      "earnings strategy"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "by_strategy": {
+        "breakout_long": {
+          "trade_count": 12,
+          "wins": 10,
+          "losses": 2,
+          "win_rate": 0.8333,
+          "avg_pnl_pct_net": 0.07,
+          "profit_factor": 13.054,
+          "avg_R": 2.122,
+          "total_pnl_usd": 50594.26
+        },
+        "trend_long": {
+          "trade_count": 7,
+          "wins": 5,
+          "losses": 2,
+          "win_rate": 0.7143,
+          "avg_pnl_pct_net": 0.0882,
+          "profit_factor": 7.337,
+          "avg_R": 2.756,
+          "total_pnl_usd": 28006.07
+        }
+      },
+      "entry_filter_audit": {},
+      "eligible_signals": 0,
+      "touched_trades": 0,
+      "touched_trade_pnl": 0.0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "by_strategy": {
+        "trend_long": {
+          "trade_count": 14,
+          "wins": 8,
+          "losses": 6,
+          "win_rate": 0.5714,
+          "avg_pnl_pct_net": 0.0754,
+          "profit_factor": 4.499,
+          "avg_R": 1.335,
+          "total_pnl_usd": 37710.57
+        },
+        "breakout_long": {
+          "trade_count": 7,
+          "wins": 3,
+          "losses": 4,
+          "win_rate": 0.4286,
+          "avg_pnl_pct_net": 0.0122,
+          "profit_factor": 1.492,
+          "avg_R": 0.667,
+          "total_pnl_usd": 17304.51
+        }
+      },
+      "entry_filter_audit": {},
+      "eligible_signals": 0,
+      "touched_trades": 0,
+      "touched_trade_pnl": 0.0
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "by_strategy": {
+        "breakout_long": {
+          "trade_count": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_rate": 0.3333,
+          "avg_pnl_pct_net": -0.001,
+          "profit_factor": 0.962,
+          "avg_R": -0.055,
+          "total_pnl_usd": 2685.79
+        },
+        "trend_long": {
+          "trade_count": 19,
+          "wins": 8,
+          "losses": 11,
+          "win_rate": 0.4211,
+          "avg_pnl_pct_net": 0.0259,
+          "profit_factor": 2.012,
+          "avg_R": 0.628,
+          "total_pnl_usd": 21956.28
+        }
+      },
+      "entry_filter_audit": {},
+      "eligible_signals": 0,
+      "touched_trades": 0,
+      "touched_trade_pnl": 0.0
+    }
+  },
+  "after_metrics": {
+    "defensive_5_7pct_0_25x": {
+      "late_strong": {
+        "expected_value_score": 3.4191,
+        "sharpe_daily": 4.35,
+        "total_pnl": 78600.33,
+        "total_return_pct": 0.786,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50594.26
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4415,
+        "sharpe_daily": 2.62,
+        "total_pnl": 55015.08,
+        "total_return_pct": 0.5502,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37710.57
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0122,
+            "profit_factor": 1.492,
+            "avg_R": 0.667,
+            "total_pnl_usd": 17304.51
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "max_drawdown_pct": 0.0805,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 21956.28
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      }
+    },
+    "defensive_5_7pct_0_50x": {
+      "late_strong": {
+        "expected_value_score": 3.4191,
+        "sharpe_daily": 4.35,
+        "total_pnl": 78600.33,
+        "total_return_pct": 0.786,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50594.26
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4415,
+        "sharpe_daily": 2.62,
+        "total_pnl": 55015.08,
+        "total_return_pct": 0.5502,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37710.57
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0122,
+            "profit_factor": 1.492,
+            "avg_R": 0.667,
+            "total_pnl_usd": 17304.51
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "max_drawdown_pct": 0.0805,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 21956.28
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      }
+    },
+    "balanced_defensive_5_7pct_0_25x": {
+      "late_strong": {
+        "expected_value_score": 3.4191,
+        "sharpe_daily": 4.35,
+        "total_pnl": 78600.33,
+        "total_return_pct": 0.786,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50594.26
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4415,
+        "sharpe_daily": 2.62,
+        "total_pnl": 55015.08,
+        "total_return_pct": 0.5502,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37710.57
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0122,
+            "profit_factor": 1.492,
+            "avg_R": 0.667,
+            "total_pnl_usd": 17304.51
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "max_drawdown_pct": 0.0805,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 21956.28
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      }
+    },
+    "balanced_defensive_5_7pct_0_50x": {
+      "late_strong": {
+        "expected_value_score": 3.4191,
+        "sharpe_daily": 4.35,
+        "total_pnl": 78600.33,
+        "total_return_pct": 0.786,
+        "max_drawdown_pct": 0.0541,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 12,
+            "wins": 10,
+            "losses": 2,
+            "win_rate": 0.8333,
+            "avg_pnl_pct_net": 0.07,
+            "profit_factor": 13.054,
+            "avg_R": 2.122,
+            "total_pnl_usd": 50594.26
+          },
+          "trend_long": {
+            "trade_count": 7,
+            "wins": 5,
+            "losses": 2,
+            "win_rate": 0.7143,
+            "avg_pnl_pct_net": 0.0882,
+            "profit_factor": 7.337,
+            "avg_R": 2.756,
+            "total_pnl_usd": 28006.07
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.4415,
+        "sharpe_daily": 2.62,
+        "total_pnl": 55015.08,
+        "total_return_pct": 0.5502,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "by_strategy": {
+          "trend_long": {
+            "trade_count": 14,
+            "wins": 8,
+            "losses": 6,
+            "win_rate": 0.5714,
+            "avg_pnl_pct_net": 0.0754,
+            "profit_factor": 4.499,
+            "avg_R": 1.335,
+            "total_pnl_usd": 37710.57
+          },
+          "breakout_long": {
+            "trade_count": 7,
+            "wins": 3,
+            "losses": 4,
+            "win_rate": 0.4286,
+            "avg_pnl_pct_net": 0.0122,
+            "profit_factor": 1.492,
+            "avg_R": 0.667,
+            "total_pnl_usd": 17304.51
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.3179,
+        "sharpe_daily": 1.29,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "max_drawdown_pct": 0.0805,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "by_strategy": {
+          "breakout_long": {
+            "trade_count": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_rate": 0.3333,
+            "avg_pnl_pct_net": -0.001,
+            "profit_factor": 0.962,
+            "avg_R": -0.055,
+            "total_pnl_usd": 2685.79
+          },
+          "trend_long": {
+            "trade_count": 19,
+            "wins": 8,
+            "losses": 11,
+            "win_rate": 0.4211,
+            "avg_pnl_pct_net": 0.0259,
+            "profit_factor": 2.012,
+            "avg_R": 0.628,
+            "total_pnl_usd": 21956.28
+          }
+        },
+        "entry_filter_audit": {},
+        "eligible_signals": 0,
+        "touched_trades": 0,
+        "touched_trade_pnl": 0.0
+      }
+    }
+  },
+  "delta_metrics": {
+    "defensive_5_7pct_0_25x": {
+      "baseline_ev_sum": 5.1785,
+      "variant_ev_sum": 5.1785,
+      "aggregate_ev_delta": 0.0,
+      "aggregate_ev_delta_pct": 0.0,
+      "baseline_pnl_sum": 158257.48,
+      "variant_pnl_sum": 158257.48,
+      "aggregate_pnl_delta": 0.0,
+      "aggregate_pnl_delta_pct": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0,
+      "win_rate_delta_min": 0.0,
+      "max_drawdown_delta_min": 0.0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0.0,
+      "eligible_signal_count": 0,
+      "touched_trade_count": 0,
+      "sharpe_daily_delta_max": 0.0
+    },
+    "defensive_5_7pct_0_50x": {
+      "baseline_ev_sum": 5.1785,
+      "variant_ev_sum": 5.1785,
+      "aggregate_ev_delta": 0.0,
+      "aggregate_ev_delta_pct": 0.0,
+      "baseline_pnl_sum": 158257.48,
+      "variant_pnl_sum": 158257.48,
+      "aggregate_pnl_delta": 0.0,
+      "aggregate_pnl_delta_pct": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0,
+      "win_rate_delta_min": 0.0,
+      "max_drawdown_delta_min": 0.0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0.0,
+      "eligible_signal_count": 0,
+      "touched_trade_count": 0,
+      "sharpe_daily_delta_max": 0.0
+    },
+    "balanced_defensive_5_7pct_0_25x": {
+      "baseline_ev_sum": 5.1785,
+      "variant_ev_sum": 5.1785,
+      "aggregate_ev_delta": 0.0,
+      "aggregate_ev_delta_pct": 0.0,
+      "baseline_pnl_sum": 158257.48,
+      "variant_pnl_sum": 158257.48,
+      "aggregate_pnl_delta": 0.0,
+      "aggregate_pnl_delta_pct": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0,
+      "win_rate_delta_min": 0.0,
+      "max_drawdown_delta_min": 0.0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0.0,
+      "eligible_signal_count": 0,
+      "touched_trade_count": 0,
+      "sharpe_daily_delta_max": 0.0
+    },
+    "balanced_defensive_5_7pct_0_50x": {
+      "baseline_ev_sum": 5.1785,
+      "variant_ev_sum": 5.1785,
+      "aggregate_ev_delta": 0.0,
+      "aggregate_ev_delta_pct": 0.0,
+      "baseline_pnl_sum": 158257.48,
+      "variant_pnl_sum": 158257.48,
+      "aggregate_pnl_delta": 0.0,
+      "aggregate_pnl_delta_pct": 0.0,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 0,
+      "win_rate_delta_min": 0.0,
+      "max_drawdown_delta_min": 0.0,
+      "max_drawdown_delta_max": 0.0,
+      "trade_count_delta_sum": 0.0,
+      "eligible_signal_count": 0,
+      "touched_trade_count": 0,
+      "sharpe_daily_delta_max": 0.0
+    }
+  },
+  "best_variant": "defensive_5_7pct_0_25x",
+  "best_variant_gate4": false,
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, implement in portfolio_engine/constants so run.py and backtester.py consume the same shared sizing policy."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "rejection_reason": "Gate 4 failed. The best regime-qualified trend 5%-7% stop haircut did not produce stable enough multi-window EV/PnL improvement.",
+  "next_retry_requires": [
+    "Do not retry nearby trend 5%-7% initial-risk haircuts with simple regime buckets.",
+    "A valid retry needs a different lifecycle discriminator, event/news context, or forward evidence separating fragile stop-width trades from convex winners."
+  ],
+  "related_files": [
+    "quant/experiments/exp_20260505_019_regime_qualified_trend_mid_stop_haircut.py",
+    "data/experiments/exp-20260505-019/regime_qualified_trend_mid_stop_haircut.json",
+    "experiments/logs/exp-20260505-019.json",
+    "experiments/tickets/exp-20260505-019.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

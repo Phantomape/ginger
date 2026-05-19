@@ -61,9 +61,9 @@ def _refresh_payload(payload: dict[str, Any]) -> dict[str, Any]:
     payload["related_files"] = [
         "quant/experiments/exp_20260516_004_current_stack_green_momentum_deceleration_risk.py",
         f"data/experiments/{EXPERIMENT_ID}/{EXPERIMENT_SLUG}.json",
-        f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-        f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-        f"docs/experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
+        f"experiments/logs/{EXPERIMENT_ID}.json",
+        f"experiments/tickets/{EXPERIMENT_ID}.json",
+        f"experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
         "docs/experiment_log.jsonl",
     ]
     payload["why_not_other_changes"] = (

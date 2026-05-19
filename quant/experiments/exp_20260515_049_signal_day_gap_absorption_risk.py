@@ -592,9 +592,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260515_049_signal_day_gap_absorption_risk.py",
             "data/experiments/exp-20260515-049/signal_day_gap_absorption_risk.json",
-            "docs/experiments/logs/exp-20260515-049.json",
-            "docs/experiments/tickets/exp-20260515-049.json",
-            "docs/experiments/artifacts/exp-20260515-049_signal_day_gap_absorption_risk.md",
+            "experiments/logs/exp-20260515-049.json",
+            "experiments/tickets/exp-20260515-049.json",
+            "experiments/artifacts/exp-20260515-049_signal_day_gap_absorption_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

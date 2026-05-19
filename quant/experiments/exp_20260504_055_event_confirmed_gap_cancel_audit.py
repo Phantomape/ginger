@@ -36,16 +36,15 @@ EXP_ID = "exp-20260504-055"
 SOURCE_EXP_ID = "exp-20260504-049"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / "event_confirmed_gap_cancel_audit.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXP_ID}_event_confirmed_gap_cancel_audit.md"
 )
-SOURCE_LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{SOURCE_EXP_ID}.json"
+SOURCE_LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{SOURCE_EXP_ID}.json"
 
 WINDOWS = OrderedDict(
     [

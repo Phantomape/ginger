@@ -324,9 +324,9 @@ def main():
     out_path = out_dir / "addon_heat_reserve_replay.json"
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
-    log_dir = ROOT / "docs" / "experiments" / "logs"
-    ticket_dir = ROOT / "docs" / "experiments" / "tickets"
-    artifact_dir = ROOT / "docs" / "experiments" / "artifacts"
+    log_dir = ROOT / "experiments" / "logs"
+    ticket_dir = ROOT / "experiments" / "tickets"
+    artifact_dir = ROOT / "experiments" / "artifacts"
     log_dir.mkdir(parents=True, exist_ok=True)
     ticket_dir.mkdir(parents=True, exist_ok=True)
     artifact_dir.mkdir(parents=True, exist_ok=True)

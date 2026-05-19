@@ -30,8 +30,8 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260507-002"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "non_ohlcv_replay_coverage_filing_shock_shadow.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
 AUDIT_MD = (
@@ -653,7 +653,7 @@ def _update_registry(ticket: dict[str, Any]) -> None:
         "lane": ticket["lane"],
         "owner": ticket.get("owner"),
         "hypothesis": ticket.get("hypothesis"),
-        "ticket_file": "docs/experiments/tickets/exp-20260507-002.json",
+        "ticket_file": "experiments/tickets/exp-20260507-002.json",
         "updated_at": _utc_now_iso(),
     }
     experiments = registry.setdefault("experiments", [])
@@ -862,8 +862,8 @@ def main() -> None:
             "quant/experiments/exp_20260507_002_non_ohlcv_replay_coverage_filing_shock_shadow.py",
             "data/experiments/exp-20260507-002/non_ohlcv_replay_coverage_filing_shock_shadow.json",
             "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_replay_coverage_exp-20260507-002_20260507.md",
-            "docs/experiments/tickets/exp-20260507-002.json",
-            "docs/experiments/logs/exp-20260507-002.json",
+            "experiments/tickets/exp-20260507-002.json",
+            "experiments/logs/exp-20260507-002.json",
             "docs/experiment_log.jsonl",
         ],
     }

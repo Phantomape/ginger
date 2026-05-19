@@ -1,0 +1,195 @@
+{
+  "after_metrics": {
+    "macro_all": {
+      "late_strong": {
+        "expected_value_score": 4.0952,
+        "max_drawdown_pct": 0.0682,
+        "sharpe_daily": 4.62,
+        "survival_rate": 0.803,
+        "total_pnl": 88639.32,
+        "total_return_pct": 0.8864,
+        "trade_count": 25,
+        "win_rate": 0.72
+      },
+      "mid_weak": {
+        "expected_value_score": 1.099,
+        "max_drawdown_pct": 0.0475,
+        "sharpe_daily": 2.55,
+        "survival_rate": 0.807,
+        "total_pnl": 43100.74,
+        "total_return_pct": 0.431,
+        "trade_count": 21,
+        "win_rate": 0.4762
+      },
+      "old_thin": {
+        "expected_value_score": 0.2448,
+        "max_drawdown_pct": 0.0713,
+        "sharpe_daily": 1.13,
+        "survival_rate": 0.8696,
+        "total_pnl": 21655.37,
+        "total_return_pct": 0.2166,
+        "trade_count": 25,
+        "win_rate": 0.4
+      }
+    },
+    "xle_only": {
+      "late_strong": {
+        "expected_value_score": 3.5574,
+        "max_drawdown_pct": 0.0684,
+        "sharpe_daily": 4.15,
+        "survival_rate": 0.8302,
+        "total_pnl": 85717.63,
+        "total_return_pct": 0.8572,
+        "trade_count": 22,
+        "win_rate": 0.7727
+      },
+      "mid_weak": {
+        "expected_value_score": 1.139,
+        "max_drawdown_pct": 0.0476,
+        "sharpe_daily": 2.51,
+        "survival_rate": 0.82,
+        "total_pnl": 45382.01,
+        "total_return_pct": 0.4538,
+        "trade_count": 21,
+        "win_rate": 0.4762
+      },
+      "old_thin": {
+        "expected_value_score": 0.3179,
+        "max_drawdown_pct": 0.0805,
+        "sharpe_daily": 1.29,
+        "survival_rate": 0.918,
+        "total_pnl": 24642.07,
+        "total_return_pct": 0.2464,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "change_type": "alpha_search_candidate_pool_expansion",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "macro_all": {
+      "aggregate_expected_value_score_delta": 0.2605,
+      "aggregate_total_pnl_delta": -4862.05,
+      "gate4_basis": "Rejected: one window improved and two regressed; aggregate PnL fell and late_strong drawdown rose by 1.41 pp.",
+      "windows_improved": 1,
+      "windows_regressed": 2
+    },
+    "xle_only": {
+      "aggregate_expected_value_score_delta": -0.1642,
+      "aggregate_total_pnl_delta": -2515.77,
+      "gate4_basis": "Rejected: late_strong PnL improved, but mid_weak EV and PnL regressed materially and late_strong drawdown rose by 1.43 pp.",
+      "windows_improved": 1,
+      "windows_regressed": 1
+    }
+  },
+  "experiment_id": "exp-20260504-028",
+  "hypothesis": "Macro and sector ETFs already present in the canonical OHLCV snapshots may improve the production candidate pool by adding liquid rotation instruments rather than noisy individual tickers.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains sample-limited, so this used deterministic candidate-pool expansion instead.",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "next_retry_requires": [
+    "Do not add broad macro ETF baskets to the production watchlist from this sample.",
+    "Do not promote XLE-only candidate-pool expansion without a state/event discriminator that avoids the mid_weak June 2025 loss.",
+    "A valid retry needs new forward evidence or an explicit macro-regime allocator, not another ticker-list-only expansion."
+  ],
+  "parameters": {
+    "locked_variables": [
+      "signal thresholds",
+      "risk multipliers",
+      "entry execution cancels",
+      "candidate ranking",
+      "position sizing",
+      "add-ons",
+      "exits",
+      "LLM/news replay"
+    ],
+    "screened_variants": {
+      "macro_all": [
+        "TLT",
+        "IEF",
+        "UUP",
+        "USO",
+        "XLE",
+        "XLP",
+        "XLU",
+        "XLV"
+      ],
+      "xle_only": [
+        "XLE"
+      ]
+    },
+    "single_causal_variable": "candidate pool expansion using tickers already available in all canonical snapshots"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Candidate-pool expansion did not produce stable three-window improvement. The broad ETF basket added late_strong winners but hurt mid_weak and old_thin; XLE alone still hurt mid_weak and worsened late_strong Sharpe/drawdown.",
+  "related_files": [
+    "quant/experiments/exp_20260504_028_macro_etf_candidate_pool.py",
+    "data/experiments/exp-20260504-028/macro_etf_candidate_pool.json",
+    "experiments/logs/exp-20260504-028.json",
+    "experiments/tickets/exp-20260504-028.json",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-05-04T10:15:13+00:00"
+}

@@ -492,9 +492,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260513_024_green_gap_cushion_risk.py",
             "data/experiments/exp-20260513-024/green_gap_cushion_risk.json",
-            "docs/experiments/logs/exp-20260513-024.json",
-            "docs/experiments/tickets/exp-20260513-024.json",
-            "docs/experiments/artifacts/exp-20260513-024_green_gap_cushion_risk.md",
+            "experiments/logs/exp-20260513-024.json",
+            "experiments/tickets/exp-20260513-024.json",
+            "experiments/artifacts/exp-20260513-024_green_gap_cushion_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

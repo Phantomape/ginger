@@ -289,10 +289,10 @@ def build_manifest(data_dir: Path, baseline_path: Path) -> dict[str, Any]:
         },
         "historical_constraints": {
             "related_prior_closeouts": [
-                "docs/experiments/logs/exp-20260505-027.json",
-                "docs/experiments/logs/exp-20260506-027.json",
-                "docs/experiments/logs/exp-20260508-030.json",
-                "docs/experiments/logs/exp-20260509-022.json",
+                "experiments/logs/exp-20260505-027.json",
+                "experiments/logs/exp-20260506-027.json",
+                "experiments/logs/exp-20260508-030.json",
+                "experiments/logs/exp-20260509-022.json",
             ],
             "guardrails": [
                 "Do not treat LLM output schema inconsistency as the main issue here.",

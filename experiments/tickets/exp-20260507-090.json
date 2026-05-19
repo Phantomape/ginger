@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp-20260507-090",
+  "status": "completed",
+  "lane": "alpha_discovery",
+  "owner": "codex",
+  "hypothesis": "Daily EPS estimate snapshots may support a PIT analyst-revision / earnings-quality shadow tag for existing trend_long and breakout_long candidates.",
+  "change_type": "non_ohlcv_data_audit_shadow_overlay",
+  "single_causal_variable": "EPS estimate snapshot revision availability and PIT status",
+  "baseline_result_file": "data/backtest_results_20260507.json",
+  "allowed_write_scope": [
+    "experiments/tickets",
+    "experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "data/experiments"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "entry rules",
+    "exits",
+    "sizing",
+    "candidate ranking",
+    "LLM/news replay",
+    "core universe"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit: report coverage, PIT risk, missingness, usable fields, next experiment. No production promotion from non-PIT estimate history.",
+  "created_at": "2026-05-07T17:58:00+00:00",
+  "completed_at": "2026-05-07T17:58:00+00:00",
+  "result": "data_gap",
+  "decision": "data_gap",
+  "artifacts": [
+    "data/experiments/exp-20260507-090/earnings_estimate_revision_data_audit.json",
+    "docs/non_ohlcv_data_audit/earnings_estimate_revision_exp-20260507-090_20260507.md",
+    "experiments/logs/exp-20260507-090.json",
+    "experiments/tickets/exp-20260507-090.json",
+    "docs/experiment_log.jsonl",
+    "data/experiments/exp-20260507-090/accepted_trade_earnings_snapshot_join_audit.jsonl"
+  ]
+}

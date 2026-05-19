@@ -1,4 +1,4 @@
-﻿"""exp-20260514-017: Space forward replacement breakout haircut.
+"""exp-20260514-017: Space forward replacement breakout haircut.
 
 Tests one causal variable on top of accepted exp-20260514-009: whether the
 already accepted forward same-theme replacement-strength bucket should reduce
@@ -870,9 +870,9 @@ def run() -> dict[str, Any]:
 
 def persist(payload: dict[str, Any]) -> None:
     exp_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
-    logs_dir = PROJECT_ROOT / "docs" / "experiments" / "logs"
-    tickets_dir = PROJECT_ROOT / "docs" / "experiments" / "tickets"
-    artifacts_dir = PROJECT_ROOT / "docs" / "experiments" / "artifacts"
+    logs_dir = PROJECT_ROOT / "experiments" / "logs"
+    tickets_dir = PROJECT_ROOT / "experiments" / "tickets"
+    artifacts_dir = PROJECT_ROOT / "experiments" / "artifacts"
     for directory in (exp_dir, logs_dir, tickets_dir, artifacts_dir):
         directory.mkdir(parents=True, exist_ok=True)
 

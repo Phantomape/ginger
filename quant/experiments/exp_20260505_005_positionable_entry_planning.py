@@ -30,11 +30,10 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260505-005"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "positionable_entry_planning.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_positionable_entry_planning.md"
@@ -449,9 +448,9 @@ def _build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260505_005_positionable_entry_planning.py",
             "data/experiments/exp-20260505-005/positionable_entry_planning.json",
-            "docs/experiments/logs/exp-20260505-005.json",
-            "docs/experiments/tickets/exp-20260505-005.json",
-            "docs/experiments/artifacts/exp-20260505-005_positionable_entry_planning.md",
+            "experiments/logs/exp-20260505-005.json",
+            "experiments/tickets/exp-20260505-005.json",
+            "experiments/artifacts/exp-20260505-005_positionable_entry_planning.md",
         ],
         "rows": rows,
     }

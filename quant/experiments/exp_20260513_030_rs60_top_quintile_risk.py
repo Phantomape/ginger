@@ -555,9 +555,9 @@ def run() -> dict[str, Any]:
             "quant/test_low_score_risk_on_sizing.py",
             "quant/test_quant.py",
             "data/experiments/exp-20260513-030/rs60_top_quintile_risk.json",
-            "docs/experiments/logs/exp-20260513-030.json",
-            "docs/experiments/tickets/exp-20260513-030.json",
-            "docs/experiments/artifacts/exp-20260513-030_rs60_top_quintile_risk.md",
+            "experiments/logs/exp-20260513-030.json",
+            "experiments/tickets/exp-20260513-030.json",
+            "experiments/artifacts/exp-20260513-030_rs60_top_quintile_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

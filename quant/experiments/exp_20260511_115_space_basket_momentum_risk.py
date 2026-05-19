@@ -928,9 +928,9 @@ def run() -> dict:
             "quant/report_generator.py",
             "quant/test_space_catalyst_sleeve.py",
             "data/experiments/exp-20260511-115/space_basket_momentum_risk.json",
-            "docs/experiments/logs/exp-20260511-115.json",
-            "docs/experiments/tickets/exp-20260511-115.json",
-            "docs/experiments/artifacts/exp-20260511-115_space_basket_momentum_risk.md",
+            "experiments/logs/exp-20260511-115.json",
+            "experiments/tickets/exp-20260511-115.json",
+            "experiments/artifacts/exp-20260511-115_space_basket_momentum_risk.md",
             "docs/experiment_log.jsonl",
         ],
         "why_not_other_changes": (
@@ -945,11 +945,10 @@ def run() -> dict:
 def persist(payload: dict) -> None:
     out_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
     artifact_path = out_dir / f"{STEM}.json"
-    log_path = PROJECT_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = PROJECT_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = PROJECT_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = PROJECT_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     md_path = (
         PROJECT_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{STEM}.md"

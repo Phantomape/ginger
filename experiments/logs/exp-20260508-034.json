@@ -1,0 +1,362 @@
+{
+  "experiment_id": "exp-20260508-034",
+  "timestamp": "2026-05-08T20:11:35+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "hypothesis": "Buying a conservative initial fraction of each accepted A/B signal and using the existing day-2 follow-through add-on to top up confirmed winners may improve expected value by reducing loser exposure while preserving upside in trades that quickly work.",
+  "alpha_hypothesis_category": "capital_allocation_entry_lifecycle",
+  "change_type": "staged_entry_topup_replay",
+  "single_causal_variable": "initial entry fraction with original_shares preserved for day-2 top-up",
+  "historical_experiment_check": {
+    "not_repeated": [
+      "Not a raw add-on heat-cap increase.",
+      "Not same-day add-on ordering.",
+      "Not checkpoint volume confirmation.",
+      "Not second add-on enablement.",
+      "Not an RS/no-gap scalar replay."
+    ],
+    "mechanism_insight": "exp-20260508-027 and exp-20260508-029 made conservative-entry intent metadata the next valid add-on direction; this replay tests that lifecycle alpha with a frozen original share count."
+  },
+  "parameters": {
+    "variants": {
+      "initial_50pct": {
+        "initial_entry_fraction": 0.5
+      },
+      "initial_75pct": {
+        "initial_entry_fraction": 0.75
+      }
+    },
+    "locked_variables": [
+      "signal generation",
+      "entry candidate ranking",
+      "entry filters",
+      "gap cancel rules",
+      "stop/target rules",
+      "day-2 add-on trigger",
+      "day-2 add-on fraction",
+      "position caps",
+      "portfolio heat cap",
+      "exits",
+      "universe",
+      "LLM/news replay"
+    ]
+  },
+  "date_range": {
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json"
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json"
+    },
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json"
+    }
+  },
+  "market_regime_summary": {
+    "late_strong": "strong late accepted-stack tape",
+    "mid_weak": "rotation-heavy weaker validation tape",
+    "old_thin": "older thin mixed-to-weak tape"
+  },
+  "before_metrics": {
+    "aggregate_ev_sum": 6.0452,
+    "aggregate_pnl": 177676.93,
+    "windows": {
+      "late_strong": {
+        "expected_value_score": 4.0674,
+        "sharpe_daily": 4.48,
+        "sharpe": 6.57,
+        "max_drawdown_pct": 0.0539,
+        "total_pnl": 90788.88,
+        "total_return_pct": 0.9079,
+        "win_rate": 0.7895,
+        "total_trades": 19,
+        "survival_rate": 0.8039
+      },
+      "mid_weak": {
+        "expected_value_score": 1.6195,
+        "sharpe_daily": 2.72,
+        "sharpe": 4.36,
+        "max_drawdown_pct": 0.0879,
+        "total_pnl": 59540.63,
+        "total_return_pct": 0.5954,
+        "win_rate": 0.5238,
+        "total_trades": 21,
+        "survival_rate": 0.7925
+      },
+      "old_thin": {
+        "expected_value_score": 0.3583,
+        "sharpe_daily": 1.31,
+        "sharpe": 2.09,
+        "max_drawdown_pct": 0.0903,
+        "total_pnl": 27347.42,
+        "total_return_pct": 0.2735,
+        "win_rate": 0.4091,
+        "total_trades": 22,
+        "survival_rate": 0.9167
+      }
+    }
+  },
+  "after_metrics": {
+    "best_variant": "initial_75pct",
+    "variants": {
+      "initial_50pct": {
+        "late_strong": {
+          "expected_value_score": 2.1691,
+          "sharpe_daily": 4.49,
+          "sharpe": 6.2,
+          "max_drawdown_pct": 0.0353,
+          "total_pnl": 48312.94,
+          "total_return_pct": 0.4831,
+          "win_rate": 0.7895,
+          "total_trades": 19,
+          "survival_rate": 0.8039,
+          "addon_summary": {
+            "scheduled": 7,
+            "executed": 7,
+            "skipped": 0,
+            "checkpoint_rejected": 0,
+            "executed_shares": 884
+          },
+          "staged_entry_stats": {
+            "initial_entry_fraction": 0.5,
+            "signals_staged": 31,
+            "original_shares_sum": 7711,
+            "staged_shares_sum": 3850,
+            "position_original_restored": 18
+          }
+        },
+        "mid_weak": {
+          "expected_value_score": 0.8832,
+          "sharpe_daily": 2.67,
+          "sharpe": 4.14,
+          "max_drawdown_pct": 0.0566,
+          "total_pnl": 33077.37,
+          "total_return_pct": 0.3308,
+          "win_rate": 0.5238,
+          "total_trades": 21,
+          "survival_rate": 0.7925,
+          "addon_summary": {
+            "scheduled": 7,
+            "executed": 7,
+            "skipped": 0,
+            "checkpoint_rejected": 0,
+            "executed_shares": 842
+          },
+          "staged_entry_stats": {
+            "initial_entry_fraction": 0.5,
+            "signals_staged": 31,
+            "original_shares_sum": 8866,
+            "staged_shares_sum": 4427,
+            "position_original_restored": 21
+          }
+        },
+        "old_thin": {
+          "expected_value_score": 0.2429,
+          "sharpe_daily": 1.46,
+          "sharpe": 2.32,
+          "max_drawdown_pct": 0.0472,
+          "total_pnl": 16638.72,
+          "total_return_pct": 0.1664,
+          "win_rate": 0.4091,
+          "total_trades": 22,
+          "survival_rate": 0.9167,
+          "addon_summary": {
+            "scheduled": 4,
+            "executed": 4,
+            "skipped": 0,
+            "checkpoint_rejected": 0,
+            "executed_shares": 407
+          },
+          "staged_entry_stats": {
+            "initial_entry_fraction": 0.5,
+            "signals_staged": 41,
+            "original_shares_sum": 11138,
+            "staged_shares_sum": 5561,
+            "position_original_restored": 21
+          }
+        }
+      },
+      "initial_75pct": {
+        "late_strong": {
+          "expected_value_score": 3.1543,
+          "sharpe_daily": 4.51,
+          "sharpe": 6.41,
+          "max_drawdown_pct": 0.041,
+          "total_pnl": 69938.94,
+          "total_return_pct": 0.6994,
+          "win_rate": 0.7895,
+          "total_trades": 19,
+          "survival_rate": 0.8039,
+          "addon_summary": {
+            "scheduled": 7,
+            "executed": 7,
+            "skipped": 0,
+            "checkpoint_rejected": 0,
+            "executed_shares": 905
+          },
+          "staged_entry_stats": {
+            "initial_entry_fraction": 0.75,
+            "signals_staged": 31,
+            "original_shares_sum": 8173,
+            "staged_shares_sum": 6117,
+            "position_original_restored": 18
+          }
+        },
+        "mid_weak": {
+          "expected_value_score": 1.2531,
+          "sharpe_daily": 2.7,
+          "sharpe": 4.26,
+          "max_drawdown_pct": 0.0724,
+          "total_pnl": 46413.9,
+          "total_return_pct": 0.4641,
+          "win_rate": 0.5238,
+          "total_trades": 21,
+          "survival_rate": 0.7925,
+          "addon_summary": {
+            "scheduled": 7,
+            "executed": 7,
+            "skipped": 0,
+            "checkpoint_rejected": 0,
+            "executed_shares": 849
+          },
+          "staged_entry_stats": {
+            "initial_entry_fraction": 0.75,
+            "signals_staged": 31,
+            "original_shares_sum": 9238,
+            "staged_shares_sum": 6917,
+            "position_original_restored": 21
+          }
+        },
+        "old_thin": {
+          "expected_value_score": 0.3097,
+          "sharpe_daily": 1.38,
+          "sharpe": 2.2,
+          "max_drawdown_pct": 0.0689,
+          "total_pnl": 22440.76,
+          "total_return_pct": 0.2244,
+          "win_rate": 0.4091,
+          "total_trades": 22,
+          "survival_rate": 0.9167,
+          "addon_summary": {
+            "scheduled": 4,
+            "executed": 4,
+            "skipped": 0,
+            "checkpoint_rejected": 0,
+            "executed_shares": 336
+          },
+          "staged_entry_stats": {
+            "initial_entry_fraction": 0.75,
+            "signals_staged": 41,
+            "original_shares_sum": 11420,
+            "staged_shares_sum": 8548,
+            "position_original_restored": 21
+          }
+        }
+      }
+    }
+  },
+  "delta_metrics": {
+    "initial_50pct": {
+      "baseline_ev_sum": 6.0452,
+      "after_ev_sum": 3.2952,
+      "aggregate_ev_delta": -2.75,
+      "aggregate_ev_delta_pct": -0.454906,
+      "baseline_pnl_sum": 177676.93,
+      "after_pnl_sum": 98029.03,
+      "aggregate_pnl_delta": -79647.9,
+      "aggregate_pnl_delta_pct": -0.448274,
+      "ev_positive_windows": [],
+      "pnl_positive_windows": [],
+      "ev_regressed_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "pnl_regressed_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "win_rate_regressions": [],
+      "trade_count_delta_sum": 0,
+      "max_drawdown_delta_max": -0.0186,
+      "sharpe_daily_delta_max": 0.15
+    },
+    "initial_75pct": {
+      "baseline_ev_sum": 6.0452,
+      "after_ev_sum": 4.7171,
+      "aggregate_ev_delta": -1.3281,
+      "aggregate_ev_delta_pct": -0.219695,
+      "baseline_pnl_sum": 177676.93,
+      "after_pnl_sum": 138793.6,
+      "aggregate_pnl_delta": -38883.33,
+      "aggregate_pnl_delta_pct": -0.218843,
+      "ev_positive_windows": [],
+      "pnl_positive_windows": [],
+      "ev_regressed_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "pnl_regressed_windows": [
+        "late_strong",
+        "mid_weak",
+        "old_thin"
+      ],
+      "win_rate_regressions": [],
+      "trade_count_delta_sum": 0,
+      "max_drawdown_delta_max": -0.0129,
+      "sharpe_daily_delta_max": 0.07
+    }
+  },
+  "gate4": {
+    "passed": false,
+    "rule": "EV first over the three canonical backtesting.md windows; secondary improvements cannot override aggregate EV/PnL regression.",
+    "reason": "EV/PnL regressed, so drawdown improvement is insufficient"
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM/event ranking remains sample-limited; this run uses fully replayable OHLCV and existing add-on mechanics."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "promotion_requirement_if_positive": "Implement staged initial shares and original_shares preservation in shared production/backtest policy, expose intended_shares in run.py, and add parity tests before live promotion."
+  },
+  "rejection_reason": "Gate 4 failed. Staging initial entries reduced exposure to winners more than it helped avoid losers; do not retry nearby 50%-75% staged-entry fractions without a new discriminator for which entries should be staged.",
+  "next_retry_requires": [
+    "Do not retry nearby 50%-75% staged-entry fractions alone.",
+    "A valid retry needs an ex-ante discriminator identifying which accepted entries should be staged.",
+    "If later positive, staged-entry sizing must be shared by production and backtest before promotion."
+  ],
+  "raw_result_paths": {
+    "initial_50pct": {
+      "late_strong": "data\\experiments\\exp-20260508-034\\exp-20260508-034_initial_50pct_late_strong_raw.json",
+      "mid_weak": "data\\experiments\\exp-20260508-034\\exp-20260508-034_initial_50pct_mid_weak_raw.json",
+      "old_thin": "data\\experiments\\exp-20260508-034\\exp-20260508-034_initial_50pct_old_thin_raw.json"
+    },
+    "initial_75pct": {
+      "late_strong": "data\\experiments\\exp-20260508-034\\exp-20260508-034_initial_75pct_late_strong_raw.json",
+      "mid_weak": "data\\experiments\\exp-20260508-034\\exp-20260508-034_initial_75pct_mid_weak_raw.json",
+      "old_thin": "data\\experiments\\exp-20260508-034\\exp-20260508-034_initial_75pct_old_thin_raw.json"
+    }
+  },
+  "related_files": [
+    "data\\experiments\\exp-20260508-034\\exp-20260508-034_staged_entry_topup_replay.json",
+    "experiments\\logs\\exp-20260508-034.json",
+    "experiments\\tickets\\exp-20260508-034.json",
+    "experiments\\artifacts\\exp-20260508-034_staged_entry_topup_replay.md",
+    "docs/experiment_log.jsonl",
+    "quant/experiments/exp_20260508_034_staged_entry_topup_replay.py"
+  ]
+}

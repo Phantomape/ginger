@@ -551,9 +551,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260515_020_dual_slow_trend_leadership_risk.py",
             "data/experiments/exp-20260515-020/dual_slow_trend_leadership_risk.json",
-            "docs/experiments/logs/exp-20260515-020_dual_slow_trend_leadership_risk.json",
-            "docs/experiments/tickets/exp-20260515-020_dual_slow_trend_leadership_risk.json",
-            "docs/experiments/artifacts/exp-20260515-020_dual_slow_trend_leadership_risk.md",
+            "experiments/logs/exp-20260515-020_dual_slow_trend_leadership_risk.json",
+            "experiments/tickets/exp-20260515-020_dual_slow_trend_leadership_risk.json",
+            "experiments/artifacts/exp-20260515-020_dual_slow_trend_leadership_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -596,21 +596,18 @@ def persist(payload: dict[str, Any]) -> None:
     )
     log_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "logs"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.json"
     )
     ticket_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "tickets"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.json"
     )
     md_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

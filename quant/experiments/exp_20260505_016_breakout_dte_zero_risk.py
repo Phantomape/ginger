@@ -32,11 +32,10 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260505-016"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "breakout_dte_zero_risk.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_breakout_dte_zero_risk.md"
@@ -533,9 +532,9 @@ def main() -> None:
         "related_files": [
             "quant/experiments/exp_20260505_016_breakout_dte_zero_risk.py",
             "data/experiments/exp-20260505-016/breakout_dte_zero_risk.json",
-            "docs/experiments/logs/exp-20260505-016.json",
-            "docs/experiments/tickets/exp-20260505-016.json",
-            "docs/experiments/artifacts/exp-20260505-016_breakout_dte_zero_risk.md",
+            "experiments/logs/exp-20260505-016.json",
+            "experiments/tickets/exp-20260505-016.json",
+            "experiments/artifacts/exp-20260505-016_breakout_dte_zero_risk.md",
             "docs/experiment_log.jsonl",
             "docs/alpha-optimization-playbook.md",
         ],

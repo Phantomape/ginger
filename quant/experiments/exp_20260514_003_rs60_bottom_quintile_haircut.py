@@ -538,9 +538,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_003_rs60_bottom_quintile_haircut.py",
             "data/experiments/exp-20260514-003/rs60_bottom_quintile_haircut.json",
-            "docs/experiments/logs/exp-20260514-003.json",
-            "docs/experiments/tickets/exp-20260514-003.json",
-            "docs/experiments/artifacts/exp-20260514-003_rs60_bottom_quintile_haircut.md",
+            "experiments/logs/exp-20260514-003.json",
+            "experiments/tickets/exp-20260514-003.json",
+            "experiments/artifacts/exp-20260514-003_rs60_bottom_quintile_haircut.md",
             "docs/experiment_log.jsonl",
         ],
     }

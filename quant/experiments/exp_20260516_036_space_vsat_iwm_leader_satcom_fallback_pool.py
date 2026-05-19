@@ -19,11 +19,10 @@ CHANGED_VARIABLE = "space_forward_benchmark_same_theme_satcom_iwm_leader_fallbac
 
 ROOT = accepted_stack.BASE.ROOT
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOC_LOG = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-DOC_TICKET = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+DOC_LOG = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_TICKET = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 DOC_ARTIFACT = (
     ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{EXPERIMENT_NAME}.md"

@@ -622,9 +622,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_023_financials_sector_leader_cap.py",
             "data/experiments/exp-20260514-023/financials_sector_leader_cap.json",
-            "docs/experiments/logs/exp-20260514-023.json",
-            "docs/experiments/tickets/exp-20260514-023.json",
-            "docs/experiments/artifacts/exp-20260514-023_financials_sector_leader_cap.md",
+            "experiments/logs/exp-20260514-023.json",
+            "experiments/tickets/exp-20260514-023.json",
+            "experiments/artifacts/exp-20260514-023_financials_sector_leader_cap.md",
             "docs/experiment_log.jsonl",
             "quant/constants.py",
             "quant/portfolio_engine.py",
@@ -643,13 +643,12 @@ def persist(payload: dict[str, Any]) -> None:
         / EXPERIMENT_ID
         / f"{EXPERIMENT_SLUG}.json"
     )
-    log_path = base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    log_path = base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     ticket_path = (
-        base.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+        base.REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     )
     md_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

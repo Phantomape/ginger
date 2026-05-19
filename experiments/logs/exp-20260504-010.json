@@ -1,0 +1,2757 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "alpha_hypothesis": {
+    "category": "event_sleeve_backtest",
+    "entry_or_ranking": "entry",
+    "text": "8-K Item 2.02 events with negative filing language and negative first reaction versus SPY can form a small mean-reversion/recoverable-pressure event sleeve."
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "buy_hold": {
+    "end": "2026-04-21",
+    "qqq_return_pct": 0.352028,
+    "spy_return_pct": 0.262436,
+    "start": "2024-10-02"
+  },
+  "change_type": "non_ohlcv_event_sleeve_backtest",
+  "coverage": {
+    "candidate_by_reaction_bucket": {
+      "reaction_-2_to_0": 12,
+      "reaction_-5_to_-2": 4
+    },
+    "candidate_by_window": {
+      "late_strong": 5,
+      "mid_weak": 7,
+      "old_thin": 4
+    },
+    "candidate_events": 16,
+    "dedupe_key": "ticker + entry_date"
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "decision": "sleeve_promising_not_promoted",
+  "decision_rationale": "The fixed SEC negative-language + negative-reaction packet remains positive after portfolio-level event-sleeve simulation with costs; it is eligible for a default-off production queue / replacement-value test.",
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260504-010",
+  "gate4": {
+    "basis": "No production/core strategy change was promoted; this is a standalone sleeve simulation.",
+    "passed": false
+  },
+  "historical_experiment_check": {
+    "mechanism_insight_check": "Recent playbook requires no phrase tuning and no direct production promotion; this run tests whether the fixed packet survives a real sleeve backtest.",
+    "prior_same_family": {
+      "exp-20260504-002": "raw positive SEC results-8K reaction failed",
+      "exp-20260504-004": "Companyfacts point score was nonmonotonic",
+      "exp-20260504-007": "positive filing text failed; negative language was shadow-positive",
+      "exp-20260504-008": "negative_language + reaction_excess_return < 0 was shadow-promising"
+    },
+    "why_this_is_not_repeat": "This freezes the exp-008 packet and changes only the measurement layer from forward-return distribution to capital/capacity/cost portfolio simulation."
+  },
+  "hypothesis": "The fixed, replayable SEC negative-language + negative first-reaction packet can make money as a small deterministic event sleeve after capacity limits and round-trip costs.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "next_retry_requires": [
+    "Do not tune keywords or reaction thresholds around this result.",
+    "Next valid step is a replacement-value test versus same-day A/B accepted and skipped candidates.",
+    "If replacement value is positive, add a default-off production queue using shared packet policy."
+  ],
+  "parameters": {
+    "capital_model": "standalone event-sleeve capital, compounding available sleeve equity; this does not consume core A/B slots",
+    "entry_timing": "next trading-day open after reaction close",
+    "exit_variants_trading_days": [
+      10,
+      20
+    ],
+    "initial_capital": 100000.0,
+    "language_proxy_version": "fixed_keyword_proxy_v0_from_exp_20260504_007",
+    "locked_variables": [
+      "keyword phrase list",
+      "reaction threshold at < 0",
+      "production universe",
+      "core A/B entries",
+      "core ranking",
+      "core sizing",
+      "core exits",
+      "LLM/news replay"
+    ],
+    "max_positions_variants": [
+      1,
+      2
+    ],
+    "packet_rule": "8-K Item 2.02 AND language_bucket == negative_language AND reaction_excess_return < 0",
+    "primary_variant": "10d_max1",
+    "reaction_metric": "ticker open-to-close return on usable trade date minus SPY open-to-close return",
+    "round_trip_cost_pct": 0.0035,
+    "same_day_candidate_ordering": "most negative reaction_excess_return first, then ticker"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_impact": "shadow_sleeve_backtest_only_no_core_strategy_logic_changed",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260504_010_sec_event_sleeve_backtest.py",
+    "data/experiments/exp-20260504-010/sec_event_sleeve_backtest.json",
+    "experiments/logs/exp-20260504-010.json",
+    "docs/non_ohlcv_data_audit/sec_event_sleeve_backtest_20260504.md",
+    "data/non_ohlcv/sec_filing_text_20241002_20260421.jsonl",
+    "quant/experiments/exp_20260504_008_sec_negative_reaction_absorption.py"
+  ],
+  "single_causal_variable": "promote exp-20260504-008 primary packet into deterministic sleeve simulation",
+  "sleeve_metrics": {
+    "primary": {
+      "equity_curve_tail": [
+        {
+          "active_positions": 0,
+          "date": "2026-03-10",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-11",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-12",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-13",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-16",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-17",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-18",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-19",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-20",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-23",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-24",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-25",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-26",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-27",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-30",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-03-31",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-01",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-02",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-06",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-07",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-08",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-09",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-10",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-13",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-14",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-15",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-16",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-17",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-20",
+          "equity": 199993.3
+        },
+        {
+          "active_positions": 0,
+          "date": "2026-04-21",
+          "equity": 199993.3
+        }
+      ],
+      "expected_value_score": 1.475584,
+      "exposure_days": 117,
+      "exposure_rate": 0.1765,
+      "final_equity": 199993.3,
+      "holding_days": 10,
+      "initial_capital": 100000.0,
+      "max_drawdown_pct": 0.103714,
+      "max_positions": 1,
+      "sharpe_daily": 1.4757,
+      "skipped_by_reason": {
+        "slot_full": 3
+      },
+      "skipped_count": 3,
+      "skipped_events": [
+        {
+          "accession_number": "0000093410-25-000004",
+          "entry_date": "2025-02-04",
+          "language_score": -2,
+          "negative_phrase_hits": 11,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_date": "2025-02-03",
+          "reaction_excess_return": -0.006323,
+          "skip_reason": "slot_full",
+          "text_event_type": "item_2_02_other_text",
+          "ticker": "CVX",
+          "usable_trade_date": "2025-02-03",
+          "window": "old_thin"
+        },
+        {
+          "accession_number": "0001035267-25-000206",
+          "entry_date": "2025-10-23",
+          "language_score": -2,
+          "negative_phrase_hits": 0,
+          "reaction_bucket": "reaction_-5_to_-2",
+          "reaction_date": "2025-10-22",
+          "reaction_excess_return": -0.023161,
+          "skip_reason": "slot_full",
+          "text_event_type": "earnings_release_text",
+          "ticker": "ISRG",
+          "usable_trade_date": "2025-10-22",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0001744489-25-000154",
+          "entry_date": "2025-11-17",
+          "language_score": -5,
+          "negative_phrase_hits": 7,
+          "reaction_bucket": "reaction_-5_to_-2",
+          "reaction_date": "2025-11-14",
+          "reaction_excess_return": -0.025841,
+          "skip_reason": "slot_full",
+          "text_event_type": "earnings_release_text",
+          "ticker": "DIS",
+          "usable_trade_date": "2025-11-14",
+          "window": "late_strong"
+        }
+      ],
+      "total_pnl": 99993.3,
+      "total_return_pct": 0.999933,
+      "trade_count": 13,
+      "trade_summary": {
+        "by_window": {
+          "late_strong": {
+            "net_return_distribution": {
+              "avg": 0.101042,
+              "count": 4,
+              "max": 0.452055,
+              "median": 0.025487,
+              "min": -0.098859,
+              "win_rate": 0.75
+            },
+            "total_pnl": 54618.33,
+            "trade_count": 4
+          },
+          "mid_weak": {
+            "net_return_distribution": {
+              "avg": 0.066932,
+              "count": 6,
+              "max": 0.245155,
+              "median": 0.020945,
+              "min": 0.012534,
+              "win_rate": 1.0
+            },
+            "total_pnl": 45104.98,
+            "trade_count": 6
+          },
+          "old_thin": {
+            "net_return_distribution": {
+              "avg": 0.000981,
+              "count": 3,
+              "max": 0.01389,
+              "median": 0.005382,
+              "min": -0.01633,
+              "win_rate": 0.6667
+            },
+            "total_pnl": 269.98,
+            "trade_count": 3
+          }
+        },
+        "gross_return_distribution": {
+          "avg": 0.065938,
+          "count": 13,
+          "max": 0.457155,
+          "median": 0.017923,
+          "min": -0.095694,
+          "win_rate": 0.8462
+        },
+        "net_return_distribution": {
+          "avg": 0.062208,
+          "count": 13,
+          "max": 0.452055,
+          "median": 0.014361,
+          "min": -0.098859,
+          "win_rate": 0.8462
+        },
+        "profit_factor": 5.241806,
+        "top_trade_concentration": {
+          "pnl": 69092.5,
+          "share_of_total_pnl": 0.691,
+          "ticker": "LITE",
+          "total_pnl_without_top_trade": 30900.79
+        }
+      },
+      "trades": [
+        {
+          "accession_number": "0001193125-24-237206",
+          "entry_date": "2024-10-17",
+          "entry_notional": 100000.0,
+          "entry_price": 515.3367,
+          "exit_date": "2024-10-30",
+          "exit_price": 508.7014,
+          "gross_return_pct": -0.012876,
+          "holding_days": 10,
+          "language_score": -6,
+          "negative_phrase_hits": 8,
+          "net_return_pct": -0.01633,
+          "pnl": -1633.05,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.004611,
+          "ticker": "GS",
+          "window": "old_thin"
+        },
+        {
+          "accession_number": "0000063908-24-000152",
+          "entry_date": "2024-10-31",
+          "entry_notional": 98366.95,
+          "entry_price": 282.304,
+          "exit_date": "2024-11-13",
+          "exit_price": 287.2305,
+          "gross_return_pct": 0.017451,
+          "holding_days": 10,
+          "language_score": -17,
+          "negative_phrase_hits": 20,
+          "net_return_pct": 0.01389,
+          "pnl": 1366.29,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.007917,
+          "ticker": "MCD",
+          "window": "old_thin"
+        },
+        {
+          "accession_number": "0000101829-25-000002",
+          "entry_date": "2025-01-30",
+          "entry_notional": 99733.24,
+          "entry_price": 122.9517,
+          "exit_date": "2025-02-12",
+          "exit_price": 124.0476,
+          "gross_return_pct": 0.008913,
+          "holding_days": 10,
+          "language_score": -2,
+          "negative_phrase_hits": 14,
+          "net_return_pct": 0.005382,
+          "pnl": 536.74,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.014654,
+          "ticker": "RTX",
+          "window": "old_thin"
+        },
+        {
+          "accession_number": "0000063908-25-000021",
+          "entry_date": "2025-05-05",
+          "entry_notional": 100269.98,
+          "entry_price": 305.9228,
+          "exit_date": "2025-05-16",
+          "exit_price": 311.4059,
+          "gross_return_pct": 0.017923,
+          "holding_days": 10,
+          "language_score": -17,
+          "negative_phrase_hits": 20,
+          "net_return_pct": 0.014361,
+          "pnl": 1439.93,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.008666,
+          "ticker": "MCD",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0001628280-25-028827",
+          "entry_date": "2025-06-04",
+          "entry_notional": 101709.91,
+          "entry_price": 73.03,
+          "exit_date": "2025-06-17",
+          "exit_price": 79.71,
+          "gross_return_pct": 0.091469,
+          "holding_days": 10,
+          "language_score": -3,
+          "negative_phrase_hits": 3,
+          "net_return_pct": 0.087649,
+          "pnl": 8914.78,
+          "reaction_bucket": "reaction_-5_to_-2",
+          "reaction_excess_return": -0.046758,
+          "ticker": "CRDO",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0001193125-25-159560",
+          "entry_date": "2025-07-18",
+          "entry_notional": 110624.69,
+          "entry_price": 696.1621,
+          "exit_date": "2025-07-31",
+          "exit_price": 712.4373,
+          "gross_return_pct": 0.023378,
+          "holding_days": 10,
+          "language_score": -4,
+          "negative_phrase_hits": 4,
+          "net_return_pct": 0.019797,
+          "pnl": 2190.0,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.006453,
+          "ticker": "GS",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0001744489-25-000135",
+          "entry_date": "2025-08-08",
+          "entry_notional": 112814.69,
+          "entry_price": 112.5386,
+          "exit_date": "2025-08-21",
+          "exit_price": 115.429,
+          "gross_return_pct": 0.025684,
+          "holding_days": 10,
+          "language_score": -3,
+          "negative_phrase_hits": 5,
+          "net_return_pct": 0.022094,
+          "pnl": 2492.54,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.018524,
+          "ticker": "DIS",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0001807794-25-000018",
+          "entry_date": "2025-09-05",
+          "entry_notional": 115307.23,
+          "entry_price": 137.9,
+          "exit_date": "2025-09-18",
+          "exit_price": 172.31,
+          "gross_return_pct": 0.249529,
+          "holding_days": 10,
+          "language_score": -4,
+          "negative_phrase_hits": 4,
+          "net_return_pct": 0.245155,
+          "pnl": 28268.18,
+          "reaction_bucket": "reaction_-5_to_-2",
+          "reaction_excess_return": -0.036244,
+          "ticker": "CRDO",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0001193125-25-238058",
+          "entry_date": "2025-10-16",
+          "entry_notional": 143575.41,
+          "entry_price": 762.8436,
+          "exit_date": "2025-10-29",
+          "exit_price": 775.1179,
+          "gross_return_pct": 0.01609,
+          "holding_days": 10,
+          "language_score": -3,
+          "negative_phrase_hits": 3,
+          "net_return_pct": 0.012534,
+          "pnl": 1799.55,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.011255,
+          "ticker": "GS",
+          "window": "mid_weak"
+        },
+        {
+          "accession_number": "0000063908-25-000057",
+          "entry_date": "2025-11-07",
+          "entry_notional": 145374.96,
+          "entry_price": 296.89,
+          "exit_date": "2025-11-20",
+          "exit_price": 300.6661,
+          "gross_return_pct": 0.012719,
+          "holding_days": 10,
+          "language_score": -9,
+          "negative_phrase_hits": 12,
+          "net_return_pct": 0.009175,
+          "pnl": 1333.74,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.010121,
+          "ticker": "MCD",
+          "window": "late_strong"
+        },
+        {
+          "accession_number": "0001104659-25-116130",
+          "entry_date": "2025-12-01",
+          "entry_notional": 146708.71,
+          "entry_price": 460.7738,
+          "exit_date": "2025-12-12",
+          "exit_price": 481.7198,
+          "gross_return_pct": 0.045458,
+          "holding_days": 10,
+          "language_score": -6,
+          "negative_phrase_hits": 6,
+          "net_return_pct": 0.041799,
+          "pnl": 6132.32,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.008899,
+          "ticker": "DE",
+          "window": "late_strong"
+        },
+        {
+          "accession_number": "0001628280-26-005005",
+          "entry_date": "2026-02-05",
+          "entry_notional": 152841.03,
+          "entry_price": 436.22,
+          "exit_date": "2026-02-19",
+          "exit_price": 635.64,
+          "gross_return_pct": 0.457155,
+          "holding_days": 10,
+          "language_score": -3,
+          "negative_phrase_hits": 4,
+          "net_return_pct": 0.452055,
+          "pnl": 69092.5,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.009995,
+          "ticker": "LITE",
+          "window": "late_strong"
+        },
+        {
+          "accession_number": "0001104659-26-017239",
+          "entry_date": "2026-02-23",
+          "entry_notional": 221933.52,
+          "entry_price": 650.2781,
+          "exit_date": "2026-03-06",
+          "exit_price": 588.0501,
+          "gross_return_pct": -0.095694,
+          "holding_days": 10,
+          "language_score": -2,
+          "negative_phrase_hits": 3,
+          "net_return_pct": -0.098859,
+          "pnl": -21940.23,
+          "reaction_bucket": "reaction_-2_to_0",
+          "reaction_excess_return": -0.01307,
+          "ticker": "DE",
+          "window": "late_strong"
+        }
+      ],
+      "win_rate": 0.8462
+    },
+    "primary_variant": "10d_max1",
+    "variants": {
+      "10d_max1": {
+        "equity_curve_tail": [
+          {
+            "active_positions": 0,
+            "date": "2026-03-10",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-11",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-12",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-13",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-16",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-17",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-18",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-19",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-20",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-23",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-24",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-25",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-26",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-27",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-30",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-31",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-01",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-02",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-06",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-07",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-08",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-09",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-10",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-13",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-14",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-15",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-16",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-17",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-20",
+            "equity": 199993.3
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-21",
+            "equity": 199993.3
+          }
+        ],
+        "expected_value_score": 1.475584,
+        "exposure_days": 117,
+        "exposure_rate": 0.1765,
+        "final_equity": 199993.3,
+        "holding_days": 10,
+        "initial_capital": 100000.0,
+        "max_drawdown_pct": 0.103714,
+        "max_positions": 1,
+        "sharpe_daily": 1.4757,
+        "skipped_by_reason": {
+          "slot_full": 3
+        },
+        "skipped_count": 3,
+        "skipped_events": [
+          {
+            "accession_number": "0000093410-25-000004",
+            "entry_date": "2025-02-04",
+            "language_score": -2,
+            "negative_phrase_hits": 11,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2025-02-03",
+            "reaction_excess_return": -0.006323,
+            "skip_reason": "slot_full",
+            "text_event_type": "item_2_02_other_text",
+            "ticker": "CVX",
+            "usable_trade_date": "2025-02-03",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0001035267-25-000206",
+            "entry_date": "2025-10-23",
+            "language_score": -2,
+            "negative_phrase_hits": 0,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_date": "2025-10-22",
+            "reaction_excess_return": -0.023161,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "ISRG",
+            "usable_trade_date": "2025-10-22",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001744489-25-000154",
+            "entry_date": "2025-11-17",
+            "language_score": -5,
+            "negative_phrase_hits": 7,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_date": "2025-11-14",
+            "reaction_excess_return": -0.025841,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "DIS",
+            "usable_trade_date": "2025-11-14",
+            "window": "late_strong"
+          }
+        ],
+        "total_pnl": 99993.3,
+        "total_return_pct": 0.999933,
+        "trade_count": 13,
+        "trade_summary": {
+          "by_window": {
+            "late_strong": {
+              "net_return_distribution": {
+                "avg": 0.101042,
+                "count": 4,
+                "max": 0.452055,
+                "median": 0.025487,
+                "min": -0.098859,
+                "win_rate": 0.75
+              },
+              "total_pnl": 54618.33,
+              "trade_count": 4
+            },
+            "mid_weak": {
+              "net_return_distribution": {
+                "avg": 0.066932,
+                "count": 6,
+                "max": 0.245155,
+                "median": 0.020945,
+                "min": 0.012534,
+                "win_rate": 1.0
+              },
+              "total_pnl": 45104.98,
+              "trade_count": 6
+            },
+            "old_thin": {
+              "net_return_distribution": {
+                "avg": 0.000981,
+                "count": 3,
+                "max": 0.01389,
+                "median": 0.005382,
+                "min": -0.01633,
+                "win_rate": 0.6667
+              },
+              "total_pnl": 269.98,
+              "trade_count": 3
+            }
+          },
+          "gross_return_distribution": {
+            "avg": 0.065938,
+            "count": 13,
+            "max": 0.457155,
+            "median": 0.017923,
+            "min": -0.095694,
+            "win_rate": 0.8462
+          },
+          "net_return_distribution": {
+            "avg": 0.062208,
+            "count": 13,
+            "max": 0.452055,
+            "median": 0.014361,
+            "min": -0.098859,
+            "win_rate": 0.8462
+          },
+          "profit_factor": 5.241806,
+          "top_trade_concentration": {
+            "pnl": 69092.5,
+            "share_of_total_pnl": 0.691,
+            "ticker": "LITE",
+            "total_pnl_without_top_trade": 30900.79
+          }
+        },
+        "trades": [
+          {
+            "accession_number": "0001193125-24-237206",
+            "entry_date": "2024-10-17",
+            "entry_notional": 100000.0,
+            "entry_price": 515.3367,
+            "exit_date": "2024-10-30",
+            "exit_price": 508.7014,
+            "gross_return_pct": -0.012876,
+            "holding_days": 10,
+            "language_score": -6,
+            "negative_phrase_hits": 8,
+            "net_return_pct": -0.01633,
+            "pnl": -1633.05,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.004611,
+            "ticker": "GS",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-24-000152",
+            "entry_date": "2024-10-31",
+            "entry_notional": 98366.95,
+            "entry_price": 282.304,
+            "exit_date": "2024-11-13",
+            "exit_price": 287.2305,
+            "gross_return_pct": 0.017451,
+            "holding_days": 10,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.01389,
+            "pnl": 1366.29,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.007917,
+            "ticker": "MCD",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000101829-25-000002",
+            "entry_date": "2025-01-30",
+            "entry_notional": 99733.24,
+            "entry_price": 122.9517,
+            "exit_date": "2025-02-12",
+            "exit_price": 124.0476,
+            "gross_return_pct": 0.008913,
+            "holding_days": 10,
+            "language_score": -2,
+            "negative_phrase_hits": 14,
+            "net_return_pct": 0.005382,
+            "pnl": 536.74,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.014654,
+            "ticker": "RTX",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-25-000021",
+            "entry_date": "2025-05-05",
+            "entry_notional": 100269.98,
+            "entry_price": 305.9228,
+            "exit_date": "2025-05-16",
+            "exit_price": 311.4059,
+            "gross_return_pct": 0.017923,
+            "holding_days": 10,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.014361,
+            "pnl": 1439.93,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008666,
+            "ticker": "MCD",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001628280-25-028827",
+            "entry_date": "2025-06-04",
+            "entry_notional": 101709.91,
+            "entry_price": 73.03,
+            "exit_date": "2025-06-17",
+            "exit_price": 79.71,
+            "gross_return_pct": 0.091469,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.087649,
+            "pnl": 8914.78,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.046758,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-159560",
+            "entry_date": "2025-07-18",
+            "entry_notional": 110624.69,
+            "entry_price": 696.1621,
+            "exit_date": "2025-07-31",
+            "exit_price": 712.4373,
+            "gross_return_pct": 0.023378,
+            "holding_days": 10,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.019797,
+            "pnl": 2190.0,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.006453,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001744489-25-000135",
+            "entry_date": "2025-08-08",
+            "entry_notional": 112814.69,
+            "entry_price": 112.5386,
+            "exit_date": "2025-08-21",
+            "exit_price": 115.429,
+            "gross_return_pct": 0.025684,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 5,
+            "net_return_pct": 0.022094,
+            "pnl": 2492.54,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.018524,
+            "ticker": "DIS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001807794-25-000018",
+            "entry_date": "2025-09-05",
+            "entry_notional": 115307.23,
+            "entry_price": 137.9,
+            "exit_date": "2025-09-18",
+            "exit_price": 172.31,
+            "gross_return_pct": 0.249529,
+            "holding_days": 10,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.245155,
+            "pnl": 28268.18,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.036244,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-238058",
+            "entry_date": "2025-10-16",
+            "entry_notional": 143575.41,
+            "entry_price": 762.8436,
+            "exit_date": "2025-10-29",
+            "exit_price": 775.1179,
+            "gross_return_pct": 0.01609,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.012534,
+            "pnl": 1799.55,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.011255,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0000063908-25-000057",
+            "entry_date": "2025-11-07",
+            "entry_notional": 145374.96,
+            "entry_price": 296.89,
+            "exit_date": "2025-11-20",
+            "exit_price": 300.6661,
+            "gross_return_pct": 0.012719,
+            "holding_days": 10,
+            "language_score": -9,
+            "negative_phrase_hits": 12,
+            "net_return_pct": 0.009175,
+            "pnl": 1333.74,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.010121,
+            "ticker": "MCD",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-25-116130",
+            "entry_date": "2025-12-01",
+            "entry_notional": 146708.71,
+            "entry_price": 460.7738,
+            "exit_date": "2025-12-12",
+            "exit_price": 481.7198,
+            "gross_return_pct": 0.045458,
+            "holding_days": 10,
+            "language_score": -6,
+            "negative_phrase_hits": 6,
+            "net_return_pct": 0.041799,
+            "pnl": 6132.32,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008899,
+            "ticker": "DE",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001628280-26-005005",
+            "entry_date": "2026-02-05",
+            "entry_notional": 152841.03,
+            "entry_price": 436.22,
+            "exit_date": "2026-02-19",
+            "exit_price": 635.64,
+            "gross_return_pct": 0.457155,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.452055,
+            "pnl": 69092.5,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.009995,
+            "ticker": "LITE",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-26-017239",
+            "entry_date": "2026-02-23",
+            "entry_notional": 221933.52,
+            "entry_price": 650.2781,
+            "exit_date": "2026-03-06",
+            "exit_price": 588.0501,
+            "gross_return_pct": -0.095694,
+            "holding_days": 10,
+            "language_score": -2,
+            "negative_phrase_hits": 3,
+            "net_return_pct": -0.098859,
+            "pnl": -21940.23,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.01307,
+            "ticker": "DE",
+            "window": "late_strong"
+          }
+        ],
+        "win_rate": 0.8462
+      },
+      "10d_max2": {
+        "equity_curve_tail": [
+          {
+            "active_positions": 0,
+            "date": "2026-03-10",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-11",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-12",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-13",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-16",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-17",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-18",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-19",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-20",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-23",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-24",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-25",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-26",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-27",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-30",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-31",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-01",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-02",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-06",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-07",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-08",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-09",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-10",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-13",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-14",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-15",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-16",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-17",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-20",
+            "equity": 152735.18
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-21",
+            "equity": 152735.18
+          }
+        ],
+        "expected_value_score": 0.85602,
+        "exposure_days": 131,
+        "exposure_rate": 0.1976,
+        "final_equity": 152735.18,
+        "holding_days": 10,
+        "initial_capital": 100000.0,
+        "max_drawdown_pct": 0.053047,
+        "max_positions": 2,
+        "sharpe_daily": 1.6232,
+        "skipped_by_reason": {},
+        "skipped_count": 0,
+        "skipped_events": [],
+        "total_pnl": 52735.18,
+        "total_return_pct": 0.527352,
+        "trade_count": 16,
+        "trade_summary": {
+          "by_window": {
+            "late_strong": {
+              "net_return_distribution": {
+                "avg": 0.082056,
+                "count": 5,
+                "max": 0.452055,
+                "median": 0.009175,
+                "min": -0.098859,
+                "win_rate": 0.8
+              },
+              "total_pnl": 25318.43,
+              "trade_count": 5
+            },
+            "mid_weak": {
+              "net_return_distribution": {
+                "avg": 0.063151,
+                "count": 7,
+                "max": 0.245155,
+                "median": 0.022094,
+                "min": 0.012534,
+                "win_rate": 1.0
+              },
+              "total_pnl": 24381.54,
+              "trade_count": 7
+            },
+            "old_thin": {
+              "net_return_distribution": {
+                "avg": 0.015225,
+                "count": 4,
+                "max": 0.057958,
+                "median": 0.009636,
+                "min": -0.01633,
+                "win_rate": 0.75
+              },
+              "total_pnl": 3035.22,
+              "trade_count": 4
+            }
+          },
+          "gross_return_distribution": {
+            "avg": 0.06079,
+            "count": 16,
+            "max": 0.457155,
+            "median": 0.020651,
+            "min": -0.095694,
+            "win_rate": 0.875
+          },
+          "net_return_distribution": {
+            "avg": 0.057077,
+            "count": 16,
+            "max": 0.452055,
+            "median": 0.017079,
+            "min": -0.098859,
+            "win_rate": 0.875
+          },
+          "profit_factor": 7.020851,
+          "top_trade_concentration": {
+            "pnl": 29622.09,
+            "share_of_total_pnl": 0.5617,
+            "ticker": "LITE",
+            "total_pnl_without_top_trade": 23113.1
+          }
+        },
+        "trades": [
+          {
+            "accession_number": "0001193125-24-237206",
+            "entry_date": "2024-10-17",
+            "entry_notional": 50000.0,
+            "entry_price": 515.3367,
+            "exit_date": "2024-10-30",
+            "exit_price": 508.7014,
+            "gross_return_pct": -0.012876,
+            "holding_days": 10,
+            "language_score": -6,
+            "negative_phrase_hits": 8,
+            "net_return_pct": -0.01633,
+            "pnl": -816.52,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.004611,
+            "ticker": "GS",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-24-000152",
+            "entry_date": "2024-10-31",
+            "entry_notional": 49591.74,
+            "entry_price": 282.304,
+            "exit_date": "2024-11-13",
+            "exit_price": 287.2305,
+            "gross_return_pct": 0.017451,
+            "holding_days": 10,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.01389,
+            "pnl": 688.81,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.007917,
+            "ticker": "MCD",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000101829-25-000002",
+            "entry_date": "2025-01-30",
+            "entry_notional": 49936.15,
+            "entry_price": 122.9517,
+            "exit_date": "2025-02-12",
+            "exit_price": 124.0476,
+            "gross_return_pct": 0.008913,
+            "holding_days": 10,
+            "language_score": -2,
+            "negative_phrase_hits": 14,
+            "net_return_pct": 0.005382,
+            "pnl": 268.74,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.014654,
+            "ticker": "RTX",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000093410-25-000004",
+            "entry_date": "2025-02-04",
+            "entry_notional": 49936.15,
+            "entry_price": 140.7543,
+            "exit_date": "2025-02-18",
+            "exit_price": 149.4352,
+            "gross_return_pct": 0.061674,
+            "holding_days": 10,
+            "language_score": -2,
+            "negative_phrase_hits": 11,
+            "net_return_pct": 0.057958,
+            "pnl": 2894.19,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.006323,
+            "ticker": "CVX",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-25-000021",
+            "entry_date": "2025-05-05",
+            "entry_notional": 51517.61,
+            "entry_price": 305.9228,
+            "exit_date": "2025-05-16",
+            "exit_price": 311.4059,
+            "gross_return_pct": 0.017923,
+            "holding_days": 10,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.014361,
+            "pnl": 739.82,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008666,
+            "ticker": "MCD",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001628280-25-028827",
+            "entry_date": "2025-06-04",
+            "entry_notional": 51887.52,
+            "entry_price": 73.03,
+            "exit_date": "2025-06-17",
+            "exit_price": 79.71,
+            "gross_return_pct": 0.091469,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.087649,
+            "pnl": 4547.9,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.046758,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-159560",
+            "entry_date": "2025-07-18",
+            "entry_notional": 54161.47,
+            "entry_price": 696.1621,
+            "exit_date": "2025-07-31",
+            "exit_price": 712.4373,
+            "gross_return_pct": 0.023378,
+            "holding_days": 10,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.019797,
+            "pnl": 1072.22,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.006453,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001744489-25-000135",
+            "entry_date": "2025-08-08",
+            "entry_notional": 54697.58,
+            "entry_price": 112.5386,
+            "exit_date": "2025-08-21",
+            "exit_price": 115.429,
+            "gross_return_pct": 0.025684,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 5,
+            "net_return_pct": 0.022094,
+            "pnl": 1208.49,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.018524,
+            "ticker": "DIS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001807794-25-000018",
+            "entry_date": "2025-09-05",
+            "entry_notional": 55301.82,
+            "entry_price": 137.9,
+            "exit_date": "2025-09-18",
+            "exit_price": 172.31,
+            "gross_return_pct": 0.249529,
+            "holding_days": 10,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.245155,
+            "pnl": 13557.54,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.036244,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-238058",
+            "entry_date": "2025-10-16",
+            "entry_notional": 62080.59,
+            "entry_price": 762.8436,
+            "exit_date": "2025-10-29",
+            "exit_price": 775.1179,
+            "gross_return_pct": 0.01609,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.012534,
+            "pnl": 778.11,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.011255,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001035267-25-000206",
+            "entry_date": "2025-10-23",
+            "entry_notional": 61221.88,
+            "entry_price": 525.37,
+            "exit_date": "2025-11-05",
+            "exit_price": 548.55,
+            "gross_return_pct": 0.044121,
+            "holding_days": 10,
+            "language_score": -2,
+            "negative_phrase_hits": 0,
+            "net_return_pct": 0.040467,
+            "pnl": 2477.46,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.023161,
+            "ticker": "ISRG",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0000063908-25-000057",
+            "entry_date": "2025-11-07",
+            "entry_notional": 63708.37,
+            "entry_price": 296.89,
+            "exit_date": "2025-11-20",
+            "exit_price": 300.6661,
+            "gross_return_pct": 0.012719,
+            "holding_days": 10,
+            "language_score": -9,
+            "negative_phrase_hits": 12,
+            "net_return_pct": 0.009175,
+            "pnl": 584.49,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.010121,
+            "ticker": "MCD",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001744489-25-000154",
+            "entry_date": "2025-11-17",
+            "entry_notional": 63708.37,
+            "entry_price": 105.0393,
+            "exit_date": "2025-12-01",
+            "exit_price": 106.0525,
+            "gross_return_pct": 0.009645,
+            "holding_days": 10,
+            "language_score": -5,
+            "negative_phrase_hits": 7,
+            "net_return_pct": 0.006112,
+            "pnl": 389.36,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.025841,
+            "ticker": "DIS",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-25-116130",
+            "entry_date": "2025-12-01",
+            "entry_notional": 63750.61,
+            "entry_price": 460.7738,
+            "exit_date": "2025-12-12",
+            "exit_price": 481.7198,
+            "gross_return_pct": 0.045458,
+            "holding_days": 10,
+            "language_score": -6,
+            "negative_phrase_hits": 6,
+            "net_return_pct": 0.041799,
+            "pnl": 2664.73,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008899,
+            "ticker": "DE",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001628280-26-005005",
+            "entry_date": "2026-02-05",
+            "entry_notional": 65527.67,
+            "entry_price": 436.22,
+            "exit_date": "2026-02-19",
+            "exit_price": 635.64,
+            "gross_return_pct": 0.457155,
+            "holding_days": 10,
+            "language_score": -3,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.452055,
+            "pnl": 29622.09,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.009995,
+            "ticker": "LITE",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-26-017239",
+            "entry_date": "2026-02-23",
+            "entry_notional": 80338.71,
+            "entry_price": 650.2781,
+            "exit_date": "2026-03-06",
+            "exit_price": 588.0501,
+            "gross_return_pct": -0.095694,
+            "holding_days": 10,
+            "language_score": -2,
+            "negative_phrase_hits": 3,
+            "net_return_pct": -0.098859,
+            "pnl": -7942.24,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.01307,
+            "ticker": "DE",
+            "window": "late_strong"
+          }
+        ],
+        "win_rate": 0.875
+      },
+      "20d_max1": {
+        "equity_curve_tail": [
+          {
+            "active_positions": 0,
+            "date": "2026-03-10",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-11",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-12",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-13",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-16",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-17",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-18",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-19",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-20",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-23",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-24",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-25",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-26",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-27",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-30",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-31",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-01",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-02",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-06",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-07",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-08",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-09",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-10",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-13",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-14",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-15",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-16",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-17",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-20",
+            "equity": 272503.57
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-21",
+            "equity": 272503.57
+          }
+        ],
+        "expected_value_score": 2.702374,
+        "exposure_days": 171,
+        "exposure_rate": 0.2579,
+        "final_equity": 272503.57,
+        "holding_days": 20,
+        "initial_capital": 100000.0,
+        "max_drawdown_pct": 0.171986,
+        "max_positions": 1,
+        "sharpe_daily": 1.5666,
+        "skipped_by_reason": {
+          "slot_full": 7
+        },
+        "skipped_count": 7,
+        "skipped_events": [
+          {
+            "accession_number": "0000063908-24-000152",
+            "entry_date": "2024-10-31",
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2024-10-30",
+            "reaction_excess_return": -0.007917,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "MCD",
+            "usable_trade_date": "2024-10-30",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000093410-25-000004",
+            "entry_date": "2025-02-04",
+            "language_score": -2,
+            "negative_phrase_hits": 11,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2025-02-03",
+            "reaction_excess_return": -0.006323,
+            "skip_reason": "slot_full",
+            "text_event_type": "item_2_02_other_text",
+            "ticker": "CVX",
+            "usable_trade_date": "2025-02-03",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0001744489-25-000135",
+            "entry_date": "2025-08-08",
+            "language_score": -3,
+            "negative_phrase_hits": 5,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2025-08-07",
+            "reaction_excess_return": -0.018524,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "DIS",
+            "usable_trade_date": "2025-08-07",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001035267-25-000206",
+            "entry_date": "2025-10-23",
+            "language_score": -2,
+            "negative_phrase_hits": 0,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_date": "2025-10-22",
+            "reaction_excess_return": -0.023161,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "ISRG",
+            "usable_trade_date": "2025-10-22",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0000063908-25-000057",
+            "entry_date": "2025-11-07",
+            "language_score": -9,
+            "negative_phrase_hits": 12,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2025-11-06",
+            "reaction_excess_return": -0.010121,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "MCD",
+            "usable_trade_date": "2025-11-06",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-25-116130",
+            "entry_date": "2025-12-01",
+            "language_score": -6,
+            "negative_phrase_hits": 6,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2025-11-28",
+            "reaction_excess_return": -0.008899,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "DE",
+            "usable_trade_date": "2025-11-27",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-26-017239",
+            "entry_date": "2026-02-23",
+            "language_score": -2,
+            "negative_phrase_hits": 3,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2026-02-20",
+            "reaction_excess_return": -0.01307,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "DE",
+            "usable_trade_date": "2026-02-20",
+            "window": "late_strong"
+          }
+        ],
+        "total_pnl": 172503.57,
+        "total_return_pct": 1.725036,
+        "trade_count": 9,
+        "trade_summary": {
+          "by_window": {
+            "late_strong": {
+              "net_return_distribution": {
+                "avg": 0.267471,
+                "count": 2,
+                "max": 0.486732,
+                "median": 0.267471,
+                "min": 0.04821,
+                "win_rate": 1.0
+              },
+              "total_pnl": 97643.28,
+              "trade_count": 2
+            },
+            "mid_weak": {
+              "net_return_distribution": {
+                "avg": 0.08795,
+                "count": 5,
+                "max": 0.219461,
+                "median": 0.081264,
+                "min": 0.001127,
+                "win_rate": 1.0
+              },
+              "total_pnl": 58906.88,
+              "trade_count": 5
+            },
+            "old_thin": {
+              "net_return_distribution": {
+                "avg": 0.077458,
+                "count": 2,
+                "max": 0.114638,
+                "median": 0.077458,
+                "min": 0.040279,
+                "win_rate": 1.0
+              },
+              "total_pnl": 15953.41,
+              "trade_count": 2
+            }
+          },
+          "gross_return_distribution": {
+            "avg": 0.129466,
+            "count": 9,
+            "max": 0.491954,
+            "median": 0.085062,
+            "min": 0.004644,
+            "win_rate": 1.0
+          },
+          "net_return_distribution": {
+            "avg": 0.125512,
+            "count": 9,
+            "max": 0.486732,
+            "median": 0.081264,
+            "min": 0.001127,
+            "win_rate": 1.0
+          },
+          "profit_factor": null,
+          "top_trade_concentration": {
+            "pnl": 89213.23,
+            "share_of_total_pnl": 0.5172,
+            "ticker": "LITE",
+            "total_pnl_without_top_trade": 83290.34
+          }
+        },
+        "trades": [
+          {
+            "accession_number": "0001193125-24-237206",
+            "entry_date": "2024-10-17",
+            "entry_notional": 100000.0,
+            "entry_price": 515.3367,
+            "exit_date": "2024-11-13",
+            "exit_price": 576.4313,
+            "gross_return_pct": 0.118553,
+            "holding_days": 20,
+            "language_score": -6,
+            "negative_phrase_hits": 8,
+            "net_return_pct": 0.114638,
+            "pnl": 11463.78,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.004611,
+            "ticker": "GS",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000101829-25-000002",
+            "entry_date": "2025-01-30",
+            "entry_notional": 111463.78,
+            "entry_price": 122.9517,
+            "exit_date": "2025-02-27",
+            "exit_price": 128.3533,
+            "gross_return_pct": 0.043933,
+            "holding_days": 20,
+            "language_score": -2,
+            "negative_phrase_hits": 14,
+            "net_return_pct": 0.040279,
+            "pnl": 4489.63,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.014654,
+            "ticker": "RTX",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-25-000021",
+            "entry_date": "2025-05-05",
+            "entry_notional": 115953.41,
+            "entry_price": 305.9228,
+            "exit_date": "2025-06-02",
+            "exit_price": 307.3434,
+            "gross_return_pct": 0.004644,
+            "holding_days": 20,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.001127,
+            "pnl": 130.71,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008666,
+            "ticker": "MCD",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001628280-25-028827",
+            "entry_date": "2025-06-04",
+            "entry_notional": 116084.12,
+            "entry_price": 73.03,
+            "exit_date": "2025-07-02",
+            "exit_price": 89.37,
+            "gross_return_pct": 0.223744,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.219461,
+            "pnl": 25475.89,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.046758,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-159560",
+            "entry_date": "2025-07-18",
+            "entry_notional": 141560.02,
+            "entry_price": 696.1621,
+            "exit_date": "2025-08-14",
+            "exit_price": 735.6833,
+            "gross_return_pct": 0.05677,
+            "holding_days": 20,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.053072,
+            "pnl": 7512.81,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.006453,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001807794-25-000018",
+            "entry_date": "2025-09-05",
+            "entry_notional": 149072.83,
+            "entry_price": 137.9,
+            "exit_date": "2025-10-02",
+            "exit_price": 149.63,
+            "gross_return_pct": 0.085062,
+            "holding_days": 20,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.081264,
+            "pnl": 12114.26,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.036244,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-238058",
+            "entry_date": "2025-10-16",
+            "entry_notional": 161187.08,
+            "entry_price": 762.8436,
+            "exit_date": "2025-11-12",
+            "exit_price": 830.4608,
+            "gross_return_pct": 0.088638,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.084828,
+            "pnl": 13673.21,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.011255,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001744489-25-000154",
+            "entry_date": "2025-11-17",
+            "entry_notional": 174860.29,
+            "entry_price": 105.0393,
+            "exit_date": "2025-12-15",
+            "exit_price": 110.49,
+            "gross_return_pct": 0.051892,
+            "holding_days": 20,
+            "language_score": -5,
+            "negative_phrase_hits": 7,
+            "net_return_pct": 0.04821,
+            "pnl": 8430.05,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.025841,
+            "ticker": "DIS",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001628280-26-005005",
+            "entry_date": "2026-02-05",
+            "entry_notional": 183290.34,
+            "entry_price": 436.22,
+            "exit_date": "2026-03-05",
+            "exit_price": 650.82,
+            "gross_return_pct": 0.491954,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.486732,
+            "pnl": 89213.23,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.009995,
+            "ticker": "LITE",
+            "window": "late_strong"
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "20d_max2": {
+        "equity_curve_tail": [
+          {
+            "active_positions": 1,
+            "date": "2026-03-10",
+            "equity": 176029.88
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-11",
+            "equity": 176178.61
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-12",
+            "equity": 175253.58
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-13",
+            "equity": 174315.03
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-16",
+            "equity": 173749.42
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-17",
+            "equity": 173949.98
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-18",
+            "equity": 173584.93
+          },
+          {
+            "active_positions": 1,
+            "date": "2026-03-19",
+            "equity": 173197.34
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-20",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-23",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-24",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-25",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-26",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-27",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-30",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-03-31",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-01",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-02",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-06",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-07",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-08",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-09",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-10",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-13",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-14",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-15",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-16",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-17",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-20",
+            "equity": 172092.14
+          },
+          {
+            "active_positions": 0,
+            "date": "2026-04-21",
+            "equity": 172092.14
+          }
+        ],
+        "expected_value_score": 1.026214,
+        "exposure_days": 222,
+        "exposure_rate": 0.3348,
+        "final_equity": 172092.14,
+        "holding_days": 20,
+        "initial_capital": 100000.0,
+        "max_drawdown_pct": 0.152343,
+        "max_positions": 2,
+        "sharpe_daily": 1.4235,
+        "skipped_by_reason": {
+          "slot_full": 1
+        },
+        "skipped_count": 1,
+        "skipped_events": [
+          {
+            "accession_number": "0000063908-25-000057",
+            "entry_date": "2025-11-07",
+            "language_score": -9,
+            "negative_phrase_hits": 12,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_date": "2025-11-06",
+            "reaction_excess_return": -0.010121,
+            "skip_reason": "slot_full",
+            "text_event_type": "earnings_release_text",
+            "ticker": "MCD",
+            "usable_trade_date": "2025-11-06",
+            "window": "late_strong"
+          }
+        ],
+        "total_pnl": 72092.14,
+        "total_return_pct": 0.720921,
+        "trade_count": 15,
+        "trade_summary": {
+          "by_window": {
+            "late_strong": {
+              "net_return_distribution": {
+                "avg": 0.100173,
+                "count": 4,
+                "max": 0.486732,
+                "median": 0.029361,
+                "min": -0.144759,
+                "win_rate": 0.75
+              },
+              "total_pnl": 29270.87,
+              "trade_count": 4
+            },
+            "mid_weak": {
+              "net_return_distribution": {
+                "avg": 0.078255,
+                "count": 7,
+                "max": 0.219461,
+                "median": 0.070986,
+                "min": 0.001127,
+                "win_rate": 1.0
+              },
+              "total_pnl": 33070.32,
+              "trade_count": 7
+            },
+            "old_thin": {
+              "net_return_distribution": {
+                "avg": 0.04771,
+                "count": 4,
+                "max": 0.114638,
+                "median": 0.035027,
+                "min": 0.00615,
+                "win_rate": 1.0
+              },
+              "total_pnl": 9750.93,
+              "trade_count": 4
+            }
+          },
+          "gross_return_distribution": {
+            "avg": 0.079734,
+            "count": 15,
+            "max": 0.491954,
+            "median": 0.051892,
+            "min": -0.141755,
+            "win_rate": 0.9333
+          },
+          "net_return_distribution": {
+            "avg": 0.075955,
+            "count": 15,
+            "max": 0.486732,
+            "median": 0.04821,
+            "min": -0.144759,
+            "win_rate": 0.9333
+          },
+          "profit_factor": 7.777384,
+          "top_trade_concentration": {
+            "pnl": 35765.88,
+            "share_of_total_pnl": 0.4961,
+            "ticker": "LITE",
+            "total_pnl_without_top_trade": 36326.24
+          }
+        },
+        "trades": [
+          {
+            "accession_number": "0001193125-24-237206",
+            "entry_date": "2024-10-17",
+            "entry_notional": 50000.0,
+            "entry_price": 515.3367,
+            "exit_date": "2024-11-13",
+            "exit_price": 576.4313,
+            "gross_return_pct": 0.118553,
+            "holding_days": 20,
+            "language_score": -6,
+            "negative_phrase_hits": 8,
+            "net_return_pct": 0.114638,
+            "pnl": 5731.89,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.004611,
+            "ticker": "GS",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-24-000152",
+            "entry_date": "2024-10-31",
+            "entry_notional": 49585.87,
+            "entry_price": 282.304,
+            "exit_date": "2024-11-27",
+            "exit_price": 285.0377,
+            "gross_return_pct": 0.009683,
+            "holding_days": 20,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.00615,
+            "pnl": 304.93,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.007917,
+            "ticker": "MCD",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000101829-25-000002",
+            "entry_date": "2025-01-30",
+            "entry_notional": 53018.41,
+            "entry_price": 122.9517,
+            "exit_date": "2025-02-27",
+            "exit_price": 128.3533,
+            "gross_return_pct": 0.043933,
+            "holding_days": 20,
+            "language_score": -2,
+            "negative_phrase_hits": 14,
+            "net_return_pct": 0.040279,
+            "pnl": 2135.52,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.014654,
+            "ticker": "RTX",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000093410-25-000004",
+            "entry_date": "2025-02-04",
+            "entry_notional": 53018.41,
+            "entry_price": 140.7543,
+            "exit_date": "2025-03-04",
+            "exit_price": 145.4543,
+            "gross_return_pct": 0.033391,
+            "holding_days": 20,
+            "language_score": -2,
+            "negative_phrase_hits": 11,
+            "net_return_pct": 0.029774,
+            "pnl": 1578.59,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.006323,
+            "ticker": "CVX",
+            "window": "old_thin"
+          },
+          {
+            "accession_number": "0000063908-25-000021",
+            "entry_date": "2025-05-05",
+            "entry_notional": 54875.47,
+            "entry_price": 305.9228,
+            "exit_date": "2025-06-02",
+            "exit_price": 307.3434,
+            "gross_return_pct": 0.004644,
+            "holding_days": 20,
+            "language_score": -17,
+            "negative_phrase_hits": 20,
+            "net_return_pct": 0.001127,
+            "pnl": 61.86,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008666,
+            "ticker": "MCD",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001628280-25-028827",
+            "entry_date": "2025-06-04",
+            "entry_notional": 54906.4,
+            "entry_price": 73.03,
+            "exit_date": "2025-07-02",
+            "exit_price": 89.37,
+            "gross_return_pct": 0.223744,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.219461,
+            "pnl": 12049.79,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.046758,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-159560",
+            "entry_date": "2025-07-18",
+            "entry_notional": 60931.29,
+            "entry_price": 696.1621,
+            "exit_date": "2025-08-14",
+            "exit_price": 735.6833,
+            "gross_return_pct": 0.05677,
+            "holding_days": 20,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.053072,
+            "pnl": 3233.72,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.006453,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001744489-25-000135",
+            "entry_date": "2025-08-08",
+            "entry_notional": 60931.29,
+            "entry_price": 112.5386,
+            "exit_date": "2025-09-05",
+            "exit_price": 117.1176,
+            "gross_return_pct": 0.040688,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 5,
+            "net_return_pct": 0.037046,
+            "pnl": 2257.26,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.018524,
+            "ticker": "DIS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001807794-25-000018",
+            "entry_date": "2025-09-05",
+            "entry_notional": 64056.65,
+            "entry_price": 137.9,
+            "exit_date": "2025-10-02",
+            "exit_price": 149.63,
+            "gross_return_pct": 0.085062,
+            "holding_days": 20,
+            "language_score": -4,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.081264,
+            "pnl": 5205.5,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.036244,
+            "ticker": "CRDO",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001193125-25-238058",
+            "entry_date": "2025-10-16",
+            "entry_notional": 66279.53,
+            "entry_price": 762.8436,
+            "exit_date": "2025-11-12",
+            "exit_price": 830.4608,
+            "gross_return_pct": 0.088638,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 3,
+            "net_return_pct": 0.084828,
+            "pnl": 5622.37,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.011255,
+            "ticker": "GS",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001035267-25-000206",
+            "entry_date": "2025-10-23",
+            "entry_notional": 65362.74,
+            "entry_price": 525.37,
+            "exit_date": "2025-11-19",
+            "exit_price": 564.64,
+            "gross_return_pct": 0.074747,
+            "holding_days": 20,
+            "language_score": -2,
+            "negative_phrase_hits": 0,
+            "net_return_pct": 0.070986,
+            "pnl": 4639.82,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.023161,
+            "ticker": "ISRG",
+            "window": "mid_weak"
+          },
+          {
+            "accession_number": "0001744489-25-000154",
+            "entry_date": "2025-11-17",
+            "entry_notional": 70409.5,
+            "entry_price": 105.0393,
+            "exit_date": "2025-12-15",
+            "exit_price": 110.49,
+            "gross_return_pct": 0.051892,
+            "holding_days": 20,
+            "language_score": -5,
+            "negative_phrase_hits": 7,
+            "net_return_pct": 0.04821,
+            "pnl": 3394.46,
+            "reaction_bucket": "reaction_-5_to_-2",
+            "reaction_excess_return": -0.025841,
+            "ticker": "DIS",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-25-116130",
+            "entry_date": "2025-12-01",
+            "entry_notional": 71134.32,
+            "entry_price": 460.7738,
+            "exit_date": "2025-12-29",
+            "exit_price": 467.2523,
+            "gross_return_pct": 0.01406,
+            "holding_days": 20,
+            "language_score": -6,
+            "negative_phrase_hits": 6,
+            "net_return_pct": 0.010511,
+            "pnl": 747.69,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.008899,
+            "ticker": "DE",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001628280-26-005005",
+            "entry_date": "2026-02-05",
+            "entry_notional": 73481.71,
+            "entry_price": 436.22,
+            "exit_date": "2026-03-05",
+            "exit_price": 650.82,
+            "gross_return_pct": 0.491954,
+            "holding_days": 20,
+            "language_score": -3,
+            "negative_phrase_hits": 4,
+            "net_return_pct": 0.486732,
+            "pnl": 35765.88,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.009995,
+            "ticker": "LITE",
+            "window": "late_strong"
+          },
+          {
+            "accession_number": "0001104659-26-017239",
+            "entry_date": "2026-02-23",
+            "entry_notional": 73481.71,
+            "entry_price": 650.2781,
+            "exit_date": "2026-03-20",
+            "exit_price": 558.0977,
+            "gross_return_pct": -0.141755,
+            "holding_days": 20,
+            "language_score": -2,
+            "negative_phrase_hits": 3,
+            "net_return_pct": -0.144759,
+            "pnl": -10637.16,
+            "reaction_bucket": "reaction_-2_to_0",
+            "reaction_excess_return": -0.01307,
+            "ticker": "DE",
+            "window": "late_strong"
+          }
+        ],
+        "win_rate": 0.9333
+      }
+    }
+  },
+  "status": "sleeve_promising_not_promoted",
+  "timestamp": "2026-05-04T01:44:10+00:00"
+}

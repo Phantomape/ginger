@@ -342,7 +342,7 @@ def run() -> dict[str, Any]:
             "min survival_rate >= 5%, nonzero adjusted signals, and max_drawdown no worse by more than 0.5 percentage points."
         ),
         "reproducibility": (
-            "This file, docs/experiments artifacts, and docs/experiment_log.jsonl contain the parameters, windows, and before/after metrics."
+            "This file, experiments artifacts, and docs/experiment_log.jsonl contain the parameters, windows, and before/after metrics."
         ),
         "production_impact": {
             "shared_policy_changed": False,

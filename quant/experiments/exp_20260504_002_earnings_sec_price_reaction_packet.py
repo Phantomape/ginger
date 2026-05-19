@@ -30,8 +30,8 @@ SEC_EVENTS_PATH = DATA_DIR / "non_ohlcv" / "sec_filing_events_20241002_20260421.
 BASELINE_PATH = DATA_DIR / "backtest_results_20260503.json"
 OUT_DIR = DATA_DIR / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "earnings_sec_price_reaction_packet.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 REPORT_MD = (
     REPO_ROOT
     / "docs"
@@ -962,7 +962,7 @@ def build_payload() -> dict[str, Any]:
             "data/backtest_results_20260503.json",
             "quant/experiments/exp_20260504_002_earnings_sec_price_reaction_packet.py",
             "data/experiments/exp-20260504-002/earnings_sec_price_reaction_packet.json",
-            "docs/experiments/logs/exp-20260504-002.json",
+            "experiments/logs/exp-20260504-002.json",
             "docs/non_ohlcv_data_audit/earnings_sec_price_reaction_packet_20260504.md",
         ],
     }

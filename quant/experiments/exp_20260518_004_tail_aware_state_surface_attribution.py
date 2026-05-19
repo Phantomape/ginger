@@ -63,11 +63,10 @@ CANONICAL_DIR = OUT_DIR / "canonical"
 DIAGNOSTICS_DIR = OUT_DIR / "diagnostics"
 COHORT_JSON = OUT_DIR / "cohort_attribution.json"
 NEXT_DECISION_JSON = OUT_DIR / "next_candidate_decision.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

@@ -35,10 +35,10 @@ EXPERIMENT_ID = "exp-20260508-020"
 STEM = "sector_cap_quality_replay"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
-    REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
+    REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
 )
 
 WINDOWS = OrderedDict(
@@ -404,9 +404,9 @@ def build_payload() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260508_020_sector_cap_quality_replay.py",
             "data/experiments/exp-20260508-020/sector_cap_quality_replay.json",
-            "docs/experiments/logs/exp-20260508-020.json",
-            "docs/experiments/tickets/exp-20260508-020.json",
-            "docs/experiments/artifacts/exp-20260508-020_sector_cap_quality_replay.md",
+            "experiments/logs/exp-20260508-020.json",
+            "experiments/tickets/exp-20260508-020.json",
+            "experiments/artifacts/exp-20260508-020_sector_cap_quality_replay.md",
         ],
     }
 

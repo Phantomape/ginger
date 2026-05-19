@@ -458,9 +458,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260512_950_core_rs20_acceleration_risk.py",
             "data/experiments/exp-20260512-950/core_rs20_acceleration_risk.json",
-            "docs/experiments/logs/exp-20260512-950.json",
-            "docs/experiments/tickets/exp-20260512-950.json",
-            "docs/experiments/artifacts/exp-20260512-950_core_rs20_acceleration_risk.md",
+            "experiments/logs/exp-20260512-950.json",
+            "experiments/tickets/exp-20260512-950.json",
+            "experiments/artifacts/exp-20260512-950_core_rs20_acceleration_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

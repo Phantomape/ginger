@@ -1,0 +1,74 @@
+{
+  "acceptance_rule": "shadow-only; promotion requires positive replacement value after slot accounting across multiple windows and no evidence of displacing higher-value A/B trades",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260504_006_form4_slot_capacity_replacement_value.py",
+    "experiments/tickets/exp-20260504-006.json",
+    "experiments/logs/exp-20260504-006.json",
+    "docs/non_ohlcv_data_audit/form4_slot_capacity_replacement_value_20260504.md",
+    "data/experiments/exp-20260504-006/form4_slot_capacity_replacement_value.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtest_results_20260503.json",
+  "change_type": "form4_slot_capacity_replacement_value_shadow",
+  "claimed_at": null,
+  "completed_at": "2026-05-04T01:03:11+00:00",
+  "created_at": "2026-05-04T01:00:08+00:00",
+  "decision": "shadow_only_capacity_inconclusive",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260504-006",
+  "hypothesis": "Portfolio-capacity-aware replacement-value snapshots can show whether Form 4 forward queue candidates would have added value after accounting for occupied MAX_POSITIONS slots and same-day accepted alternatives.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "Form 4 queue rule",
+    "minimum purchase value",
+    "owner role filters",
+    "production signal path",
+    "OHLCV entry thresholds",
+    "technical indicators",
+    "core universe",
+    "candidate ranking",
+    "position sizing",
+    "exits",
+    "LLM prompts"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/form4_event_queue.py"
+  ],
+  "owner": "loss-attribution",
+  "result": {
+    "artifact": "data/experiments/exp-20260504-006/form4_slot_capacity_replacement_value.json",
+    "audit_report": "docs/non_ohlcv_data_audit/form4_slot_capacity_replacement_value_20260504.md",
+    "candidate_count": 17,
+    "decision": "shadow_only_capacity_inconclusive",
+    "expected_value_score_delta": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0,
+      "production": 0.0
+    },
+    "log": "experiments/logs/exp-20260504-006.json",
+    "next_action": "Do not promote Form 4 entries yet. The next useful step is to capture full same-day candidate-rank snapshots from the production/backtest entry loop, so Form 4 can be compared against all rankable A/B candidates rather than only accepted trades and top-skipped oracle rows.",
+    "same_day_accepted_conflict_count": 2
+  },
+  "single_causal_variable": "Form 4 queue slot-capacity replacement value",
+  "status": "observed_only"
+}

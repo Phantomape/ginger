@@ -28,8 +28,8 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260501-003"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "gold_trend_risk_budget.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 
 WINDOWS = OrderedDict([
     ("late_strong", {
@@ -356,8 +356,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260501_003_gold_trend_risk_budget.py",
             "data/experiments/exp-20260501-003/gold_trend_risk_budget.json",
-            "docs/experiments/logs/exp-20260501-003.json",
-            "docs/experiments/tickets/exp-20260501-003.json",
+            "experiments/logs/exp-20260501-003.json",
+            "experiments/tickets/exp-20260501-003.json",
         ],
     }
 

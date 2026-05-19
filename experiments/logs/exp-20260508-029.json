@@ -1,0 +1,78 @@
+{
+  "experiment_id": "exp-20260508-029",
+  "timestamp": "2026-05-08T12:05:00-07:00",
+  "lane": "measurement_repair_supporting_alpha",
+  "alpha_hypothesis_category": "capital_allocation_conservative_entry_top_up",
+  "hypothesis": "Follow-through add-ons have positive marginal expectancy, but conservative initial buys cannot be diagnosed unless production records the original or intended entry share count. If the metadata exists, add-on sizing should use it; if it is missing, the daily prompt should explicitly surface the blind spot instead of silently treating current shares as the full intended position.",
+  "change_type": "production_position_intent_metadata_adapter",
+  "single_causal_variable": "intended-share metadata becomes the source of original_shares for production follow-through add-on sizing and LLM preflight audit",
+  "historical_experiment_check": {
+    "exp-20260508-017": "Add-on heat removal was positive in shadow but rejected as unsafe production policy.",
+    "exp-20260508-018": "Same-day add-on ordering had no effect.",
+    "exp-20260508-027": "Pending ADD execution memory was accepted; next valid step was intended/original share metadata for conservative entries.",
+    "mechanism_insight": "This does not retry heat-cap increases, ordering keys, volume filters, or wider add-on windows."
+  },
+  "parameters": {
+    "accepted_intended_share_fields": [
+      "original_shares",
+      "intended_shares",
+      "target_shares",
+      "signal_suggested_shares",
+      "planned_entry_shares"
+    ],
+    "fallback_when_missing": "current_shares_minus_addon_shares",
+    "strategy_thresholds_changed": false,
+    "addon_trigger_changed": false,
+    "addon_fraction_changed": false,
+    "portfolio_heat_cap_changed": false,
+    "llm_decision_authority_changed": false
+  },
+  "baseline_metrics": {
+    "latest_backtest_file": "data/backtest_results_20260508.json",
+    "current_open_positions_intent_audit": {
+      "non_legacy_positions": 4,
+      "positions_with_intended_shares": 0,
+      "coverage_pct": 0.0,
+      "missing_intended_share_tickers": [
+        "MSFT",
+        "SNXX",
+        "UNH",
+        "AMZN"
+      ],
+      "underfilled_positions": []
+    },
+    "blocked_alpha_hypothesis": "Backtest or production promotion of conservative-entry top-up requires intended/original signal shares to be present; current live data coverage is 0%."
+  },
+  "after_metrics": {
+    "unit_tests": ".\\.venv\\Scripts\\python -m pytest quant/test_position_intent.py quant/test_production_parity.py quant/test_pending_actions.py -q => 29 passed",
+    "import_check": ".\\.venv\\Scripts\\python -B -c \"import sys; sys.path.insert(0, 'quant'); import llm_advisor, position_intent, production_parity; print('imports_ok')\" => imports_ok",
+    "expected_value_score_delta": 0.0,
+    "reason_ev_not_rerun": "No signal generation, candidate ranking, add-on trigger, add-on fraction, heat cap, stop, target, universe, LLM veto, or backtester execution policy changed. Current live open_positions has no intended-share fields, so current production orders are unchanged except for audit visibility."
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "parity_test_added": true,
+    "replay_only": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": true,
+    "alters_orders": true,
+    "current_data_order_change": false,
+    "scope": "When an intended-share field exists, production follow-through add-on sizing uses it as the original entry size. Backtester positions already carry original_shares, so this narrows production/backtest intent semantics."
+  },
+  "decision": "accepted_measurement_adapter",
+  "risk": "If a user populates intended_shares incorrectly, follow-through add-on size can be too large or too small. The field is only metadata; hard add-on triggers, position caps, and heat caps still gate orders.",
+  "next_action": "Populate original_shares or intended_shares for non-legacy live positions from trustworthy entry records, then run a separate conservative-entry top-up replay instead of inferring missing values from current shares.",
+  "related_files": [
+    "quant/position_intent.py",
+    "quant/production_parity.py",
+    "quant/llm_advisor.py",
+    "quant/test_position_intent.py",
+    "quant/test_production_parity.py",
+    "experiments/logs/exp-20260508-029.json",
+    "docs/alpha-optimization-playbook.md",
+    "docs/experiment_log.jsonl"
+  ]
+}

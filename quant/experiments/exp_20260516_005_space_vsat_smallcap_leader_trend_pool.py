@@ -44,7 +44,7 @@ BEFORE_EXPERIMENT_ID = "exp-20260515-044"
 BEFORE_STEM = "space_source_diversity_peer_nonleader_near_perfect_trend_risk"
 
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOCS_DIR = ROOT / "docs" / "experiments"
+DOCS_DIR = ROOT / "experiments"
 LOG_DIR = DOCS_DIR / "logs"
 TICKET_DIR = DOCS_DIR / "tickets"
 ARTIFACT_DIR = DOCS_DIR / "artifacts"

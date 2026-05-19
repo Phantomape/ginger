@@ -1,0 +1,57 @@
+{
+  "experiment_id": "exp-20260504-025",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but this run only checks whether new PIT-safe SEC/earnings evidence exists after exp-20260504-024.",
+  "change_type": "non_ohlcv_sec_earnings_duplicate_guardrail_data_audit",
+  "single_causal_variable": "fresh PIT-safe SEC / earnings filing-shock evidence since exp-20260504-024",
+  "baseline_result_file": "data/backtest_results_20260504.json",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260504-025.json",
+    "experiments/logs/exp-20260504-025.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_no_new_evidence_exp-20260504-025_20260504.md",
+    "data/experiments/exp-20260504-025/sec_earnings_filing_shock_no_new_evidence_audit.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/run.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "OHLCV thresholds",
+    "SEC packet thresholds",
+    "keyword lists",
+    "Companyfacts score weights",
+    "LLM prompts"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, usable fields, candidate overlap, slot value, and next experiment; no production changes allowed.",
+  "created_at": "2026-05-04T09:03:57+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-04T09:07:33+00:00",
+  "result": {
+    "decision": "data_gap",
+    "production_impact": "data_audit_only_no_production_change",
+    "experiment_log": "experiments/logs/exp-20260504-025.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_no_new_evidence_exp-20260504-025_20260504.md"
+  }
+}

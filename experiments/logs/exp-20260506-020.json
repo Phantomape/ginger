@@ -1,0 +1,1162 @@
+{
+  "experiment_id": "exp-20260506-020",
+  "generated_at": "2026-05-06T17:11:23.694205+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "state_conditioned_meta_allocation",
+  "mechanism_family": "index_state_gated_scarce_slot_breakout_defer",
+  "hypothesis": "The accepted one-slot breakout defer rule should create more EV if it fires only when cap-weight index state is not already strongly above trend. In very strong index states, taking the current breakout may be better than preserving a slot for later candidates.",
+  "alpha_hypothesis": {
+    "category": "allocation / ranking",
+    "entry_exit_ranking_or_allocation": "allocation",
+    "why_this_now": "LLM soft ranking and event overlay promotion are sample-limited, broad universe growth and recent single-name expansions were rejected, and the playbook names mid_weak meta-allocation as the cleanest unblocked alpha surface."
+  },
+  "historical_experiment_check": {
+    "similar_prior_results": {
+      "exp-20260427-028": "Unconditional one-slot breakout defer is accepted and modestly positive in mid_weak/old_thin.",
+      "exp-20260427-021": "Simple market-regime allowlists were rejected; this run uses the pre-existing continuous SPY/QQQ distance-from-MA hook instead.",
+      "exp-20260427-025": "Simple breadth thresholds failed; this run tests cap-weight index trend state, not breadth-above-SMA.",
+      "exp-20260506-019": "Pullback/60d collision ranking failed; this run does not reorder candidates and only changes when the accepted defer hook fires."
+    },
+    "why_not_simple_repeat": "The only causal variable is the existing shared DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA guard. Universe, signal generation, entry filters, ranking, sizing, exits, add-ons, LLM/news, and slot count remain locked."
+  },
+  "parameters": {
+    "single_causal_variable": "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA",
+    "baseline": {
+      "DEFER_BREAKOUT_WHEN_SLOTS_LTE": 1,
+      "DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA": null
+    },
+    "tested_variants": {
+      "defer_when_index_le_0pct_from_ma": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.0,
+        "description": "defer only when either SPY or QQQ is at/below its 200-day average"
+      },
+      "defer_when_index_le_5pct_from_ma": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.05,
+        "description": "defer when the weaker index is no more than 5% above its 200-day average"
+      },
+      "defer_when_index_le_10pct_from_ma": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.1,
+        "description": "defer when the weaker index is no more than 10% above its 200-day average"
+      },
+      "defer_when_index_le_15pct_from_ma": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.15,
+        "description": "defer when the weaker index is no more than 15% above its 200-day average"
+      }
+    },
+    "best_variant": "defer_when_index_le_10pct_from_ma",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ordering",
+      "MAX_POSITIONS",
+      "MAX_PER_SECTOR",
+      "sizing multipliers",
+      "position caps",
+      "portfolio heat cap",
+      "add-on policy",
+      "exit policy",
+      "LLM/news replay",
+      "pilot sleeve"
+    ]
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "delta_metrics": {
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0
+      }
+    },
+    "baseline_expected_value_score_sum": 5.1785,
+    "expected_value_score_delta_sum": 0.0,
+    "expected_value_score_delta_pct": 0.0,
+    "baseline_total_pnl_sum": 158257.48,
+    "total_pnl_delta_sum": 0.0,
+    "total_pnl_delta_pct": 0.0,
+    "ev_windows_improved": 0,
+    "ev_windows_regressed": 0,
+    "pnl_windows_improved": 0,
+    "pnl_windows_regressed": 0,
+    "max_drawdown_delta_min": 0.0,
+    "max_drawdown_delta_max": 0.0,
+    "sharpe_daily_delta_min": 0.0,
+    "sharpe_daily_delta_max": 0.0,
+    "trade_count_delta_sum": 0.0,
+    "win_rate_delta_min": 0.0,
+    "deferred_breakout_delta_sum": 0,
+    "slot_sliced_delta_sum": 0
+  },
+  "variants": {
+    "defer_when_index_le_0pct_from_ma": {
+      "parameters": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.0,
+        "description": "defer only when either SPY or QQQ is at/below its 200-day average"
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.2273,
+            "sharpe_daily": 2.34,
+            "total_pnl": 52454.37,
+            "total_return_pct": 0.5245,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.8077,
+            "signals_generated": 52,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": -0.2142,
+            "sharpe_daily": -0.28,
+            "total_pnl": -2560.71,
+            "total_return_pct": -0.0257,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1.0,
+            "survival_rate": 0.0152,
+            "signals_generated": -1.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 22,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.2839,
+            "sharpe_daily": 1.23,
+            "total_pnl": 23084.19,
+            "total_return_pct": 0.2308,
+            "max_drawdown_pct": 0.0769,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.8929,
+            "signals_generated": 56,
+            "signals_survived": 50,
+            "converged": false
+          },
+          "delta": {
+            "expected_value_score": -0.034,
+            "sharpe_daily": -0.06,
+            "total_pnl": -1557.88,
+            "total_return_pct": -0.0156,
+            "max_drawdown_pct": -0.0036,
+            "win_rate": -0.0178,
+            "trade_count": 1.0,
+            "survival_rate": -0.0238,
+            "signals_generated": -4.0,
+            "signals_survived": -5.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 50,
+            "entered_count": 23,
+            "slot_sliced_count": 10,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": -0.2482,
+        "expected_value_score_delta_pct": -0.047929,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": -4118.59,
+        "total_pnl_delta_pct": -0.026025,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 2,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 2,
+        "max_drawdown_delta_min": -0.0036,
+        "max_drawdown_delta_max": 0.0,
+        "sharpe_daily_delta_min": -0.28,
+        "sharpe_daily_delta_max": 0.0,
+        "trade_count_delta_sum": 2.0,
+        "win_rate_delta_min": -0.0238,
+        "deferred_breakout_delta_sum": -12,
+        "slot_sliced_delta_sum": 3
+      },
+      "gate4_passed": false
+    },
+    "defer_when_index_le_5pct_from_ma": {
+      "parameters": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.05,
+        "description": "defer when the weaker index is no more than 5% above its 200-day average"
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.2273,
+            "sharpe_daily": 2.34,
+            "total_pnl": 52454.37,
+            "total_return_pct": 0.5245,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.8077,
+            "signals_generated": 52,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": -0.2142,
+            "sharpe_daily": -0.28,
+            "total_pnl": -2560.71,
+            "total_return_pct": -0.0257,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1.0,
+            "survival_rate": 0.0152,
+            "signals_generated": -1.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 22,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.2839,
+            "sharpe_daily": 1.23,
+            "total_pnl": 23084.19,
+            "total_return_pct": 0.2308,
+            "max_drawdown_pct": 0.0769,
+            "win_rate": 0.3913,
+            "trade_count": 23,
+            "survival_rate": 0.8929,
+            "signals_generated": 56,
+            "signals_survived": 50,
+            "converged": false
+          },
+          "delta": {
+            "expected_value_score": -0.034,
+            "sharpe_daily": -0.06,
+            "total_pnl": -1557.88,
+            "total_return_pct": -0.0156,
+            "max_drawdown_pct": -0.0036,
+            "win_rate": -0.0178,
+            "trade_count": 1.0,
+            "survival_rate": -0.0238,
+            "signals_generated": -4.0,
+            "signals_survived": -5.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 50,
+            "entered_count": 23,
+            "slot_sliced_count": 10,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": -0.2482,
+        "expected_value_score_delta_pct": -0.047929,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": -4118.59,
+        "total_pnl_delta_pct": -0.026025,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 2,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 2,
+        "max_drawdown_delta_min": -0.0036,
+        "max_drawdown_delta_max": 0.0,
+        "sharpe_daily_delta_min": -0.28,
+        "sharpe_daily_delta_max": 0.0,
+        "trade_count_delta_sum": 2.0,
+        "win_rate_delta_min": -0.0238,
+        "deferred_breakout_delta_sum": -12,
+        "slot_sliced_delta_sum": 3
+      },
+      "gate4_passed": false
+    },
+    "defer_when_index_le_10pct_from_ma": {
+      "parameters": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.1,
+        "description": "defer when the weaker index is no more than 10% above its 200-day average"
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": 0.0,
+        "expected_value_score_delta_pct": 0.0,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": 0.0,
+        "total_pnl_delta_pct": 0.0,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 0,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 0,
+        "max_drawdown_delta_min": 0.0,
+        "max_drawdown_delta_max": 0.0,
+        "sharpe_daily_delta_min": 0.0,
+        "sharpe_daily_delta_max": 0.0,
+        "trade_count_delta_sum": 0.0,
+        "win_rate_delta_min": 0.0,
+        "deferred_breakout_delta_sum": 0,
+        "slot_sliced_delta_sum": 0
+      },
+      "gate4_passed": false
+    },
+    "defer_when_index_le_15pct_from_ma": {
+      "parameters": {
+        "defer_breakout_max_min_index_pct_from_ma": 0.15,
+        "description": "defer when the weaker index is no more than 15% above its 200-day average"
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "deferred_tickers": {},
+            "deferred_min_index_pct_from_ma_min": null,
+            "deferred_min_index_pct_from_ma_max": null,
+            "sample_deferred_events": []
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": 0.0,
+        "expected_value_score_delta_pct": 0.0,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": 0.0,
+        "total_pnl_delta_pct": 0.0,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 0,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 0,
+        "max_drawdown_delta_min": 0.0,
+        "max_drawdown_delta_max": 0.0,
+        "sharpe_daily_delta_min": 0.0,
+        "sharpe_daily_delta_max": 0.0,
+        "trade_count_delta_sum": 0.0,
+        "win_rate_delta_min": 0.0,
+        "deferred_breakout_delta_sum": 0,
+        "slot_sliced_delta_sum": 0
+      },
+      "gate4_passed": false
+    }
+  },
+  "best_variant": "defer_when_index_le_10pct_from_ma",
+  "gate4": {
+    "passed": false,
+    "basis": "Gate 4 requires material EV/PnL/Sharpe/drawdown improvement or more trades without win-rate decline, plus EV improvement in at least two canonical windows and no EV-regressed window."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, promote by changing quant/constants.py only; production_parity.plan_entry_candidates is already the shared run/backtester path for this guard."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none",
+    "blocker_relation": "LLM soft-ranking remains production-sample limited, so this run tests a deterministic shared meta-allocation lever instead of changing LLM duties."
+  },
+  "acceptance_reason": null,
+  "rejection_reason": "Index-distance gating did not improve the accepted one-slot breakout defer rule enough to clear Gate 4. The accepted unconditional hook remains the best tested version; do not retry nearby SPY/QQQ distance-from-MA thresholds without a richer capacity-timing signal.",
+  "next_retry_requires": [
+    "Do not retry nearby SPY/QQQ pct-from-200MA thresholds as a simple guard.",
+    "A valid retry needs a richer capacity-timing discriminator, such as closed opportunity-cost evidence or sector/dispersion state that explains later-candidate value.",
+    "Any future promotion must use the shared production_parity path and add parity coverage if the shared helper changes."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260506-020\\index_state_breakout_defer.json",
+    "experiments\\logs\\exp-20260506-020.json",
+    "experiments\\tickets\\exp-20260506-020.json",
+    "experiments\\artifacts\\exp-20260506-020_index_state_breakout_defer.md",
+    "quant/experiments/exp_20260506_020_index_state_breakout_defer.py"
+  ]
+}

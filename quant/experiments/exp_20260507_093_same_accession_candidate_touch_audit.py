@@ -44,8 +44,8 @@ EXPERIMENT_ID = "exp-20260507-093"
 SOURCE_EXPERIMENT_ID = "exp-20260507-006"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "same_accession_candidate_touch_audit.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_JSON = REPO_ROOT / "docs" / "experiment_registry.json"
 AUDIT_MD = (
@@ -463,7 +463,7 @@ def _update_registry(ticket: dict[str, Any]) -> None:
         "lane": ticket.get("lane"),
         "owner": ticket.get("owner"),
         "hypothesis": ticket.get("hypothesis"),
-        "ticket_file": f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
+        "ticket_file": f"experiments/tickets/{EXPERIMENT_ID}.json",
         "updated_at": _utc_now_iso(),
     }
     experiments = registry.setdefault("experiments", [])
@@ -549,8 +549,8 @@ def _update_ticket(payload: dict[str, Any]) -> dict[str, Any]:
         "allowed_write_scope": [
             f"quant/experiments/exp_20260507_093_same_accession_candidate_touch_audit.py",
             f"data/experiments/{EXPERIMENT_ID}",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
             f"docs/non_ohlcv_data_audit/sec_same_accession_candidate_touch_{EXPERIMENT_ID}_20260507.md",
             "docs/experiment_log.jsonl",
             "docs/experiment_registry.json",
@@ -682,8 +682,8 @@ def main() -> None:
             "quant/experiments/exp_20260507_093_same_accession_candidate_touch_audit.py",
             f"data/experiments/{EXPERIMENT_ID}/same_accession_candidate_touch_audit.json",
             f"docs/non_ohlcv_data_audit/sec_same_accession_candidate_touch_{EXPERIMENT_ID}_20260507.md",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
             "docs/experiment_log.jsonl",
             "data/experiments/exp-20260507-006/full_candidate_filing_shock_shadow.json",
         ],

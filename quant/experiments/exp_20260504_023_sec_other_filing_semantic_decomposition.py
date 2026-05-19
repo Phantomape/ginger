@@ -45,8 +45,8 @@ ARTIFACT = (
     / EXPERIMENT_ID
     / "sec_other_filing_semantic_decomposition.json"
 )
-LOG_JSON = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 AUDIT_MD = (
     ROOT
     / "docs"

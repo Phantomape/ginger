@@ -75,13 +75,12 @@ SOURCE_EXP100_JSON = (
 )
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-DOC_LOG = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_LOG = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 DOC_TICKET = (
-    REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 )
 DOC_ARTIFACT = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_sec_financial_report_t1_sleeve_capacity.md"
@@ -167,7 +166,7 @@ def _upsert_registry(payload: dict[str, Any]) -> None:
             "lane": "alpha_search",
             "owner": "alpha-search",
             "status": payload["status"],
-            "ticket_file": f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
+            "ticket_file": f"experiments/tickets/{EXPERIMENT_ID}.json",
             "updated_at": payload["timestamp"],
         }
     )

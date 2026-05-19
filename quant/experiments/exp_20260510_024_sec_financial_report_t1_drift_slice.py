@@ -32,9 +32,9 @@ SOURCE_JSON = (
 )
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
-ARTIFACT_MD = REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+ARTIFACT_MD = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
 EXPERIMENT_LOG_JSONL = REPO_ROOT / "docs" / "experiment_log.jsonl"
 PLAYBOOK = REPO_ROOT / "docs" / "alpha-optimization-playbook.md"
 
@@ -229,7 +229,7 @@ def _build_payload() -> dict[str, Any]:
             },
             "3_single_causal_variable": "event_family_gate = earnings_8k or periodic_report",
             "4_gate": "Observed-only candidate gate requires >=50 valid 10d rows, 3/3 positive avg windows, aggregate 10d win rate >=52%, and positive aggregate 10d average return.",
-            "5_reproducibility": f"Re-run {SOURCE_EXPERIMENT_ID}, then this script. Outputs are under data/experiments and docs/experiments.",
+            "5_reproducibility": f"Re-run {SOURCE_EXPERIMENT_ID}, then this script. Outputs are under data/experiments and experiments.",
         },
         "backtest_protocol": (
             "Observed-only slice of exp-20260510-023 across the three docs/backtesting.md fixed windows. "

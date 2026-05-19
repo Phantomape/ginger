@@ -39,8 +39,8 @@ from experiments.exp_20260503_051_sec_filing_reaction_drift import (  # noqa: E4
 EXP_ID = "exp-20260504-039"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / "sec_governance_procedural_overlay.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 AUDIT_MD = (
     REPO_ROOT
     / "docs"

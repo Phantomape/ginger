@@ -41,7 +41,7 @@ BEFORE_STEM = "space_benchmark_breadth_iwm_leader_trend_risk"
 TARGET_STRATEGY = "trend_long"
 
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOCS_DIR = ROOT / "docs" / "experiments"
+DOCS_DIR = ROOT / "experiments"
 LOG_DIR = DOCS_DIR / "logs"
 TICKET_DIR = DOCS_DIR / "tickets"
 ARTIFACT_DIR = DOCS_DIR / "artifacts"

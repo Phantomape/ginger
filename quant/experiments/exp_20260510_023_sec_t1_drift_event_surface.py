@@ -28,9 +28,9 @@ EXPERIMENT_ID = "exp-20260510-023"
 STEM = "sec_t1_drift_event_surface"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
-ARTIFACT_MD = REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+ARTIFACT_MD = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
 EXPERIMENT_LOG_JSONL = REPO_ROOT / "docs" / "experiment_log.jsonl"
 PLAYBOOK = REPO_ROOT / "docs" / "alpha-optimization-playbook.md"
 
@@ -705,7 +705,7 @@ def main() -> None:
             ),
             "5_reproducibility": (
                 "All inputs are local OHLCV snapshots plus data/non_ohlcv/sec_filing_events_*.jsonl and coverage manifests; "
-                "outputs are stored under data/experiments, docs/experiments/logs, docs/experiments/artifacts, and JSONL."
+                "outputs are stored under data/experiments, experiments/logs, experiments/artifacts, and JSONL."
             ),
         },
         "backtest_protocol": (

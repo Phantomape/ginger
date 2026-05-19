@@ -61,13 +61,12 @@ MAX_DRAWDOWN_DAMAGE_VS_BEFORE = 0.005
 
 OUT_DIR = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = PROJECT_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = PROJECT_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 TICKET_JSON = (
-    PROJECT_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    PROJECT_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 )
 ARTIFACT_MD = (
     PROJECT_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"
@@ -650,9 +649,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             f"quant/experiments/exp_20260513_026_{STEM}.py",
             f"data/experiments/{EXPERIMENT_ID}/{STEM}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/artifacts/{EXPERIMENT_ID}_{STEM}.md",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/artifacts/{EXPERIMENT_ID}_{STEM}.md",
             "docs/experiment_log.jsonl",
         ],
         "llm_metrics": {"used_llm": False},

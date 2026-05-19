@@ -505,9 +505,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_004_core_borderline_exec_rr_haircut.py",
             "data/experiments/exp-20260514-004/core_borderline_exec_rr_haircut.json",
-            "docs/experiments/logs/exp-20260514-004.json",
-            "docs/experiments/tickets/exp-20260514-004.json",
-            "docs/experiments/artifacts/exp-20260514-004_core_borderline_exec_rr_haircut.md",
+            "experiments/logs/exp-20260514-004.json",
+            "experiments/tickets/exp-20260514-004.json",
+            "experiments/artifacts/exp-20260514-004_core_borderline_exec_rr_haircut.md",
             "docs/experiment_log.jsonl",
         ],
     }

@@ -38,7 +38,7 @@ BEFORE_EXPERIMENT_ID = "exp-20260515-021"
 BEFORE_STEM = "space_defense_budget_same_theme_winner_trend_risk"
 
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOCS_DIR = ROOT / "docs" / "experiments"
+DOCS_DIR = ROOT / "experiments"
 LOG_DIR = DOCS_DIR / "logs"
 TICKET_DIR = DOCS_DIR / "tickets"
 ARTIFACT_DIR = DOCS_DIR / "artifacts"

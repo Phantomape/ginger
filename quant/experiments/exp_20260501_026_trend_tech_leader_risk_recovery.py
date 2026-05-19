@@ -37,8 +37,8 @@ from risk_engine import SECTOR_MAP  # noqa: E402
 EXPERIMENT_ID = "exp-20260501-026"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "trend_tech_leader_risk_recovery.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 
 WINDOWS = OrderedDict([
     ("late_strong", {
@@ -431,8 +431,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260501_026_trend_tech_leader_risk_recovery.py",
             "data/experiments/exp-20260501-026/trend_tech_leader_risk_recovery.json",
-            "docs/experiments/logs/exp-20260501-026.json",
-            "docs/experiments/tickets/exp-20260501-026.json",
+            "experiments/logs/exp-20260501-026.json",
+            "experiments/tickets/exp-20260501-026.json",
         ],
     }
 

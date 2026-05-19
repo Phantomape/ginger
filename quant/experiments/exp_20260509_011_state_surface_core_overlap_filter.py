@@ -32,11 +32,10 @@ from experiments import exp_20260507_016_state_surface_satellite_replay as base 
 EXPERIMENT_ID = "exp-20260509-011"
 STEM = "state_surface_core_overlap_filter"
 OUT_JSON = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"
@@ -418,9 +417,9 @@ def build_payload() -> dict[str, Any]:
                 "AGENTS.md",
                 "docs/alpha-optimization-playbook.md",
                 "docs/backtesting.md",
-                "docs/experiments/logs/exp-20260509-010.json",
-                "docs/experiments/artifacts/exp-20260509-010_state_surface_current_stack_revalidation.md",
-                "docs/experiments/logs/exp-20260509-002.json",
+                "experiments/logs/exp-20260509-010.json",
+                "experiments/artifacts/exp-20260509-010_state_surface_current_stack_revalidation.md",
+                "experiments/logs/exp-20260509-002.json",
             ],
             "recent_no_go_or_blocked_surfaces": [
                 "Do not rerun full state-surface revalidation",
@@ -498,7 +497,7 @@ def build_payload() -> dict[str, Any]:
         "experiment_log_jsonl_note": (
             "Not appended by this run because docs/experiment_log.jsonl has "
             "pre-existing unstaged automation changes; canonical record is the "
-            "docs/experiments log file and artifact."
+            "experiments log file and artifact."
         ),
         "related_files": [
             _repo_rel(Path(__file__)),

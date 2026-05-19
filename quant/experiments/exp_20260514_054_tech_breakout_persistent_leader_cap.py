@@ -633,13 +633,12 @@ def run() -> dict[str, Any]:
         / EXPERIMENT_ID
         / f"{EXPERIMENT_SLUG}.json"
     )
-    log_path = base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    log_path = base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     ticket_path = (
-        base.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+        base.REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     )
     artifact_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

@@ -1,4 +1,4 @@
-﻿"""exp-20260513-032: Space attention-overlay risk.
+"""exp-20260513-032: Space attention-overlay risk.
 
 Tests one causal variable on top of the accepted exp-20260513-028 default-off
 Space stack: a risk scalar for official Space tickers whose event-seed profile
@@ -959,9 +959,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260513_032_space_attention_overlay_risk.py",
             "data/experiments/exp-20260513-032/space_attention_overlay_risk.json",
-            "docs/experiments/logs/exp-20260513-032.json",
-            "docs/experiments/tickets/exp-20260513-032.json",
-            "docs/experiments/artifacts/exp-20260513-032_space_attention_overlay_risk.md",
+            "experiments/logs/exp-20260513-032.json",
+            "experiments/tickets/exp-20260513-032.json",
+            "experiments/artifacts/exp-20260513-032_space_attention_overlay_risk.md",
             "docs/experiment_log.jsonl",
         ],
         "why_not_other_changes": (
@@ -981,11 +981,10 @@ def run() -> dict[str, Any]:
 def persist(payload: dict[str, Any]) -> None:
     out_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
     artifact_path = out_dir / f"{STEM}.json"
-    log_path = PROJECT_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = PROJECT_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = PROJECT_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = PROJECT_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     md_path = (
         PROJECT_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{STEM}.md"

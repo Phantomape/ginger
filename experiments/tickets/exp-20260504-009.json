@@ -1,0 +1,76 @@
+{
+  "acceptance_rule": "default-off shadow only; report all canonical windows and do not promote unless fixed sleeve return/EV is positive with acceptable drawdown and enough sample count",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260504_009_form4_event_sleeve_replay.py",
+    "experiments/tickets/exp-20260504-009.json",
+    "experiments/logs/exp-20260504-009.json",
+    "docs/non_ohlcv_data_audit/form4_event_sleeve_replay_20260504.md",
+    "data/experiments/exp-20260504-009/form4_event_sleeve_replay.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtest_results_20260503.json",
+  "change_type": "form4_default_off_event_sleeve_replay",
+  "claimed_at": null,
+  "completed_at": "2026-05-04T01:35:38+00:00",
+  "created_at": "2026-05-04T01:32:15+00:00",
+  "decision": "default_off_event_sleeve_positive_not_promoted",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260504-009",
+  "hypothesis": "A fixed-rule PIT-safe Form 4 event sleeve may earn positive standalone returns when replayed with fixed capacity, notional, holding period, and transaction costs across the three canonical windows.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "Form 4 queue rule",
+    "minimum purchase value",
+    "owner role filters",
+    "production signal path",
+    "OHLCV entry thresholds",
+    "technical indicators",
+    "core universe",
+    "candidate ranking",
+    "position sizing",
+    "exits",
+    "LLM prompts"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/form4_event_queue.py"
+  ],
+  "owner": "loss-attribution",
+  "result": {
+    "aggregate_primary": {
+      "avg_window_sharpe_daily": 1.085479,
+      "expected_value_score_proxy": 0.04121607,
+      "positive_pnl_windows": 3,
+      "total_pnl": 3797.04,
+      "total_return_pct_on_100k_base": 0.0379704,
+      "trade_count": 8,
+      "win_rate": 0.75,
+      "window_count": 3
+    },
+    "artifact": "data/experiments/exp-20260504-009/form4_event_sleeve_replay.json",
+    "audit_report": "docs/non_ohlcv_data_audit/form4_event_sleeve_replay_20260504.md",
+    "decision": "default_off_event_sleeve_positive_not_promoted",
+    "log": "experiments/logs/exp-20260504-009.json",
+    "next_action": "Treat Form 4 as a positive default-off event-sleeve candidate. The next valid test is a shared event-sleeve harness with explicit capital allocation and forward queue reporting; do not wire it into core A/B ranking or scarce slots yet."
+  },
+  "single_causal_variable": "fixed Form 4 event sleeve replay",
+  "status": "observed_only"
+}

@@ -689,9 +689,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260512_013_space_peer_nonleader_breakout_risk.py",
             "data/experiments/exp-20260512-013/space_peer_nonleader_breakout_risk.json",
-            "docs/experiments/logs/exp-20260512-013.json",
-            "docs/experiments/tickets/exp-20260512-013.json",
-            "docs/experiments/artifacts/exp-20260512-013_space_peer_nonleader_breakout_risk.md",
+            "experiments/logs/exp-20260512-013.json",
+            "experiments/tickets/exp-20260512-013.json",
+            "experiments/artifacts/exp-20260512-013_space_peer_nonleader_breakout_risk.md",
             "docs/experiment_log.jsonl",
         ],
         "why_not_other_changes": (
@@ -709,11 +709,10 @@ def run() -> dict[str, Any]:
 def persist(payload: dict[str, Any]) -> None:
     out_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
     artifact_path = out_dir / f"{STEM}.json"
-    log_path = PROJECT_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = PROJECT_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = PROJECT_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = PROJECT_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     md_path = (
         PROJECT_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{STEM}.md"

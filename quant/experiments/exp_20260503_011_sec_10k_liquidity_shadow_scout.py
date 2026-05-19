@@ -33,8 +33,8 @@ from yfinance_bootstrap import configure_yfinance_runtime  # noqa: E402
 EXPERIMENT_ID = "exp-20260503-011"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "sec_10k_liquidity_shadow_scout.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 EXP006_ARTIFACT = REPO_ROOT / "data" / "experiments" / "exp-20260503-006" / "filing_shadow_universe_scout.json"
 
@@ -674,8 +674,8 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
         "allowed_write_scope": [
             "quant/experiments/exp_20260503_011_sec_10k_liquidity_shadow_scout.py",
             "data/experiments/exp-20260503-011",
-            "docs/experiments/logs/exp-20260503-011.json",
-            "docs/experiments/tickets/exp-20260503-011.json",
+            "experiments/logs/exp-20260503-011.json",
+            "experiments/tickets/exp-20260503-011.json",
             "docs/experiment_log.jsonl",
         ],
         "must_not_touch": [
@@ -801,8 +801,8 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
             "data/experiments/exp-20260503-006/filing_shadow_universe_scout.json",
             "quant/experiments/exp_20260503_011_sec_10k_liquidity_shadow_scout.py",
             "data/experiments/exp-20260503-011/sec_10k_liquidity_shadow_scout.json",
-            "docs/experiments/logs/exp-20260503-011.json",
-            "docs/experiments/tickets/exp-20260503-011.json",
+            "experiments/logs/exp-20260503-011.json",
+            "experiments/tickets/exp-20260503-011.json",
         ],
     }
     return _sanitize(payload)

@@ -1,0 +1,1034 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 11.863502,
+    "max_drawdown_pct_max": 0.116971,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 52,
+    "sleeve_total_pnl_sum": 87338.65,
+    "total_pnl_sum": 324233.16,
+    "trade_count_sum": 113
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for core baseline, plus production SEC financial-report paper-sleeve replay over the same snapshots.",
+  "before_metrics": {
+    "expected_value_score_sum": 11.675045,
+    "max_drawdown_pct_max": 0.115591,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 52,
+    "sleeve_total_pnl_sum": 81916.54,
+    "total_pnl_sum": 318771.68,
+    "trade_count_sum": 113
+  },
+  "best_variant": "earnings_release_spy_t1_context_scalar_1.10",
+  "candidate_counts_after_current_queue_filter": {
+    "late_strong": 39,
+    "mid_weak": 29,
+    "old_thin": 40
+  },
+  "change_summary": "Sweep a paper-notional scalar for SEC earnings-release text rows with `spy_t1_return >= -0.005`.",
+  "change_type": "alpha_search_semantic_market_context_notional_allocation",
+  "changed_variable": "sec_earnings_release_text_spy_t1_context_notional_scalar",
+  "component": "quant/sec_financial_report_event_sleeve.py",
+  "decision": "accepted_default_off_sec_earnings_release_spy_t1_context_notional",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": 0.188457,
+      "expected_value_score_sum_delta_pct": 0.016142,
+      "max_drawdown_pct_max_delta": 0.00138,
+      "max_drawdown_pct_max_delta_pct": 0.011939,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": 0.0,
+      "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+      "sleeve_total_pnl_sum_delta": 5422.11,
+      "sleeve_total_pnl_sum_delta_pct": 0.066191,
+      "total_pnl_sum_delta": 5461.48,
+      "total_pnl_sum_delta_pct": 0.017133,
+      "trade_count_sum_delta": 0.0,
+      "trade_count_sum_delta_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.001057,
+        "max_drawdown_pct": 1e-06,
+        "sharpe_daily": -0.013661,
+        "total_pnl": 411.66
+      },
+      "mid_weak": {
+        "expected_value_score": 0.112585,
+        "max_drawdown_pct": -0.000717,
+        "sharpe_daily": 0.041462,
+        "total_pnl": 1784.32
+      },
+      "old_thin": {
+        "expected_value_score": 0.074815,
+        "max_drawdown_pct": 0.00138,
+        "sharpe_daily": 0.005082,
+        "total_pnl": 3265.5
+      }
+    }
+  },
+  "expected_value_score_delta": 0.188457,
+  "experiment_id": "exp-20260519-008",
+  "gate": {
+    "aggregate_delta": {
+      "expected_value_score_sum_delta": 0.188457,
+      "expected_value_score_sum_delta_pct": 0.016142,
+      "max_drawdown_pct_max_delta": 0.00138,
+      "max_drawdown_pct_max_delta_pct": 0.011939,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": 0.0,
+      "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+      "sleeve_total_pnl_sum_delta": 5422.11,
+      "sleeve_total_pnl_sum_delta_pct": 0.066191,
+      "total_pnl_sum_delta": 5461.48,
+      "total_pnl_sum_delta_pct": 0.017133,
+      "trade_count_sum_delta": 0.0,
+      "trade_count_sum_delta_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.001057,
+        "max_drawdown_pct": 1e-06,
+        "sharpe_daily": -0.013661,
+        "total_pnl": 411.66
+      },
+      "mid_weak": {
+        "expected_value_score": 0.112585,
+        "max_drawdown_pct": -0.000717,
+        "sharpe_daily": 0.041462,
+        "total_pnl": 1784.32
+      },
+      "old_thin": {
+        "expected_value_score": 0.074815,
+        "max_drawdown_pct": 0.00138,
+        "sharpe_daily": 0.005082,
+        "total_pnl": 3265.5
+      }
+    },
+    "concentration_guard_passed": true,
+    "metric_gate_passed": true,
+    "passed": true,
+    "rules": {
+      "concentration_guard": {
+        "max_single_positive_pnl_share": 0.65
+      },
+      "metric_gate": "aggregate EV/PnL positive, all three windows EV/PnL positive, no window regression, and max drawdown worsening <= 0.5pp",
+      "sample_guard": {
+        "min_adjusted_trades": 20,
+        "min_windows_present": 3
+      }
+    },
+    "sample_guard_passed": true
+  },
+  "gate2_required_fields": {
+    "checked_position_count": 8,
+    "exists": true,
+    "missing_entry_date_count": 0,
+    "missing_target_price_count": 0,
+    "passed": true,
+    "path": "operator_inputs\\open_positions.json",
+    "sample_missing_entry_date": [],
+    "sample_missing_target_price": []
+  },
+  "hypothesis": "Inside the accepted SEC financial-report T+1 paper sleeve, `text_event_type=earnings_release_text` rows should only receive extra paper notional when same-day SPY T+1 context is not worse than -0.5%; this should preserve post-earnings drift exposure while avoiding the broad earnings-release scalar rejected in exp-20260519-007.",
+  "interpretation": "The 1.10x earnings-release SPY T+1 context scalar cleared Gate 4: aggregate EV/PnL improved, all three windows were positive, drawdown drift was immaterial, sample count was 29, and positive PnL concentration stayed below the guardrail.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking remains sparse; this tests deterministic production-visible SEC event-type and SPY T+1 fields.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "next_evidence_needed": "Keep live/default orders disabled; promote only as shared default-off SEC paper notional metadata and continue collecting forward replacement-value evidence.",
+  "parameters": {
+    "accepted_market_context_scalar": 1.5,
+    "accepted_market_context_spy_t1_min": -0.005,
+    "accepted_neutral_underreaction_max_t1_excess": 0.02,
+    "accepted_neutral_underreaction_scalar": 2.0,
+    "anti_js": "No JavaScript was used.",
+    "base_event_notional_usd": 15000.0,
+    "baseline_target_scalar": 1.0,
+    "best_target_scalar": 1.1,
+    "max_positions": 3,
+    "periodic_report_scalar": 1.25,
+    "source_candidate_artifact": "data\\experiments\\exp-20260511-100\\exp_20260511_100_sec_financial_report_positive_t1_forward_outcome_refresh.json",
+    "spy_t1_return_min": -0.005,
+    "target_scalar_variants": [
+      0.5,
+      0.75,
+      1.0,
+      1.1,
+      1.25,
+      1.5
+    ],
+    "target_text_event_type": "earnings_release_text",
+    "tenq_periodic_report_scalar": 2.0,
+    "text_archive": "data\\non_ohlcv\\sec_filing_text_20241002_20260421.jsonl"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": true,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_default_orders_changed": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true
+  },
+  "protocol_answers": {
+    "1_alpha_hypothesis": "capital allocation: scale the SEC financial-report paper sleeve only when `text_event_type=earnings_release_text` and `spy_t1_return >= -0.005`.",
+    "2_history_check": "exp-20260519-007 rejected the broad earnings-release text scalar because late_strong EV regressed. exp-20260518-014 accepted the same SPY T+1 market context threshold for neutral underreaction; this run freezes that stack and tests only whether the context field separates earnings-release text rows.",
+    "3_single_causal_variable": "sec_earnings_release_text_spy_t1_context_notional_scalar",
+    "4_acceptance_standard": {
+      "concentration_guard": {
+        "max_single_positive_pnl_share": 0.65
+      },
+      "metric_gate": "aggregate EV/PnL positive, all three windows EV/PnL positive, no window regression, and max drawdown worsening <= 0.5pp",
+      "sample_guard": {
+        "min_adjusted_trades": 20,
+        "min_windows_present": 3
+      }
+    },
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260519_008_sec_earnings_release_spy_context_notional.py"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260519_008_sec_earnings_release_spy_context_notional.py",
+    "data/experiments/exp-20260519-008/exp_20260519_008_sec_earnings_release_spy_context_notional.json",
+    "experiments/logs/exp-20260519-008.json",
+    "experiments/tickets/exp-20260519-008.json",
+    "experiments/artifacts/exp-20260519-008_sec_earnings_release_spy_context_notional.md",
+    "docs/experiment_log.jsonl",
+    "quant/sec_financial_report_event_sleeve.py",
+    "quant/test_sec_financial_report_event_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/backtesting.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "selection": {
+    "adjusted_trade_count": 29,
+    "by_ticker_count": {
+      "AAPL": 1,
+      "AVGO": 2,
+      "BKNG": 2,
+      "CAT": 1,
+      "COIN": 1,
+      "CRDO": 3,
+      "DDOG": 2,
+      "DE": 3,
+      "GS": 1,
+      "INTC": 1,
+      "ISRG": 1,
+      "LLY": 1,
+      "MU": 2,
+      "TRIP": 1,
+      "TSLA": 6,
+      "UNH": 1
+    },
+    "by_ticker_incremental_pnl": {
+      "AAPL": -30.9,
+      "AVGO": -103.71,
+      "BKNG": -231.77,
+      "CAT": 119.2,
+      "COIN": 3615.43,
+      "CRDO": 326.25,
+      "DDOG": -250.85,
+      "DE": -87.05,
+      "GS": 36.99,
+      "INTC": -70.04,
+      "ISRG": 62.94,
+      "LLY": 674.88,
+      "MU": 486.96,
+      "TRIP": -16.86,
+      "TSLA": 891.17,
+      "UNH": 46.94
+    },
+    "by_window_count": {
+      "late_strong": 10,
+      "mid_weak": 9,
+      "old_thin": 10
+    },
+    "by_window_incremental_pnl": {
+      "late_strong": 419.77,
+      "mid_weak": 1784.33,
+      "old_thin": 3265.48
+    },
+    "max_single_positive_incremental_pnl": 3615.43,
+    "max_single_positive_pnl_share": 0.5117,
+    "positive_incremental_pnl": 7065.75,
+    "sample_rows": [
+      {
+        "adjusted_pnl": -770.43,
+        "baseline_pnl": -700.39,
+        "entry_date": "2025-10-28",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-11-11",
+        "form_base": "8-K",
+        "incremental_pnl": -70.04,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.011798,
+        "t1_excess_return_vs_spy": 0.021118,
+        "t1_return": 0.032915,
+        "text_event_type": "earnings_release_text",
+        "ticker": "INTC",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -3351.93,
+        "baseline_pnl": -3047.21,
+        "entry_date": "2025-11-11",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-11-25",
+        "form_base": "8-K",
+        "incremental_pnl": -304.72,
+        "language_bucket": "positive_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.015604,
+        "t1_excess_return_vs_spy": 0.028738,
+        "t1_return": 0.044342,
+        "text_event_type": "earnings_release_text",
+        "ticker": "DDOG",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": 422.15,
+        "baseline_pnl": 383.78,
+        "entry_date": "2025-12-02",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-12-16",
+        "form_base": "8-K",
+        "incremental_pnl": 38.38,
+        "language_bucket": "negative_language",
+        "notional": 16500.0,
+        "spy_t1_return": -0.004565,
+        "t1_excess_return_vs_spy": 0.012359,
+        "t1_return": 0.007793,
+        "text_event_type": "earnings_release_text",
+        "ticker": "DE",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": 3665.37,
+        "baseline_pnl": 3332.16,
+        "entry_date": "2025-12-22",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2026-01-07",
+        "form_base": "8-K",
+        "incremental_pnl": 333.22,
+        "language_bucket": "positive_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.009063,
+        "t1_excess_return_vs_spy": 0.060822,
+        "t1_return": 0.069885,
+        "text_event_type": "earnings_release_text",
+        "ticker": "MU",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -475.25,
+        "baseline_pnl": -432.05,
+        "entry_date": "2026-02-02",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2026-02-17",
+        "form_base": "8-K",
+        "incremental_pnl": -43.2,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": -0.002983,
+        "t1_excess_return_vs_spy": 0.036231,
+        "t1_return": 0.033249,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TSLA",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": 1311.23,
+        "baseline_pnl": 1192.03,
+        "entry_date": "2026-02-03",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2026-02-18",
+        "form_base": "8-K",
+        "incremental_pnl": 119.2,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.004971,
+        "t1_excess_return_vs_spy": 0.046066,
+        "t1_return": 0.051037,
+        "text_event_type": "earnings_release_text",
+        "ticker": "CAT",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -339.86,
+        "baseline_pnl": -308.96,
+        "entry_date": "2026-02-03",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2026-02-18",
+        "form_base": "8-K",
+        "incremental_pnl": -30.9,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.004971,
+        "t1_excess_return_vs_spy": 0.03561,
+        "t1_return": 0.040581,
+        "text_event_type": "earnings_release_text",
+        "ticker": "AAPL",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -185.41,
+        "baseline_pnl": -168.55,
+        "entry_date": "2026-02-18",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2026-03-04",
+        "form_base": "8-K",
+        "incremental_pnl": -16.86,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.001613,
+        "t1_excess_return_vs_spy": 0.095161,
+        "t1_return": 0.096774,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TRIP",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": 4700.43,
+        "baseline_pnl": 4273.12,
+        "entry_date": "2026-02-23",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+neutral_underreaction_scalar+neutral_underreaction_spy_t1_context_scalar+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 3.3000000000000003,
+        "exit_date": "2026-03-09",
+        "form_base": "8-K",
+        "incremental_pnl": 427.31,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 49500.0,
+        "spy_t1_return": 0.007232,
+        "t1_excess_return_vs_spy": 0.010071,
+        "t1_return": 0.017303,
+        "text_event_type": "earnings_release_text",
+        "ticker": "BKNG",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": -358.77,
+        "baseline_pnl": -326.15,
+        "entry_date": "2026-03-05",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2026-03-19",
+        "form_base": "8-K",
+        "incremental_pnl": -32.62,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.007055,
+        "t1_excess_return_vs_spy": 0.046799,
+        "t1_return": 0.053854,
+        "text_event_type": "earnings_release_text",
+        "ticker": "CRDO",
+        "window": "late_strong"
+      },
+      {
+        "adjusted_pnl": 692.37,
+        "baseline_pnl": 629.43,
+        "entry_date": "2025-04-25",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-05-09",
+        "form_base": "8-K",
+        "incremental_pnl": 62.94,
+        "language_bucket": "positive_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.021049,
+        "t1_excess_return_vs_spy": 0.02035,
+        "t1_return": 0.041399,
+        "text_event_type": "earnings_release_text",
+        "ticker": "ISRG",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 6744.15,
+        "baseline_pnl": 6131.05,
+        "entry_date": "2025-04-25",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+neutral_underreaction_scalar+neutral_underreaction_spy_t1_context_scalar+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 3.3000000000000003,
+        "exit_date": "2025-05-09",
+        "form_base": "8-K",
+        "incremental_pnl": 613.1,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 49500.0,
+        "spy_t1_return": 0.021049,
+        "t1_excess_return_vs_spy": 0.013927,
+        "t1_return": 0.034976,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TSLA",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 592.54,
+        "baseline_pnl": 538.67,
+        "entry_date": "2025-05-09",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-05-23",
+        "form_base": "8-K",
+        "incremental_pnl": 53.87,
+        "language_bucket": "positive_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.006968,
+        "t1_excess_return_vs_spy": 0.023215,
+        "t1_return": 0.030183,
+        "text_event_type": "earnings_release_text",
+        "ticker": "DDOG",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 1737.31,
+        "baseline_pnl": 1579.37,
+        "entry_date": "2025-06-05",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-06-20",
+        "form_base": "8-K",
+        "incremental_pnl": 157.94,
+        "language_bucket": "negative_language",
+        "notional": 16500.0,
+        "spy_t1_return": -0.000268,
+        "t1_excess_return_vs_spy": 0.063394,
+        "t1_return": 0.063126,
+        "text_event_type": "earnings_release_text",
+        "ticker": "CRDO",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 1008.57,
+        "baseline_pnl": 916.88,
+        "entry_date": "2025-07-28",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-08-11",
+        "form_base": "8-K",
+        "incremental_pnl": 91.69,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.004224,
+        "t1_excess_return_vs_spy": 0.03102,
+        "t1_return": 0.035244,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TSLA",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 7423.72,
+        "baseline_pnl": 6748.83,
+        "entry_date": "2025-08-12",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+neutral_underreaction_scalar+neutral_underreaction_spy_t1_context_scalar+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 3.3000000000000003,
+        "exit_date": "2025-08-26",
+        "form_base": "8-K",
+        "incremental_pnl": 674.88,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 49500.0,
+        "spy_t1_return": -0.001978,
+        "t1_excess_return_vs_spy": 0.017273,
+        "t1_return": 0.015296,
+        "text_event_type": "earnings_release_text",
+        "ticker": "LLY",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 2210.19,
+        "baseline_pnl": 2009.26,
+        "entry_date": "2025-09-08",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-09-22",
+        "form_base": "8-K",
+        "incremental_pnl": 200.93,
+        "language_bucket": "negative_language",
+        "notional": 16500.0,
+        "spy_t1_return": -0.002896,
+        "t1_excess_return_vs_spy": 0.053792,
+        "t1_return": 0.050896,
+        "text_event_type": "earnings_release_text",
+        "ticker": "CRDO",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": -531.17,
+        "baseline_pnl": -482.88,
+        "entry_date": "2025-09-09",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-09-23",
+        "form_base": "8-K",
+        "incremental_pnl": -48.29,
+        "language_bucket": "positive_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.002457,
+        "t1_excess_return_vs_spy": 0.029673,
+        "t1_return": 0.03213,
+        "text_event_type": "earnings_release_text",
+        "ticker": "AVGO",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": -250.08,
+        "baseline_pnl": -227.35,
+        "entry_date": "2025-10-07",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2025-10-21",
+        "form_base": "8-K",
+        "incremental_pnl": -22.73,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.003586,
+        "t1_excess_return_vs_spy": 0.0509,
+        "t1_return": 0.054487,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TSLA",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": -2055.64,
+        "baseline_pnl": -1868.76,
+        "entry_date": "2024-10-07",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar",
+        "event_notional_scalar": 1.1,
+        "exit_date": "2024-10-21",
+        "form_base": "8-K",
+        "incremental_pnl": -186.88,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 16500.0,
+        "spy_t1_return": 0.009087,
+        "t1_excess_return_vs_spy": 0.030055,
+        "t1_return": 0.039142,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TSLA",
+        "window": "old_thin"
+      }
+    ],
+    "windows_present": 3
+  },
+  "single_causal_variable": "earnings-release text SPY T+1 context paper-notional scalar",
+  "status": "accepted",
+  "target_coverage_summary": {
+    "aggregate": {
+      "missing_spy_t1": 0,
+      "non_target": 62,
+      "target": 46
+    },
+    "by_window": {
+      "late_strong": {
+        "candidate_count": 39,
+        "earnings_release_missing_spy_t1": 0,
+        "target_count": 16
+      },
+      "mid_weak": {
+        "candidate_count": 29,
+        "earnings_release_missing_spy_t1": 0,
+        "target_count": 15
+      },
+      "old_thin": {
+        "candidate_count": 40,
+        "earnings_release_missing_spy_t1": 0,
+        "target_count": 15
+      }
+    },
+    "target_definition": {
+      "spy_t1_return_min": -0.005,
+      "text_event_type": "earnings_release_text"
+    }
+  },
+  "text_coverage_summary": {
+    "aggregate": {
+      "candidate_count": 108,
+      "coverage_rate": 0.5926,
+      "coverage_status": {
+        "covered": 64,
+        "missing_text_archive": 44
+      },
+      "covered_candidate_count": 64,
+      "language_bucket": {
+        "negative_language": 13,
+        "neutral_or_mixed_language": 38,
+        "positive_language": 13,
+        "uncovered": 44
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "candidate_count": 39,
+        "coverage_status": {
+          "covered": 23,
+          "missing_text_archive": 16
+        },
+        "language_bucket": {
+          "negative_language": 3,
+          "neutral_or_mixed_language": 17,
+          "positive_language": 3,
+          "uncovered": 16
+        }
+      },
+      "mid_weak": {
+        "candidate_count": 29,
+        "coverage_status": {
+          "covered": 18,
+          "missing_text_archive": 11
+        },
+        "language_bucket": {
+          "negative_language": 4,
+          "neutral_or_mixed_language": 8,
+          "positive_language": 6,
+          "uncovered": 11
+        }
+      },
+      "old_thin": {
+        "candidate_count": 40,
+        "coverage_status": {
+          "covered": 23,
+          "missing_text_archive": 17
+        },
+        "language_bucket": {
+          "negative_language": 6,
+          "neutral_or_mixed_language": 13,
+          "positive_language": 4,
+          "uncovered": 17
+        }
+      }
+    }
+  },
+  "text_load_stats": [
+    {
+      "bytes": 12541135,
+      "path": "data\\non_ohlcv\\sec_filing_text_20241002_20260421.jsonl",
+      "rows_loaded": 306
+    }
+  ],
+  "timestamp": "2026-05-19T06:20:42Z",
+  "total_pnl_delta": 5461.48,
+  "variant_summaries": {
+    "earnings_release_spy_t1_context_scalar_0.50": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -1.030964,
+        "expected_value_score_sum_delta_pct": -0.088305,
+        "max_drawdown_pct_max_delta": -0.007803,
+        "max_drawdown_pct_max_delta_pct": -0.067505,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -27110.53,
+        "sleeve_total_pnl_sum_delta_pct": -0.330953,
+        "total_pnl_sum_delta": -27307.43,
+        "total_pnl_sum_delta_pct": -0.085665,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.028593,
+          "max_drawdown_pct": -7e-06,
+          "sharpe_daily": 0.051258,
+          "total_pnl": -2058.29
+        },
+        "mid_weak": {
+          "expected_value_score": -0.571686,
+          "max_drawdown_pct": 0.003746,
+          "sharpe_daily": -0.238046,
+          "total_pnl": -8921.64
+        },
+        "old_thin": {
+          "expected_value_score": -0.430685,
+          "max_drawdown_pct": -0.007803,
+          "sharpe_daily": -0.121777,
+          "total_pnl": -16327.5
+        }
+      },
+      "earnings_release_text_notional_scalar": 0.5,
+      "earnings_release_text_spy_t1_context_notional_scalar": 0.5,
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 3,
+      "max_drawdown_delta_max": 0.003746,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 3
+    },
+    "earnings_release_spy_t1_context_scalar_0.75": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.496372,
+        "expected_value_score_sum_delta_pct": -0.042516,
+        "max_drawdown_pct_max_delta": -0.003699,
+        "max_drawdown_pct_max_delta_pct": -0.032001,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -13555.26,
+        "sleeve_total_pnl_sum_delta_pct": -0.165476,
+        "total_pnl_sum_delta": -13653.71,
+        "total_pnl_sum_delta_pct": -0.042832,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.009278,
+          "max_drawdown_pct": -4e-06,
+          "sharpe_daily": 0.029348,
+          "total_pnl": -1029.14
+        },
+        "mid_weak": {
+          "expected_value_score": -0.284567,
+          "max_drawdown_pct": 0.001839,
+          "sharpe_daily": -0.112762,
+          "total_pnl": -4460.82
+        },
+        "old_thin": {
+          "expected_value_score": -0.202527,
+          "max_drawdown_pct": -0.003699,
+          "sharpe_daily": -0.036211,
+          "total_pnl": -8163.75
+        }
+      },
+      "earnings_release_text_notional_scalar": 0.75,
+      "earnings_release_text_spy_t1_context_notional_scalar": 0.75,
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 3,
+      "max_drawdown_delta_max": 0.001839,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 3
+    },
+    "earnings_release_spy_t1_context_scalar_1.00": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "expected_value_score_sum_delta_pct": 0.0,
+        "max_drawdown_pct_max_delta": 0.0,
+        "max_drawdown_pct_max_delta_pct": 0.0,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 0.0,
+        "sleeve_total_pnl_sum_delta_pct": 0.0,
+        "total_pnl_sum_delta": 0.0,
+        "total_pnl_sum_delta_pct": 0.0,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        }
+      },
+      "earnings_release_text_notional_scalar": 1.0,
+      "earnings_release_text_spy_t1_context_notional_scalar": 1.0,
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.0,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 0
+    },
+    "earnings_release_spy_t1_context_scalar_1.10": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.188457,
+        "expected_value_score_sum_delta_pct": 0.016142,
+        "max_drawdown_pct_max_delta": 0.00138,
+        "max_drawdown_pct_max_delta_pct": 0.011939,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 5422.11,
+        "sleeve_total_pnl_sum_delta_pct": 0.066191,
+        "total_pnl_sum_delta": 5461.48,
+        "total_pnl_sum_delta_pct": 0.017133,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.001057,
+          "max_drawdown_pct": 1e-06,
+          "sharpe_daily": -0.013661,
+          "total_pnl": 411.66
+        },
+        "mid_weak": {
+          "expected_value_score": 0.112585,
+          "max_drawdown_pct": -0.000717,
+          "sharpe_daily": 0.041462,
+          "total_pnl": 1784.32
+        },
+        "old_thin": {
+          "expected_value_score": 0.074815,
+          "max_drawdown_pct": 0.00138,
+          "sharpe_daily": 0.005082,
+          "total_pnl": 3265.5
+        }
+      },
+      "earnings_release_text_notional_scalar": 1.1,
+      "earnings_release_text_spy_t1_context_notional_scalar": 1.1,
+      "ev_positive_windows": 3,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.00138,
+      "pnl_positive_windows": 3,
+      "pnl_regressed_windows": 0
+    },
+    "earnings_release_spy_t1_context_scalar_1.25": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.461279,
+        "expected_value_score_sum_delta_pct": 0.03951,
+        "max_drawdown_pct_max_delta": 0.003352,
+        "max_drawdown_pct_max_delta_pct": 0.028999,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 13555.28,
+        "sleeve_total_pnl_sum_delta_pct": 0.165477,
+        "total_pnl_sum_delta": 13653.71,
+        "total_pnl_sum_delta_pct": 0.042832,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -4.4e-05,
+          "max_drawdown_pct": 3e-06,
+          "sharpe_daily": -0.036058,
+          "total_pnl": 1029.15
+        },
+        "mid_weak": {
+          "expected_value_score": 0.279714,
+          "max_drawdown_pct": -0.001774,
+          "sharpe_daily": 0.099692,
+          "total_pnl": 4460.81
+        },
+        "old_thin": {
+          "expected_value_score": 0.181609,
+          "max_drawdown_pct": 0.003352,
+          "sharpe_daily": 0.005859,
+          "total_pnl": 8163.75
+        }
+      },
+      "earnings_release_text_notional_scalar": 1.25,
+      "earnings_release_text_spy_t1_context_notional_scalar": 1.25,
+      "ev_positive_windows": 2,
+      "ev_regressed_windows": 1,
+      "max_drawdown_delta_max": 0.003352,
+      "pnl_positive_windows": 3,
+      "pnl_regressed_windows": 0
+    },
+    "earnings_release_spy_t1_context_scalar_1.50": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.892202,
+        "expected_value_score_sum_delta_pct": 0.07642,
+        "max_drawdown_pct_max_delta": 0.006403,
+        "max_drawdown_pct_max_delta_pct": 0.055394,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 27110.54,
+        "sleeve_total_pnl_sum_delta_pct": 0.330953,
+        "total_pnl_sum_delta": 27307.42,
+        "total_pnl_sum_delta_pct": 0.085665,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": -0.0086,
+          "max_drawdown_pct": 7e-06,
+          "sharpe_daily": -0.07805,
+          "total_pnl": 2058.29
+        },
+        "mid_weak": {
+          "expected_value_score": 0.552642,
+          "max_drawdown_pct": -0.003487,
+          "sharpe_daily": 0.186159,
+          "total_pnl": 8921.63
+        },
+        "old_thin": {
+          "expected_value_score": 0.34816,
+          "max_drawdown_pct": 0.006403,
+          "sharpe_daily": -0.004867,
+          "total_pnl": 16327.5
+        }
+      },
+      "earnings_release_text_notional_scalar": 1.5,
+      "earnings_release_text_spy_t1_context_notional_scalar": 1.5,
+      "ev_positive_windows": 2,
+      "ev_regressed_windows": 1,
+      "max_drawdown_delta_max": 0.006403,
+      "pnl_positive_windows": 3,
+      "pnl_regressed_windows": 0
+    }
+  },
+  "why_not_other_changes": "State-surface near-high/profile mining is now anti-repeat without a new field, the broad earnings-release scalar was rejected, and noisy ticker-pool expansion is not needed for this SEC sleeve test.",
+  "windows": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  }
+}

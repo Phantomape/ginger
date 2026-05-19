@@ -618,9 +618,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260512_106_signal_day_sector_tape_risk.py",
             "data/experiments/exp-20260512-106/signal_day_sector_tape_risk.json",
-            "docs/experiments/logs/exp-20260512-106.json",
-            "docs/experiments/tickets/exp-20260512-106.json",
-            "docs/experiments/artifacts/exp-20260512-106_signal_day_sector_tape_risk.md",
+            "experiments/logs/exp-20260512-106.json",
+            "experiments/tickets/exp-20260512-106.json",
+            "experiments/artifacts/exp-20260512-106_signal_day_sector_tape_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -629,9 +629,9 @@ def run() -> dict[str, Any]:
 
 def persist(payload: dict[str, Any]) -> None:
     artifact_path = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{EXPERIMENT_SLUG}.json"
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
-    md_path = REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    md_path = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
     ticket = {
         "experiment_id": EXPERIMENT_ID,
         "status": payload["status"],

@@ -590,8 +590,8 @@ def append_experiment_log(payload: dict) -> None:
         ],
         "related_files": payload["related_files"] + [
             "data/experiments/exp-20260503-006/filing_shadow_universe_scout.json",
-            "docs/experiments/logs/exp-20260503-006.json",
-            "docs/experiments/tickets/exp-20260503-006.json",
+            "experiments/logs/exp-20260503-006.json",
+            "experiments/tickets/exp-20260503-006.json",
         ],
     }
     EXPERIMENT_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)

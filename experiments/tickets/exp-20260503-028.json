@@ -1,0 +1,60 @@
+{
+  "experiment_id": "exp-20260503-028",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "Short interest / borrow pressure may improve breakout_long or event-confirmed candidate priority as a squeeze overlay, but prior audits already found no PIT-safe short/borrow rows; this run only checks whether new PIT-safe evidence exists after exp-20260503-023.",
+  "change_type": "non_ohlcv_data_audit_recheck",
+  "single_causal_variable": "new PIT-safe short-interest or borrow-pressure evidence since exp-20260503-023",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260503-028.json",
+    "experiments/logs/exp-20260503-028.json",
+    "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_exp-20260503-028_20260503.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "core universe",
+    "trade-enabled tickers",
+    "entry filters",
+    "candidate ordering",
+    "risk sizing",
+    "exits",
+    "LLM/news gates"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "data-audit recheck only: report whether new PIT short/borrow evidence exists; no production promotion",
+  "created_at": "2026-05-03T12:03:48+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T12:05:48+00:00",
+  "result": {
+    "decision": "data_gap",
+    "expected_value_score_delta": 0.0,
+    "log_file": "experiments/logs/exp-20260503-028.json",
+    "audit_report": "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_exp-20260503-028_20260503.md",
+    "reason": "No new PIT-safe short-interest, FINRA short-volume, or borrow-pressure data exists after exp-20260503-023; shadow tagging remains blocked.",
+    "production_impact": "data_audit_only"
+  }
+}

@@ -842,19 +842,18 @@ def run() -> dict[str, Any]:
         "related_files": [
             f"quant/experiments/{Path(__file__).name}",
             f"data/experiments/{EXPERIMENT_ID}/{EXPERIMENT_SLUG}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
             "docs/experiment_log.jsonl",
         ],
     }
 
     data_path = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{EXPERIMENT_SLUG}.json"
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     artifact_path = (
         REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

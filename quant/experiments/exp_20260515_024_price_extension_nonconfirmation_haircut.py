@@ -427,21 +427,18 @@ def run() -> dict[str, Any]:
     )
     log_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "logs"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.json"
     )
     ticket_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "tickets"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.json"
     )
     md_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

@@ -540,9 +540,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260513_113_high_exec_rr_core_risk.py",
             "data/experiments/exp-20260513-113/high_exec_rr_core_risk.json",
-            "docs/experiments/logs/exp-20260513-113.json",
-            "docs/experiments/tickets/exp-20260513-113.json",
-            "docs/experiments/artifacts/exp-20260513-113_high_exec_rr_core_risk.md",
+            "experiments/logs/exp-20260513-113.json",
+            "experiments/tickets/exp-20260513-113.json",
+            "experiments/artifacts/exp-20260513-113_high_exec_rr_core_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

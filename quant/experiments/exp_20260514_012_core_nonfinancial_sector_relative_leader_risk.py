@@ -582,9 +582,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_012_core_nonfinancial_sector_relative_leader_risk.py",
             "data/experiments/exp-20260514-012/core_nonfinancial_sector_relative_leader_risk.json",
-            "docs/experiments/logs/exp-20260514-012.json",
-            "docs/experiments/tickets/exp-20260514-012.json",
-            "docs/experiments/artifacts/exp-20260514-012_core_nonfinancial_sector_relative_leader_risk.md",
+            "experiments/logs/exp-20260514-012.json",
+            "experiments/tickets/exp-20260514-012.json",
+            "experiments/artifacts/exp-20260514-012_core_nonfinancial_sector_relative_leader_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

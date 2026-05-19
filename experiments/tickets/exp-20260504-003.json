@@ -1,0 +1,53 @@
+{
+  "experiment_id": "exp-20260504-003",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "loss-attribution",
+  "hypothesis": "Form 4 insider buying may eventually confirm or seed candidates, but prior overlay joins were sparse and the default-off queue is already live; this run only checks for new closed forward evidence before any replay or production change.",
+  "change_type": "non_ohlcv_duplicate_guardrail",
+  "single_causal_variable": "new closed Form 4 forward queue evidence since exp-20260504-001",
+  "baseline_result_file": "data/backtest_results_20260503.json",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260504-003.json",
+    "experiments/logs/exp-20260504-003.json",
+    "docs/non_ohlcv_data_audit/form4_duplicate_guardrail_20260504.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "OHLCV thresholds",
+    "Form 4 queue promotion"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data-audit duplicate guardrail only: accept as observed_only if no production strategy path changes and prior Form 4 queue evidence is summarized with current data availability.",
+  "created_at": "2026-05-04T00:28:49+00:00",
+  "claimed_at": "2026-05-04T00:28:49+00:00",
+  "completed_at": "2026-05-04T00:30:49Z",
+  "decision": "shadow_only_no_new_forward_evidence",
+  "result": {
+    "decision": "shadow_only_no_new_forward_evidence",
+    "expected_value_score_delta": 0.0,
+    "log_file": "experiments/logs/exp-20260504-003.json",
+    "audit_report": "docs/non_ohlcv_data_audit/form4_duplicate_guardrail_20260504.md",
+    "reason": "Prior Form 4 overlay joins were sparse and the default-off queue has no new closed forward outcomes."
+  }
+}

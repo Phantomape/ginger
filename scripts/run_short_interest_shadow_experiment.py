@@ -839,7 +839,7 @@ def main() -> None:
         / "non_ohlcv_data_audit"
         / f"short_interest_borrow_pressure_{experiment_id}_20260505.md"
     )
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{experiment_id}.json"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{experiment_id}.json"
     related_files = {
         "artifact": repo_rel(artifact_path),
         "audit": repo_rel(audit_path),
@@ -973,7 +973,7 @@ def main() -> None:
     upsert_jsonl(REPO_ROOT / "docs" / "experiment_log.jsonl", log_row)
     write_audit_markdown(audit_path, payload)
     update_ticket(
-        REPO_ROOT / "docs" / "experiments" / "tickets" / f"{experiment_id}.json",
+        REPO_ROOT / "experiments" / "tickets" / f"{experiment_id}.json",
         payload,
     )
     update_registry(

@@ -30,8 +30,8 @@ EXPERIMENT_ID = "exp-20260502-003"
 SOURCE_EXPERIMENT_ID = "exp-20260501-008"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "ai_infra_event_guarded_pool.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 PLAYBOOK = REPO_ROOT / "docs" / "alpha-optimization-playbook.md"
 
@@ -414,8 +414,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260502_003_ai_infra_event_guarded_pool.py",
             "data/experiments/exp-20260502-003/ai_infra_event_guarded_pool.json",
-            "docs/experiments/logs/exp-20260502-003.json",
-            "docs/experiments/tickets/exp-20260502-003.json",
+            "experiments/logs/exp-20260502-003.json",
+            "experiments/tickets/exp-20260502-003.json",
         ],
     }
 

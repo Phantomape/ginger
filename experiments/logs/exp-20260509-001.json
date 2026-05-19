@@ -1,0 +1,1452 @@
+{
+  "aggregate": {
+    "ev_windows_improved": 1,
+    "ev_windows_regressed": 2,
+    "expected_value_score_after_sum": 5.4899,
+    "expected_value_score_before_sum": 6.0452,
+    "expected_value_score_delta_pct": -0.091858,
+    "expected_value_score_delta_sum": -0.5553,
+    "max_drawdown_delta_max": 0.0,
+    "max_sharpe_daily_delta": 0.19,
+    "pnl_windows_improved": 1,
+    "pnl_windows_regressed": 2,
+    "shadow_entered_sum": 11,
+    "shadow_injected_sum": 33,
+    "total_pnl_after_sum": 154656.51,
+    "total_pnl_before_sum": 177676.93,
+    "total_pnl_delta_pct": -0.129563,
+    "total_pnl_delta_sum": -23020.42,
+    "trade_count_delta_sum": 10,
+    "win_rate_delta_min": -0.1228
+  },
+  "alpha_category": "entry / allocation",
+  "change_type": "entry_source_replay",
+  "classification": "alpha_search",
+  "decision": "rejected",
+  "experiment_id": "exp-20260509-001",
+  "experiment_log_jsonl_note": "Canonical record is experiments/logs because docs/experiment_log.jsonl had pre-existing unstaged changes.",
+  "gate4": {
+    "basis": "Requires >10% EV, >0.1 Sharpe, >1pp drawdown reduction, >5% PnL, or more trades without lower win rate, with majority-window EV improvement.",
+    "passed": false
+  },
+  "gate_2_data_fields": {
+    "atr": "feature_layer.compute_trend_features",
+    "momentum_20d_pct": "feature_layer.compute_trend_features",
+    "pct_from_52w_high": "feature_layer.compute_trend_features",
+    "price_vs_200ma_pct": "feature_layer.compute_trend_features",
+    "signal_date": "patched from the last OHLCV row during replay only",
+    "volume_spike_ratio": "feature_layer.compute_trend_features"
+  },
+  "historical_checks": {
+    "avoids_recent_no_repeat_zones": "No LLM prompt change, no broad universe expansion, no add-on trigger/cap retune, no global MAX_POSITIONS/sixth-slot retry, no staged-entry fraction retry.",
+    "blocked_llm_soft_ranking": "Not tested; recent LLM archives had zero effective candidate coverage.",
+    "exp_20260507_005_state_aware_shadow_surface": "Observed positive non-overlap/replacement forward marks; this run performs the required executable replay."
+  },
+  "hypothesis": "A state-aware shadow leadership surface may become executable alpha if used only on baseline pressure dates and only within the current core universe, where it can compete for scarce entry slots without broad ticker expansion.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "used_llm": false,
+    "why_no_llm": "LLM soft-ranking remains data-limited, so this tests deterministic entry alpha instead."
+  },
+  "mechanism_read": "The state-aware surface is not enough as an executable pressure-date entry source. It injected candidates from existing core tickers, but any apparent added coverage must beat the live slot/heat path, not just show positive forward returns in a shadow audit.",
+  "next_time_do_not_repeat": "Do not retry this pressure-date state-shadow entry source or nearby hard thresholds on the same snapshots unless candidate-level replacement evidence changes or the surface is tied to a new orthogonal event/news feature.",
+  "parameters": {
+    "hard_candidate_requirements": {
+      "above_200ma": true,
+      "atr_over_close_lte": 0.07,
+      "not_already_core_signal_same_day": true,
+      "pct_from_52w_high_gte": -0.08,
+      "ret20_gt_spy_ret20": true,
+      "volume_spike_ratio_gte": 0.7
+    },
+    "injection_scope": "baseline pressure dates with slot_sliced or no_shares counts",
+    "score_weights": {
+      "balanced": "0.35 ret20 excess + 0.30 trend_score + 0.20 near_high + 0.15 volume",
+      "broad_rotation": "0.45 ret20 excess + 0.25 near_high + 0.20 volume + 0.10 trend_score",
+      "narrow_cap_weight": "0.40 ret20 excess + 0.30 near_high + 0.20 trend_score + 0.10 volume"
+    },
+    "shadow_strategy": "state_shadow_long",
+    "universe": "data_layer.get_universe() only; no added tickers"
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted later, move state scoring and pressure-date injection into a shared policy called by both run.py and backtester.py before orders can change.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "strategy_behavior_changed_in_repo": false
+  },
+  "rejection_reason": "Pressure-date state-shadow entries did not clear the three-window EV-first Gate 4 bar.",
+  "run_at_utc": "2026-05-09T00:22:36.385276+00:00",
+  "single_causal_variable": "pressure-date state-shadow entry source",
+  "windows": {
+    "late_strong": {
+      "after_metrics": {
+        "converged": true,
+        "expected_value_score": 3.4715,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.56,
+        "signals_generated": 61,
+        "signals_survived": 46,
+        "survival_rate": 0.7541,
+        "total_pnl": 76125.54,
+        "total_return_pct": 0.7613,
+        "trade_count": 21,
+        "win_rate": 0.6667
+      },
+      "before_metrics": {
+        "converged": true,
+        "expected_value_score": 4.0674,
+        "max_drawdown_pct": 0.0539,
+        "sharpe_daily": 4.48,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 90788.88,
+        "total_return_pct": 0.9079,
+        "trade_count": 19,
+        "win_rate": 0.7895
+      },
+      "by_strategy_after": {
+        "breakout_long": {
+          "avg_R": 1.7,
+          "avg_pnl_pct_net": 0.0601,
+          "losses": 3,
+          "profit_factor": 8.594,
+          "total_pnl_usd": 49985.53,
+          "trade_count": 13,
+          "win_rate": 0.7692,
+          "wins": 10
+        },
+        "state_shadow_long": {
+          "avg_R": -1.079,
+          "avg_pnl_pct_net": -0.0607,
+          "losses": 2,
+          "profit_factor": 0.0,
+          "total_pnl_usd": -670.22,
+          "trade_count": 2,
+          "win_rate": 0.0,
+          "wins": 0
+        },
+        "trend_long": {
+          "avg_R": 1.914,
+          "avg_pnl_pct_net": 0.0763,
+          "losses": 2,
+          "profit_factor": 5.699,
+          "total_pnl_usd": 26810.23,
+          "trade_count": 6,
+          "win_rate": 0.6667,
+          "wins": 4
+        }
+      },
+      "delta": {
+        "expected_value_score": -0.5959,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.08,
+        "signals_generated": 10,
+        "signals_survived": 5,
+        "survival_rate": -0.0498,
+        "total_pnl": -14663.34,
+        "total_return_pct": -0.1466,
+        "trade_count": 2,
+        "win_rate": -0.1228
+      },
+      "entry_reason_counts_after": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 21,
+        "gap_cancel": 5,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 1,
+        "slot_sliced": 4
+      },
+      "entry_reason_counts_before": {
+        "adverse_gap_down_cancel": 5,
+        "entered": 19,
+        "gap_cancel": 4,
+        "no_future_fill": 1,
+        "no_shares": 9,
+        "slot_sliced": 3
+      },
+      "pressure_date_count": 10,
+      "shadow_decisions": {
+        "decision_counts": {
+          "entered": 2,
+          "slot_sliced": 1
+        },
+        "entered_count": 2,
+        "sample_events": [
+          {
+            "available_slots_at_entry_loop": 5,
+            "candidate_rank": 2,
+            "date": "2025-10-29",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-10-30",
+              "fill_price": 225.9138,
+              "shares": 15
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 226.44,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.184,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 15
+              },
+              "stop_price": 212.46,
+              "target_mult_used": 4.5,
+              "target_price": 268.38,
+              "trade_quality_score": 0.811
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "MU"
+          },
+          {
+            "available_slots_at_entry_loop": 2,
+            "candidate_rank": 3,
+            "date": "2026-01-06",
+            "decision": "slot_sliced",
+            "details": {
+              "signal_count": 3
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.93,
+              "entry_price": 73.71,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.118,
+              "sector": "Commodities",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 440
+              },
+              "stop_price": 69.0,
+              "target_mult_used": 4.5,
+              "target_price": 87.83,
+              "trade_quality_score": 0.868
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "SLV"
+          },
+          {
+            "available_slots_at_entry_loop": 3,
+            "candidate_rank": 2,
+            "date": "2026-02-12",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2026-02-13",
+              "fill_price": 763.5464,
+              "shares": 8
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.91,
+              "entry_price": 756.85,
+              "regime_exit_bucket": "balanced",
+              "regime_exit_score": 0.03,
+              "sector": "Industrials",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 8
+              },
+              "stop_price": 719.87,
+              "target_mult_used": 4.12,
+              "target_price": 858.42,
+              "trade_quality_score": 0.821
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "CAT"
+          }
+        ]
+      },
+      "shadow_patch_stats": {
+        "injected_by_surface": {
+          "balanced_leadership_pressure": 4,
+          "rotation_leadership_pressure": 6
+        },
+        "injected_by_ticker": {
+          "CAT": 1,
+          "CVX": 1,
+          "MU": 2,
+          "SLV": 5,
+          "XOM": 1
+        },
+        "injected_rows": [
+          {
+            "confidence_score": 0.92,
+            "date": "2025-10-29",
+            "score": 0.949968,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "MU"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2025-12-10",
+            "score": 1.644883,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-12-11",
+            "score": 1.438171,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2026-01-06",
+            "score": 1.973551,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2026-01-16",
+            "score": 1.927094,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "MU"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2026-01-21",
+            "score": 1.290115,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2026-01-29",
+            "score": 1.153962,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2026-02-04",
+            "score": 1.183887,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "XOM"
+          },
+          {
+            "confidence_score": 0.91,
+            "date": "2026-02-12",
+            "score": 0.355007,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "CAT"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2026-02-19",
+            "score": 0.74334,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "CVX"
+          }
+        ],
+        "injected_signals": 10,
+        "pressure_dates": 10,
+        "pressure_dates_seen": 10,
+        "skipped_pressure_no_candidate": 0
+      },
+      "window": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23",
+        "state_note": "slow-melt bull / accepted-stack dominant tape"
+      }
+    },
+    "mid_weak": {
+      "after_metrics": {
+        "converged": true,
+        "expected_value_score": 1.9046,
+        "max_drawdown_pct": 0.0842,
+        "sharpe_daily": 2.91,
+        "signals_generated": 63,
+        "signals_survived": 50,
+        "survival_rate": 0.7937,
+        "total_pnl": 65448.35,
+        "total_return_pct": 0.6545,
+        "trade_count": 25,
+        "win_rate": 0.52
+      },
+      "before_metrics": {
+        "converged": true,
+        "expected_value_score": 1.6195,
+        "max_drawdown_pct": 0.0879,
+        "sharpe_daily": 2.72,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 59540.63,
+        "total_return_pct": 0.5954,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "by_strategy_after": {
+        "breakout_long": {
+          "avg_R": 0.667,
+          "avg_pnl_pct_net": 0.0123,
+          "losses": 4,
+          "profit_factor": 1.5,
+          "total_pnl_usd": 18472.85,
+          "trade_count": 7,
+          "win_rate": 0.4286,
+          "wins": 3
+        },
+        "state_shadow_long": {
+          "avg_R": 0.097,
+          "avg_pnl_pct_net": 0.0147,
+          "losses": 2,
+          "profit_factor": 2.108,
+          "total_pnl_usd": 5228.96,
+          "trade_count": 4,
+          "win_rate": 0.5,
+          "wins": 2
+        },
+        "trend_long": {
+          "avg_R": 1.144,
+          "avg_pnl_pct_net": 0.0747,
+          "losses": 6,
+          "profit_factor": 4.797,
+          "total_pnl_usd": 41746.54,
+          "trade_count": 14,
+          "win_rate": 0.5714,
+          "wins": 8
+        }
+      },
+      "delta": {
+        "expected_value_score": 0.2851,
+        "max_drawdown_pct": -0.0037,
+        "sharpe_daily": 0.19,
+        "signals_generated": 10,
+        "signals_survived": 8,
+        "survival_rate": 0.0012,
+        "total_pnl": 5907.72,
+        "total_return_pct": 0.0591,
+        "trade_count": 4,
+        "win_rate": -0.0038
+      },
+      "entry_reason_counts_after": {
+        "adverse_gap_down_cancel": 2,
+        "entered": 25,
+        "gap_cancel": 7,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      },
+      "entry_reason_counts_before": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 21,
+        "gap_cancel": 4,
+        "no_shares": 11,
+        "scarce_slot_breakout_deferred": 4,
+        "slot_sliced": 1
+      },
+      "pressure_date_count": 11,
+      "shadow_decisions": {
+        "decision_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 4,
+          "gap_cancel": 3
+        },
+        "entered_count": 4,
+        "sample_events": [
+          {
+            "available_slots_at_entry_loop": 4,
+            "candidate_rank": 2,
+            "date": "2025-05-15",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-05-16",
+              "fill_price": 227.8639,
+              "shares": 188
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 228.17,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.0791,
+              "sector": "Industrials",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 188
+              },
+              "stop_price": 219.51,
+              "target_mult_used": 4.5,
+              "target_price": 254.16,
+              "trade_quality_score": 0.852
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "GE"
+          },
+          {
+            "available_slots_at_entry_loop": 2,
+            "candidate_rank": 2,
+            "date": "2025-06-13",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-06-16",
+              "fill_price": 314.8,
+              "shares": 167
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 316.29,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.054,
+              "sector": "Commodities",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 167
+              },
+              "stop_price": 309.27,
+              "target_mult_used": 4.42,
+              "target_price": 336.99,
+              "trade_quality_score": 0.789
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "GLD"
+          },
+          {
+            "available_slots_at_entry_loop": 4,
+            "candidate_rank": 2,
+            "date": "2025-07-23",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-07-24",
+              "fill_price": 424.0154,
+              "shares": 23
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.93,
+              "entry_price": 424.56,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1071,
+              "sector": "Industrials",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 23
+              },
+              "stop_price": 413.25,
+              "target_mult_used": 4.5,
+              "target_price": 458.5,
+              "trade_quality_score": 0.796
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "CAT"
+          },
+          {
+            "available_slots_at_entry_loop": 2,
+            "candidate_rank": 2,
+            "date": "2025-09-22",
+            "decision": "gap_cancel",
+            "details": {
+              "adverse_gap_cancel_pct": 0.02,
+              "cancel_gap_pct": 0.015,
+              "fill_date": "2025-09-23",
+              "fill_price": 280.8483,
+              "signal_entry": 271.13
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 271.13,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.154,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 245
+              },
+              "stop_price": 261.22,
+              "target_mult_used": 4.5,
+              "target_price": 300.87,
+              "trade_quality_score": 0.854
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "TSM"
+          },
+          {
+            "available_slots_at_entry_loop": 3,
+            "candidate_rank": 1,
+            "date": "2025-10-01",
+            "decision": "gap_cancel",
+            "details": {
+              "adverse_gap_cancel_pct": 0.02,
+              "cancel_gap_pct": 0.015,
+              "fill_date": "2025-10-02",
+              "fill_price": 184.692,
+              "signal_entry": 181.89
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.93,
+              "entry_price": 181.89,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1433,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 265
+              },
+              "stop_price": 171.7,
+              "target_mult_used": 4.5,
+              "target_price": 212.47,
+              "trade_quality_score": 0.87
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "MU"
+          },
+          {
+            "available_slots_at_entry_loop": 3,
+            "candidate_rank": 2,
+            "date": "2025-10-14",
+            "decision": "gap_cancel",
+            "details": {
+              "adverse_gap_cancel_pct": 0.02,
+              "cancel_gap_pct": 0.015,
+              "fill_date": "2025-10-15",
+              "fill_price": 47.75,
+              "signal_entry": 46.8
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.93,
+              "entry_price": 46.8,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1135,
+              "sector": "Commodities",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 1434
+              },
+              "stop_price": 44.96,
+              "target_mult_used": 4.5,
+              "target_price": 52.33,
+              "trade_quality_score": 0.804
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "SLV"
+          },
+          {
+            "available_slots_at_entry_loop": 5,
+            "candidate_rank": 2,
+            "date": "2025-10-20",
+            "decision": "adverse_gap_down_cancel",
+            "details": {
+              "adverse_gap_cancel_pct": 0.02,
+              "cancel_gap_pct": 0.015,
+              "fill_date": "2025-10-21",
+              "fill_price": 386.54,
+              "signal_entry": 403.15
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 403.15,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1345,
+              "sector": "Commodities",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 204
+              },
+              "stop_price": 393.17,
+              "target_mult_used": 4.5,
+              "target_price": 433.1,
+              "trade_quality_score": 0.884
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "GLD"
+          },
+          {
+            "available_slots_at_entry_loop": 5,
+            "candidate_rank": 2,
+            "date": "2025-10-21",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-10-22",
+              "fill_price": 76.31,
+              "shares": 1057
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 77.38,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1355,
+              "sector": "Commodities",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 1057
+              },
+              "stop_price": 74.92,
+              "target_mult_used": 4.5,
+              "target_price": 84.77,
+              "trade_quality_score": 0.815
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "IAU"
+          }
+        ]
+      },
+      "shadow_patch_stats": {
+        "injected_by_surface": {
+          "balanced_leadership_pressure": 9,
+          "cap_weight_leadership_pressure": 1,
+          "rotation_leadership_pressure": 1
+        },
+        "injected_by_ticker": {
+          "CAT": 2,
+          "GE": 1,
+          "GLD": 2,
+          "IAU": 1,
+          "MU": 1,
+          "PLTR": 1,
+          "SLV": 2,
+          "TSM": 1
+        },
+        "injected_rows": [
+          {
+            "confidence_score": 0.92,
+            "date": "2025-05-15",
+            "score": 0.935353,
+            "surface": "cap_weight_leadership_pressure",
+            "ticker": "GE"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-06-13",
+            "score": 1.099433,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "GLD"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2025-07-23",
+            "score": 1.655284,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "CAT"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-07-31",
+            "score": 0.695066,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "CAT"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2025-08-06",
+            "score": 2.085264,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "PLTR"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-09-22",
+            "score": 0.755,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "TSM"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2025-10-01",
+            "score": 1.750065,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "MU"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-10-08",
+            "score": 0.902549,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2025-10-14",
+            "score": 1.503575,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "SLV"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-10-20",
+            "score": 1.043434,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "GLD"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-10-21",
+            "score": 0.980386,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "IAU"
+          }
+        ],
+        "injected_signals": 11,
+        "pressure_dates": 11,
+        "pressure_dates_seen": 11,
+        "skipped_pressure_no_candidate": 0
+      },
+      "window": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23",
+        "state_note": "rotation-heavy bull where strategy profits but can lag indexes"
+      }
+    },
+    "old_thin": {
+      "after_metrics": {
+        "converged": false,
+        "expected_value_score": 0.1138,
+        "max_drawdown_pct": 0.0888,
+        "sharpe_daily": 0.87,
+        "signals_generated": 73,
+        "signals_survived": 67,
+        "survival_rate": 0.9178,
+        "total_pnl": 13082.62,
+        "total_return_pct": 0.1308,
+        "trade_count": 26,
+        "win_rate": 0.3462
+      },
+      "before_metrics": {
+        "converged": true,
+        "expected_value_score": 0.3583,
+        "max_drawdown_pct": 0.0903,
+        "sharpe_daily": 1.31,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "total_pnl": 27347.42,
+        "total_return_pct": 0.2735,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      },
+      "by_strategy_after": {
+        "breakout_long": {
+          "avg_R": -0.169,
+          "avg_pnl_pct_net": -0.0026,
+          "losses": 2,
+          "profit_factor": 0.901,
+          "total_pnl_usd": 2719.27,
+          "trade_count": 3,
+          "win_rate": 0.3333,
+          "wins": 1
+        },
+        "state_shadow_long": {
+          "avg_R": -0.57,
+          "avg_pnl_pct_net": -0.0348,
+          "losses": 4,
+          "profit_factor": 0.343,
+          "total_pnl_usd": -4247.61,
+          "trade_count": 5,
+          "win_rate": 0.2,
+          "wins": 1
+        },
+        "trend_long": {
+          "avg_R": 0.276,
+          "avg_pnl_pct_net": 0.0178,
+          "losses": 11,
+          "profit_factor": 1.661,
+          "total_pnl_usd": 14610.96,
+          "trade_count": 18,
+          "win_rate": 0.3889,
+          "wins": 7
+        }
+      },
+      "delta": {
+        "expected_value_score": -0.2445,
+        "max_drawdown_pct": -0.0015,
+        "sharpe_daily": -0.44,
+        "signals_generated": 13,
+        "signals_survived": 12,
+        "survival_rate": 0.0011,
+        "total_pnl": -14264.8,
+        "total_return_pct": -0.1427,
+        "trade_count": 4,
+        "win_rate": -0.0629
+      },
+      "entry_reason_counts_after": {
+        "adverse_gap_down_cancel": 2,
+        "entered": 26,
+        "gap_cancel": 4,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 18
+      },
+      "entry_reason_counts_before": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 10,
+        "scarce_slot_breakout_deferred": 8,
+        "slot_sliced": 9
+      },
+      "pressure_date_count": 12,
+      "shadow_decisions": {
+        "decision_counts": {
+          "adverse_gap_down_cancel": 1,
+          "entered": 5,
+          "slot_sliced": 5
+        },
+        "entered_count": 5,
+        "sample_events": [
+          {
+            "available_slots_at_entry_loop": 1,
+            "candidate_rank": 1,
+            "date": "2024-10-29",
+            "decision": "adverse_gap_down_cancel",
+            "details": {
+              "adverse_gap_cancel_pct": 0.02,
+              "cancel_gap_pct": 0.015,
+              "fill_date": "2024-10-30",
+              "fill_price": 40.7,
+              "signal_entry": 41.7
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 41.7,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1021,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 78
+              },
+              "stop_price": 38.93,
+              "target_mult_used": 4.5,
+              "target_price": 50.01,
+              "trade_quality_score": 0.795
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "CRDO"
+          },
+          {
+            "available_slots_at_entry_loop": 1,
+            "candidate_rank": 7,
+            "date": "2024-11-06",
+            "decision": "slot_sliced",
+            "details": {
+              "signal_count": 7
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 44.35,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1197,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 70
+              },
+              "stop_price": 41.18,
+              "target_mult_used": 4.5,
+              "target_price": 53.86,
+              "trade_quality_score": 0.827
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "CRDO"
+          },
+          {
+            "available_slots_at_entry_loop": 2,
+            "candidate_rank": 3,
+            "date": "2024-11-21",
+            "decision": "slot_sliced",
+            "details": {
+              "signal_count": 4
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 318.24,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.0905,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 9
+              },
+              "stop_price": 292.06,
+              "target_mult_used": 4.5,
+              "target_price": 396.79,
+              "trade_quality_score": 0.791
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "APP"
+          },
+          {
+            "available_slots_at_entry_loop": 1,
+            "candidate_rank": 3,
+            "date": "2024-11-25",
+            "decision": "slot_sliced",
+            "details": {
+              "signal_count": 3
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 481.38,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.0949,
+              "sector": "Communication Services",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 89
+              },
+              "stop_price": 461.14,
+              "target_mult_used": 4.5,
+              "target_price": 542.09,
+              "trade_quality_score": 0.918
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "SPOT"
+          },
+          {
+            "available_slots_at_entry_loop": 3,
+            "candidate_rank": 2,
+            "date": "2024-12-04",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2024-12-05",
+              "fill_price": 373.7,
+              "shares": 9
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 373.7,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.137,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 9
+              },
+              "stop_price": 344.84,
+              "target_mult_used": 4.5,
+              "target_price": 460.28,
+              "trade_quality_score": 0.79
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "APP"
+          },
+          {
+            "available_slots_at_entry_loop": 4,
+            "candidate_rank": 2,
+            "date": "2024-12-20",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2024-12-23",
+              "fill_price": 80.65,
+              "shares": 298
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.93,
+              "entry_price": 80.55,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.0797,
+              "sector": "Technology",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 298
+              },
+              "stop_price": 73.53,
+              "target_mult_used": 4.5,
+              "target_price": 101.6,
+              "trade_quality_score": 0.855
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "PLTR"
+          },
+          {
+            "available_slots_at_entry_loop": 5,
+            "candidate_rank": 4,
+            "date": "2025-01-15",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-01-16",
+              "fill_price": 180.3878,
+              "shares": 38
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 179.01,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.0798,
+              "sector": "Industrials",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 38
+              },
+              "stop_price": 173.3,
+              "target_mult_used": 4.5,
+              "target_price": 196.15,
+              "trade_quality_score": 0.822
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "GE"
+          },
+          {
+            "available_slots_at_entry_loop": 2,
+            "candidate_rank": 2,
+            "date": "2025-01-23",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-01-24",
+              "fill_price": 466.6917,
+              "shares": 115
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 466.95,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.122,
+              "sector": "Industrials",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 115
+              },
+              "stop_price": 451.41,
+              "target_mult_used": 4.5,
+              "target_price": 513.56,
+              "trade_quality_score": 0.876
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "DE"
+          },
+          {
+            "available_slots_at_entry_loop": 1,
+            "candidate_rank": 2,
+            "date": "2025-01-28",
+            "decision": "slot_sliced",
+            "details": {
+              "signal_count": 2
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 530.8,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.1039,
+              "sector": "Communication Services",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                  "spy_relative_leader_risk_on_multiplier_applied": 2.0
+                },
+                "risk_pct": 0.02,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 74
+              },
+              "stop_price": 505.07,
+              "target_mult_used": 4.5,
+              "target_price": 607.99,
+              "trade_quality_score": 0.858
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "SPOT"
+          },
+          {
+            "available_slots_at_entry_loop": 1,
+            "candidate_rank": 4,
+            "date": "2025-01-30",
+            "decision": "slot_sliced",
+            "details": {
+              "signal_count": 5
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.92,
+              "entry_price": 550.13,
+              "regime_exit_bucket": "risk_on",
+              "regime_exit_score": 0.094,
+              "sector": "Communication Services",
+              "sizing": {
+                "base_risk_pct": 0.01,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.0025,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 9
+              },
+              "stop_price": 524.3,
+              "target_mult_used": 4.5,
+              "target_price": 627.63,
+              "trade_quality_score": 0.838
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "SPOT"
+          },
+          {
+            "available_slots_at_entry_loop": 5,
+            "candidate_rank": 2,
+            "date": "2025-03-07",
+            "decision": "entered",
+            "details": {
+              "fill_date": "2025-03-10",
+              "fill_price": 489.4725,
+              "shares": 8
+            },
+            "signal_snapshot": {
+              "confidence_score": 0.93,
+              "entry_price": 491.44,
+              "regime_exit_bucket": "defensive",
+              "regime_exit_score": -0.0208,
+              "sector": "Industrials",
+              "sizing": {
+                "base_risk_pct": 0.0075,
+                "risk_multipliers": {
+                  "tqs_risk_multiplier_applied": 0.25
+                },
+                "risk_pct": 0.001875,
+                "risk_pct_after": null,
+                "risk_pct_before": null,
+                "shares_to_buy": 8
+              },
+              "stop_price": 470.84,
+              "target_mult_used": 3.49,
+              "target_price": 539.37,
+              "trade_quality_score": 0.711
+            },
+            "strategy": "state_shadow_long",
+            "ticker": "DE"
+          }
+        ]
+      },
+      "shadow_patch_stats": {
+        "injected_by_surface": {
+          "balanced_leadership_pressure": 6,
+          "cap_weight_leadership_pressure": 1,
+          "rotation_leadership_pressure": 5
+        },
+        "injected_by_ticker": {
+          "APP": 2,
+          "CRDO": 3,
+          "DE": 2,
+          "GE": 1,
+          "PLTR": 1,
+          "SPOT": 3
+        },
+        "injected_rows": [
+          {
+            "confidence_score": 0.92,
+            "date": "2024-10-29",
+            "score": 1.399842,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "CRDO"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2024-11-06",
+            "score": 1.164313,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "CRDO"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2024-11-07",
+            "score": 1.455288,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "CRDO"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2024-11-21",
+            "score": 1.262948,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "APP"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2024-11-25",
+            "score": 1.308478,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "SPOT"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2024-12-04",
+            "score": 1.109849,
+            "surface": "rotation_leadership_pressure",
+            "ticker": "APP"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2024-12-20",
+            "score": 1.901463,
+            "surface": "cap_weight_leadership_pressure",
+            "ticker": "PLTR"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-01-15",
+            "score": 1.294786,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "GE"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-01-23",
+            "score": 0.818697,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "DE"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-01-28",
+            "score": 1.338058,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "SPOT"
+          },
+          {
+            "confidence_score": 0.92,
+            "date": "2025-01-30",
+            "score": 1.356313,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "SPOT"
+          },
+          {
+            "confidence_score": 0.93,
+            "date": "2025-03-07",
+            "score": 1.710686,
+            "surface": "balanced_leadership_pressure",
+            "ticker": "DE"
+          }
+        ],
+        "injected_signals": 12,
+        "pressure_dates": 12,
+        "pressure_dates_seen": 12,
+        "skipped_pressure_no_candidate": 0
+      },
+      "window": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02",
+        "state_note": "mixed-to-weak older tape with lower win rate"
+      }
+    }
+  }
+}

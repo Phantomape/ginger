@@ -28,7 +28,7 @@ TEXT_PATH = NON_ROOT / "sec_filing_text_20260511.jsonl"
 FEATURES_PATH = NON_ROOT / "sec_filing_features_20260511.jsonl"
 EARNINGS_PATH = REPO_ROOT / "data" / "earnings_snapshot_20260511.json"
 QUANT_SIGNALS_PATH = REPO_ROOT / "data" / "quant_signals_20260511.json"
-PRIOR_LOG_PATH = REPO_ROOT / "docs" / "experiments" / "logs" / "exp-20260511-001.json"
+PRIOR_LOG_PATH = REPO_ROOT / "experiments" / "logs" / "exp-20260511-001.json"
 
 SHADOW_PATH = NON_ROOT / f"sec_earnings_filing_shock_shadow_events_{EXP_ID}.json"
 AUDIT_JSON_PATH = (
@@ -44,8 +44,8 @@ AUDIT_MD_PATH = (
     / "non_ohlcv_data_audit"
     / f"sec_earnings_filing_shock_delta_{EXP_ID}_{RUN_DATE_KEY}.md"
 )
-TICKET_PATH = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
-LOG_PATH = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_PATH = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_PATH = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
 EXPERIMENT_LOG_PATH = REPO_ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_PATH = REPO_ROOT / "docs" / "experiment_registry.json"
 
@@ -603,7 +603,7 @@ def main() -> int:
         "overlap_with_existing_signals": prior.get("shadow_metrics", {}).get("overlap_with_existing_signals"),
         "scarce_slot_opportunity_cost": prior.get("shadow_metrics", {}).get("scarce_slot_opportunity_cost"),
         "tagged_candidate_forward_returns": prior.get("shadow_metrics", {}).get("tagged_candidate_forward_returns"),
-        "source": "docs/experiments/logs/exp-20260511-001.json",
+        "source": "experiments/logs/exp-20260511-001.json",
         "freshness_note": (
             "Carried forward only; 2026-05-11 SEC refresh is post-canonical-window "
             "and not candidate-linked."

@@ -31,8 +31,8 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260502-011"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "old_thin_slot_routing_alpha.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 
 WINDOWS = OrderedDict([
     ("late_strong", {
@@ -801,8 +801,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260502_011_old_thin_slot_routing_alpha.py",
             "data/experiments/exp-20260502-011/old_thin_slot_routing_alpha.json",
-            "docs/experiments/logs/exp-20260502-011.json",
-            "docs/experiments/tickets/exp-20260502-011.json",
+            "experiments/logs/exp-20260502-011.json",
+            "experiments/tickets/exp-20260502-011.json",
         ],
         "experiment_log_jsonl_note": (
             "Not appended in this run because docs/experiment_log.jsonl already has "

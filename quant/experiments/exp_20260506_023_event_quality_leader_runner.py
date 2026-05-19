@@ -604,11 +604,10 @@ def main() -> int:
         / EXPERIMENT_ID
         / "event_quality_leader_runner.json"
     )
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     artifact_path = (
         REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_event_quality_leader_runner.md"
@@ -659,8 +658,8 @@ def main() -> int:
             "date_range": payload["date_range"],
             "parameters": payload["parameters"],
             "market_regime_summary": payload["market_regime_summary"],
-            "before_metrics": "see docs/experiments/logs/exp-20260506-023.json",
-            "after_metrics": "see docs/experiments/logs/exp-20260506-023.json",
+            "before_metrics": "see experiments/logs/exp-20260506-023.json",
+            "after_metrics": "see experiments/logs/exp-20260506-023.json",
             "expected_value_score_delta": aggregate["expected_value_score_delta_sum"],
             "decision": payload["status"],
             "rejection_reason": (

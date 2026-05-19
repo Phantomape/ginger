@@ -41,17 +41,16 @@ STEM = "core_platform_entry_timing"
 
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"
 )
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
-BASELINE_LOG = REPO_ROOT / "docs" / "experiments" / "logs" / "exp-20260507-006.json"
+BASELINE_LOG = REPO_ROOT / "experiments" / "logs" / "exp-20260507-006.json"
 
 INITIAL_CAPITAL = 100_000.0
 ATR_LOOKBACK = 14

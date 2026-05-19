@@ -1,0 +1,537 @@
+{
+  "experiment_id": "exp-20260515-099",
+  "timestamp": "2026-05-15T18:21:13Z",
+  "status": "observed_only",
+  "decision": "shadow_only",
+  "lane": "alpha_discovery",
+  "run_type": "shadow_experiment",
+  "hypothesis": "EOD options IV, skew, term structure, open-interest concentration, and put/call structure may add explanatory value only as a default-off overlay on existing Ginger breakout, event, and earnings candidates.",
+  "non_ohlcv_data_source": "OnClickMedia EOD options chain snapshots in data/non_ohlcv/options_onclickmedia_chain_YYYYMMDD.jsonl",
+  "mechanism_family": "non_ohlcv_options_structure_overlay",
+  "change_type": "shadow_non_ohlcv_options_overlay_refresh",
+  "changed_variable": "clean forward options ledger refresh with 2026-05-14 snapshot and PIT usable-date candidate alignment",
+  "single_causal_variable": "clean forward options ledger refresh with 2026-05-14 snapshot and PIT usable-date candidate alignment",
+  "gate_questions": {
+    "1_alpha_hypothesis": "Options structure may be useful as an overlay on existing candidates, especially squeeze, downside-risk, or earnings-volatility contexts.",
+    "2_history_check": "Options data was absent through early audits, exp-20260506-009 rejected PIT-unsafe historical overlay promotion, and forward ledger runs through exp-20260514-040 stayed shadow-only because outcomes and slot-conflict values were not closed.",
+    "3_single_causal_variable": "clean forward options ledger refresh with 2026-05-14 snapshot and PIT usable-date candidate alignment",
+    "4_acceptance_standard": "Shadow-only audit: coverage, PIT safety, missingness, candidate overlap, forward 5/10/20/60d returns, drawdown/realized-vol outcomes, and scarce-slot value. No production promotion without closed outcomes and shared policy design.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe scripts\\run_options_forward_ledger.py --experiment-id exp-20260515-099 --output-dir data\\experiments\\exp-20260515-099 --quant-signal-dir data\\daily\\signals\\quant --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260501_with_pilot.json --date 2026-05-05 --date 2026-05-06 --date 2026-05-07 --date 2026-05-08 --date 2026-05-11 --date 2026-05-12 --date 2026-05-13 --date 2026-05-14"
+  },
+  "historical_experiment_check": {
+    "prior_options_records": [
+      "exp-20260503-044 / exp-20260504-043 / exp-20260505-021: no usable structured options data or no new data.",
+      "exp-20260506-003: initial OnClickMedia options harness.",
+      "exp-20260506-009: rejected historical overlay promotion as PIT-unsafe with weak slot-value evidence.",
+      "exp-20260507-091 through exp-20260514-040: default-off forward ledger stayed shadow-only; no closed 5/10/20/60d outcomes.",
+      "exp-20260515-033: options artifacts existed but the experiment ID collided with another run, so this clean ID preserves reproducibility."
+    ],
+    "finding": "This is not a new options threshold or production rule. It is a clean shadow ledger closeout using the same usable_trade_date discipline and the latest 2026-05-14 local option snapshot."
+  },
+  "experiment_mode": "default_off_forward_options_candidate_tag_ledger",
+  "production_change_allowed": false,
+  "data_availability": {
+    "chain_files": [
+      "data/non_ohlcv/options_onclickmedia_chain_20260505.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260506.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260507.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260508.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260511.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260512.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260513.jsonl",
+      "data/non_ohlcv/options_onclickmedia_chain_20260514.jsonl"
+    ],
+    "summary_files_present_through": "data/non_ohlcv/options_onclickmedia_summary_20260514.json",
+    "schema_fields_present": [
+      "ask",
+      "ask_size",
+      "bid",
+      "bid_size",
+      "call_put",
+      "collection_mode",
+      "date",
+      "delta",
+      "expiration",
+      "expiry",
+      "gamma",
+      "implied_vol",
+      "last",
+      "mark",
+      "mid",
+      "open_interest",
+      "option_liquidity_pass",
+      "option_liquidity_score",
+      "pit_caveat",
+      "pit_safe",
+      "pit_safe_flag",
+      "quote_date",
+      "retrieved_at",
+      "rho",
+      "source",
+      "source_url_base",
+      "strike",
+      "theta",
+      "ticker",
+      "usable_trade_date",
+      "vega",
+      "vendor_asof",
+      "vendor_asof_available",
+      "volume"
+    ],
+    "required_schema_status": {
+      "ticker": "present",
+      "date": "present",
+      "expiry": "present",
+      "strike": "present",
+      "call_put": "present",
+      "volume": "present",
+      "open_interest": "present",
+      "bid": "present",
+      "ask": "present",
+      "mid": "present",
+      "implied_vol": "present",
+      "delta": "present",
+      "option_liquidity_score": "present",
+      "usable_trade_date": "present",
+      "pit_safe_flag": "present",
+      "iv_rank": "missing",
+      "iv_percentile": "missing",
+      "iv_minus_realized_vol": "not_wired",
+      "earnings_iv_flag": "not_wired"
+    },
+    "ticker_level_option_liquidity_filter": "option_liquidity_pass and option_liquidity_score are present and enforced by the ledger quality gate.",
+    "earnings_date_alignment": "Earnings snapshots exist through 2026-05-14, but earnings_iv_flag is not wired into this options ledger.",
+    "short_interest_linkage": "Prior short-interest artifacts exist, but no current PIT-safe short-interest, borrow-fee, or shares-available join is wired.",
+    "pit_status": "forward_collected_rows_with_next_trading_day_usable_trade_date; vendor_asof_available_rows is 0, so same-date historical replay remains biased.",
+    "latest_blocker": "data/daily/signals/quant/quant_signals_20260515.json is absent, so the 2026-05-14 option snapshot cannot yet join to 2026-05-15 candidates."
+  },
+  "collection_quality_gate": {
+    "overall_status": "usable_shadow_dates_present",
+    "usable_quote_dates": [
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-11",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-14"
+    ],
+    "quarantined_quote_dates": [
+      "2026-05-05"
+    ],
+    "latest_quote_date_quality": {
+      "ask_gt_bid_rate": 0.998089,
+      "bid_gt_0_rate": 0.914509,
+      "delta_nonzero_rate": 0.510339,
+      "liquid_tickers_ge_10_rows": 58,
+      "mid_gt_0_rate": 0.998089,
+      "open_interest_gt_0_rate": 0.984361,
+      "option_liquidity_pass_rate": 0.839444,
+      "option_liquidity_pass_rows": 4831,
+      "reasons": [],
+      "rows": 5755,
+      "scoring_allowed": true,
+      "status": "usable_for_shadow",
+      "tickers": 58,
+      "usable_trade_dates": [
+        "2026-05-15"
+      ]
+    }
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1064,
+      "sharpe_daily": 4.39,
+      "total_pnl": 116319.1,
+      "total_return_pct": 1.1632,
+      "max_drawdown_pct": 0.0665,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 1.1091,
+      "vs_qqq_pct": 1.1052
+    },
+    "mid_weak": {
+      "expected_value_score": 2.0987,
+      "sharpe_daily": 2.76,
+      "total_pnl": 76035.04,
+      "total_return_pct": 0.7604,
+      "max_drawdown_pct": 0.1063,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.506,
+      "vs_qqq_pct": 0.4253
+    },
+    "old_thin": {
+      "expected_value_score": 0.5294,
+      "sharpe_daily": 1.42,
+      "total_pnl": 37282.59,
+      "total_return_pct": 0.3728,
+      "max_drawdown_pct": 0.1001,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "survival_rate": 0.8667,
+      "vs_spy_pct": 0.44,
+      "vs_qqq_pct": 0.4477
+    }
+  },
+  "after_metrics": {
+    "candidate_count": 21,
+    "expected_value_score": null,
+    "forward_return_of_tagged_candidates": {
+      "downside_risk_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 4,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "squeeze_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 6,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      }
+    },
+    "max_drawdown": null,
+    "overlap_with_existing_signals": 21,
+    "production_impact": "none_default_off_shadow_artifact_only",
+    "scarce_slot_opportunity_cost": {
+      "downside_risk_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      },
+      "squeeze_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      }
+    },
+    "sharpe_daily": null,
+    "signals_generated": null,
+    "signals_survived": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return": null,
+    "trade_count": null,
+    "vs_qqq": null,
+    "vs_spy": null,
+    "win_rate": null
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": null,
+    "total_pnl_delta": null,
+    "reason": "No strategy replay, production signal path, ranking, sizing, slot, stop, target, or LLM behavior changed."
+  },
+  "shadow_metrics": {
+    "candidate_count": 21,
+    "options_covered_candidates": 21,
+    "options_candidate_coverage_rate": 1.0,
+    "option_liquidity_eligible_candidates": 18,
+    "options_scoring_allowed_candidates": 9,
+    "pit_join_safe_candidates": 11,
+    "pit_join_safe_rate": 0.52381,
+    "quality_quarantined_candidates": 3,
+    "squeeze_overlay_candidates": 12,
+    "downside_risk_overlay_candidates": 6,
+    "earnings_vol_overlay_candidates": 0,
+    "overlap_with_existing_signals": 21,
+    "forward_return_of_tagged_candidates": {
+      "downside_risk_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 4,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      },
+      "squeeze_overlay": {
+        "closed_10d_count": 0,
+        "closed_20d_count": 0,
+        "closed_5d_count": 0,
+        "closed_60d_count": 0,
+        "count": 6,
+        "forward_10d_mean": null,
+        "forward_20d_mean": null,
+        "forward_20d_win_rate": null,
+        "forward_5d_mean": null,
+        "forward_60d_mean": null,
+        "future_drawdown_20d_mean": null,
+        "future_realized_vol_20d_mean": null
+      }
+    },
+    "scarce_slot_opportunity_cost": {
+      "downside_risk_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      },
+      "squeeze_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      }
+    },
+    "by_options_quote_date": {
+      "2026-05-05": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.666667,
+        "quality_quarantined_candidates": 3,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "sec_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-06": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 1,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 1,
+        "pit_join_safe_rate": 0.5,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 0
+      },
+      "2026-05-07": {
+        "candidate_count": 6,
+        "downside_risk_overlay_candidates": 4,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 6,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 6,
+        "options_scoring_allowed_candidates": 5,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 6
+        },
+        "pit_join_safe_candidates": 5,
+        "pit_join_safe_rate": 0.833333,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 6,
+        "source_section_counts": {
+          "event_sleeve_bundle": 3,
+          "pilot_signals": 1,
+          "sec_event_queue": 1,
+          "sec_leadership_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 4
+      },
+      "2026-05-08": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 2,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 1,
+        "outcome_status_counts": {
+          "ohlcv_snapshot_missing": 1,
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 1,
+        "pit_join_safe_rate": 0.333333,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "pilot_signals": 1
+        },
+        "squeeze_overlay_candidates": 1
+      },
+      "2026-05-11": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-05-12": {
+        "candidate_count": 3,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 3,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 3,
+        "options_scoring_allowed_candidates": 2,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 3
+        },
+        "pit_join_safe_candidates": 2,
+        "pit_join_safe_rate": 0.666667,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 3,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2,
+          "sec_governance_event_queue": 1
+        },
+        "squeeze_overlay_candidates": 3
+      },
+      "2026-05-13": {
+        "candidate_count": 2,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 2,
+        "options_candidate_coverage_rate": 1.0,
+        "options_covered_candidates": 2,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {
+          "signal_date_missing_in_ohlcv": 2
+        },
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 2,
+        "source_section_counts": {
+          "event_sleeve_bundle": 2
+        },
+        "squeeze_overlay_candidates": 2
+      },
+      "2026-05-14": {
+        "candidate_count": 0,
+        "downside_risk_overlay_candidates": 0,
+        "earnings_vol_overlay_candidates": 0,
+        "option_liquidity_eligible_candidates": 0,
+        "options_candidate_coverage_rate": 0.0,
+        "options_covered_candidates": 0,
+        "options_scoring_allowed_candidates": 0,
+        "outcome_status_counts": {},
+        "pit_join_safe_candidates": 0,
+        "pit_join_safe_rate": 0.0,
+        "quality_quarantined_candidates": 0,
+        "quality_usable_candidates": 0,
+        "source_section_counts": {},
+        "squeeze_overlay_candidates": 0
+      }
+    }
+  },
+  "candidate_overlap_and_slot_value": {
+    "candidate_count": 21,
+    "overlap_with_existing_signals": 21,
+    "scarce_slot_opportunity_cost": {
+      "downside_risk_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      },
+      "squeeze_overlay": {
+        "avg_slot_conflict_value_20d": null,
+        "conflict_count": 0,
+        "examples": [],
+        "positive_conflict_fraction": null
+      }
+    },
+    "slot_conflict_value_status": "not_measurable_without_closed_20d_forward_outcomes"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "live_slots_changed": false
+  },
+  "decision_rationale": "Keep shadow-only. Local options rows are present and mostly liquid after 2026-05-05, but there are no closed forward returns, no measurable slot-conflict value, no wired earnings-IV flag, and no PIT-safe short-interest/borrow join.",
+  "next_minimum_action": "After quant_signals_20260515.json and later OHLCV snapshots exist, rerun the same ledger and compute closed 5/10/20/60d returns, future drawdown, future realized vol, and slot-conflict value.",
+  "related_files": [
+    "experiments/tickets/exp-20260515-099.json",
+    "experiments/logs/exp-20260515-099.json",
+    "docs/non_ohlcv_data_audit/options_onclickmedia_exp-20260515-099_20260515.md",
+    "data/experiments/exp-20260515-099/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260515-099/options_forward_candidate_ledger.jsonl",
+    "data/experiments/exp-20260515-099/options_collection_quality_gate.json",
+    "data/experiments/exp-20260515-099/options_quarantined_quote_dates.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "candidate_join_date_mode": "usable_trade_date",
+    "min_liquidity_pass_rate": 0.05,
+    "min_liquid_tickers": 10,
+    "min_market_rows_rate": 0.5,
+    "locked_variables": [
+      "entries",
+      "exits",
+      "ranking",
+      "sizing",
+      "portfolio_heat",
+      "LLM/news",
+      "production_orders",
+      "options_thresholds",
+      "core_universe"
+    ]
+  }
+}

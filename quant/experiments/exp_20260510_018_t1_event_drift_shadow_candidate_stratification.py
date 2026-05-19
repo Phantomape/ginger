@@ -626,8 +626,8 @@ def main() -> None:
         "related_files": [
             "quant/experiments/exp_20260510_018_t1_event_drift_shadow_candidate_stratification.py",
             "data/experiments/exp-20260510-018/exp_20260510_018_t1_event_drift_shadow_candidate_stratification.json",
-            "docs/experiments/tickets/exp-20260510-018.json",
-            "docs/experiments/logs/exp-20260510-018.json",
+            "experiments/tickets/exp-20260510-018.json",
+            "experiments/logs/exp-20260510-018.json",
         ],
     }
     _write_json(OUT_JSON, payload)

@@ -30,8 +30,8 @@ import exp_20260501_003_gold_trend_risk_budget as prior  # noqa: E402
 EXPERIMENT_ID = "exp-20260501-004"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "gold_trend_position_cap.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 
 BASELINE_CAP = 0.40
 TESTED_CAPS = [0.45, 0.50]
@@ -228,8 +228,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260501_004_gold_trend_position_cap.py",
             "data/experiments/exp-20260501-004/gold_trend_position_cap.json",
-            "docs/experiments/logs/exp-20260501-004.json",
-            "docs/experiments/tickets/exp-20260501-004.json",
+            "experiments/logs/exp-20260501-004.json",
+            "experiments/tickets/exp-20260501-004.json",
         ],
     }
 

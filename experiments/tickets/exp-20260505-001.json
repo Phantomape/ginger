@@ -1,0 +1,62 @@
+{
+  "experiment_id": "exp-20260505-001",
+  "status": "completed_data_gap",
+  "lane": "alpha_discovery",
+  "owner": "codex-automation",
+  "hypothesis": "SEC filing shock and earnings surprise may improve C-strategy grading or A/B event confirmation only if fresh PIT-safe evidence exists after exp-20260504-054.",
+  "change_type": "data_audit_shadow_tagging_guardrail",
+  "single_causal_variable": "fresh PIT-safe SEC earnings filing-shock evidence availability after exp-20260504-054",
+  "baseline_result_file": "data/backtest_results_20260504.json",
+  "allowed_write_scope": [
+    "experiments/tickets/exp-20260505-001.json",
+    "experiments/logs/exp-20260505-001.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_post_exp054_exp-20260505-001_20260505.md",
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260505-001.json",
+    "data/experiments/exp-20260505-001/sec_earnings_filing_shock_post_exp054_freshness_audit.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "OHLCV thresholds",
+    "SEC event thresholds",
+    "SEC queue policy",
+    "LLM prompt",
+    "event sleeve sizing"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, candidate overlap, slot value, and next experiment; no production change.",
+  "created_at": "2026-05-05T00:04:09+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-05T00:07:48+00:00",
+  "result": "No fresh PIT-safe SEC/earnings filing-shock evidence, current candidates, event-bundle daily state, SEC paper state, or closed outcomes exist after exp-20260504-054.",
+  "related_files": [
+    "experiments/tickets/exp-20260505-001.json",
+    "experiments/logs/exp-20260505-001.json",
+    "data/experiments/exp-20260505-001/sec_earnings_filing_shock_post_exp054_freshness_audit.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_post_exp054_exp-20260505-001_20260505.md",
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260505-001.json",
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260504-054.json",
+    "data/non_ohlcv/sec_filing_schema.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ]
+}

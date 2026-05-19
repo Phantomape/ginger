@@ -1,0 +1,871 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "vs_qqq_pct": 0.728,
+      "vs_spy_pct": 0.7319,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "vs_qqq_pct": 0.2151,
+      "vs_spy_pct": 0.2958,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "vs_qqq_pct": 0.3213,
+      "vs_spy_pct": 0.3137,
+      "win_rate": 0.4091
+    }
+  },
+  "alpha_hypothesis": {
+    "category": "event_source_context",
+    "entry_or_ranking": "event_packet_qualification",
+    "text": "SEC 8-K negative-language events that sell off despite non-terminal fundamental context may rebound better than events with hard fundamental deterioration."
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "trade_count": 19,
+      "vs_qqq_pct": 0.728,
+      "vs_spy_pct": 0.7319,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe_daily": 2.62,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "trade_count": 21,
+      "vs_qqq_pct": 0.2151,
+      "vs_spy_pct": 0.2958,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe_daily": 1.29,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "trade_count": 22,
+      "vs_qqq_pct": 0.3213,
+      "vs_spy_pct": 0.3137,
+      "win_rate": 0.4091
+    }
+  },
+  "change_type": "non_ohlcv_event_context_shadow_test",
+  "data_availability": {
+    "companyfacts_unavailable_count": 0,
+    "data_limitation": "The SEC 8-K event packet had no same-accession XBRL Companyfacts rows, so this test only evaluates stale latest-prior context.",
+    "latest_prior_companyfacts_count": 16,
+    "pit_status": "Companyfacts filed date is used as public-availability proxy; all joined context must be filed no later than the event usable date.",
+    "same_accession_companyfacts_count": 0,
+    "sec_packet_event_count": 16,
+    "valid_10d_event_count": 14,
+    "valid_20d_event_count": 14
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "decision": "rejected_no_companyfacts_discriminator",
+  "decision_rationale": "All events joined only to latest-prior Companyfacts, so the context is stale relative to the 8-K reaction date.",
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0,
+    "production": 0.0
+  },
+  "experiment_id": "exp-20260504-014",
+  "gate4": {
+    "applicable": false,
+    "core_strategy_changed": false,
+    "result": "not_applicable_shadow_attribution_only"
+  },
+  "historical_experiment_check": {
+    "mechanism_insight_check": "Complies with the playbook ban on direct SEC queue promotion and raw reaction-threshold sweeps; LLM soft-ranking remains blocked by sparse replay joins, so this uses a structured non-OHLCV context.",
+    "prior_same_family": {
+      "exp-20260504-004": "Simple Companyfacts financial-quality score was not monotonic and was not promoted.",
+      "exp-20260504-008": "SEC negative-language + negative-reaction packet was shadow promising before capacity charging.",
+      "exp-20260504-010": "Standalone SEC event sleeve was positive but concentrated.",
+      "exp-20260504-011": "SEC event replacement value was inconclusive and blocked core promotion.",
+      "exp-20260504-012": "A default-off forward SEC queue was added only for observation."
+    },
+    "why_this_is_not_repeat": "This does not tune SEC keywords, reaction thresholds, sleeve sizing, or replacement slots. It tests one orthogonal context variable: PIT-safe Companyfacts bucket attribution on the frozen packet."
+  },
+  "hypothesis": "PIT-safe latest-prior Companyfacts context may separate recoverable negative SEC reaction events from genuine fundamental deterioration inside the frozen SEC negative-language + negative-reaction packet.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where accepted stack makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "next_retry_requires": [
+    "Do not promote or tune this Companyfacts overlay from latest-prior context.",
+    "Retry only if same-accession or same-day earnings XBRL snapshots become PIT-safe at the event date.",
+    "A valid retry must compare replacement value against frozen A/B alternatives, not just standalone event returns."
+  ],
+  "parameters": {
+    "bucket_rules": {
+      "companyfacts_unavailable": "no PIT-safe facts found",
+      "fundamental_pressure": "at least two severe pressure flags",
+      "mixed_or_unknown": "everything else with available facts",
+      "pressure_but_not_terminal": "positive revenue/gross profit/operating income/net income/operating cash flow evidence and no more than one severe flag"
+    },
+    "companyfacts_pit_rule": "filed <= usable_trade_date; same accession preferred if present",
+    "companyfacts_source": "data\\non_ohlcv\\sec_companyfacts_selected_20241002_20260421.jsonl",
+    "locked_variables": [
+      "SEC text language rule",
+      "reaction threshold",
+      "core A/B signal generation",
+      "core A/B ranking",
+      "core sizing",
+      "core exits",
+      "production orders",
+      "LLM prompts"
+    ],
+    "packet_rule": "8-K Item 2.02 AND language_bucket == negative_language AND reaction_excess_return < 0",
+    "primary_packet_source": "data\\experiments\\exp-20260504-008\\sec_negative_reaction_absorption.json",
+    "severe_flags": [
+      "high_liabilities_to_assets",
+      "negative_free_cash_flow_proxy",
+      "negative_gross_profit",
+      "negative_net_income",
+      "negative_operating_cash_flow",
+      "negative_operating_income"
+    ]
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_impact": "shadow_only_no_strategy_logic_changed",
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "data\\experiments\\exp-20260504-008\\sec_negative_reaction_absorption.json",
+    "data\\non_ohlcv\\sec_companyfacts_selected_20241002_20260421.jsonl",
+    "data/experiments/exp-20260504-014/sec_negative_reaction_companyfacts_context.json",
+    "experiments\\logs\\exp-20260504-014.json",
+    "experiments\\tickets\\exp-20260504-014.json",
+    "docs\\non_ohlcv_data_audit\\sec_negative_reaction_companyfacts_context_20260504.md",
+    "quant\\experiments\\exp_20260504_014_sec_negative_reaction_companyfacts_context.py"
+  ],
+  "shadow_metrics": {
+    "all_primary_packet": {
+      "avg_10d_excess_return_pct": 5.733793,
+      "avg_20d_excess_return_pct": 6.461629,
+      "event_count": 16,
+      "median_10d_excess_return_pct": 2.11475,
+      "positive_10d_rate": 0.642857,
+      "positive_20d_rate": 0.714286,
+      "valid_10d_count": 14,
+      "valid_20d_count": 14
+    },
+    "by_companyfacts_bucket": {
+      "fundamental_pressure": {
+        "avg_10d_excess_return_pct": 16.027467,
+        "avg_20d_excess_return_pct": 19.9518,
+        "event_count": 4,
+        "median_10d_excess_return_pct": 1.8961,
+        "positive_10d_rate": 1.0,
+        "positive_20d_rate": 1.0,
+        "tickers": [
+          "GS",
+          "LITE",
+          "RTX"
+        ],
+        "valid_10d_count": 3,
+        "valid_20d_count": 3,
+        "windows": {
+          "late_strong": 1,
+          "mid_weak": 2,
+          "old_thin": 1
+        }
+      },
+      "pressure_but_not_terminal": {
+        "avg_10d_excess_return_pct": 2.926427,
+        "avg_20d_excess_return_pct": 2.782491,
+        "event_count": 12,
+        "median_10d_excess_return_pct": 2.3334,
+        "positive_10d_rate": 0.545455,
+        "positive_20d_rate": 0.636364,
+        "tickers": [
+          "CRDO",
+          "CVX",
+          "DE",
+          "DIS",
+          "GS",
+          "ISRG",
+          "MCD"
+        ],
+        "valid_10d_count": 11,
+        "valid_20d_count": 11,
+        "windows": {
+          "late_strong": 4,
+          "mid_weak": 5,
+          "old_thin": 3
+        }
+      }
+    },
+    "by_companyfacts_source": {
+      "latest_prior": {
+        "avg_10d_excess_return_pct": 5.733793,
+        "avg_20d_excess_return_pct": 6.461629,
+        "event_count": 16,
+        "median_10d_excess_return_pct": 2.11475,
+        "positive_10d_rate": 0.642857,
+        "positive_20d_rate": 0.714286,
+        "tickers": [
+          "CRDO",
+          "CVX",
+          "DE",
+          "DIS",
+          "GS",
+          "ISRG",
+          "LITE",
+          "MCD",
+          "RTX"
+        ],
+        "valid_10d_count": 14,
+        "valid_20d_count": 14,
+        "windows": {
+          "late_strong": 5,
+          "mid_weak": 7,
+          "old_thin": 4
+        }
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "avg_10d_excess_return_pct": 8.9889,
+        "avg_20d_excess_return_pct": 9.06372,
+        "event_count": 5,
+        "median_10d_excess_return_pct": 3.5746,
+        "positive_10d_rate": 0.6,
+        "positive_20d_rate": 0.6,
+        "tickers": [
+          "DE",
+          "DIS",
+          "LITE",
+          "MCD"
+        ],
+        "valid_10d_count": 5,
+        "valid_20d_count": 5,
+        "windows": {
+          "late_strong": 5
+        }
+      },
+      "mid_weak": {
+        "avg_10d_excess_return_pct": 6.54982,
+        "avg_20d_excess_return_pct": 4.78354,
+        "event_count": 7,
+        "median_10d_excess_return_pct": 2.3334,
+        "positive_10d_rate": 0.8,
+        "positive_20d_rate": 0.8,
+        "tickers": [
+          "CRDO",
+          "DIS",
+          "GS",
+          "ISRG",
+          "MCD"
+        ],
+        "valid_10d_count": 5,
+        "valid_20d_count": 5,
+        "windows": {
+          "mid_weak": 7
+        }
+      },
+      "old_thin": {
+        "avg_10d_excess_return_pct": 0.644875,
+        "avg_20d_excess_return_pct": 5.306625,
+        "event_count": 4,
+        "median_10d_excess_return_pct": 0.35505,
+        "positive_10d_rate": 0.5,
+        "positive_20d_rate": 0.75,
+        "tickers": [
+          "CVX",
+          "GS",
+          "MCD",
+          "RTX"
+        ],
+        "valid_10d_count": 4,
+        "valid_20d_count": 4,
+        "windows": {
+          "old_thin": 4
+        }
+      }
+    },
+    "event_rows": [
+      {
+        "accession_number": "0001193125-24-237206",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [
+          "high_liabilities_to_assets"
+        ],
+        "companyfacts_row_count": 29,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2024-10-17",
+        "excess_return_10d": -0.002806,
+        "excess_return_20d": 0.099301,
+        "raw_return_10d": -0.012876,
+        "raw_return_20d": 0.118553,
+        "reaction_excess_return_pct": -0.4611,
+        "selected_fact_count": 9,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "shares_diluted"
+        ],
+        "ticker": "GS",
+        "usable_trade_date": "2024-10-16",
+        "window": "old_thin"
+      },
+      {
+        "accession_number": "0000063908-24-000152",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 44,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2024-10-31",
+        "excess_return_10d": -0.02013,
+        "excess_return_20d": -0.030747,
+        "raw_return_10d": 0.017451,
+        "raw_return_20d": 0.009683,
+        "reaction_excess_return_pct": -0.7917,
+        "selected_fact_count": 12,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "cost_of_revenue",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "MCD",
+        "usable_trade_date": "2024-10-30",
+        "window": "old_thin"
+      },
+      {
+        "accession_number": "0000101829-25-000002",
+        "companyfacts_bucket": "fundamental_pressure",
+        "companyfacts_flags": [
+          "negative_net_income",
+          "negative_operating_income"
+        ],
+        "companyfacts_row_count": 51,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-01-30",
+        "excess_return_10d": 0.009907,
+        "excess_return_20d": 0.075243,
+        "raw_return_10d": 0.008913,
+        "raw_return_20d": 0.043933,
+        "reaction_excess_return_pct": -1.4654,
+        "selected_fact_count": 13,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "RTX",
+        "usable_trade_date": "2025-01-29",
+        "window": "old_thin"
+      },
+      {
+        "accession_number": "0000093410-25-000004",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 48,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-02-04",
+        "excess_return_10d": 0.038824,
+        "excess_return_20d": 0.068468,
+        "raw_return_10d": 0.061673,
+        "raw_return_20d": 0.033391,
+        "reaction_excess_return_pct": -0.6323,
+        "selected_fact_count": 12,
+        "selected_facts_present": [
+          "assets",
+          "cost_of_revenue",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "CVX",
+        "usable_trade_date": "2025-02-03",
+        "window": "old_thin"
+      },
+      {
+        "accession_number": "0000063908-25-000021",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 22,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-05-05",
+        "excess_return_10d": -0.038301,
+        "excess_return_20d": -0.048932,
+        "raw_return_10d": 0.017923,
+        "raw_return_20d": 0.004644,
+        "reaction_excess_return_pct": -0.8666,
+        "selected_fact_count": 11,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "MCD",
+        "usable_trade_date": "2025-05-02",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0001628280-25-028827",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [
+          "negative_operating_income"
+        ],
+        "companyfacts_row_count": 52,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-06-04",
+        "excess_return_10d": 0.090515,
+        "excess_return_20d": 0.181322,
+        "raw_return_10d": 0.091469,
+        "raw_return_20d": 0.223744,
+        "reaction_excess_return_pct": -4.6758,
+        "selected_fact_count": 15,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "cost_of_revenue",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "gross_profit",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "CRDO",
+        "usable_trade_date": "2025-06-03",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0001193125-25-159560",
+        "companyfacts_bucket": "fundamental_pressure",
+        "companyfacts_flags": [
+          "negative_operating_cash_flow",
+          "negative_free_cash_flow_proxy",
+          "high_liabilities_to_assets"
+        ],
+        "companyfacts_row_count": 19,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-07-18",
+        "excess_return_10d": 0.018961,
+        "excess_return_20d": 0.031901,
+        "raw_return_10d": 0.023379,
+        "raw_return_20d": 0.05677,
+        "reaction_excess_return_pct": -0.6453,
+        "selected_fact_count": 9,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "shares_diluted"
+        ],
+        "ticker": "GS",
+        "usable_trade_date": "2025-07-17",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0001744489-25-000135",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 40,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-08-08",
+        "excess_return_10d": 0.023334,
+        "excess_return_20d": 0.019902,
+        "raw_return_10d": 0.025684,
+        "raw_return_20d": 0.040688,
+        "reaction_excess_return_pct": -1.8524,
+        "selected_fact_count": 11,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "DIS",
+        "usable_trade_date": "2025-08-07",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0001807794-25-000018",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 32,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-09-05",
+        "excess_return_10d": 0.232982,
+        "excess_return_20d": 0.054984,
+        "raw_return_10d": 0.249529,
+        "raw_return_20d": 0.085062,
+        "reaction_excess_return_pct": -3.6244,
+        "selected_fact_count": 15,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "cost_of_revenue",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "gross_profit",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "CRDO",
+        "usable_trade_date": "2025-09-04",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0001193125-25-238058",
+        "companyfacts_bucket": "fundamental_pressure",
+        "companyfacts_flags": [
+          "negative_operating_cash_flow",
+          "negative_free_cash_flow_proxy",
+          "high_liabilities_to_assets"
+        ],
+        "companyfacts_row_count": 29,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-10-16",
+        "excess_return_10d": null,
+        "excess_return_20d": null,
+        "raw_return_10d": null,
+        "raw_return_20d": null,
+        "reaction_excess_return_pct": -1.1255,
+        "selected_fact_count": 9,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "shares_diluted"
+        ],
+        "ticker": "GS",
+        "usable_trade_date": "2025-10-15",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0001035267-25-000206",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 54,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-10-23",
+        "excess_return_10d": null,
+        "excess_return_20d": null,
+        "raw_return_10d": null,
+        "raw_return_20d": null,
+        "reaction_excess_return_pct": -2.3161,
+        "selected_fact_count": 14,
+        "selected_facts_present": [
+          "assets",
+          "cost_of_revenue",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "gross_profit",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "ISRG",
+        "usable_trade_date": "2025-10-22",
+        "window": "mid_weak"
+      },
+      {
+        "accession_number": "0000063908-25-000057",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 46,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-11-07",
+        "excess_return_10d": 0.035746,
+        "excess_return_20d": 0.015857,
+        "raw_return_10d": 0.012719,
+        "raw_return_20d": 0.042477,
+        "reaction_excess_return_pct": -1.0121,
+        "selected_fact_count": 12,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "cost_of_revenue",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "MCD",
+        "usable_trade_date": "2025-11-06",
+        "window": "late_strong"
+      },
+      {
+        "accession_number": "0001744489-25-000154",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 35,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-11-17",
+        "excess_return_10d": -0.006138,
+        "excess_return_20d": 0.035422,
+        "raw_return_10d": 0.009645,
+        "raw_return_20d": 0.051892,
+        "reaction_excess_return_pct": -2.5841,
+        "selected_fact_count": 11,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "DIS",
+        "usable_trade_date": "2025-11-14",
+        "window": "late_strong"
+      },
+      {
+        "accession_number": "0001104659-25-116130",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [],
+        "companyfacts_row_count": 49,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2025-12-01",
+        "excess_return_10d": 0.041113,
+        "excess_return_20d": -0.002251,
+        "raw_return_10d": 0.045458,
+        "raw_return_20d": 0.01406,
+        "reaction_excess_return_pct": -0.8899,
+        "selected_fact_count": 12,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "DE",
+        "usable_trade_date": "2025-11-27",
+        "window": "late_strong"
+      },
+      {
+        "accession_number": "0001628280-26-005005",
+        "companyfacts_bucket": "fundamental_pressure",
+        "companyfacts_flags": [
+          "negative_net_income",
+          "negative_operating_income",
+          "negative_free_cash_flow_proxy"
+        ],
+        "companyfacts_row_count": 42,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2026-02-05",
+        "excess_return_10d": 0.451956,
+        "excess_return_20d": 0.49141,
+        "raw_return_10d": 0.457155,
+        "raw_return_20d": 0.491954,
+        "reaction_excess_return_pct": -0.9995,
+        "selected_fact_count": 12,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "gross_profit",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "operating_income",
+          "shares_diluted"
+        ],
+        "ticker": "LITE",
+        "usable_trade_date": "2026-02-04",
+        "window": "late_strong"
+      },
+      {
+        "accession_number": "0001104659-26-017239",
+        "companyfacts_bucket": "pressure_but_not_terminal",
+        "companyfacts_flags": [
+          "high_liabilities_to_assets"
+        ],
+        "companyfacts_row_count": 38,
+        "companyfacts_source": "latest_prior",
+        "entry_date": "2026-02-23",
+        "excess_return_10d": -0.073232,
+        "excess_return_20d": -0.087252,
+        "raw_return_10d": -0.095694,
+        "raw_return_20d": -0.141755,
+        "reaction_excess_return_pct": -1.307,
+        "selected_fact_count": 12,
+        "selected_facts_present": [
+          "assets",
+          "capex",
+          "eps_basic",
+          "eps_diluted",
+          "equity",
+          "inventory",
+          "liabilities",
+          "net_income",
+          "operating_cash_flow",
+          "receivables",
+          "revenue",
+          "shares_diluted"
+        ],
+        "ticker": "DE",
+        "usable_trade_date": "2026-02-20",
+        "window": "late_strong"
+      }
+    ]
+  },
+  "single_causal_variable": "Companyfacts context bucket layered on frozen SEC negative-reaction events",
+  "status": "rejected",
+  "timestamp": "2026-05-04T03:18:44+00:00"
+}

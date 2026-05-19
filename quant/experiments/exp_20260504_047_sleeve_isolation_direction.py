@@ -33,11 +33,10 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260504-047"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "sleeve_isolation_direction.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 REPORT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / "exp-20260504-047_sleeve_isolation_direction.md"
@@ -563,9 +562,9 @@ def main() -> None:
         "related_files": [
             "quant/experiments/exp_20260504_047_sleeve_isolation_direction.py",
             "data/experiments/exp-20260504-047/sleeve_isolation_direction.json",
-            "docs/experiments/logs/exp-20260504-047.json",
-            "docs/experiments/tickets/exp-20260504-047.json",
-            "docs/experiments/artifacts/exp-20260504-047_sleeve_isolation_direction.md",
+            "experiments/logs/exp-20260504-047.json",
+            "experiments/tickets/exp-20260504-047.json",
+            "experiments/artifacts/exp-20260504-047_sleeve_isolation_direction.md",
         ],
     }
 

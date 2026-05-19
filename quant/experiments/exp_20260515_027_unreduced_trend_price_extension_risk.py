@@ -528,9 +528,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260515_027_unreduced_trend_price_extension_risk.py",
             "data/experiments/exp-20260515-027/unreduced_trend_price_extension_risk.json",
-            "docs/experiments/logs/exp-20260515-027_unreduced_trend_price_extension_risk.json",
-            "docs/experiments/tickets/exp-20260515-027_unreduced_trend_price_extension_risk.json",
-            "docs/experiments/artifacts/exp-20260515-027_unreduced_trend_price_extension_risk.md",
+            "experiments/logs/exp-20260515-027_unreduced_trend_price_extension_risk.json",
+            "experiments/tickets/exp-20260515-027_unreduced_trend_price_extension_risk.json",
+            "experiments/artifacts/exp-20260515-027_unreduced_trend_price_extension_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -541,7 +541,7 @@ def run() -> dict[str, Any]:
 def main() -> None:
     payload = run()
     out_dir = base.REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
-    docs_dir = base.REPO_ROOT / "docs" / "experiments"
+    docs_dir = base.REPO_ROOT / "experiments"
     _write_json(out_dir / f"{EXPERIMENT_SLUG}.json", payload)
     _write_json(
         docs_dir / "logs" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.json",

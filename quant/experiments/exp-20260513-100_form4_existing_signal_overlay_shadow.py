@@ -22,8 +22,8 @@ RUN_AT = datetime.now(timezone.utc).isoformat(timespec="seconds")
 DATA_DIR = ROOT / "data"
 OUT_DIR = DATA_DIR / "experiments" / EXP_ID
 ARTIFACT = OUT_DIR / "form4_existing_signal_overlay_shadow.json"
-LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_PATH = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / f"form4_existing_signal_overlay_{EXP_ID}_20260513.md"
 JSONL_PATH = ROOT / "docs" / "experiment_log.jsonl"
 BASELINE_ARTIFACT = DATA_DIR / "experiments" / "exp-20260513-036" / "clean_spy_leader_signal_day_risk.json"
@@ -69,8 +69,8 @@ def configure_run(
     EXP_ID = experiment_id
     OUT_DIR = DATA_DIR / "experiments" / EXP_ID
     ARTIFACT = OUT_DIR / "form4_existing_signal_overlay_shadow.json"
-    LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-    TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+    LOG_PATH = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+    TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
     REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / f"form4_existing_signal_overlay_{EXP_ID}_{report_date}.md"
     if baseline_artifact:
         path = Path(baseline_artifact)
@@ -302,9 +302,9 @@ def add_fresh_event_context(events: list[dict[str, Any]], historical_events: lis
 
 def historical_reference() -> dict[str, Any]:
     outcomes = load_json(HISTORICAL_OUTCOMES, {}) or {}
-    prior_overlay = load_json(ROOT / "docs" / "experiments" / "logs" / "exp-20260513-100.json", {}) or {}
+    prior_overlay = load_json(ROOT / "experiments" / "logs" / "exp-20260513-100.json", {}) or {}
     prior_single_owner = load_json(DATA_DIR / "experiments" / "exp-20260512-108" / "form4_single_owner_preentry_rs.json", {}) or {}
-    prior_cluster = load_json(ROOT / "docs" / "experiments" / "logs" / "exp-20260512-017.json", {}) or {}
+    prior_cluster = load_json(ROOT / "experiments" / "logs" / "exp-20260512-017.json", {}) or {}
     overlay_hist = (
         (prior_overlay.get("forward_return_of_tagged_candidates") or {})
         .get("historical_reference_not_new_evidence")

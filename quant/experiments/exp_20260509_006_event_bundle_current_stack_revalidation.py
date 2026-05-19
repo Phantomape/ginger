@@ -46,11 +46,10 @@ from experiments.exp_20260504_049_default_off_event_overlay_bundle import (  # n
 EXPERIMENT_ID = "exp-20260509-006"
 STEM = "event_bundle_current_stack_revalidation"
 OUT_JSON = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"
@@ -295,7 +294,7 @@ def build_payload() -> dict[str, Any]:
             "checked_sources": [
                 "docs/alpha-optimization-playbook.md",
                 "docs/experiment_log.jsonl",
-                "docs/experiments/artifacts",
+                "experiments/artifacts",
                 "docs/backtesting.md",
             ],
             "recent_no_go_or_blocked_surfaces": [

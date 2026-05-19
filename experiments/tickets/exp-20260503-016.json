@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp-20260503-016",
+  "status": "completed",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock and earnings surprise may be useful as an event confirmation overlay, but the current run must first verify PIT archive coverage before any production signal change.",
+  "change_type": "non_ohlcv_data_audit",
+  "single_causal_variable": "SEC / earnings filing-shock data availability and PIT status only",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "data/non_ohlcv",
+    "docs/non_ohlcv_data_audit",
+    "experiments/tickets",
+    "experiments/logs",
+    "docs/experiment_log.jsonl"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "core universe",
+    "trade-enabled tickers",
+    "entry filters",
+    "candidate ordering",
+    "risk sizing",
+    "exits",
+    "LLM/news gates"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "data-audit only: report coverage, PIT risk, missing fields, overlap, and next minimum experiment; no production promotion",
+  "created_at": "2026-05-03T07:05:05+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T07:08:00+00:00",
+  "result": {
+    "decision": "data_gap",
+    "log": "experiments/logs/exp-20260503-016.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_20260503.md",
+    "shadow_event_table": "data/non_ohlcv/sec_filing_shadow_events_20260503.json",
+    "production_impact": "shadow_only"
+  }
+}

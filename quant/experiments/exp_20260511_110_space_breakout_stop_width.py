@@ -839,9 +839,9 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260511_110_space_breakout_stop_width.py",
             "data/experiments/exp-20260511-110/space_breakout_stop_width.json",
-            "docs/experiments/logs/exp-20260511-110.json",
-            "docs/experiments/tickets/exp-20260511-110.json",
-            "docs/experiments/artifacts/exp-20260511-110_space_breakout_stop_width.md",
+            "experiments/logs/exp-20260511-110.json",
+            "experiments/tickets/exp-20260511-110.json",
+            "experiments/artifacts/exp-20260511-110_space_breakout_stop_width.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -850,11 +850,10 @@ def build_payload() -> dict:
 def persist(payload: dict) -> None:
     out_dir = PROJECT_ROOT / "data" / "experiments" / EXPERIMENT_ID
     artifact_path = out_dir / "space_breakout_stop_width.json"
-    log_path = PROJECT_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = PROJECT_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = PROJECT_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = PROJECT_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     md_path = (
         PROJECT_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_space_breakout_stop_width.md"

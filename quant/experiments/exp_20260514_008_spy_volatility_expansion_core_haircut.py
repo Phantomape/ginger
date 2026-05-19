@@ -421,9 +421,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_008_spy_volatility_expansion_core_haircut.py",
             "data/experiments/exp-20260514-008/spy_volatility_expansion_core_haircut.json",
-            "docs/experiments/logs/exp-20260514-008.json",
-            "docs/experiments/tickets/exp-20260514-008.json",
-            "docs/experiments/artifacts/exp-20260514-008_spy_volatility_expansion_core_haircut.md",
+            "experiments/logs/exp-20260514-008.json",
+            "experiments/tickets/exp-20260514-008.json",
+            "experiments/artifacts/exp-20260514-008_spy_volatility_expansion_core_haircut.md",
             "docs/experiment_log.jsonl",
         ],
     }

@@ -340,13 +340,12 @@ def _persist(payload: dict[str, Any]) -> None:
     artifact_path = (
         repo_root / "data" / "experiments" / EXPERIMENT_ID / f"{EXPERIMENT_SLUG}.json"
     )
-    log_path = repo_root / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    log_path = repo_root / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     ticket_path = (
-        repo_root / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+        repo_root / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     )
     md_path = (
         repo_root
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
@@ -385,11 +384,10 @@ def run() -> dict[str, Any]:
     prior.OUT_DIR = prior.REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
     prior.OUT_JSON = prior.OUT_DIR / f"{EXPERIMENT_SLUG}.json"
     prior.LOG_JSON = (
-        prior.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+        prior.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     )
     prior.TICKET_JSON = (
         prior.REPO_ROOT
-        / "docs"
         / "experiments"
         / "tickets"
         / f"{EXPERIMENT_ID}.json"
@@ -575,9 +573,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260518_007_trend_noncore_spy_leader_fallback_revalidation.py",
             f"data/experiments/{EXPERIMENT_ID}/{EXPERIMENT_SLUG}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
             "docs/experiment_log.jsonl",
         ],
     }

@@ -10,8 +10,8 @@ Primary index:
 
 Per-experiment state:
 
-- `docs/experiments/tickets/exp-*.json`
-- `docs/experiments/logs/exp-*.json`
+- `experiments/tickets/exp-*.json`
+- `experiments/logs/exp-*.json`
 
 The registry is intentionally only a small index. Each agent mostly writes its
 own ticket and final log file, so parallel experiments do not fight over one
@@ -49,8 +49,8 @@ large shared JSON document.
   "allowed_write_scope": [
     "quant/experiments/exp_20260425_001_breakout_follow_through_taxonomy.py",
     "data/experiments/exp-20260425-001/exp_20260425_001_breakout_follow_through_taxonomy.json",
-    "docs/experiments/tickets/exp-20260425-001.json",
-    "docs/experiments/logs/exp-20260425-001.json",
+    "experiments/tickets/exp-20260425-001.json",
+    "experiments/logs/exp-20260425-001.json",
     "docs/experiment_log.jsonl",
     "docs/experiment_registry.json"
   ],
@@ -128,7 +128,7 @@ python scripts\judge_experiment.py `
 ```
 
 `--append-log` writes the generated row to
-`docs/experiments/logs/<experiment_id>.json`. Duplicate experiment IDs are
+`experiments/logs/<experiment_id>.json`. Duplicate experiment IDs are
 rejected unless `--allow-duplicate-log-id` is set.
 
 ## Conflict Rules
@@ -166,8 +166,8 @@ non-overlapping paths:
 
 - `quant/experiments/<experiment_id_as_prefix>_<slug>.py`
 - `data/experiments/<experiment_id>/<experiment_id_as_prefix>_<slug>.json`
-- `docs/experiments/tickets/<experiment_id>.json`
-- `docs/experiments/logs/<experiment_id>.json`
+- `experiments/tickets/<experiment_id>.json`
+- `experiments/logs/<experiment_id>.json`
 - `docs/experiment_log.jsonl`
 - `docs/experiment_registry.json`
 

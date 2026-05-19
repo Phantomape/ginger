@@ -444,11 +444,10 @@ def main() -> int:
     }
 
     exp_dir = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     artifact_path = (
         REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_financials_leader_target_width.md"

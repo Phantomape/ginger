@@ -1,0 +1,1741 @@
+{
+  "experiment_id": "exp-20260507-003",
+  "timestamp": "2026-05-07T01:18:21.252187+00:00",
+  "lane": "alpha_search",
+  "change_type": "capital_allocation_recent_sec_breakout_risk",
+  "alpha_hypothesis_category": "event_confirmed_capital_allocation",
+  "hypothesis": "If a `breakout_long` candidate has a PIT-safe SEC filing within the last 20 trading days, the event context may confirm the technical breakout and justify a larger risk budget.",
+  "why_not_llm_soft_ranking": "Production-aligned LLM soft-ranking samples remain too thin; this uses complete PIT-safe non-OHLCV SEC coverage from exp-20260507-002 instead.",
+  "history_guardrails": {
+    "not_mid_dispersion_breakout_retry": true,
+    "not_broad_universe_expansion": true,
+    "not_sec_threshold_reaction_retry": true,
+    "why_not_simple_repeat": "This tests event-confirmed sizing on existing breakout signals. It does not retry mid-sector-dispersion breakout sizing, SEC negative-reaction sleeves, simple guidance raise reaction rules, or broad watchlist expansion."
+  },
+  "parameters": {
+    "recent_event_definition": "latest PIT-safe row from data/non_ohlcv/sec_filing_features_YYYYMMDD.jsonl with usable_trade_date no more than 20 trading days before the signal date",
+    "strategy_scope": "breakout_long only",
+    "tested_variants": {
+      "recent_sec_breakout_1_25x": {
+        "risk_multiplier": 1.25
+      },
+      "recent_sec_breakout_1_50x": {
+        "risk_multiplier": 1.5
+      },
+      "recent_sec_breakout_2_00x": {
+        "risk_multiplier": 2.0
+      }
+    },
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "entry filters",
+      "candidate ranking",
+      "MAX_POSITIONS",
+      "MAX_POSITION_PCT",
+      "MAX_PORTFOLIO_HEAT",
+      "MAX_PER_SECTOR",
+      "gap cancels",
+      "add-ons",
+      "all exits",
+      "all non-tested sizing rules",
+      "LLM/news replay",
+      "earnings strategy"
+    ],
+    "windows": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "state_note": "slow-melt bull / accepted-stack dominant tape"
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "state_note": "rotation-heavy bull where strategy profits but can lag indexes"
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "state_note": "mixed-to-weak older tape with lower win rate"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "metrics": {
+        "expected_value_score": 3.7435,
+        "sharpe_daily": 4.48,
+        "total_pnl": 83562.53,
+        "total_return_pct": 0.8356,
+        "max_drawdown_pct": 0.0539,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "tail_loss_share": 0.5154,
+        "breakout_signals_seen": 0,
+        "recent_sec_breakout_signals_seen": 0,
+        "signals_resized": 0,
+        "recent_sec_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "touched_trades": []
+    },
+    "mid_weak": {
+      "metrics": {
+        "expected_value_score": 1.5478,
+        "sharpe_daily": 2.69,
+        "total_pnl": 57542.74,
+        "total_return_pct": 0.5754,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "tail_loss_share": 0.4687,
+        "breakout_signals_seen": 0,
+        "recent_sec_breakout_signals_seen": 0,
+        "signals_resized": 0,
+        "recent_sec_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "touched_trades": []
+    },
+    "old_thin": {
+      "metrics": {
+        "expected_value_score": 0.3359,
+        "sharpe_daily": 1.28,
+        "total_pnl": 26242.68,
+        "total_return_pct": 0.2624,
+        "max_drawdown_pct": 0.0905,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "tail_loss_share": 0.4733,
+        "breakout_signals_seen": 0,
+        "recent_sec_breakout_signals_seen": 0,
+        "signals_resized": 0,
+        "recent_sec_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "touched_trades": []
+    }
+  },
+  "variant_results": {
+    "recent_sec_breakout_1_25x": {
+      "parameters": {
+        "risk_multiplier": 1.25
+      },
+      "by_window": {
+        "late_strong": {
+          "metrics": {
+            "expected_value_score": 3.8834,
+            "sharpe_daily": 4.4,
+            "total_pnl": 88258.66,
+            "total_return_pct": 0.8826,
+            "max_drawdown_pct": 0.0563,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "tail_loss_share": 0.5158,
+            "breakout_signals_seen": 19,
+            "recent_sec_breakout_signals_seen": 9,
+            "signals_resized": 9,
+            "recent_sec_sizing_days": 9,
+            "touched_trade_count": 8,
+            "touched_trade_pnl": 49533.77,
+            "touched_trade_win_rate": 0.875
+          },
+          "touched_trades": [
+            {
+              "ticker": "LLY",
+              "strategy": "breakout_long",
+              "entry_date": "2025-11-04",
+              "exit_date": "2025-11-12",
+              "sector": "Healthcare",
+              "pnl": 6490.34,
+              "pnl_pct_net": 0.113765,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "sector": "Energy",
+              "pnl": -1834.3,
+              "pnl_pct_net": -0.030081,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "MU",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-07",
+              "exit_date": "2026-01-27",
+              "sector": "Technology",
+              "pnl": 7952.75,
+              "pnl_pct_net": 0.216879,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-03",
+              "sector": "Energy",
+              "pnl": 6009.93,
+              "pnl_pct_net": 0.09771,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "CAT",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-30",
+              "exit_date": "2026-02-10",
+              "sector": "Industrials",
+              "pnl": 9662.3,
+              "pnl_pct_net": 0.134644,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "CVX",
+              "strategy": "breakout_long",
+              "entry_date": "2026-02-02",
+              "exit_date": "2026-03-02",
+              "sector": "Energy",
+              "pnl": 7893.13,
+              "pnl_pct_net": 0.099886,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-02-04",
+              "exit_date": "2026-03-02",
+              "sector": "Energy",
+              "pnl": 8262.5,
+              "pnl_pct_net": 0.108412,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "AMZN",
+              "strategy": "breakout_long",
+              "entry_date": "2026-04-10",
+              "exit_date": "2026-04-21",
+              "sector": "Consumer Discretionary",
+              "pnl": 5097.12,
+              "pnl_pct_net": 0.049113,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": 0.1399,
+            "sharpe_daily": -0.08,
+            "total_pnl": 4696.13,
+            "total_return_pct": 0.047,
+            "max_drawdown_pct": 0.0024,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0004,
+            "breakout_signals_seen": 19.0,
+            "recent_sec_breakout_signals_seen": 9.0,
+            "signals_resized": 9.0,
+            "recent_sec_sizing_days": 9.0,
+            "touched_trade_count": 8.0,
+            "touched_trade_pnl": 49533.77,
+            "touched_trade_win_rate": 0.875
+          }
+        },
+        "mid_weak": {
+          "metrics": {
+            "expected_value_score": 1.5423,
+            "sharpe_daily": 2.68,
+            "total_pnl": 57554.82,
+            "total_return_pct": 0.5755,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "tail_loss_share": 0.4522,
+            "breakout_signals_seen": 21,
+            "recent_sec_breakout_signals_seen": 9,
+            "signals_resized": 9,
+            "recent_sec_sizing_days": 8,
+            "touched_trade_count": 4,
+            "touched_trade_pnl": 7311.68,
+            "touched_trade_win_rate": 0.25
+          },
+          "touched_trades": [
+            {
+              "ticker": "COIN",
+              "strategy": "breakout_long",
+              "entry_date": "2025-07-21",
+              "exit_date": "2025-07-23",
+              "sector": "Financials",
+              "pnl": -418.45,
+              "pnl_pct_net": -0.089651,
+              "sizing_multipliers": {
+                "breakout_financials_dte_risk_multiplier_applied": 0.25,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "DIS",
+              "strategy": "breakout_long",
+              "entry_date": "2025-06-11",
+              "exit_date": "2025-08-06",
+              "sector": "Communication Services",
+              "pnl": -63.06,
+              "pnl_pct_net": -0.033752,
+              "sizing_multipliers": {
+                "breakout_comms_near_high_risk_multiplier_applied": 0.25,
+                "breakout_comms_gap_risk_multiplier_applied": 0.25,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "AAPL",
+              "strategy": "breakout_long",
+              "entry_date": "2025-08-11",
+              "exit_date": "2025-09-22",
+              "sector": "Technology",
+              "pnl": 7888.66,
+              "pnl_pct_net": 0.10343,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            },
+            {
+              "ticker": "ISRG",
+              "strategy": "breakout_long",
+              "entry_date": "2025-10-23",
+              "exit_date": "2025-10-22",
+              "sector": "Healthcare",
+              "pnl": -95.47,
+              "pnl_pct_net": -0.001338,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.25
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.0055,
+            "sharpe_daily": -0.01,
+            "total_pnl": 12.08,
+            "total_return_pct": 0.0001,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": -0.0165,
+            "breakout_signals_seen": 21.0,
+            "recent_sec_breakout_signals_seen": 9.0,
+            "signals_resized": 9.0,
+            "recent_sec_sizing_days": 8.0,
+            "touched_trade_count": 4.0,
+            "touched_trade_pnl": 7311.68,
+            "touched_trade_win_rate": 0.25
+          }
+        },
+        "old_thin": {
+          "metrics": {
+            "expected_value_score": 0.3359,
+            "sharpe_daily": 1.28,
+            "total_pnl": 26242.68,
+            "total_return_pct": 0.2624,
+            "max_drawdown_pct": 0.0905,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "tail_loss_share": 0.4733,
+            "breakout_signals_seen": 13,
+            "recent_sec_breakout_signals_seen": 3,
+            "signals_resized": 3,
+            "recent_sec_sizing_days": 2,
+            "touched_trade_count": 0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          },
+          "touched_trades": [],
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0,
+            "breakout_signals_seen": 13.0,
+            "recent_sec_breakout_signals_seen": 3.0,
+            "signals_resized": 3.0,
+            "recent_sec_sizing_days": 2.0,
+            "touched_trade_count": 0.0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.6272,
+        "after_expected_value_score_sum": 5.7616,
+        "expected_value_score_delta_sum": 0.1344,
+        "expected_value_score_delta_pct": 0.023884,
+        "baseline_total_pnl_sum": 167347.95,
+        "after_total_pnl_sum": 172056.16,
+        "total_pnl_delta_sum": 4708.21,
+        "total_pnl_delta_pct": 0.028134,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 2,
+        "windows_pnl_regressed": 0,
+        "by_window_ev_delta": {
+          "late_strong": 0.1399,
+          "mid_weak": -0.0055,
+          "old_thin": 0.0
+        },
+        "by_window_pnl_delta": {
+          "late_strong": 4696.13,
+          "mid_weak": 12.08,
+          "old_thin": 0.0
+        },
+        "by_window_sharpe_daily_delta": {
+          "late_strong": -0.08,
+          "mid_weak": -0.01,
+          "old_thin": 0.0
+        },
+        "by_window_max_drawdown_delta": {
+          "late_strong": 0.0024,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "by_window_win_rate_delta": {
+          "late_strong": 0.0,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "trade_count_delta_sum": 0,
+        "max_drawdown_worsening_max": 0.0024,
+        "max_drawdown_improvement_min": 0.0,
+        "best_sharpe_daily_delta": 0.0,
+        "min_win_rate_delta": 0.0,
+        "signals_resized_sum": 21,
+        "touched_trade_count_sum": 12,
+        "touched_trade_pnl_sum": 56845.45
+      },
+      "gate4_pass": false
+    },
+    "recent_sec_breakout_1_50x": {
+      "parameters": {
+        "risk_multiplier": 1.5
+      },
+      "by_window": {
+        "late_strong": {
+          "metrics": {
+            "expected_value_score": 3.8334,
+            "sharpe_daily": 4.24,
+            "total_pnl": 90414.11,
+            "total_return_pct": 0.9041,
+            "max_drawdown_pct": 0.0624,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "tail_loss_share": 0.5158,
+            "breakout_signals_seen": 19,
+            "recent_sec_breakout_signals_seen": 9,
+            "signals_resized": 9,
+            "recent_sec_sizing_days": 9,
+            "touched_trade_count": 8,
+            "touched_trade_pnl": 51638.77,
+            "touched_trade_win_rate": 0.875
+          },
+          "touched_trades": [
+            {
+              "ticker": "LLY",
+              "strategy": "breakout_long",
+              "entry_date": "2025-11-04",
+              "exit_date": "2025-11-12",
+              "sector": "Healthcare",
+              "pnl": 6490.34,
+              "pnl_pct_net": 0.113765,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "sector": "Energy",
+              "pnl": -1834.3,
+              "pnl_pct_net": -0.030081,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "MU",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-07",
+              "exit_date": "2026-01-27",
+              "sector": "Technology",
+              "pnl": 9572.76,
+              "pnl_pct_net": 0.216879,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-03",
+              "sector": "Energy",
+              "pnl": 6009.93,
+              "pnl_pct_net": 0.09771,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "CAT",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-30",
+              "exit_date": "2026-02-10",
+              "sector": "Industrials",
+              "pnl": 9750.14,
+              "pnl_pct_net": 0.134644,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "CVX",
+              "strategy": "breakout_long",
+              "entry_date": "2026-02-02",
+              "exit_date": "2026-03-02",
+              "sector": "Energy",
+              "pnl": 8003.9,
+              "pnl_pct_net": 0.099758,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-02-04",
+              "exit_date": "2026-03-02",
+              "sector": "Energy",
+              "pnl": 8339.87,
+              "pnl_pct_net": 0.108412,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "AMZN",
+              "strategy": "breakout_long",
+              "entry_date": "2026-04-10",
+              "exit_date": "2026-04-21",
+              "sector": "Consumer Discretionary",
+              "pnl": 5306.13,
+              "pnl_pct_net": 0.050623,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": 0.0899,
+            "sharpe_daily": -0.24,
+            "total_pnl": 6851.58,
+            "total_return_pct": 0.0685,
+            "max_drawdown_pct": 0.0085,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0004,
+            "breakout_signals_seen": 19.0,
+            "recent_sec_breakout_signals_seen": 9.0,
+            "signals_resized": 9.0,
+            "recent_sec_sizing_days": 9.0,
+            "touched_trade_count": 8.0,
+            "touched_trade_pnl": 51638.77,
+            "touched_trade_win_rate": 0.875
+          }
+        },
+        "mid_weak": {
+          "metrics": {
+            "expected_value_score": 1.5402,
+            "sharpe_daily": 2.68,
+            "total_pnl": 57472.73,
+            "total_return_pct": 0.5747,
+            "max_drawdown_pct": 0.0878,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "tail_loss_share": 0.4458,
+            "breakout_signals_seen": 21,
+            "recent_sec_breakout_signals_seen": 9,
+            "signals_resized": 9,
+            "recent_sec_sizing_days": 8,
+            "touched_trade_count": 4,
+            "touched_trade_pnl": 7207.17,
+            "touched_trade_win_rate": 0.25
+          },
+          "touched_trades": [
+            {
+              "ticker": "COIN",
+              "strategy": "breakout_long",
+              "entry_date": "2025-07-21",
+              "exit_date": "2025-07-23",
+              "sector": "Financials",
+              "pnl": -494.54,
+              "pnl_pct_net": -0.089651,
+              "sizing_multipliers": {
+                "breakout_financials_dte_risk_multiplier_applied": 0.25,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "DIS",
+              "strategy": "breakout_long",
+              "entry_date": "2025-06-11",
+              "exit_date": "2025-08-06",
+              "sector": "Communication Services",
+              "pnl": -74.88,
+              "pnl_pct_net": -0.033752,
+              "sizing_multipliers": {
+                "breakout_comms_near_high_risk_multiplier_applied": 0.25,
+                "breakout_comms_gap_risk_multiplier_applied": 0.25,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "AAPL",
+              "strategy": "breakout_long",
+              "entry_date": "2025-08-11",
+              "exit_date": "2025-09-22",
+              "sector": "Technology",
+              "pnl": 7881.96,
+              "pnl_pct_net": 0.103333,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            },
+            {
+              "ticker": "ISRG",
+              "strategy": "breakout_long",
+              "entry_date": "2025-10-23",
+              "exit_date": "2025-10-22",
+              "sector": "Healthcare",
+              "pnl": -105.37,
+              "pnl_pct_net": -0.001338,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 1.5
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.0076,
+            "sharpe_daily": -0.01,
+            "total_pnl": -70.01,
+            "total_return_pct": -0.0007,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": -0.0229,
+            "breakout_signals_seen": 21.0,
+            "recent_sec_breakout_signals_seen": 9.0,
+            "signals_resized": 9.0,
+            "recent_sec_sizing_days": 8.0,
+            "touched_trade_count": 4.0,
+            "touched_trade_pnl": 7207.17,
+            "touched_trade_win_rate": 0.25
+          }
+        },
+        "old_thin": {
+          "metrics": {
+            "expected_value_score": 0.3359,
+            "sharpe_daily": 1.28,
+            "total_pnl": 26242.68,
+            "total_return_pct": 0.2624,
+            "max_drawdown_pct": 0.0905,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "tail_loss_share": 0.4733,
+            "breakout_signals_seen": 13,
+            "recent_sec_breakout_signals_seen": 3,
+            "signals_resized": 3,
+            "recent_sec_sizing_days": 2,
+            "touched_trade_count": 0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          },
+          "touched_trades": [],
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0,
+            "breakout_signals_seen": 13.0,
+            "recent_sec_breakout_signals_seen": 3.0,
+            "signals_resized": 3.0,
+            "recent_sec_sizing_days": 2.0,
+            "touched_trade_count": 0.0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.6272,
+        "after_expected_value_score_sum": 5.7095,
+        "expected_value_score_delta_sum": 0.0823,
+        "expected_value_score_delta_pct": 0.014625,
+        "baseline_total_pnl_sum": 167347.95,
+        "after_total_pnl_sum": 174129.52,
+        "total_pnl_delta_sum": 6781.57,
+        "total_pnl_delta_pct": 0.040524,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 1,
+        "by_window_ev_delta": {
+          "late_strong": 0.0899,
+          "mid_weak": -0.0076,
+          "old_thin": 0.0
+        },
+        "by_window_pnl_delta": {
+          "late_strong": 6851.58,
+          "mid_weak": -70.01,
+          "old_thin": 0.0
+        },
+        "by_window_sharpe_daily_delta": {
+          "late_strong": -0.24,
+          "mid_weak": -0.01,
+          "old_thin": 0.0
+        },
+        "by_window_max_drawdown_delta": {
+          "late_strong": 0.0085,
+          "mid_weak": -0.0001,
+          "old_thin": 0.0
+        },
+        "by_window_win_rate_delta": {
+          "late_strong": 0.0,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "trade_count_delta_sum": 0,
+        "max_drawdown_worsening_max": 0.0085,
+        "max_drawdown_improvement_min": -0.0001,
+        "best_sharpe_daily_delta": 0.0,
+        "min_win_rate_delta": 0.0,
+        "signals_resized_sum": 21,
+        "touched_trade_count_sum": 12,
+        "touched_trade_pnl_sum": 58845.94
+      },
+      "gate4_pass": false
+    },
+    "recent_sec_breakout_2_00x": {
+      "parameters": {
+        "risk_multiplier": 2.0
+      },
+      "by_window": {
+        "late_strong": {
+          "metrics": {
+            "expected_value_score": 3.7425,
+            "sharpe_daily": 3.97,
+            "total_pnl": 94265.25,
+            "total_return_pct": 0.9427,
+            "max_drawdown_pct": 0.0765,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "tail_loss_share": 0.5158,
+            "breakout_signals_seen": 19,
+            "recent_sec_breakout_signals_seen": 9,
+            "signals_resized": 9,
+            "recent_sec_sizing_days": 9,
+            "touched_trade_count": 8,
+            "touched_trade_pnl": 55386.8,
+            "touched_trade_win_rate": 0.875
+          },
+          "touched_trades": [
+            {
+              "ticker": "LLY",
+              "strategy": "breakout_long",
+              "entry_date": "2025-11-04",
+              "exit_date": "2025-11-12",
+              "sector": "Healthcare",
+              "pnl": 6490.34,
+              "pnl_pct_net": 0.113765,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-06",
+              "exit_date": "2026-01-06",
+              "sector": "Energy",
+              "pnl": -1834.3,
+              "pnl_pct_net": -0.030081,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "MU",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-07",
+              "exit_date": "2026-01-27",
+              "sector": "Technology",
+              "pnl": 12665.49,
+              "pnl_pct_net": 0.216879,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-15",
+              "exit_date": "2026-02-03",
+              "sector": "Energy",
+              "pnl": 6009.93,
+              "pnl_pct_net": 0.09771,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "CAT",
+              "strategy": "breakout_long",
+              "entry_date": "2026-01-30",
+              "exit_date": "2026-02-10",
+              "sector": "Industrials",
+              "pnl": 10013.66,
+              "pnl_pct_net": 0.134644,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "CVX",
+              "strategy": "breakout_long",
+              "entry_date": "2026-02-02",
+              "exit_date": "2026-03-02",
+              "sector": "Energy",
+              "pnl": 8117.92,
+              "pnl_pct_net": 0.100142,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "XOM",
+              "strategy": "breakout_long",
+              "entry_date": "2026-02-04",
+              "exit_date": "2026-03-02",
+              "sector": "Energy",
+              "pnl": 8510.07,
+              "pnl_pct_net": 0.108412,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "AMZN",
+              "strategy": "breakout_long",
+              "entry_date": "2026-04-10",
+              "exit_date": "2026-04-21",
+              "sector": "Consumer Discretionary",
+              "pnl": 5413.69,
+              "pnl_pct_net": 0.050623,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.001,
+            "sharpe_daily": -0.51,
+            "total_pnl": 10702.72,
+            "total_return_pct": 0.1071,
+            "max_drawdown_pct": 0.0226,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0004,
+            "breakout_signals_seen": 19.0,
+            "recent_sec_breakout_signals_seen": 9.0,
+            "signals_resized": 9.0,
+            "recent_sec_sizing_days": 9.0,
+            "touched_trade_count": 8.0,
+            "touched_trade_pnl": 55386.8,
+            "touched_trade_win_rate": 0.875
+          }
+        },
+        "mid_weak": {
+          "metrics": {
+            "expected_value_score": 1.5221,
+            "sharpe_daily": 2.66,
+            "total_pnl": 57221.2,
+            "total_return_pct": 0.5722,
+            "max_drawdown_pct": 0.0878,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "tail_loss_share": 0.4848,
+            "breakout_signals_seen": 21,
+            "recent_sec_breakout_signals_seen": 9,
+            "signals_resized": 9,
+            "recent_sec_sizing_days": 8,
+            "touched_trade_count": 4,
+            "touched_trade_pnl": 6989.38,
+            "touched_trade_win_rate": 0.25
+          },
+          "touched_trades": [
+            {
+              "ticker": "COIN",
+              "strategy": "breakout_long",
+              "entry_date": "2025-07-21",
+              "exit_date": "2025-07-23",
+              "sector": "Financials",
+              "pnl": -684.74,
+              "pnl_pct_net": -0.089651,
+              "sizing_multipliers": {
+                "breakout_financials_dte_risk_multiplier_applied": 0.25,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "DIS",
+              "strategy": "breakout_long",
+              "entry_date": "2025-06-11",
+              "exit_date": "2025-08-06",
+              "sector": "Communication Services",
+              "pnl": -102.47,
+              "pnl_pct_net": -0.033752,
+              "sizing_multipliers": {
+                "breakout_comms_near_high_risk_multiplier_applied": 0.25,
+                "breakout_comms_gap_risk_multiplier_applied": 0.25,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "AAPL",
+              "strategy": "breakout_long",
+              "entry_date": "2025-08-11",
+              "exit_date": "2025-09-22",
+              "sector": "Technology",
+              "pnl": 7881.96,
+              "pnl_pct_net": 0.103333,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            },
+            {
+              "ticker": "ISRG",
+              "strategy": "breakout_long",
+              "entry_date": "2025-10-23",
+              "exit_date": "2025-10-22",
+              "sector": "Healthcare",
+              "pnl": -105.37,
+              "pnl_pct_net": -0.001338,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0,
+                "breakout_recent_sec_filing_risk_multiplier_applied": 2.0
+              }
+            }
+          ],
+          "delta": {
+            "expected_value_score": -0.0257,
+            "sharpe_daily": -0.03,
+            "total_pnl": -321.54,
+            "total_return_pct": -0.0032,
+            "max_drawdown_pct": -0.0001,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0161,
+            "breakout_signals_seen": 21.0,
+            "recent_sec_breakout_signals_seen": 9.0,
+            "signals_resized": 9.0,
+            "recent_sec_sizing_days": 8.0,
+            "touched_trade_count": 4.0,
+            "touched_trade_pnl": 6989.38,
+            "touched_trade_win_rate": 0.25
+          }
+        },
+        "old_thin": {
+          "metrics": {
+            "expected_value_score": 0.3359,
+            "sharpe_daily": 1.28,
+            "total_pnl": 26242.68,
+            "total_return_pct": 0.2624,
+            "max_drawdown_pct": 0.0905,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "tail_loss_share": 0.4733,
+            "breakout_signals_seen": 13,
+            "recent_sec_breakout_signals_seen": 3,
+            "signals_resized": 3,
+            "recent_sec_sizing_days": 2,
+            "touched_trade_count": 0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          },
+          "touched_trades": [],
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0,
+            "tail_loss_share": 0.0,
+            "breakout_signals_seen": 13.0,
+            "recent_sec_breakout_signals_seen": 3.0,
+            "signals_resized": 3.0,
+            "recent_sec_sizing_days": 2.0,
+            "touched_trade_count": 0.0,
+            "touched_trade_pnl": 0.0,
+            "touched_trade_win_rate": 0.0
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.6272,
+        "after_expected_value_score_sum": 5.6005,
+        "expected_value_score_delta_sum": -0.0267,
+        "expected_value_score_delta_pct": -0.004745,
+        "baseline_total_pnl_sum": 167347.95,
+        "after_total_pnl_sum": 177729.13,
+        "total_pnl_delta_sum": 10381.18,
+        "total_pnl_delta_pct": 0.062034,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 1,
+        "by_window_ev_delta": {
+          "late_strong": -0.001,
+          "mid_weak": -0.0257,
+          "old_thin": 0.0
+        },
+        "by_window_pnl_delta": {
+          "late_strong": 10702.72,
+          "mid_weak": -321.54,
+          "old_thin": 0.0
+        },
+        "by_window_sharpe_daily_delta": {
+          "late_strong": -0.51,
+          "mid_weak": -0.03,
+          "old_thin": 0.0
+        },
+        "by_window_max_drawdown_delta": {
+          "late_strong": 0.0226,
+          "mid_weak": -0.0001,
+          "old_thin": 0.0
+        },
+        "by_window_win_rate_delta": {
+          "late_strong": 0.0,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "trade_count_delta_sum": 0,
+        "max_drawdown_worsening_max": 0.0226,
+        "max_drawdown_improvement_min": -0.0001,
+        "best_sharpe_daily_delta": 0.0,
+        "min_win_rate_delta": 0.0,
+        "signals_resized_sum": 21,
+        "touched_trade_count_sum": 12,
+        "touched_trade_pnl_sum": 62376.18
+      },
+      "gate4_pass": false
+    }
+  },
+  "best_variant": "recent_sec_breakout_1_25x",
+  "best_variant_gate4": false,
+  "decision": "rejected",
+  "interpretation": "Recent SEC filing breakout risk expansion did not pass the three-window promotion gate. The best EV variant `recent_sec_breakout_1_25x` changed aggregate EV by 0.1344 and PnL by 4708.21; this does not justify adding an event-confirmed breakout sizing branch.",
+  "rejection_reason": "Recent SEC filing breakout risk expansion did not pass the three-window promotion gate. The best EV variant `recent_sec_breakout_1_25x` changed aggregate EV by 0.1344 and PnL by 4708.21; this does not justify adding an event-confirmed breakout sizing branch.",
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_role_changed": false,
+    "blocker_relation": "LLM data limits were bypassed by selecting another alpha branch."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, compute recent SEC filing context in shared production/backtest enrichment and consume it from shared sizing before live behavior changes."
+  },
+  "ticket": {
+    "experiment_id": "exp-20260507-003",
+    "status": "rejected",
+    "lane": "alpha_search",
+    "title": "Recent SEC filing breakout risk",
+    "decision": "rejected",
+    "best_variant": "recent_sec_breakout_1_25x",
+    "created_at": "2026-05-07T01:18:21.252187+00:00",
+    "completed_at": "2026-05-07T01:18:21.252187+00:00",
+    "result": {
+      "decision": "rejected",
+      "expected_value_score_delta_sum": 0.1344,
+      "total_pnl_delta_sum": 4708.21,
+      "gate4_passed": false
+    }
+  },
+  "related_files": [
+    "data\\experiments\\exp-20260507-003\\recent_sec_breakout_risk.json",
+    "experiments\\logs\\exp-20260507-003.json",
+    "experiments\\tickets\\exp-20260507-003.json",
+    "experiments\\artifacts\\exp-20260507-003_recent_sec_breakout_risk.md",
+    "quant/experiments/exp_20260507_003_recent_sec_breakout_risk.py",
+    "docs/experiment_log.jsonl"
+  ],
+  "experiment_log_entry": {
+    "experiment_id": "exp-20260507-003",
+    "timestamp": "2026-05-07T01:18:21.252187+00:00",
+    "lane": "alpha_search",
+    "change_type": "capital_allocation_recent_sec_breakout_risk",
+    "alpha_hypothesis_category": "event_confirmed_capital_allocation",
+    "hypothesis": "If a `breakout_long` candidate has a PIT-safe SEC filing within the last 20 trading days, the event context may confirm the technical breakout and justify a larger risk budget.",
+    "parameters": {
+      "recent_event_definition": "latest PIT-safe row from data/non_ohlcv/sec_filing_features_YYYYMMDD.jsonl with usable_trade_date no more than 20 trading days before the signal date",
+      "strategy_scope": "breakout_long only",
+      "tested_variants": {
+        "recent_sec_breakout_1_25x": {
+          "risk_multiplier": 1.25
+        },
+        "recent_sec_breakout_1_50x": {
+          "risk_multiplier": 1.5
+        },
+        "recent_sec_breakout_2_00x": {
+          "risk_multiplier": 2.0
+        }
+      },
+      "locked_variables": [
+        "universe",
+        "signal generation",
+        "entry filters",
+        "candidate ranking",
+        "MAX_POSITIONS",
+        "MAX_POSITION_PCT",
+        "MAX_PORTFOLIO_HEAT",
+        "MAX_PER_SECTOR",
+        "gap cancels",
+        "add-ons",
+        "all exits",
+        "all non-tested sizing rules",
+        "LLM/news replay",
+        "earnings strategy"
+      ],
+      "windows": {
+        "late_strong": {
+          "start": "2025-10-23",
+          "end": "2026-04-21",
+          "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+          "state_note": "slow-melt bull / accepted-stack dominant tape"
+        },
+        "mid_weak": {
+          "start": "2025-04-23",
+          "end": "2025-10-22",
+          "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+          "state_note": "rotation-heavy bull where strategy profits but can lag indexes"
+        },
+        "old_thin": {
+          "start": "2024-10-02",
+          "end": "2025-04-22",
+          "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+          "state_note": "mixed-to-weak older tape with lower win rate"
+        }
+      }
+    },
+    "date_range": {
+      "primary": "2025-10-23 -> 2026-04-21",
+      "secondary": [
+        "2025-04-23 -> 2025-10-22",
+        "2024-10-02 -> 2025-04-22"
+      ]
+    },
+    "market_regime_summary": {
+      "late_strong": "slow-melt bull / accepted-stack dominant tape",
+      "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+      "old_thin": "mixed-to-weak older tape with lower win rate"
+    },
+    "before_metrics": {
+      "late_strong": {
+        "expected_value_score": 3.7435,
+        "sharpe_daily": 4.48,
+        "total_pnl": 83562.53,
+        "total_return_pct": 0.8356,
+        "max_drawdown_pct": 0.0539,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "survival_rate": 0.8039,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "tail_loss_share": 0.5154,
+        "breakout_signals_seen": 0,
+        "recent_sec_breakout_signals_seen": 0,
+        "signals_resized": 0,
+        "recent_sec_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 1.5478,
+        "sharpe_daily": 2.69,
+        "total_pnl": 57542.74,
+        "total_return_pct": 0.5754,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "survival_rate": 0.7925,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "tail_loss_share": 0.4687,
+        "breakout_signals_seen": 0,
+        "recent_sec_breakout_signals_seen": 0,
+        "signals_resized": 0,
+        "recent_sec_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.3359,
+        "sharpe_daily": 1.28,
+        "total_pnl": 26242.68,
+        "total_return_pct": 0.2624,
+        "max_drawdown_pct": 0.0905,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "survival_rate": 0.9167,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "tail_loss_share": 0.4733,
+        "breakout_signals_seen": 0,
+        "recent_sec_breakout_signals_seen": 0,
+        "signals_resized": 0,
+        "recent_sec_sizing_days": 0,
+        "touched_trade_count": 0,
+        "touched_trade_pnl": 0.0,
+        "touched_trade_win_rate": 0.0
+      }
+    },
+    "after_metrics": {
+      "recent_sec_breakout_1_25x": {
+        "late_strong": {
+          "expected_value_score": 3.8834,
+          "sharpe_daily": 4.4,
+          "total_pnl": 88258.66,
+          "total_return_pct": 0.8826,
+          "max_drawdown_pct": 0.0563,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8039,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "tail_loss_share": 0.5158,
+          "breakout_signals_seen": 19,
+          "recent_sec_breakout_signals_seen": 9,
+          "signals_resized": 9,
+          "recent_sec_sizing_days": 9,
+          "touched_trade_count": 8,
+          "touched_trade_pnl": 49533.77,
+          "touched_trade_win_rate": 0.875
+        },
+        "mid_weak": {
+          "expected_value_score": 1.5423,
+          "sharpe_daily": 2.68,
+          "total_pnl": 57554.82,
+          "total_return_pct": 0.5755,
+          "max_drawdown_pct": 0.0879,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "tail_loss_share": 0.4522,
+          "breakout_signals_seen": 21,
+          "recent_sec_breakout_signals_seen": 9,
+          "signals_resized": 9,
+          "recent_sec_sizing_days": 8,
+          "touched_trade_count": 4,
+          "touched_trade_pnl": 7311.68,
+          "touched_trade_win_rate": 0.25
+        },
+        "old_thin": {
+          "expected_value_score": 0.3359,
+          "sharpe_daily": 1.28,
+          "total_pnl": 26242.68,
+          "total_return_pct": 0.2624,
+          "max_drawdown_pct": 0.0905,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167,
+          "signals_generated": 60,
+          "signals_survived": 55,
+          "tail_loss_share": 0.4733,
+          "breakout_signals_seen": 13,
+          "recent_sec_breakout_signals_seen": 3,
+          "signals_resized": 3,
+          "recent_sec_sizing_days": 2,
+          "touched_trade_count": 0,
+          "touched_trade_pnl": 0.0,
+          "touched_trade_win_rate": 0.0
+        }
+      },
+      "recent_sec_breakout_1_50x": {
+        "late_strong": {
+          "expected_value_score": 3.8334,
+          "sharpe_daily": 4.24,
+          "total_pnl": 90414.11,
+          "total_return_pct": 0.9041,
+          "max_drawdown_pct": 0.0624,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8039,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "tail_loss_share": 0.5158,
+          "breakout_signals_seen": 19,
+          "recent_sec_breakout_signals_seen": 9,
+          "signals_resized": 9,
+          "recent_sec_sizing_days": 9,
+          "touched_trade_count": 8,
+          "touched_trade_pnl": 51638.77,
+          "touched_trade_win_rate": 0.875
+        },
+        "mid_weak": {
+          "expected_value_score": 1.5402,
+          "sharpe_daily": 2.68,
+          "total_pnl": 57472.73,
+          "total_return_pct": 0.5747,
+          "max_drawdown_pct": 0.0878,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "tail_loss_share": 0.4458,
+          "breakout_signals_seen": 21,
+          "recent_sec_breakout_signals_seen": 9,
+          "signals_resized": 9,
+          "recent_sec_sizing_days": 8,
+          "touched_trade_count": 4,
+          "touched_trade_pnl": 7207.17,
+          "touched_trade_win_rate": 0.25
+        },
+        "old_thin": {
+          "expected_value_score": 0.3359,
+          "sharpe_daily": 1.28,
+          "total_pnl": 26242.68,
+          "total_return_pct": 0.2624,
+          "max_drawdown_pct": 0.0905,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167,
+          "signals_generated": 60,
+          "signals_survived": 55,
+          "tail_loss_share": 0.4733,
+          "breakout_signals_seen": 13,
+          "recent_sec_breakout_signals_seen": 3,
+          "signals_resized": 3,
+          "recent_sec_sizing_days": 2,
+          "touched_trade_count": 0,
+          "touched_trade_pnl": 0.0,
+          "touched_trade_win_rate": 0.0
+        }
+      },
+      "recent_sec_breakout_2_00x": {
+        "late_strong": {
+          "expected_value_score": 3.7425,
+          "sharpe_daily": 3.97,
+          "total_pnl": 94265.25,
+          "total_return_pct": 0.9427,
+          "max_drawdown_pct": 0.0765,
+          "win_rate": 0.7895,
+          "trade_count": 19,
+          "survival_rate": 0.8039,
+          "signals_generated": 51,
+          "signals_survived": 41,
+          "tail_loss_share": 0.5158,
+          "breakout_signals_seen": 19,
+          "recent_sec_breakout_signals_seen": 9,
+          "signals_resized": 9,
+          "recent_sec_sizing_days": 9,
+          "touched_trade_count": 8,
+          "touched_trade_pnl": 55386.8,
+          "touched_trade_win_rate": 0.875
+        },
+        "mid_weak": {
+          "expected_value_score": 1.5221,
+          "sharpe_daily": 2.66,
+          "total_pnl": 57221.2,
+          "total_return_pct": 0.5722,
+          "max_drawdown_pct": 0.0878,
+          "win_rate": 0.5238,
+          "trade_count": 21,
+          "survival_rate": 0.7925,
+          "signals_generated": 53,
+          "signals_survived": 42,
+          "tail_loss_share": 0.4848,
+          "breakout_signals_seen": 21,
+          "recent_sec_breakout_signals_seen": 9,
+          "signals_resized": 9,
+          "recent_sec_sizing_days": 8,
+          "touched_trade_count": 4,
+          "touched_trade_pnl": 6989.38,
+          "touched_trade_win_rate": 0.25
+        },
+        "old_thin": {
+          "expected_value_score": 0.3359,
+          "sharpe_daily": 1.28,
+          "total_pnl": 26242.68,
+          "total_return_pct": 0.2624,
+          "max_drawdown_pct": 0.0905,
+          "win_rate": 0.4091,
+          "trade_count": 22,
+          "survival_rate": 0.9167,
+          "signals_generated": 60,
+          "signals_survived": 55,
+          "tail_loss_share": 0.4733,
+          "breakout_signals_seen": 13,
+          "recent_sec_breakout_signals_seen": 3,
+          "signals_resized": 3,
+          "recent_sec_sizing_days": 2,
+          "touched_trade_count": 0,
+          "touched_trade_pnl": 0.0,
+          "touched_trade_win_rate": 0.0
+        }
+      }
+    },
+    "delta_metrics": {
+      "recent_sec_breakout_1_25x": {
+        "baseline_expected_value_score_sum": 5.6272,
+        "after_expected_value_score_sum": 5.7616,
+        "expected_value_score_delta_sum": 0.1344,
+        "expected_value_score_delta_pct": 0.023884,
+        "baseline_total_pnl_sum": 167347.95,
+        "after_total_pnl_sum": 172056.16,
+        "total_pnl_delta_sum": 4708.21,
+        "total_pnl_delta_pct": 0.028134,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 2,
+        "windows_pnl_regressed": 0,
+        "by_window_ev_delta": {
+          "late_strong": 0.1399,
+          "mid_weak": -0.0055,
+          "old_thin": 0.0
+        },
+        "by_window_pnl_delta": {
+          "late_strong": 4696.13,
+          "mid_weak": 12.08,
+          "old_thin": 0.0
+        },
+        "by_window_sharpe_daily_delta": {
+          "late_strong": -0.08,
+          "mid_weak": -0.01,
+          "old_thin": 0.0
+        },
+        "by_window_max_drawdown_delta": {
+          "late_strong": 0.0024,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "by_window_win_rate_delta": {
+          "late_strong": 0.0,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "trade_count_delta_sum": 0,
+        "max_drawdown_worsening_max": 0.0024,
+        "max_drawdown_improvement_min": 0.0,
+        "best_sharpe_daily_delta": 0.0,
+        "min_win_rate_delta": 0.0,
+        "signals_resized_sum": 21,
+        "touched_trade_count_sum": 12,
+        "touched_trade_pnl_sum": 56845.45
+      },
+      "recent_sec_breakout_1_50x": {
+        "baseline_expected_value_score_sum": 5.6272,
+        "after_expected_value_score_sum": 5.7095,
+        "expected_value_score_delta_sum": 0.0823,
+        "expected_value_score_delta_pct": 0.014625,
+        "baseline_total_pnl_sum": 167347.95,
+        "after_total_pnl_sum": 174129.52,
+        "total_pnl_delta_sum": 6781.57,
+        "total_pnl_delta_pct": 0.040524,
+        "windows_ev_improved": 1,
+        "windows_ev_regressed": 1,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 1,
+        "by_window_ev_delta": {
+          "late_strong": 0.0899,
+          "mid_weak": -0.0076,
+          "old_thin": 0.0
+        },
+        "by_window_pnl_delta": {
+          "late_strong": 6851.58,
+          "mid_weak": -70.01,
+          "old_thin": 0.0
+        },
+        "by_window_sharpe_daily_delta": {
+          "late_strong": -0.24,
+          "mid_weak": -0.01,
+          "old_thin": 0.0
+        },
+        "by_window_max_drawdown_delta": {
+          "late_strong": 0.0085,
+          "mid_weak": -0.0001,
+          "old_thin": 0.0
+        },
+        "by_window_win_rate_delta": {
+          "late_strong": 0.0,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "trade_count_delta_sum": 0,
+        "max_drawdown_worsening_max": 0.0085,
+        "max_drawdown_improvement_min": -0.0001,
+        "best_sharpe_daily_delta": 0.0,
+        "min_win_rate_delta": 0.0,
+        "signals_resized_sum": 21,
+        "touched_trade_count_sum": 12,
+        "touched_trade_pnl_sum": 58845.94
+      },
+      "recent_sec_breakout_2_00x": {
+        "baseline_expected_value_score_sum": 5.6272,
+        "after_expected_value_score_sum": 5.6005,
+        "expected_value_score_delta_sum": -0.0267,
+        "expected_value_score_delta_pct": -0.004745,
+        "baseline_total_pnl_sum": 167347.95,
+        "after_total_pnl_sum": 177729.13,
+        "total_pnl_delta_sum": 10381.18,
+        "total_pnl_delta_pct": 0.062034,
+        "windows_ev_improved": 0,
+        "windows_ev_regressed": 2,
+        "windows_pnl_improved": 1,
+        "windows_pnl_regressed": 1,
+        "by_window_ev_delta": {
+          "late_strong": -0.001,
+          "mid_weak": -0.0257,
+          "old_thin": 0.0
+        },
+        "by_window_pnl_delta": {
+          "late_strong": 10702.72,
+          "mid_weak": -321.54,
+          "old_thin": 0.0
+        },
+        "by_window_sharpe_daily_delta": {
+          "late_strong": -0.51,
+          "mid_weak": -0.03,
+          "old_thin": 0.0
+        },
+        "by_window_max_drawdown_delta": {
+          "late_strong": 0.0226,
+          "mid_weak": -0.0001,
+          "old_thin": 0.0
+        },
+        "by_window_win_rate_delta": {
+          "late_strong": 0.0,
+          "mid_weak": 0.0,
+          "old_thin": 0.0
+        },
+        "trade_count_delta_sum": 0,
+        "max_drawdown_worsening_max": 0.0226,
+        "max_drawdown_improvement_min": -0.0001,
+        "best_sharpe_daily_delta": 0.0,
+        "min_win_rate_delta": 0.0,
+        "signals_resized_sum": 21,
+        "touched_trade_count_sum": 12,
+        "touched_trade_pnl_sum": 62376.18
+      }
+    },
+    "best_variant": "recent_sec_breakout_1_25x",
+    "best_variant_gate4": false,
+    "decision": "rejected",
+    "rejection_reason": "Recent SEC filing breakout risk expansion did not pass the three-window promotion gate. The best EV variant `recent_sec_breakout_1_25x` changed aggregate EV by 0.1344 and PnL by 4708.21; this does not justify adding an event-confirmed breakout sizing branch.",
+    "llm_metrics": {
+      "used_llm": false,
+      "llm_role_changed": false,
+      "blocker_relation": "LLM data limits were bypassed by selecting another alpha branch."
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "replay_only": false,
+      "parity_test_added": false,
+      "promotion_requirement": "If accepted, compute recent SEC filing context in shared production/backtest enrichment and consume it from shared sizing before live behavior changes."
+    },
+    "history_guardrails": {
+      "not_mid_dispersion_breakout_retry": true,
+      "not_broad_universe_expansion": true,
+      "not_sec_threshold_reaction_retry": true,
+      "why_not_simple_repeat": "This tests event-confirmed sizing on existing breakout signals. It does not retry mid-sector-dispersion breakout sizing, SEC negative-reaction sleeves, simple guidance raise reaction rules, or broad watchlist expansion."
+    },
+    "next_retry_requires": [
+      "Do not retry nearby recent-SEC breakout multipliers on the same 20-trading-day filing definition if this run fails.",
+      "A valid retry needs a richer event-quality discriminator, not just a wider lookback or bigger risk scalar.",
+      "If promoted later, implement SEC event context and sizing in shared production/backtest policy with parity tests."
+    ],
+    "related_files": [
+      "data\\experiments\\exp-20260507-003\\recent_sec_breakout_risk.json",
+      "experiments\\logs\\exp-20260507-003.json",
+      "experiments\\tickets\\exp-20260507-003.json",
+      "experiments\\artifacts\\exp-20260507-003_recent_sec_breakout_risk.md",
+      "quant/experiments/exp_20260507_003_recent_sec_breakout_risk.py",
+      "docs/experiment_log.jsonl"
+    ],
+    "status": "rejected"
+  }
+}

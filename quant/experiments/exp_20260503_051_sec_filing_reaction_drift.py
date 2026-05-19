@@ -31,8 +31,8 @@ EXPERIMENT_ID = "exp-20260503-051"
 SEC_EVENTS_PATH = REPO_ROOT / "data" / "non_ohlcv" / "sec_filing_events_20241002_20260421.jsonl"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "sec_filing_reaction_drift.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 
 WINDOWS = OrderedDict([
@@ -680,8 +680,8 @@ def build_payload() -> dict[str, Any]:
             "data/non_ohlcv/sec_filing_events_20241002_20260421.jsonl",
             "quant/experiments/exp_20260503_051_sec_filing_reaction_drift.py",
             "data/experiments/exp-20260503-051/sec_filing_reaction_drift.json",
-            "docs/experiments/logs/exp-20260503-051.json",
-            "docs/experiments/tickets/exp-20260503-051.json",
+            "experiments/logs/exp-20260503-051.json",
+            "experiments/tickets/exp-20260503-051.json",
         ],
     }
     return _safe_payload(payload)

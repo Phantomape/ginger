@@ -33,11 +33,10 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260505-007"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "breakout_above_200ma_gate.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_breakout_above_200ma_gate.md"
@@ -568,9 +567,9 @@ def main() -> int:
         "related_files": [
             str(Path("quant/experiments/exp_20260505_007_breakout_above_200ma_gate.py")),
             str(Path("data/experiments/exp-20260505-007/breakout_above_200ma_gate.json")),
-            str(Path("docs/experiments/logs/exp-20260505-007.json")),
-            str(Path("docs/experiments/tickets/exp-20260505-007.json")),
-            str(Path("docs/experiments/artifacts/exp-20260505-007_breakout_above_200ma_gate.md")),
+            str(Path("experiments/logs/exp-20260505-007.json")),
+            str(Path("experiments/tickets/exp-20260505-007.json")),
+            str(Path("experiments/artifacts/exp-20260505-007_breakout_above_200ma_gate.md")),
             str(Path("docs/experiment_log.jsonl")),
         ],
     }

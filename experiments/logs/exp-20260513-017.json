@@ -1,0 +1,1391 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.2894,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0552,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.5,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5156,
+      "total_pnl": 95321.74,
+      "total_return_pct": 0.9532,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.5717,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.097,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.61,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4891,
+      "total_pnl": 60223.38,
+      "total_return_pct": 0.6022,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.3867,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0821,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.34,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4574,
+      "total_pnl": 28855.61,
+      "total_return_pct": 0.2886,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "alpha_hypothesis": {
+    "category": "exit / lifecycle",
+    "statement": "QQQ-like index ETFs should only become their own strategy pool if a single deterministic lifecycle variable, wider ATR targets, improves accepted-stack outcomes across the canonical fixed windows.",
+    "why_now": "The live QQQ position triggered SIGNAL_TARGET at a relatively small index gain. LLM soft-ranking remains sample-limited, and prior broad ETF pool expansion was rejected, so this tests lifecycle width rather than adding or reshuffling tickers."
+  },
+  "backtest_protocol": {
+    "source": "docs/backtesting.md canonical three-window protocol",
+    "windows": {
+      "late_strong": {
+        "date_range": "2025-10-23 -> 2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "state_note": "slow-melt bull / accepted-stack dominant tape"
+      },
+      "mid_weak": {
+        "date_range": "2025-04-23 -> 2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+      },
+      "old_thin": {
+        "date_range": "2024-10-02 -> 2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "state_note": "mixed-to-weak older tape with lower win rate"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "converged": true,
+      "expected_value_score": 4.2894,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0552,
+      "qqq_buy_hold_return_pct": 0.058,
+      "sharpe_daily": 4.5,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "spy_buy_hold_return_pct": 0.0541,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5156,
+      "total_pnl": 95321.74,
+      "total_return_pct": 0.9532,
+      "trade_count": 19,
+      "win_rate": 0.7895,
+      "worst_trade_pct": -0.060734
+    },
+    "mid_weak": {
+      "converged": true,
+      "expected_value_score": 1.6747,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.097,
+      "qqq_buy_hold_return_pct": 0.3351,
+      "sharpe_daily": 2.68,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "spy_buy_hold_return_pct": 0.2544,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.4885,
+      "total_pnl": 62490.66,
+      "total_return_pct": 0.6249,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.089651
+    },
+    "old_thin": {
+      "converged": true,
+      "expected_value_score": 0.3867,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0821,
+      "qqq_buy_hold_return_pct": -0.0749,
+      "sharpe_daily": 1.34,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "spy_buy_hold_return_pct": -0.0672,
+      "survival_rate": 0.9167,
+      "tail_loss_share": 0.4574,
+      "total_pnl": 28855.61,
+      "total_return_pct": 0.2886,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.063499
+    }
+  },
+  "best_variant": "index_etf_target_5_0atr",
+  "change_type": "alpha_search_exit_lifecycle_sweep",
+  "changed_variable": "target ATR multiple for index ETF signals with ticker in QQQ/SPY/IWM",
+  "decision": "rejected_index_etf_target_width",
+  "decision_notes": "A separate index ETF strategy pool is only justified if this or a narrower state-conditioned lifecycle rule creates real behavior-changing PnL/EV in the fixed windows. Otherwise, treat the recent QQQ trigger as a forward watch item rather than a production policy change.",
+  "delta_metrics": {
+    "aggregate": {
+      "added_index_etf_trade_count_sum": 0,
+      "changed_index_etf_trade_count_sum": 1,
+      "drawdown_delta_max": 0.0,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 1,
+      "expected_value_score_after_sum": 6.2478,
+      "expected_value_score_before_sum": 6.3508,
+      "expected_value_score_delta_pct": -0.016218,
+      "expected_value_score_delta_sum": -0.103,
+      "index_etf_candidate_count_sum": 3,
+      "max_consecutive_losses_delta_max": 0,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 1,
+      "removed_index_etf_trade_count_sum": 0,
+      "survival_rate_min_after": 0.7925,
+      "tail_loss_share_delta_max": 0.0006,
+      "total_pnl_after_sum": 184400.73,
+      "total_pnl_before_sum": 186668.01,
+      "total_pnl_delta_pct": -0.012146,
+      "total_pnl_delta_sum": -2267.28,
+      "worst_trade_delta_min": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": -0.103,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": -0.07,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0006,
+        "total_pnl": -2267.28,
+        "total_return_pct": -0.0227,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": 0.0,
+        "max_consecutive_losses": 0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "signals_generated": 0,
+        "signals_survived": 0,
+        "survival_rate": 0.0,
+        "tail_loss_share": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "trade_count": 0,
+        "win_rate": 0.0,
+        "worst_trade_pct": 0.0
+      }
+    }
+  },
+  "experiment_id": "exp-20260513-017",
+  "gate2": {
+    "checked_rows": 14,
+    "missing_required_fields": [],
+    "passed": true,
+    "path": "operator_inputs\\open_positions.json",
+    "qqq_position": {
+      "avg_cost": 611.063,
+      "entry_date": "2026-03-30",
+      "opened_by_strategy": "legacy",
+      "stop_price": 594.08,
+      "target_price": 650.7
+    },
+    "required_fields": [
+      "entry_date",
+      "target_price"
+    ]
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "passed": true,
+    "survival_rate_min_after": 0.7925
+  },
+  "gate4": {
+    "basis": "Requires at least one behavior-changing index ETF trade, positive aggregate EV and PnL, EV improvement in at least two windows, no EV regression, survival >= 5%, and no material drawdown/tail loss drift.",
+    "passed": false
+  },
+  "generated_at": "2026-05-13T06:13:20+00:00",
+  "historical_experiment_check": {
+    "mechanism_guard": "Avoids no-repeat zones: no broad/static ETF expansion, no adjacent low-deployment overlay pool retry, no LLM soft-ranking, and no blunt production-only target trim.",
+    "similar_prior_results": {
+      "exp-20260428-035 / exp-20260430-008": "Broad ETF universe expansion as direct core alpha was rejected; this tests exit lifecycle, not universe expansion.",
+      "exp-20260506-006": "SPY-relative leader target widening was rejected; this run narrows scope to actual broad index ETFs only, excluding single-name leaders.",
+      "exp-20260512-777": "Adjacent low-deployment ETF candidate-pool variants were rejected; this run does not add or replace ETF tickers.",
+      "exp-20260513-008": "Legacy target full exits were not promoted; this run tests future simulated index ETF target width through the canonical target path."
+    }
+  },
+  "hypothesis": "Broad index ETFs may be target-clipped by the generic target path. If QQQ/SPY/IWM behave more like slow index trend sleeves than single-name breakouts, a separate target-width pool should improve three-window EV without worsening drawdown or tail loss.",
+  "live_qqq_trigger_audit": {
+    "atr": 10.5721,
+    "available": true,
+    "close": 707.24,
+    "daily_high": 710.18,
+    "signal_target_pct": 0.0649,
+    "signal_target_price": 650.7,
+    "source": "data\\trend_signals_20260512.json",
+    "triggered_rules": [
+      {
+        "message": "daily_high 710.18 >= signal target 650.70 (+6.5%) - full-position target exit",
+        "rule": "SIGNAL_TARGET",
+        "target_price": 650.7,
+        "trigger_price": 710.18
+      }
+    ],
+    "unrealized_pnl_pct": 0.1574
+  },
+  "llm_metrics": {
+    "blocker_relation": "LLM soft-ranking data remains insufficient, so this deterministic lifecycle scout avoids depending on LLM historical replay.",
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "next_evidence_needed": [
+    "Forward shadow tracking of index ETF target touches versus holding/ratcheting.",
+    "A narrower state discriminator, such as index trend strength or breadth, before retrying target width.",
+    "If a future variant is positive, implement it in shared risk_engine/constants before production use."
+  ],
+  "parameters": {
+    "best_variant": "index_etf_target_5_0atr",
+    "index_etfs": [
+      "QQQ",
+      "SPY",
+      "IWM"
+    ],
+    "locked_variables": [
+      "core universe",
+      "ETF overlay candidate pool",
+      "signal generation",
+      "entry ranking",
+      "entry open cancels",
+      "position sizing",
+      "risk multipliers",
+      "add-ons",
+      "portfolio slot limits",
+      "LLM/news behavior",
+      "hard stops",
+      "sector map"
+    ],
+    "single_causal_variable": "index_etf_target_atr_multiple",
+    "target_strategies": [
+      "trend_long",
+      "breakout_long"
+    ],
+    "variants": {
+      "index_etf_target_5_0atr": {
+        "target_atr_mult": 5.0
+      },
+      "index_etf_target_6_0atr": {
+        "target_atr_mult": 6.0
+      },
+      "index_etf_target_7_0atr": {
+        "target_atr_mult": 7.0
+      }
+    }
+  },
+  "production_impact": {
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, add shared constants/risk_engine target policy used by both backtester.py and run.py, then rerun the same three-window comparison.",
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "Index ETF target widening did not clear the canonical three-window behavioral Gate 4; do not split QQQ/SPY/IWM into a promoted target pool on this evidence.",
+  "related_files": [
+    "quant/experiments/exp_20260513_017_index_etf_target_width.py",
+    "data\\experiments\\exp-20260513-017\\index_etf_target_width.json",
+    "experiments\\logs\\exp-20260513-017.json",
+    "experiments\\tickets\\exp-20260513-017.json",
+    "experiments\\artifacts\\exp-20260513-017_index_etf_target_width.md",
+    "docs/experiment_log.jsonl",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "status": "rejected",
+  "variants": {
+    "index_etf_target_5_0atr": {
+      "aggregate": {
+        "added_index_etf_trade_count_sum": 0,
+        "changed_index_etf_trade_count_sum": 1,
+        "drawdown_delta_max": 0.0,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 1,
+        "expected_value_score_after_sum": 6.2478,
+        "expected_value_score_before_sum": 6.3508,
+        "expected_value_score_delta_pct": -0.016218,
+        "expected_value_score_delta_sum": -0.103,
+        "index_etf_candidate_count_sum": 3,
+        "max_consecutive_losses_delta_max": 0,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 1,
+        "removed_index_etf_trade_count_sum": 0,
+        "survival_rate_min_after": 0.7925,
+        "tail_loss_share_delta_max": 0.0006,
+        "total_pnl_after_sum": 184400.73,
+        "total_pnl_before_sum": 186668.01,
+        "total_pnl_delta_pct": -0.012146,
+        "total_pnl_delta_sum": -2267.28,
+        "worst_trade_delta_min": 0.0
+      },
+      "rows": {
+        "late_strong": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 4.2894,
+            "max_consecutive_losses": 2,
+            "max_drawdown_pct": 0.0552,
+            "qqq_buy_hold_return_pct": 0.058,
+            "sharpe_daily": 4.5,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "spy_buy_hold_return_pct": 0.0541,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5156,
+            "total_pnl": 95321.74,
+            "total_return_pct": 0.9532,
+            "trade_count": 19,
+            "win_rate": 0.7895,
+            "worst_trade_pct": -0.060734
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 4.2894,
+            "max_consecutive_losses": 2,
+            "max_drawdown_pct": 0.0552,
+            "qqq_buy_hold_return_pct": 0.058,
+            "sharpe_daily": 4.5,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "spy_buy_hold_return_pct": 0.0541,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5156,
+            "total_pnl": 95321.74,
+            "total_return_pct": 0.9532,
+            "trade_count": 19,
+            "win_rate": 0.7895,
+            "worst_trade_pct": -0.060734
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [],
+            "changed_count": 0,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 3.7146,
+              "entry_price": 267.31,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 261.74,
+              "strategy": "breakout_long",
+              "target_after": 285.88,
+              "target_before": 284.03,
+              "target_mult_after": 5.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.85
+            }
+          ],
+          "index_etf_trades_after": [],
+          "index_etf_trades_before": [],
+          "window": {
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "start": "2025-10-23",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          }
+        },
+        "mid_weak": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 1.5717,
+            "max_consecutive_losses": 6,
+            "max_drawdown_pct": 0.097,
+            "qqq_buy_hold_return_pct": 0.3351,
+            "sharpe_daily": 2.61,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "spy_buy_hold_return_pct": 0.2544,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4891,
+            "total_pnl": 60223.38,
+            "total_return_pct": 0.6022,
+            "trade_count": 21,
+            "win_rate": 0.5238,
+            "worst_trade_pct": -0.089651
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 1.6747,
+            "max_consecutive_losses": 6,
+            "max_drawdown_pct": 0.097,
+            "qqq_buy_hold_return_pct": 0.3351,
+            "sharpe_daily": 2.68,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "spy_buy_hold_return_pct": 0.2544,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4885,
+            "total_pnl": 62490.66,
+            "total_return_pct": 0.6249,
+            "trade_count": 21,
+            "win_rate": 0.5238,
+            "worst_trade_pct": -0.089651
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [
+              {
+                "after": {
+                  "entry_date": "2025-08-25",
+                  "exit_date": "2025-10-22",
+                  "exit_reason": "end_of_backtest",
+                  "pnl": 2513.69,
+                  "pnl_pct_net": 0.037701,
+                  "target_mult_used": 5.0,
+                  "ticker": "IWM"
+                },
+                "before": {
+                  "entry_date": "2025-08-25",
+                  "exit_date": "2025-10-15",
+                  "exit_reason": "target",
+                  "pnl": 4783.8,
+                  "pnl_pct_net": 0.071737,
+                  "target_mult_used": 4.5,
+                  "ticker": "IWM"
+                },
+                "key": "IWM|2025-08-25|breakout_long|232.4"
+              }
+            ],
+            "changed_count": 1,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": -0.103,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": -0.07,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0006,
+            "total_pnl": -2267.28,
+            "total_return_pct": -0.0227,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 3.7872,
+              "entry_price": 232.97,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 227.29,
+              "strategy": "breakout_long",
+              "target_after": 251.91,
+              "target_before": 250.01,
+              "target_mult_after": 5.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.868
+            }
+          ],
+          "index_etf_trades_after": [
+            {
+              "addon_count": 0,
+              "entry_date": "2025-08-25",
+              "entry_price": 232.4,
+              "exit_date": "2025-10-22",
+              "exit_price": 241.97,
+              "exit_reason": "end_of_backtest",
+              "pnl": 2513.69,
+              "pnl_pct_net": 0.037701,
+              "shares": 288,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0
+              },
+              "strategy": "breakout_long",
+              "target_mult_used": 5.0,
+              "ticker": "IWM",
+              "trade_key": "IWM|2025-08-25|breakout_long|232.4"
+            }
+          ],
+          "index_etf_trades_before": [
+            {
+              "addon_count": 0,
+              "entry_date": "2025-08-25",
+              "entry_price": 232.4,
+              "exit_date": "2025-10-15",
+              "exit_price": 249.88,
+              "exit_reason": "target",
+              "pnl": 4783.8,
+              "pnl_pct_net": 0.071737,
+              "shares": 288,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0
+              },
+              "strategy": "breakout_long",
+              "target_mult_used": 4.5,
+              "ticker": "IWM",
+              "trade_key": "IWM|2025-08-25|breakout_long|232.4"
+            }
+          ],
+          "window": {
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "start": "2025-04-23",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          }
+        },
+        "old_thin": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 0.3867,
+            "max_consecutive_losses": 4,
+            "max_drawdown_pct": 0.0821,
+            "qqq_buy_hold_return_pct": -0.0749,
+            "sharpe_daily": 1.34,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "spy_buy_hold_return_pct": -0.0672,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4574,
+            "total_pnl": 28855.61,
+            "total_return_pct": 0.2886,
+            "trade_count": 22,
+            "win_rate": 0.4091,
+            "worst_trade_pct": -0.063499
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 0.3867,
+            "max_consecutive_losses": 4,
+            "max_drawdown_pct": 0.0821,
+            "qqq_buy_hold_return_pct": -0.0749,
+            "sharpe_daily": 1.34,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "spy_buy_hold_return_pct": -0.0672,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4574,
+            "total_pnl": 28855.61,
+            "total_return_pct": 0.2886,
+            "trade_count": 22,
+            "win_rate": 0.4091,
+            "worst_trade_pct": -0.063499
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [],
+            "changed_count": 0,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 4.1534,
+              "entry_price": 233.47,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 227.24,
+              "strategy": "trend_long",
+              "target_after": 254.24,
+              "target_before": 252.16,
+              "target_mult_after": 5.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.973
+            }
+          ],
+          "index_etf_trades_after": [],
+          "index_etf_trades_before": [],
+          "window": {
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "start": "2024-10-02",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          }
+        }
+      },
+      "variant": {
+        "target_atr_mult": 5.0
+      }
+    },
+    "index_etf_target_6_0atr": {
+      "aggregate": {
+        "added_index_etf_trade_count_sum": 0,
+        "changed_index_etf_trade_count_sum": 1,
+        "drawdown_delta_max": 0.0,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 1,
+        "expected_value_score_after_sum": 6.2478,
+        "expected_value_score_before_sum": 6.3508,
+        "expected_value_score_delta_pct": -0.016218,
+        "expected_value_score_delta_sum": -0.103,
+        "index_etf_candidate_count_sum": 3,
+        "max_consecutive_losses_delta_max": 0,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 1,
+        "removed_index_etf_trade_count_sum": 0,
+        "survival_rate_min_after": 0.7925,
+        "tail_loss_share_delta_max": 0.0006,
+        "total_pnl_after_sum": 184400.73,
+        "total_pnl_before_sum": 186668.01,
+        "total_pnl_delta_pct": -0.012146,
+        "total_pnl_delta_sum": -2267.28,
+        "worst_trade_delta_min": 0.0
+      },
+      "rows": {
+        "late_strong": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 4.2894,
+            "max_consecutive_losses": 2,
+            "max_drawdown_pct": 0.0552,
+            "qqq_buy_hold_return_pct": 0.058,
+            "sharpe_daily": 4.5,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "spy_buy_hold_return_pct": 0.0541,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5156,
+            "total_pnl": 95321.74,
+            "total_return_pct": 0.9532,
+            "trade_count": 19,
+            "win_rate": 0.7895,
+            "worst_trade_pct": -0.060734
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 4.2894,
+            "max_consecutive_losses": 2,
+            "max_drawdown_pct": 0.0552,
+            "qqq_buy_hold_return_pct": 0.058,
+            "sharpe_daily": 4.5,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "spy_buy_hold_return_pct": 0.0541,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5156,
+            "total_pnl": 95321.74,
+            "total_return_pct": 0.9532,
+            "trade_count": 19,
+            "win_rate": 0.7895,
+            "worst_trade_pct": -0.060734
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [],
+            "changed_count": 0,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 3.7146,
+              "entry_price": 267.31,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 261.74,
+              "strategy": "breakout_long",
+              "target_after": 289.6,
+              "target_before": 284.03,
+              "target_mult_after": 6.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.85
+            }
+          ],
+          "index_etf_trades_after": [],
+          "index_etf_trades_before": [],
+          "window": {
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "start": "2025-10-23",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          }
+        },
+        "mid_weak": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 1.5717,
+            "max_consecutive_losses": 6,
+            "max_drawdown_pct": 0.097,
+            "qqq_buy_hold_return_pct": 0.3351,
+            "sharpe_daily": 2.61,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "spy_buy_hold_return_pct": 0.2544,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4891,
+            "total_pnl": 60223.38,
+            "total_return_pct": 0.6022,
+            "trade_count": 21,
+            "win_rate": 0.5238,
+            "worst_trade_pct": -0.089651
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 1.6747,
+            "max_consecutive_losses": 6,
+            "max_drawdown_pct": 0.097,
+            "qqq_buy_hold_return_pct": 0.3351,
+            "sharpe_daily": 2.68,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "spy_buy_hold_return_pct": 0.2544,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4885,
+            "total_pnl": 62490.66,
+            "total_return_pct": 0.6249,
+            "trade_count": 21,
+            "win_rate": 0.5238,
+            "worst_trade_pct": -0.089651
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [
+              {
+                "after": {
+                  "entry_date": "2025-08-25",
+                  "exit_date": "2025-10-22",
+                  "exit_reason": "end_of_backtest",
+                  "pnl": 2513.69,
+                  "pnl_pct_net": 0.037701,
+                  "target_mult_used": 6.0,
+                  "ticker": "IWM"
+                },
+                "before": {
+                  "entry_date": "2025-08-25",
+                  "exit_date": "2025-10-15",
+                  "exit_reason": "target",
+                  "pnl": 4783.8,
+                  "pnl_pct_net": 0.071737,
+                  "target_mult_used": 4.5,
+                  "ticker": "IWM"
+                },
+                "key": "IWM|2025-08-25|breakout_long|232.4"
+              }
+            ],
+            "changed_count": 1,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": -0.103,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": -0.07,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0006,
+            "total_pnl": -2267.28,
+            "total_return_pct": -0.0227,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 3.7872,
+              "entry_price": 232.97,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 227.29,
+              "strategy": "breakout_long",
+              "target_after": 255.69,
+              "target_before": 250.01,
+              "target_mult_after": 6.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.868
+            }
+          ],
+          "index_etf_trades_after": [
+            {
+              "addon_count": 0,
+              "entry_date": "2025-08-25",
+              "entry_price": 232.4,
+              "exit_date": "2025-10-22",
+              "exit_price": 241.97,
+              "exit_reason": "end_of_backtest",
+              "pnl": 2513.69,
+              "pnl_pct_net": 0.037701,
+              "shares": 288,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0
+              },
+              "strategy": "breakout_long",
+              "target_mult_used": 6.0,
+              "ticker": "IWM",
+              "trade_key": "IWM|2025-08-25|breakout_long|232.4"
+            }
+          ],
+          "index_etf_trades_before": [
+            {
+              "addon_count": 0,
+              "entry_date": "2025-08-25",
+              "entry_price": 232.4,
+              "exit_date": "2025-10-15",
+              "exit_price": 249.88,
+              "exit_reason": "target",
+              "pnl": 4783.8,
+              "pnl_pct_net": 0.071737,
+              "shares": 288,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0
+              },
+              "strategy": "breakout_long",
+              "target_mult_used": 4.5,
+              "ticker": "IWM",
+              "trade_key": "IWM|2025-08-25|breakout_long|232.4"
+            }
+          ],
+          "window": {
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "start": "2025-04-23",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          }
+        },
+        "old_thin": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 0.3867,
+            "max_consecutive_losses": 4,
+            "max_drawdown_pct": 0.0821,
+            "qqq_buy_hold_return_pct": -0.0749,
+            "sharpe_daily": 1.34,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "spy_buy_hold_return_pct": -0.0672,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4574,
+            "total_pnl": 28855.61,
+            "total_return_pct": 0.2886,
+            "trade_count": 22,
+            "win_rate": 0.4091,
+            "worst_trade_pct": -0.063499
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 0.3867,
+            "max_consecutive_losses": 4,
+            "max_drawdown_pct": 0.0821,
+            "qqq_buy_hold_return_pct": -0.0749,
+            "sharpe_daily": 1.34,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "spy_buy_hold_return_pct": -0.0672,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4574,
+            "total_pnl": 28855.61,
+            "total_return_pct": 0.2886,
+            "trade_count": 22,
+            "win_rate": 0.4091,
+            "worst_trade_pct": -0.063499
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [],
+            "changed_count": 0,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 4.1534,
+              "entry_price": 233.47,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 227.24,
+              "strategy": "trend_long",
+              "target_after": 258.39,
+              "target_before": 252.16,
+              "target_mult_after": 6.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.973
+            }
+          ],
+          "index_etf_trades_after": [],
+          "index_etf_trades_before": [],
+          "window": {
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "start": "2024-10-02",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          }
+        }
+      },
+      "variant": {
+        "target_atr_mult": 6.0
+      }
+    },
+    "index_etf_target_7_0atr": {
+      "aggregate": {
+        "added_index_etf_trade_count_sum": 0,
+        "changed_index_etf_trade_count_sum": 1,
+        "drawdown_delta_max": 0.0,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 1,
+        "expected_value_score_after_sum": 6.2478,
+        "expected_value_score_before_sum": 6.3508,
+        "expected_value_score_delta_pct": -0.016218,
+        "expected_value_score_delta_sum": -0.103,
+        "index_etf_candidate_count_sum": 3,
+        "max_consecutive_losses_delta_max": 0,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 1,
+        "removed_index_etf_trade_count_sum": 0,
+        "survival_rate_min_after": 0.7925,
+        "tail_loss_share_delta_max": 0.0006,
+        "total_pnl_after_sum": 184400.73,
+        "total_pnl_before_sum": 186668.01,
+        "total_pnl_delta_pct": -0.012146,
+        "total_pnl_delta_sum": -2267.28,
+        "worst_trade_delta_min": 0.0
+      },
+      "rows": {
+        "late_strong": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 4.2894,
+            "max_consecutive_losses": 2,
+            "max_drawdown_pct": 0.0552,
+            "qqq_buy_hold_return_pct": 0.058,
+            "sharpe_daily": 4.5,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "spy_buy_hold_return_pct": 0.0541,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5156,
+            "total_pnl": 95321.74,
+            "total_return_pct": 0.9532,
+            "trade_count": 19,
+            "win_rate": 0.7895,
+            "worst_trade_pct": -0.060734
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 4.2894,
+            "max_consecutive_losses": 2,
+            "max_drawdown_pct": 0.0552,
+            "qqq_buy_hold_return_pct": 0.058,
+            "sharpe_daily": 4.5,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "spy_buy_hold_return_pct": 0.0541,
+            "survival_rate": 0.8039,
+            "tail_loss_share": 0.5156,
+            "total_pnl": 95321.74,
+            "total_return_pct": 0.9532,
+            "trade_count": 19,
+            "win_rate": 0.7895,
+            "worst_trade_pct": -0.060734
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [],
+            "changed_count": 0,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 3.7146,
+              "entry_price": 267.31,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 261.74,
+              "strategy": "breakout_long",
+              "target_after": 293.31,
+              "target_before": 284.03,
+              "target_mult_after": 7.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.85
+            }
+          ],
+          "index_etf_trades_after": [],
+          "index_etf_trades_before": [],
+          "window": {
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "start": "2025-10-23",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          }
+        },
+        "mid_weak": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 1.5717,
+            "max_consecutive_losses": 6,
+            "max_drawdown_pct": 0.097,
+            "qqq_buy_hold_return_pct": 0.3351,
+            "sharpe_daily": 2.61,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "spy_buy_hold_return_pct": 0.2544,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4891,
+            "total_pnl": 60223.38,
+            "total_return_pct": 0.6022,
+            "trade_count": 21,
+            "win_rate": 0.5238,
+            "worst_trade_pct": -0.089651
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 1.6747,
+            "max_consecutive_losses": 6,
+            "max_drawdown_pct": 0.097,
+            "qqq_buy_hold_return_pct": 0.3351,
+            "sharpe_daily": 2.68,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "spy_buy_hold_return_pct": 0.2544,
+            "survival_rate": 0.7925,
+            "tail_loss_share": 0.4885,
+            "total_pnl": 62490.66,
+            "total_return_pct": 0.6249,
+            "trade_count": 21,
+            "win_rate": 0.5238,
+            "worst_trade_pct": -0.089651
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [
+              {
+                "after": {
+                  "entry_date": "2025-08-25",
+                  "exit_date": "2025-10-22",
+                  "exit_reason": "end_of_backtest",
+                  "pnl": 2513.69,
+                  "pnl_pct_net": 0.037701,
+                  "target_mult_used": 7.0,
+                  "ticker": "IWM"
+                },
+                "before": {
+                  "entry_date": "2025-08-25",
+                  "exit_date": "2025-10-15",
+                  "exit_reason": "target",
+                  "pnl": 4783.8,
+                  "pnl_pct_net": 0.071737,
+                  "target_mult_used": 4.5,
+                  "ticker": "IWM"
+                },
+                "key": "IWM|2025-08-25|breakout_long|232.4"
+              }
+            ],
+            "changed_count": 1,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": -0.103,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": -0.07,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0006,
+            "total_pnl": -2267.28,
+            "total_return_pct": -0.0227,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 3.7872,
+              "entry_price": 232.97,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 227.29,
+              "strategy": "breakout_long",
+              "target_after": 259.48,
+              "target_before": 250.01,
+              "target_mult_after": 7.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.868
+            }
+          ],
+          "index_etf_trades_after": [
+            {
+              "addon_count": 0,
+              "entry_date": "2025-08-25",
+              "entry_price": 232.4,
+              "exit_date": "2025-10-22",
+              "exit_price": 241.97,
+              "exit_reason": "end_of_backtest",
+              "pnl": 2513.69,
+              "pnl_pct_net": 0.037701,
+              "shares": 288,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0
+              },
+              "strategy": "breakout_long",
+              "target_mult_used": 7.0,
+              "ticker": "IWM",
+              "trade_key": "IWM|2025-08-25|breakout_long|232.4"
+            }
+          ],
+          "index_etf_trades_before": [
+            {
+              "addon_count": 0,
+              "entry_date": "2025-08-25",
+              "entry_price": 232.4,
+              "exit_date": "2025-10-15",
+              "exit_price": 249.88,
+              "exit_reason": "target",
+              "pnl": 4783.8,
+              "pnl_pct_net": 0.071737,
+              "shares": 288,
+              "sizing_multipliers": {
+                "risk_on_unmodified_risk_multiplier_applied": 2.0,
+                "spy_relative_leader_risk_on_multiplier_applied": 2.0
+              },
+              "strategy": "breakout_long",
+              "target_mult_used": 4.5,
+              "ticker": "IWM",
+              "trade_key": "IWM|2025-08-25|breakout_long|232.4"
+            }
+          ],
+          "window": {
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "start": "2025-04-23",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          }
+        },
+        "old_thin": {
+          "after": {
+            "converged": true,
+            "expected_value_score": 0.3867,
+            "max_consecutive_losses": 4,
+            "max_drawdown_pct": 0.0821,
+            "qqq_buy_hold_return_pct": -0.0749,
+            "sharpe_daily": 1.34,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "spy_buy_hold_return_pct": -0.0672,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4574,
+            "total_pnl": 28855.61,
+            "total_return_pct": 0.2886,
+            "trade_count": 22,
+            "win_rate": 0.4091,
+            "worst_trade_pct": -0.063499
+          },
+          "before": {
+            "converged": true,
+            "expected_value_score": 0.3867,
+            "max_consecutive_losses": 4,
+            "max_drawdown_pct": 0.0821,
+            "qqq_buy_hold_return_pct": -0.0749,
+            "sharpe_daily": 1.34,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "spy_buy_hold_return_pct": -0.0672,
+            "survival_rate": 0.9167,
+            "tail_loss_share": 0.4574,
+            "total_pnl": 28855.61,
+            "total_return_pct": 0.2886,
+            "trade_count": 22,
+            "win_rate": 0.4091,
+            "worst_trade_pct": -0.063499
+          },
+          "changed_index_etf_trades": {
+            "added_count": 0,
+            "changed": [],
+            "changed_count": 0,
+            "removed_count": 0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "max_consecutive_losses": 0,
+            "max_drawdown_pct": 0.0,
+            "sharpe_daily": 0.0,
+            "signals_generated": 0,
+            "signals_survived": 0,
+            "survival_rate": 0.0,
+            "tail_loss_share": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate": 0.0,
+            "worst_trade_pct": 0.0
+          },
+          "index_etf_candidate_count": 1,
+          "index_etf_candidates": [
+            {
+              "atr": 4.1534,
+              "entry_price": 233.47,
+              "regime_exit_bucket": null,
+              "regime_exit_score": null,
+              "sector": "ETF",
+              "signal_date": null,
+              "stop_price": 227.24,
+              "strategy": "trend_long",
+              "target_after": 262.54,
+              "target_before": 252.16,
+              "target_mult_after": 7.0,
+              "target_mult_before": null,
+              "ticker": "IWM",
+              "trade_quality_score": 0.973
+            }
+          ],
+          "index_etf_trades_after": [],
+          "index_etf_trades_before": [],
+          "window": {
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "start": "2024-10-02",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          }
+        }
+      },
+      "variant": {
+        "target_atr_mult": 7.0
+      }
+    }
+  }
+}

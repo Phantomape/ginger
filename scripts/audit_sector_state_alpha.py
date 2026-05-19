@@ -488,16 +488,16 @@ def main():
         "snapshot_metadata": snapshot_metadata,
         "related_files": [
             f"data/experiments/{EXPERIMENT_ID}/sector_state_alpha_audit.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
         ],
     }
 
     artifact_dir = ROOT / "data" / "experiments" / EXPERIMENT_ID
     artifact_dir.mkdir(parents=True, exist_ok=True)
     artifact_path = artifact_dir / "sector_state_alpha_audit.json"
-    log_path = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     for path in [log_path.parent, ticket_path.parent]:
         path.mkdir(parents=True, exist_ok=True)
 

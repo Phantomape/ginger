@@ -171,7 +171,7 @@ def parse_backtesting_doc(path: Path) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--results-glob", default=None)
-    parser.add_argument("--ticket", default="docs/experiments/tickets/exp-20260428-015.json")
+    parser.add_argument("--ticket", default="experiments/tickets/exp-20260428-015.json")
     parser.add_argument("--backtesting-doc", default="docs/backtesting.md")
     parser.add_argument("--output", default="data/diagnostics/exp_baseline_reproducibility_audit.json")
     args = parser.parse_args()

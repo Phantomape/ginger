@@ -123,8 +123,8 @@ data\quant_signals_YYYYMMDD.json -> pilot_signals
 
 最新 pilot sleeve 激活时的标准三窗口结果记录在：
 
-- `docs\experiments\logs\exp-20260501-029.json`
-- `docs\experiments\tickets\exp-20260501-029.json`
+- `experiments\logs\exp-20260501-029.json`
+- `experiments\tickets\exp-20260501-029.json`
 
 ## Pilot sleeve replay backtest
 
@@ -214,8 +214,8 @@ quant\run.py
 策略修改和失败尝试必须落盘：
 
 - `docs\experiment_log.jsonl`：结构化实验主日志。
-- `docs\experiments\logs\`：单个实验详细记录。
-- `docs\experiments\tickets\`：实验 ticket。
+- `experiments\logs\`：单个实验详细记录。
+- `experiments\tickets\`：实验 ticket。
 - `docs\experiment_log_format.md`：字段说明。
 
 原则：

@@ -42,7 +42,7 @@ BEFORE_EXPERIMENT_ID = "exp-20260516-023"
 BEFORE_STEM = "space_dual_catalyst_near_perfect_trend_risk"
 
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-DOCS_DIR = ROOT / "docs" / "experiments"
+DOCS_DIR = ROOT / "experiments"
 LOG_DIR = DOCS_DIR / "logs"
 TICKET_DIR = DOCS_DIR / "tickets"
 ARTIFACT_DIR = DOCS_DIR / "artifacts"
@@ -556,9 +556,9 @@ def _experiment_record(payload: dict[str, Any]) -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260516_024_space_dual_catalyst_financing_profile_trend_risk.py",
             "data/experiments/exp-20260516-024/space_dual_catalyst_financing_profile_trend_risk.json",
-            "docs/experiments/logs/exp-20260516-024.json",
-            "docs/experiments/tickets/exp-20260516-024.json",
-            "docs/experiments/artifacts/exp-20260516-024_space_dual_catalyst_financing_profile_trend_risk.md",
+            "experiments/logs/exp-20260516-024.json",
+            "experiments/tickets/exp-20260516-024.json",
+            "experiments/artifacts/exp-20260516-024_space_dual_catalyst_financing_profile_trend_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

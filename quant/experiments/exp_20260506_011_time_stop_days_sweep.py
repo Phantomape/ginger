@@ -28,10 +28,10 @@ except Exception:  # pragma: no cover - CLI fallback parity
 EXPERIMENT_ID = "exp-20260506-011"
 DATA_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
 DATA_FILE = DATA_DIR / "time_stop_days_sweep.json"
-LOG_FILE = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_FILE = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_FILE = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_FILE = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_FILE = (
-    ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_time_stop_days_sweep.md"
+    ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_time_stop_days_sweep.md"
 )
 JSONL_FILE = ROOT / "docs" / "experiment_log.jsonl"
 PLAYBOOK_FILE = ROOT / "docs" / "alpha-optimization-playbook.md"
@@ -318,9 +318,9 @@ def write_records(payload):
         "related_files": [
             "quant/experiments/exp_20260506_011_time_stop_days_sweep.py",
             "data/experiments/exp-20260506-011/time_stop_days_sweep.json",
-            "docs/experiments/logs/exp-20260506-011.json",
-            "docs/experiments/tickets/exp-20260506-011.json",
-            "docs/experiments/artifacts/exp-20260506-011_time_stop_days_sweep.md",
+            "experiments/logs/exp-20260506-011.json",
+            "experiments/tickets/exp-20260506-011.json",
+            "experiments/artifacts/exp-20260506-011_time_stop_days_sweep.md",
         ],
     }
     LOG_FILE.write_text(json.dumps(log, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -346,7 +346,7 @@ def write_records(payload):
         "completed_at": payload["timestamp"],
         "result": {
             "decision": "rejected_noop",
-            "log_file": "docs/experiments/logs/exp-20260506-011.json",
+            "log_file": "experiments/logs/exp-20260506-011.json",
             "artifact": "data/experiments/exp-20260506-011/time_stop_days_sweep.json",
             "summary": (
                 "TIME_STOP_DAYS 30/45/60 was a no-op: 0 time_stop exits and 0 metric delta."

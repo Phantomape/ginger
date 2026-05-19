@@ -569,9 +569,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_006_spy_volatility_contraction_core_risk.py",
             "data/experiments/exp-20260514-006/spy_volatility_contraction_core_risk.json",
-            "docs/experiments/logs/exp-20260514-006.json",
-            "docs/experiments/tickets/exp-20260514-006.json",
-            "docs/experiments/artifacts/exp-20260514-006_spy_volatility_contraction_core_risk.md",
+            "experiments/logs/exp-20260514-006.json",
+            "experiments/tickets/exp-20260514-006.json",
+            "experiments/artifacts/exp-20260514-006_spy_volatility_contraction_core_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

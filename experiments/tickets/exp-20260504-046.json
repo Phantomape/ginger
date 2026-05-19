@@ -1,0 +1,66 @@
+{
+  "experiment_id": "exp-20260504-046",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock, earnings surprise, and 8-K filing context may improve Ginger as C-strategy grading or A/B event confirmation, but this run only checks whether new PIT-safe evidence exists after the existing SEC governance queue and duplicate guardrail audits.",
+  "change_type": "data_audit",
+  "single_causal_variable": "fresh PIT-safe SEC earnings filing-shock evidence availability after exp-20260504-044",
+  "baseline_result_file": "data/backtest_results_20260503.json",
+  "allowed_write_scope": [
+    "experiments/tickets",
+    "experiments/logs",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl",
+    "data/experiments"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "position sizing",
+    "risk engine",
+    "portfolio engine",
+    "OHLCV thresholds",
+    "LLM prompt",
+    "news veto",
+    "SEC queue policy"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data audit only: accept only as data_gap or shadow_only unless new PIT-safe filings, same-accession XBRL, closed forward outcomes, and slot replacement evidence exist.",
+  "created_at": "2026-05-04T19:02:42+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-04T19:08:43+00:00",
+  "result": {
+    "decision": "data_gap",
+    "expected_value_score_delta": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0,
+      "production": 0.0
+    },
+    "artifact": "data/experiments/exp-20260504-046/sec_earnings_filing_shock_fresh_evidence_guardrail.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_fresh_evidence_guardrail_exp-20260504-046_20260504.md",
+    "log_file": "experiments/logs/exp-20260504-046.json",
+    "production_impact": "data_audit_recheck_only_no_production_change",
+    "reason": "No fresh PIT-safe evidence was found beyond already logged SEC/earnings experiments. The only positive branch, governance/procedural SEC events, already has an observe-only forward ledger and should wait for closed outcomes."
+  }
+}

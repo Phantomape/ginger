@@ -1,0 +1,152 @@
+{
+  "experiment_id": "exp-20260509-009",
+  "timestamp": "2026-05-09T07:15:20Z",
+  "title": "Event bundle forward-gated trade adapter parity",
+  "lane": "alpha_search_deployment_parity",
+  "hypothesis": "The strongest current alpha direction is event candidate-pool allocation, specifically the non-generic positive state-surface event add-on from exp-20260509-007. Before this alpha can move from default-off paper attribution toward live capital, it needs a shared forward-gated trade adapter so production and historical replay cannot diverge.",
+  "alpha_hypothesis": {
+    "category": "allocation/event-quality",
+    "entry_exit_ranking_or_allocation": "allocation",
+    "selected_direction": "default-off event overlay bundle with non-generic positive state-surface add-on",
+    "why_this_now": "Recent records show LLM soft-ranking is data-limited, earnings/revision alpha remains blocked by field coverage, core threshold/ranking retunes are mostly rejected or below materiality, and event candidate allocation is the only recent surface with all three canonical windows improving."
+  },
+  "historical_experiment_check": {
+    "accepted_or_promising_parent": {
+      "exp-20260509-006": "Frozen current-stack event bundle improved EV in all three fixed windows versus accepted core.",
+      "exp-20260509-007": "Non-generic positive state-surface add-on beat the full event bundle in all three fixed windows."
+    },
+    "nearby_rejected_or_blocked": {
+      "LLM soft-ranking": "Production-aligned soft-ranking outcomes remain too sparse.",
+      "earnings/revisions": "Multi-window earnings/revision candidate coverage remains insufficient.",
+      "generic add-on heat reserve": "Rejected or inert; raw heat relaxation is production-unsafe.",
+      "clean mid-dispersion trend top-up": "Positive but below Gate 4 materiality.",
+      "event source pruning and overlap filters": "Rejected in nearby event-bundle experiments."
+    },
+    "mechanism_insight_conflict": "No conflict. This run did not retry a rejected threshold/filter/source subset. It kept the accepted alpha surface and removed the promotion parity blocker."
+  },
+  "change_type": "shared_default_off_trade_adapter",
+  "parameters": {
+    "trade_adapter_rule_version": "event_bundle_forward_gated_trade_plan_v1",
+    "trade_adapter_requires_forward_gate": true,
+    "default_trade_enabled": false,
+    "micro_live_notional_usd": 2500.0,
+    "micro_live_max_portfolio_pct": 0.025,
+    "micro_live_max_positions": 1
+  },
+  "before_metrics": {
+    "event_alpha_evidence_from_exp_20260509_007": {
+      "late_strong": {
+        "full_event_bundle_ev": 4.5771,
+        "variant_ev": 4.8980,
+        "delta_ev": 0.3209,
+        "full_event_bundle_pnl": 97384.30,
+        "variant_pnl": 101828.78,
+        "delta_pnl": 4444.48,
+        "event_trades": 9,
+        "event_pnl": 10357.92
+      },
+      "mid_weak": {
+        "full_event_bundle_ev": 2.0830,
+        "variant_ev": 2.3533,
+        "delta_ev": 0.2703,
+        "full_event_bundle_pnl": 67850.50,
+        "variant_pnl": 72186.99,
+        "delta_pnl": 4336.49,
+        "event_trades": 11,
+        "event_pnl": 13344.80
+      },
+      "old_thin": {
+        "full_event_bundle_ev": 0.3938,
+        "variant_ev": 0.4231,
+        "delta_ev": 0.0293,
+        "full_event_bundle_pnl": 28745.97,
+        "variant_pnl": 30005.02,
+        "delta_pnl": 1259.05,
+        "event_trades": 7,
+        "event_pnl": 2657.59
+      },
+      "aggregate": {
+        "ev_delta": 0.6205,
+        "ev_delta_pct": 0.0880,
+        "pnl_delta": 10040.02,
+        "pnl_delta_pct": 0.0518,
+        "ev_windows_improved": 3,
+        "ev_windows_regressed": 0
+      }
+    }
+  },
+  "after_metrics": {
+    "default_core_three_window_check_after_adapter": {
+      "late_strong": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "expected_value_score": 4.0674,
+        "total_pnl": 90788.88,
+        "sharpe_daily": 4.48,
+        "max_drawdown_pct": 0.0539,
+        "win_rate": 0.790,
+        "trade_count": 19
+      },
+      "mid_weak": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "expected_value_score": 1.6195,
+        "total_pnl": 59540.63,
+        "sharpe_daily": 2.72,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.524,
+        "trade_count": 21
+      },
+      "old_thin": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "expected_value_score": 0.3583,
+        "total_pnl": 27347.42,
+        "sharpe_daily": 1.31,
+        "max_drawdown_pct": 0.0903,
+        "win_rate": 0.409,
+        "trade_count": 22
+      }
+    }
+  },
+  "gate_4_result": {
+    "strategy_behavior_changed": false,
+    "default_backtest_changed": false,
+    "decision_basis": "No default strategy metrics moved because the adapter is blocked by default. The positive alpha evidence is the existing exp-20260509-007 paper-allocation result; this run closes the shared adapter requirement for future promotion.",
+    "passed": true
+  },
+  "production_impact": {
+    "shared_policy_changed": true,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "parity_test_added": true,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "default_live_orders_changed": false,
+    "promotion_blocker_remaining": "Closed forward paper replacement-value outcomes must pass the shared gate before trade_enabled can be set true."
+  },
+  "verification": {
+    "tests": [
+      ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_event_sleeve_bundle.py -q"
+    ],
+    "backtests": [
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-10-23 --end 2026-04-21 --ohlcv-snapshot data\\ohlcv_snapshot_20251023_20260421.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2025-04-23 --end 2025-10-22 --ohlcv-snapshot data\\ohlcv_snapshot_20250423_20251022.json",
+      ".\\.venv\\Scripts\\python.exe quant\\backtester.py --start 2024-10-02 --end 2025-04-22 --ohlcv-snapshot data\\ohlcv_snapshot_20241002_20250422.json"
+    ]
+  },
+  "decision": "accepted_default_off_parity_adapter",
+  "decision_rationale": "Keep event candidate allocation as the current strongest alpha direction, but do not enable live orders. The adapter now creates a single shared action surface that stays blocked unless trade_enabled is explicit, the forward paper gate passes, the kill switch is clear, and candidate schema is valid.",
+  "why_not_other_attractive_points": "Skipped LLM soft-ranking, earnings/revisions, raw universe expansion, generic heat reserve, clean mid-dispersion top-up, and event source pruning because recent experiment records mark them data-limited, rejected, production-unsafe, or below materiality.",
+  "risk_of_change": "The main risk is future misuse: manually enabling trade_enabled without enough closed forward event outcomes would promote a sparse paper edge too early. The adapter therefore keeps forward gate and kill-switch blocks in the shared helper.",
+  "related_files": [
+    "quant/event_sleeve_bundle.py",
+    "quant/test_event_sleeve_bundle.py",
+    "docs/production_backtest_parity.md",
+    "experiments/artifacts/exp-20260509-009_event_bundle_trade_adapter_parity.md"
+  ]
+}

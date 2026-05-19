@@ -93,11 +93,10 @@ EXCLUDED_SPACE_TICKERS = {
 
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 ARTIFACT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_{STEM}.md"
@@ -710,9 +709,9 @@ def main() -> None:
         "related_files": [
             "quant/experiments/exp_20260511_002_space_catalyst_static_pool_replay.py",
             "data/experiments/exp-20260510-028/space_catalyst_ohlcv_snapshot_build.json",
-            "docs/experiments/logs/exp-20260511-002.json",
-            "docs/experiments/tickets/exp-20260511-002.json",
-            "docs/experiments/artifacts/exp-20260511-002_space_catalyst_static_pool_replay.md",
+            "experiments/logs/exp-20260511-002.json",
+            "experiments/tickets/exp-20260511-002.json",
+            "experiments/artifacts/exp-20260511-002_space_catalyst_static_pool_replay.md",
             "docs/experiment_log.jsonl",
         ],
     }

@@ -1,0 +1,41 @@
+{
+  "acceptance_rule": "Data audit only: report coverage, PIT risk, missingness, candidate overlap, slot opportunity cost; no production signal path changes.",
+  "allowed_write_scope": [
+    "quant/experiments/exp-20260516-003_sec_filing_shock_20260514_audit.py",
+    "data/experiments/exp-20260516-003/sec_earnings_filing_shock_20260514_data_audit.json",
+    "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260516-003.json",
+    "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_latest_exp-20260516-003_20260515.md",
+    "experiments/tickets/exp-20260516-003.json",
+    "experiments/logs/exp-20260516-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260515-028/current_stack_core_confirmed_quality_risk.json",
+  "change_type": "data_audit",
+  "claimed_at": null,
+  "completed_at": "2026-05-16T01:30:53+00:00",
+  "created_at": "2026-05-16T01:30:43+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260516-003",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K/10-Q/10-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but only if the 2026-05-14 SEC refresh adds PIT directional fields that touch candidates.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "sec_earnings_filing_shock_20260514_shadow_field_availability"
+  ],
+  "log_file": "experiments/logs/exp-20260516-003.json",
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "owner": "codex-alpha-discovery",
+  "result": {
+    "artifact": "data/experiments/exp-20260516-003/sec_earnings_filing_shock_20260514_data_audit.json",
+    "decision": "data_gap",
+    "report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_latest_exp-20260516-003_20260515.md",
+    "shadow_event_table": "data/non_ohlcv/sec_earnings_filing_shock_shadow_events_exp-20260516-003.json",
+    "summary": "`data_gap`: the 2026-05-14 SEC refresh has PIT timestamp/text/feature coverage and two more feature rows than the prior audit, but still has zero same-accession rows, zero directional rows, and no B/C candidate-touch cohort. Do not enter a default-off C grading harness yet."
+  },
+  "single_causal_variable": "sec_earnings_filing_shock_20260514_shadow_field_availability",
+  "status": "data_gap"
+}

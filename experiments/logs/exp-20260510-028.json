@@ -1,0 +1,189 @@
+{
+  "experiment_id": "exp-20260510-028",
+  "timestamp": "2026-05-10T18:39:34-07:00",
+  "status": "observed_only",
+  "lane": "measurement_repair",
+  "hypothesis": "The SPACE_CATALYST_SHADOW sleeve cannot be evaluated from canonical snapshots because the space tickers are absent; augmenting snapshot copies with those OHLCV rows should enable shadow replay without changing core metrics or live eligibility.",
+  "change_type": "ohlcv_snapshot_coverage_expansion",
+  "changed_variable": "space_catalyst_shadow_ohlcv_coverage",
+  "single_causal_variable": "Append SPACE_CATALYST_SHADOW ticker OHLCV to experiment-local snapshot copies only.",
+  "parameters": {
+    "sleeve": "SPACE_CATALYST_SHADOW",
+    "requested_tickers": [
+      "RKLB",
+      "ASTS",
+      "LUNR",
+      "HAWK",
+      "PL",
+      "RDW",
+      "BKSY",
+      "IRDM",
+      "VSAT",
+      "GSAT",
+      "SATS",
+      "ARKX",
+      "UFO",
+      "SPCE"
+    ],
+    "source": "Yahoo Finance chart API adjusted OHLC",
+    "canonical_snapshots_mutated": false,
+    "live_slots_enabled": false
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "snapshot_outputs": {
+    "manifest": "data/experiments/exp-20260510-028/space_catalyst_ohlcv_snapshot_build.json",
+    "replay": "data/experiments/exp-20260510-028/space_catalyst_shadow_basket_replay.json",
+    "late_strong": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_late_strong_with_space_catalyst.json",
+    "mid_weak": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_mid_weak_with_space_catalyst.json",
+    "old_thin": "data/experiments/exp-20260510-028/ohlcv/exp-20260510-028_old_thin_with_space_catalyst.json"
+  },
+  "coverage_result": {
+    "late_strong": {
+      "added_tickers": 13,
+      "failed_tickers": [
+        "HAWK"
+      ],
+      "augmented_ticker_count": 69
+    },
+    "mid_weak": {
+      "added_tickers": 13,
+      "failed_tickers": [
+        "HAWK"
+      ],
+      "augmented_ticker_count": 65
+    },
+    "old_thin": {
+      "added_tickers": 13,
+      "failed_tickers": [
+        "HAWK"
+      ],
+      "augmented_ticker_count": 65
+    }
+  },
+  "core_no_drift_check": {
+    "late_strong": {
+      "expected_value_score": 4.234,
+      "total_pnl": 94086.91,
+      "total_return_pct": 0.9409,
+      "sharpe_daily": 4.5,
+      "max_drawdown_pct": 0.0548,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "pilot_entries": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 1.6689,
+      "total_pnl": 61813.4,
+      "total_return_pct": 0.6181,
+      "sharpe_daily": 2.7,
+      "max_drawdown_pct": 0.0941,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "pilot_entries": 0
+    },
+    "old_thin": {
+      "expected_value_score": 0.3853,
+      "total_pnl": 28544.11,
+      "total_return_pct": 0.2854,
+      "sharpe_daily": 1.35,
+      "max_drawdown_pct": 0.0815,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "pilot_entries": 0
+    }
+  },
+  "shadow_basket_results": {
+    "space_equity_equal_weight": {
+      "late_strong": {
+        "total_return_pct": 0.830241,
+        "total_pnl": 83024.15,
+        "sharpe_daily": 2.1453,
+        "max_drawdown_pct": 0.242823,
+        "max_single_positive_contribution_share": 0.2333
+      },
+      "mid_weak": {
+        "total_return_pct": 1.591888,
+        "total_pnl": 159188.76,
+        "sharpe_daily": 3.8694,
+        "max_drawdown_pct": 0.177117,
+        "max_single_positive_contribution_share": 0.1913
+      },
+      "old_thin": {
+        "total_return_pct": 0.134392,
+        "total_pnl": 13439.19,
+        "sharpe_daily": 0.6743,
+        "max_drawdown_pct": 0.496817,
+        "max_single_positive_contribution_share": 0.4442
+      }
+    },
+    "space_equity_top3_rs20_monthly_no_cost": {
+      "late_strong": {
+        "total_return_pct": 0.669818,
+        "total_pnl": 66981.75,
+        "sharpe_daily": 1.805,
+        "max_drawdown_pct": 0.332565
+      },
+      "mid_weak": {
+        "total_return_pct": 1.562915,
+        "total_pnl": 156291.51,
+        "sharpe_daily": 2.9148,
+        "max_drawdown_pct": 0.262422
+      },
+      "old_thin": {
+        "total_return_pct": 0.880752,
+        "total_pnl": 88075.2,
+        "sharpe_daily": 1.834,
+        "max_drawdown_pct": 0.469802
+      }
+    },
+    "quarantine_spce_buy_hold": {
+      "late_strong": {
+        "total_return_pct": -0.264484,
+        "total_pnl": -26448.36,
+        "max_drawdown_pct": 0.523077
+      },
+      "mid_weak": {
+        "total_return_pct": 0.314488,
+        "total_pnl": 31448.77,
+        "max_drawdown_pct": 0.43125
+      },
+      "old_thin": {
+        "total_return_pct": -0.575456,
+        "total_pnl": -57545.61,
+        "max_drawdown_pct": 0.693798
+      }
+    }
+  },
+  "gate_result": {
+    "gate1_baseline": "passed; accepted core metrics reproduced on augmented snapshot copies",
+    "gate2_fields": "not applicable to live trading; no new entry/exit rule added",
+    "gate3_survival": "passed for core no-drift; no new filter added",
+    "gate4_decision": "observe_only; not acceptance evidence because the basket is selected with 2026-05-10 knowledge and drawdowns are too high for live promotion"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "alters_orders": false
+  },
+  "decision": "observed_only_continue",
+  "rejection_reason": "Do not promote live slots from this replay. It is a current-basket historical diagnostic with look-ahead selection and large drawdowns, especially old_thin near 50% for equal-weight space equities.",
+  "next_evidence_needed": "Use the augmented OHLCV to build event-dated shadow decisions and collect direct, cash-relative, core-replacement, and same-theme replacement value for at least 30 active signal days or 10 closed decisions.",
+  "related_files": [
+    "quant/experiments/exp_20260510_028_space_catalyst_ohlcv_snapshots.py",
+    "quant/experiments/exp_20260510_028_space_catalyst_shadow_basket_replay.py",
+    "data/experiments/exp-20260510-028/space_catalyst_ohlcv_snapshot_build.json",
+    "data/experiments/exp-20260510-028/space_catalyst_shadow_basket_replay.json",
+    "experiments/logs/exp-20260510-028.json",
+    "experiments/artifacts/exp-20260510-028_space_catalyst_ohlcv_replay.md",
+    "experiments/tickets/exp-20260510-028.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

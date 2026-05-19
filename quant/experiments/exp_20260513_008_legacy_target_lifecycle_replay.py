@@ -33,9 +33,9 @@ DATA_DIR = REPO_ROOT / "data"
 OPERATOR_POSITIONS_PATH = REPO_ROOT / "operator_inputs" / "open_positions.json"
 OUTPUT_DIR = DATA_DIR / "experiments" / EXPERIMENT_ID
 ARTIFACT_PATH = OUTPUT_DIR / f"{EXPERIMENT_SLUG}.json"
-DOC_LOG_PATH = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_LOG_PATH = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 DOC_ARTIFACT_PATH = (
-    REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
+    REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
 )
 EXPERIMENT_LOG_PATH = REPO_ROOT / "docs" / "experiment_log.jsonl"
 
@@ -671,8 +671,8 @@ def run() -> dict[str, Any]:
             "quant/experiments/exp_20260513_008_legacy_target_lifecycle_replay.py",
             "quant/experiments/exp_20260513_005_legacy_explicit_target_exit_shadow.py",
             "data/experiments/exp-20260513-008/legacy_target_lifecycle_replay.json",
-            "docs/experiments/logs/exp-20260513-008.json",
-            "docs/experiments/artifacts/exp-20260513-008_legacy_target_lifecycle_replay.md",
+            "experiments/logs/exp-20260513-008.json",
+            "experiments/artifacts/exp-20260513-008_legacy_target_lifecycle_replay.md",
             "docs/experiment_log.jsonl",
         ],
     }

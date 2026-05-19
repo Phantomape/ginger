@@ -43,8 +43,8 @@ from experiments.exp_20260503_051_sec_filing_reaction_drift import (  # noqa: E4
 EXPERIMENT_ID = "exp-20260504-026"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "sec_leadership_event_sleeve.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 REPORT_MD = (
     REPO_ROOT
     / "docs"
@@ -538,8 +538,8 @@ def _build_payload() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260504_026_sec_leadership_event_sleeve.py",
             "data/experiments/exp-20260504-026/sec_leadership_event_sleeve.json",
-            "docs/experiments/logs/exp-20260504-026.json",
-            "docs/experiments/tickets/exp-20260504-026.json",
+            "experiments/logs/exp-20260504-026.json",
+            "experiments/tickets/exp-20260504-026.json",
             "docs/non_ohlcv_data_audit/sec_leadership_event_sleeve_20260504_exp026.md",
         ],
         "candidate_examples": [_compact_event(row) for row in candidates[:12]],

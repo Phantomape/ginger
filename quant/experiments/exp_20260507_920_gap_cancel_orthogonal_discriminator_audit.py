@@ -36,7 +36,7 @@ OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_CSV = OUT_DIR / "gap_cancel_orthogonal_features.csv"
 OUT_RANKING = OUT_DIR / "discriminator_ranking.json"
 OUT_CATALOG = OUT_DIR / "event_catalog.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
 
 ORACLE_DIR = REPO_ROOT / "data" / "experiments" / "oracle_standard_3window_20260501_220042"
 

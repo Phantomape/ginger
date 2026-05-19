@@ -2,7 +2,7 @@
 
 在 Windows PowerShell 中读取中文或 Markdown 文件时，必须显式使用 UTF-8，例如 `Get-Content -Raw -Encoding UTF8 <path>`，不要裸用 `Get-Content -Raw`。
 
-综合过去实验记录(experiment_log.jsonl和docs/experiments)一起，从最强大脑角度判断，目前应该优化什么方向的 alpha，而不是修 bug。
+综合过去实验记录(experiment_log.jsonl和experiments)一起，从最强大脑角度判断，目前应该优化什么方向的 alpha，而不是修 bug。
 
 不要用js做任何事情！！！
 

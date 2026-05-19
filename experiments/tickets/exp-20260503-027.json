@@ -1,0 +1,62 @@
+{
+  "experiment_id": "exp-20260503-027",
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "SEC filing shock, financial surprise, 8-K event type, and post-earnings drift may improve C-strategy grading or A/B event confirmation, but this run only checks whether new PIT-safe SEC evidence exists after exp-20260503-024.",
+  "change_type": "non_ohlcv_sec_earnings_duplicate_guardrail_data_audit",
+  "single_causal_variable": "new PIT-safe SEC / earnings filing-shock evidence since exp-20260503-024",
+  "baseline_result_file": "data/backtest_results_20260502.json",
+  "allowed_write_scope": [
+    "C:/Users/Administrator/.codex/automations/alpha-discovery/memory.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/logs",
+    "experiments/tickets",
+    "docs/non_ohlcv_data_audit"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "locked_variables": [
+    "production signal path",
+    "production universe",
+    "signal generation",
+    "ranking",
+    "sizing",
+    "entries",
+    "exits",
+    "LLM/news replay",
+    "OHLCV thresholds"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "data_gap only unless new PIT SEC archive days or XBRL/companyfacts fields exist",
+  "created_at": "2026-05-03T11:05:07+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-03T11:08:13+00:00",
+  "result": {
+    "decision": "data_gap",
+    "log_file": "experiments/logs/exp-20260503-027.json",
+    "audit_report": "docs/non_ohlcv_data_audit/sec_earnings_filing_shock_no_new_evidence_exp027_20260503.md",
+    "expected_value_score_delta": 0.0,
+    "production_impact": "data_audit_only",
+    "next_action": "Wait for at least 5-10 new forward SEC archive days with ticker tags, or add a PIT XBRL/companyfacts field-fill adapter, before rerunning filing-shock grading, breakout confirmation, or scarce-slot value tests."
+  }
+}

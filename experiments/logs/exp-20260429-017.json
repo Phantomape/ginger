@@ -1,0 +1,74 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "before_metrics": {
+    "expected_value_score": 0.9672,
+    "max_drawdown_pct": 0.0616,
+    "sharpe": 4.43,
+    "sharpe_daily": 2.53,
+    "survival_rate": 0.7925,
+    "total_pnl": 38232.59,
+    "total_return_pct": 0.3823,
+    "trade_count": 21,
+    "win_rate": 0.5238
+  },
+  "change_summary": "Disabled production TRAILING_STOP-only daily partial-reduce actions via shared production_parity policy while preserving non-trailing HIGH_REDUCE rules. Fixed-window replay comparison against the old enabled policy improved EV in 2/3 windows and PnL in 2/3 windows: EV delta sum +0.4028, PnL delta +12837.60, partial reduce executions 16 -> 0.",
+  "change_type": "exit_rule",
+  "component": "quant/production_parity.py, quant/preflight_validator.py, quant/backtester.py, quant/test_production_parity.py, quant/test_quant.py, docs/production_backtest_parity.md, quant/experiments/exp-20260429-011_trailing_partial_reduce_parity.py, data/experiments/exp-20260429-011/exp-20260429-011_trailing_partial_reduce_parity.json, experiments/tickets, experiments/logs, docs/experiment_registry.json, docs/experiment_log.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "experiment_id": "exp-20260429-017",
+  "hypothesis": "关闭生产 TRAILING_STOP 触发的 daily partial reduce 可以避免重复削减赢家仓位，并提升固定窗口 expected_value_score。",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "next_retry_requires": [],
+  "notes": "Artifact contains nested fixed-window before/after metrics under deltas_disabled_vs_enabled because this experiment compares shared-policy variants, not one flat backtest JSON.",
+  "parameters": {
+    "locked_variables": [
+      "disable trailing-stop partial-reduce actions"
+    ],
+    "single_causal_variable": "disable trailing-stop partial-reduce actions"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtest_results_20260429.json",
+    "data/experiments/exp-20260429-011/exp-20260429-011_trailing_partial_reduce_parity.json"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-04-29T17:37:34+00:00"
+}

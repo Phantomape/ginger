@@ -40,9 +40,9 @@ BASELINE_PATH = (
     / "exp-20260515-028"
     / "current_stack_core_confirmed_quality_risk.json"
 )
-PRIOR_LOG_PATH = REPO_ROOT / "docs" / "experiments" / "logs" / "exp-20260515-002.json"
-TICKET_PATH = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
-LOG_PATH = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
+PRIOR_LOG_PATH = REPO_ROOT / "experiments" / "logs" / "exp-20260515-002.json"
+TICKET_PATH = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_PATH = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
 REGISTRY_PATH = REPO_ROOT / "docs" / "experiment_registry.json"
 EXPERIMENT_LOG_PATH = REPO_ROOT / "docs" / "experiment_log.jsonl"
 

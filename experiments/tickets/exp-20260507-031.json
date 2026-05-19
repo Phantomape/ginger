@@ -1,0 +1,71 @@
+{
+  "experiment_id": "exp-20260507-031",
+  "status": "completed",
+  "lane": "alpha_discovery",
+  "owner": "alpha-discovery",
+  "hypothesis": "Directional SEC filing-shock fields can be repaired without vendor data if the existing PIT companyfacts selected JSONL is auto-discovered and joined by same accession during non-OHLCV backfill.",
+  "change_type": "measurement_repair",
+  "single_causal_variable": "auto_discover_existing_companyfacts_for_same_accession_feature_derivation",
+  "baseline_result_file": "data/backtest_results_20260506.json",
+  "allowed_write_scope": [
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_features.py",
+    "experiments/tickets/exp-20260507-031.json",
+    "experiments/logs/exp-20260507-031.json",
+    "docs/non_ohlcv_data_audit/sec_companyfacts_same_accession_feature_repair_exp-20260507-031_20260507.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260507-031",
+    "data/non_ohlcv"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "OHLCV thresholds",
+    "technical entries",
+    "production signal path",
+    "signal ranking",
+    "risk sizing",
+    "exits",
+    "LLM prompts",
+    "SEC event thresholds",
+    "event notionals",
+    "capacity",
+    "holding periods"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data repair only: same-accession/companyfacts-derived rows must become nonzero where companyfacts exists; PIT fields must remain accepted_datetime/usable_trade_date based; no production signal-path change.",
+  "created_at": "2026-05-07T17:50:58+00:00",
+  "claimed_at": "2026-05-07T17:50:58+00:00",
+  "completed_at": "2026-05-07T17:50:58+00:00",
+  "result": "partial_repair",
+  "decision": "shadow_only",
+  "artifacts": [
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_features.py",
+    "data/non_ohlcv/sec_companyfacts_selected_20241002_20260505.jsonl",
+    "data/non_ohlcv/sec_companyfacts_backfill_summary_20241002_20260505.json",
+    "data/experiments/exp-20260507-031/feature_rebuild_summary.json",
+    "data/experiments/exp-20260507-006/full_candidate_filing_shock_shadow.json",
+    "docs/non_ohlcv_data_audit/sec_companyfacts_same_accession_feature_repair_exp-20260507-031_20260507.md",
+    "experiments/tickets/exp-20260507-031.json",
+    "experiments/logs/exp-20260507-031.json",
+    "docs/experiment_log.jsonl"
+  ]
+}

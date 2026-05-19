@@ -57,8 +57,8 @@ WINDOWS = OrderedDict(
 
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"exp_20260507_005_{STEM}.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 META_MAP_JSON = REPO_ROOT / "data" / "experiments" / "exp-20260506-024" / "meta_allocation_state_map.json"
 RESULT_FILES = {
     "late_strong": REPO_ROOT / "data" / "backtest_results_20260506.json",
@@ -727,8 +727,8 @@ def main() -> int:
         "allowed_write_scope": [
             "quant/experiments/exp_20260507_005_state_aware_shadow_alpha_surface.py",
             "data/experiments/exp-20260507-005/exp_20260507_005_state_aware_shadow_alpha_surface.json",
-            "docs/experiments/tickets/exp-20260507-005.json",
-            "docs/experiments/logs/exp-20260507-005.json",
+            "experiments/tickets/exp-20260507-005.json",
+            "experiments/logs/exp-20260507-005.json",
             "docs/experiment_log.jsonl",
             "docs/experiment_registry.json",
         ],

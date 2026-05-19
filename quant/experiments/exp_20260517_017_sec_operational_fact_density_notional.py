@@ -36,11 +36,10 @@ from sec_event_queue import language_features  # noqa: E402
 
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-DOC_LOG = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-DOC_TICKET = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+DOC_LOG = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_TICKET = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 DOC_ARTIFACT = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_sec_operational_fact_density_notional.md"
@@ -731,7 +730,7 @@ def main() -> int:
                 "and non-high-vagueness filings should deserve more paper notional."
             ),
             "2_history_check": (
-                "No prior experiment in docs/experiment_log.jsonl or docs/experiments "
+                "No prior experiment in docs/experiment_log.jsonl or experiments "
                 "used the playbook's operational_fact_density_bucket or "
                 "narrative_vagueness_bucket. The nearest related runs were "
                 "exp-20260516-033 neutral-language notional and exp-20260517-012 "

@@ -1,0 +1,570 @@
+{
+  "experiment_id": "exp-20260508-022",
+  "timestamp": "2026-05-08T15:23:20.529867+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "delayed_entry_satellite_replay",
+  "alpha_hypothesis_category": "entry",
+  "hypothesis": "Adverse-gap-cancelled A/B candidates that reclaim the original signal entry on the cancel day may carry delayed-entry alpha without weakening the accepted adverse-gap cancel.",
+  "why_this_now": "LLM soft-ranking and add-on capital allocation are currently data/parity constrained, while recent mechanism notes explicitly allow adverse-gap retries only with orthogonal reclaim evidence.",
+  "history_guardrails": {
+    "not_raw_gap_cancel_bypass": true,
+    "not_adverse_gap_threshold_tuning": true,
+    "not_sector_or_tqs_exception": true,
+    "not_dynamic_extra_slot_retry": true,
+    "single_causal_variable": "adverse-gap reclaim delayed-entry sleeve"
+  },
+  "parameters": {
+    "variants": {
+      "intraday_reclaim_next_open": {
+        "reclaim_field": "High",
+        "reclaim_description": "adverse-gap day high reclaims original signal entry"
+      },
+      "close_reclaim_next_open": {
+        "reclaim_field": "Close",
+        "reclaim_description": "adverse-gap day close reclaims original signal entry"
+      }
+    },
+    "notional_per_trade": 10000.0,
+    "max_hold_days": 20,
+    "locked_variables": [
+      "core signal generation",
+      "accepted adverse-gap cancel",
+      "entry filters",
+      "candidate ranking",
+      "sizing",
+      "exits",
+      "add-ons",
+      "LLM/news replay",
+      "universe"
+    ]
+  },
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but can lag indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "rows": {
+    "late_strong": {
+      "window": {
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+        "state_note": "slow-melt bull / accepted-stack dominant tape"
+      },
+      "before": {
+        "expected_value_score": 3.7435,
+        "sharpe_daily": 4.48,
+        "total_pnl": 83562.53,
+        "total_return_pct": 0.8356,
+        "max_drawdown_pct": 0.0539,
+        "win_rate": 0.7895,
+        "trade_count": 19,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "adverse_gap_cancel_count": 5,
+        "slot_sliced_count": 3,
+        "addon_scheduled": 7,
+        "addon_executed": 4,
+        "converged": true
+      },
+      "variants": {
+        "intraday_reclaim_next_open": {
+          "parameters": {
+            "reclaim_field": "High",
+            "reclaim_description": "adverse-gap day high reclaims original signal entry",
+            "notional_per_trade": 10000.0,
+            "max_hold_days": 20,
+            "entry_timing": "next open after adverse-gap day reclaim",
+            "stop_target_source": "original A/B signal"
+          },
+          "audit": {
+            "adverse_gap_events": 5,
+            "missing_ohlcv": 0,
+            "missing_signal_fields": 0,
+            "reclaim_passed": 1,
+            "no_next_open": 0,
+            "entry_below_stop": 0,
+            "no_exit": 0
+          },
+          "after": {
+            "expected_value_score": 3.6606,
+            "sharpe_daily": 4.42,
+            "total_pnl": 82823.28,
+            "total_return_pct": 0.8282,
+            "max_drawdown_pct": 0.0542,
+            "win_rate": 0.75,
+            "trade_count": 20,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039,
+            "adverse_gap_cancel_count": 0,
+            "slot_sliced_count": 0,
+            "addon_scheduled": null,
+            "addon_executed": null,
+            "converged": false,
+            "satellite_trade_count": 1,
+            "satellite_pnl": -739.25,
+            "satellite_win_rate": 0.0
+          },
+          "delta": {
+            "expected_value_score": -0.0829,
+            "sharpe_daily": -0.06,
+            "total_pnl": -739.25,
+            "total_return_pct": -0.0074,
+            "max_drawdown_pct": 0.0003,
+            "win_rate": -0.04,
+            "trade_count": 1.0,
+            "survival_rate": 0.0
+          },
+          "satellite_trades": [
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "source_decision_date": "2025-11-06",
+              "cancel_fill_date": "2025-11-07",
+              "reclaim_field": "High",
+              "reclaim_value": 191.32,
+              "signal_entry": 190.82,
+              "entry_date": "2025-11-10",
+              "entry_price": 192.91,
+              "stop_price": 179.09,
+              "target_price": 237.75,
+              "exit_date": "2025-11-14",
+              "exit_price": 179.09,
+              "exit_reason": "stop",
+              "hold_days": 4,
+              "shares": 51,
+              "notional": 9838.41,
+              "pnl": -739.25,
+              "pnl_pct": -0.07514
+            }
+          ]
+        },
+        "close_reclaim_next_open": {
+          "parameters": {
+            "reclaim_field": "Close",
+            "reclaim_description": "adverse-gap day close reclaims original signal entry",
+            "notional_per_trade": 10000.0,
+            "max_hold_days": 20,
+            "entry_timing": "next open after adverse-gap day reclaim",
+            "stop_target_source": "original A/B signal"
+          },
+          "audit": {
+            "adverse_gap_events": 5,
+            "missing_ohlcv": 0,
+            "missing_signal_fields": 0,
+            "reclaim_passed": 1,
+            "no_next_open": 0,
+            "entry_below_stop": 0,
+            "no_exit": 0
+          },
+          "after": {
+            "expected_value_score": 3.6606,
+            "sharpe_daily": 4.42,
+            "total_pnl": 82823.28,
+            "total_return_pct": 0.8282,
+            "max_drawdown_pct": 0.0542,
+            "win_rate": 0.75,
+            "trade_count": 20,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "survival_rate": 0.8039,
+            "adverse_gap_cancel_count": 0,
+            "slot_sliced_count": 0,
+            "addon_scheduled": null,
+            "addon_executed": null,
+            "converged": false,
+            "satellite_trade_count": 1,
+            "satellite_pnl": -739.25,
+            "satellite_win_rate": 0.0
+          },
+          "delta": {
+            "expected_value_score": -0.0829,
+            "sharpe_daily": -0.06,
+            "total_pnl": -739.25,
+            "total_return_pct": -0.0074,
+            "max_drawdown_pct": 0.0003,
+            "win_rate": -0.04,
+            "trade_count": 1.0,
+            "survival_rate": 0.0
+          },
+          "satellite_trades": [
+            {
+              "ticker": "DDOG",
+              "strategy": "trend_long",
+              "source_decision_date": "2025-11-06",
+              "cancel_fill_date": "2025-11-07",
+              "reclaim_field": "Close",
+              "reclaim_value": 191.24,
+              "signal_entry": 190.82,
+              "entry_date": "2025-11-10",
+              "entry_price": 192.91,
+              "stop_price": 179.09,
+              "target_price": 237.75,
+              "exit_date": "2025-11-14",
+              "exit_price": 179.09,
+              "exit_reason": "stop",
+              "hold_days": 4,
+              "shares": 51,
+              "notional": 9838.41,
+              "pnl": -739.25,
+              "pnl_pct": -0.07514
+            }
+          ]
+        }
+      }
+    },
+    "mid_weak": {
+      "window": {
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+        "state_note": "rotation-heavy bull where strategy profits but can lag indexes"
+      },
+      "before": {
+        "expected_value_score": 1.5478,
+        "sharpe_daily": 2.69,
+        "total_pnl": 57542.74,
+        "total_return_pct": 0.5754,
+        "max_drawdown_pct": 0.0879,
+        "win_rate": 0.5238,
+        "trade_count": 21,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "adverse_gap_cancel_count": 1,
+        "slot_sliced_count": 1,
+        "addon_scheduled": 7,
+        "addon_executed": 5,
+        "converged": true
+      },
+      "variants": {
+        "intraday_reclaim_next_open": {
+          "parameters": {
+            "reclaim_field": "High",
+            "reclaim_description": "adverse-gap day high reclaims original signal entry",
+            "notional_per_trade": 10000.0,
+            "max_hold_days": 20,
+            "entry_timing": "next open after adverse-gap day reclaim",
+            "stop_target_source": "original A/B signal"
+          },
+          "audit": {
+            "adverse_gap_events": 1,
+            "missing_ohlcv": 0,
+            "missing_signal_fields": 0,
+            "reclaim_passed": 1,
+            "no_next_open": 0,
+            "entry_below_stop": 0,
+            "no_exit": 0
+          },
+          "after": {
+            "expected_value_score": 1.5896,
+            "sharpe_daily": 2.72,
+            "total_pnl": 58435.07,
+            "total_return_pct": 0.5844,
+            "max_drawdown_pct": 0.0867,
+            "win_rate": 0.5455,
+            "trade_count": 22,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925,
+            "adverse_gap_cancel_count": 0,
+            "slot_sliced_count": 0,
+            "addon_scheduled": null,
+            "addon_executed": null,
+            "converged": false,
+            "satellite_trade_count": 1,
+            "satellite_pnl": 892.33,
+            "satellite_win_rate": 1.0
+          },
+          "delta": {
+            "expected_value_score": 0.0418,
+            "sharpe_daily": 0.03,
+            "total_pnl": 892.33,
+            "total_return_pct": 0.009,
+            "max_drawdown_pct": -0.0012,
+            "win_rate": 0.02,
+            "trade_count": 1.0,
+            "survival_rate": 0.0
+          },
+          "satellite_trades": [
+            {
+              "ticker": "SNOW",
+              "strategy": "trend_long",
+              "source_decision_date": "2025-05-22",
+              "cancel_fill_date": "2025-05-23",
+              "reclaim_field": "High",
+              "reclaim_value": 205.4,
+              "signal_entry": 203.18,
+              "entry_date": "2025-05-27",
+              "entry_price": 202.6,
+              "stop_price": 192.81,
+              "target_price": 244.68,
+              "exit_date": "2025-06-25",
+              "exit_price": 221.52,
+              "exit_reason": "max_hold",
+              "hold_days": 20,
+              "shares": 49,
+              "notional": 9927.4,
+              "pnl": 892.33,
+              "pnl_pct": 0.089886
+            }
+          ]
+        },
+        "close_reclaim_next_open": {
+          "parameters": {
+            "reclaim_field": "Close",
+            "reclaim_description": "adverse-gap day close reclaims original signal entry",
+            "notional_per_trade": 10000.0,
+            "max_hold_days": 20,
+            "entry_timing": "next open after adverse-gap day reclaim",
+            "stop_target_source": "original A/B signal"
+          },
+          "audit": {
+            "adverse_gap_events": 1,
+            "missing_ohlcv": 0,
+            "missing_signal_fields": 0,
+            "reclaim_passed": 0,
+            "no_next_open": 0,
+            "entry_below_stop": 0,
+            "no_exit": 0
+          },
+          "after": {
+            "expected_value_score": 1.5478,
+            "sharpe_daily": 2.69,
+            "total_pnl": 57542.74,
+            "total_return_pct": 0.5754,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "survival_rate": 0.7925,
+            "adverse_gap_cancel_count": 1,
+            "slot_sliced_count": 1,
+            "addon_scheduled": 7,
+            "addon_executed": 5,
+            "converged": true,
+            "satellite_trade_count": 0,
+            "satellite_pnl": 0.0,
+            "satellite_win_rate": 0.0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0
+          },
+          "satellite_trades": []
+        }
+      }
+    },
+    "old_thin": {
+      "window": {
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+        "state_note": "mixed-to-weak older tape with lower win rate"
+      },
+      "before": {
+        "expected_value_score": 0.3359,
+        "sharpe_daily": 1.28,
+        "total_pnl": 26242.68,
+        "total_return_pct": 0.2624,
+        "max_drawdown_pct": 0.0905,
+        "win_rate": 0.4091,
+        "trade_count": 22,
+        "signals_generated": 60,
+        "signals_survived": 55,
+        "survival_rate": 0.9167,
+        "adverse_gap_cancel_count": 1,
+        "slot_sliced_count": 9,
+        "addon_scheduled": 4,
+        "addon_executed": 2,
+        "converged": true
+      },
+      "variants": {
+        "intraday_reclaim_next_open": {
+          "parameters": {
+            "reclaim_field": "High",
+            "reclaim_description": "adverse-gap day high reclaims original signal entry",
+            "notional_per_trade": 10000.0,
+            "max_hold_days": 20,
+            "entry_timing": "next open after adverse-gap day reclaim",
+            "stop_target_source": "original A/B signal"
+          },
+          "audit": {
+            "adverse_gap_events": 1,
+            "missing_ohlcv": 0,
+            "missing_signal_fields": 0,
+            "reclaim_passed": 0,
+            "no_next_open": 0,
+            "entry_below_stop": 0,
+            "no_exit": 0
+          },
+          "after": {
+            "expected_value_score": 0.3359,
+            "sharpe_daily": 1.28,
+            "total_pnl": 26242.68,
+            "total_return_pct": 0.2624,
+            "max_drawdown_pct": 0.0905,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "survival_rate": 0.9167,
+            "adverse_gap_cancel_count": 1,
+            "slot_sliced_count": 9,
+            "addon_scheduled": 4,
+            "addon_executed": 2,
+            "converged": true,
+            "satellite_trade_count": 0,
+            "satellite_pnl": 0.0,
+            "satellite_win_rate": 0.0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0
+          },
+          "satellite_trades": []
+        },
+        "close_reclaim_next_open": {
+          "parameters": {
+            "reclaim_field": "Close",
+            "reclaim_description": "adverse-gap day close reclaims original signal entry",
+            "notional_per_trade": 10000.0,
+            "max_hold_days": 20,
+            "entry_timing": "next open after adverse-gap day reclaim",
+            "stop_target_source": "original A/B signal"
+          },
+          "audit": {
+            "adverse_gap_events": 1,
+            "missing_ohlcv": 0,
+            "missing_signal_fields": 0,
+            "reclaim_passed": 0,
+            "no_next_open": 0,
+            "entry_below_stop": 0,
+            "no_exit": 0
+          },
+          "after": {
+            "expected_value_score": 0.3359,
+            "sharpe_daily": 1.28,
+            "total_pnl": 26242.68,
+            "total_return_pct": 0.2624,
+            "max_drawdown_pct": 0.0905,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "survival_rate": 0.9167,
+            "adverse_gap_cancel_count": 1,
+            "slot_sliced_count": 9,
+            "addon_scheduled": 4,
+            "addon_executed": 2,
+            "converged": true,
+            "satellite_trade_count": 0,
+            "satellite_pnl": 0.0,
+            "satellite_win_rate": 0.0
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0
+          },
+          "satellite_trades": []
+        }
+      }
+    }
+  },
+  "variant_aggregates": {
+    "intraday_reclaim_next_open": {
+      "baseline_expected_value_score_sum": 5.6272,
+      "after_expected_value_score_sum": 5.5861,
+      "expected_value_score_delta_sum": -0.0411,
+      "expected_value_score_delta_pct": -0.007304,
+      "baseline_total_pnl_sum": 167347.95,
+      "after_total_pnl_sum": 167501.03,
+      "total_pnl_delta_sum": 153.08,
+      "total_pnl_delta_pct": 0.000915,
+      "ev_windows_improved": 1,
+      "ev_windows_regressed": 1,
+      "pnl_windows_improved": 1,
+      "pnl_windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0003,
+      "satellite_trade_count": 2,
+      "satellite_pnl_sum": 153.08,
+      "gate4_passed": false
+    },
+    "close_reclaim_next_open": {
+      "baseline_expected_value_score_sum": 5.6272,
+      "after_expected_value_score_sum": 5.5443,
+      "expected_value_score_delta_sum": -0.0829,
+      "expected_value_score_delta_pct": -0.014732,
+      "baseline_total_pnl_sum": 167347.95,
+      "after_total_pnl_sum": 166608.7,
+      "total_pnl_delta_sum": -739.25,
+      "total_pnl_delta_pct": -0.004417,
+      "ev_windows_improved": 0,
+      "ev_windows_regressed": 1,
+      "pnl_windows_improved": 0,
+      "pnl_windows_regressed": 1,
+      "max_drawdown_delta_max": 0.0003,
+      "satellite_trade_count": 1,
+      "satellite_pnl_sum": -739.25,
+      "gate4_passed": false
+    }
+  },
+  "best_variant": "intraday_reclaim_next_open",
+  "best_variant_gate4": false,
+  "mechanism_read": "The reclaim idea is distinct from raw gap-cancel bypasses, but the tested daily reclaim signals do not deliver enough stable marginal EV. The accepted adverse-gap cancel should remain unchanged; a valid retry needs richer intraday structure, fresh event/news context, or forward paper evidence.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "promotion_requirement": "A positive future version needs a shared production/backtest paper adapter before any live order path changes."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "blocker_relation": "LLM soft-ranking remains sample-limited; this tests a deterministic alternative entry alpha."
+  },
+  "rejection_reason": "Daily reclaim delayed entries did not pass three-window Gate 4.",
+  "next_retry_requires": [
+    "Do not retry same-day high/close reclaim alone on the same frozen samples.",
+    "A valid retry needs richer intraday structure, event/news confirmation, or forward paper evidence.",
+    "Keep ADVERSE_GAP_CANCEL_PCT unchanged."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260508-022\\adverse_gap_reclaim_sleeve.json",
+    "experiments\\logs\\exp-20260508-022.json",
+    "experiments\\tickets\\exp-20260508-022.json",
+    "experiments\\artifacts\\exp-20260508-022_adverse_gap_reclaim_sleeve.md"
+  ]
+}

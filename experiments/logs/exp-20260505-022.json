@@ -1,0 +1,237 @@
+{
+  "experiment_id": "exp-20260505-022",
+  "timestamp": "2026-05-05T17:24:20+00:00",
+  "status": "observed_only",
+  "decision": "data_gap",
+  "lane": "alpha_discovery",
+  "run_mode": "duplicate_guardrail_data_audit_recheck",
+  "change_type": "non_ohlcv_data_audit_recheck",
+  "mechanism_family": "short_interest_borrow_pressure_overlay",
+  "hypothesis": "High short interest plus price/event strength may identify squeeze-ready existing Ginger candidates, while high short crowding plus negative event context may identify fragile candidates. This run only checks whether new PIT short/borrow evidence exists after exp-20260504-041.",
+  "alpha_hypothesis": {
+    "category": "candidate_overlay_ranking_and_risk",
+    "entry_exit_ranking_or_allocation": "ranking/risk overlay on existing candidates, not standalone entry",
+    "text": "High short crowding plus existing breakout_long/trend_long strength or positive event context may be a squeeze setup tag; high short crowding plus negative filing/news/earnings context may be a fragile-short risk tag.",
+    "why_not_now": "Prior same-family audits through exp-20260504-041 already found no PIT-safe short-interest, FINRA short-volume, or borrow-pressure rows. This recheck found no new local structured source files or adapters."
+  },
+  "non_ohlcv_data_source": "exchange short interest, FINRA daily short volume, and paid securities-lending / borrow-pressure feeds",
+  "single_causal_variable": "new PIT-safe short-interest or borrow-pressure evidence since exp-20260504-041",
+  "date_range": {
+    "primary": "2025-10-23 -> 2026-04-21",
+    "secondary": [
+      "2025-04-23 -> 2025-10-22",
+      "2024-10-02 -> 2025-04-22"
+    ]
+  },
+  "market_regime_summary": {
+    "late_strong": "accepted-stack dominant bull tape",
+    "mid_weak": "rotation-heavy tape where strategy profits but lags indexes",
+    "old_thin": "mixed older tape with lower win rate"
+  },
+  "historical_experiment_check": {
+    "exact_prior_experiments": [
+      "exp-20260503-015",
+      "exp-20260503-018",
+      "exp-20260503-021",
+      "exp-20260503-023",
+      "exp-20260503-028",
+      "exp-20260503-032",
+      "exp-20260503-034",
+      "exp-20260503-038",
+      "exp-20260503-039",
+      "exp-20260503-043",
+      "exp-20260504-041"
+    ],
+    "prior_decision": "data_gap",
+    "prior_result_summary": "0 structured short-interest rows, 0 FINRA adapter/files, 0 paid borrow rows, 0 PIT-safe rows, 0 usable trade-date rows, and 0 taggable candidates.",
+    "mechanism_insight_check": "docs/alpha-optimization-playbook.md ranks short interest / borrow pressure as a valid external overlay source, but only as shadow-quality until PIT data exists and explicitly warns not to treat FINRA daily short volume as short interest.",
+    "new_short_borrow_files_since_prior": false,
+    "new_evidence_since_prior": "No new local files or code adapters matching structured short interest, FINRA daily short volume, paid borrow, hard-to-borrow, borrow fee, shares available, or squeeze data were found after exp-20260504-041. data/non_ohlcv contains Form 4 and SEC artifacts only.",
+    "why_not_simple_rerun": "Rerunning squeeze shadow scoring without PIT rows would reproduce 0 taggable candidates and add no alpha evidence."
+  },
+  "data_availability": {
+    "coverage": 0.0,
+    "pit_status": "unavailable",
+    "structured_short_interest_files": 0,
+    "structured_short_interest_rows": 0,
+    "finra_adapter_files": 0,
+    "finra_daily_short_volume_files": 0,
+    "paid_borrow_files": 0,
+    "borrow_fee_rows": 0,
+    "shares_available_rows": 0,
+    "hard_to_borrow_rows": 0,
+    "usable_trade_date_rows": 0,
+    "pit_safe_rows": 0,
+    "data_non_ohlcv_short_borrow_files": 0,
+    "name_or_adapter_matches_in_data_quant_scripts": 0,
+    "docs_only_prior_short_borrow_audit_files": 11,
+    "non_ohlcv_files_present": [
+      "form4_*",
+      "sec_companyfacts_*",
+      "sec_filing_*"
+    ],
+    "field_missingness": {
+      "ticker": "no structured short/borrow rows",
+      "settlement_date": "no structured short/borrow rows",
+      "publication_date": "no structured short/borrow rows",
+      "short_interest": "no structured short/borrow rows",
+      "short_interest_float": "no structured short/borrow rows",
+      "days_to_cover": "no structured short/borrow rows",
+      "short_interest_change": "no structured short/borrow rows",
+      "borrow_fee": "no structured short/borrow rows",
+      "shares_available": "no structured short/borrow rows",
+      "hard_to_borrow": "no structured short/borrow rows",
+      "daily_short_volume": "no structured short/borrow rows",
+      "total_volume": "no structured short/borrow rows",
+      "daily_short_volume_ratio": "no structured short/borrow rows",
+      "usable_trade_date": "no structured short/borrow rows",
+      "pit_safe": "no structured short/borrow rows"
+    },
+    "pit_risk_notes": [
+      "Short-interest settlement dates are not tradable without publication dates.",
+      "FINRA daily short volume is trading activity, not short positioning.",
+      "News/headline mentions are unstructured and are not borrow-pressure evidence.",
+      "Without borrow_fee or shares_available, squeeze confidence must be downgraded."
+    ]
+  },
+  "baseline_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "total_return_pct": 0.786,
+      "total_pnl": 78600.33,
+      "sharpe_daily": 4.35,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "vs_spy_pct": 0.7319,
+      "vs_qqq_pct": 0.728
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "total_return_pct": 0.5502,
+      "total_pnl": 55015.08,
+      "sharpe_daily": 2.62,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "vs_spy_pct": 0.2958,
+      "vs_qqq_pct": 0.2151
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "total_return_pct": 0.2464,
+      "total_pnl": 24642.07,
+      "sharpe_daily": 1.29,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "vs_spy_pct": 0.3137,
+      "vs_qqq_pct": 0.3213
+    },
+    "source": "Accepted fixed-window metrics reused from prior no-drift records and current playbook; this data audit did not rerun backtests."
+  },
+  "before_metrics": {
+    "expected_value_score": "same as baseline; data audit only"
+  },
+  "after_metrics": {
+    "expected_value_score": "same as baseline; data audit only",
+    "production_metrics_changed": false,
+    "reason": "No strategy, replay, ranking, universe, sizing, signal path, or LLM prompt changed."
+  },
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0,
+    "production": 0.0,
+    "shadow": null,
+    "reason": "No replay or production path changed; no taggable candidates exist."
+  },
+  "shadow_metrics": {
+    "candidate_count": {
+      "existing_executed_trades": 62,
+      "existing_survived_candidates": 138,
+      "taggable_short_borrow_candidates": 0
+    },
+    "overlap_with_existing_signals": {
+      "existing_survived_candidate_count": 138,
+      "tagged_existing_signal_count": 0,
+      "overlap_ratio": 0.0
+    },
+    "scarce_slot_opportunity_cost": {
+      "measurable": false,
+      "slot_conflict_value": null,
+      "reason": "No tagged candidates; slot conflict value cannot be estimated."
+    },
+    "forward_return_of_tagged_candidates": {
+      "forward_5d_return": null,
+      "forward_10d_return": null,
+      "forward_20d_return": null,
+      "forward_60d_return": null,
+      "reason": "No point-in-time short/borrow rows exist to tag candidates."
+    },
+    "false_positive_examples": {
+      "available": true,
+      "examples": [
+        "News headlines using squeeze for supply, margin, or cash-flow pressure are not short-squeeze evidence.",
+        "A headline mentioning short interest lacks settlement_date, publication_date, usable_trade_date, float, borrow fee, and shares-available fields.",
+        "Future FINRA daily short-volume rows must not be interpreted as short-interest positioning."
+      ]
+    }
+  },
+  "candidate_count": 0,
+  "overlap_with_existing_signals": {
+    "tagged_existing_signal_count": 0,
+    "overlap_ratio": 0.0
+  },
+  "scarce_slot_opportunity_cost": {
+    "measurable": false,
+    "slot_conflict_value": null
+  },
+  "forward_return_of_tagged_candidates": {
+    "5d": null,
+    "10d": null,
+    "20d": null,
+    "60d": null
+  },
+  "production_change_allowed": false,
+  "production_impact": {
+    "production_impact": "data_audit_only_no_production_change",
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_signal_path_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false,
+    "replay_only": false,
+    "parity_test_added": false
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none"
+  },
+  "gate4": {
+    "applicable": false,
+    "reason": "No strategy behavior changed and no shadow replay was possible."
+  },
+  "decision_rationale": "The mechanism remains plausible as a future non-OHLCV overlay, but this run adds no new evidence beyond the earlier data-gap audits. Shadow scoring would be fabricated without real PIT-safe rows.",
+  "next_minimum_action": "Choose one real default-off append-only short/borrow source and require publication_date plus usable_trade_date before rerunning shadow tagging. If only FINRA daily short volume is available, treat it as activity context, not short-interest positioning.",
+  "related_files": [
+    "experiments/tickets/exp-20260505-022.json",
+    "experiments/logs/exp-20260505-022.json",
+    "docs/non_ohlcv_data_audit/short_interest_borrow_pressure_exp-20260505-022_20260505.md",
+    "experiments/logs/exp-20260504-041.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ]
+}

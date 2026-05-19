@@ -1,0 +1,208 @@
+{
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe": 6.62,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_trades": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe": 4.28,
+      "sharpe_daily": 2.62,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_trades": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe": 2.11,
+      "sharpe_daily": 1.29,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_trades": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "alpha_hypothesis": {
+    "category": "entry_execution",
+    "entry_exit_ranking_or_allocation": "entry execution exception",
+    "why_this_now": "Prior global upside-gap exception sweeps failed; recent playbook notes allow a retry only with an orthogonal event/state source. LLM soft-ranking is data-limited and the event overlay bundle must not be promoted without forward outcomes."
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "max_drawdown_pct": 0.0541,
+      "sharpe": 6.62,
+      "sharpe_daily": 4.35,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "survival_rate": 0.8039,
+      "total_pnl": 78600.33,
+      "total_trades": 19,
+      "win_rate": 0.7895
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "max_drawdown_pct": 0.0879,
+      "sharpe": 4.28,
+      "sharpe_daily": 2.62,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "survival_rate": 0.7925,
+      "total_pnl": 55015.08,
+      "total_trades": 21,
+      "win_rate": 0.5238
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "max_drawdown_pct": 0.0805,
+      "sharpe": 2.11,
+      "sharpe_daily": 1.29,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "survival_rate": 0.9167,
+      "total_pnl": 24642.07,
+      "total_trades": 22,
+      "win_rate": 0.4091
+    }
+  },
+  "change_type": "alpha_preflight_coverage_audit",
+  "coverage": {
+    "by_window": {
+      "late_strong": {
+        "event_active_gap_cancel_matches": 0,
+        "event_bundle_trades": 12,
+        "gap_cancel_candidates": 4,
+        "same_ticker_window_overlaps": 1
+      },
+      "mid_weak": {
+        "event_active_gap_cancel_matches": 0,
+        "event_bundle_trades": 15,
+        "gap_cancel_candidates": 4,
+        "same_ticker_window_overlaps": 1
+      },
+      "old_thin": {
+        "event_active_gap_cancel_matches": 0,
+        "event_bundle_trades": 8,
+        "gap_cancel_candidates": 5,
+        "same_ticker_window_overlaps": 1
+      }
+    },
+    "total_event_active_gap_cancel_matches": 0,
+    "total_event_bundle_trades": 35,
+    "total_gap_cancel_candidates": 13,
+    "total_same_ticker_window_overlaps": 3
+  },
+  "date_range": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  },
+  "decision": "rejected_no_event_coverage",
+  "decision_rationale": "The orthogonal event source does not touch the candidates this rule would alter: 0/13 gap-cancel candidates had an active event-bundle match. Implementing the exception would be a zero-impact policy change or would require broadening the event source first, which is a separate causal variable.",
+  "expected_value_score_delta": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "experiment_id": "exp-20260504-055",
+  "gate4": {
+    "reason": "Rejected before implementation because coverage was zero in all canonical windows.",
+    "status": "not_applicable_no_strategy_change"
+  },
+  "historical_experiment_check": {
+    "mechanism_insight_check": "This tests the allowed orthogonal-event retry condition without changing thresholds or promoting event sleeves. It does not repeat the rejected global/sector gap exception.",
+    "similar_experiments": {
+      "exp-20260428-021": "Global upside gap threshold sweeps rejected; current 1.5% remains best.",
+      "exp-20260428-022": "Sector/strategy upside-gap exceptions rejected; valid retry needs orthogonal event/state source.",
+      "exp-20260503-048": "Form 4 near accepted A/B overlay too sparse; do not use Form 4 alone near entries.",
+      "exp-20260504-049": "Default-off event bundle is positive as a satellite overlay but not yet live-promoted.",
+      "exp-20260504-053": "Production only records default-off event bundle attribution; no live orders."
+    }
+  },
+  "hypothesis": "If a frozen external event source is active around an A/B upside gap-cancel candidate, that gap may be confirmation rather than overextended execution and could justify a narrow shared-policy exception.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false,
+    "why_not_llm": "LLM soft-ranking remains data-limited and this alpha hypothesis is event/execution based."
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy makes money but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "mechanism_family": "event_confirmed_execution_exception",
+  "next_action": "Do not implement event-confirmed upside-gap exceptions. Search for alpha in a different candidate-pool or lifecycle branch unless new PIT-safe event evidence overlaps skipped A/B candidates.",
+  "parameters": {
+    "confirmation_rule": "same ticker and gap-cancel candidate date inside frozen event trade active window",
+    "locked_variables": [
+      "core A/B signal generation",
+      "core candidate ranking",
+      "core sizing",
+      "entry gap thresholds",
+      "event source thresholds",
+      "event holding periods",
+      "event notionals",
+      "production defaults",
+      "LLM/news decisions"
+    ],
+    "source_event_bundle": "exp-20260504-049",
+    "strategy_change_attempted": false
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "observe_only": true,
+    "parity_test_added": false,
+    "production_signal_path_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "rejection_reason": "No active-window overlap between frozen event-bundle trades and upside gap-cancel candidates.",
+  "related_files": [
+    "data\\experiments\\exp-20260504-055\\event_confirmed_gap_cancel_audit.json",
+    "experiments\\logs\\exp-20260504-055.json",
+    "experiments\\tickets\\exp-20260504-055.json",
+    "experiments\\artifacts\\exp-20260504-055_event_confirmed_gap_cancel_audit.md"
+  ],
+  "risk_of_change": "None to live trading; the intentionally avoided risk is allowing overextended gap entries without event coverage, which could reintroduce the failure mode rejected by prior sweeps.",
+  "single_causal_variable": "coverage of A/B upside gap-cancel candidates by the frozen exp-20260504-049 event bundle",
+  "status": "rejected_preflight",
+  "timestamp": "2026-05-04T23:15:52+00:00",
+  "why_not_other_attractive_points": {
+    "event_bundle_promotion": "Positive replay exists, but forward closed outcomes are not yet available.",
+    "gap_threshold_retune": "Prior sweeps already rejected nearby global threshold changes.",
+    "llm_soft_ranking": "Still insufficient replay/forward attribution coverage.",
+    "macro_etf_pool": "Recent broad and pair-confirmed macro ETF expansions were rejected."
+  }
+}

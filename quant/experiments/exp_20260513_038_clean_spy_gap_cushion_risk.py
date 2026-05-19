@@ -508,9 +508,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260513_038_clean_spy_gap_cushion_risk.py",
             "data/experiments/exp-20260513-038/clean_spy_gap_cushion_risk.json",
-            "docs/experiments/logs/exp-20260513-038.json",
-            "docs/experiments/tickets/exp-20260513-038.json",
-            "docs/experiments/artifacts/exp-20260513-038_clean_spy_gap_cushion_risk.md",
+            "experiments/logs/exp-20260513-038.json",
+            "experiments/tickets/exp-20260513-038.json",
+            "experiments/artifacts/exp-20260513-038_clean_spy_gap_cushion_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }

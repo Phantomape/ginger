@@ -38,8 +38,8 @@ from experiments.exp_20260503_051_sec_filing_reaction_drift import (
 
 EXPERIMENT_ID = "exp-20260504-015"
 ARTIFACT_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
-LOG_DIR = ROOT / "docs" / "experiments" / "logs"
-TICKET_DIR = ROOT / "docs" / "experiments" / "tickets"
+LOG_DIR = ROOT / "experiments" / "logs"
+TICKET_DIR = ROOT / "experiments" / "tickets"
 AUDIT_DIR = ROOT / "docs" / "non_ohlcv_data_audit"
 EXPERIMENT_LOG = ROOT / "docs" / "experiment_log.jsonl"
 

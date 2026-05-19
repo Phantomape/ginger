@@ -30,8 +30,8 @@ from risk_engine import _retarget_signal_with_atr_mult  # noqa: E402
 EXPERIMENT_ID = "exp-20260501-019"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "precious_breakout_target_width.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 
 WINDOWS = OrderedDict([
     ("late_strong", {
@@ -358,8 +358,8 @@ def build_payload() -> dict:
         "related_files": [
             "quant/experiments/exp_20260501_019_precious_breakout_target_width.py",
             "data/experiments/exp-20260501-019/precious_breakout_target_width.json",
-            "docs/experiments/logs/exp-20260501-019.json",
-            "docs/experiments/tickets/exp-20260501-019.json",
+            "experiments/logs/exp-20260501-019.json",
+            "experiments/tickets/exp-20260501-019.json",
         ],
     }
 

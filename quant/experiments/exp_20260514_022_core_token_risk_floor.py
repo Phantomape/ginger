@@ -511,9 +511,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260514_022_core_token_risk_floor.py",
             "data/experiments/exp-20260514-022/core_token_risk_floor.json",
-            "docs/experiments/logs/exp-20260514-022.json",
-            "docs/experiments/tickets/exp-20260514-022.json",
-            "docs/experiments/artifacts/exp-20260514-022_core_token_risk_floor.md",
+            "experiments/logs/exp-20260514-022.json",
+            "experiments/tickets/exp-20260514-022.json",
+            "experiments/artifacts/exp-20260514-022_core_token_risk_floor.md",
             "docs/experiment_log.jsonl",
         ],
         "why_not_other_changes": (
@@ -537,21 +537,18 @@ def persist(payload: dict[str, Any]) -> None:
     )
     log_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "logs"
         / f"{EXPERIMENT_ID}.json"
     )
     ticket_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "tickets"
         / f"{EXPERIMENT_ID}.json"
     )
     md_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

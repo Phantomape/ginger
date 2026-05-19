@@ -25,11 +25,11 @@ TEXT_PATH = DATA_DIR / "non_ohlcv" / "sec_filing_text_20241002_20260421.jsonl"
 TEXT_SUMMARY_PATH = DATA_DIR / "non_ohlcv" / "sec_filing_text_backfill_summary_20241002_20260421.json"
 OUT_DIR = DATA_DIR / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / "sec_filing_text_language_shadow.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 REPORT_MD = REPO_ROOT / "docs" / "non_ohlcv_data_audit" / "sec_filing_text_language_shadow_20260504.md"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
-BASELINE_LOG = REPO_ROOT / "docs" / "experiments" / "logs" / "exp-20260503-051.json"
+BASELINE_LOG = REPO_ROOT / "experiments" / "logs" / "exp-20260503-051.json"
 
 SNAPSHOT_FILES = {
     "old_thin": DATA_DIR / "ohlcv_snapshot_20241002_20250422.json",
@@ -736,7 +736,7 @@ def build_payload() -> dict[str, Any]:
             "quant/sec_filing_text_backfill.py",
             "quant/experiments/exp_20260504_005_sec_filing_text_language_shadow.py",
             "data/experiments/exp-20260504-005/sec_filing_text_language_shadow.json",
-            "docs/experiments/logs/exp-20260504-005.json",
+            "experiments/logs/exp-20260504-005.json",
             "docs/non_ohlcv_data_audit/sec_filing_text_language_shadow_20260504.md",
         ],
     }

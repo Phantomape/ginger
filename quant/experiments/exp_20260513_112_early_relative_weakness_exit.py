@@ -238,9 +238,9 @@ def _payload() -> dict[str, Any]:
             "quant/backtester.py",
             "quant/experiments/exp_20260513_112_early_relative_weakness_exit.py",
             "data/experiments/exp-20260513-112/early_relative_weakness_exit.json",
-            "docs/experiments/logs/exp-20260513-112.json",
-            "docs/experiments/tickets/exp-20260513-112.json",
-            "docs/experiments/artifacts/exp-20260513-112_early_relative_weakness_exit.md",
+            "experiments/logs/exp-20260513-112.json",
+            "experiments/tickets/exp-20260513-112.json",
+            "experiments/artifacts/exp-20260513-112_early_relative_weakness_exit.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -308,18 +308,16 @@ def persist(payload: dict[str, Any]) -> None:
         / f"{EXPERIMENT_SLUG}.json"
     )
     log_path = (
-        base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+        base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     )
     ticket_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "tickets"
         / f"{EXPERIMENT_ID}.json"
     )
     md_path = (
         base.REPO_ROOT
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

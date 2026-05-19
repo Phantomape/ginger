@@ -1,0 +1,1159 @@
+{
+  "experiment_id": "exp-20260506-016",
+  "generated_at": "2026-05-06T13:18:28.404917+00:00",
+  "status": "rejected",
+  "decision": "rejected",
+  "lane": "alpha_search",
+  "change_type": "scarce_slot_allocation",
+  "mechanism_family": "spy_relative_leader_conditional_capacity",
+  "hypothesis": "If SPY-relative leaders are the accepted high-quality risk-on sleeve, then a single conditional sixth core slot for SPY leaders sliced by the standard 5-position cap should improve opportunity capture without generic universe or capacity expansion.",
+  "alpha_hypothesis": {
+    "category": "allocation",
+    "entry_exit_ranking_or_allocation": "allocation",
+    "why_this_now": "LLM soft-ranking and event-bundle alpha remain sample-limited. Recent add-on heat and target-width variants are no-go zones, while the playbook still calls for explicit meta-allocation tests rather than more broad ticker expansion."
+  },
+  "historical_experiment_check": {
+    "similar_prior_results": {
+      "global MAX_POSITIONS sweeps": "Rejected or unstable; this run is not a generic capacity increase because only slot-sliced SPY-relative leaders are eligible.",
+      "exp-20260502-022": "SPY-relative leader first add-on cap at 60% is accepted; this run does not change add-on cap, add-on trigger, or sizing multipliers.",
+      "exp-20260506-015": "Add-on-only heat room was directionally positive but below Gate 4; this run moves to scarce-slot allocation instead of retrying nearby add-on heat caps."
+    },
+    "why_not_simple_repeat": "The tested variable is the entry slot allocator for a pre-existing leader sleeve. Thresholds, ranking, add-on policy, target width, exits, and candidate universe remain locked."
+  },
+  "parameters": {
+    "single_causal_variable": "one conditional extra core entry slot for slot-sliced SPY-relative leaders",
+    "baseline": {
+      "max_positions": 5,
+      "extra_slot_for_sliced_spy_relative_leader": false
+    },
+    "tested_variants": {
+      "spy_leader_extra_slot_all_slices": {
+        "require_available_slots_lte": null,
+        "strategy_allowlist": null
+      },
+      "spy_leader_extra_slot_scarce_only": {
+        "require_available_slots_lte": 1,
+        "strategy_allowlist": null
+      },
+      "trend_spy_leader_extra_slot_all_slices": {
+        "require_available_slots_lte": null,
+        "strategy_allowlist": [
+          "trend_long"
+        ]
+      }
+    },
+    "best_variant": "spy_leader_extra_slot_scarce_only",
+    "locked_variables": [
+      "universe",
+      "signal generation",
+      "candidate scoring",
+      "candidate ordering before slot slicing",
+      "entry filters",
+      "MAX_PER_SECTOR",
+      "sizing multipliers",
+      "MAX_POSITION_PCT",
+      "portfolio heat cap",
+      "add-on policy",
+      "exit policy",
+      "LLM/news replay",
+      "pilot sleeve"
+    ]
+  },
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "snapshots": {
+    "late_strong": "data/ohlcv_snapshot_20251023_20260421.json",
+    "mid_weak": "data/ohlcv_snapshot_20250423_20251022.json",
+    "old_thin": "data/ohlcv_snapshot_20241002_20250422.json"
+  },
+  "market_regime_summary": {
+    "late_strong": "slow-melt bull / accepted-stack dominant tape",
+    "mid_weak": "rotation-heavy bull where strategy profits but lags indexes",
+    "old_thin": "mixed-to-weak older tape with lower win rate"
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.3179,
+      "sharpe_daily": 1.29,
+      "total_pnl": 24642.07,
+      "total_return_pct": 0.2464,
+      "max_drawdown_pct": 0.0805,
+      "win_rate": 0.4091,
+      "trade_count": 22,
+      "survival_rate": 0.9167,
+      "signals_generated": 60,
+      "signals_survived": 55,
+      "converged": true
+    }
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 3.4191,
+      "sharpe_daily": 4.35,
+      "total_pnl": 78600.33,
+      "total_return_pct": 0.786,
+      "max_drawdown_pct": 0.0541,
+      "win_rate": 0.7895,
+      "trade_count": 19,
+      "survival_rate": 0.8039,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "converged": true
+    },
+    "mid_weak": {
+      "expected_value_score": 1.4415,
+      "sharpe_daily": 2.62,
+      "total_pnl": 55015.08,
+      "total_return_pct": 0.5502,
+      "max_drawdown_pct": 0.0879,
+      "win_rate": 0.5238,
+      "trade_count": 21,
+      "survival_rate": 0.7925,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "converged": true
+    },
+    "old_thin": {
+      "expected_value_score": 0.1502,
+      "sharpe_daily": 0.97,
+      "total_pnl": 15483.26,
+      "total_return_pct": 0.1548,
+      "max_drawdown_pct": 0.0811,
+      "win_rate": 0.3478,
+      "trade_count": 23,
+      "survival_rate": 0.9123,
+      "signals_generated": 57,
+      "signals_survived": 52,
+      "converged": false
+    }
+  },
+  "delta_metrics": {
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0,
+        "total_return_pct": 0.0,
+        "max_drawdown_pct": 0.0,
+        "win_rate": 0.0,
+        "trade_count": 0.0,
+        "survival_rate": 0.0,
+        "signals_generated": 0.0,
+        "signals_survived": 0.0
+      },
+      "old_thin": {
+        "expected_value_score": -0.1677,
+        "sharpe_daily": -0.32,
+        "total_pnl": -9158.81,
+        "total_return_pct": -0.0916,
+        "max_drawdown_pct": 0.0006,
+        "win_rate": -0.0613,
+        "trade_count": 1.0,
+        "survival_rate": -0.0044,
+        "signals_generated": -3.0,
+        "signals_survived": -3.0
+      }
+    },
+    "baseline_expected_value_score_sum": 5.1785,
+    "expected_value_score_delta_sum": -0.1677,
+    "expected_value_score_delta_pct": -0.032384,
+    "baseline_total_pnl_sum": 158257.48,
+    "total_pnl_delta_sum": -9158.81,
+    "total_pnl_delta_pct": -0.057873,
+    "ev_windows_improved": 0,
+    "ev_windows_regressed": 1,
+    "pnl_windows_improved": 0,
+    "pnl_windows_regressed": 1,
+    "max_drawdown_delta_min": 0.0,
+    "max_drawdown_delta_max": 0.0006,
+    "sharpe_daily_delta_min": -0.32,
+    "sharpe_daily_delta_max": 0.0,
+    "trade_count_delta_sum": 1.0,
+    "win_rate_delta_min": -0.0613,
+    "slot_sliced_delta_sum": -2,
+    "entered_delta_sum": 1,
+    "promoted_extra_slot_count_sum": 3
+  },
+  "variants": {
+    "spy_leader_extra_slot_all_slices": {
+      "parameters": {
+        "require_available_slots_lte": null,
+        "strategy_allowlist": null
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 2.7355,
+            "sharpe_daily": 3.98,
+            "total_pnl": 68732.23,
+            "total_return_pct": 0.6873,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7,
+            "trade_count": 20,
+            "survival_rate": 0.8723,
+            "signals_generated": 47,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": -0.6836,
+            "sharpe_daily": -0.37,
+            "total_pnl": -9868.1,
+            "total_return_pct": -0.0987,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0895,
+            "trade_count": 1.0,
+            "survival_rate": 0.0684,
+            "signals_generated": -4.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 20,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 1,
+            "promoted_count": 2,
+            "promoted_by_ticker": {
+              "IWM": 1,
+              "META": 1
+            },
+            "promoted_by_strategy": {
+              "breakout_long": 1,
+              "trend_long": 1
+            },
+            "sample_promotions": [
+              {
+                "ticker": "IWM",
+                "strategy": "breakout_long",
+                "sector": "ETF",
+                "available_slots": 2,
+                "original_rank": 3,
+                "trade_quality_score": 0.85,
+                "confidence_score": 1.0,
+                "shares_to_buy": 227,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "META",
+                "strategy": "trend_long",
+                "sector": "Technology",
+                "available_slots": 3,
+                "original_rank": 4,
+                "trade_quality_score": 0.956,
+                "confidence_score": 0.89,
+                "shares_to_buy": 2,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.3762,
+            "sharpe_daily": 2.57,
+            "total_pnl": 53553.46,
+            "total_return_pct": 0.5355,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": -0.0653,
+            "sharpe_daily": -0.05,
+            "total_pnl": -1461.62,
+            "total_return_pct": -0.0147,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 22,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred_count": 4,
+            "promoted_count": 1,
+            "promoted_by_ticker": {
+              "GLD": 1
+            },
+            "promoted_by_strategy": {
+              "trend_long": 1
+            },
+            "sample_promotions": [
+              {
+                "ticker": "GLD",
+                "strategy": "trend_long",
+                "sector": "Commodities",
+                "available_slots": 2,
+                "original_rank": 3,
+                "trade_quality_score": 0.977,
+                "confidence_score": 1.0,
+                "shares_to_buy": 156,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.1502,
+            "sharpe_daily": 0.97,
+            "total_pnl": 15483.26,
+            "total_return_pct": 0.1548,
+            "max_drawdown_pct": 0.0811,
+            "win_rate": 0.3478,
+            "trade_count": 23,
+            "survival_rate": 0.9123,
+            "signals_generated": 57,
+            "signals_survived": 52,
+            "converged": false
+          },
+          "delta": {
+            "expected_value_score": -0.1677,
+            "sharpe_daily": -0.32,
+            "total_pnl": -9158.81,
+            "total_return_pct": -0.0916,
+            "max_drawdown_pct": 0.0006,
+            "win_rate": -0.0613,
+            "trade_count": 1.0,
+            "survival_rate": -0.0044,
+            "signals_generated": -3.0,
+            "signals_survived": -3.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 52,
+            "entered_count": 23,
+            "slot_sliced_count": 6,
+            "scarce_slot_breakout_deferred_count": 8,
+            "promoted_count": 4,
+            "promoted_by_ticker": {
+              "GS": 1,
+              "MA": 1,
+              "SNOW": 1,
+              "V": 1
+            },
+            "promoted_by_strategy": {
+              "trend_long": 4
+            },
+            "sample_promotions": [
+              {
+                "ticker": "GS",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 1.0,
+                "confidence_score": 1.0,
+                "shares_to_buy": 56,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "SNOW",
+                "strategy": "trend_long",
+                "sector": "Technology",
+                "available_slots": 2,
+                "original_rank": 3,
+                "trade_quality_score": 0.956,
+                "confidence_score": 0.89,
+                "shares_to_buy": 179,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "V",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 0.864,
+                "confidence_score": 1.0,
+                "shares_to_buy": 139,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "MA",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 0.975,
+                "confidence_score": 1.0,
+                "shares_to_buy": 79,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": -0.9166,
+        "expected_value_score_delta_pct": -0.177001,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": -20488.53,
+        "total_pnl_delta_pct": -0.129463,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 3,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 3,
+        "max_drawdown_delta_min": 0.0,
+        "max_drawdown_delta_max": 0.0006,
+        "sharpe_daily_delta_min": -0.37,
+        "sharpe_daily_delta_max": -0.05,
+        "trade_count_delta_sum": 3.0,
+        "win_rate_delta_min": -0.0895,
+        "slot_sliced_delta_sum": -6,
+        "entered_delta_sum": 3,
+        "promoted_extra_slot_count_sum": 7
+      },
+      "gate4_passed": false
+    },
+    "spy_leader_extra_slot_scarce_only": {
+      "parameters": {
+        "require_available_slots_lte": 1,
+        "strategy_allowlist": null
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": 0.0,
+            "sharpe_daily": 0.0,
+            "total_pnl": 0.0,
+            "total_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "win_rate": 0.0,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.1502,
+            "sharpe_daily": 0.97,
+            "total_pnl": 15483.26,
+            "total_return_pct": 0.1548,
+            "max_drawdown_pct": 0.0811,
+            "win_rate": 0.3478,
+            "trade_count": 23,
+            "survival_rate": 0.9123,
+            "signals_generated": 57,
+            "signals_survived": 52,
+            "converged": false
+          },
+          "delta": {
+            "expected_value_score": -0.1677,
+            "sharpe_daily": -0.32,
+            "total_pnl": -9158.81,
+            "total_return_pct": -0.0916,
+            "max_drawdown_pct": 0.0006,
+            "win_rate": -0.0613,
+            "trade_count": 1.0,
+            "survival_rate": -0.0044,
+            "signals_generated": -3.0,
+            "signals_survived": -3.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 52,
+            "entered_count": 23,
+            "slot_sliced_count": 7,
+            "scarce_slot_breakout_deferred_count": 8,
+            "promoted_count": 3,
+            "promoted_by_ticker": {
+              "GS": 1,
+              "MA": 1,
+              "V": 1
+            },
+            "promoted_by_strategy": {
+              "trend_long": 3
+            },
+            "sample_promotions": [
+              {
+                "ticker": "GS",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 1.0,
+                "confidence_score": 1.0,
+                "shares_to_buy": 56,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "V",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 0.864,
+                "confidence_score": 1.0,
+                "shares_to_buy": 139,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "MA",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 0.975,
+                "confidence_score": 1.0,
+                "shares_to_buy": 79,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": -0.1677,
+        "expected_value_score_delta_pct": -0.032384,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": -9158.81,
+        "total_pnl_delta_pct": -0.057873,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 1,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 1,
+        "max_drawdown_delta_min": 0.0,
+        "max_drawdown_delta_max": 0.0006,
+        "sharpe_daily_delta_min": -0.32,
+        "sharpe_daily_delta_max": 0.0,
+        "trade_count_delta_sum": 1.0,
+        "win_rate_delta_min": -0.0613,
+        "slot_sliced_delta_sum": -2,
+        "entered_delta_sum": 1,
+        "promoted_extra_slot_count_sum": 3
+      },
+      "gate4_passed": false
+    },
+    "trend_spy_leader_extra_slot_all_slices": {
+      "parameters": {
+        "require_available_slots_lte": null,
+        "strategy_allowlist": [
+          "trend_long"
+        ]
+      },
+      "rows": {
+        "late_strong": {
+          "window": {
+            "start": "2025-10-23",
+            "end": "2026-04-21",
+            "snapshot": "data/ohlcv_snapshot_20251023_20260421.json",
+            "state_note": "slow-melt bull / accepted-stack dominant tape"
+          },
+          "before": {
+            "expected_value_score": 3.4191,
+            "sharpe_daily": 4.35,
+            "total_pnl": 78600.33,
+            "total_return_pct": 0.786,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7895,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 2.9368,
+            "sharpe_daily": 4.13,
+            "total_pnl": 71114.52,
+            "total_return_pct": 0.7111,
+            "max_drawdown_pct": 0.0541,
+            "win_rate": 0.7368,
+            "trade_count": 19,
+            "survival_rate": 0.8039,
+            "signals_generated": 51,
+            "signals_survived": 41,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": -0.4823,
+            "sharpe_daily": -0.22,
+            "total_pnl": -7485.81,
+            "total_return_pct": -0.0749,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0527,
+            "trade_count": 0.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 3,
+            "scarce_slot_breakout_deferred_count": 0,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 41,
+            "entered_count": 19,
+            "slot_sliced_count": 2,
+            "scarce_slot_breakout_deferred_count": 1,
+            "promoted_count": 1,
+            "promoted_by_ticker": {
+              "META": 1
+            },
+            "promoted_by_strategy": {
+              "trend_long": 1
+            },
+            "sample_promotions": [
+              {
+                "ticker": "META",
+                "strategy": "trend_long",
+                "sector": "Technology",
+                "available_slots": 3,
+                "original_rank": 4,
+                "trade_quality_score": 0.956,
+                "confidence_score": 0.89,
+                "shares_to_buy": 2,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        },
+        "mid_weak": {
+          "window": {
+            "start": "2025-04-23",
+            "end": "2025-10-22",
+            "snapshot": "data/ohlcv_snapshot_20250423_20251022.json",
+            "state_note": "rotation-heavy bull where strategy profits but lags indexes"
+          },
+          "before": {
+            "expected_value_score": 1.4415,
+            "sharpe_daily": 2.62,
+            "total_pnl": 55015.08,
+            "total_return_pct": 0.5502,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5238,
+            "trade_count": 21,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 1.3762,
+            "sharpe_daily": 2.57,
+            "total_pnl": 53553.46,
+            "total_return_pct": 0.5355,
+            "max_drawdown_pct": 0.0879,
+            "win_rate": 0.5,
+            "trade_count": 22,
+            "survival_rate": 0.7925,
+            "signals_generated": 53,
+            "signals_survived": 42,
+            "converged": true
+          },
+          "delta": {
+            "expected_value_score": -0.0653,
+            "sharpe_daily": -0.05,
+            "total_pnl": -1461.62,
+            "total_return_pct": -0.0147,
+            "max_drawdown_pct": 0.0,
+            "win_rate": -0.0238,
+            "trade_count": 1.0,
+            "survival_rate": 0.0,
+            "signals_generated": 0.0,
+            "signals_survived": 0.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 21,
+            "slot_sliced_count": 1,
+            "scarce_slot_breakout_deferred_count": 4,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 42,
+            "entered_count": 22,
+            "slot_sliced_count": 0,
+            "scarce_slot_breakout_deferred_count": 4,
+            "promoted_count": 1,
+            "promoted_by_ticker": {
+              "GLD": 1
+            },
+            "promoted_by_strategy": {
+              "trend_long": 1
+            },
+            "sample_promotions": [
+              {
+                "ticker": "GLD",
+                "strategy": "trend_long",
+                "sector": "Commodities",
+                "available_slots": 2,
+                "original_rank": 3,
+                "trade_quality_score": 0.977,
+                "confidence_score": 1.0,
+                "shares_to_buy": 156,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        },
+        "old_thin": {
+          "window": {
+            "start": "2024-10-02",
+            "end": "2025-04-22",
+            "snapshot": "data/ohlcv_snapshot_20241002_20250422.json",
+            "state_note": "mixed-to-weak older tape with lower win rate"
+          },
+          "before": {
+            "expected_value_score": 0.3179,
+            "sharpe_daily": 1.29,
+            "total_pnl": 24642.07,
+            "total_return_pct": 0.2464,
+            "max_drawdown_pct": 0.0805,
+            "win_rate": 0.4091,
+            "trade_count": 22,
+            "survival_rate": 0.9167,
+            "signals_generated": 60,
+            "signals_survived": 55,
+            "converged": true
+          },
+          "after": {
+            "expected_value_score": 0.1502,
+            "sharpe_daily": 0.97,
+            "total_pnl": 15483.26,
+            "total_return_pct": 0.1548,
+            "max_drawdown_pct": 0.0811,
+            "win_rate": 0.3478,
+            "trade_count": 23,
+            "survival_rate": 0.9123,
+            "signals_generated": 57,
+            "signals_survived": 52,
+            "converged": false
+          },
+          "delta": {
+            "expected_value_score": -0.1677,
+            "sharpe_daily": -0.32,
+            "total_pnl": -9158.81,
+            "total_return_pct": -0.0916,
+            "max_drawdown_pct": 0.0006,
+            "win_rate": -0.0613,
+            "trade_count": 1.0,
+            "survival_rate": -0.0044,
+            "signals_generated": -3.0,
+            "signals_survived": -3.0
+          },
+          "before_entry_stats": {
+            "candidate_events": 55,
+            "entered_count": 22,
+            "slot_sliced_count": 9,
+            "scarce_slot_breakout_deferred_count": 8,
+            "promoted_count": 0,
+            "promoted_by_ticker": {},
+            "promoted_by_strategy": {},
+            "sample_promotions": []
+          },
+          "after_entry_stats": {
+            "candidate_events": 52,
+            "entered_count": 23,
+            "slot_sliced_count": 6,
+            "scarce_slot_breakout_deferred_count": 8,
+            "promoted_count": 4,
+            "promoted_by_ticker": {
+              "GS": 1,
+              "MA": 1,
+              "SNOW": 1,
+              "V": 1
+            },
+            "promoted_by_strategy": {
+              "trend_long": 4
+            },
+            "sample_promotions": [
+              {
+                "ticker": "GS",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 1.0,
+                "confidence_score": 1.0,
+                "shares_to_buy": 56,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "SNOW",
+                "strategy": "trend_long",
+                "sector": "Technology",
+                "available_slots": 2,
+                "original_rank": 3,
+                "trade_quality_score": 0.956,
+                "confidence_score": 0.89,
+                "shares_to_buy": 179,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "V",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 0.864,
+                "confidence_score": 1.0,
+                "shares_to_buy": 139,
+                "risk_multipliers": {}
+              },
+              {
+                "ticker": "MA",
+                "strategy": "trend_long",
+                "sector": "Financials",
+                "available_slots": 1,
+                "original_rank": 2,
+                "trade_quality_score": 0.975,
+                "confidence_score": 1.0,
+                "shares_to_buy": 79,
+                "risk_multipliers": {}
+              }
+            ]
+          }
+        }
+      },
+      "aggregate": {
+        "baseline_expected_value_score_sum": 5.1785,
+        "expected_value_score_delta_sum": -0.7153,
+        "expected_value_score_delta_pct": -0.138129,
+        "baseline_total_pnl_sum": 158257.48,
+        "total_pnl_delta_sum": -18106.24,
+        "total_pnl_delta_pct": -0.11441,
+        "ev_windows_improved": 0,
+        "ev_windows_regressed": 3,
+        "pnl_windows_improved": 0,
+        "pnl_windows_regressed": 3,
+        "max_drawdown_delta_min": 0.0,
+        "max_drawdown_delta_max": 0.0006,
+        "sharpe_daily_delta_min": -0.32,
+        "sharpe_daily_delta_max": -0.05,
+        "trade_count_delta_sum": 2.0,
+        "win_rate_delta_min": -0.0613,
+        "slot_sliced_delta_sum": -5,
+        "entered_delta_sum": 2,
+        "promoted_extra_slot_count_sum": 6
+      },
+      "gate4_passed": false
+    }
+  },
+  "best_variant": "spy_leader_extra_slot_scarce_only",
+  "gate4": {
+    "passed": false,
+    "basis": "Gate 4 requires material EV/PnL/Sharpe/drawdown improvement or more trades without win-rate decline, plus EV improvement in at least two canonical windows and no EV-regressed window."
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": true,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "promotion_requirement": "If accepted, implement the extra-slot rule in production_parity.plan_entry_candidates and add parity coverage before changing production behavior."
+  },
+  "llm_metrics": {
+    "used_llm": false,
+    "llm_change_scope": "none",
+    "blocker_relation": "LLM soft-ranking remains production-sample limited, so this run tests a deterministic allocation lever instead of changing LLM duties."
+  },
+  "acceptance_reason": null,
+  "rejection_reason": "The conditional extra-slot leader sleeve did not clear Gate 4. Either the fifth-slot slice is not the binding opportunity-cost bottleneck, or the marginal leader candidate is not strong enough without a richer state discriminator.",
+  "next_retry_requires": [
+    "Do not retry generic MAX_POSITIONS or nearby sixth-slot variants.",
+    "A valid retry needs a materially richer discriminator, such as explicit slot collision PnL attribution or forward evidence that sliced leaders outperform entered candidates.",
+    "Any future promotion must live in production_parity.plan_entry_candidates and be covered by run/backtester parity tests."
+  ],
+  "related_files": [
+    "data\\experiments\\exp-20260506-016\\spy_leader_extra_slot.json",
+    "experiments\\logs\\exp-20260506-016.json",
+    "experiments\\tickets\\exp-20260506-016.json",
+    "experiments\\artifacts\\exp-20260506-016_spy_leader_extra_slot.md",
+    "quant/experiments/exp_20260506_016_spy_leader_extra_slot.py"
+  ]
+}

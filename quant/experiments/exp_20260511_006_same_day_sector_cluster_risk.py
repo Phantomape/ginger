@@ -431,7 +431,7 @@ Gate notes:
 
 Production impact: replay-only scout. A positive result would need the same follower-risk rule implemented in shared `portfolio_engine.size_signals`, with the new multiplier key added to shared backtest attribution and a focused parity test before live/default behavior changes.
 """
-    path = REPO_ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
+    path = REPO_ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
 
@@ -574,17 +574,17 @@ def main() -> None:
         "related_files": [
             f"quant/experiments/exp_20260511_006_{EXPERIMENT_SLUG}.py",
             f"data/experiments/{EXPERIMENT_ID}/{EXPERIMENT_SLUG}.json",
-            f"docs/experiments/logs/{EXPERIMENT_ID}.json",
-            f"docs/experiments/tickets/{EXPERIMENT_ID}.json",
-            f"docs/experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
+            f"experiments/logs/{EXPERIMENT_ID}.json",
+            f"experiments/tickets/{EXPERIMENT_ID}.json",
+            f"experiments/artifacts/{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md",
             "docs/experiment_log.jsonl",
             "docs/alpha-optimization-playbook.md",
         ],
     }
 
     artifact_path = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{EXPERIMENT_SLUG}.json"
-    log_path = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     ticket = {
         "experiment_id": EXPERIMENT_ID,
         "title": "Same-day sector risk-on follower sizing",

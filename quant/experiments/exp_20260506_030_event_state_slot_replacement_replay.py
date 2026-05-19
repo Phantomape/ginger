@@ -69,9 +69,9 @@ WINDOWS = OrderedDict(
 
 OUT_DIR = ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-LOG_JSON = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-TICKET_JSON = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
-ARTIFACT_MD = ROOT / "docs" / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
+LOG_JSON = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+TICKET_JSON = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+ARTIFACT_MD = ROOT / "experiments" / "artifacts" / f"{EXPERIMENT_ID}_{STEM}.md"
 
 NOTIONAL = 10_000
 ROUND_TRIP_COST = 0.0035

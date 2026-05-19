@@ -203,9 +203,9 @@ def run() -> dict[str, Any]:
             "related_files": [
                 "quant/experiments/exp_20260512_107_signal_day_positive_sector_tape_risk.py",
                 "data/experiments/exp-20260512-107/signal_day_positive_sector_tape_risk.json",
-                "docs/experiments/logs/exp-20260512-107.json",
-                "docs/experiments/tickets/exp-20260512-107.json",
-                "docs/experiments/artifacts/exp-20260512-107_signal_day_positive_sector_tape_risk.md",
+                "experiments/logs/exp-20260512-107.json",
+                "experiments/tickets/exp-20260512-107.json",
+                "experiments/artifacts/exp-20260512-107_signal_day_positive_sector_tape_risk.md",
                 "docs/experiment_log.jsonl",
             ],
         }

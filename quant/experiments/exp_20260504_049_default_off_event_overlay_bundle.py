@@ -59,11 +59,10 @@ from experiments.exp_20260504_039_sec_governance_procedural_overlay import (  # 
 EXP_ID = "exp-20260504-049"
 OUT_DIR = REPO_ROOT / "data" / "experiments" / EXP_ID
 OUT_JSON = OUT_DIR / "default_off_event_overlay_bundle.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_JSON = REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_JSON = REPO_ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 AUDIT_MD = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / "exp-20260504-049_default_off_event_overlay_bundle.md"

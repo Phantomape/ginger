@@ -68,7 +68,7 @@ VARIANTS = OrderedDict([
 ])
 
 EXP_DIR = os.path.join(REPO_ROOT, "experiments", "research", STRATEGY_NAME)
-LOG_DIR = os.path.join(REPO_ROOT, "research_log")
+LOG_DIR = os.path.join(REPO_ROOT, "experiments", "research", STRATEGY_NAME, "logs")
 DATA_EXP_DIR = os.path.join(REPO_ROOT, "data", "experiments", EXPERIMENT_ID)
 DOC_LOG = os.path.join(REPO_ROOT, "docs", "experiment_log.jsonl")
 

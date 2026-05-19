@@ -1,0 +1,53 @@
+{
+  "experiment_id": "exp-20260513-099",
+  "status": "completed",
+  "lane": "alpha_discovery",
+  "owner": "universe-scout",
+  "hypothesis": "EOD options IV/skew/term/OI structure may improve Ginger only as a default-off overlay on existing breakout/event/earnings candidates; this run refreshes PIT-safe forward coverage and candidate overlap after the 2026-05-12 OnClickMedia snapshot without changing production.",
+  "change_type": "data_audit_shadow_overlay",
+  "single_causal_variable": "forward_options_structure_ledger_refresh_20260512_quote_date",
+  "baseline_result_file": "data/experiments/exp-20260513-036/clean_spy_leader_signal_day_risk.json",
+  "allowed_write_scope": [
+    "data/experiments/exp-20260513-099",
+    "experiments/tickets/exp-20260513-099.json",
+    "experiments/logs/exp-20260513-099.json",
+    "docs/non_ohlcv_data_audit",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py"
+  ],
+  "locked_variables": [
+    "forward_options_structure_ledger_refresh_20260512_quote_date",
+    "no_production_change",
+    "no_options_threshold_sweep"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Data-audit/shadow-only: report coverage, PIT risk, missingness, candidate overlap, option liquidity, forward outcome availability, slot conflict readiness, and production impact; no production promotion.",
+  "created_at": "2026-05-13T17:17:19+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-13T17:22:08+00:00",
+  "result": {
+    "artifact": "data/experiments/exp-20260513-099/options_forward_candidate_ledger_report.json",
+    "decision": "shadow_only",
+    "log": "experiments/logs/exp-20260513-099.json",
+    "report": "docs/non_ohlcv_data_audit/eod_options_forward_refresh_exp-20260513-099_20260513.md",
+    "summary": "Forward options coverage now spans 16 existing candidates, but no tagged candidate has closed forward outcomes and the latest quote date still lacks a 2026-05-13 candidate file."
+  }
+}

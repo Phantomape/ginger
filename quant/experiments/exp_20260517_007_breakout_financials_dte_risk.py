@@ -446,9 +446,9 @@ def run() -> dict[str, Any]:
         "related_files": [
             "quant/experiments/exp_20260517_007_breakout_financials_dte_risk.py",
             "data/experiments/exp-20260517-007/breakout_financials_dte_risk.json",
-            "docs/experiments/logs/exp-20260517-007.json",
-            "docs/experiments/tickets/exp-20260517-007.json",
-            "docs/experiments/artifacts/exp-20260517-007_breakout_financials_dte_risk.md",
+            "experiments/logs/exp-20260517-007.json",
+            "experiments/tickets/exp-20260517-007.json",
+            "experiments/artifacts/exp-20260517-007_breakout_financials_dte_risk.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -460,13 +460,12 @@ def persist(payload: dict[str, Any]) -> None:
     artifact_path = (
         repo_root / "data" / "experiments" / EXPERIMENT_ID / f"{EXPERIMENT_SLUG}.json"
     )
-    log_path = repo_root / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    log_path = repo_root / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     ticket_path = (
-        repo_root / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+        repo_root / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     )
     md_path = (
         repo_root
-        / "docs"
         / "experiments"
         / "artifacts"
         / f"{EXPERIMENT_ID}_{EXPERIMENT_SLUG}.md"

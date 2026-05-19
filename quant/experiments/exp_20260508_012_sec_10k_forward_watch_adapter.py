@@ -32,7 +32,7 @@ OUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 AUDIT_JSON = OUT_DIR / "sec_10k_forward_watch_adapter_audit.json"
 LEDGER_JSONL = OUT_DIR / "sec_10k_liquidity_forward_watch.jsonl"
 SUMMARY_JSON = OUT_DIR / "sec_10k_liquidity_forward_watch_summary.json"
-LOG_JSON = REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+LOG_JSON = REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 OHLCV_SNAPSHOT = REPO_ROOT / "data" / "ohlcv_snapshot_20251023_20260501_with_pilot.json"
 
