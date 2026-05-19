@@ -208,17 +208,20 @@ orders remain disabled. The broader `exp-20260519-005` front-rank near-high
 support scout is rejected because `mid_weak` EV regressed and max drawdown
 drift exceeded the Gate 4 guardrail.
 
-Latest accepted default-off SEC paper result: `exp-20260518-014` keeps core
+Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
-10-trading-day hold, max position count, periodic-report scalars, and accepted
-neutral-underreaction rule fixed, but adds a production-visible SPY T+1 market
-context override. Accepted neutral-underreaction rows whose `spy_t1_return` is
-at least `-0.5%` receive an additional `1.50x` default-off paper-notional
-scalar. Versus the accepted `exp-20260518-009` SEC paper baseline, aggregate
-paper-overlay EV improved `+0.6754` and PnL improved `+$16,748.28`, with all
-three fixed windows EV-positive (`late_strong +0.0953`, `mid_weak +0.2790`,
-`old_thin +0.3011`) and no EV regression. The adjusted sample is 6 closed
-paper trades across all windows; live/default orders remain disabled.
+10-trading-day hold, max position count, periodic-report scalars, accepted
+neutral-underreaction rule, and accepted neutral-underreaction SPY T+1 context
+rule fixed, but adds a production-visible earnings-release SPY T+1 context
+paper-notional scalar. Covered `earnings_release_text` rows whose
+`spy_t1_return` is at least `-0.5%` receive an additional `1.10x` default-off
+paper-notional scalar. Versus the accepted `exp-20260518-014` SEC paper stack,
+aggregate paper-overlay EV improved `+0.1885` and PnL improved `+$5,461.48`,
+with all three fixed windows EV-positive (`late_strong +0.0011`,
+`mid_weak +0.1126`, `old_thin +0.0748`) and no EV regression. The adjusted
+sample is 29 closed paper trades across all windows, max drawdown worsened by
+only `0.138pp`, and max single-ticker positive incremental PnL share stayed
+inside the `65%` guardrail at `51.17%`; live/default orders remain disabled.
 
 Latest accepted core-sizing result: core `exp-20260517-009` keeps entries,
 exits, filters, universe, targets, heat, LLM, news, and pre-slot ranking

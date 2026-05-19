@@ -38,6 +38,8 @@ DEFAULT_NEUTRAL_UNDERREACTION_NOTIONAL_SCALAR = 2.0
 DEFAULT_NEUTRAL_UNDERREACTION_MAX_T1_EXCESS = 0.02
 DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR = 1.5
 DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN = -0.005
+DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_CONTEXT_SCALAR = 1.10
+DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_RETURN_MIN = -0.005
 DEFAULT_MAX_POSITIONS = 3
 DEFAULT_STATE_PATH = data_artifact_path("sec_financial_report_event_sleeve_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path(
@@ -58,6 +60,9 @@ DEFAULT_CONFIG = {
     "neutral_underreaction_spy_t1_context_enabled": True,
     "neutral_underreaction_spy_t1_context_scalar": DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_CONTEXT_SCALAR,
     "neutral_underreaction_spy_t1_return_min": DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN,
+    "earnings_release_text_spy_t1_context_enabled": True,
+    "earnings_release_text_spy_t1_context_scalar": DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_CONTEXT_SCALAR,
+    "earnings_release_text_spy_t1_return_min": DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_RETURN_MIN,
     "hold_days": PRIMARY_HORIZON_TRADING_DAYS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "fill_price_policy": "pending_next_session_open_when_available",
@@ -383,6 +388,14 @@ def _candidate_event_notional(
                 scalar *= context_scalar
                 rule = f"{rule}+neutral_underreaction_spy_t1_context_scalar"
 
+    if _candidate_earnings_release_text_spy_t1_context(candidate, config):
+        text_context_scalar = _float_or_none(
+            config.get("earnings_release_text_spy_t1_context_scalar")
+        )
+        if text_context_scalar is not None and text_context_scalar > 0:
+            scalar *= text_context_scalar
+            rule = f"{rule}+earnings_release_text_spy_t1_context_scalar"
+
     return base * scalar, scalar, rule
 
 
@@ -412,6 +425,23 @@ def _candidate_neutral_underreaction_spy_t1_context(
     spy_t1_return = _float_or_none(candidate.get("spy_t1_return"))
     min_spy_t1_return = _float_or_none(
         config.get("neutral_underreaction_spy_t1_return_min")
+    )
+    if spy_t1_return is None or min_spy_t1_return is None:
+        return False
+    return spy_t1_return >= min_spy_t1_return
+
+
+def _candidate_earnings_release_text_spy_t1_context(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+) -> bool:
+    if not bool(config.get("earnings_release_text_spy_t1_context_enabled", True)):
+        return False
+    if str(candidate.get("text_event_type") or "") != "earnings_release_text":
+        return False
+    spy_t1_return = _float_or_none(candidate.get("spy_t1_return"))
+    min_spy_t1_return = _float_or_none(
+        config.get("earnings_release_text_spy_t1_return_min")
     )
     if spy_t1_return is None or min_spy_t1_return is None:
         return False

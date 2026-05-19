@@ -805,7 +805,7 @@ sample is thin at 7 closed paper trades and positive PnL is concentrated in
 `COIN`, so promotion still requires closed forward replacement-value evidence
 before any trade-enabled adapter.
 
-Latest accepted SEC market-context paper refinement: `exp-20260518-014` keeps
+Previous accepted SEC market-context paper refinement: `exp-20260518-014` keeps
 the accepted `exp-20260518-009` neutral-underreaction rule fixed, but adds a
 production-visible SPY T+1 context override. Accepted neutral-underreaction
 rows with `spy_t1_return >= -0.5%` receive an additional `1.50x` default-off
@@ -816,6 +816,20 @@ paper-notional scalar. Versus `exp-20260518-009`, aggregate EV improved
 6 closed paper trades across all windows. Positive PnL is still concentrated
 in `COIN`, so this remains default-off paper and requires closed forward
 replacement-value evidence before any trade-enabled adapter.
+
+Latest accepted SEC earnings-release market-context paper refinement:
+`exp-20260519-008` keeps the accepted `exp-20260518-014` SEC paper stack fixed,
+but adds one production-visible context scalar for covered
+`earnings_release_text` rows whose `spy_t1_return >= -0.5%`. Those rows receive
+an additional `1.10x` default-off paper-notional scalar. Versus
+`exp-20260518-014`, aggregate EV improved `+0.1885` and aggregate PnL improved
+`+$5,461.48`; all three windows improved (`late_strong +0.0011` EV /
+`+$411.66`, `mid_weak +0.1126` EV / `+$1,784.32`, `old_thin +0.0748` EV /
+`+$3,265.50`). The adjusted sample is 29 closed paper trades across all
+windows, max single-ticker positive incremental PnL share is `51.17%`, and max
+drawdown worsened by only `0.138pp`. The broad `earnings_release_text` scalar
+from `exp-20260519-007` remains rejected; do not retry that nearby split
+without a new semantic or context field.
 
 Latest rejected SEC semantic paper scout: `exp-20260518-011` tested covered
 `negative_language` financial-report rows as a separate paper-notional scalar

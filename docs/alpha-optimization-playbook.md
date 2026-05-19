@@ -515,6 +515,12 @@ Recent repository evidence:
   neutral-underreaction rows with `spy_t1_return >= -0.5%` receive extra
   default-off paper notional. Treat this as a forward-observation branch, not
   as proof that broad neutral tone or live SEC sizing is ready.
+- `exp-20260519-008` supports a second narrow SEC earnings-release context
+  field: covered `earnings_release_text` rows with `spy_t1_return >= -0.5%`
+  receive a conservative `1.10x` default-off paper-notional scalar. The broad
+  `earnings_release_text` scalar was rejected in `exp-20260519-007` because
+  `late_strong` EV regressed, so future SEC work needs a new semantic/context
+  discriminator rather than another broad text-event scalar.
 
 ### 5. All-Market Candidate Discovery
 
@@ -787,6 +793,8 @@ production-visible field:
 - SEC sleeve changes that add no new filing or call semantics;
 - nearby SEC financial-report `negative_language` notional scalars on the
   frozen sample;
+- broad SEC financial-report `earnings_release_text` notional scalars without
+  an additional context discriminator on the frozen sample;
 - buyback work that only adds keyword coverage;
 - Form 4 work that ignores options-market context;
 - LLM veto or ranking expansion without attribution fields;

@@ -5,6 +5,8 @@ import pytest
 from sec_financial_report_event_sleeve import (
     DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR,
     DEFAULT_CONFIG,
+    DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_CONTEXT_SCALAR,
+    DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_RETURN_MIN,
     DEFAULT_MAX_POSITIONS,
     DEFAULT_NEUTRAL_UNDERREACTION_MAX_T1_EXCESS,
     DEFAULT_NEUTRAL_UNDERREACTION_NOTIONAL_SCALAR,
@@ -36,6 +38,7 @@ def _candidate(
     form_base: str | None = None,
     language_bucket: str | None = None,
     spy_t1_return: float | None = None,
+    text_event_type: str | None = None,
 ) -> dict[str, object]:
     candidate = {
         "ticker": ticker,
@@ -52,6 +55,8 @@ def _candidate(
         candidate["language_bucket"] = language_bucket
     if spy_t1_return is not None:
         candidate["spy_t1_return"] = spy_t1_return
+    if text_event_type is not None:
+        candidate["text_event_type"] = text_event_type
     return candidate
 
 
@@ -329,6 +334,61 @@ def test_financial_report_sleeve_scales_neutral_underreaction_market_context_wit
     assert by_ticker["ADVR"]["event_notional_rule"] == "base+neutral_underreaction_scalar"
     assert by_ticker["MISS"]["notional"] == 30_000.0
     assert by_ticker["MISS"]["event_notional_rule"] == "base+neutral_underreaction_scalar"
+    assert second["trade_enabled"] is False
+    assert all(position["trade_enabled"] is False for position in second["open_positions"])
+
+
+def test_financial_report_sleeve_scales_earnings_release_text_market_context_without_orders():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate(
+                "ERN",
+                "0001",
+                0.04,
+                spy_t1_return=-0.004,
+                text_event_type="earnings_release_text",
+            ),
+            _candidate(
+                "ADVR",
+                "0002",
+                0.03,
+                spy_t1_return=-0.006,
+                text_event_type="earnings_release_text",
+            ),
+            _candidate(
+                "MISS",
+                "0003",
+                0.02,
+                spy_t1_return=-0.004,
+            ),
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"ERN": 100.0, "ADVR": 100.0, "MISS": 100.0},
+        current_prices={"ERN": 100.0, "ADVR": 100.0, "MISS": 100.0},
+        state=_state_from_snapshot(first),
+        persist=False,
+    )
+
+    by_ticker = {position["ticker"]: position for position in second["open_positions"]}
+
+    assert DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_CONTEXT_SCALAR == 1.10
+    assert DEFAULT_EARNINGS_RELEASE_TEXT_SPY_T1_RETURN_MIN == -0.005
+    assert second["parameters"]["earnings_release_text_spy_t1_context_enabled"] is True
+    assert by_ticker["ERN"]["notional"] == pytest.approx(16_500.0)
+    assert by_ticker["ERN"]["event_notional_scalar"] == pytest.approx(1.10)
+    assert by_ticker["ERN"]["event_notional_rule"] == (
+        "base+earnings_release_text_spy_t1_context_scalar"
+    )
+    assert by_ticker["ADVR"]["notional"] == 15_000.0
+    assert by_ticker["ADVR"]["event_notional_rule"] == "base"
+    assert by_ticker["MISS"]["notional"] == 15_000.0
+    assert by_ticker["MISS"]["event_notional_rule"] == "base"
     assert second["trade_enabled"] is False
     assert all(position["trade_enabled"] is False for position in second["open_positions"])
 
