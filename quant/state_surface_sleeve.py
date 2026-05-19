@@ -86,6 +86,9 @@ RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION = (
 RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION = (
     "state_surface_rank3_volume_confirmation_notional_v1"
 )
+RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION = (
+    "state_surface_top3_ret5_followthrough_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -153,6 +156,10 @@ DEFAULT_CONFIG = {
     "rank_notional_rank3_volume_confirmation_enabled": True,
     "rank_notional_rank3_volume_confirmation_min": 1.10,
     "rank_notional_rank3_volume_confirmation_scalar": 1.5,
+    "rank_notional_top3_ret5_followthrough_enabled": True,
+    "rank_notional_top3_ret5_followthrough_min": 0.0,
+    "rank_notional_top3_ret5_followthrough_scalar": 1.25,
+    "rank_notional_top3_ret5_followthrough_max_queue_rank": 3,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -690,6 +697,39 @@ def _rank2_volume_confirmation_profile_name(threshold: float | None) -> str:
 def _rank2_near_high_support_profile_name(threshold: float | None) -> str:
     value = str(round(float(threshold or 0.0), 6)).rstrip("0").rstrip(".")
     return f"rank2_near_high_ge_{value.replace('.', 'p')}_support"
+
+
+def _top3_ret5_followthrough_profile_name(threshold: float | None) -> str:
+    value = str(round(float(threshold or 0.0), 6)).rstrip("0").rstrip(".")
+    return f"top3_ret5_gt_{value.replace('.', 'p')}_followthrough"
+
+
+def _top3_ret5_followthrough_settings(config: dict[str, Any]) -> dict[str, Any]:
+    threshold = _float_or_none(
+        config.get("rank_notional_top3_ret5_followthrough_min")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_top3_ret5_followthrough_scalar")
+    )
+    max_rank = int(
+        _float_or_none(config.get("rank_notional_top3_ret5_followthrough_max_queue_rank"))
+        or 3
+    )
+    enabled = bool(config.get("rank_notional_top3_ret5_followthrough_enabled", True))
+    return {
+        "enabled": bool(
+            enabled
+            and threshold is not None
+            and scalar is not None
+            and scalar > 0
+            and max_rank > 0
+        ),
+        "threshold": threshold,
+        "scalar": scalar,
+        "max_queue_rank": max_rank,
+        "profile_name": _top3_ret5_followthrough_profile_name(threshold),
+        "rule_version": RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION,
+    }
 
 
 def _rank2_near_high_support_settings(config: dict[str, Any]) -> dict[str, Any]:
@@ -1290,6 +1330,30 @@ def _rank2_volume_confirmation_applies(
     )
 
 
+def _top3_ret5_followthrough_applies(
+    queue_rank: Any,
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _top3_ret5_followthrough_settings(config)
+    try:
+        rank = int(queue_rank)
+    except (TypeError, ValueError):
+        rank = 0
+    ret5 = _float_or_none(
+        ((candidate or {}).get("features") or {}).get("ret5")
+    )
+    threshold = settings["threshold"]
+    return bool(
+        settings["enabled"]
+        and rank > 0
+        and rank <= int(settings["max_queue_rank"])
+        and ret5 is not None
+        and threshold is not None
+        and ret5 > threshold
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1313,6 +1377,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _rank3_volume_confirmation_applies(queue_rank, candidate, config):
         settings = _rank3_volume_confirmation_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _top3_ret5_followthrough_applies(queue_rank, candidate, config):
+        settings = _top3_ret5_followthrough_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -1443,6 +1510,38 @@ def _rank2_volume_confirmation_metadata(
     }
 
 
+def _top3_ret5_followthrough_metadata(
+    queue_rank: Any,
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _top3_ret5_followthrough_settings(config)
+    ret5 = _float_or_none((candidate.get("features") or {}).get("ret5"))
+    applied = _top3_ret5_followthrough_applies(queue_rank, candidate, config)
+    return {
+        "top3_ret5_followthrough_applied": bool(applied),
+        "top3_ret5_followthrough_profiles_enabled": bool(settings["enabled"]),
+        "top3_ret5_followthrough_min": _round(settings["threshold"], 6),
+        "top3_ret5_followthrough_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "top3_ret5_followthrough_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "top3_ret5_followthrough_ret5": _round(ret5, 6),
+        "top3_ret5_followthrough_max_queue_rank": int(settings["max_queue_rank"]),
+        "top3_ret5_followthrough_base_multiplier": _round(base_multiplier, 6),
+        "top3_ret5_followthrough_profile_name": settings["profile_name"],
+        "top3_ret5_followthrough_rule_version": settings["rule_version"],
+        "rank_notional_top3_ret5_followthrough_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1476,6 +1575,13 @@ def _apply_rank_notional(
     if _rank2_near_high_support_applies(queue_rank, candidate, config):
         settings = _rank2_near_high_support_settings(config)
         support_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    volume_adjusted_base_multiplier = support_adjusted_base_multiplier
+    if _rank2_volume_confirmation_applies(queue_rank, candidate, config):
+        settings = _rank2_volume_confirmation_settings(config)
+        volume_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    if _rank3_volume_confirmation_applies(queue_rank, candidate, config):
+        settings = _rank3_volume_confirmation_settings(config)
+        volume_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -1514,6 +1620,14 @@ def _apply_rank_notional(
             candidate,
             config,
             base_multiplier=support_adjusted_base_multiplier,
+        )
+    )
+    candidate.update(
+        _top3_ret5_followthrough_metadata(
+            queue_rank,
+            candidate,
+            config,
+            base_multiplier=volume_adjusted_base_multiplier,
         )
     )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
@@ -1556,6 +1670,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_rank3_volume_confirmation_rule_version"] = (
         RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION
+    )
+    candidate["rank_notional_top3_ret5_followthrough_rule_version"] = (
+        RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -1738,6 +1855,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     rank2_volume_confirmation = _rank2_volume_confirmation_settings(cfg)
     rank3_near_high_support = _rank3_near_high_support_settings(cfg)
     rank3_volume_confirmation = _rank3_volume_confirmation_settings(cfg)
+    top3_ret5_followthrough = _top3_ret5_followthrough_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -1755,6 +1873,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank2_volume_confirmation_rule_version": RANK_NOTIONAL_RANK2_VOLUME_CONFIRMATION_RULE_VERSION,
         "rank3_near_high_support_rule_version": RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION,
         "rank3_volume_confirmation_rule_version": RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION,
+        "top3_ret5_followthrough_rule_version": RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -1966,6 +2085,23 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "rank3_volume_confirmation_profile_name": rank3_volume_confirmation[
+            "profile_name"
+        ],
+        "top3_ret5_followthrough_enabled": bool(
+            top3_ret5_followthrough["enabled"]
+        ),
+        "top3_ret5_followthrough_min": _round(
+            top3_ret5_followthrough["threshold"],
+            6,
+        ),
+        "top3_ret5_followthrough_scalar": _round(
+            top3_ret5_followthrough["scalar"],
+            6,
+        ),
+        "top3_ret5_followthrough_max_queue_rank": int(
+            top3_ret5_followthrough["max_queue_rank"]
+        ),
+        "top3_ret5_followthrough_profile_name": top3_ret5_followthrough[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -2750,6 +2886,39 @@ def _fill_pending_entries(
             "rank3_volume_confirmation_rule_version": entry.get(
                 "rank3_volume_confirmation_rule_version"
             ),
+            "rank_notional_top3_ret5_followthrough_rule_version": entry.get(
+                "rank_notional_top3_ret5_followthrough_rule_version"
+            ),
+            "top3_ret5_followthrough_applied": bool(
+                entry.get("top3_ret5_followthrough_applied")
+            ),
+            "top3_ret5_followthrough_profiles_enabled": bool(
+                entry.get("top3_ret5_followthrough_profiles_enabled")
+            ),
+            "top3_ret5_followthrough_min": entry.get(
+                "top3_ret5_followthrough_min"
+            ),
+            "top3_ret5_followthrough_configured_scalar": entry.get(
+                "top3_ret5_followthrough_configured_scalar"
+            ),
+            "top3_ret5_followthrough_scalar": entry.get(
+                "top3_ret5_followthrough_scalar"
+            ),
+            "top3_ret5_followthrough_ret5": entry.get(
+                "top3_ret5_followthrough_ret5"
+            ),
+            "top3_ret5_followthrough_max_queue_rank": entry.get(
+                "top3_ret5_followthrough_max_queue_rank"
+            ),
+            "top3_ret5_followthrough_base_multiplier": entry.get(
+                "top3_ret5_followthrough_base_multiplier"
+            ),
+            "top3_ret5_followthrough_profile_name": entry.get(
+                "top3_ret5_followthrough_profile_name"
+            ),
+            "top3_ret5_followthrough_rule_version": entry.get(
+                "top3_ret5_followthrough_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -3001,6 +3170,39 @@ def _add_queue_candidates(
             ),
             "rank3_volume_confirmation_rule_version": candidate.get(
                 "rank3_volume_confirmation_rule_version"
+            ),
+            "rank_notional_top3_ret5_followthrough_rule_version": candidate.get(
+                "rank_notional_top3_ret5_followthrough_rule_version"
+            ),
+            "top3_ret5_followthrough_applied": bool(
+                candidate.get("top3_ret5_followthrough_applied")
+            ),
+            "top3_ret5_followthrough_profiles_enabled": bool(
+                candidate.get("top3_ret5_followthrough_profiles_enabled")
+            ),
+            "top3_ret5_followthrough_min": candidate.get(
+                "top3_ret5_followthrough_min"
+            ),
+            "top3_ret5_followthrough_configured_scalar": candidate.get(
+                "top3_ret5_followthrough_configured_scalar"
+            ),
+            "top3_ret5_followthrough_scalar": candidate.get(
+                "top3_ret5_followthrough_scalar"
+            ),
+            "top3_ret5_followthrough_ret5": candidate.get(
+                "top3_ret5_followthrough_ret5"
+            ),
+            "top3_ret5_followthrough_max_queue_rank": candidate.get(
+                "top3_ret5_followthrough_max_queue_rank"
+            ),
+            "top3_ret5_followthrough_base_multiplier": candidate.get(
+                "top3_ret5_followthrough_base_multiplier"
+            ),
+            "top3_ret5_followthrough_profile_name": candidate.get(
+                "top3_ret5_followthrough_profile_name"
+            ),
+            "top3_ret5_followthrough_rule_version": candidate.get(
+                "top3_ret5_followthrough_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

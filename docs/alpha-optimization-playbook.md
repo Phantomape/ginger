@@ -287,6 +287,15 @@ Default rule:
   `mid_weak` regressed and drawdown drift exceeded Gate 4. Treat rank-2
   near-high as a narrow queue-depth quality field, not permission to keep
   mining front-rank near-high thresholds/scalars on the frozen sample.
+- `exp-20260519-023` accepted a default-off top-3 positive ret5 follow-through
+  notional field (`+0.7211` aggregate EV, `+$14,108.30` PnL), with all 3
+  windows improved, at most `0.44pp` max drawdown drift, and 18 adjusted paper
+  trades across all windows. It applies only to same-day state-surface ranks 1
+  through 3 when the candidate's own `features.ret5 > 0.0`, then scales that
+  candidate by `1.25` after active profile, near-high, and volume scalars.
+  Concentration improved (`42.91% -> 40.43%`). Treat it as capped near-term
+  continuation support, not permission to mine adjacent ret5 floors or scalars
+  on the frozen sample.
 
 ## What The Recent Logs Mean
 
@@ -783,6 +792,8 @@ production-visible field:
 - nearby state-surface rank-3 near-high support threshold/scalar retunes on
   the frozen sample;
 - nearby state-surface rank-2 near-high support threshold/scalar retunes on
+  the frozen sample;
+- nearby state-surface top-3 ret5 follow-through threshold/scalar retunes on
   the frozen sample;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or

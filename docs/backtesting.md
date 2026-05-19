@@ -208,7 +208,7 @@ orders remain disabled. The broader `exp-20260519-005` front-rank near-high
 support scout is rejected because `mid_weak` EV regressed and max drawdown
 drift exceeded the Gate 4 guardrail.
 
-Latest accepted state-surface paper rank-depth volume result:
+Previous accepted state-surface paper rank-depth volume result:
 `exp-20260519-021` keeps the accepted rank-3 volume-confirmation stack fixed
 and adds one production-visible rank-2 volume-confirmation paper support
 scalar. When the second ranked same-day qualified state-surface queue candidate
@@ -223,6 +223,22 @@ single-ticker positive-share concentration inside the `50%` guardrail
 (`41.52% -> 42.91%`). The rule lives in shared `state_surface_sleeve.py`, is
 surfaced by the production default-off paper path, and has focused parity
 tests; live/default orders remain disabled.
+
+Latest accepted state-surface paper ret5 follow-through result:
+`exp-20260519-023` keeps the accepted `exp-20260519-021` stack fixed and adds
+one production-visible top-3 positive 5-day return paper support scalar. When a
+same-day qualified state-surface queue candidate is ranked 1 through 3 and has
+its own `features.ret5 > 0.0`, only that candidate's default-off paper notional
+is scaled by `1.25x` after the active profile, near-high, and volume scalars.
+Versus the accepted rank-2 volume baseline, aggregate paper-overlay EV improved
+`+0.7211` and PnL improved `+$14,108.30`, with all three windows EV-positive
+and no EV-regressed window (`late_strong +0.2314`, `mid_weak +0.3282`,
+`old_thin +0.1615`). The rule adjusted 18 paper trades across all 3 windows,
+worsened max drawdown by at most `0.44pp`, inside the `0.50pp` Gate 4 guardrail,
+and kept single-ticker positive-share concentration inside the `50%` guardrail
+(`42.91% -> 40.43%`). The rule lives in shared `state_surface_sleeve.py`, is
+surfaced by the production default-off paper path, and has focused parity tests;
+live/default orders remain disabled.
 
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,

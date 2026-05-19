@@ -374,7 +374,7 @@ coverage in `test_state_surface_sleeve.py`; live/default orders remain
 disabled. The broader `exp-20260519-005` front-rank near-high scout remains
 rejected because `mid_weak` EV regressed and drawdown drift exceeded Gate 4.
 
-Latest accepted state-surface paper rank-depth volume refinement:
+Previous accepted state-surface paper rank-depth volume refinement:
 `exp-20260519-021` keeps the accepted `exp-20260519-015` rank-3
 volume-confirmation stack fixed and adds one production-visible rank-2
 volume-confirmation support scalar. When the second ranked same-day qualified
@@ -389,6 +389,22 @@ single-ticker positive share rose from `41.52%` to `42.91%`, still inside the
 `50%` guardrail. The accepted rule lives in shared `state_surface_sleeve.py`
 with focused parity coverage in `test_state_surface_sleeve.py`; live/default
 orders remain disabled.
+
+Latest accepted state-surface paper ret5 follow-through refinement:
+`exp-20260519-023` keeps the accepted `exp-20260519-021` rank-depth volume stack
+fixed and adds one production-visible top-3 positive 5-day return support
+scalar. When a same-day qualified state-surface candidate is ranked 1 through
+3 and has its own `features.ret5 > 0.0`, the shared default-off paper path
+multiplies only that candidate's active paper notional by `1.25`. Versus the
+accepted rank-2 volume baseline, three-window EV improved `+0.7211` and PnL
+improved `+$14,108.30`: `late_strong` improved `+0.2314` EV / `+$3,788.69`,
+`mid_weak` improved `+0.3282` EV / `+$4,555.55`, and `old_thin` improved
+`+0.1615` EV / `+$5,764.06`. Eighteen paper trades were adjusted across all
+three windows, max drawdown worsened by at most `0.44pp`, inside the `0.50pp`
+Gate 4 guardrail, and single-ticker positive share fell from `42.91%` to
+`40.43%`. The accepted rule lives in shared `state_surface_sleeve.py` with
+focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
+remain disabled.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
