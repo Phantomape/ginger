@@ -17,6 +17,27 @@ from pathlib import Path
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[1]
 
+PRIORITY_WEIGHTS = {
+    "evidence_score": 0.35,
+    "reproducibility_score": 0.25,
+    "production_feasibility": 0.20,
+    "novelty_score": 0.10,
+    "risk_control_score": 0.10,
+}
+
+ALLOCATION_FAMILIES = {
+    "position_cap_or_cap_release",
+    "risk_scalar_or_topup",
+    "ticker_specific",
+    "pilot_or_sleeve",
+}
+
+BROAD_OR_RISKY_FAMILIES = {
+    "filter_or_gate",
+    "slot_or_ranking",
+    "exit_policy",
+}
+
 
 def _float(value, default=0.0):
     try:
@@ -25,6 +46,10 @@ def _float(value, default=0.0):
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def _clamp(value, lo=0.0, hi=1.0):
+    return max(lo, min(hi, value))
 
 
 def _read_json(path):
@@ -116,6 +141,11 @@ def _sample_count(record):
     return None
 
 
+def _production_impact(record):
+    impact = record.get("production_impact") or {}
+    return impact if isinstance(impact, dict) else {}
+
+
 def classify_research_family(record):
     """Infer a durable research family from log metadata and text."""
     text = " ".join(
@@ -199,6 +229,190 @@ def _aggregate(records, key_fn):
     return sorted(out, key=lambda r: (r["avg_meta_score"], r["sum_ev_delta"]), reverse=True)
 
 
+def _records_for_family(records, family):
+    return [r for r in records if classify_research_family(r) == family]
+
+
+def _multi_window_hint(record):
+    if record.get("secondary_windows"):
+        return True
+    text = json.dumps(record, ensure_ascii=False).lower()
+    return "late_strong" in text and "mid_weak" in text and "old_thin" in text
+
+
+def _family_production_feasibility(records, family):
+    rows = _records_for_family(records, family)
+    if not rows:
+        return 0.5, ["no direct records; neutral feasibility"]
+    points = []
+    why = []
+    for r in rows:
+        impact = _production_impact(r)
+        if impact.get("shared_policy_changed") and impact.get("run_adapter_changed"):
+            points.append(1.0)
+        elif impact.get("replay_only"):
+            points.append(0.55)
+        elif impact.get("shared_policy_changed") and not impact.get("run_adapter_changed"):
+            points.append(0.25)
+        elif impact:
+            points.append(0.70)
+        else:
+            points.append(0.50)
+    avg = sum(points) / len(points)
+    if avg >= 0.75:
+        why.append("historically production-visible or parity-aware")
+    elif avg <= 0.4:
+        why.append("historically weak production/backtest parity evidence")
+    else:
+        why.append("mixed production feasibility evidence")
+    return _clamp(avg), why
+
+
+def _family_reproducibility(records, family):
+    rows = _records_for_family(records, family)
+    if not rows:
+        return 0.4, ["no direct records; weak reproducibility"]
+    multi_window = sum(1 for r in rows if _multi_window_hint(r))
+    sufficient_sample = sum(1 for r in rows if (_sample_count(r) or 0) >= 10)
+    accepted = sum(1 for r in rows if _decision(r) in {"accepted", "accept", "promoted"})
+    score = 0.25
+    score += 0.35 * (multi_window / len(rows))
+    score += 0.25 * (sufficient_sample / len(rows))
+    score += 0.15 * (accepted / len(rows))
+    why = []
+    if multi_window:
+        why.append(f"{multi_window}/{len(rows)} records show multi-window evidence")
+    if sufficient_sample:
+        why.append(f"{sufficient_sample}/{len(rows)} records have sample >= 10")
+    if not why:
+        why.append("limited multi-window/sample evidence")
+    return _clamp(score), why
+
+
+def _family_novelty(records, family):
+    rows = _records_for_family(records, family)
+    if not rows:
+        return 0.8, ["new or underexplored family"]
+    score = 0.75
+    penalties = []
+    if len(rows) >= 10:
+        score -= 0.20
+        penalties.append("heavily explored family; diminishing-return risk")
+    if family in {"risk_scalar_or_topup", "ticker_specific"} and len(rows) >= 5:
+        score -= 0.15
+        penalties.append("nearby scalar/ticker retry risk")
+    rejected = sum(1 for r in rows if _decision(r) in {"rejected", "reject", "rolled_back"})
+    if rows and rejected / len(rows) >= 0.6:
+        score -= 0.20
+        penalties.append("many prior rejections in this family")
+    why = ["still has room for materially new fields"] if not penalties else []
+    return _clamp(score), why, penalties
+
+
+def _family_risk_control(records, family):
+    rows = _records_for_family(records, family)
+    score = 0.65
+    why = []
+    penalties = []
+    if family in ALLOCATION_FAMILIES:
+        score += 0.15
+        why.append("usually changes sizing/allocation rather than broad candidate eligibility")
+    if family in BROAD_OR_RISKY_FAMILIES:
+        score -= 0.20
+        penalties.append("can change survival, trade count, or exit distribution broadly")
+    if rows:
+        avg_dd_delta = sum(_delta(r, "max_drawdown_pct") for r in rows) / len(rows)
+        avg_survival_delta = sum(_delta(r, "survival_rate") for r in rows) / len(rows)
+        if avg_dd_delta <= 0:
+            score += 0.05
+            why.append("average drawdown delta is non-worsening")
+        else:
+            score -= min(0.20, avg_dd_delta * 5)
+            penalties.append("average drawdown delta worsens")
+        if avg_survival_delta < -0.02:
+            score -= 0.10
+            penalties.append("survival rate has tended to decline")
+    return _clamp(score), why, penalties
+
+
+def build_research_priorities(records):
+    """Transparent research queue scoring by family.
+
+    This is intentionally not optimized or fit. The weights are fixed constants
+    and the component scores are exposed for audit.
+    """
+    family_rows = _aggregate(records, classify_research_family)
+    if not family_rows:
+        return []
+
+    max_abs_ev = max(abs(row["sum_ev_delta"]) for row in family_rows) or 1.0
+    priorities = []
+    freeze_names = {item["name"] for item in build_freeze_candidates(records)}
+
+    for row in family_rows:
+        family = row["name"]
+        why = []
+        penalties = []
+
+        # Evidence is a bounded mix of accept rate, average meta score, and EV delta.
+        evidence_score = 0.0
+        evidence_score += 0.45 * row["accept_rate"]
+        evidence_score += 0.35 * _clamp((row["avg_meta_score"] + 1.0) / 4.0)
+        evidence_score += 0.20 * _clamp((row["sum_ev_delta"] / max_abs_ev + 1.0) / 2.0)
+        evidence_score = _clamp(evidence_score)
+        if row["accept_rate"] > 0.3:
+            why.append("historically non-trivial accept rate")
+        if row["sum_ev_delta"] > 0:
+            why.append("positive cumulative EV delta in logs")
+        if row["avg_meta_score"] > 0:
+            why.append("positive average meta score")
+
+        reproducibility_score, repro_why = _family_reproducibility(records, family)
+        why.extend(repro_why)
+
+        production_feasibility, prod_why = _family_production_feasibility(records, family)
+        why.extend(prod_why)
+
+        novelty_score, novelty_why, novelty_penalties = _family_novelty(records, family)
+        why.extend(novelty_why)
+        penalties.extend(novelty_penalties)
+
+        risk_control_score, risk_why, risk_penalties = _family_risk_control(records, family)
+        why.extend(risk_why)
+        penalties.extend(risk_penalties)
+
+        if family in freeze_names:
+            penalties.append("freeze candidate: require new evidence before retry")
+            novelty_score = min(novelty_score, 0.25)
+            evidence_score = min(evidence_score, 0.35)
+
+        priority = (
+            PRIORITY_WEIGHTS["evidence_score"] * evidence_score
+            + PRIORITY_WEIGHTS["reproducibility_score"] * reproducibility_score
+            + PRIORITY_WEIGHTS["production_feasibility"] * production_feasibility
+            + PRIORITY_WEIGHTS["novelty_score"] * novelty_score
+            + PRIORITY_WEIGHTS["risk_control_score"] * risk_control_score
+        )
+
+        priorities.append({
+            "family": family,
+            "priority": round(priority, 4),
+            "component_scores": {
+                "evidence_score": round(evidence_score, 4),
+                "reproducibility_score": round(reproducibility_score, 4),
+                "production_feasibility": round(production_feasibility, 4),
+                "novelty_score": round(novelty_score, 4),
+                "risk_control_score": round(risk_control_score, 4),
+            },
+            "weights": dict(PRIORITY_WEIGHTS),
+            "why": sorted(set(why)),
+            "penalties": sorted(set(penalties)),
+            "evidence_summary": row,
+        })
+
+    return sorted(priorities, key=lambda r: r["priority"], reverse=True)
+
+
 def build_freeze_candidates(records):
     """Find families/components with repeated rejection or bad meta score."""
     candidates = []
@@ -224,8 +438,18 @@ def build_freeze_candidates(records):
 
 def build_recommendations(records):
     by_family = _aggregate(records, classify_research_family)
+    priorities = build_research_priorities(records)
     recs = []
-    if by_family:
+    if priorities:
+        best = priorities[0]
+        recs.append({
+            "type": "continue_high_priority_family",
+            "family": best["family"],
+            "why": best["why"][:5],
+            "priority": best["priority"],
+            "component_scores": best["component_scores"],
+        })
+    elif by_family:
         best = by_family[0]
         recs.append({
             "type": "continue_high_prior_family",
@@ -277,9 +501,15 @@ def build_meta_report(root=DEFAULT_ROOT):
         })
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "read_only": True,
         "records_loaded": len(records),
+        "priority_formula": {
+            "formula": "0.35*evidence + 0.25*reproducibility + 0.20*production_feasibility + 0.10*novelty + 0.10*risk_control",
+            "weights": PRIORITY_WEIGHTS,
+            "note": "Research queue priority only; never used as trade sizing or signal ranking.",
+        },
+        "research_priorities": build_research_priorities(records),
         "by_family": _aggregate(records, classify_research_family),
         "by_change_type": _aggregate(records, _change_type),
         "by_component": _aggregate(records, _component),
@@ -290,6 +520,7 @@ def build_meta_report(root=DEFAULT_ROOT):
         "notes": [
             "This is a research-prior engine, not a trading signal.",
             "Scores are intentionally coarse and should guide what to test next, not what to trade.",
+            "Priority scores are transparent fixed-formula audit values, not optimized or fit parameters.",
             "Low-quality or missing delta_metrics reduce precision; improve experiment logs before treating rankings as strong evidence.",
         ],
     }
