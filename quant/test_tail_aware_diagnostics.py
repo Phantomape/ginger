@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 from backtest_readonly_diagnostics import build_diagnostics
-from evaluator_gates import evaluate_metrics
+from evaluator_gates import evaluate_experiment_promotion_gate, evaluate_metrics
 from experiments.exp_20260518_004_tail_aware_state_surface_attribution import (
     _paper_diagnostics,
     _tail_metrics_from_values,
@@ -68,6 +68,78 @@ def test_evaluator_gate_flags_synthetic_top5_concentration():
 
     assert report["passed"] is False
     assert "r_top5_concentration" in report["hard_failures"]
+
+
+def _healthy_experiment_gate_metrics():
+    return {
+        "aggregate_ev_delta": 0.25,
+        "aggregate_pnl_delta": 2500.0,
+        "windows_ev_improved": 2,
+        "windows_ev_regressed": 0,
+        "adjusted_trade_count": 12,
+        "adjusted_windows": ["late_strong", "mid_weak"],
+        "max_drawdown_worse_max": 0.001,
+        "single_ticker_positive_share": 0.32,
+        "baseline_single_ticker_positive_share": 0.38,
+        "pnl_top_5_contribution_pct": 0.46,
+        "baseline_pnl_top_5_contribution_pct": 0.52,
+        "pnl_hhi_concentration": 0.16,
+        "baseline_pnl_hhi_concentration": 0.19,
+    }
+
+
+def test_experiment_promotion_gate_accepts_healthy_tail_aware_variant():
+    report = evaluate_experiment_promotion_gate(_healthy_experiment_gate_metrics())
+
+    assert report["passed"] is True
+    assert report["checks"]["tail_concentration_not_worse"] is True
+    assert report["metrics"]["adjusted_window_count"] == 2
+
+
+def test_experiment_promotion_gate_blocks_thin_single_window_sample():
+    metrics = _healthy_experiment_gate_metrics()
+    metrics["adjusted_trade_count"] = 5
+    metrics["adjusted_windows"] = ["old_thin"]
+
+    report = evaluate_experiment_promotion_gate(metrics)
+
+    assert report["passed"] is False
+    assert "insufficient_adjusted_sample" in report["hard_failures"]
+    assert "insufficient_adjusted_window_coverage" in report["hard_failures"]
+
+
+def test_experiment_promotion_gate_blocks_tail_concentration_worse():
+    metrics = _healthy_experiment_gate_metrics()
+    metrics["single_ticker_positive_share"] = 0.42
+
+    report = evaluate_experiment_promotion_gate(metrics)
+
+    assert report["passed"] is False
+    assert "single_ticker_positive_share_worse" in report["hard_failures"]
+
+
+def test_experiment_promotion_gate_blocks_top5_absolute_cap():
+    metrics = _healthy_experiment_gate_metrics()
+    metrics["pnl_top_5_contribution_pct"] = 0.72
+    metrics["baseline_pnl_top_5_contribution_pct"] = 0.78
+
+    report = evaluate_experiment_promotion_gate(metrics)
+
+    assert report["passed"] is False
+    assert "top_5_contribution_pct_cap" in report["hard_failures"]
+
+
+def test_experiment_promotion_gate_requires_tail_evidence():
+    metrics = {
+        key: value
+        for key, value in _healthy_experiment_gate_metrics().items()
+        if "share" not in key and "contribution" not in key and "hhi" not in key
+    }
+
+    report = evaluate_experiment_promotion_gate(metrics)
+
+    assert report["passed"] is False
+    assert "missing_tail_concentration_evidence" in report["hard_failures"]
 
 
 def test_regime_engine_missing_fields_falls_back_low_confidence():
