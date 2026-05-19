@@ -1239,6 +1239,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank1_ret20_dominance_rule_version": RANK_NOTIONAL_RANK1_RET20_DOMINANCE_RULE_VERSION,
         "top2_sector_cohesion_rule_version": RANK_NOTIONAL_TOP2_SECTOR_COHESION_RULE_VERSION,
         "rank1_ret60_residual_rule_version": RANK_NOTIONAL_RANK1_RET60_RESIDUAL_RULE_VERSION,
+        "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
         "rank_event_notional_usd": [
@@ -1373,6 +1374,22 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             _round(base_notional * value, 2)
             for value in rank1_ret60_residual_profile
         ],
+        "recent_ticker_repeat_profiles_enabled": bool(
+            cfg.get("rank_notional_recent_ticker_repeat_profiles_enabled", True)
+        ),
+        "recent_ticker_repeat_lookback_days": int(
+            _float_or_none(
+                cfg.get("rank_notional_recent_ticker_repeat_lookback_days")
+            )
+            or 0
+        ),
+        "recent_ticker_repeat_scalar": _round(
+            cfg.get("rank_notional_recent_ticker_repeat_scalar"),
+            6,
+        ),
+        "recent_ticker_repeat_profile_name": _recent_ticker_repeat_profile_name(
+            _float_or_none(cfg.get("rank_notional_recent_ticker_repeat_scalar"))
+        ),
         "scope": "default_off_state_surface_paper_candidate_queue",
         "trade_enabled_after_profile": False,
         "production_impact": _production_impact(),
@@ -2005,6 +2022,45 @@ def _fill_pending_entries(
             "rank_notional_rank1_ret60_residual_rule_version": entry.get(
                 "rank_notional_rank1_ret60_residual_rule_version"
             ),
+            "recent_ticker_repeat_notional_applied": bool(
+                entry.get("recent_ticker_repeat_notional_applied")
+            ),
+            "recent_ticker_repeat_applied": bool(
+                entry.get("recent_ticker_repeat_applied")
+            ),
+            "recent_ticker_repeat_profiles_enabled": bool(
+                entry.get("recent_ticker_repeat_profiles_enabled")
+            ),
+            "recent_ticker_repeat_lookback_days": entry.get(
+                "recent_ticker_repeat_lookback_days"
+            ),
+            "recent_ticker_repeat_configured_scalar": entry.get(
+                "recent_ticker_repeat_configured_scalar"
+            ),
+            "recent_ticker_repeat_scalar": entry.get(
+                "recent_ticker_repeat_scalar"
+            ),
+            "recent_ticker_repeat_days_since_prior": entry.get(
+                "recent_ticker_repeat_days_since_prior"
+            ),
+            "recent_ticker_repeat_prior_date": entry.get(
+                "recent_ticker_repeat_prior_date"
+            ),
+            "recent_ticker_repeat_prior_status": entry.get(
+                "recent_ticker_repeat_prior_status"
+            ),
+            "recent_ticker_repeat_prior_decision_id": entry.get(
+                "recent_ticker_repeat_prior_decision_id"
+            ),
+            "recent_ticker_repeat_base_event_notional_usd": entry.get(
+                "recent_ticker_repeat_base_event_notional_usd"
+            ),
+            "recent_ticker_repeat_profile_name": entry.get(
+                "recent_ticker_repeat_profile_name"
+            ),
+            "recent_ticker_repeat_rule_version": entry.get(
+                "recent_ticker_repeat_rule_version"
+            ),
             "market_regime": deepcopy(entry.get("market_regime") or {}),
             "observed_trading_days": 0,
             "last_seen_date": as_of,
@@ -2108,6 +2164,12 @@ def _add_queue_candidates(
             "trade_enabled": False,
             "candidate": deepcopy(candidate),
         }
+        entry = _apply_recent_ticker_repeat_to_entry(
+            entry,
+            state,
+            as_of=as_of,
+            config=config,
+        )
         state["pending_entries"].append(entry)
         new_entries.append(entry)
         existing.add(decision_id)

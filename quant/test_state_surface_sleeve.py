@@ -649,6 +649,47 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
     assert second["production_impact"]["alters_orders"] is False
 
 
+def test_state_surface_sleeve_scales_recent_ticker_repeat_without_orders():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
+        universe=["AAA", "BBB", "CCC"],
+        config={"max_candidates": 1},
+    )
+    state = empty_state_surface_sleeve_state()
+    state["closed_positions"] = [
+        {
+            "decision_id": "prior-aaa",
+            "ticker": "AAA",
+            "source_event_date": "2026-04-01",
+            "paper_status": "closed",
+            "pnl": 100.0,
+        }
+    ]
+
+    snapshot = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+
+    pending = snapshot["new_pending_entries"][0]
+    assert pending["ticker"] == "AAA"
+    assert pending["recent_ticker_repeat_notional_applied"] is True
+    assert pending["recent_ticker_repeat_days_since_prior"] == 33
+    assert pending["recent_ticker_repeat_prior_date"] == "2026-04-01"
+    assert pending["recent_ticker_repeat_scalar"] == 1.5
+    assert pending["recent_ticker_repeat_base_event_notional_usd"] == 16250.0
+    assert pending["event_notional_usd"] == 24375.0
+    assert pending["rank_notional_multiplier"] == 2.4375
+    assert pending["candidate"]["event_notional_usd"] == 24375.0
+    assert pending["candidate"]["recent_ticker_repeat_notional_applied"] is True
+    assert snapshot["rank_notional_profile"]["recent_ticker_repeat_scalar"] == 1.5
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["alters_orders"] is False
+
+
 def test_state_surface_forward_tail_gate_blocks_top5_concentration_without_orders():
     concentrated = [{"pnl": 100.0} for _ in range(5)]
     concentrated.extend({"pnl": 1.0} for _ in range(15))

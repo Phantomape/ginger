@@ -312,6 +312,20 @@ positive share fell from `38.01%` to `37.43%`. The accepted rule lives in
 shared `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
+Latest accepted state-surface paper repeat-exposure refinement:
+`exp-20260519-002` keeps the accepted `exp-20260519-001` stack fixed and adds
+one sleeve-state recurrence field. When a ticker reappears in the default-off
+state-surface paper sleeve within `60` calendar days, the shared paper path
+scales that pending entry's accepted base notional by `1.50`. Versus the
+accepted score-expansion baseline, three-window EV improved `+0.2685` and PnL
+improved `+$4,069.88`: `late_strong` improved `+0.0351` EV / `+$484.29`,
+`mid_weak` improved `+0.2334` EV / `+$3,585.59`, and `old_thin` was unchanged.
+Two paper trades were adjusted across two windows, max drawdown did not
+worsen, and single-ticker positive share rose from `38.01%` to `41.28%`, still
+inside the `50%` guardrail. The accepted rule lives in shared
+`state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The

@@ -252,6 +252,14 @@ Default rule:
   Treat this as a modest incubation improvement; do not mine nearby
   score-expansion thresholds or profiles without forward evidence or a new
   independent field.
+- `exp-20260519-002` accepted a default-off recent same-ticker repeat notional
+  field (`+0.2685` aggregate EV, `+$4,069.88` PnL), with 2 improved windows and
+  no EV-regressed window. It applies after the accepted rank-notional stack:
+  if a ticker reappears in the state-surface paper sleeve within `60` calendar
+  days, scale that paper entry by `1.50`. Concentration rose (`38.01% ->
+  41.28%`) but stayed under the `50%` guardrail. Treat this as a continuation
+  field, not an invitation to mine adjacent repeat lookbacks/scalars without
+  forward evidence or a distinct crowding-quality variable.
 
 ## What The Recent Logs Mean
 
