@@ -89,6 +89,9 @@ RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION = (
 RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION = (
     "state_surface_top3_ret5_followthrough_notional_v1"
 )
+RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION = (
+    "state_surface_broad_breadth_support_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -160,6 +163,9 @@ DEFAULT_CONFIG = {
     "rank_notional_top3_ret5_followthrough_min": 0.0,
     "rank_notional_top3_ret5_followthrough_scalar": 1.25,
     "rank_notional_top3_ret5_followthrough_max_queue_rank": 3,
+    "rank_notional_broad_breadth_support_enabled": True,
+    "rank_notional_broad_breadth_support_bucket": "broad_breadth",
+    "rank_notional_broad_breadth_support_scalar": 1.10,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -729,6 +735,29 @@ def _top3_ret5_followthrough_settings(config: dict[str, Any]) -> dict[str, Any]:
         "max_queue_rank": max_rank,
         "profile_name": _top3_ret5_followthrough_profile_name(threshold),
         "rule_version": RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION,
+    }
+
+
+def _broad_breadth_support_profile_name(bucket: str | None) -> str:
+    clean = "_".join(str(bucket or "unknown").lower().split())
+    return f"{clean}_support"
+
+
+def _broad_breadth_support_settings(config: dict[str, Any]) -> dict[str, Any]:
+    bucket = str(
+        config.get("rank_notional_broad_breadth_support_bucket")
+        or "broad_breadth"
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_broad_breadth_support_scalar")
+    )
+    enabled = bool(config.get("rank_notional_broad_breadth_support_enabled", True))
+    return {
+        "enabled": bool(enabled and bucket and scalar is not None and scalar > 0),
+        "bucket": bucket,
+        "scalar": scalar,
+        "profile_name": _broad_breadth_support_profile_name(bucket),
+        "rule_version": RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION,
     }
 
 
@@ -1354,6 +1383,19 @@ def _top3_ret5_followthrough_applies(
     )
 
 
+def _broad_breadth_support_applies(
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _broad_breadth_support_settings(config)
+    breadth_bucket = str((candidate or {}).get("breadth_bucket") or "")
+    return bool(
+        settings["enabled"]
+        and breadth_bucket
+        and breadth_bucket == settings["bucket"]
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1380,6 +1422,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _top3_ret5_followthrough_applies(queue_rank, candidate, config):
         settings = _top3_ret5_followthrough_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _broad_breadth_support_applies(candidate, config):
+        settings = _broad_breadth_support_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -1542,6 +1587,36 @@ def _top3_ret5_followthrough_metadata(
     }
 
 
+def _broad_breadth_support_metadata(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _broad_breadth_support_settings(config)
+    breadth_bucket = str(candidate.get("breadth_bucket") or "")
+    applied = _broad_breadth_support_applies(candidate, config)
+    return {
+        "broad_breadth_support_applied": bool(applied),
+        "broad_breadth_support_profiles_enabled": bool(settings["enabled"]),
+        "broad_breadth_support_bucket": breadth_bucket or None,
+        "broad_breadth_support_target_bucket": settings["bucket"],
+        "broad_breadth_support_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "broad_breadth_support_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "broad_breadth_support_base_multiplier": _round(base_multiplier, 6),
+        "broad_breadth_support_profile_name": settings["profile_name"],
+        "broad_breadth_support_rule_version": settings["rule_version"],
+        "rank_notional_broad_breadth_support_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1582,6 +1657,10 @@ def _apply_rank_notional(
     if _rank3_volume_confirmation_applies(queue_rank, candidate, config):
         settings = _rank3_volume_confirmation_settings(config)
         volume_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    top3_adjusted_base_multiplier = volume_adjusted_base_multiplier
+    if _top3_ret5_followthrough_applies(queue_rank, candidate, config):
+        settings = _top3_ret5_followthrough_settings(config)
+        top3_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -1630,6 +1709,13 @@ def _apply_rank_notional(
             base_multiplier=volume_adjusted_base_multiplier,
         )
     )
+    candidate.update(
+        _broad_breadth_support_metadata(
+            candidate,
+            config,
+            base_multiplier=top3_adjusted_base_multiplier,
+        )
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
     candidate["rank_notional_candidate_breadth_rule_version"] = (
@@ -1673,6 +1759,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_top3_ret5_followthrough_rule_version"] = (
         RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION
+    )
+    candidate["rank_notional_broad_breadth_support_rule_version"] = (
+        RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -1856,6 +1945,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     rank3_near_high_support = _rank3_near_high_support_settings(cfg)
     rank3_volume_confirmation = _rank3_volume_confirmation_settings(cfg)
     top3_ret5_followthrough = _top3_ret5_followthrough_settings(cfg)
+    broad_breadth_support = _broad_breadth_support_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -1874,6 +1964,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank3_near_high_support_rule_version": RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION,
         "rank3_volume_confirmation_rule_version": RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION,
         "top3_ret5_followthrough_rule_version": RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION,
+        "broad_breadth_support_rule_version": RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -2102,6 +2193,17 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             top3_ret5_followthrough["max_queue_rank"]
         ),
         "top3_ret5_followthrough_profile_name": top3_ret5_followthrough[
+            "profile_name"
+        ],
+        "broad_breadth_support_enabled": bool(
+            broad_breadth_support["enabled"]
+        ),
+        "broad_breadth_support_bucket": broad_breadth_support["bucket"],
+        "broad_breadth_support_scalar": _round(
+            broad_breadth_support["scalar"],
+            6,
+        ),
+        "broad_breadth_support_profile_name": broad_breadth_support[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -2704,6 +2806,9 @@ def _fill_pending_entries(
             "ticker": ticker,
             "sector": entry.get("sector"),
             "surface": entry.get("surface"),
+            "state_bucket": entry.get("state_bucket"),
+            "breadth_bucket": entry.get("breadth_bucket"),
+            "dispersion_bucket": entry.get("dispersion_bucket"),
             "source_event_date": entry.get("source_event_date"),
             "entry_date": as_of,
             "entry_price": entry_open,
@@ -2919,6 +3024,36 @@ def _fill_pending_entries(
             "top3_ret5_followthrough_rule_version": entry.get(
                 "top3_ret5_followthrough_rule_version"
             ),
+            "rank_notional_broad_breadth_support_rule_version": entry.get(
+                "rank_notional_broad_breadth_support_rule_version"
+            ),
+            "broad_breadth_support_applied": bool(
+                entry.get("broad_breadth_support_applied")
+            ),
+            "broad_breadth_support_profiles_enabled": bool(
+                entry.get("broad_breadth_support_profiles_enabled")
+            ),
+            "broad_breadth_support_bucket": entry.get(
+                "broad_breadth_support_bucket"
+            ),
+            "broad_breadth_support_target_bucket": entry.get(
+                "broad_breadth_support_target_bucket"
+            ),
+            "broad_breadth_support_configured_scalar": entry.get(
+                "broad_breadth_support_configured_scalar"
+            ),
+            "broad_breadth_support_scalar": entry.get(
+                "broad_breadth_support_scalar"
+            ),
+            "broad_breadth_support_base_multiplier": entry.get(
+                "broad_breadth_support_base_multiplier"
+            ),
+            "broad_breadth_support_profile_name": entry.get(
+                "broad_breadth_support_profile_name"
+            ),
+            "broad_breadth_support_rule_version": entry.get(
+                "broad_breadth_support_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -2995,6 +3130,9 @@ def _add_queue_candidates(
             "ticker": str(candidate.get("ticker") or "").upper(),
             "sector": candidate.get("sector"),
             "surface": candidate.get("surface"),
+            "state_bucket": candidate.get("state_bucket"),
+            "breadth_bucket": candidate.get("breadth_bucket"),
+            "dispersion_bucket": candidate.get("dispersion_bucket"),
             "rank": candidate.get("rank"),
             "queue_rank": candidate.get("queue_rank"),
             "score": candidate.get("score"),
@@ -3203,6 +3341,36 @@ def _add_queue_candidates(
             ),
             "top3_ret5_followthrough_rule_version": candidate.get(
                 "top3_ret5_followthrough_rule_version"
+            ),
+            "rank_notional_broad_breadth_support_rule_version": candidate.get(
+                "rank_notional_broad_breadth_support_rule_version"
+            ),
+            "broad_breadth_support_applied": bool(
+                candidate.get("broad_breadth_support_applied")
+            ),
+            "broad_breadth_support_profiles_enabled": bool(
+                candidate.get("broad_breadth_support_profiles_enabled")
+            ),
+            "broad_breadth_support_bucket": candidate.get(
+                "broad_breadth_support_bucket"
+            ),
+            "broad_breadth_support_target_bucket": candidate.get(
+                "broad_breadth_support_target_bucket"
+            ),
+            "broad_breadth_support_configured_scalar": candidate.get(
+                "broad_breadth_support_configured_scalar"
+            ),
+            "broad_breadth_support_scalar": candidate.get(
+                "broad_breadth_support_scalar"
+            ),
+            "broad_breadth_support_base_multiplier": candidate.get(
+                "broad_breadth_support_base_multiplier"
+            ),
+            "broad_breadth_support_profile_name": candidate.get(
+                "broad_breadth_support_profile_name"
+            ),
+            "broad_breadth_support_rule_version": candidate.get(
+                "broad_breadth_support_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

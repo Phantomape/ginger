@@ -224,7 +224,7 @@ single-ticker positive-share concentration inside the `50%` guardrail
 surfaced by the production default-off paper path, and has focused parity
 tests; live/default orders remain disabled.
 
-Latest accepted state-surface paper ret5 follow-through result:
+Previous accepted state-surface paper ret5 follow-through result:
 `exp-20260519-023` keeps the accepted `exp-20260519-021` stack fixed and adds
 one production-visible top-3 positive 5-day return paper support scalar. When a
 same-day qualified state-surface queue candidate is ranked 1 through 3 and has
@@ -239,6 +239,22 @@ and kept single-ticker positive-share concentration inside the `50%` guardrail
 (`42.91% -> 40.43%`). The rule lives in shared `state_surface_sleeve.py`, is
 surfaced by the production default-off paper path, and has focused parity tests;
 live/default orders remain disabled.
+
+Latest accepted state-surface paper market-breadth support result:
+`exp-20260519-024` keeps the accepted `exp-20260519-023` stack fixed and adds
+one production-visible market-state paper support scalar. When an already
+selected same-day qualified state-surface candidate has `breadth_bucket ==
+broad_breadth`, that candidate's default-off paper notional is scaled by
+`1.10x` after the active profile, near-high, volume, and top-3 ret5 scalars.
+Versus the accepted top-3 ret5 baseline, aggregate paper-overlay EV improved
+`+0.3571` and PnL improved `+$6,920.20`, with no EV-regressed window
+(`late_strong unchanged`, `mid_weak +0.2698`, `old_thin +0.0873`). The rule
+adjusted 15 paper trades across 2 windows, worsened max drawdown by at most
+`0.21pp`, inside the `0.50pp` Gate 4 guardrail, and kept single-ticker
+positive-share concentration inside the `50%` guardrail (`40.43% -> 41.30%`).
+The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
+production default-off paper path, and has focused parity tests; live/default
+orders remain disabled.
 
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
