@@ -208,6 +208,22 @@ orders remain disabled. The broader `exp-20260519-005` front-rank near-high
 support scout is rejected because `mid_weak` EV regressed and max drawdown
 drift exceeded the Gate 4 guardrail.
 
+Latest accepted state-surface paper rank-depth volume result:
+`exp-20260519-021` keeps the accepted rank-3 volume-confirmation stack fixed
+and adds one production-visible rank-2 volume-confirmation paper support
+scalar. When the second ranked same-day qualified state-surface queue candidate
+has its own `features.volume_ratio_20 >= 1.10`, only rank 2's default-off paper
+notional is scaled by `1.10x` after the active profile multiplier. Versus the
+accepted `exp-20260519-015` rank-3 volume baseline, aggregate paper-overlay EV
+improved `+0.1599` and PnL improved `+$3,346.57`, with all three windows
+EV-positive and no EV-regressed window (`late_strong +0.0182`,
+`mid_weak +0.0992`, `old_thin +0.0425`). The rule adjusted 7 paper trades
+across all 3 windows, worsened max drawdown by only `0.14pp`, and kept
+single-ticker positive-share concentration inside the `50%` guardrail
+(`41.52% -> 42.91%`). The rule lives in shared `state_surface_sleeve.py`, is
+surfaced by the production default-off paper path, and has focused parity
+tests; live/default orders remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted
