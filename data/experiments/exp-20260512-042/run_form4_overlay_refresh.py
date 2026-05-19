@@ -19,8 +19,8 @@ RUN_AT = datetime.now(timezone.utc).isoformat(timespec="seconds")
 DATA_DIR = ROOT / "data"
 OUT_DIR = DATA_DIR / "experiments" / EXP_ID
 ARTIFACT = OUT_DIR / "form4_insider_overlay_refresh.json"
-LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_PATH = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / f"form4_insider_overlay_{EXP_ID}_20260512.md"
 JSONL_PATH = ROOT / "docs" / "experiment_log.jsonl"
 
@@ -33,8 +33,8 @@ SEC_TICKERS = DATA_DIR / "sec_company_tickers.json"
 PAPER_STATE = DATA_DIR / "form4_event_sleeve_paper_state.json"
 PAPER_SNAPSHOTS = DATA_DIR / "form4_event_sleeve_paper_snapshots.jsonl"
 BASELINE_ARTIFACT = DATA_DIR / "experiments" / "exp-20260510-015" / "trip_sector_taxonomy.json"
-PRIOR_OVERLAY_LOG = ROOT / "docs" / "experiments" / "logs" / "exp-20260511-035.json"
-PRIOR_CLUSTER_LOG = ROOT / "docs" / "experiments" / "logs" / "exp-20260512-017.json"
+PRIOR_OVERLAY_LOG = ROOT / "experiments" / "logs" / "exp-20260511-035.json"
+PRIOR_CLUSTER_LOG = ROOT / "experiments" / "logs" / "exp-20260512-017.json"
 HISTORICAL_OUTCOMES = DATA_DIR / "non_ohlcv" / "form4_purchase_shadow_outcomes_20241002_20260421.json"
 
 NON_COMPANY = {"SPY", "QQQ", "IWM", "GLD", "IAU", "SLV", "ARKX", "UFO"}
@@ -482,7 +482,7 @@ def main() -> int:
         "status": "observed_only",
         "lane": "alpha_discovery",
         "change_type": "data_audit_shadow_overlay",
-        "component": "docs/experiments/logs, docs/non_ohlcv_data_audit, data/experiments artifact only",
+        "component": "experiments/logs, docs/non_ohlcv_data_audit, data/experiments artifact only",
         "hypothesis": "Public-market insider Form 4 buying, especially CEO/CFO large buys, clustered buys, first buys, and post-drawdown buys, may confirm existing trend_long/breakout_long candidates. This run refreshes local PIT-safe availability and existing-signal shadow overlap only.",
         "non_ohlcv_data_source": repo_rel(LATEST_TX),
         "mechanism_family": "insider_form4_open_market_purchase_confirmation_overlay",
@@ -649,8 +649,8 @@ def main() -> int:
         "single_causal_variable": record["single_causal_variable"],
         "baseline_result_file": repo_rel(BASELINE_ARTIFACT),
         "allowed_write_scope": [
-            "docs/experiments/tickets",
-            "docs/experiments/logs",
+            "experiments/tickets",
+            "experiments/logs",
             "docs/non_ohlcv_data_audit",
             "data/experiments",
             "docs/experiment_log.jsonl",

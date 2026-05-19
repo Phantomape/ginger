@@ -30,10 +30,10 @@ scout.STEM = STEM
 scout.OUT_DIR = scout.REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 scout.OUT_JSON = scout.OUT_DIR / f"{STEM}.json"
 scout.DOC_LOG = (
-    scout.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    scout.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 )
 scout.DOC_TICKET = (
-    scout.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    scout.REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 )
 scout.DOC_ARTIFACT = (
     scout.REPO_ROOT

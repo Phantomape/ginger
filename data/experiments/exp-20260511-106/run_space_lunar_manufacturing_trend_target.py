@@ -779,9 +779,9 @@ def build_payload() -> dict:
         "related_files": [
             "data/experiments/exp-20260511-106/run_space_lunar_manufacturing_trend_target.py",
             "data/experiments/exp-20260511-106/space_lunar_manufacturing_trend_target.json",
-            "docs/experiments/logs/exp-20260511-106.json",
-            "docs/experiments/tickets/exp-20260511-106.json",
-            "docs/experiments/artifacts/exp-20260511-106_space_lunar_manufacturing_trend_target.md",
+            "experiments/logs/exp-20260511-106.json",
+            "experiments/tickets/exp-20260511-106.json",
+            "experiments/artifacts/exp-20260511-106_space_lunar_manufacturing_trend_target.md",
             "docs/experiment_log.jsonl",
         ],
     }
@@ -790,8 +790,8 @@ def build_payload() -> dict:
 def persist(payload: dict) -> None:
     out_dir = ROOT / "data" / "experiments" / EXPERIMENT_ID
     artifact_path = out_dir / "space_lunar_manufacturing_trend_target.json"
-    log_path = ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
-    ticket_path = ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    log_path = ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    ticket_path = ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     md_path = (
         ROOT
         / "docs"

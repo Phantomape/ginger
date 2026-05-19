@@ -136,7 +136,7 @@ def test_create_ticket_rejects_broad_directory_scope_without_exclusive_flag():
             change_type="failure_taxonomy",
             single_causal_variable="hold quality taxonomy",
             baseline_result_file="data/backtests/backtest_results_20260425.json",
-            allowed_write_scope=["quant/exp_loss_attribution_runner.py", "data/"],
+            allowed_write_scope=["quant/experiments/legacy/exp_loss_attribution_runner.py", "data/"],
         )
     except ValueError as exc:
         assert "broad allowed_write_scope" in str(exc)

@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[3]
 OUT_DIR = ROOT / "data" / "experiments" / EXP_ID
 ARTIFACT = OUT_DIR / "form4_overlay_shadow_audit.json"
 REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / "form4_20260508.md"
-LOG = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 REGISTRY = ROOT / "docs" / "experiment_registry.json"
 EXPERIMENT_LOG = ROOT / "docs" / "experiment_log.jsonl"
 
@@ -420,7 +420,7 @@ def latest_purchase_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def build_baseline_metrics() -> dict[str, Any]:
     out = {
         "source": (
-            "accepted-stack before blocks from docs/experiments/logs/"
+            "accepted-stack before blocks from experiments/logs/"
             "exp-20260508-020.json and exp-20260508-023.json"
         ),
         "late_strong": {

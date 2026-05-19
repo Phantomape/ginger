@@ -24,15 +24,15 @@ REPORT = (
     / "non_ohlcv_data_audit"
     / f"form4_insider_overlay_fresh_shadow_{EXP_ID}_{DATE_TAG}.md"
 )
-LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_PATH = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 REGISTRY_PATH = ROOT / "docs" / "experiment_registry.json"
 JSONL_PATH = ROOT / "docs" / "experiment_log.jsonl"
 
 NON_COMPANY = {"SPY", "QQQ", "IWM", "GLD", "IAU", "SLV"}
 LATEST_TX = DATA_DIR / "non_ohlcv" / "form4_transactions_20260509.jsonl"
 LATEST_SUMMARY = DATA_DIR / "non_ohlcv" / "form4_backfill_summary_20260509.json"
-PRIOR_LOG = ROOT / "docs" / "experiments" / "logs" / "exp-20260509-018.json"
+PRIOR_LOG = ROOT / "experiments" / "logs" / "exp-20260509-018.json"
 BASELINE = DATA_DIR / "experiments" / "exp-20260510-012" / "rs20_entry_state_shared_sizing.json"
 HIST_EVENTS = DATA_DIR / "non_ohlcv" / "form4_purchase_shadow_outcomes_20241002_20260421.json"
 QUANT_SIGNALS = DATA_DIR / "quant_signals_20260509.json"

@@ -19,8 +19,8 @@ RUN_AT = datetime.now(timezone.utc).isoformat(timespec="seconds")
 DATA_DIR = ROOT / "data"
 OUT_DIR = DATA_DIR / "experiments" / EXP_ID
 ARTIFACT = OUT_DIR / "form4_insider_overlay_latest_audit.json"
-LOG_PATH = ROOT / "docs" / "experiments" / "logs" / f"{EXP_ID}.json"
-TICKET_PATH = ROOT / "docs" / "experiments" / "tickets" / f"{EXP_ID}.json"
+LOG_PATH = ROOT / "experiments" / "logs" / f"{EXP_ID}.json"
+TICKET_PATH = ROOT / "experiments" / "tickets" / f"{EXP_ID}.json"
 REPORT = ROOT / "docs" / "non_ohlcv_data_audit" / f"form4_insider_overlay_{EXP_ID}_20260511.md"
 JSONL_PATH = ROOT / "docs" / "experiment_log.jsonl"
 REGISTRY_PATH = ROOT / "docs" / "experiment_registry.json"
@@ -32,7 +32,7 @@ UNIVERSE_STATE = DATA_DIR / "universe_state_20260510.json"
 SEC_TICKERS = DATA_DIR / "sec_company_tickers.json"
 PAPER_STATE = DATA_DIR / "form4_event_sleeve_paper_state.json"
 PAPER_SNAPSHOTS = DATA_DIR / "form4_event_sleeve_paper_snapshots.jsonl"
-PRIOR_LOG = ROOT / "docs" / "experiments" / "logs" / "exp-20260510-016.json"
+PRIOR_LOG = ROOT / "experiments" / "logs" / "exp-20260510-016.json"
 BASELINE_ARTIFACT = DATA_DIR / "experiments" / "exp-20260510-015" / "trip_sector_taxonomy.json"
 
 NON_COMPANY = {"SPY", "QQQ", "IWM", "GLD", "IAU", "SLV", "ARKX", "UFO"}
@@ -304,7 +304,7 @@ def update_registry(record: dict[str, Any]) -> None:
         "lane": "alpha_search",
         "owner": "alpha-search",
         "status": "accepted_default_off_forward_observation_surface",
-        "ticket_file": "docs/experiments/tickets/exp-20260511-003.json",
+        "ticket_file": "experiments/tickets/exp-20260511-003.json",
         "updated_at": "2026-05-11T02:08:33Z",
     }
     stale_collision_ids = {"exp-20260511-003", "exp-20260511-033", EXP_ID}
@@ -459,7 +459,7 @@ def main() -> int:
         "status": "observed_only",
         "lane": "alpha_discovery",
         "change_type": "data_audit_shadow_overlay",
-        "component": "docs/experiments/logs, docs/non_ohlcv_data_audit, data/experiments artifact only",
+        "component": "experiments/logs, docs/non_ohlcv_data_audit, data/experiments artifact only",
         "run_mode": "data_audit_shadow_only_overlay_refresh",
         "hypothesis": "Public-market insider Form 4 buying, especially large CEO/CFO or clustered open-market purchases, may confirm existing trend_long/breakout_long candidates; this run only checks the latest local PIT-safe data and shadow overlap without changing production.",
         "non_ohlcv_data_source": "SEC EDGAR Form 4 transaction-level XML rows from data/non_ohlcv/form4_transactions_20260510.jsonl plus the default-off Form 4 paper sleeve snapshots.",
@@ -660,8 +660,8 @@ def main() -> int:
         "single_causal_variable": record["single_causal_variable"],
         "baseline_result_file": repo_rel(BASELINE_ARTIFACT),
         "allowed_write_scope": [
-            "docs/experiments/tickets",
-            "docs/experiments/logs",
+            "experiments/tickets",
+            "experiments/logs",
             "docs/non_ohlcv_data_audit",
             "data/experiments",
             "docs/experiment_log.jsonl",

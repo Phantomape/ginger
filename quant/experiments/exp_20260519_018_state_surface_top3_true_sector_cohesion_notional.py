@@ -146,9 +146,9 @@ def _configure_base_module() -> None:
     base.OUT_JSON = (
         base.REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID / f"{EXPERIMENT_SLUG}.json"
     )
-    base.LOG_JSON = base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+    base.LOG_JSON = base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
     base.TICKET_JSON = (
-        base.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+        base.REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
     )
     base.ARTIFACT_MD = (
         base.REPO_ROOT
