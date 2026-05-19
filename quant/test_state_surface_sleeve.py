@@ -16,10 +16,15 @@ SLEEVE_CAPACITY_DISABLED = {
     "rank_notional_sleeve_capacity_enabled": False,
 }
 
+ABSOLUTE_SCORE_SUPPORT_DISABLED = {
+    "rank_notional_absolute_score_support_enabled": False,
+}
+
 BROAD_BREADTH_DISABLED = {
     "rank_notional_broad_breadth_support_enabled": False,
     "rank_notional_rank_queue_alignment_enabled": False,
     **SLEEVE_CAPACITY_DISABLED,
+    **ABSOLUTE_SCORE_SUPPORT_DISABLED,
 }
 
 RANK_QUEUE_ALIGNMENT_DISABLED = {
@@ -175,14 +180,14 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
     assert queue["market_regime"]["regime"] == "chop"
     assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
-        3.364109,
+        3.868726,
         3.40957,
         2.727656,
         0.981956,
         0.509162,
     ]
     assert [row["event_notional_usd"] for row in queue["candidates"]] == [
-        33641.09,
+        38687.26,
         34095.7,
         27276.56,
         9819.56,
@@ -212,9 +217,19 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert queue["rank_notional_profile"]["broad_breadth_support_enabled"] is True
     assert queue["rank_notional_profile"]["broad_breadth_support_bucket"] == "broad_breadth"
     assert queue["rank_notional_profile"]["broad_breadth_support_scalar"] == 1.1
+    assert queue["rank_notional_profile"]["absolute_score_support_enabled"] is True
+    assert queue["rank_notional_profile"]["absolute_score_support_min"] == 0.9
+    assert queue["rank_notional_profile"]["absolute_score_support_scalar"] == 1.15
+    assert (
+        queue["rank_notional_profile"]["absolute_score_support_profile_name"]
+        == "absolute_score_ge_0p9_1p15x"
+    )
     assert [
         row["top3_ret5_followthrough_applied"] for row in queue["candidates"]
     ] == [True, True, True, False, False]
+    assert [
+        row["absolute_score_support_applied"] for row in queue["candidates"]
+    ] == [True, False, False, False, False]
     assert [
         row["broad_breadth_support_applied"] for row in queue["candidates"]
     ] == [True, True, True, True, True]
@@ -552,8 +567,13 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert rank1["sleeve_capacity_applied"] is True
     assert rank1["sleeve_capacity_scalar"] == 1.15
     assert rank1["sleeve_capacity_base_multiplier"] == 2.925312
-    assert rank1["rank_notional_multiplier"] == 3.364109
-    assert rank1["event_notional_usd"] == 33641.09
+    assert rank1["absolute_score_support_applied"] is True
+    assert rank1["absolute_score_support_qualified"] is True
+    assert rank1["absolute_score_support_min"] == 0.9
+    assert rank1["absolute_score_support_scalar"] == 1.15
+    assert rank1["absolute_score_support_base_multiplier"] == 3.364109
+    assert rank1["rank_notional_multiplier"] == 3.868726
+    assert rank1["event_notional_usd"] == 38687.26
     assert [
         row["top3_ret5_followthrough_applied"] for row in queue["candidates"]
     ] == [True, True, True, False, False]
@@ -574,11 +594,14 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert pending["rank_queue_alignment_scalar"] == 1.15
     assert pending["sleeve_capacity_applied"] is True
     assert pending["sleeve_capacity_scalar"] == 1.15
-    assert pending["event_notional_usd"] == 33641.09
+    assert pending["absolute_score_support_applied"] is True
+    assert pending["absolute_score_support_scalar"] == 1.15
+    assert pending["event_notional_usd"] == 38687.26
     assert pending["candidate"]["top3_ret5_followthrough_applied"] is True
     assert pending["candidate"]["broad_breadth_support_applied"] is True
     assert pending["candidate"]["rank_queue_alignment_applied"] is True
     assert pending["candidate"]["sleeve_capacity_applied"] is True
+    assert pending["candidate"]["absolute_score_support_applied"] is True
 
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
@@ -602,8 +625,10 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert position["rank_queue_alignment_scalar"] == 1.15
     assert position["sleeve_capacity_applied"] is True
     assert position["sleeve_capacity_scalar"] == 1.15
-    assert position["rank_notional_multiplier"] == 3.364109
-    assert position["notional"] == 33641.09
+    assert position["absolute_score_support_applied"] is True
+    assert position["absolute_score_support_scalar"] == 1.15
+    assert position["rank_notional_multiplier"] == 3.868726
+    assert position["notional"] == 38687.26
     assert second["trade_enabled"] is False
     assert second["production_impact"]["alters_orders"] is False
 

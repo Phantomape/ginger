@@ -435,6 +435,21 @@ share fell from `41.74%` to `41.03%`, inside the `50%` guardrail. The accepted
 rule lives in shared `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
+Latest accepted state-surface paper absolute-score refinement:
+`exp-20260519-031` keeps the accepted `exp-20260519-028` queue-lag stack fixed
+and adds one production-visible absolute composite score support scalar. When
+an already-selected state-surface paper candidate has `score >= 0.90`, the
+shared default-off paper path multiplies that candidate's active paper notional
+by `1.15` after the queue-lag stack. Versus the accepted queue-lag baseline,
+three-window EV improved `+0.6845` and PnL improved `+$14,516.94`:
+`late_strong +0.1422` EV / `+$2,370.68`, `mid_weak +0.3713` EV /
+`+$5,857.31`, and `old_thin +0.1710` EV / `+$6,288.95`. Sixteen paper trades
+were adjusted across all three windows, max drawdown worsened by at most
+`0.46pp`, and single-ticker positive share rose from `41.03%` to `42.36%`,
+inside the `50%` guardrail. The accepted rule lives in shared
+`state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The

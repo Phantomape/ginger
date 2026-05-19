@@ -101,6 +101,9 @@ RANK_NOTIONAL_SLEEVE_CAPACITY_RULE_VERSION = (
 RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION = (
     "state_surface_queue_lag_support_notional_v1"
 )
+RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION = (
+    "state_surface_absolute_score_support_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -181,6 +184,9 @@ DEFAULT_CONFIG = {
     "rank_notional_sleeve_capacity_scalar": 1.15,
     "rank_notional_queue_lag_support_enabled": True,
     "rank_notional_queue_lag_support_scalar": 1.25,
+    "rank_notional_absolute_score_support_enabled": True,
+    "rank_notional_absolute_score_support_min": 0.90,
+    "rank_notional_absolute_score_support_scalar": 1.15,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -831,6 +837,44 @@ def _queue_lag_support_settings(config: dict[str, Any]) -> dict[str, Any]:
         "scalar": scalar,
         "profile_name": _queue_lag_support_profile_name(scalar),
         "rule_version": RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION,
+    }
+
+
+def _absolute_score_support_profile_name(
+    threshold: float | None,
+    scalar: float | None,
+) -> str:
+    if threshold is None or scalar is None:
+        return "absolute_score_support_disabled"
+    threshold_text = str(round(float(threshold), 6)).rstrip("0").rstrip(".")
+    scalar_text = str(round(float(scalar), 6)).rstrip("0").rstrip(".")
+    return (
+        "absolute_score_ge_"
+        f"{threshold_text.replace('.', 'p')}_{scalar_text.replace('.', 'p')}x"
+    )
+
+
+def _absolute_score_support_settings(config: dict[str, Any]) -> dict[str, Any]:
+    threshold = _float_or_none(
+        config.get("rank_notional_absolute_score_support_min")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_absolute_score_support_scalar")
+    )
+    enabled = bool(
+        config.get("rank_notional_absolute_score_support_enabled", True)
+    )
+    return {
+        "enabled": bool(
+            enabled
+            and threshold is not None
+            and scalar is not None
+            and scalar > 0
+        ),
+        "threshold": threshold,
+        "scalar": scalar,
+        "profile_name": _absolute_score_support_profile_name(threshold, scalar),
+        "rule_version": RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION,
     }
 
 
@@ -1497,6 +1541,21 @@ def _queue_lag_support_applies(
     return bool(settings["enabled"] and rank > queue_rank > 0)
 
 
+def _absolute_score_support_applies(
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _absolute_score_support_settings(config)
+    score = _float_or_none((candidate or {}).get("score"))
+    threshold = settings["threshold"]
+    return bool(
+        settings["enabled"]
+        and score is not None
+        and threshold is not None
+        and score >= threshold
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1535,6 +1594,9 @@ def _rank_notional_multiplier(
         base = base * float(capacity_settings["scalar"] or 1.0)
     if _queue_lag_support_applies(candidate, config):
         settings = _queue_lag_support_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _absolute_score_support_applies(candidate, config):
+        settings = _absolute_score_support_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -1829,6 +1891,43 @@ def _queue_lag_support_metadata(
     }
 
 
+def _absolute_score_support_metadata(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _absolute_score_support_settings(config)
+    score = _float_or_none(candidate.get("score"))
+    threshold = settings["threshold"]
+    qualified = (
+        score is not None
+        and threshold is not None
+        and score >= threshold
+    )
+    applied = _absolute_score_support_applies(candidate, config)
+    return {
+        "absolute_score_support_applied": bool(applied),
+        "absolute_score_support_qualified": bool(qualified),
+        "absolute_score_support_profiles_enabled": bool(settings["enabled"]),
+        "absolute_score_support_score": _round(score, 6),
+        "absolute_score_support_min": _round(settings["threshold"], 6),
+        "absolute_score_support_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "absolute_score_support_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "absolute_score_support_base_multiplier": _round(base_multiplier, 6),
+        "absolute_score_support_profile_name": settings["profile_name"],
+        "absolute_score_support_rule_version": settings["rule_version"],
+        "rank_notional_absolute_score_support_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1887,6 +1986,10 @@ def _apply_rank_notional(
         capacity_adjusted_base_multiplier *= float(
             capacity_settings["scalar"] or 1.0
         )
+    queue_lag_adjusted_base_multiplier = capacity_adjusted_base_multiplier
+    if _queue_lag_support_applies(candidate, config):
+        settings = _queue_lag_support_settings(config)
+        queue_lag_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -1962,6 +2065,13 @@ def _apply_rank_notional(
             base_multiplier=capacity_adjusted_base_multiplier,
         )
     )
+    candidate.update(
+        _absolute_score_support_metadata(
+            candidate,
+            config,
+            base_multiplier=queue_lag_adjusted_base_multiplier,
+        )
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
     candidate["rank_notional_candidate_breadth_rule_version"] = (
@@ -2017,6 +2127,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_queue_lag_support_rule_version"] = (
         RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION
+    )
+    candidate["rank_notional_absolute_score_support_rule_version"] = (
+        RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -2204,6 +2317,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     rank_queue_alignment = _rank_queue_alignment_settings(cfg)
     sleeve_capacity = _sleeve_capacity_settings(cfg)
     queue_lag_support = _queue_lag_support_settings(cfg)
+    absolute_score_support = _absolute_score_support_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -2226,6 +2340,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank_queue_alignment_rule_version": RANK_NOTIONAL_RANK_QUEUE_ALIGNMENT_RULE_VERSION,
         "sleeve_capacity_rule_version": RANK_NOTIONAL_SLEEVE_CAPACITY_RULE_VERSION,
         "queue_lag_support_rule_version": RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION,
+        "absolute_score_support_rule_version": RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -2489,6 +2604,20 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "queue_lag_support_profile_name": queue_lag_support["profile_name"],
+        "absolute_score_support_enabled": bool(
+            absolute_score_support["enabled"]
+        ),
+        "absolute_score_support_min": _round(
+            absolute_score_support["threshold"],
+            6,
+        ),
+        "absolute_score_support_scalar": _round(
+            absolute_score_support["scalar"],
+            6,
+        ),
+        "absolute_score_support_profile_name": absolute_score_support[
+            "profile_name"
+        ],
         "recent_ticker_repeat_profiles_enabled": bool(
             cfg.get("rank_notional_recent_ticker_repeat_profiles_enabled", True)
         ),
@@ -3422,6 +3551,37 @@ def _fill_pending_entries(
             "queue_lag_support_rule_version": entry.get(
                 "queue_lag_support_rule_version"
             ),
+            "rank_notional_absolute_score_support_rule_version": entry.get(
+                "rank_notional_absolute_score_support_rule_version"
+            ),
+            "absolute_score_support_applied": bool(
+                entry.get("absolute_score_support_applied")
+            ),
+            "absolute_score_support_qualified": bool(
+                entry.get("absolute_score_support_qualified")
+            ),
+            "absolute_score_support_profiles_enabled": bool(
+                entry.get("absolute_score_support_profiles_enabled")
+            ),
+            "absolute_score_support_score": entry.get(
+                "absolute_score_support_score"
+            ),
+            "absolute_score_support_min": entry.get("absolute_score_support_min"),
+            "absolute_score_support_configured_scalar": entry.get(
+                "absolute_score_support_configured_scalar"
+            ),
+            "absolute_score_support_scalar": entry.get(
+                "absolute_score_support_scalar"
+            ),
+            "absolute_score_support_base_multiplier": entry.get(
+                "absolute_score_support_base_multiplier"
+            ),
+            "absolute_score_support_profile_name": entry.get(
+                "absolute_score_support_profile_name"
+            ),
+            "absolute_score_support_rule_version": entry.get(
+                "absolute_score_support_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -3826,6 +3986,39 @@ def _add_queue_candidates(
             ),
             "queue_lag_support_rule_version": candidate.get(
                 "queue_lag_support_rule_version"
+            ),
+            "rank_notional_absolute_score_support_rule_version": candidate.get(
+                "rank_notional_absolute_score_support_rule_version"
+            ),
+            "absolute_score_support_applied": bool(
+                candidate.get("absolute_score_support_applied")
+            ),
+            "absolute_score_support_qualified": bool(
+                candidate.get("absolute_score_support_qualified")
+            ),
+            "absolute_score_support_profiles_enabled": bool(
+                candidate.get("absolute_score_support_profiles_enabled")
+            ),
+            "absolute_score_support_score": candidate.get(
+                "absolute_score_support_score"
+            ),
+            "absolute_score_support_min": candidate.get(
+                "absolute_score_support_min"
+            ),
+            "absolute_score_support_configured_scalar": candidate.get(
+                "absolute_score_support_configured_scalar"
+            ),
+            "absolute_score_support_scalar": candidate.get(
+                "absolute_score_support_scalar"
+            ),
+            "absolute_score_support_base_multiplier": candidate.get(
+                "absolute_score_support_base_multiplier"
+            ),
+            "absolute_score_support_profile_name": candidate.get(
+                "absolute_score_support_profile_name"
+            ),
+            "absolute_score_support_rule_version": candidate.get(
+                "absolute_score_support_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")
