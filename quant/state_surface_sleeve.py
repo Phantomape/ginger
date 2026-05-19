@@ -56,6 +56,9 @@ RANK_NOTIONAL_SCORE_COMPRESSION_RULE_VERSION = (
 RANK_NOTIONAL_SCORE_EXPANSION_RULE_VERSION = (
     "state_surface_score_expansion_rank_notional_v1"
 )
+RANK_NOTIONAL_RANK1_SCORE_ISOLATION_RULE_VERSION = (
+    "state_surface_rank1_score_isolation_rank_notional_v1"
+)
 RANK_NOTIONAL_RANK2_RET20_LEAD_RULE_VERSION = (
     "state_surface_rank2_ret20_lead_rank_notional_v1"
 )
@@ -104,6 +107,11 @@ DEFAULT_CONFIG = {
     "rank_notional_score_expansion_min_candidate_breadth": 4,
     "rank_notional_score_expansion_min_top3_spread": 0.40,
     "rank_notional_score_expansion_profile": [1.85, 1.25, 1.0, 0.675, 0.35],
+    "rank_notional_rank1_score_isolation_profiles_enabled": True,
+    "rank_notional_rank1_score_isolation_min_candidate_breadth": 4,
+    "rank_notional_rank1_score_isolation_min_top3_spread": 0.40,
+    "rank_notional_rank1_score_isolation_min_score_gap": 0.20,
+    "rank_notional_rank1_score_isolation_profile": [2.2, 1.0, 0.7, 0.675, 0.35],
     "rank_notional_rank2_ret20_lead_profiles_enabled": True,
     "rank_notional_rank2_ret20_lead_min": 0.005,
     "rank_notional_rank2_ret20_lead_profile": [1.3, 1.55, 1.1, 0.675, 0.35],
@@ -600,6 +608,14 @@ def _rank_notional_score_expansion_profile(config: dict[str, Any]) -> list[float
     return _positive_float_list(config.get("rank_notional_score_expansion_profile"))
 
 
+def _rank_notional_rank1_score_isolation_profile(
+    config: dict[str, Any],
+) -> list[float]:
+    return _positive_float_list(
+        config.get("rank_notional_rank1_score_isolation_profile")
+    )
+
+
 def _rank_notional_rank2_ret20_lead_profile(config: dict[str, Any]) -> list[float]:
     return _positive_float_list(config.get("rank_notional_rank2_ret20_lead_profile"))
 
@@ -831,6 +847,18 @@ def _score_expansion_profile_name(threshold: float) -> str:
     return f"score_expansion_top3_ge_{value.replace('.', 'p')}"
 
 
+def _rank1_score_isolation_profile_name(
+    score_gap_min: float,
+    top3_spread_min: float,
+) -> str:
+    gap = str(round(float(score_gap_min), 6)).rstrip("0").rstrip(".")
+    spread = str(round(float(top3_spread_min), 6)).rstrip("0").rstrip(".")
+    return (
+        f"rank1_score_gap_ge_{gap.replace('.', 'p')}_"
+        f"score_expansion_top3_ge_{spread.replace('.', 'p')}"
+    )
+
+
 def _score_compression_profile_applies(
     config: dict[str, Any],
     candidate: dict[str, Any] | None,
@@ -857,6 +885,49 @@ def _score_compression_profile_applies(
         and profile
     ):
         return _score_compression_profile_name(max_spread), profile
+    return None, None
+
+
+def _rank1_score_isolation_profile_applies(
+    config: dict[str, Any],
+    candidate: dict[str, Any] | None,
+) -> tuple[str | None, list[float] | None]:
+    if not bool(
+        config.get("rank_notional_rank1_score_isolation_profiles_enabled", True)
+    ):
+        return None, None
+    if not bool(config.get("rank_notional_score_expansion_profiles_enabled", True)):
+        return None, None
+    row = candidate or {}
+    candidate_breadth = _float_or_none(row.get("candidate_breadth"))
+    min_breadth = _float_or_none(
+        config.get("rank_notional_rank1_score_isolation_min_candidate_breadth")
+    )
+    top3_spread = _float_or_none(row.get("score_top3_spread"))
+    min_top3_spread = _float_or_none(
+        config.get("rank_notional_rank1_score_isolation_min_top3_spread")
+    )
+    score_gap = _float_or_none(row.get("score_top_to_second_gap"))
+    score_gap_min = _float_or_none(
+        config.get("rank_notional_rank1_score_isolation_min_score_gap")
+    )
+    profile = _rank_notional_rank1_score_isolation_profile(config)
+    if (
+        candidate_breadth is not None
+        and min_breadth is not None
+        and top3_spread is not None
+        and min_top3_spread is not None
+        and score_gap is not None
+        and score_gap_min is not None
+        and candidate_breadth >= min_breadth
+        and top3_spread >= min_top3_spread
+        and score_gap >= score_gap_min
+        and profile
+    ):
+        return (
+            _rank1_score_isolation_profile_name(score_gap_min, min_top3_spread),
+            profile,
+        )
     return None, None
 
 
@@ -935,6 +1006,13 @@ def _rank_notional_profile_for_regime(
     )
     if compression_name and compression_profile:
         return compression_name, compression_profile
+
+    isolation_name, isolation_profile = _rank1_score_isolation_profile_applies(
+        config,
+        candidate,
+    )
+    if isolation_name and isolation_profile:
+        return isolation_name, isolation_profile
 
     expansion_name, expansion_profile = _score_expansion_profile_applies(
         config,
@@ -1035,6 +1113,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_score_expansion_rule_version"] = (
         RANK_NOTIONAL_SCORE_EXPANSION_RULE_VERSION
+    )
+    candidate["rank_notional_rank1_score_isolation_rule_version"] = (
+        RANK_NOTIONAL_RANK1_SCORE_ISOLATION_RULE_VERSION
     )
     candidate["rank_notional_rank2_ret20_lead_rule_version"] = (
         RANK_NOTIONAL_RANK2_RET20_LEAD_RULE_VERSION
@@ -1222,6 +1303,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     breadth_profile = _rank_notional_candidate_breadth_profile(cfg)
     score_profile = _rank_notional_score_compression_profile(cfg)
     score_expansion_profile = _rank_notional_score_expansion_profile(cfg)
+    rank1_score_isolation_profile = _rank_notional_rank1_score_isolation_profile(cfg)
     rank2_profile = _rank_notional_rank2_ret20_lead_profile(cfg)
     rank2_score_gap_profile = _rank_notional_rank2_ret20_score_gap_profile(cfg)
     rank1_dominance_profile = _rank_notional_rank1_ret20_dominance_profile(cfg)
@@ -1234,6 +1316,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "candidate_breadth_rule_version": RANK_NOTIONAL_CANDIDATE_BREADTH_RULE_VERSION,
         "score_compression_rule_version": RANK_NOTIONAL_SCORE_COMPRESSION_RULE_VERSION,
         "score_expansion_rule_version": RANK_NOTIONAL_SCORE_EXPANSION_RULE_VERSION,
+        "rank1_score_isolation_rule_version": RANK_NOTIONAL_RANK1_SCORE_ISOLATION_RULE_VERSION,
         "rank2_ret20_lead_rule_version": RANK_NOTIONAL_RANK2_RET20_LEAD_RULE_VERSION,
         "rank2_ret20_score_gap_rule_version": RANK_NOTIONAL_RANK2_RET20_SCORE_GAP_RULE_VERSION,
         "rank1_ret20_dominance_rule_version": RANK_NOTIONAL_RANK1_RET20_DOMINANCE_RULE_VERSION,
@@ -1300,6 +1383,28 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         ],
         "score_expansion_rank_event_notional_usd": [
             _round(base_notional * value, 2) for value in score_expansion_profile
+        ],
+        "rank1_score_isolation_profiles_enabled": bool(
+            cfg.get("rank_notional_rank1_score_isolation_profiles_enabled", True)
+        ),
+        "rank1_score_isolation_min_candidate_breadth": _round(
+            cfg.get("rank_notional_rank1_score_isolation_min_candidate_breadth"),
+            6,
+        ),
+        "rank1_score_isolation_min_top3_spread": _round(
+            cfg.get("rank_notional_rank1_score_isolation_min_top3_spread"),
+            6,
+        ),
+        "rank1_score_isolation_min_score_gap": _round(
+            cfg.get("rank_notional_rank1_score_isolation_min_score_gap"),
+            6,
+        ),
+        "rank1_score_isolation_profile": [
+            _round(value, 6) for value in rank1_score_isolation_profile
+        ],
+        "rank1_score_isolation_rank_event_notional_usd": [
+            _round(base_notional * value, 2)
+            for value in rank1_score_isolation_profile
         ],
         "rank2_ret20_lead_profiles_enabled": bool(
             cfg.get("rank_notional_rank2_ret20_lead_profiles_enabled", True)
@@ -2007,6 +2112,9 @@ def _fill_pending_entries(
             "rank_notional_score_expansion_rule_version": entry.get(
                 "rank_notional_score_expansion_rule_version"
             ),
+            "rank_notional_rank1_score_isolation_rule_version": entry.get(
+                "rank_notional_rank1_score_isolation_rule_version"
+            ),
             "rank_notional_rank2_ret20_lead_rule_version": entry.get(
                 "rank_notional_rank2_ret20_lead_rule_version"
             ),
@@ -2136,6 +2244,9 @@ def _add_queue_candidates(
             ),
             "rank_notional_score_expansion_rule_version": candidate.get(
                 "rank_notional_score_expansion_rule_version"
+            ),
+            "rank_notional_rank1_score_isolation_rule_version": candidate.get(
+                "rank_notional_rank1_score_isolation_rule_version"
             ),
             "rank_notional_rank2_ret20_lead_rule_version": candidate.get(
                 "rank_notional_rank2_ret20_lead_rule_version"

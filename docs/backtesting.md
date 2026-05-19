@@ -174,6 +174,22 @@ concentration from `38.01%` to `37.43%`. The rule lives in shared
 `state_surface_sleeve.py`, is surfaced by the production default-off paper
 path, and has focused parity tests; live/default orders remain disabled.
 
+Latest accepted state-surface paper rank-1 score-isolation result:
+`exp-20260519-003` keeps the accepted score-expansion plus recent-repeat stack
+fixed and adds a residual production-visible rank-1 score-isolation paper
+allocation field. After all higher-priority state-surface profiles have passed,
+when the residual score-expansion branch applies and
+`score_top_to_second_gap >= 0.20`, the shared default-off paper path uses
+`[2.2, 1.0, 0.7, 0.675, 0.35]` times the `$10,000` base. Versus the accepted
+combined score-expansion plus recent-repeat baseline, aggregate paper-overlay
+EV improved `+0.1039` and PnL improved `+$1,536.65`, with no EV-regressed
+window (`late_strong +0.0790`, `mid_weak +0.0249`, `old_thin` unchanged). The
+rule adjusted 6 paper trades across 2 windows, worsened max drawdown by only
+`0.25pp`, and lowered single-ticker positive-share concentration from `40.70%`
+to `39.68%`. The rule lives in shared `state_surface_sleeve.py`, is surfaced by
+the production default-off paper path, and has focused parity tests;
+live/default orders remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260518-014` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, and accepted

@@ -260,6 +260,14 @@ Default rule:
   41.28%`) but stayed under the `50%` guardrail. Treat this as a continuation
   field, not an invitation to mine adjacent repeat lookbacks/scalars without
   forward evidence or a distinct crowding-quality variable.
+- `exp-20260519-003` accepted a default-off residual rank-1 score-isolation
+  notional field (`+0.1039` aggregate EV, `+$1,536.65` PnL), with 2 improved
+  windows and no EV-regressed window. It applies only inside the residual
+  score-expansion branch when `score_top_to_second_gap >= 0.20`, and shifts
+  paper notional toward rank 1 with `[2.2, 1.0, 0.7, 0.675, 0.35]`.
+  Concentration improved (`40.70% -> 39.68%`). Treat this as a rank-quality
+  field; do not mine adjacent score-gap thresholds or profiles without forward
+  evidence or a distinct quality variable.
 
 ## What The Recent Logs Mean
 
@@ -745,6 +753,8 @@ production-visible field:
   frozen sample;
 - nearby state-surface residual score-expansion threshold/profile retunes on
   the frozen sample;
+- nearby state-surface residual rank-1 score-isolation threshold/profile
+  retunes on the frozen sample;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining;

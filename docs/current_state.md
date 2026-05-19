@@ -326,6 +326,23 @@ inside the `50%` guardrail. The accepted rule lives in shared
 `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
+Latest accepted state-surface paper rank-quality refinement:
+`exp-20260519-003` keeps the accepted score-expansion plus recent-repeat stack
+fixed and adds one residual production-visible rank-1 score-isolation paper
+allocation field. When the residual score-expansion branch applies
+(`score_top3_spread >= 0.40`, candidate breadth `>= 4`) and
+`score_top_to_second_gap >= 0.20`, the shared default-off paper path uses
+`[2.2, 1.0, 0.7, 0.675, 0.35]` times the `$10,000` base before any repeat
+scalar is applied. Versus the accepted combined score-expansion plus
+recent-repeat baseline, three-window EV improved `+0.1039` and PnL improved
+`+$1,536.65`: `late_strong` improved `+0.0790` EV / `+$1,148.61`,
+`mid_weak` improved `+0.0249` EV / `+$388.04`, and `old_thin` was unchanged.
+Six paper trades were adjusted across two windows, max drawdown worsened by
+only `0.25pp`, and single-ticker positive share fell from `40.70%` to
+`39.68%`. The accepted rule lives in shared `state_surface_sleeve.py` with
+focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
+remain disabled.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The
