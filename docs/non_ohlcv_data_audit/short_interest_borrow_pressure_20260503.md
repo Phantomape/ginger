@@ -17,7 +17,7 @@ This is a non-OHLCV confirmation/risk overlay, not a standalone entry, not an OH
 
 - `docs/alpha-optimization-playbook.md` ranks `Short interest / borrow pressure` as an external alpha source worth researching after earnings/SEC, analyst revisions, and insider transactions.
 - The playbook explicitly warns not to treat FINRA daily short volume as short interest.
-- `docs/experiment_log.jsonl` and `docs/experiments/logs` contain no prior structured `short_interest`, `borrow_fee`, `FINRA`, `hard_to_borrow`, `daily_short_volume`, or `squeeze_setup` experiment.
+- `docs/experiment_log.jsonl` and `experiments/logs` contain no prior structured `short_interest`, `borrow_fee`, `FINRA`, `hard_to_borrow`, `daily_short_volume`, or `squeeze_setup` experiment.
 - Incidental news/headline matches such as "short interest" or "squeeze" exist, but they are unstructured text and cannot supply publication-lagged numeric fields.
 
 ## Data Availability
@@ -49,7 +49,7 @@ Required fields are currently missing:
 
 ## Baseline Reference
 
-No new backtest was run because this is a data audit and no strategy behavior changed. The accepted-stack baseline used for candidate-count context is the latest canonical three-window baseline recorded in `docs/experiments/logs/exp-20260503-011.json`:
+No new backtest was run because this is a data audit and no strategy behavior changed. The accepted-stack baseline used for candidate-count context is the latest canonical three-window baseline recorded in `experiments/logs/exp-20260503-011.json`:
 
 | Window | EV | Return | PnL | Sharpe daily | Max DD | Win rate | Trades | Signals generated | Signals survived | Survival | vs SPY | vs QQQ |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

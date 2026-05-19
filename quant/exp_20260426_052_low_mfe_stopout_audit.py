@@ -29,7 +29,6 @@ from data_layer import get_universe  # noqa: E402
 EXPERIMENT_ID = "exp-20260426-052"
 OUT_JSON = os.path.join(
     REPO_ROOT,
-    "docs",
     "experiments",
     "artifacts",
     "exp_20260426_052_low_mfe_stopout_audit.json",

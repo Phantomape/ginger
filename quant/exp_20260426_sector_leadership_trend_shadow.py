@@ -31,7 +31,6 @@ from risk_engine import SECTOR_MAP  # noqa: E402
 EXPERIMENT_ID = "exp-20260426-049"
 OUT_JSON = os.path.join(
     REPO_ROOT,
-    "docs",
     "experiments",
     "artifacts",
     "exp_20260426_sector_leadership_trend_shadow.json",

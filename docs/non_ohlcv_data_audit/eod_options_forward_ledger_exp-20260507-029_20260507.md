@@ -6,7 +6,7 @@ Forward PIT-safe EOD options structure tags may enrich existing Ginger candidate
 
 ## Historical check
 
-Checked AGENTS.md, docs/alpha-optimization-playbook.md, docs/experiment_log.jsonl, docs/experiments/logs, and universe-scout automation memory. Prior options work (`exp-20260506-009`) rejected naive historical options overlay promotion because historical rows lacked vendor_asof and tag performance was unstable. This run is not a retry of those thresholds; it adds a forward-only candidate-tag ledger and quarantines bad daily snapshots.
+Checked AGENTS.md, docs/alpha-optimization-playbook.md, docs/experiment_log.jsonl, experiments/logs, and universe-scout automation memory. Prior options work (`exp-20260506-009`) rejected naive historical options overlay promotion because historical rows lacked vendor_asof and tag performance was unstable. This run is not a retry of those thresholds; it adds a forward-only candidate-tag ledger and quarantines bad daily snapshots.
 
 ## Source and PIT status
 

@@ -31,8 +31,8 @@ from fill_model import SLIPPAGE_BPS_TARGET, apply_slippage  # noqa: E402
 EXPERIMENT_ID = "exp-20260502-014"
 OUT_DIR = os.path.join(REPO_ROOT, "data", "experiments", EXPERIMENT_ID)
 OUT_JSON = os.path.join(OUT_DIR, "mfe_giveback_sma_exit.json")
-LOG_JSON = os.path.join(REPO_ROOT, "docs", "experiments", "logs", f"{EXPERIMENT_ID}.json")
-TICKET_JSON = os.path.join(REPO_ROOT, "docs", "experiments", "tickets", f"{EXPERIMENT_ID}.json")
+LOG_JSON = os.path.join(REPO_ROOT, "experiments", "logs", f"{EXPERIMENT_ID}.json")
+TICKET_JSON = os.path.join(REPO_ROOT, "experiments", "tickets", f"{EXPERIMENT_ID}.json")
 EXPERIMENT_LOG = os.path.join(REPO_ROOT, "docs", "experiment_log.jsonl")
 
 WINDOWS = OrderedDict([

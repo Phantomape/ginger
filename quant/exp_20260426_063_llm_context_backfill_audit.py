@@ -19,7 +19,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = REPO_ROOT / "data"
 DEFAULT_OUTPUT = (
     REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / "exp_20260426_063_llm_context_backfill_audit.json"

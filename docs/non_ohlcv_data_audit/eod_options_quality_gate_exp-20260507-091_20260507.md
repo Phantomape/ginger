@@ -6,7 +6,7 @@ A forward options overlay needs a candidate usable-date join, daily collection q
 
 ## Historical check
 
-Checked AGENTS.md, docs/alpha-optimization-playbook.md, docs/experiment_log.jsonl, docs/experiments/logs, and universe-scout memory. Prior options evidence rejects naive historical call/put OI or skew promotion. This run changes only the forward measurement harness.
+Checked AGENTS.md, docs/alpha-optimization-playbook.md, docs/experiment_log.jsonl, experiments/logs, and universe-scout memory. Prior options evidence rejects naive historical call/put OI or skew promotion. This run changes only the forward measurement harness.
 
 ## What changed
 

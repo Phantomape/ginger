@@ -23,7 +23,6 @@ REAL_BEFORE = os.path.join(REPO_ROOT, "data", "backtest_results_20260426_exp028_
 REAL_AFTER = os.path.join(REPO_ROOT, "data", "backtest_results_20260426_exp028_after.json")
 OUT_JSON = os.path.join(
     REPO_ROOT,
-    "docs",
     "experiments",
     "artifacts",
     "exp_20260426_043_addon_cap_headroom_loss_attribution.json",

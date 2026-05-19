@@ -34,7 +34,6 @@ import signal_engine as se_module  # noqa: E402
 EXPERIMENT_ID = "exp-20260426-051"
 OUT_JSON = os.path.join(
     REPO_ROOT,
-    "docs",
     "experiments",
     "artifacts",
     "exp_20260426_051_pullback_reclaim_replay_results.json",

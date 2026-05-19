@@ -30,7 +30,6 @@ from fill_model import SLIPPAGE_BPS_TARGET, apply_slippage  # noqa: E402
 EXPERIMENT_ID = "exp-20260426-053"
 OUT_JSON = os.path.join(
     REPO_ROOT,
-    "docs",
     "experiments",
     "artifacts",
     "exp_20260426_053_low_mfe_exit_replay_results.json",

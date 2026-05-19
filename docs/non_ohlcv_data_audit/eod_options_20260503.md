@@ -13,7 +13,7 @@ and option liquidity. This should not become a standalone entry engine.
 ## Historical Check
 
 No prior structured options experiment was found in `docs/experiment_log.jsonl`
-or `docs/experiments/logs`. The playbook ranks EOD options as a mid/late
+or `experiments/logs`. The playbook ranks EOD options as a mid/late
 external source: useful as confirmation, but high-risk for overfit unless
 PIT-safe chain data and option-liquidity filters exist.
 
