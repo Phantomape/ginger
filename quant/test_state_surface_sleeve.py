@@ -79,6 +79,37 @@ def _ohlcv_rank2_ret20_lead():
     return rows
 
 
+def _ohlcv_rank1_ret20_dominance():
+    rows = _ohlcv_broad_rotation_many()
+    rows["BBB"] = _rows(50.0, 0.0030)
+    return rows
+
+
+def _ohlcv_rank1_ret60_overheat():
+    rows = _ohlcv_broad_rotation_many()
+    rows["AAA"] = _rows(50.0, 0.0070)
+    rows["BBB"] = _rows(50.0, 0.0024)
+    rows["CCC"] = _rows(50.0, 0.0022)
+    rows["DDD"] = _rows(50.0, 0.0020)
+    rows["EEE"] = _rows(50.0, 0.0018)
+    rows["FFF"] = _rows(50.0, 0.0016)
+    return rows
+
+
+def _ohlcv_top2_tech_cohesion():
+    return {
+        "SPY": _rows(100.0, 0.0002),
+        "QQQ": _rows(100.0, 0.0003),
+        "IWM": _rows(100.0, 0.0020),
+        "PLTR": _rows(50.0, 0.0024),
+        "CRDO": _rows(50.0, 0.0022),
+        "GOOG": _rows(50.0, 0.0018),
+        "XOM": _rows(50.0, 0.0016),
+        "CVX": _rows(50.0, 0.0014),
+        "DIS": _rows(50.0, 0.0012),
+    }
+
+
 def _ohlcv_flat_benchmarks_broad_rotation():
     return {
         "SPY": _rows(100.0, 0.0),
@@ -128,23 +159,24 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
     assert queue["market_regime"]["regime"] == "chop"
     assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
-        1.6625,
-        1.315,
+        1.85,
+        1.25,
         1.0,
         0.675,
         0.35,
     ]
     assert [row["event_notional_usd"] for row in queue["candidates"]] == [
-        16625.0,
-        13150.0,
+        18500.0,
+        12500.0,
         10000.0,
         6750.0,
         3500.0,
     ]
     assert {
         row["rank_notional_profile_name"] for row in queue["candidates"]
-    } == {"candidate_breadth_ge4_override"}
+    } == {"score_expansion_top3_ge_0p4"}
     assert {row["candidate_breadth"] for row in queue["candidates"]} == {5}
+    assert {row["score_top3_spread"] for row in queue["candidates"]} == {0.931526}
     assert queue["rank_notional_profile"]["rank_event_notional_usd"] == [
         15000.0,
         12500.0,
@@ -167,6 +199,14 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
         6750.0,
         3500.0,
     ]
+    assert queue["rank_notional_profile"]["score_expansion_min_top3_spread"] == 0.40
+    assert queue["rank_notional_profile"]["score_expansion_rank_event_notional_usd"] == [
+        18500.0,
+        12500.0,
+        10000.0,
+        6750.0,
+        3500.0,
+    ]
     assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
     assert all(row["ret20_excess_spy_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["production_impact"]["alters_orders"] is False
@@ -180,6 +220,7 @@ def test_state_surface_queue_can_disable_regime_rank_notional_profile():
         config={
             "rank_notional_regime_profiles_enabled": False,
             "rank_notional_candidate_breadth_profiles_enabled": False,
+            "rank_notional_score_expansion_profiles_enabled": False,
         },
     )
 
@@ -203,7 +244,10 @@ def test_state_surface_queue_can_disable_candidate_breadth_rank_notional_profile
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={"rank_notional_candidate_breadth_profiles_enabled": False},
+        config={
+            "rank_notional_candidate_breadth_profiles_enabled": False,
+            "rank_notional_score_expansion_profiles_enabled": False,
+        },
     )
 
     assert queue["market_regime"]["regime"] == "chop"
@@ -267,7 +311,10 @@ def test_state_surface_queue_applies_rank2_ret20_lead_profile_before_score_compr
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank2_ret20_lead(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={"rank_notional_score_compression_max_top3_spread": 2.0},
+        config={
+            "rank_notional_score_compression_max_top3_spread": 2.0,
+            "rank_notional_rank2_ret20_score_gap_profiles_enabled": False,
+        },
     )
 
     assert queue["enabled"] is False
@@ -295,6 +342,186 @@ def test_state_surface_queue_applies_rank2_ret20_lead_profile_before_score_compr
         6750.0,
         3500.0,
     ]
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_applies_rank2_ret20_score_gap_profile_before_rank2_lead():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_rank2_ret20_lead(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={"rank_notional_score_compression_max_top3_spread": 2.0},
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["candidate_count"] == 5
+    assert queue["candidates"][0]["ticker"] == "AAA"
+    assert queue["candidates"][1]["ticker"] == "BBB"
+    assert queue["candidates"][0]["rank2_ret20_excess_spy_lead"] >= 0.005
+    assert queue["candidates"][0]["score_top_to_second_gap"] >= 0.30
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.0,
+        1.85,
+        1.1,
+        0.675,
+        0.35,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"rank2_ret20_lead_ge_0p005_score_gap_ge_0p3"}
+    assert queue["rank_notional_profile"]["rank2_ret20_score_gap_profiles_enabled"] is True
+    assert queue["rank_notional_profile"]["rank2_ret20_score_gap_min"] == 0.30
+    assert queue["rank_notional_profile"]["rank2_ret20_score_gap_rank_event_notional_usd"] == [
+        10000.0,
+        18500.0,
+        11000.0,
+        6750.0,
+        3500.0,
+    ]
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_applies_top2_tech_cohesion_before_rank2_score_gap():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_top2_tech_cohesion(),
+        universe=["PLTR", "CRDO", "GOOG", "XOM", "CVX", "DIS"],
+        config={
+            "rank_notional_rank1_ret60_residual_min": 0.0,
+            "rank_notional_rank2_ret20_score_gap_min": 0.0,
+        },
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["candidate_count"] == 5
+    assert queue["candidates"][0]["sector"] == "Technology"
+    assert queue["candidates"][0]["rank1_sector"] == "Technology"
+    assert queue["candidates"][0]["rank2_sector"] == "Technology"
+    assert all(row["top2_sector_cohesion"] is True for row in queue["candidates"])
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.45,
+        1.7,
+        1.15,
+        0.675,
+        0.35,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"top2_sector_cohesion_technology"}
+    assert {
+        row["rank_notional_top2_sector_cohesion_rule_version"]
+        for row in queue["candidates"]
+    } == {"state_surface_top2_sector_cohesion_rank_notional_v1"}
+    assert {
+        row["rank_notional_rank1_ret60_residual_rule_version"]
+        for row in queue["candidates"]
+    } == {"state_surface_rank1_ret60_residual_rank_notional_v1"}
+    assert queue["rank_notional_profile"][
+        "top2_sector_cohesion_profiles_enabled"
+    ] is True
+    assert queue["rank_notional_profile"]["top2_sector_cohesion_sector"] == "Technology"
+    assert queue["rank_notional_profile"][
+        "top2_sector_cohesion_rank_event_notional_usd"
+    ] == [
+        14500.0,
+        17000.0,
+        11500.0,
+        6750.0,
+        3500.0,
+    ]
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_applies_rank1_ret60_residual_after_top2_priority():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_rank1_ret60_overheat(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={"rank_notional_rank2_ret20_score_gap_min": 0.0},
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["candidate_count"] == 5
+    assert queue["candidates"][0]["ticker"] == "AAA"
+    assert queue["candidates"][0]["rank1_ret60"] >= 0.50
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.2,
+        1.85,
+        1.1,
+        0.675,
+        0.35,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"rank1_ret60_ge_0p5"}
+    assert {
+        row["rank_notional_rank1_ret60_residual_rule_version"]
+        for row in queue["candidates"]
+    } == {"state_surface_rank1_ret60_residual_rank_notional_v1"}
+    assert queue["rank_notional_profile"]["rank1_ret60_residual_profiles_enabled"] is True
+    assert queue["rank_notional_profile"]["rank1_ret60_residual_min"] == 0.50
+    assert queue["rank_notional_profile"][
+        "rank1_ret60_residual_rank_event_notional_usd"
+    ] == [
+        12000.0,
+        18500.0,
+        11000.0,
+        6750.0,
+        3500.0,
+    ]
+    assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_queue_applies_rank1_ret20_dominance_profile_before_compression():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_rank1_ret20_dominance(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={
+            "rank_notional_rank1_ret20_dominance_lead_min": 0.0,
+            "rank_notional_rank1_ret20_dominance_score_gap_min": 0.0,
+            "rank_notional_score_compression_max_top3_spread": 2.0,
+        },
+    )
+
+    assert queue["enabled"] is False
+    assert queue["trade_enabled"] is False
+    assert queue["candidate_count"] == 5
+    assert queue["candidates"][0]["ticker"] == "BBB"
+    assert queue["candidates"][0]["rank1_ret20_excess_spy"] > queue["candidates"][0][
+        "rank2_ret20_excess_spy"
+    ]
+    assert queue["candidates"][0]["score_top_to_second_gap"] >= 0.0
+    assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
+        1.6,
+        1.4,
+        1.0,
+        0.675,
+        0.35,
+    ]
+    assert {
+        row["rank_notional_profile_name"] for row in queue["candidates"]
+    } == {"rank1_ret20_dominance_ge_0_score_gap_ge_0"}
+    assert {
+        row["rank_notional_rank1_ret20_dominance_rule_version"]
+        for row in queue["candidates"]
+    } == {"state_surface_rank1_ret20_dominance_rank_notional_v1"}
+    assert queue["rank_notional_profile"]["rank1_ret20_dominance_profiles_enabled"] is True
+    assert queue["rank_notional_profile"]["rank1_ret20_dominance_lead_min"] == 0.0
+    assert queue["rank_notional_profile"]["rank1_ret20_dominance_score_gap_min"] == 0.0
+    assert queue["rank_notional_profile"][
+        "rank1_ret20_dominance_rank_event_notional_usd"
+    ] == [
+        16000.0,
+        14000.0,
+        10000.0,
+        6750.0,
+        3500.0,
+    ]
+    assert queue["rank_notional_profile"]["trade_enabled_after_profile"] is False
     assert queue["production_impact"]["alters_orders"] is False
 
 

@@ -57,9 +57,13 @@ Recent accepted work does not change that worldview:
 - Core alpha still mostly comes from small post-sizing promotions on
   production-visible states.
 - The state-surface sleeve improved when the candidate definition stayed tight
-  and only paper allocation changed; the latest score-compression and rank-2
-  ret20-lead refinements support queue-quality fields as better alpha inputs
-  than another nearby breadth scalar.
+  and only paper allocation changed; the latest score-compression, rank-2
+  ret20-lead, and score/ret20 disagreement refinements support queue-quality
+  fields as better alpha inputs than another nearby breadth scalar.
+- Core-misfit evidence is strongest as candidate-pool governance, not as live
+  shorting: the default-off paper sleeve now observes only `trend_long`
+  misfit signals after the combined `trend_long + breakout_long` scope proved
+  more window-fragile.
 - The latest measurement repair showed that strong paper PnL is still not
   promotion-ready when tail concentration is too high.
 
@@ -158,6 +162,18 @@ Default rule:
 - no-trade avoided value can justify a paper sleeve first;
 - inverse evidence is still paper research until forward outcomes and
   execution-friction evidence mature.
+- `exp-20260518-019` sharpened the core-misfit short read: the blanket
+  fixed-10d inverse was old-window concentrated, but the production-visible
+  `trend_long_only` condition produced `+$5,799.05` across 7 trades with both
+  observed windows positive. Treat this as a paper observation priority for
+  `CORE_MISFIT_PAPER`, not as a live short adapter; the mid-window proof is
+  still one tiny trade and borrow/locate costs are unmodelled.
+- `exp-20260518-022` promoted that evidence only into default-off paper-scope
+  governance: `CORE_MISFIT_PAPER` now observes `trend_long` misfit signals by
+  default. The stricter gate kept `95.38%` of identity paper inverse PnL while
+  improving positive windows, win rate, worst trade, and max drawdown. Do not
+  re-add `breakout_long` or expand the ticker set without new forward evidence
+  or a new production-visible discriminator.
 
 ### 7. LLM Value Comes From Structure, Not Authority
 
@@ -206,6 +222,36 @@ Default rule:
 - forward promotion gates must inspect concentration, not just mean returns;
 - when tail concentration blocks promotion, the next step is a new quality or
   regime field, not more nearby notional tuning.
+- `exp-20260518-021` rejected rank-2 ret5 leadership as that kind of nearby
+  notional tuning: aggregate EV/PnL improved, but the best variant touched only
+  6 trades and worsened single-ticker positive-share concentration versus the
+  accepted baseline. Do not retry adjacent ret5 queue-notional profiles without
+  a new field or forward evidence.
+- `exp-20260518-023` accepted a small default-off rank-1 ret20 dominance plus
+  score-gap notional field (`+0.0098` aggregate EV, `+$287.87` PnL), but it
+  also raised single-ticker positive-share concentration from `36.12%` to
+  `36.55%`. Treat this as a marginal incubation improvement, not permission to
+  keep mining neighboring state-surface scalars without a new quality field or
+  forward evidence.
+- `exp-20260518-025` accepted a default-off top-2 Technology sector-cohesion
+  notional field (`+0.0759` aggregate EV, `+$1,593.99` PnL), with 2 improved
+  windows and no EV-regressed window. Concentration still rose slightly
+  (`36.55% -> 36.80%`), so this remains an incubation improvement; do not keep
+  mining adjacent sector-cohesion profiles without forward evidence or a new
+  independent field.
+- `exp-20260518-027` accepted a default-off residual rank-1 ret60 overheat
+  notional field after top-2 Technology priority (`+0.1209` aggregate EV,
+  `+$1,606.68` PnL), with 2 improved windows and no EV-regressed window. The
+  broader `0.40` threshold failed, so do not mine nearby ret60 thresholds or
+  override the accepted top-2 Technology priority without forward evidence or a
+  new independent field.
+- `exp-20260519-001` accepted a default-off residual score-expansion notional
+  field (`+0.0552` aggregate EV, `+$725.33` PnL), with 2 improved windows and
+  no EV-regressed window. It lowered concentration (`38.01% -> 37.43%`) and
+  only applies to generic-breadth residual rows after higher-priority profiles.
+  Treat this as a modest incubation improvement; do not mine nearby
+  score-expansion thresholds or profiles without forward evidence or a new
+  independent field.
 
 ## What The Recent Logs Mean
 
@@ -215,6 +261,8 @@ Compressing the recent repository evidence into durable conclusions:
   stable candidate set;
 - accepted paper-sleeve changes came from tighter candidate definitions and
   better paper allocation, not from broadening discretion;
+- accepted core-misfit work came from narrowing the default-off observation
+  scope, not from enabling live shorts or broad no-trade quarantines;
 - rejected work was usually broad overlays, pool expansion, slot reranking,
   lifecycle retuning, or sample-thin interaction mining;
 - the state-surface sleeve is a valid alpha incubator, but forward promotion is
@@ -683,6 +731,12 @@ production-visible field:
 - nearby scarce-slot or ample-slot scalar retries on the same accepted state;
 - nearby state-surface queue-rank, floor, regime-notional, or
   candidate-breadth profile retunes on the frozen sample;
+- nearby state-surface rank-1 ret20 dominance or score-gap notional profile
+  retunes on the frozen sample;
+- nearby state-surface rank-1 ret60 residual threshold/profile retunes on the
+  frozen sample;
+- nearby state-surface residual score-expansion threshold/profile retunes on
+  the frozen sample;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining;

@@ -62,13 +62,13 @@ requires closed forward paper outcomes and a separate Gate 1-4 experiment.
 
 Latest production-visible paper adapter: `exp-20260517-002` implements the
 `CORE_MISFIT_PAPER` sleeve as a daily default-off ledger and report block. It
-copies only selected or slot-sliced `TSM` / `ISRG` / `V` / `DDOG` core long
-signals into no-trade, fast-long, and inverse-short paper outcomes at 1/3/5/10
-trading-day horizons. It does not change core entries, exits, ranking, sizing,
-slots, heat, LLM/news, or orders, and it does not enable live shorts. The
-forward gate requires at least 20 closed 10-day paper outcomes plus positive
-no-trade and inverse evidence before any separate live exclusion/short
-experiment is allowed.
+now copies only `trend_long` selected or slot-sliced `TSM` / `ISRG` / `V` /
+`DDOG` core long signals into no-trade, fast-long, and inverse-short paper
+outcomes at 1/3/5/10 trading-day horizons. It does not change core entries,
+exits, ranking, sizing, slots, heat, LLM/news, or orders, and it does not
+enable live shorts. The forward gate requires at least 20 closed 10-day paper
+outcomes plus positive no-trade and inverse evidence before any separate live
+exclusion/short experiment is allowed.
 
 Latest rejected short-shadow scout: `exp-20260517-003` tested whether the same
 `TSM` / `ISRG` / `V` / `DDOG` core-misfit signals are true short alpha rather
@@ -79,6 +79,29 @@ because only `old_thin` was positive (`+$6,855.82`) while `mid_weak` was
 negative (`-$776.16`), and the sample still lacks borrow/locate costs plus the
 20 closed forward outcomes required by `CORE_MISFIT_PAPER`. Interpretation:
 there is a real inverse clue, but not a live short rule.
+
+Latest core-misfit conditioned short scout: `exp-20260518-019` locked the
+short exit policy to the prior best `fixed_10d` and swept only production-
+visible condition gates. The selected gate was `trend_long_only`: 7 trades,
+PnL `+$5,799.05`, win rate `71.43%`, worst trade `-2.03%`, max drawdown
+`0.20%`, and both observed windows positive (`mid_weak +$8.81`,
+`old_thin +$5,790.24`). Other passing gates were `available_slots_lte_3` and
+`not_risk_on_tagged`. This is promising replay-only conditioning, not a live
+short promotion: the `mid_weak` proof is still one tiny TSM trade, borrow/
+locate costs are unmodelled, and the forward `CORE_MISFIT_PAPER` gate remains
+required.
+
+Latest accepted core-misfit paper-scope refinement: `exp-20260518-022`
+promotes only the observation-scope implication from `exp-20260518-019`.
+The default-off `CORE_MISFIT_PAPER` target strategy scope is now `trend_long`
+only, while tickers, horizons, fill policy, forward gate, core ranking, core
+sizing, core slots, and live orders stay unchanged. Against the combined
+`trend_long + breakout_long` paper identity, trend-only keeps 7 of 9 paper
+trades and `95.38%` of paper inverse PnL (`$5,799.05` vs `$6,079.66`), improves
+win rate (`71.43%` vs `66.67%`), improves observed positive windows (`2` vs
+`1`), worst trade (`-2.03%` vs `-4.53%`), and max drawdown (`0.20%` vs
+`0.73%`). The canonical core three-window metrics remain unchanged; this is
+not a live short or core exclusion promotion.
 
 Latest accepted alpha result: core `exp-20260517-009` keeps entries, exits,
 filters, universe, targets, heat, LLM, news, and pre-slot ranking unchanged,
@@ -215,17 +238,78 @@ shared `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
 Latest accepted state-surface paper rank-quality refinement:
-`exp-20260518-018` keeps the accepted `exp-20260518-013` score-compression
-stack fixed, but adds one production-visible field: rank-2 candidate
-`ret20_excess_spy` leadership over rank 1. When rank 2 leads rank 1 by at
-least `0.005`, the shared default-off paper path uses
-`[1.3, 1.55, 1.1, 0.675, 0.35]` times the $10,000 base. Versus the accepted
-score-compression baseline, three-window EV improved `+0.0260` and PnL
-improved `+$544.72`: `late_strong +0.0041` EV / `+$90.93`, `mid_weak +0.0178`
-EV / `+$228.52`, and `old_thin +0.0041` EV / `+$225.27`. Nine paper trades
-were adjusted across all three windows, max drawdown did not worsen, and
-single-ticker positive share stayed controlled at `33.63%`. The accepted rule
+`exp-20260518-020` keeps the accepted `exp-20260518-018` rank-2 ret20-lead
+stack fixed, but adds one production-visible score/ret20 disagreement field.
+When rank 2 leads rank 1 on `ret20_excess_spy` by at least `0.005` while rank
+1 still leads rank 2 on composite score by at least `0.30`, the shared
+default-off paper path uses `[1.0, 1.85, 1.1, 0.675, 0.35]` times the $10,000
+base. Versus the accepted rank-2 ret20-lead baseline, three-window EV improved
+`+0.0575` and PnL improved `+$1,292.85`: `late_strong` unchanged,
+`mid_weak +0.0376` EV / `+$508.85`, and `old_thin +0.0199` EV / `+$784.00`.
+Six paper trades were adjusted across two windows, max drawdown did not
+worsen, and single-ticker positive share stayed controlled at `36.12%`. The
+accepted rule lives in shared `state_surface_sleeve.py` with focused parity
+coverage in `test_state_surface_sleeve.py`; live/default orders remain
+disabled.
+
+Previous accepted state-surface paper rank-dominance refinement:
+`exp-20260518-023` keeps the accepted `exp-20260518-020` stack fixed, but adds
+one production-visible rank-1 ret20 dominance plus score-gap paper allocation
+field. When rank 1 leads rank 2 on `ret20_excess_spy` by at least `0.15` and
+also leads on composite score by at least `0.45`, the shared default-off paper
+path uses `[1.6, 1.4, 1.0, 0.675, 0.35]` times the $10,000 base. Versus the
+accepted `exp-20260518-020` baseline, three-window EV improved `+0.0098` and
+PnL improved `+$287.87`: `late_strong +0.0006` EV / `+$12.86`, `mid_weak
++0.0092` EV / `+$275.01`, and `old_thin` unchanged. Six paper trades were
+adjusted across two windows, max drawdown did not worsen, but single-ticker
+positive share rose from `36.12%` to `36.55%`. The higher-EV rank2-heavy
+candidate was rejected because one fixed window regressed. The accepted rule lives in
+shared `state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
+
+Previous accepted state-surface paper sector-cohesion refinement:
+`exp-20260518-025` keeps the accepted `exp-20260518-023` stack fixed, but adds
+one production-visible top-2 Technology sector-cohesion paper allocation field.
+When the first two ranked queue candidates are both Technology, the shared
+default-off paper path uses `[1.45, 1.7, 1.15, 0.675, 0.35]` times the $10,000
+base. Versus the accepted rank-dominance baseline, three-window EV improved
+`+0.0759` and PnL improved `+$1,593.99`: `late_strong` unchanged, `mid_weak
++0.0528` EV / `+$938.67`, and `old_thin +0.0231` EV / `+$655.32`. Six paper
+trades were adjusted across two windows, max drawdown did not worsen, but
+single-ticker positive share rose from `36.55%` to `36.80%`. The accepted rule
 lives in shared `state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
+
+Previous accepted state-surface paper residual-rank refinement:
+`exp-20260518-027` keeps the accepted `exp-20260518-025` stack fixed, gives
+the top-2 Technology sector-cohesion rule priority, and adds one residual
+production-visible rank-1 60-day return paper allocation field. When rank 1's
+60-day return is at least `0.50` and no higher-priority top-2 Technology rule
+has applied, the shared default-off paper path uses
+`[1.2, 1.85, 1.1, 0.675, 0.35]` times the $10,000 base. Versus the accepted
+sector-cohesion baseline, three-window EV improved `+0.1209` and PnL improved
+`+$1,606.68`: `late_strong +0.0148` EV / `+$42.60`, `mid_weak +0.1061` EV /
+`+$1,564.08`, and `old_thin` unchanged. Six paper trades were adjusted across
+two windows, max drawdown did not worsen, but single-ticker positive share rose
+from `36.80%` to `38.01%`. A broader `0.40` threshold was rejected because it
+introduced a late-window EV regression; the accepted rule lives in shared
+`state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
+
+Latest accepted state-surface paper score-expansion refinement:
+`exp-20260519-001` keeps the accepted `exp-20260518-027` stack fixed, gives all
+higher-priority state-surface profiles priority, and adds one residual
+production-visible score-expansion paper allocation field. When the qualified
+same-day paper queue has at least four candidates and the top-three score
+spread is at least `0.40`, the shared default-off paper path uses `[1.85,
+1.25, 1.0, 0.675, 0.35]` times the `$10,000` base. Versus the accepted
+residual-rank baseline,
+three-window EV improved `+0.0552` and PnL improved `+$725.33`: `late_strong`
+improved `+0.0408` EV / `+$609.34`, `mid_weak` improved `+0.0144` EV /
+`+$115.99`, and `old_thin` was unchanged. Six paper trades were adjusted
+across two windows, max drawdown worsened by only `0.14pp`, and single-ticker
+positive share fell from `38.01%` to `37.43%`. The accepted rule lives in
+shared `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested

@@ -99,20 +99,80 @@ Artifact note:
 records the latest accepted three-window comparison. Aggregate accepted-stack
 EV is `7.8941`; aggregate PnL is `$234,850.99`.
 
-Latest accepted default-off state-surface paper result: `exp-20260518-018`
+Previous accepted default-off state-surface paper rank-quality result:
+`exp-20260518-020`
 keeps core metrics unchanged and keeps the accepted rotation-only surface,
 `ret20_excess_spy >= 0.0` gate, top-five queue, active cap, 20-day hold,
-regime-aware rank-notional profile, candidate-breadth override, and
-score-compression override fixed, but adds a production-visible rank-quality
-override when rank-2's `ret20_excess_spy` leads rank 1 by at least `0.005`.
-The accepted override profile is `[1.3, 1.55, 1.1, 0.675, 0.35]` times the
-$10,000 base. Versus the accepted `exp-20260518-013` score-compression
-baseline, aggregate paper-overlay EV improved `+0.0260` and PnL improved
-`+$544.72`, with all three fixed windows EV-positive (`late_strong +0.0041`,
-`mid_weak +0.0178`, `old_thin +0.0041`) and no EV regression. The rule adjusted
-9 paper trades across all windows, did not worsen max drawdown, lives in shared
-`state_surface_sleeve.py`, is surfaced by the production default-off paper path,
-and has focused parity tests; live/default orders remain disabled.
+regime-aware rank-notional profile, candidate-breadth override,
+score-compression override, and rank-2 ret20-lead override fixed, but adds a
+production-visible score/ret20 disagreement override. When rank 2 leads rank 1
+on `ret20_excess_spy` by at least `0.005` and rank 1 still leads rank 2 on
+composite score by at least `0.30`, the paper-notional profile is
+`[1.0, 1.85, 1.1, 0.675, 0.35]` times the $10,000 base. Versus the accepted
+`exp-20260518-018` rank-2 ret20-lead baseline, aggregate paper-overlay EV
+improved `+0.0575` and PnL improved `+$1,292.85`, with no EV-regressed window
+(`late_strong unchanged`, `mid_weak +0.0376`, `old_thin +0.0199`). The rule
+adjusted 6 paper trades across 2 windows, did not worsen max drawdown, lives in
+shared `state_surface_sleeve.py`, is surfaced by the production default-off
+paper path, and has focused parity tests; live/default orders remain disabled.
+
+Previous accepted state-surface paper rank-dominance result: `exp-20260518-023`
+keeps core metrics unchanged and keeps the accepted `exp-20260518-020`
+state-surface stack fixed, but adds a production-visible rank-1 ret20 dominance
+plus score-gap paper allocation override. When rank 1 leads rank 2 on
+`ret20_excess_spy` by at least `0.15` and rank 1 leads rank 2 on composite
+score by at least `0.45`, the paper-notional profile is
+`[1.6, 1.4, 1.0, 0.675, 0.35]` times the $10,000 base. Versus the accepted
+`exp-20260518-020` baseline, aggregate paper-overlay EV improved `+0.0098` and
+PnL improved `+$287.87`, with no EV-regressed window (`late_strong +0.0006`,
+`mid_weak +0.0092`, `old_thin unchanged`). The rule adjusted 6 paper trades
+across 2 windows, did not worsen max drawdown, lives in shared
+`state_surface_sleeve.py`, is surfaced by the production default-off paper
+path, and has focused parity tests; live/default orders remain disabled.
+
+Previous accepted state-surface paper sector-cohesion result:
+`exp-20260518-025` keeps the accepted `exp-20260518-023` stack fixed, but adds
+a production-visible top-2 Technology sector-cohesion paper allocation
+override. When the first two ranked queue candidates are both Technology, the
+paper-notional profile is `[1.45, 1.7, 1.15, 0.675, 0.35]` times the $10,000
+base. Versus the accepted `exp-20260518-023` baseline, aggregate paper-overlay
+EV improved `+0.0759` and PnL improved `+$1,593.99`, with no EV-regressed
+window (`late_strong unchanged`, `mid_weak +0.0528`, `old_thin +0.0231`). The
+rule adjusted 6 paper trades across 2 windows, did not worsen max drawdown,
+and kept single-ticker positive-share concentration below the `50%` guardrail
+(`36.55% -> 36.80%`). The rule lives in shared `state_surface_sleeve.py`, is
+surfaced by the production default-off paper path, and has focused parity
+tests; live/default orders remain disabled.
+
+Previous accepted state-surface paper residual-rank result:
+`exp-20260518-027` keeps the accepted `exp-20260518-025` stack fixed, gives the
+top-2 Technology sector-cohesion rule priority, and adds one residual
+production-visible rank-1 60-day return paper allocation field. When rank 1's
+60-day return is at least `0.50` and no higher-priority top-2 Technology rule
+has applied, the paper-notional profile is `[1.2, 1.85, 1.1, 0.675, 0.35]`
+times the $10,000 base. Versus the accepted sector-cohesion baseline,
+aggregate paper-overlay EV improved `+0.1209` and PnL improved `+$1,606.68`,
+with no EV-regressed window (`late_strong +0.0148`, `mid_weak +0.1061`,
+`old_thin unchanged`). The rule adjusted 6 paper trades across 2 windows, did
+not worsen max drawdown, and kept single-ticker positive-share concentration
+below the `50%` guardrail (`36.80% -> 38.01%`). The rule lives in shared
+`state_surface_sleeve.py`, is surfaced by the production default-off paper
+path, and has focused parity tests; live/default orders remain disabled.
+
+Latest accepted state-surface paper score-expansion result:
+`exp-20260519-001` keeps the accepted `exp-20260518-027` stack fixed and adds a
+residual production-visible score-expansion paper allocation field. After all
+higher-priority state-surface profiles have passed, when the same-day qualified
+paper queue has at least four candidates and `score_top3_spread >= 0.40`, the
+shared default-off paper path uses `[1.85, 1.25, 1.0, 0.675, 0.35]` times the
+`$10,000` base. Versus the accepted residual-rank baseline, aggregate
+paper-overlay EV improved `+0.0552` and PnL improved `+$725.33`, with no
+EV-regressed window (`late_strong +0.0408`, `mid_weak +0.0144`, `old_thin`
+unchanged). The rule adjusted 6 paper trades across 2 windows, worsened max
+drawdown by only `0.14pp`, and lowered single-ticker positive-share
+concentration from `38.01%` to `37.43%`. The rule lives in shared
+`state_surface_sleeve.py`, is surfaced by the production default-off paper
+path, and has focused parity tests; live/default orders remain disabled.
 
 Latest accepted default-off SEC paper result: `exp-20260518-014` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
