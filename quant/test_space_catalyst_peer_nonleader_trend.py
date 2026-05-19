@@ -765,7 +765,7 @@ def test_observation_slot_surfaces_dual_catalyst_benchmark_breadth_bucket():
         plan[
             "space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar"
         ]
-        == 1.0125
+        == 1.021875
     )
     assert (
         plan["space_source_diversity_dual_catalyst_benchmark_breadth_profile"]

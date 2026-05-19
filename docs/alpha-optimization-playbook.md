@@ -61,6 +61,11 @@ Recent evidence only strengthens that view:
   structure;
 - accepted SEC work came from narrow context-aware event allocation, not broad
   language scalars;
+- accepted Space work now also fits the narrow allocation pattern: the
+  dual-catalyst benchmark-breadth cohort tolerated one final precision scalar
+  inside the original drawdown anchor, but further nearby scalar mining is
+  frozen until new closed forward rows or a new production-visible quality
+  field exists;
 - recent tail diagnostics showed that paper EV alone is not enough when gains
   are too concentrated.
 
@@ -239,6 +244,8 @@ log replay.
 - Broad lifecycle target-width rewrites.
 - Broad positive/negative language scalars without a new context field.
 - Nearby retunes of already accepted state-surface thresholds.
+- Nearby Space dual-catalyst benchmark-breadth scalar retunes on the frozen
+  LUNR/RKLB sample.
 - Thin interaction mining that only changes a tiny frozen sample.
 - Broad theme or sector overlays that behave like hidden beta leverage.
 

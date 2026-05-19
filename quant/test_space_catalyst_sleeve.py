@@ -611,13 +611,13 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         snapshot["forward_hypothesis"][
             "space_source_diversity_dual_catalyst_benchmark_breadth_trend_experiment_id"
         ]
-        == "exp-20260516-029"
+        == "exp-20260519-027"
     )
     assert (
         snapshot["forward_hypothesis"][
             "space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar"
         ]
-        == 1.0125
+        == 1.021875
     )
     assert (
         snapshot["forward_hypothesis"][
@@ -3108,7 +3108,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_source_diversity_dual_catalyst_same_theme_winner_trend_risk_scalar": 1.0125,
                 "space_source_diversity_dual_catalyst_near_perfect_trend_risk_scalar": 1.0125,
                 "space_source_diversity_dual_catalyst_financing_profile_trend_risk_scalar": 1.0125,
-                "space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar": 1.0125,
+                "space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar": 1.021875,
                 "space_forward_replacement_positive_horizon": "10d",
                 "space_forward_replacement_positive_risk_scalar": 1.05,
                 "space_forward_replacement_same_theme_strength_min_value": 500.0,
@@ -3241,7 +3241,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "source-diversity dual-catalyst same-theme winner trend @ 1.0125x; "
         "source-diversity dual-catalyst near-perfect trend @ 1.0125x; "
         "source-diversity dual-catalyst financing-profile trend @ 1.0125x; "
-        "source-diversity dual-catalyst benchmark-breadth trend @ 1.0125x; "
+        "source-diversity dual-catalyst benchmark-breadth trend @ 1.021875x; "
         "forward replacement-positive 10d @ 1.05x; "
         "forward same-theme replacement-strength >=500.0 @ 1.05x; "
         "forward replacement-strength trend @ 1.05x; "

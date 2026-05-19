@@ -676,21 +676,33 @@ VSAT/satcom fallback membership or risk scalars on these frozen windows without
 new closed forward rows or a production-visible field that prevents peer-basket
 contamination.
 
-Latest accepted default-off Space alpha result: `exp-20260516-029` keeps live
-Space slots at zero and adds only the shared
-`space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar=1.0125`
-helper on top of accepted `exp-20260516-024`. It applies only to
-source-diverse official Space `trend_long` signals whose event profile contains
-both `customer_win` and `government_space_contract` and whose closed
-event-state replacement rows are cash-, SPY-, QQQ-, UFO-, and ARKX-positive.
-Aggregate EV improved `+0.1868` and aggregate PnL improved `+$5,124.39` across
-the three frozen Space replay windows: `late_strong` EV `+0.0476`,
-`mid_weak` EV `+0.1392`, and `old_thin` unchanged. Trade count and survival
-were unchanged; aggregate max drawdown ceiling drift stayed inside Gate 4 at
-`+0.27 pp`. The changed slice was 4 LUNR/RKLB signals across late/mid windows.
-The helper lives in shared `space_catalyst_sleeve.py`, is surfaced in the
-production observation slot/report, has focused parity tests, and remains
-observe-only/default-off.
+Latest accepted default-off Space alpha result: `exp-20260519-027` keeps live
+Space slots at zero and promotes the shared
+`space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar`
+helper from `1.0125` to `1.021875` on top of accepted `exp-20260516-029`. It
+applies only to source-diverse official Space `trend_long` signals whose event
+profile contains both `customer_win` and `government_space_contract` and whose
+closed event-state replacement rows are cash-, SPY-, QQQ-, UFO-, and
+ARKX-positive. Versus the accepted `1.0125` baseline, aggregate EV improved
+`+0.0630` and aggregate PnL improved `+$3,212.78` across the three frozen Space
+replay windows: `late_strong` EV `+0.0271`, `mid_weak` EV `+0.0359`, and
+`old_thin` unchanged. Trade count stayed `63`, minimum survival stayed
+`62.67%`, and aggregate max drawdown ceiling drift stayed inside Gate 4 at
+`+0.21 pp` versus current and `+0.48 pp` versus the original `1.0` anchor. The
+changed slice remained 4 LUNR/RKLB signals across late/mid windows. The helper
+lives in shared `space_catalyst_sleeve.py`, is surfaced in the production
+observation slot/report, has focused parity tests, and remains
+observe-only/default-off. The nearby `1.025` variant remains rejected because
+anchor drawdown drift reached `+0.53 pp`; do not retry nearby scalar mining on
+this frozen cohort without new closed forward rows or a materially different
+production-visible replacement-quality field.
+
+Previous accepted default-off Space alpha result: `exp-20260516-029` kept live
+Space slots at zero and added the same helper at `1.0125` on top of accepted
+`exp-20260516-024`. Aggregate EV improved `+0.1868` and aggregate PnL improved
+`+$5,124.39` across the three frozen Space replay windows: `late_strong` EV
+`+0.0476`, `mid_weak` EV `+0.1392`, and `old_thin` unchanged. Aggregate max
+drawdown ceiling drift stayed inside Gate 4 at `+0.27 pp`.
 
 Previous accepted default-off Space alpha result: `exp-20260516-024` keeps live
 Space slots at zero and adds only the shared

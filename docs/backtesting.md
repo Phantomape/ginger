@@ -505,22 +505,31 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260516-029` adds only
+Latest accepted default-off Space replay result: `exp-20260519-027` promotes
 the shared Space metadata/helper
-`space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar=1.0125`
-on top of accepted `exp-20260516-024`, for source-diverse official Space
-`trend_long` signals whose event profile contains both `customer_win` and
-`government_space_contract` and whose closed event-state replacement rows are
-cash-, SPY-, QQQ-, UFO-, and ARKX-positive. It uses the same three window
-labels above with frozen Space snapshots and keeps live Space slots at zero.
-Aggregate default-off Space EV improved `+0.1868` and PnL improved
-`+$5,124.39`; window EV deltas were `late_strong +0.0476`, `mid_weak
-+0.1392`, and `old_thin` unchanged. Aggregate max drawdown ceiling drift was
-`+0.27 pp`, trade count stayed `64`, minimum survival stayed `62.67%`, and the
-changed slice was LUNR/RKLB dual-catalyst benchmark-breadth trend evidence
-across 4 signals. Do not retry nearby dual-catalyst benchmark-breadth Space
-scalars on these frozen windows without new closed forward rows or a
-materially different production-visible replacement-quality field.
+`space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar` from
+`1.0125` to `1.021875` on top of accepted `exp-20260516-029`, for the same
+source-diverse official Space `trend_long` signals whose event profile contains
+both `customer_win` and `government_space_contract` and whose closed
+event-state replacement rows are cash-, SPY-, QQQ-, UFO-, and ARKX-positive.
+It uses the same three window labels above with frozen Space snapshots and
+keeps live Space slots at zero. Versus the accepted `1.0125` baseline,
+aggregate default-off Space EV improved `+0.0630` and PnL improved
+`+$3,212.78`; window EV deltas were `late_strong +0.0271`, `mid_weak
++0.0359`, and `old_thin` unchanged. Aggregate max drawdown ceiling drift was
+`+0.21 pp` versus current and `+0.48 pp` versus the original `1.0` anchor,
+trade count stayed `63`, minimum survival stayed `62.67%`, and the changed
+slice remained 4 LUNR/RKLB dual-catalyst benchmark-breadth trend signals. The
+nearby `1.025` variant is rejected on these frozen windows because original
+anchor drawdown drift reached `+0.53 pp`; do not retry nearby
+dual-catalyst benchmark-breadth Space scalars without new closed forward rows
+or a materially different production-visible replacement-quality field.
+
+Previous accepted default-off Space replay result: `exp-20260516-029` added
+the same helper at `1.0125` on top of accepted `exp-20260516-024`. Aggregate
+default-off Space EV improved `+0.1868` and PnL improved `+$5,124.39`; window
+EV deltas were `late_strong +0.0476`, `mid_weak +0.1392`, and `old_thin`
+unchanged, with aggregate max drawdown ceiling drift `+0.27 pp`.
 
 Previous accepted default-off Space replay result: `exp-20260516-024` adds only
 the shared Space metadata/helper

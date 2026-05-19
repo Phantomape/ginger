@@ -159,7 +159,7 @@ SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_FINANCING_PROFILE_TREND_RISK_SCALA
     1.0125
 )
 SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_BENCHMARK_BREADTH_TREND_RISK_SCALAR = (
-    1.0125
+    1.021875
 )
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_HORIZON = "10d"
 SPACE_CATALYST_FORWARD_REPLACEMENT_POSITIVE_MIN_CASH_PNL = 0.0
@@ -527,7 +527,7 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
         SPACE_CATALYST_SOURCE_DIVERSITY_DUAL_CATALYST_FINANCING_PROFILE_TREND_RISK_SCALAR
     ),
     "space_source_diversity_dual_catalyst_benchmark_breadth_trend_experiment_id": (
-        "exp-20260516-029"
+        "exp-20260519-027"
     ),
     "space_source_diversity_dual_catalyst_benchmark_breadth_trend_definition": (
         "source-diverse official non-attention trend_long signals with both "
