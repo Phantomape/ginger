@@ -23,14 +23,14 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "CORE_MISFIT_PAPER"
-RULE_VERSION = "core_misfit_negative_signal_v1"
+RULE_VERSION = "core_misfit_negative_signal_v2"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("core_misfit_paper_state")
 DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("core_misfit_paper_snapshots")
 
 DEFAULT_MISFIT_TICKERS = ("TSM", "ISRG", "V", "DDOG")
-DEFAULT_TARGET_STRATEGIES = ("trend_long", "breakout_long")
+DEFAULT_TARGET_STRATEGIES = ("trend_long",)
 DEFAULT_HORIZONS = (1, 3, 5, 10)
 
 DEFAULT_CONFIG = {

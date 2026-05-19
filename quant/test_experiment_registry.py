@@ -93,8 +93,8 @@ def test_create_ticket_auto_generates_per_experiment_write_scope(tmp_path):
     stem = f"{ticket['experiment_id'].replace('-', '_')}_hold_quality_taxonomy"
     assert f"quant/experiments/{stem}.py" in scopes
     assert f"data/experiments/{ticket['experiment_id']}/{stem}.json" in scopes
-    assert f"docs/experiments/tickets/{ticket['experiment_id']}.json" in scopes
-    assert f"docs/experiments/logs/{ticket['experiment_id']}.json" in scopes
+    assert f"experiments/tickets/{ticket['experiment_id']}.json" in scopes
+    assert f"experiments/logs/{ticket['experiment_id']}.json" in scopes
     assert "data/" not in scopes
 
 

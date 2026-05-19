@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from core_misfit_paper_sleeve import (
+    DEFAULT_TARGET_STRATEGIES,
+    RULE_VERSION,
     SLEEVE_NAME,
     build_core_misfit_paper_candidates,
     build_core_misfit_paper_sleeve_snapshot,
@@ -45,6 +47,54 @@ def test_core_misfit_candidates_are_default_off_and_filtered():
     }
     assert all(row["trade_enabled"] is False for row in candidates)
     assert all(row["alters_orders"] is False for row in candidates)
+    assert all(row["rule_version"] == RULE_VERSION for row in candidates)
+
+
+def test_core_misfit_default_scope_is_trend_long_only_but_configurable():
+    assert DEFAULT_TARGET_STRATEGIES == ("trend_long",)
+
+    default_candidates = build_core_misfit_paper_candidates(
+        candidate_signals=[
+            _signal("TSM", strategy="trend_long"),
+            _signal("ISRG", strategy="breakout_long"),
+        ],
+        entry_execution_plan={
+            "slot_sliced_signals": [
+                _signal("V", strategy="trend_long"),
+                _signal("DDOG", strategy="breakout_long"),
+            ]
+        },
+        as_of="2026-05-18",
+    )
+
+    assert {row["ticker"] for row in default_candidates} == {"TSM", "V"}
+    assert {row["strategy"] for row in default_candidates} == {"trend_long"}
+
+    override_candidates = build_core_misfit_paper_candidates(
+        candidate_signals=[
+            _signal("TSM", strategy="trend_long"),
+            _signal("ISRG", strategy="breakout_long"),
+        ],
+        entry_execution_plan={
+            "slot_sliced_signals": [
+                _signal("V", strategy="trend_long"),
+                _signal("DDOG", strategy="breakout_long"),
+            ]
+        },
+        as_of="2026-05-18",
+        config={"target_strategies": ("trend_long", "breakout_long")},
+    )
+
+    assert {row["ticker"] for row in override_candidates} == {
+        "TSM",
+        "ISRG",
+        "V",
+        "DDOG",
+    }
+    assert {row["strategy"] for row in override_candidates} == {
+        "trend_long",
+        "breakout_long",
+    }
 
 
 def test_core_misfit_sleeve_tracks_no_trade_and_inverse_paper_outcomes():
