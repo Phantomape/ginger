@@ -450,6 +450,22 @@ inside the `50%` guardrail. The accepted rule lives in shared
 `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
+Latest accepted state-surface paper rank-depth score-volume refinement:
+`exp-20260519-033` keeps the accepted `exp-20260519-031` absolute-score stack
+fixed and adds one production-visible rank-depth score-volume support scalar.
+When an already-selected state-surface paper candidate has `queue_rank` 2-3,
+`score >= 0.90`, and `features.volume_ratio_20 >= 1.10`, the shared
+default-off paper path multiplies that candidate's active paper notional by
+`1.075` after the absolute-score stack. Versus the accepted absolute-score
+baseline, three-window EV improved `+0.1602` and PnL improved `+$4,363.51`:
+`late_strong +0.0127` EV / `+$267.03`, `mid_weak +0.0850` EV / `+$1,256.67`,
+and `old_thin +0.0625` EV / `+$2,839.81`. Seven paper trades were adjusted
+across all three windows, max drawdown worsened by at most `0.47pp`, and
+single-ticker positive share rose from `42.36%` to `43.67%`, inside the `50%`
+guardrail. The accepted rule lives in shared `state_surface_sleeve.py` with
+focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
+remain disabled.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The

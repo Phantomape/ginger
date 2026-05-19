@@ -743,6 +743,9 @@ production-visible field:
 - nearby state-surface absolute-score support threshold/scalar retries after
   `exp-20260519-031` unless the sample widens or the score field is combined
   with a genuinely new risk/concentration discriminator;
+- nearby state-surface rank-depth score-volume scalar retries after
+  `exp-20260519-033` unless forward outcomes widen the sample or introduce a
+  distinct concentration/risk discriminator;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining without a new state variable;

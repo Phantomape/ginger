@@ -301,6 +301,23 @@ The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
 production default-off paper path, and has focused parity tests; live/default
 orders remain disabled.
 
+Latest accepted state-surface paper rank-depth score-volume support result:
+`exp-20260519-033` keeps the accepted `exp-20260519-031` absolute-score stack
+fixed and adds one production-visible rank-depth score-volume support scalar.
+When an already-selected state-surface paper candidate has `queue_rank` 2-3,
+`score >= 0.90`, and `features.volume_ratio_20 >= 1.10`, the shared
+default-off paper path multiplies that candidate's active paper notional by
+`1.075` after the absolute-score stack. Versus the accepted absolute-score
+baseline, aggregate paper-overlay EV improved `+0.1602` and PnL improved
+`+$4,363.51`, with all three windows EV-positive and no EV-regressed window:
+`late_strong +0.0127`, `mid_weak +0.0850`, and `old_thin +0.0625`. The rule
+adjusted 7 paper trades across all 3 windows, worsened max drawdown by at most
+`0.47pp`, inside the `0.50pp` Gate 4 guardrail, and kept single-ticker
+positive-share concentration inside the `50%` guardrail (`42.36% -> 43.67%`).
+The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
+production default-off paper path, and has focused parity tests; live/default
+orders remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted

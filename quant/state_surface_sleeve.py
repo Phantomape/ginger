@@ -104,6 +104,9 @@ RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION = (
 RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION = (
     "state_surface_absolute_score_support_notional_v1"
 )
+RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION = (
+    "state_surface_rank_depth_score_volume_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -187,6 +190,12 @@ DEFAULT_CONFIG = {
     "rank_notional_absolute_score_support_enabled": True,
     "rank_notional_absolute_score_support_min": 0.90,
     "rank_notional_absolute_score_support_scalar": 1.15,
+    "rank_notional_rank_depth_score_volume_enabled": True,
+    "rank_notional_rank_depth_score_volume_min_queue_rank": 2,
+    "rank_notional_rank_depth_score_volume_max_queue_rank": 3,
+    "rank_notional_rank_depth_score_volume_score_min": 0.90,
+    "rank_notional_rank_depth_score_volume_volume_min": 1.10,
+    "rank_notional_rank_depth_score_volume_scalar": 1.075,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -878,6 +887,76 @@ def _absolute_score_support_settings(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _rank_depth_score_volume_profile_name(
+    min_queue_rank: int,
+    max_queue_rank: int,
+    score_min: float | None,
+    volume_min: float | None,
+    scalar: float | None,
+) -> str:
+    if score_min is None or volume_min is None or scalar is None:
+        return "rank_depth_score_volume_disabled"
+    score_text = str(round(float(score_min), 6)).rstrip("0").rstrip(".")
+    volume_text = str(round(float(volume_min), 6)).rstrip("0").rstrip(".")
+    scalar_text = str(round(float(scalar), 6)).rstrip("0").rstrip(".")
+    return (
+        f"rank{min_queue_rank}_{max_queue_rank}_score_ge_"
+        f"{score_text.replace('.', 'p')}_volume_ge_"
+        f"{volume_text.replace('.', 'p')}_{scalar_text.replace('.', 'p')}x"
+    )
+
+
+def _rank_depth_score_volume_settings(config: dict[str, Any]) -> dict[str, Any]:
+    min_queue_rank = int(
+        _float_or_none(
+            config.get("rank_notional_rank_depth_score_volume_min_queue_rank")
+        )
+        or 2
+    )
+    max_queue_rank = int(
+        _float_or_none(
+            config.get("rank_notional_rank_depth_score_volume_max_queue_rank")
+        )
+        or 3
+    )
+    score_min = _float_or_none(
+        config.get("rank_notional_rank_depth_score_volume_score_min")
+    )
+    volume_min = _float_or_none(
+        config.get("rank_notional_rank_depth_score_volume_volume_min")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_rank_depth_score_volume_scalar")
+    )
+    enabled = bool(
+        config.get("rank_notional_rank_depth_score_volume_enabled", True)
+    )
+    return {
+        "enabled": bool(
+            enabled
+            and min_queue_rank > 0
+            and max_queue_rank >= min_queue_rank
+            and score_min is not None
+            and volume_min is not None
+            and scalar is not None
+            and scalar > 0
+        ),
+        "min_queue_rank": min_queue_rank,
+        "max_queue_rank": max_queue_rank,
+        "score_min": score_min,
+        "volume_min": volume_min,
+        "scalar": scalar,
+        "profile_name": _rank_depth_score_volume_profile_name(
+            min_queue_rank,
+            max_queue_rank,
+            score_min,
+            volume_min,
+            scalar,
+        ),
+        "rule_version": RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION,
+    }
+
+
 def _rank2_near_high_support_settings(config: dict[str, Any]) -> dict[str, Any]:
     threshold = _float_or_none(
         config.get("rank_notional_rank2_near_high_support_min")
@@ -1556,6 +1635,29 @@ def _absolute_score_support_applies(
     )
 
 
+def _rank_depth_score_volume_applies(
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _rank_depth_score_volume_settings(config)
+    row = candidate or {}
+    try:
+        queue_rank = int(row.get("queue_rank"))
+    except (TypeError, ValueError):
+        return False
+    score = _float_or_none(row.get("score"))
+    volume_ratio = _float_or_none((row.get("features") or {}).get("volume_ratio_20"))
+    return bool(
+        settings["enabled"]
+        and queue_rank >= int(settings["min_queue_rank"])
+        and queue_rank <= int(settings["max_queue_rank"])
+        and score is not None
+        and score >= float(settings["score_min"])
+        and volume_ratio is not None
+        and volume_ratio >= float(settings["volume_min"])
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1597,6 +1699,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _absolute_score_support_applies(candidate, config):
         settings = _absolute_score_support_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _rank_depth_score_volume_applies(candidate, config):
+        settings = _rank_depth_score_volume_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -1928,6 +2033,58 @@ def _absolute_score_support_metadata(
     }
 
 
+def _rank_depth_score_volume_metadata(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _rank_depth_score_volume_settings(config)
+    try:
+        queue_rank = int(candidate.get("queue_rank"))
+    except (TypeError, ValueError):
+        queue_rank = None
+    score = _float_or_none(candidate.get("score"))
+    volume_ratio = _float_or_none(
+        (candidate.get("features") or {}).get("volume_ratio_20")
+    )
+    qualified = bool(
+        queue_rank is not None
+        and queue_rank >= int(settings["min_queue_rank"])
+        and queue_rank <= int(settings["max_queue_rank"])
+        and score is not None
+        and score >= float(settings["score_min"])
+        and volume_ratio is not None
+        and volume_ratio >= float(settings["volume_min"])
+    )
+    applied = _rank_depth_score_volume_applies(candidate, config)
+    return {
+        "rank_depth_score_volume_applied": bool(applied),
+        "rank_depth_score_volume_qualified": bool(qualified),
+        "rank_depth_score_volume_profiles_enabled": bool(settings["enabled"]),
+        "rank_depth_score_volume_min_queue_rank": int(settings["min_queue_rank"]),
+        "rank_depth_score_volume_max_queue_rank": int(settings["max_queue_rank"]),
+        "rank_depth_score_volume_queue_rank": queue_rank,
+        "rank_depth_score_volume_score": _round(score, 6),
+        "rank_depth_score_volume_score_min": _round(settings["score_min"], 6),
+        "rank_depth_score_volume_volume_ratio_20": _round(volume_ratio, 6),
+        "rank_depth_score_volume_volume_min": _round(settings["volume_min"], 6),
+        "rank_depth_score_volume_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "rank_depth_score_volume_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "rank_depth_score_volume_base_multiplier": _round(base_multiplier, 6),
+        "rank_depth_score_volume_profile_name": settings["profile_name"],
+        "rank_depth_score_volume_rule_version": settings["rule_version"],
+        "rank_notional_rank_depth_score_volume_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1990,6 +2147,10 @@ def _apply_rank_notional(
     if _queue_lag_support_applies(candidate, config):
         settings = _queue_lag_support_settings(config)
         queue_lag_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    absolute_score_adjusted_base_multiplier = queue_lag_adjusted_base_multiplier
+    if _absolute_score_support_applies(candidate, config):
+        settings = _absolute_score_support_settings(config)
+        absolute_score_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -2072,6 +2233,13 @@ def _apply_rank_notional(
             base_multiplier=queue_lag_adjusted_base_multiplier,
         )
     )
+    candidate.update(
+        _rank_depth_score_volume_metadata(
+            candidate,
+            config,
+            base_multiplier=absolute_score_adjusted_base_multiplier,
+        )
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
     candidate["rank_notional_candidate_breadth_rule_version"] = (
@@ -2130,6 +2298,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_absolute_score_support_rule_version"] = (
         RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION
+    )
+    candidate["rank_notional_rank_depth_score_volume_rule_version"] = (
+        RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -2318,6 +2489,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     sleeve_capacity = _sleeve_capacity_settings(cfg)
     queue_lag_support = _queue_lag_support_settings(cfg)
     absolute_score_support = _absolute_score_support_settings(cfg)
+    rank_depth_score_volume = _rank_depth_score_volume_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -2341,6 +2513,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "sleeve_capacity_rule_version": RANK_NOTIONAL_SLEEVE_CAPACITY_RULE_VERSION,
         "queue_lag_support_rule_version": RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION,
         "absolute_score_support_rule_version": RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION,
+        "rank_depth_score_volume_rule_version": RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -2616,6 +2789,30 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "absolute_score_support_profile_name": absolute_score_support[
+            "profile_name"
+        ],
+        "rank_depth_score_volume_enabled": bool(
+            rank_depth_score_volume["enabled"]
+        ),
+        "rank_depth_score_volume_min_queue_rank": int(
+            rank_depth_score_volume["min_queue_rank"]
+        ),
+        "rank_depth_score_volume_max_queue_rank": int(
+            rank_depth_score_volume["max_queue_rank"]
+        ),
+        "rank_depth_score_volume_score_min": _round(
+            rank_depth_score_volume["score_min"],
+            6,
+        ),
+        "rank_depth_score_volume_volume_min": _round(
+            rank_depth_score_volume["volume_min"],
+            6,
+        ),
+        "rank_depth_score_volume_scalar": _round(
+            rank_depth_score_volume["scalar"],
+            6,
+        ),
+        "rank_depth_score_volume_profile_name": rank_depth_score_volume[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -3582,6 +3779,54 @@ def _fill_pending_entries(
             "absolute_score_support_rule_version": entry.get(
                 "absolute_score_support_rule_version"
             ),
+            "rank_notional_rank_depth_score_volume_rule_version": entry.get(
+                "rank_notional_rank_depth_score_volume_rule_version"
+            ),
+            "rank_depth_score_volume_applied": bool(
+                entry.get("rank_depth_score_volume_applied")
+            ),
+            "rank_depth_score_volume_qualified": bool(
+                entry.get("rank_depth_score_volume_qualified")
+            ),
+            "rank_depth_score_volume_profiles_enabled": bool(
+                entry.get("rank_depth_score_volume_profiles_enabled")
+            ),
+            "rank_depth_score_volume_min_queue_rank": entry.get(
+                "rank_depth_score_volume_min_queue_rank"
+            ),
+            "rank_depth_score_volume_max_queue_rank": entry.get(
+                "rank_depth_score_volume_max_queue_rank"
+            ),
+            "rank_depth_score_volume_queue_rank": entry.get(
+                "rank_depth_score_volume_queue_rank"
+            ),
+            "rank_depth_score_volume_score": entry.get(
+                "rank_depth_score_volume_score"
+            ),
+            "rank_depth_score_volume_score_min": entry.get(
+                "rank_depth_score_volume_score_min"
+            ),
+            "rank_depth_score_volume_volume_ratio_20": entry.get(
+                "rank_depth_score_volume_volume_ratio_20"
+            ),
+            "rank_depth_score_volume_volume_min": entry.get(
+                "rank_depth_score_volume_volume_min"
+            ),
+            "rank_depth_score_volume_configured_scalar": entry.get(
+                "rank_depth_score_volume_configured_scalar"
+            ),
+            "rank_depth_score_volume_scalar": entry.get(
+                "rank_depth_score_volume_scalar"
+            ),
+            "rank_depth_score_volume_base_multiplier": entry.get(
+                "rank_depth_score_volume_base_multiplier"
+            ),
+            "rank_depth_score_volume_profile_name": entry.get(
+                "rank_depth_score_volume_profile_name"
+            ),
+            "rank_depth_score_volume_rule_version": entry.get(
+                "rank_depth_score_volume_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -4019,6 +4264,54 @@ def _add_queue_candidates(
             ),
             "absolute_score_support_rule_version": candidate.get(
                 "absolute_score_support_rule_version"
+            ),
+            "rank_notional_rank_depth_score_volume_rule_version": candidate.get(
+                "rank_notional_rank_depth_score_volume_rule_version"
+            ),
+            "rank_depth_score_volume_applied": bool(
+                candidate.get("rank_depth_score_volume_applied")
+            ),
+            "rank_depth_score_volume_qualified": bool(
+                candidate.get("rank_depth_score_volume_qualified")
+            ),
+            "rank_depth_score_volume_profiles_enabled": bool(
+                candidate.get("rank_depth_score_volume_profiles_enabled")
+            ),
+            "rank_depth_score_volume_min_queue_rank": candidate.get(
+                "rank_depth_score_volume_min_queue_rank"
+            ),
+            "rank_depth_score_volume_max_queue_rank": candidate.get(
+                "rank_depth_score_volume_max_queue_rank"
+            ),
+            "rank_depth_score_volume_queue_rank": candidate.get(
+                "rank_depth_score_volume_queue_rank"
+            ),
+            "rank_depth_score_volume_score": candidate.get(
+                "rank_depth_score_volume_score"
+            ),
+            "rank_depth_score_volume_score_min": candidate.get(
+                "rank_depth_score_volume_score_min"
+            ),
+            "rank_depth_score_volume_volume_ratio_20": candidate.get(
+                "rank_depth_score_volume_volume_ratio_20"
+            ),
+            "rank_depth_score_volume_volume_min": candidate.get(
+                "rank_depth_score_volume_volume_min"
+            ),
+            "rank_depth_score_volume_configured_scalar": candidate.get(
+                "rank_depth_score_volume_configured_scalar"
+            ),
+            "rank_depth_score_volume_scalar": candidate.get(
+                "rank_depth_score_volume_scalar"
+            ),
+            "rank_depth_score_volume_base_multiplier": candidate.get(
+                "rank_depth_score_volume_base_multiplier"
+            ),
+            "rank_depth_score_volume_profile_name": candidate.get(
+                "rank_depth_score_volume_profile_name"
+            ),
+            "rank_depth_score_volume_rule_version": candidate.get(
+                "rank_depth_score_volume_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

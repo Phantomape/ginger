@@ -16,8 +16,13 @@ SLEEVE_CAPACITY_DISABLED = {
     "rank_notional_sleeve_capacity_enabled": False,
 }
 
+RANK_DEPTH_SCORE_VOLUME_DISABLED = {
+    "rank_notional_rank_depth_score_volume_enabled": False,
+}
+
 ABSOLUTE_SCORE_SUPPORT_DISABLED = {
     "rank_notional_absolute_score_support_enabled": False,
+    **RANK_DEPTH_SCORE_VOLUME_DISABLED,
 }
 
 BROAD_BREADTH_DISABLED = {
@@ -224,6 +229,15 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
         queue["rank_notional_profile"]["absolute_score_support_profile_name"]
         == "absolute_score_ge_0p9_1p15x"
     )
+    assert queue["rank_notional_profile"]["rank_depth_score_volume_enabled"] is True
+    assert queue["rank_notional_profile"]["rank_depth_score_volume_min_queue_rank"] == 2
+    assert queue["rank_notional_profile"]["rank_depth_score_volume_max_queue_rank"] == 3
+    assert queue["rank_notional_profile"]["rank_depth_score_volume_score_min"] == 0.9
+    assert queue["rank_notional_profile"]["rank_depth_score_volume_volume_min"] == 1.1
+    assert queue["rank_notional_profile"]["rank_depth_score_volume_scalar"] == 1.075
+    assert [
+        row["rank_depth_score_volume_applied"] for row in queue["candidates"]
+    ] == [False, False, False, False, False]
     assert [
         row["top3_ret5_followthrough_applied"] for row in queue["candidates"]
     ] == [True, True, True, False, False]
@@ -302,6 +316,78 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert {row["surface"] for row in queue["candidates"]} == {"rotation_breakout_leadership"}
     assert all(row["ret20_excess_spy_gate"]["allowed"] is True for row in queue["candidates"])
     assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_rank_depth_score_volume_persists_to_paper_ledger():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+        config={
+            "rank_notional_rank_depth_score_volume_score_min": 0.0,
+            "rank_notional_rank_depth_score_volume_volume_min": 0.0,
+        },
+    )
+
+    assert [
+        row["rank_depth_score_volume_applied"] for row in queue["candidates"]
+    ] == [False, True, True, False, False]
+    assert [
+        row["rank_depth_score_volume_scalar"] for row in queue["candidates"]
+    ] == [None, 1.075, 1.075, None, None]
+    assert [
+        row["rank_notional_multiplier"] for row in queue["candidates"]
+    ] == [
+        3.868726,
+        3.665288,
+        2.93223,
+        0.981956,
+        0.509162,
+    ]
+    assert [
+        row["event_notional_usd"] for row in queue["candidates"]
+    ] == [
+        38687.26,
+        36652.88,
+        29322.3,
+        9819.56,
+        5091.62,
+    ]
+
+    state = empty_state_surface_sleeve_state()
+    first = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    pending = [
+        row for row in first["pending_entries"]
+        if row["rank_depth_score_volume_applied"]
+    ]
+    assert [row["queue_rank"] for row in pending] == [2, 3]
+    assert [row["event_notional_usd"] for row in pending] == [36652.88, 29322.3]
+    assert all(row["candidate"]["rank_depth_score_volume_applied"] for row in pending)
+
+    next_state = empty_state_surface_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
+    second = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        state=next_state,
+        open_prices=prices,
+        current_prices=prices,
+        persist=False,
+    )
+    positions = [
+        row for row in second["open_positions"]
+        if row["rank_depth_score_volume_applied"]
+    ]
+    assert [row["rank_depth_score_volume_queue_rank"] for row in positions] == [2, 3]
+    assert [row["notional"] for row in positions] == [36652.88, 29322.3]
+    assert second["trade_enabled"] is False
+    assert second["production_impact"]["alters_orders"] is False
 
 
 def test_state_surface_rank3_near_high_support_persists_to_paper_ledger():
