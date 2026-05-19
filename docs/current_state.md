@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-18.
+Last updated: 2026-05-19.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -343,7 +343,7 @@ only `0.25pp`, and single-ticker positive share fell from `40.70%` to
 focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
 remain disabled.
 
-Latest accepted state-surface paper rank-depth refinement:
+Previous accepted state-surface paper rank-depth refinement:
 `exp-20260519-004` keeps the accepted `exp-20260519-003` stack fixed and adds
 one production-visible rank-3 near-high support scalar. When the third ranked
 same-day qualified state-surface candidate has `near_high_60 >= 0.98`, the
@@ -356,6 +356,23 @@ adjusted across all three windows, max drawdown did not worsen, and
 single-ticker positive share fell from `39.68%` to `38.43%`. The accepted rule
 lives in shared `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
+
+Latest accepted state-surface paper rank-depth refinement:
+`exp-20260519-006` keeps the accepted `exp-20260519-004` rank-3 near-high
+stack fixed and adds one production-visible rank-2 near-high support scalar.
+When the second ranked same-day qualified state-surface candidate has its own
+`features.near_high_60 >= 0.975`, the shared default-off paper path multiplies
+only rank 2's active profile notional by `1.50`. Versus the accepted rank-3
+near-high baseline, three-window EV improved `+0.3390` and PnL improved
+`+$8,382.06`: `late_strong` improved `+0.0741` EV / `+$1,319.55`,
+`mid_weak` improved `+0.1265` EV / `+$1,939.52`, and `old_thin` improved
+`+0.1384` EV / `+$5,122.99`. Five paper trades were adjusted across all three
+windows, max drawdown worsened by only `0.02pp`, and single-ticker positive
+share rose from `38.43%` to `43.75%`, still inside the `50%` guardrail. The
+accepted rule lives in shared `state_surface_sleeve.py` with focused parity
+coverage in `test_state_surface_sleeve.py`; live/default orders remain
+disabled. The broader `exp-20260519-005` front-rank near-high scout remains
+rejected because `mid_weak` EV regressed and drawdown drift exceeded Gate 4.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger

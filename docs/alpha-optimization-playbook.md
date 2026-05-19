@@ -276,6 +276,17 @@ Default rule:
   (`39.68% -> 38.43%`). Treat this as a rank-depth quality field; do not mine
   adjacent near-high thresholds/scalars on the frozen sample without forward
   evidence or a distinct queue-depth variable.
+- `exp-20260519-006` accepted a default-off rank-2 near-high support notional
+  field (`+0.3390` aggregate EV, `+$8,382.06` PnL), with all 3 windows
+  improved, only `0.02pp` max drawdown drift, and 5 adjusted paper trades
+  across all windows. It applies only when the second ranked same-day
+  state-surface candidate has its own `features.near_high_60 >= 0.975`, then
+  scales only rank 2 by `1.50` after the active profile multiplier.
+  Concentration rose (`38.43% -> 43.75%`) but stayed under the `50%`
+  guardrail. The broader `exp-20260519-005` front-rank version failed because
+  `mid_weak` regressed and drawdown drift exceeded Gate 4. Treat rank-2
+  near-high as a narrow queue-depth quality field, not permission to keep
+  mining front-rank near-high thresholds/scalars on the frozen sample.
 
 ## What The Recent Logs Mean
 
@@ -764,6 +775,8 @@ production-visible field:
 - nearby state-surface residual rank-1 score-isolation threshold/profile
   retunes on the frozen sample;
 - nearby state-surface rank-3 near-high support threshold/scalar retunes on
+  the frozen sample;
+- nearby state-surface rank-2 near-high support threshold/scalar retunes on
   the frozen sample;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
