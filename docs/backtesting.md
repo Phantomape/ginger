@@ -256,7 +256,7 @@ The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
 production default-off paper path, and has focused parity tests; live/default
 orders remain disabled.
 
-Latest accepted state-surface paper sleeve-capacity result:
+Previous accepted state-surface paper sleeve-capacity result:
 `exp-20260519-027` keeps the accepted `exp-20260519-026` rank/queue alignment
 stack fixed and adds one production-visible default-off paper capacity scalar.
 All already selected state-surface paper candidates receive `1.15x` notional
@@ -269,6 +269,21 @@ the `0.50pp` Gate 4 guardrail, and kept single-ticker positive-share
 concentration inside the `50%` guardrail (`41.74% -> 41.74%`). The rule lives
 in shared `state_surface_sleeve.py`, is surfaced by the production default-off
 paper path, and has focused parity tests; live/default orders remain disabled.
+
+Latest accepted state-surface paper queue-lag support result:
+`exp-20260519-028` keeps the accepted `exp-20260519-027` sleeve-capacity stack
+fixed and adds one production-visible selected-trade displacement support
+scalar. When an already-selected state-surface paper candidate has
+`rank > queue_rank`, the shared default-off paper path multiplies that
+candidate's active paper notional by `1.25`. Versus the accepted
+sleeve-capacity baseline, aggregate paper-overlay EV improved `+0.3875` and
+PnL improved `+$6,716.53`, with no EV-regressed window: `late_strong +0.1699`,
+`mid_weak +0.2176`, and `old_thin unchanged`. The rule adjusted 10 paper
+trades across 2 windows, did not worsen max drawdown, and kept single-ticker
+positive-share concentration inside the `50%` guardrail (`41.74% -> 41.03%`).
+The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
+production default-off paper path, and has focused parity tests; live/default
+orders remain disabled.
 
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,

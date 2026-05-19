@@ -228,9 +228,9 @@ log replay.
   state-qualified candidates rather than new filters or new entry logic.
 - State-surface alpha is real when it uses orthogonal queue-quality fields.
   The most durable recent gains came from paper notional changes keyed off
-  residual queue structure, rank-depth quality, near-high support, volume
-  confirmation, and capped top-3 positive ret5 follow-through, not from broad
-  queue or regime retuning.
+  residual queue structure, rank-depth quality, queue-lag displacement,
+  near-high support, volume confirmation, and capped top-3 positive ret5
+  follow-through, not from broad queue or regime retuning.
 - SEC alpha is real when event text is used narrowly and contextually. The
   accepted branch is not "positive text is good"; it is "specific covered
   filing subsets with favorable market context deserve more paper capital."
@@ -737,6 +737,9 @@ production-visible field:
   field is already accepted;
 - nearby top-3 ret5 follow-through scalar or floor retries on the frozen
   state-surface sample after `exp-20260519-023`;
+- nearby state-surface queue-lag support scalar retries after
+  `exp-20260519-028` unless the sample widens or a distinct displacement/risk
+  field is added;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining without a new state variable;

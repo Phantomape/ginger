@@ -785,6 +785,71 @@ def test_state_surface_sleeve_capacity_persists_to_paper_ledger():
     assert second["production_impact"]["alters_orders"] is False
 
 
+def test_state_surface_queue_lag_support_persists_to_paper_ledger():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
+        universe=["AAA", "BBB", "CCC"],
+        core_signals=[{"ticker": "AAA"}],
+        config={
+            "max_candidates": 1,
+            "rank_notional_top3_ret5_followthrough_enabled": False,
+            "rank_notional_broad_breadth_support_enabled": False,
+            "rank_notional_rank_queue_alignment_enabled": False,
+        },
+    )
+
+    candidate = queue["candidates"][0]
+    assert candidate["ticker"] == "BBB"
+    assert candidate["rank"] == 2
+    assert candidate["queue_rank"] == 1
+    assert candidate["queue_lag_support_applied"] is True
+    assert candidate["queue_lag_support_qualified"] is True
+    assert candidate["queue_lag_support_scalar"] == 1.25
+    assert candidate["queue_lag_support_delta"] == 1
+    assert candidate["queue_lag_support_base_multiplier"] == 1.86875
+    assert candidate["rank_notional_multiplier"] == 2.335938
+    assert candidate["event_notional_usd"] == 23359.38
+    assert queue["rank_notional_profile"]["queue_lag_support_enabled"] is True
+    assert queue["rank_notional_profile"]["queue_lag_support_scalar"] == 1.25
+    assert (
+        queue["rank_notional_profile"]["queue_lag_support_profile_name"]
+        == "queue_lag_support_1p25x"
+    )
+
+    state = empty_state_surface_sleeve_state()
+    first = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    pending = first["pending_entries"][0]
+    assert pending["queue_lag_support_applied"] is True
+    assert pending["queue_lag_support_scalar"] == 1.25
+    assert pending["event_notional_usd"] == 23359.38
+    assert pending["candidate"]["queue_lag_support_applied"] is True
+
+    next_state = empty_state_surface_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    ticker = pending["ticker"]
+    second = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        state=next_state,
+        open_prices={ticker: 100.0},
+        current_prices={ticker: 100.0},
+        persist=False,
+    )
+    position = second["open_positions"][0]
+    assert position["queue_lag_support_applied"] is True
+    assert position["queue_lag_support_scalar"] == 1.25
+    assert position["rank_notional_multiplier"] == 2.335938
+    assert position["notional"] == 23359.38
+    assert second["trade_enabled"] is False
+    assert second["production_impact"]["alters_orders"] is False
+
+
 def test_state_surface_queue_can_disable_regime_rank_notional_profile():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
