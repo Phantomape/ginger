@@ -318,6 +318,22 @@ The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
 production default-off paper path, and has focused parity tests; live/default
 orders remain disabled.
 
+Latest accepted broad-market candidate-pool paper result:
+`exp-20260519-036` keeps core metrics unchanged and promotes the fixed
+`exp-20260519-035` `price_floor_40` broad-market leadership candidate
+definition into a shared default-off paper adapter. Historical replay uses the
+same shared `broad_market_paper_sleeve.py` feature/filter logic that production
+now calls from `run.py`; live/default orders remain disabled. Versus the
+accepted stack, aggregate paper-overlay EV improved `+0.7208` and PnL improved
+`+$18,639.46`, with all three canonical windows EV-positive and no EV/PnL
+regression: `late_strong +0.0121` EV / `+$4,795.64`, `mid_weak +0.6659` EV /
+`+$11,047.61`, and `old_thin +0.0428` EV / `+$2,796.21`. The sleeve selected
+90 paper trades across all three windows, max drawdown drift was `+0.23pp`,
+single-ticker positive share was `11.16%`, top-five positive share was
+`39.42%`, and shared-adapter parity versus the parent scout matched EV, PnL,
+and trade count exactly. Treat this as paper candidate-pool alpha, not core
+universe expansion.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted

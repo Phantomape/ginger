@@ -192,6 +192,11 @@ def main():
         build_core_misfit_paper_sleeve_snapshot,
         empty_core_misfit_paper_sleeve_snapshot,
     )
+    from broad_market_paper_sleeve import (
+        build_broad_market_paper_sleeve_snapshot,
+        empty_broad_market_paper_sleeve_snapshot,
+        load_broad_market_candidate_universe,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_observation_slot,
@@ -1484,6 +1489,60 @@ def main():
         )
 
     try:
+        broad_market_candidate_universe = load_broad_market_candidate_universe()
+        broad_market_ohlcv = {}
+        broad_market_tickers = set(broad_market_candidate_universe.get("tickers") or [])
+        if broad_market_tickers:
+            for ticker in sorted(broad_market_tickers | {"SPY"}):
+                if ticker in ohlcv_dict:
+                    broad_market_ohlcv[ticker] = ohlcv_dict[ticker]
+                    continue
+                if ticker == "SPY" and spy_ohlcv is not None:
+                    broad_market_ohlcv[ticker] = spy_ohlcv
+                    continue
+                try:
+                    broad_market_ohlcv[ticker] = _cached_ohlcv(ticker)
+                except Exception as ticker_error:
+                    log.warning(
+                        "Broad-market paper OHLCV unavailable for %s: %s",
+                        ticker,
+                        ticker_error,
+                    )
+        broad_market_tradeable_universe = (
+            set(universe)
+            | set(pilot_universe)
+            | set((universe_governance_state or {}).get("governance_tradeable_universe") or [])
+        )
+        broad_market_paper_sleeve = build_broad_market_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=broad_market_ohlcv,
+            current_tradeable_universe=broad_market_tradeable_universe,
+            candidate_universe=broad_market_candidate_universe,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            broad_market_paper_sleeve.get("candidate_count", 0) > 0
+            or broad_market_paper_sleeve.get("pending_count", 0) > 0
+            or broad_market_paper_sleeve.get("open_position_count", 0) > 0
+            or broad_market_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Broad-market paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                broad_market_paper_sleeve.get("candidate_count", 0),
+                broad_market_paper_sleeve.get("pending_count", 0),
+                broad_market_paper_sleeve.get("open_position_count", 0),
+                broad_market_paper_sleeve.get("closed_count_today", 0),
+                broad_market_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Broad-market paper sleeve unavailable: {e}")
+        broad_market_paper_sleeve = empty_broad_market_paper_sleeve_snapshot(
+            today_iso,
+            "broad_market_paper_sleeve_build_failed",
+        )
+
+    try:
         crypto_sleeve = build_crypto_sleeve_advice(load_crypto_config())
         if crypto_sleeve.get("enabled"):
             crypto_action = crypto_sleeve.get("action", {}).get("action")
@@ -1530,6 +1589,7 @@ def main():
     trend_signals_dict["state_surface_sleeve"] = state_surface_sleeve
     trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
     trend_signals_dict["core_misfit_paper_sleeve"] = core_misfit_paper_sleeve
+    trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -1566,6 +1626,7 @@ def main():
         state_surface_sleeve = state_surface_sleeve,
         low_deployment_etf_overlay = low_deployment_etf_overlay,
         core_misfit_paper_sleeve = core_misfit_paper_sleeve,
+        broad_market_paper_sleeve = broad_market_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -1608,6 +1669,7 @@ def main():
         "state_surface_sleeve": state_surface_sleeve,
         "low_deployment_etf_overlay": low_deployment_etf_overlay,
         "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
+        "broad_market_paper_sleeve": broad_market_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,

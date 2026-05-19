@@ -466,6 +466,22 @@ guardrail. The accepted rule lives in shared `state_surface_sleeve.py` with
 focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
 remain disabled.
 
+Latest accepted broad-market candidate-pool paper sleeve:
+`exp-20260519-036` promotes the promising `exp-20260519-035` `price_floor_40`
+all-market leadership scout into a shared, production-visible default-off paper
+adapter. The single changed variable is adapter visibility for the fixed
+candidate definition; the core universe, core entries, ranking, sizing, exits,
+LLM/news, and live/default orders remain unchanged. Versus the accepted stack,
+three-window paper overlay EV improved `+0.7208` and PnL improved
+`+$18,639.46`: `late_strong +0.0121` EV / `+$4,795.64`, `mid_weak +0.6659`
+EV / `+$11,047.61`, and `old_thin +0.0428` EV / `+$2,796.21`. The sleeve
+selected 90 paper trades across all three windows, worsened max drawdown by at
+most `0.23pp`, kept single-ticker positive share at `11.16%`, and passed
+shared-adapter parity with the parent scout exactly. The accepted rule lives in
+shared `broad_market_paper_sleeve.py`, is surfaced by `run.py` and
+`report_generator.py`, and has focused parity tests; forward promotion still
+requires a candidate feed and closed replacement-value outcomes.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The

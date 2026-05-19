@@ -49,6 +49,18 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/core_misfit/state.json",
         "core_misfit_paper_state.json",
     ),
+    "broad_market_paper_snapshots": (
+        "paper_sleeves/broad_market/snapshots.jsonl",
+        "broad_market_paper_snapshots.jsonl",
+    ),
+    "broad_market_paper_state": (
+        "paper_sleeves/broad_market/state.json",
+        "broad_market_paper_state.json",
+    ),
+    "broad_market_paper_universe": (
+        "state/broad_market_paper/universe.json",
+        "broad_market_paper_universe.json",
+    ),
     "sec_10k_liquidity_forward_watch": (
         "paper_sleeves/sec_10k_liquidity/forward_watch.jsonl",
         "sec_10k_liquidity_forward_watch.jsonl",

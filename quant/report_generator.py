@@ -56,6 +56,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            state_surface_sleeve=None,
                            low_deployment_etf_overlay=None,
                            core_misfit_paper_sleeve=None,
+                           broad_market_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -91,6 +92,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         state_surface_sleeve (dict):    Default-off state-surface satellite paper sleeve
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
         core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
+        broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -1652,6 +1654,62 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"{candidate.get('strategy', '?')} "
                 f"{candidate.get('source_kind', 'core_signal')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if broad_market_paper_sleeve and (
+        broad_market_paper_sleeve.get("candidate_count", 0) > 0
+        or broad_market_paper_sleeve.get("pending_count", 0) > 0
+        or broad_market_paper_sleeve.get("open_position_count", 0) > 0
+        or broad_market_paper_sleeve.get("closed_count_today", 0) > 0
+        or broad_market_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("BROAD-MARKET LEADERSHIP PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {broad_market_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {broad_market_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if broad_market_paper_sleeve.get("error"):
+            lines.append(f"  Source status: {broad_market_paper_sleeve.get('error')}")
+        source = broad_market_paper_sleeve.get("data_source") or {}
+        lines.append(
+            f"  Source: {source.get('status', 'unknown')}  |  "
+            f"Tickers: {source.get('ticker_count', 0)}"
+        )
+        lines.append(
+            f"  Candidates: {broad_market_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {broad_market_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {broad_market_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {broad_market_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${broad_market_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${broad_market_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = broad_market_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (broad_market_paper_sleeve.get("candidates") or [])[:5]:
+            features = candidate.get("features") or {}
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={features.get('score')} "
+                f"ret20_spy={features.get('ret20_excess_spy')} "
                 f"notional={notional_text} (paper only)"
             )
 

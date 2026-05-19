@@ -66,6 +66,10 @@ Recent evidence only strengthens that view:
   inside the original drawdown anchor, but further nearby scalar mining is
   frozen until new closed forward rows or a new production-visible quality
   field exists;
+- broad-market discovery is now useful only when treated as a default-off
+  paper candidate-pool problem: the price-floor leadership cohort passed the
+  three-window gate after moving into a shared adapter, but it still needs
+  forward replacement-value evidence before any core expansion;
 - recent tail diagnostics showed that paper EV alone is not enough when gains
   are too concentrated.
 
@@ -427,9 +431,18 @@ Why it matters:
 
 Preferred work:
 
-- PIT universe construction;
-- default-off broad-universe queue;
-- feature attribution explaining why candidates beat current core competitors.
+- maintain the shared default-off `BROAD_MARKET_LEADERSHIP_PAPER` queue;
+- build a production candidate feed that preserves the accepted price, trend,
+  near-high, volume, and core-exclusion semantics;
+- collect closed forward paper outcomes and replacement-value attribution
+  before considering any trade-enabled adapter.
+
+Do not do:
+
+- nearby price-floor, ret20, ret60, near-high, or volume threshold retunes on
+  the same frozen broad-market sample;
+- direct core universe expansion from the broad-market scout without forward
+  paper replacement-value evidence.
 
 ### 6. Buyback Credibility Sleeve v2
 
@@ -746,6 +759,9 @@ production-visible field:
 - nearby state-surface rank-depth score-volume scalar retries after
   `exp-20260519-033` unless forward outcomes widen the sample or introduce a
   distinct concentration/risk discriminator;
+- nearby broad-market leadership price-floor/profile retunes after
+  `exp-20260519-036`; next evidence must be forward paper replacement value or
+  a genuinely new production-visible field;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining without a new state variable;
