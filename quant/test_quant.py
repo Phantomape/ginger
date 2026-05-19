@@ -1964,7 +1964,7 @@ def test_prompt_exit_rule_4_uses_profit_ladder():
     """Exit rules are now code-determined. Prompt must NOT contain exit rule details."""
     import os
     path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+        os.path.dirname(__file__), "..", "instructions", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
@@ -2091,7 +2091,7 @@ def test_prompt_tqs_threshold_is_0_75():
     """
     import os
     path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+        os.path.dirname(__file__), "..", "instructions", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
@@ -2108,7 +2108,7 @@ def test_prompt_no_anti_trade_bias():
     """The prompt must not contain the 'NO NEW TRADE is optimal' statement."""
     import os
     path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+        os.path.dirname(__file__), "..", "instructions", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
@@ -2137,7 +2137,7 @@ def test_prompt_no_second_trade():
     """
     import os
     path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+        os.path.dirname(__file__), "..", "instructions", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
@@ -3388,7 +3388,7 @@ def test_prompt_legacy_basis_excludes_profit_ladder():
     """
     import os
     path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+        os.path.dirname(__file__), "..", "instructions", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()
@@ -5327,8 +5327,8 @@ def test_registry_fields_referenced_in_prompt():
     import os
 
     prompt_paths = [
-        os.path.join(os.path.dirname(__file__), '..', 'instructinos', 'prompts', 'trade_advice.txt'),
-        'instructinos/prompts/trade_advice.txt',
+        os.path.join(os.path.dirname(__file__), '..', 'instructions', 'prompts', 'trade_advice.txt'),
+        'instructions/prompts/trade_advice.txt',
     ]
     prompt_text = None
     for p in prompt_paths:
@@ -7024,7 +7024,7 @@ def test_prompt_disaster_detector_framing_present():
     """
     import os
     path = os.path.join(
-        os.path.dirname(__file__), "..", "instructinos", "prompts", "trade_advice.txt"
+        os.path.dirname(__file__), "..", "instructions", "prompts", "trade_advice.txt"
     )
     with open(path, encoding="utf-8") as f:
         content = f.read()

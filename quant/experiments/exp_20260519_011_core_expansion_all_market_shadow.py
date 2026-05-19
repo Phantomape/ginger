@@ -38,13 +38,12 @@ CORE_BASELINE_EXPERIMENT_ID = "exp-20260517-009"
 
 OUT_DIR = base.REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 OUT_JSON = OUT_DIR / f"{STEM}.json"
-DOC_LOG = base.REPO_ROOT / "docs" / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
+DOC_LOG = base.REPO_ROOT / "experiments" / "logs" / f"{EXPERIMENT_ID}.json"
 DOC_TICKET = (
-    base.REPO_ROOT / "docs" / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
+    base.REPO_ROOT / "experiments" / "tickets" / f"{EXPERIMENT_ID}.json"
 )
 DOC_ARTIFACT = (
     base.REPO_ROOT
-    / "docs"
     / "experiments"
     / "artifacts"
     / f"{EXPERIMENT_ID}_core_expansion_all_market_shadow.md"
@@ -683,6 +682,7 @@ def _markdown(payload: dict[str, Any]) -> str:
             f"- Canonical all-window non-core governed equities: `{len(coverage['canonical_registry_noncore_all_window_covered'])}`.",
             f"- Augmented all-window non-core governed equities tested: `{len(coverage['augmented_registry_noncore_all_window_covered'])}`.",
             f"- Missing current observation-universe history: `{len(coverage['augmented_registry_noncore_missing_history'])}`.",
+            f"- Gate 1 accepted-baseline alignment: `{payload['gate1']['passed']}`.",
             "",
             "## Variant Scout",
             "",

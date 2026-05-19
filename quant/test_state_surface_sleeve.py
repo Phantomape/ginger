@@ -14,6 +14,11 @@ from state_surface_sleeve import (
 
 BROAD_BREADTH_DISABLED = {
     "rank_notional_broad_breadth_support_enabled": False,
+    "rank_notional_rank_queue_alignment_enabled": False,
+}
+
+RANK_QUEUE_ALIGNMENT_DISABLED = {
+    "rank_notional_rank_queue_alignment_enabled": False,
 }
 
 
@@ -164,18 +169,18 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
     assert queue["market_regime"]["regime"] == "chop"
     assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
-        2.54375,
-        2.578125,
-        2.0625,
-        0.7425,
-        0.385,
+        2.925312,
+        2.964844,
+        2.371875,
+        0.853875,
+        0.44275,
     ]
     assert [row["event_notional_usd"] for row in queue["candidates"]] == [
-        25437.5,
-        25781.25,
-        20625.0,
-        7425.0,
-        3850.0,
+        29253.12,
+        29648.44,
+        23718.75,
+        8538.75,
+        4427.5,
     ]
     assert {
         row["rank_notional_profile_name"] for row in queue["candidates"]
@@ -207,6 +212,24 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [
         row["broad_breadth_support_applied"] for row in queue["candidates"]
     ] == [True, True, True, True, True]
+    assert [
+        row["rank_queue_alignment_applied"] for row in queue["candidates"]
+    ] == [True, True, True, True, True]
+    assert [
+        row["rank_queue_alignment_base_multiplier"] for row in queue["candidates"]
+    ] == [
+        2.54375,
+        2.578125,
+        2.0625,
+        0.7425,
+        0.385,
+    ]
+    assert queue["rank_notional_profile"]["rank_queue_alignment_enabled"] is True
+    assert queue["rank_notional_profile"]["rank_queue_alignment_scalar"] == 1.15
+    assert (
+        queue["rank_notional_profile"]["rank_queue_alignment_profile_name"]
+        == "rank_eq_queue_1p15x"
+    )
     assert queue["rank_notional_profile"]["rank_event_notional_usd"] == [
         15000.0,
         12500.0,
@@ -499,8 +522,11 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert rank1["broad_breadth_support_applied"] is True
     assert rank1["broad_breadth_support_scalar"] == 1.1
     assert rank1["broad_breadth_support_base_multiplier"] == 2.3125
-    assert rank1["rank_notional_multiplier"] == 2.54375
-    assert rank1["event_notional_usd"] == 25437.5
+    assert rank1["rank_queue_alignment_applied"] is True
+    assert rank1["rank_queue_alignment_scalar"] == 1.15
+    assert rank1["rank_queue_alignment_base_multiplier"] == 2.54375
+    assert rank1["rank_notional_multiplier"] == 2.925312
+    assert rank1["event_notional_usd"] == 29253.12
     assert [
         row["top3_ret5_followthrough_applied"] for row in queue["candidates"]
     ] == [True, True, True, False, False]
@@ -517,9 +543,12 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert pending["top3_ret5_followthrough_scalar"] == 1.25
     assert pending["broad_breadth_support_applied"] is True
     assert pending["broad_breadth_support_scalar"] == 1.1
-    assert pending["event_notional_usd"] == 25437.5
+    assert pending["rank_queue_alignment_applied"] is True
+    assert pending["rank_queue_alignment_scalar"] == 1.15
+    assert pending["event_notional_usd"] == 29253.12
     assert pending["candidate"]["top3_ret5_followthrough_applied"] is True
     assert pending["candidate"]["broad_breadth_support_applied"] is True
+    assert pending["candidate"]["rank_queue_alignment_applied"] is True
 
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
@@ -539,8 +568,10 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert position["top3_ret5_followthrough_scalar"] == 1.25
     assert position["broad_breadth_support_applied"] is True
     assert position["broad_breadth_support_scalar"] == 1.1
-    assert position["rank_notional_multiplier"] == 2.54375
-    assert position["notional"] == 25437.5
+    assert position["rank_queue_alignment_applied"] is True
+    assert position["rank_queue_alignment_scalar"] == 1.15
+    assert position["rank_notional_multiplier"] == 2.925312
+    assert position["notional"] == 29253.12
     assert second["trade_enabled"] is False
     assert second["production_impact"]["alters_orders"] is False
 
@@ -553,6 +584,7 @@ def test_state_surface_broad_breadth_support_persists_to_paper_ledger():
         config={
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
+            **RANK_QUEUE_ALIGNMENT_DISABLED,
         },
     )
 
@@ -596,6 +628,67 @@ def test_state_surface_broad_breadth_support_persists_to_paper_ledger():
     assert position["broad_breadth_support_scalar"] == 1.1
     assert position["rank_notional_multiplier"] == 1.7875
     assert position["notional"] == 17875.0
+    assert second["trade_enabled"] is False
+    assert second["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_rank_queue_alignment_persists_to_paper_ledger():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
+        universe=["AAA", "BBB", "CCC"],
+        config={
+            "max_candidates": 1,
+            "rank_notional_top3_ret5_followthrough_enabled": False,
+            "rank_notional_broad_breadth_support_enabled": False,
+        },
+    )
+
+    candidate = queue["candidates"][0]
+    assert candidate["rank"] == 1
+    assert candidate["queue_rank"] == 1
+    assert candidate["rank_queue_alignment_applied"] is True
+    assert candidate["rank_queue_alignment_scalar"] == 1.15
+    assert candidate["rank_queue_alignment_base_multiplier"] == 1.625
+    assert candidate["rank_queue_alignment_delta"] == 0
+    assert candidate["rank_notional_multiplier"] == 1.86875
+    assert candidate["event_notional_usd"] == 18687.5
+    assert queue["rank_notional_profile"]["rank_queue_alignment_enabled"] is True
+    assert queue["rank_notional_profile"]["rank_queue_alignment_scalar"] == 1.15
+    assert (
+        queue["rank_notional_profile"]["rank_queue_alignment_profile_name"]
+        == "rank_eq_queue_1p15x"
+    )
+
+    state = empty_state_surface_sleeve_state()
+    first = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    pending = first["pending_entries"][0]
+    assert pending["rank_queue_alignment_applied"] is True
+    assert pending["rank_queue_alignment_scalar"] == 1.15
+    assert pending["event_notional_usd"] == 18687.5
+    assert pending["candidate"]["rank_queue_alignment_applied"] is True
+
+    next_state = empty_state_surface_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    ticker = pending["ticker"]
+    second = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        state=next_state,
+        open_prices={ticker: 100.0},
+        current_prices={ticker: 100.0},
+        persist=False,
+    )
+    position = second["open_positions"][0]
+    assert position["rank_queue_alignment_applied"] is True
+    assert position["rank_queue_alignment_scalar"] == 1.15
+    assert position["rank_notional_multiplier"] == 1.86875
+    assert position["notional"] == 18687.5
     assert second["trade_enabled"] is False
     assert second["production_impact"]["alters_orders"] is False
 

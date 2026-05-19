@@ -92,6 +92,9 @@ RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION = (
 RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION = (
     "state_surface_broad_breadth_support_notional_v1"
 )
+RANK_NOTIONAL_RANK_QUEUE_ALIGNMENT_RULE_VERSION = (
+    "state_surface_rank_queue_alignment_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -166,6 +169,8 @@ DEFAULT_CONFIG = {
     "rank_notional_broad_breadth_support_enabled": True,
     "rank_notional_broad_breadth_support_bucket": "broad_breadth",
     "rank_notional_broad_breadth_support_scalar": 1.10,
+    "rank_notional_rank_queue_alignment_enabled": True,
+    "rank_notional_rank_queue_alignment_scalar": 1.15,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -758,6 +763,26 @@ def _broad_breadth_support_settings(config: dict[str, Any]) -> dict[str, Any]:
         "scalar": scalar,
         "profile_name": _broad_breadth_support_profile_name(bucket),
         "rule_version": RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION,
+    }
+
+
+def _rank_queue_alignment_profile_name(scalar: float | None) -> str:
+    if scalar is None:
+        return "rank_queue_alignment_disabled"
+    value = str(round(float(scalar), 6)).rstrip("0").rstrip(".")
+    return f"rank_eq_queue_{value.replace('.', 'p')}x"
+
+
+def _rank_queue_alignment_settings(config: dict[str, Any]) -> dict[str, Any]:
+    scalar = _float_or_none(
+        config.get("rank_notional_rank_queue_alignment_scalar")
+    )
+    enabled = bool(config.get("rank_notional_rank_queue_alignment_enabled", True))
+    return {
+        "enabled": bool(enabled and scalar is not None and scalar > 0),
+        "scalar": scalar,
+        "profile_name": _rank_queue_alignment_profile_name(scalar),
+        "rule_version": RANK_NOTIONAL_RANK_QUEUE_ALIGNMENT_RULE_VERSION,
     }
 
 
@@ -1396,6 +1421,20 @@ def _broad_breadth_support_applies(
     )
 
 
+def _rank_queue_alignment_applies(
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _rank_queue_alignment_settings(config)
+    row = candidate or {}
+    try:
+        rank = int(row.get("rank"))
+        queue_rank = int(row.get("queue_rank"))
+    except (TypeError, ValueError):
+        return False
+    return bool(settings["enabled"] and rank > 0 and rank == queue_rank)
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1425,6 +1464,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _broad_breadth_support_applies(candidate, config):
         settings = _broad_breadth_support_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _rank_queue_alignment_applies(candidate, config):
+        settings = _rank_queue_alignment_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -1617,6 +1659,45 @@ def _broad_breadth_support_metadata(
     }
 
 
+def _rank_queue_alignment_metadata(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _rank_queue_alignment_settings(config)
+    rank = _float_or_none(candidate.get("rank"))
+    queue_rank = _float_or_none(candidate.get("queue_rank"))
+    applied = _rank_queue_alignment_applies(candidate, config)
+    rank_queue_delta = (
+        int(rank) - int(queue_rank)
+        if rank is not None and queue_rank is not None
+        else None
+    )
+    return {
+        "rank_queue_alignment_applied": bool(applied),
+        "rank_queue_alignment_profiles_enabled": bool(settings["enabled"]),
+        "rank_queue_alignment_rank": int(rank) if rank is not None else None,
+        "rank_queue_alignment_queue_rank": int(queue_rank)
+        if queue_rank is not None
+        else None,
+        "rank_queue_alignment_delta": rank_queue_delta,
+        "rank_queue_alignment_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "rank_queue_alignment_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "rank_queue_alignment_base_multiplier": _round(base_multiplier, 6),
+        "rank_queue_alignment_profile_name": settings["profile_name"],
+        "rank_queue_alignment_rule_version": settings["rule_version"],
+        "rank_notional_rank_queue_alignment_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1661,6 +1742,10 @@ def _apply_rank_notional(
     if _top3_ret5_followthrough_applies(queue_rank, candidate, config):
         settings = _top3_ret5_followthrough_settings(config)
         top3_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    breadth_adjusted_base_multiplier = top3_adjusted_base_multiplier
+    if _broad_breadth_support_applies(candidate, config):
+        settings = _broad_breadth_support_settings(config)
+        breadth_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -1716,6 +1801,13 @@ def _apply_rank_notional(
             base_multiplier=top3_adjusted_base_multiplier,
         )
     )
+    candidate.update(
+        _rank_queue_alignment_metadata(
+            candidate,
+            config,
+            base_multiplier=breadth_adjusted_base_multiplier,
+        )
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
     candidate["rank_notional_candidate_breadth_rule_version"] = (
@@ -1762,6 +1854,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_broad_breadth_support_rule_version"] = (
         RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION
+    )
+    candidate["rank_notional_rank_queue_alignment_rule_version"] = (
+        RANK_NOTIONAL_RANK_QUEUE_ALIGNMENT_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -1946,6 +2041,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     rank3_volume_confirmation = _rank3_volume_confirmation_settings(cfg)
     top3_ret5_followthrough = _top3_ret5_followthrough_settings(cfg)
     broad_breadth_support = _broad_breadth_support_settings(cfg)
+    rank_queue_alignment = _rank_queue_alignment_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -1965,6 +2061,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank3_volume_confirmation_rule_version": RANK_NOTIONAL_RANK3_VOLUME_CONFIRMATION_RULE_VERSION,
         "top3_ret5_followthrough_rule_version": RANK_NOTIONAL_TOP3_RET5_FOLLOWTHROUGH_RULE_VERSION,
         "broad_breadth_support_rule_version": RANK_NOTIONAL_BROAD_BREADTH_SUPPORT_RULE_VERSION,
+        "rank_queue_alignment_rule_version": RANK_NOTIONAL_RANK_QUEUE_ALIGNMENT_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -2204,6 +2301,16 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "broad_breadth_support_profile_name": broad_breadth_support[
+            "profile_name"
+        ],
+        "rank_queue_alignment_enabled": bool(
+            rank_queue_alignment["enabled"]
+        ),
+        "rank_queue_alignment_scalar": _round(
+            rank_queue_alignment["scalar"],
+            6,
+        ),
+        "rank_queue_alignment_profile_name": rank_queue_alignment[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -3054,6 +3161,39 @@ def _fill_pending_entries(
             "broad_breadth_support_rule_version": entry.get(
                 "broad_breadth_support_rule_version"
             ),
+            "rank_notional_rank_queue_alignment_rule_version": entry.get(
+                "rank_notional_rank_queue_alignment_rule_version"
+            ),
+            "rank_queue_alignment_applied": bool(
+                entry.get("rank_queue_alignment_applied")
+            ),
+            "rank_queue_alignment_profiles_enabled": bool(
+                entry.get("rank_queue_alignment_profiles_enabled")
+            ),
+            "rank_queue_alignment_rank": entry.get(
+                "rank_queue_alignment_rank"
+            ),
+            "rank_queue_alignment_queue_rank": entry.get(
+                "rank_queue_alignment_queue_rank"
+            ),
+            "rank_queue_alignment_delta": entry.get(
+                "rank_queue_alignment_delta"
+            ),
+            "rank_queue_alignment_configured_scalar": entry.get(
+                "rank_queue_alignment_configured_scalar"
+            ),
+            "rank_queue_alignment_scalar": entry.get(
+                "rank_queue_alignment_scalar"
+            ),
+            "rank_queue_alignment_base_multiplier": entry.get(
+                "rank_queue_alignment_base_multiplier"
+            ),
+            "rank_queue_alignment_profile_name": entry.get(
+                "rank_queue_alignment_profile_name"
+            ),
+            "rank_queue_alignment_rule_version": entry.get(
+                "rank_queue_alignment_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -3371,6 +3511,39 @@ def _add_queue_candidates(
             ),
             "broad_breadth_support_rule_version": candidate.get(
                 "broad_breadth_support_rule_version"
+            ),
+            "rank_notional_rank_queue_alignment_rule_version": candidate.get(
+                "rank_notional_rank_queue_alignment_rule_version"
+            ),
+            "rank_queue_alignment_applied": bool(
+                candidate.get("rank_queue_alignment_applied")
+            ),
+            "rank_queue_alignment_profiles_enabled": bool(
+                candidate.get("rank_queue_alignment_profiles_enabled")
+            ),
+            "rank_queue_alignment_rank": candidate.get(
+                "rank_queue_alignment_rank"
+            ),
+            "rank_queue_alignment_queue_rank": candidate.get(
+                "rank_queue_alignment_queue_rank"
+            ),
+            "rank_queue_alignment_delta": candidate.get(
+                "rank_queue_alignment_delta"
+            ),
+            "rank_queue_alignment_configured_scalar": candidate.get(
+                "rank_queue_alignment_configured_scalar"
+            ),
+            "rank_queue_alignment_scalar": candidate.get(
+                "rank_queue_alignment_scalar"
+            ),
+            "rank_queue_alignment_base_multiplier": candidate.get(
+                "rank_queue_alignment_base_multiplier"
+            ),
+            "rank_queue_alignment_profile_name": candidate.get(
+                "rank_queue_alignment_profile_name"
+            ),
+            "rank_queue_alignment_rule_version": candidate.get(
+                "rank_queue_alignment_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

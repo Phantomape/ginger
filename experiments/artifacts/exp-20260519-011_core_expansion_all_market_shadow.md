@@ -10,6 +10,7 @@ Single variable family: candidate universe membership. No shared policy, sizing,
 - Canonical all-window non-core governed equities: `0`.
 - Augmented all-window non-core governed equities tested: `14`.
 - Missing current observation-universe history: `30`.
+- Gate 1 accepted-baseline alignment: `False`.
 
 ## Variant Scout
 
