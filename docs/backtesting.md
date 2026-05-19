@@ -174,7 +174,7 @@ concentration from `38.01%` to `37.43%`. The rule lives in shared
 `state_surface_sleeve.py`, is surfaced by the production default-off paper
 path, and has focused parity tests; live/default orders remain disabled.
 
-Latest accepted state-surface paper rank-1 score-isolation result:
+Previous accepted state-surface paper rank-1 score-isolation result:
 `exp-20260519-003` keeps the accepted score-expansion plus recent-repeat stack
 fixed and adds a residual production-visible rank-1 score-isolation paper
 allocation field. After all higher-priority state-surface profiles have passed,
@@ -189,6 +189,21 @@ rule adjusted 6 paper trades across 2 windows, worsened max drawdown by only
 to `39.68%`. The rule lives in shared `state_surface_sleeve.py`, is surfaced by
 the production default-off paper path, and has focused parity tests;
 live/default orders remain disabled.
+
+Latest accepted state-surface paper rank-depth support result:
+`exp-20260519-004` keeps the accepted `exp-20260519-003` stack fixed and adds
+one production-visible rank-3 near-high paper support scalar. When the third
+ranked same-day qualified state-surface queue candidate has
+`near_high_60 >= 0.98`, only the rank-3 default-off paper notional is scaled by
+`1.50x` after the active profile multiplier. Versus the accepted rank-1
+score-isolation baseline, aggregate paper-overlay EV improved `+0.1126` and
+PnL improved `+$2,024.62`, with all three windows EV-positive and no
+EV-regressed window (`late_strong +0.0266`, `mid_weak +0.0755`,
+`old_thin +0.0105`). The rule adjusted 5 paper trades across all 3 windows, did not
+worsen max drawdown, and lowered single-ticker positive-share concentration
+from `39.68%` to `38.43%`. The rule lives in shared
+`state_surface_sleeve.py`, is surfaced by the production default-off paper
+path, and has focused parity tests; live/default orders remain disabled.
 
 Latest accepted default-off SEC paper result: `exp-20260518-014` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,

@@ -268,6 +268,14 @@ Default rule:
   Concentration improved (`40.70% -> 39.68%`). Treat this as a rank-quality
   field; do not mine adjacent score-gap thresholds or profiles without forward
   evidence or a distinct quality variable.
+- `exp-20260519-004` accepted a default-off rank-3 near-high support notional
+  field (`+0.1126` aggregate EV, `+$2,024.62` PnL), with all 3 windows
+  improved and no drawdown worsening. It applies only when the third ranked
+  same-day state-surface candidate has `near_high_60 >= 0.98`, then scales only
+  rank 3 by `1.50` after the active profile multiplier. Concentration improved
+  (`39.68% -> 38.43%`). Treat this as a rank-depth quality field; do not mine
+  adjacent near-high thresholds/scalars on the frozen sample without forward
+  evidence or a distinct queue-depth variable.
 
 ## What The Recent Logs Mean
 
@@ -755,6 +763,8 @@ production-visible field:
   the frozen sample;
 - nearby state-surface residual rank-1 score-isolation threshold/profile
   retunes on the frozen sample;
+- nearby state-surface rank-3 near-high support threshold/scalar retunes on
+  the frozen sample;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining;

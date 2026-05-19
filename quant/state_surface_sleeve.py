@@ -74,6 +74,9 @@ RANK_NOTIONAL_TOP2_SECTOR_COHESION_RULE_VERSION = (
 RANK_NOTIONAL_RANK1_RET60_RESIDUAL_RULE_VERSION = (
     "state_surface_rank1_ret60_residual_rank_notional_v1"
 )
+RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION = (
+    "state_surface_rank3_near_high_support_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -129,6 +132,9 @@ DEFAULT_CONFIG = {
     "rank_notional_rank1_ret60_residual_profiles_enabled": True,
     "rank_notional_rank1_ret60_residual_min": 0.50,
     "rank_notional_rank1_ret60_residual_profile": [1.2, 1.85, 1.1, 0.675, 0.35],
+    "rank_notional_rank3_near_high_support_enabled": True,
+    "rank_notional_rank3_near_high_support_min": 0.98,
+    "rank_notional_rank3_near_high_support_scalar": 1.5,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -294,12 +300,14 @@ def build_state_surface_queue(
     rank2_ret20_lead = _rank2_ret20_lead_for_candidates(candidates)
     top2_sector_cohesion = _top2_sector_cohesion_for_candidates(candidates)
     rank1_ret60 = _rank1_ret60_for_candidates(candidates)
+    rank3_near_high = _rank3_near_high_for_candidates(candidates)
     for candidate in candidates:
         candidate["candidate_breadth"] = candidate_breadth
         candidate.update(score_dispersion)
         candidate.update(rank2_ret20_lead)
         candidate.update(top2_sector_cohesion)
         candidate.update(rank1_ret60)
+        candidate.update(rank3_near_high)
         _apply_rank_notional(candidate, cfg, market_regime=market_regime)
 
     return {
@@ -644,6 +652,33 @@ def _rank_notional_rank1_ret60_residual_profile(
     return _positive_float_list(
         config.get("rank_notional_rank1_ret60_residual_profile")
     )
+
+
+def _rank3_near_high_support_profile_name(threshold: float | None) -> str:
+    value = str(round(float(threshold or 0.0), 6)).rstrip("0").rstrip(".")
+    return f"rank3_near_high_ge_{value.replace('.', 'p')}_support"
+
+
+def _rank3_near_high_support_settings(config: dict[str, Any]) -> dict[str, Any]:
+    threshold = _float_or_none(
+        config.get("rank_notional_rank3_near_high_support_min")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_rank3_near_high_support_scalar")
+    )
+    enabled = bool(config.get("rank_notional_rank3_near_high_support_enabled", True))
+    return {
+        "enabled": bool(
+            enabled
+            and threshold is not None
+            and scalar is not None
+            and scalar > 0
+        ),
+        "threshold": threshold,
+        "scalar": scalar,
+        "profile_name": _rank3_near_high_support_profile_name(threshold),
+        "rule_version": RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION,
+    }
 
 
 def _rank2_ret20_lead_profile_name(threshold: float) -> str:
@@ -1046,17 +1081,7 @@ def _rank_notional_profile_for_regime(
     return "default", values
 
 
-def _rank_notional_multiplier(
-    queue_rank: Any,
-    config: dict[str, Any],
-    market_regime: dict[str, Any] | None = None,
-    candidate: dict[str, Any] | None = None,
-) -> float:
-    _, values = _rank_notional_profile_for_regime(
-        config,
-        market_regime,
-        candidate,
-    )
+def _rank_value_for_queue_rank(values: list[float], queue_rank: Any) -> float:
     if not values:
         return 1.0
     try:
@@ -1068,6 +1093,74 @@ def _rank_notional_multiplier(
     if rank > len(values):
         return values[-1]
     return values[rank - 1]
+
+
+def _rank3_near_high_support_applies(
+    queue_rank: Any,
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _rank3_near_high_support_settings(config)
+    try:
+        rank = int(queue_rank)
+    except (TypeError, ValueError):
+        rank = 0
+    near_high = _float_or_none((candidate or {}).get("rank3_near_high_60"))
+    threshold = settings["threshold"]
+    return bool(
+        settings["enabled"]
+        and rank == 3
+        and near_high is not None
+        and threshold is not None
+        and near_high >= threshold
+    )
+
+
+def _rank_notional_multiplier(
+    queue_rank: Any,
+    config: dict[str, Any],
+    market_regime: dict[str, Any] | None = None,
+    candidate: dict[str, Any] | None = None,
+) -> float:
+    _, values = _rank_notional_profile_for_regime(
+        config,
+        market_regime,
+        candidate,
+    )
+    base = _rank_value_for_queue_rank(values, queue_rank)
+    if _rank3_near_high_support_applies(queue_rank, candidate, config):
+        settings = _rank3_near_high_support_settings(config)
+        return base * float(settings["scalar"] or 1.0)
+    return base
+
+
+def _rank3_near_high_support_metadata(
+    queue_rank: Any,
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _rank3_near_high_support_settings(config)
+    applied = _rank3_near_high_support_applies(queue_rank, candidate, config)
+    return {
+        "rank3_near_high_support_applied": bool(applied),
+        "rank3_near_high_support_profiles_enabled": bool(settings["enabled"]),
+        "rank3_near_high_support_min": _round(settings["threshold"], 6),
+        "rank3_near_high_support_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "rank3_near_high_support_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "rank3_near_high_support_base_multiplier": _round(base_multiplier, 6),
+        "rank3_near_high_support_profile_name": settings["profile_name"],
+        "rank3_near_high_support_rule_version": settings["rule_version"],
+        "rank_notional_rank3_near_high_support_rule_version": settings[
+            "rule_version"
+        ],
+    }
 
 
 def _event_notional_for_queue_rank(
@@ -1090,11 +1183,12 @@ def _apply_rank_notional(
     market_regime: dict[str, Any] | None = None,
 ) -> None:
     queue_rank = candidate.get("queue_rank")
-    profile_name, _ = _rank_notional_profile_for_regime(
+    profile_name, values = _rank_notional_profile_for_regime(
         config,
         market_regime,
         candidate,
     )
+    base_multiplier = _rank_value_for_queue_rank(values, queue_rank)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -1102,6 +1196,14 @@ def _apply_rank_notional(
         config,
         market_regime,
         candidate,
+    )
+    candidate.update(
+        _rank3_near_high_support_metadata(
+            queue_rank,
+            candidate,
+            config,
+            base_multiplier=base_multiplier,
+        )
     )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
@@ -1131,6 +1233,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_rank1_ret60_residual_rule_version"] = (
         RANK_NOTIONAL_RANK1_RET60_RESIDUAL_RULE_VERSION
+    )
+    candidate["rank_notional_rank3_near_high_support_rule_version"] = (
+        RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -1309,6 +1414,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     rank1_dominance_profile = _rank_notional_rank1_ret20_dominance_profile(cfg)
     top2_sector_profile = _rank_notional_top2_sector_cohesion_profile(cfg)
     rank1_ret60_residual_profile = _rank_notional_rank1_ret60_residual_profile(cfg)
+    rank3_near_high_support = _rank3_near_high_support_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -1322,6 +1428,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank1_ret20_dominance_rule_version": RANK_NOTIONAL_RANK1_RET20_DOMINANCE_RULE_VERSION,
         "top2_sector_cohesion_rule_version": RANK_NOTIONAL_TOP2_SECTOR_COHESION_RULE_VERSION,
         "rank1_ret60_residual_rule_version": RANK_NOTIONAL_RANK1_RET60_RESIDUAL_RULE_VERSION,
+        "rank3_near_high_support_rule_version": RANK_NOTIONAL_RANK3_NEAR_HIGH_SUPPORT_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -1478,6 +1585,20 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "rank1_ret60_residual_rank_event_notional_usd": [
             _round(base_notional * value, 2)
             for value in rank1_ret60_residual_profile
+        ],
+        "rank3_near_high_support_enabled": bool(
+            rank3_near_high_support["enabled"]
+        ),
+        "rank3_near_high_support_min": _round(
+            rank3_near_high_support["threshold"],
+            6,
+        ),
+        "rank3_near_high_support_scalar": _round(
+            rank3_near_high_support["scalar"],
+            6,
+        ),
+        "rank3_near_high_support_profile_name": rank3_near_high_support[
+            "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
             cfg.get("rank_notional_recent_ticker_repeat_profiles_enabled", True)
@@ -1855,6 +1976,18 @@ def _rank1_ret60_for_candidates(candidates: list[dict[str, Any]]) -> dict[str, A
     }
 
 
+def _rank3_near_high_for_candidates(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    ranked = sorted(candidates, key=_candidate_sort_key)
+    rank3 = ranked[2] if len(ranked) >= 3 else {}
+    rank3_near_high = _float_or_none(
+        (rank3.get("features") or {}).get("near_high_60")
+    )
+    return {
+        "rank3_near_high_60": _round(rank3_near_high, 6),
+        "rank3_near_high_sample_size": min(len(ranked), 3),
+    }
+
+
 def _candidate_payload(
     row: dict[str, Any],
     *,
@@ -2085,6 +2218,10 @@ def _fill_pending_entries(
             "rank1_ret60_residual_sample_size": entry.get(
                 "rank1_ret60_residual_sample_size"
             ),
+            "rank3_near_high_60": entry.get("rank3_near_high_60"),
+            "rank3_near_high_sample_size": entry.get(
+                "rank3_near_high_sample_size"
+            ),
             "rank1_sector": entry.get("rank1_sector"),
             "rank2_sector": entry.get("rank2_sector"),
             "top2_sector_cohesion": bool(entry.get("top2_sector_cohesion")),
@@ -2129,6 +2266,33 @@ def _fill_pending_entries(
             ),
             "rank_notional_rank1_ret60_residual_rule_version": entry.get(
                 "rank_notional_rank1_ret60_residual_rule_version"
+            ),
+            "rank_notional_rank3_near_high_support_rule_version": entry.get(
+                "rank_notional_rank3_near_high_support_rule_version"
+            ),
+            "rank3_near_high_support_applied": bool(
+                entry.get("rank3_near_high_support_applied")
+            ),
+            "rank3_near_high_support_profiles_enabled": bool(
+                entry.get("rank3_near_high_support_profiles_enabled")
+            ),
+            "rank3_near_high_support_min": entry.get(
+                "rank3_near_high_support_min"
+            ),
+            "rank3_near_high_support_configured_scalar": entry.get(
+                "rank3_near_high_support_configured_scalar"
+            ),
+            "rank3_near_high_support_scalar": entry.get(
+                "rank3_near_high_support_scalar"
+            ),
+            "rank3_near_high_support_base_multiplier": entry.get(
+                "rank3_near_high_support_base_multiplier"
+            ),
+            "rank3_near_high_support_profile_name": entry.get(
+                "rank3_near_high_support_profile_name"
+            ),
+            "rank3_near_high_support_rule_version": entry.get(
+                "rank3_near_high_support_rule_version"
             ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
@@ -2226,6 +2390,10 @@ def _add_queue_candidates(
             "rank1_ret60_residual_sample_size": candidate.get(
                 "rank1_ret60_residual_sample_size"
             ),
+            "rank3_near_high_60": candidate.get("rank3_near_high_60"),
+            "rank3_near_high_sample_size": candidate.get(
+                "rank3_near_high_sample_size"
+            ),
             "rank1_sector": candidate.get("rank1_sector"),
             "rank2_sector": candidate.get("rank2_sector"),
             "top2_sector_cohesion": bool(candidate.get("top2_sector_cohesion")),
@@ -2262,6 +2430,33 @@ def _add_queue_candidates(
             ),
             "rank_notional_rank1_ret60_residual_rule_version": candidate.get(
                 "rank_notional_rank1_ret60_residual_rule_version"
+            ),
+            "rank_notional_rank3_near_high_support_rule_version": candidate.get(
+                "rank_notional_rank3_near_high_support_rule_version"
+            ),
+            "rank3_near_high_support_applied": bool(
+                candidate.get("rank3_near_high_support_applied")
+            ),
+            "rank3_near_high_support_profiles_enabled": bool(
+                candidate.get("rank3_near_high_support_profiles_enabled")
+            ),
+            "rank3_near_high_support_min": candidate.get(
+                "rank3_near_high_support_min"
+            ),
+            "rank3_near_high_support_configured_scalar": candidate.get(
+                "rank3_near_high_support_configured_scalar"
+            ),
+            "rank3_near_high_support_scalar": candidate.get(
+                "rank3_near_high_support_scalar"
+            ),
+            "rank3_near_high_support_base_multiplier": candidate.get(
+                "rank3_near_high_support_base_multiplier"
+            ),
+            "rank3_near_high_support_profile_name": candidate.get(
+                "rank3_near_high_support_profile_name"
+            ),
+            "rank3_near_high_support_rule_version": candidate.get(
+                "rank3_near_high_support_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

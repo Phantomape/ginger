@@ -326,7 +326,7 @@ inside the `50%` guardrail. The accepted rule lives in shared
 `state_surface_sleeve.py` with focused parity coverage in
 `test_state_surface_sleeve.py`; live/default orders remain disabled.
 
-Latest accepted state-surface paper rank-quality refinement:
+Previous accepted state-surface paper rank-quality refinement:
 `exp-20260519-003` keeps the accepted score-expansion plus recent-repeat stack
 fixed and adds one residual production-visible rank-1 score-isolation paper
 allocation field. When the residual score-expansion branch applies
@@ -342,6 +342,20 @@ only `0.25pp`, and single-ticker positive share fell from `40.70%` to
 `39.68%`. The accepted rule lives in shared `state_surface_sleeve.py` with
 focused parity coverage in `test_state_surface_sleeve.py`; live/default orders
 remain disabled.
+
+Latest accepted state-surface paper rank-depth refinement:
+`exp-20260519-004` keeps the accepted `exp-20260519-003` stack fixed and adds
+one production-visible rank-3 near-high support scalar. When the third ranked
+same-day qualified state-surface candidate has `near_high_60 >= 0.98`, the
+shared default-off paper path multiplies only rank 3's active profile notional
+by `1.50`. Versus the accepted rank-1 score-isolation baseline, three-window
+EV improved `+0.1126` and PnL improved `+$2,024.62`: `late_strong` improved
+`+0.0266` EV / `+$576.97`, `mid_weak` improved `+0.0755` EV / `+$1,180.88`,
+and `old_thin` improved `+0.0105` EV / `+$266.77`. Five paper trades were
+adjusted across all three windows, max drawdown did not worsen, and
+single-ticker positive share fell from `39.68%` to `38.43%`. The accepted rule
+lives in shared `state_surface_sleeve.py` with focused parity coverage in
+`test_state_surface_sleeve.py`; live/default orders remain disabled.
 
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger

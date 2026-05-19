@@ -161,14 +161,14 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
         1.85,
         1.25,
-        1.0,
+        1.5,
         0.675,
         0.35,
     ]
     assert [row["event_notional_usd"] for row in queue["candidates"]] == [
         18500.0,
         12500.0,
-        10000.0,
+        15000.0,
         6750.0,
         3500.0,
     ]
@@ -177,6 +177,12 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     } == {"score_expansion_top3_ge_0p4"}
     assert {row["candidate_breadth"] for row in queue["candidates"]} == {5}
     assert {row["score_top3_spread"] for row in queue["candidates"]} == {0.931526}
+    assert queue["candidates"][2]["rank3_near_high_60"] >= 0.98
+    assert queue["candidates"][2]["rank3_near_high_support_applied"] is True
+    assert queue["candidates"][2]["rank3_near_high_support_base_multiplier"] == 1.0
+    assert queue["rank_notional_profile"]["rank3_near_high_support_enabled"] is True
+    assert queue["rank_notional_profile"]["rank3_near_high_support_min"] == 0.98
+    assert queue["rank_notional_profile"]["rank3_near_high_support_scalar"] == 1.5
     assert queue["rank_notional_profile"]["rank_event_notional_usd"] == [
         15000.0,
         12500.0,
@@ -212,6 +218,61 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert queue["production_impact"]["alters_orders"] is False
 
 
+def test_state_surface_rank3_near_high_support_persists_to_paper_ledger():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
+        universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
+    )
+
+    rank3 = next(row for row in queue["candidates"] if row["queue_rank"] == 3)
+    assert rank3["rank3_near_high_60"] >= 0.98
+    assert rank3["rank3_near_high_support_applied"] is True
+    assert rank3["rank3_near_high_support_scalar"] == 1.5
+    assert rank3["rank3_near_high_support_base_multiplier"] == 1.0
+    assert rank3["rank_notional_multiplier"] == 1.5
+    assert rank3["event_notional_usd"] == 15000.0
+    assert {
+        row["rank3_near_high_support_applied"]
+        for row in queue["candidates"]
+        if row["queue_rank"] != 3
+    } == {False}
+
+    state = empty_state_surface_sleeve_state()
+    first = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    pending = next(row for row in first["pending_entries"] if row["queue_rank"] == 3)
+    assert pending["rank3_near_high_support_applied"] is True
+    assert pending["rank3_near_high_support_scalar"] == 1.5
+    assert pending["event_notional_usd"] == 15000.0
+    assert pending["candidate"]["rank3_near_high_support_applied"] is True
+
+    next_state = empty_state_surface_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
+    second = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        state=next_state,
+        open_prices=prices,
+        current_prices=prices,
+        persist=False,
+    )
+    position = next(
+        row for row in second["open_positions"] if row["ticker"] == pending["ticker"]
+    )
+    assert position["rank3_near_high_support_applied"] is True
+    assert position["rank3_near_high_support_scalar"] == 1.5
+    assert position["rank_notional_multiplier"] == 1.5
+    assert position["notional"] == 15000.0
+    assert second["trade_enabled"] is False
+    assert second["production_impact"]["alters_orders"] is False
+
+
 def test_state_surface_queue_can_disable_regime_rank_notional_profile():
     queue = build_state_surface_queue(
         as_of="2026-05-04",
@@ -221,6 +282,7 @@ def test_state_surface_queue_can_disable_regime_rank_notional_profile():
             "rank_notional_regime_profiles_enabled": False,
             "rank_notional_candidate_breadth_profiles_enabled": False,
             "rank_notional_score_expansion_profiles_enabled": False,
+            "rank_notional_rank3_near_high_support_enabled": False,
         },
     )
 
@@ -247,6 +309,7 @@ def test_state_surface_queue_can_disable_candidate_breadth_rank_notional_profile
         config={
             "rank_notional_candidate_breadth_profiles_enabled": False,
             "rank_notional_score_expansion_profiles_enabled": False,
+            "rank_notional_rank3_near_high_support_enabled": False,
         },
     )
 
@@ -270,7 +333,10 @@ def test_state_surface_queue_applies_score_compression_rank_notional_profile():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={"rank_notional_score_compression_max_top3_spread": 2.0},
+        config={
+            "rank_notional_score_compression_max_top3_spread": 2.0,
+            "rank_notional_rank3_near_high_support_enabled": False,
+        },
     )
 
     assert queue["enabled"] is False
@@ -311,7 +377,10 @@ def test_state_surface_queue_applies_rank1_score_isolation_before_expansion():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={"rank_notional_rank1_score_isolation_min_score_gap": 0.0},
+        config={
+            "rank_notional_rank1_score_isolation_min_score_gap": 0.0,
+            "rank_notional_rank3_near_high_support_enabled": False,
+        },
     )
 
     assert queue["enabled"] is False
@@ -362,6 +431,7 @@ def test_state_surface_queue_applies_rank2_ret20_lead_profile_before_score_compr
         config={
             "rank_notional_score_compression_max_top3_spread": 2.0,
             "rank_notional_rank2_ret20_score_gap_profiles_enabled": False,
+            "rank_notional_rank3_near_high_support_enabled": False,
         },
     )
 
@@ -398,7 +468,10 @@ def test_state_surface_queue_applies_rank2_ret20_score_gap_profile_before_rank2_
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank2_ret20_lead(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={"rank_notional_score_compression_max_top3_spread": 2.0},
+        config={
+            "rank_notional_score_compression_max_top3_spread": 2.0,
+            "rank_notional_rank3_near_high_support_enabled": False,
+        },
     )
 
     assert queue["enabled"] is False
@@ -438,6 +511,7 @@ def test_state_surface_queue_applies_top2_tech_cohesion_before_rank2_score_gap()
         config={
             "rank_notional_rank1_ret60_residual_min": 0.0,
             "rank_notional_rank2_ret20_score_gap_min": 0.0,
+            "rank_notional_rank3_near_high_support_enabled": False,
         },
     )
 
@@ -487,7 +561,10 @@ def test_state_surface_queue_applies_rank1_ret60_residual_after_top2_priority():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank1_ret60_overheat(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={"rank_notional_rank2_ret20_score_gap_min": 0.0},
+        config={
+            "rank_notional_rank2_ret20_score_gap_min": 0.0,
+            "rank_notional_rank3_near_high_support_enabled": False,
+        },
     )
 
     assert queue["enabled"] is False
@@ -532,6 +609,7 @@ def test_state_surface_queue_applies_rank1_ret20_dominance_profile_before_compre
             "rank_notional_rank1_ret20_dominance_lead_min": 0.0,
             "rank_notional_rank1_ret20_dominance_score_gap_min": 0.0,
             "rank_notional_score_compression_max_top3_spread": 2.0,
+            "rank_notional_rank3_near_high_support_enabled": False,
         },
     )
 
