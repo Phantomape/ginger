@@ -2,12 +2,14 @@
 
 $maxIterations = 20
 $iteration = 0
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$promptPath = Join-Path $repoRoot "docs\archive\agent-prompts\CLAUDE3.md"
 
 while ($iteration -lt $maxIterations) {
 
     Write-Host "Iteration $iteration"
 
-    $prompt = Get-Content CLAUDE3.md -Raw
+    $prompt = Get-Content $promptPath -Raw -Encoding UTF8
     Write-Host "Prompt loaded"
 
     Write-Host "Running Claude..."
