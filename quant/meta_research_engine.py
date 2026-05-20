@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -25,6 +26,30 @@ PRIORITY_WEIGHTS = {
     "risk_control_score": 0.10,
 }
 
+METRIC_BUCKETS = (
+    "after_metrics",
+    "candidate_metrics",
+    "delta_metrics",
+    "deltas",
+    "before_metrics",
+    "baseline_metrics",
+)
+
+DELTA_ALIASES = {
+    "expected_value_score": (
+        "expected_value_score",
+        "expected_value_score_delta",
+        "aggregate_ev_delta",
+        "ev_delta",
+    ),
+    "total_pnl": ("total_pnl", "total_pnl_delta", "aggregate_pnl_delta", "pnl_delta"),
+    "pnl": ("pnl", "pnl_delta", "total_pnl_delta", "aggregate_pnl_delta"),
+    "max_drawdown_pct": ("max_drawdown_pct", "max_drawdown_pct_delta"),
+    "survival_rate": ("survival_rate", "survival_rate_delta"),
+    "trade_count": ("trade_count", "trade_count_delta", "trades_delta"),
+    "trades": ("trades", "trades_delta", "trade_count_delta"),
+}
+
 ALLOCATION_FAMILIES = {
     "position_cap_or_cap_release",
     "risk_scalar_or_topup",
@@ -37,6 +62,46 @@ BROAD_OR_RISKY_FAMILIES = {
     "slot_or_ranking",
     "exit_policy",
 }
+
+MEASUREMENT_REPAIR_TOKENS = (
+    "measurement",
+    "instrumentation",
+    "logging",
+    "documentation",
+    "data_audit",
+    "data audit",
+    "coverage",
+    "parity",
+    "known_bias",
+    "process",
+    "replay_fix",
+    "data_gap",
+    "oracle_diagnostics",
+    "observed_only",
+    "diagnostic",
+    "data_collection",
+    "triage",
+)
+
+STRATEGY_ITERATION_TOKENS = (
+    "alpha",
+    "entry",
+    "exit",
+    "ranking",
+    "rank",
+    "slot",
+    "queue",
+    "allocation",
+    "risk",
+    "llm",
+    "event",
+    "sleeve",
+    "candidate_pool",
+    "universe",
+    "target",
+    "notional",
+    "shadow",
+)
 
 
 def _float(value, default=0.0):
@@ -85,8 +150,13 @@ def load_experiment_logs(root=DEFAULT_ROOT):
         row.setdefault("_source", str(jsonl_path))
         records.append(row)
 
-    logs_dir = root / "docs" / "experiments" / "logs"
-    if logs_dir.exists():
+    log_dirs = [
+        root / "experiments" / "logs",
+        root / "docs" / "experiments" / "logs",
+    ]
+    for logs_dir in log_dirs:
+        if not logs_dir.exists():
+            continue
         for path in sorted(logs_dir.glob("*.json")):
             row = _read_json(path)
             if isinstance(row, dict):
@@ -100,6 +170,47 @@ def _decision(record):
     return str(record.get("decision") or record.get("status") or "unknown").lower()
 
 
+def _record_text(record):
+    return " ".join(
+        str(record.get(k, ""))
+        for k in [
+            "experiment_id",
+            "hypothesis",
+            "change_summary",
+            "change_type",
+            "component",
+            "notes",
+            "lane",
+            "decision",
+            "status",
+        ]
+    ).lower()
+
+
+def _is_accepted_decision(record):
+    decision = _decision(record)
+    return (
+        decision in {"accepted", "accept", "promoted"}
+        or decision.startswith("accepted_")
+        or decision.startswith("accept_")
+        or decision.startswith("promoted_")
+    )
+
+
+def _is_rejected_decision(record):
+    decision = _decision(record)
+    return (
+        decision in {"rejected", "reject", "rolled_back"}
+        or decision.startswith("rejected_")
+        or decision.startswith("reject_")
+        or decision.startswith("rolled_back_")
+    )
+
+
+def _as_dict(value):
+    return value if isinstance(value, dict) else {}
+
+
 def _change_type(record):
     value = record.get("change_type") or record.get("category") or "unknown"
     return str(value).lower().replace(" ", "_")
@@ -110,19 +221,28 @@ def _component(record):
 
 
 def _delta(record, key):
-    delta = record.get("delta_metrics") or record.get("deltas") or {}
-    if key in delta:
-        return _float(delta.get(key), 0.0)
+    delta = _as_dict(record.get("delta_metrics"))
+    if not delta:
+        delta = _as_dict(record.get("deltas"))
+    for alias in DELTA_ALIASES.get(key, (key,)):
+        if alias in delta:
+            return _float(delta.get(alias), 0.0)
+        if alias in record:
+            return _float(record.get(alias), 0.0)
 
-    before = record.get("before_metrics") or record.get("baseline_metrics") or {}
-    after = record.get("after_metrics") or record.get("candidate_metrics") or {}
+    before = _as_dict(record.get("before_metrics"))
+    if not before:
+        before = _as_dict(record.get("baseline_metrics"))
+    after = _as_dict(record.get("after_metrics"))
+    if not after:
+        after = _as_dict(record.get("candidate_metrics"))
     if key in before or key in after:
         return _float(after.get(key), 0.0) - _float(before.get(key), 0.0)
     return 0.0
 
 
 def _metric(record, bucket, key):
-    values = record.get(bucket) or {}
+    values = _as_dict(record.get(bucket))
     return _float(values.get(key), None)
 
 
@@ -146,12 +266,89 @@ def _production_impact(record):
     return impact if isinstance(impact, dict) else {}
 
 
+def is_measurement_repair_record(record):
+    return any(token in _record_text(record) for token in MEASUREMENT_REPAIR_TOKENS)
+
+
+def is_strategy_iteration_record(record):
+    text = _record_text(record)
+    if is_measurement_repair_record(record):
+        return False
+    lane = str(record.get("lane") or "").lower()
+    if "alpha" in lane or "universe_scout" in lane:
+        return True
+    return any(token in text for token in STRATEGY_ITERATION_TOKENS)
+
+
+def _family_label_zh(family):
+    labels = {
+        "position_cap_or_cap_release": "仓位上限/释放",
+        "risk_scalar_or_topup": "风险倍率/加仓",
+        "ticker_specific": "个股特化规则",
+        "pilot_or_sleeve": "试运行/子策略袖珍组合",
+        "filter_or_gate": "过滤器/准入门槛",
+        "slot_or_ranking": "槽位/排序",
+        "exit_policy": "退出/止盈止损",
+        "event_or_llm": "事件/LLM 判断",
+        "known_bias_disclosure_repair": "已知偏差披露修复",
+        "measurement_repair": "测量修复",
+        "process_instrumentation": "流程观测与记录",
+        "risk_allocation": "风险分配",
+        "default_off_alpha_attribution_report_surface": "默认关闭的 Alpha 归因报告层",
+        "default_off_paper_candidate_pool": "默认关闭的纸面候选池",
+        "default_off_data_collection_harness": "默认关闭的数据采集框架",
+        "new_strategy_shadow": "新策略影子实验",
+        "failure_taxonomy": "失败类型归因",
+        "default_off_harness": "默认关闭的实验框架",
+        "replay_only_risk_allocation_discriminator": "仅回放的风险分配判别器",
+        "entry_execution_replay_scout": "入场执行回放侦察",
+        "forward_watch_adapter": "前向观察适配器",
+        "unknown": "未知/未归类",
+    }
+    return labels.get(family, family.replace("_", " "))
+
+
+def _priority_summary_zh(family, priority, row):
+    return (
+        f"{_family_label_zh(family)}：研究优先级 {priority:.4f}。"
+        f"历史实验 {row['experiments']} 个，接受率 {row['accept_rate']:.2%}，"
+        f"累计 EV 变化 {row['sum_ev_delta']:+.4f}。"
+        "这个分数只用于决定下一轮先研究什么，不是交易信号。"
+    )
+
+
+def build_data_quality_warnings(records):
+    metric_type_issues = []
+    for record in records:
+        for bucket in METRIC_BUCKETS:
+            if bucket not in record:
+                continue
+            value = record.get(bucket)
+            if value is None or isinstance(value, dict):
+                continue
+            metric_type_issues.append({
+                "experiment_id": _experiment_id(record),
+                "bucket": bucket,
+                "actual_type": type(value).__name__,
+                "value_preview": str(value)[:160],
+                "source": record.get("_source"),
+            })
+
+    return {
+        "non_dict_metric_buckets": {
+            "count": len(metric_type_issues),
+            "examples": metric_type_issues[:10],
+            "meaning_zh": (
+                "部分旧实验日志把 metrics 字段写成了字符串引用，而不是指标字典。"
+                "meta report 会把这些字段当作缺失值处理，并在这里列出样例。"
+            ),
+        }
+    }
+
+
 def classify_research_family(record):
     """Infer a durable research family from log metadata and text."""
-    text = " ".join(
-        str(record.get(k, ""))
-        for k in ["experiment_id", "hypothesis", "change_summary", "change_type", "component", "notes"]
-    ).lower()
+    text = _record_text(record)
 
     if "cap" in text or "position_cap" in text:
         return "position_cap_or_cap_release"
@@ -190,9 +387,9 @@ def score_experiment(record):
     score += max(0.0, survival_delta) * 0.5
     score -= max(0.0, -survival_delta) * 1.0
 
-    if decision in {"accepted", "accept", "promoted"}:
+    if _is_accepted_decision(record):
         score += 2.0
-    elif decision in {"rejected", "rolled_back", "reject"}:
+    elif _is_rejected_decision(record):
         score -= 1.0
 
     if sample is not None and sample < 5:
@@ -210,8 +407,8 @@ def _aggregate(records, key_fn):
 
     out = []
     for key, rows in groups.items():
-        accepted = [r for r in rows if _decision(r) in {"accepted", "accept", "promoted"}]
-        rejected = [r for r in rows if _decision(r) in {"rejected", "reject", "rolled_back"}]
+        accepted = [r for r in rows if _is_accepted_decision(r)]
+        rejected = [r for r in rows if _is_rejected_decision(r)]
         scores = [score_experiment(r) for r in rows]
         ev_deltas = [_delta(r, "expected_value_score") for r in rows]
         pnl_deltas = [_delta(r, "total_pnl") or _delta(r, "pnl") for r in rows]
@@ -274,7 +471,7 @@ def _family_reproducibility(records, family):
         return 0.4, ["no direct records; weak reproducibility"]
     multi_window = sum(1 for r in rows if _multi_window_hint(r))
     sufficient_sample = sum(1 for r in rows if (_sample_count(r) or 0) >= 10)
-    accepted = sum(1 for r in rows if _decision(r) in {"accepted", "accept", "promoted"})
+    accepted = sum(1 for r in rows if _is_accepted_decision(r))
     score = 0.25
     score += 0.35 * (multi_window / len(rows))
     score += 0.25 * (sufficient_sample / len(rows))
@@ -301,7 +498,7 @@ def _family_novelty(records, family):
     if family in {"risk_scalar_or_topup", "ticker_specific"} and len(rows) >= 5:
         score -= 0.15
         penalties.append("nearby scalar/ticker retry risk")
-    rejected = sum(1 for r in rows if _decision(r) in {"rejected", "reject", "rolled_back"})
+    rejected = sum(1 for r in rows if _is_rejected_decision(r))
     if rows and rejected / len(rows) >= 0.6:
         score -= 0.20
         penalties.append("many prior rejections in this family")
@@ -397,6 +594,7 @@ def build_research_priorities(records):
         priorities.append({
             "family": family,
             "priority": round(priority, 4),
+            "summary_zh": _priority_summary_zh(family, priority, row),
             "component_scores": {
                 "evidence_score": round(evidence_score, 4),
                 "reproducibility_score": round(reproducibility_score, 4),
@@ -411,6 +609,33 @@ def build_research_priorities(records):
         })
 
     return sorted(priorities, key=lambda r: r["priority"], reverse=True)
+
+
+def _has_decision_grade_strategy_evidence(priority_item):
+    summary = priority_item["evidence_summary"]
+    has_metric_evidence = (
+        abs(summary["sum_ev_delta"]) >= 0.0001
+        or abs(summary["sum_pnl_delta"]) >= 1.0
+    )
+    if not has_metric_evidence:
+        return False
+    return (
+        summary["experiments"] >= 3
+        or abs(summary["sum_ev_delta"]) >= 0.25
+        or abs(summary["sum_pnl_delta"]) >= 5000.0
+    )
+
+
+def build_strategy_research_priorities(records):
+    """Build the alpha-search queue separately from measurement/process work."""
+    strategy_records = [r for r in records if is_strategy_iteration_record(r)]
+    priorities = build_research_priorities(strategy_records)
+    return [item for item in priorities if _has_decision_grade_strategy_evidence(item)]
+
+
+def build_measurement_repair_priorities(records):
+    """Build a separate queue for work that improves evaluation quality."""
+    return build_research_priorities([r for r in records if is_measurement_repair_record(r)])
 
 
 def build_freeze_candidates(records):
@@ -484,6 +709,81 @@ def build_recommendations(records):
     return recs
 
 
+def build_chinese_explanation(
+    strategy_research_priorities,
+    measurement_repair_priorities,
+    recommendations,
+    data_quality_warnings,
+):
+    top_priorities = []
+    for item in strategy_research_priorities[:5]:
+        top_priorities.append({
+            "family": item["family"],
+            "family_zh": _family_label_zh(item["family"]),
+            "priority": item["priority"],
+            "summary": item["summary_zh"],
+        })
+
+    top_measurement = []
+    for item in measurement_repair_priorities[:3]:
+        top_measurement.append({
+            "family": item["family"],
+            "family_zh": _family_label_zh(item["family"]),
+            "priority": item["priority"],
+            "summary": item["summary_zh"],
+        })
+
+    top_recommendations = []
+    for rec in recommendations[:5]:
+        family = rec.get("family")
+        if family:
+            top_recommendations.append({
+                "type": rec.get("type"),
+                "family": family,
+                "family_zh": _family_label_zh(family),
+                "meaning": (
+                    "继续优先研究这个方向"
+                    if rec.get("type") == "continue_high_priority_family"
+                    else "冻结或要求新证据后再重试"
+                ),
+            })
+
+    metric_warning_count = data_quality_warnings.get(
+        "non_dict_metric_buckets", {}
+    ).get("count", 0)
+
+    return {
+        "一句话": (
+            "这个报告是在复盘实验历史，帮助决定下一轮研究什么；"
+            "它不是交易信号，也不会改变下单、排序或仓位。"
+        ),
+        "怎么读": [
+            "策略迭代先看 strategy_research_priorities，不要用 measurement_repair_priorities 代替 alpha 搜索。",
+            "research_priorities 是原始全量队列，包含测量修复和流程记录，只适合审计，不适合直接指导下一轮策略。",
+            "recommendations 会把策略队列最高优先级和应该暂缓的方向翻译成行动建议。",
+            "freeze_candidates 表示历史证据弱或失败较多，重试前需要新证据。",
+            "top_experiments / worst_experiments 只是历史实验样例，不等于未来收益保证。",
+            "data_quality_warnings 如果不为 0，说明有旧日志字段质量问题，排序可信度要打折。",
+        ],
+        "字段说明": {
+            "priority": "研究队列优先级，范围大致在 0 到 1；只用于排研究顺序。",
+            "evidence_score": "历史接受率、meta score 和 EV delta 的综合证据分。",
+            "reproducibility_score": "多窗口、样本数、可复现实验记录的质量。",
+            "production_feasibility": "是否容易进入生产/回测一致的共享路径。",
+            "novelty_score": "是否还有新信息，是否只是重复扫旧参数。",
+            "risk_control_score": "是否容易控制回撤、存活率和尾部风险。",
+            "meta_score": "单个实验的粗略历史证据分，不是收益预测。",
+        },
+        "当前前五策略研究方向": top_priorities,
+        "当前测量修复方向": top_measurement,
+        "当前建议": top_recommendations,
+        "数据质量提醒": (
+            f"发现 {metric_warning_count} 个非字典 metrics 字段；"
+            "已按缺失值处理，避免旧日志把报告跑崩。"
+        ),
+    }
+
+
 def build_meta_report(root=DEFAULT_ROOT):
     records = [r for r in load_experiment_logs(root) if not r.get("_parse_error")]
     scored = []
@@ -500,23 +800,49 @@ def build_meta_report(root=DEFAULT_ROOT):
             "source": record.get("_source"),
         })
 
+    strategy_records = [r for r in records if is_strategy_iteration_record(r)]
+    measurement_records = [r for r in records if is_measurement_repair_record(r)]
+
+    research_priorities = build_research_priorities(records)
+    strategy_research_priorities = build_strategy_research_priorities(records)
+    measurement_repair_priorities = build_measurement_repair_priorities(records)
+    by_family = _aggregate(records, classify_research_family)
+    by_change_type = _aggregate(records, _change_type)
+    by_component = _aggregate(records, _component)
+    freeze_candidates = build_freeze_candidates(records)
+    recommendations = build_recommendations(strategy_records)
+    data_quality_warnings = build_data_quality_warnings(records)
+
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "read_only": True,
         "records_loaded": len(records),
+        "record_counts": {
+            "strategy_iteration_records": len(strategy_records),
+            "measurement_repair_records": len(measurement_records),
+        },
         "priority_formula": {
             "formula": "0.35*evidence + 0.25*reproducibility + 0.20*production_feasibility + 0.10*novelty + 0.10*risk_control",
             "weights": PRIORITY_WEIGHTS,
             "note": "Research queue priority only; never used as trade sizing or signal ranking.",
         },
-        "research_priorities": build_research_priorities(records),
-        "by_family": _aggregate(records, classify_research_family),
-        "by_change_type": _aggregate(records, _change_type),
-        "by_component": _aggregate(records, _component),
+        "chinese_explanation": build_chinese_explanation(
+            strategy_research_priorities,
+            measurement_repair_priorities,
+            recommendations,
+            data_quality_warnings,
+        ),
+        "data_quality_warnings": data_quality_warnings,
+        "strategy_research_priorities": strategy_research_priorities,
+        "measurement_repair_priorities": measurement_repair_priorities,
+        "research_priorities": research_priorities,
+        "by_family": by_family,
+        "by_change_type": by_change_type,
+        "by_component": by_component,
         "top_experiments": sorted(scored, key=lambda r: r["meta_score"], reverse=True)[:20],
         "worst_experiments": sorted(scored, key=lambda r: r["meta_score"])[:20],
-        "freeze_candidates": build_freeze_candidates(records),
-        "recommendations": build_recommendations(records),
+        "freeze_candidates": freeze_candidates,
+        "recommendations": recommendations,
         "notes": [
             "This is a research-prior engine, not a trading signal.",
             "Scores are intentionally coarse and should guide what to test next, not what to trade.",
@@ -527,6 +853,11 @@ def build_meta_report(root=DEFAULT_ROOT):
 
 
 def main():
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default=str(DEFAULT_ROOT))
     parser.add_argument("--output", default=None)
