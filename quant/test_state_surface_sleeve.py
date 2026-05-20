@@ -16,8 +16,13 @@ SLEEVE_CAPACITY_DISABLED = {
     "rank_notional_sleeve_capacity_enabled": False,
 }
 
+LOW_EXTENSION_SUPPORT_DISABLED = {
+    "rank_notional_low_extension_support_enabled": False,
+}
+
 RANK_DEPTH_SCORE_VOLUME_DISABLED = {
     "rank_notional_rank_depth_score_volume_enabled": False,
+    **LOW_EXTENSION_SUPPORT_DISABLED,
 }
 
 ABSOLUTE_SCORE_SUPPORT_DISABLED = {
@@ -185,18 +190,18 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [row["queue_rank"] for row in queue["candidates"]] == [1, 2, 3, 4, 5]
     assert queue["market_regime"]["regime"] == "chop"
     assert [row["rank_notional_multiplier"] for row in queue["candidates"]] == [
-        3.868726,
-        3.40957,
-        2.727656,
-        0.981956,
-        0.509162,
+        4.062162,
+        3.580049,
+        2.864039,
+        1.031054,
+        0.534621,
     ]
     assert [row["event_notional_usd"] for row in queue["candidates"]] == [
-        38687.26,
-        34095.7,
-        27276.56,
-        9819.56,
-        5091.62,
+        40621.62,
+        35800.49,
+        28640.39,
+        10310.54,
+        5346.21,
     ]
     assert {
         row["rank_notional_profile_name"] for row in queue["candidates"]
@@ -235,6 +240,13 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert queue["rank_notional_profile"]["rank_depth_score_volume_score_min"] == 0.9
     assert queue["rank_notional_profile"]["rank_depth_score_volume_volume_min"] == 1.1
     assert queue["rank_notional_profile"]["rank_depth_score_volume_scalar"] == 1.075
+    assert queue["rank_notional_profile"]["low_extension_support_enabled"] is True
+    assert queue["rank_notional_profile"]["low_extension_support_max_ret5"] == 0.02
+    assert queue["rank_notional_profile"]["low_extension_support_scalar"] == 1.05
+    assert (
+        queue["rank_notional_profile"]["low_extension_support_profile_name"]
+        == "ret5_le_0p02_1p05x"
+    )
     assert [
         row["rank_depth_score_volume_applied"] for row in queue["candidates"]
     ] == [False, False, False, False, False]
@@ -244,6 +256,9 @@ def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
     assert [
         row["absolute_score_support_applied"] for row in queue["candidates"]
     ] == [True, False, False, False, False]
+    assert [
+        row["low_extension_support_applied"] for row in queue["candidates"]
+    ] == [True, True, True, True, True]
     assert [
         row["broad_breadth_support_applied"] for row in queue["candidates"]
     ] == [True, True, True, True, True]
@@ -324,6 +339,7 @@ def test_state_surface_rank_depth_score_volume_persists_to_paper_ledger():
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
         config={
+            **LOW_EXTENSION_SUPPORT_DISABLED,
             "rank_notional_rank_depth_score_volume_score_min": 0.0,
             "rank_notional_rank_depth_score_volume_volume_min": 0.0,
         },
@@ -658,8 +674,12 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert rank1["absolute_score_support_min"] == 0.9
     assert rank1["absolute_score_support_scalar"] == 1.15
     assert rank1["absolute_score_support_base_multiplier"] == 3.364109
-    assert rank1["rank_notional_multiplier"] == 3.868726
-    assert rank1["event_notional_usd"] == 38687.26
+    assert rank1["low_extension_support_applied"] is True
+    assert rank1["low_extension_support_ret5"] <= 0.02
+    assert rank1["low_extension_support_scalar"] == 1.05
+    assert rank1["low_extension_support_base_multiplier"] == 3.868726
+    assert rank1["rank_notional_multiplier"] == 4.062162
+    assert rank1["event_notional_usd"] == 40621.62
     assert [
         row["top3_ret5_followthrough_applied"] for row in queue["candidates"]
     ] == [True, True, True, False, False]
@@ -682,12 +702,15 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert pending["sleeve_capacity_scalar"] == 1.15
     assert pending["absolute_score_support_applied"] is True
     assert pending["absolute_score_support_scalar"] == 1.15
-    assert pending["event_notional_usd"] == 38687.26
+    assert pending["low_extension_support_applied"] is True
+    assert pending["low_extension_support_scalar"] == 1.05
+    assert pending["event_notional_usd"] == 40621.62
     assert pending["candidate"]["top3_ret5_followthrough_applied"] is True
     assert pending["candidate"]["broad_breadth_support_applied"] is True
     assert pending["candidate"]["rank_queue_alignment_applied"] is True
     assert pending["candidate"]["sleeve_capacity_applied"] is True
     assert pending["candidate"]["absolute_score_support_applied"] is True
+    assert pending["candidate"]["low_extension_support_applied"] is True
 
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
@@ -713,8 +736,71 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     assert position["sleeve_capacity_scalar"] == 1.15
     assert position["absolute_score_support_applied"] is True
     assert position["absolute_score_support_scalar"] == 1.15
-    assert position["rank_notional_multiplier"] == 3.868726
-    assert position["notional"] == 38687.26
+    assert position["low_extension_support_applied"] is True
+    assert position["low_extension_support_scalar"] == 1.05
+    assert position["rank_notional_multiplier"] == 4.062162
+    assert position["notional"] == 40621.62
+    assert second["trade_enabled"] is False
+    assert second["production_impact"]["alters_orders"] is False
+
+
+def test_state_surface_low_extension_support_persists_to_paper_ledger():
+    queue = build_state_surface_queue(
+        as_of="2026-05-04",
+        ohlcv_by_ticker=_ohlcv_broad_rotation(),
+        universe=["AAA", "BBB", "CCC"],
+        config={
+            "max_candidates": 1,
+            "rank_notional_top3_ret5_followthrough_enabled": False,
+            "rank_notional_broad_breadth_support_enabled": False,
+            "rank_notional_rank_queue_alignment_enabled": False,
+            "rank_notional_sleeve_capacity_enabled": False,
+            "rank_notional_absolute_score_support_enabled": False,
+            "rank_notional_rank_depth_score_volume_enabled": False,
+            "rank_notional_low_extension_support_max_ret5": 1.0,
+        },
+    )
+
+    candidate = queue["candidates"][0]
+    assert candidate["low_extension_support_applied"] is True
+    assert candidate["low_extension_support_qualified"] is True
+    assert candidate["low_extension_support_scalar"] == 1.05
+    assert candidate["low_extension_support_ret5"] <= 1.0
+    assert candidate["rank_notional_multiplier"] == round(
+        candidate["low_extension_support_base_multiplier"] * 1.05,
+        6,
+    )
+    assert queue["rank_notional_profile"]["low_extension_support_enabled"] is True
+    assert queue["rank_notional_profile"]["low_extension_support_max_ret5"] == 1.0
+    assert queue["rank_notional_profile"]["low_extension_support_scalar"] == 1.05
+
+    state = empty_state_surface_sleeve_state()
+    first = build_state_surface_sleeve_snapshot(
+        state_surface_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    pending = first["pending_entries"][0]
+    assert pending["low_extension_support_applied"] is True
+    assert pending["low_extension_support_scalar"] == 1.05
+    assert pending["candidate"]["low_extension_support_applied"] is True
+
+    next_state = empty_state_surface_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    ticker = pending["ticker"]
+    second = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        state=next_state,
+        open_prices={ticker: 100.0},
+        current_prices={ticker: 100.0},
+        persist=False,
+    )
+    position = second["open_positions"][0]
+    assert position["low_extension_support_applied"] is True
+    assert position["low_extension_support_scalar"] == 1.05
+    assert position["rank_notional_multiplier"] == pending["rank_notional_multiplier"]
     assert second["trade_enabled"] is False
     assert second["production_impact"]["alters_orders"] is False
 
@@ -728,6 +814,7 @@ def test_state_surface_broad_breadth_support_persists_to_paper_ledger():
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
             **RANK_QUEUE_ALIGNMENT_DISABLED,
+            **LOW_EXTENSION_SUPPORT_DISABLED,
         },
     )
 
@@ -785,6 +872,7 @@ def test_state_surface_rank_queue_alignment_persists_to_paper_ledger():
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
             **SLEEVE_CAPACITY_DISABLED,
+            **LOW_EXTENSION_SUPPORT_DISABLED,
         },
     )
 
@@ -847,6 +935,7 @@ def test_state_surface_sleeve_capacity_persists_to_paper_ledger():
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
             "rank_notional_rank_queue_alignment_enabled": False,
+            **LOW_EXTENSION_SUPPORT_DISABLED,
         },
     )
 
@@ -907,6 +996,7 @@ def test_state_surface_queue_lag_support_persists_to_paper_ledger():
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
             "rank_notional_rank_queue_alignment_enabled": False,
+            **LOW_EXTENSION_SUPPORT_DISABLED,
         },
     )
 

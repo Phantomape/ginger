@@ -759,6 +759,9 @@ production-visible field:
 - nearby state-surface rank-depth score-volume scalar retries after
   `exp-20260519-033` unless forward outcomes widen the sample or introduce a
   distinct concentration/risk discriminator;
+- nearby state-surface low-extension `ret5 <= 0.02` scalar retries after
+  `exp-20260520-001`; keep the accepted `1.05x` fixed until forward outcomes
+  widen the sample or introduce a distinct crowding/extension field;
 - nearby broad-market leadership price-floor/profile retunes after
   `exp-20260519-036`; next evidence must be forward paper replacement value or
   a genuinely new production-visible field;

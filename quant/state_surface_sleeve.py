@@ -107,6 +107,9 @@ RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION = (
 RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION = (
     "state_surface_rank_depth_score_volume_notional_v1"
 )
+RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION = (
+    "state_surface_low_extension_support_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -196,6 +199,9 @@ DEFAULT_CONFIG = {
     "rank_notional_rank_depth_score_volume_score_min": 0.90,
     "rank_notional_rank_depth_score_volume_volume_min": 1.10,
     "rank_notional_rank_depth_score_volume_scalar": 1.075,
+    "rank_notional_low_extension_support_enabled": True,
+    "rank_notional_low_extension_support_max_ret5": 0.02,
+    "rank_notional_low_extension_support_scalar": 1.05,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -957,6 +963,44 @@ def _rank_depth_score_volume_settings(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _low_extension_support_profile_name(
+    max_ret5: float | None,
+    scalar: float | None,
+) -> str:
+    if max_ret5 is None or scalar is None:
+        return "low_extension_support_disabled"
+    ret5_text = str(round(float(max_ret5), 6)).rstrip("0").rstrip(".")
+    scalar_text = str(round(float(scalar), 6)).rstrip("0").rstrip(".")
+    return (
+        "ret5_le_"
+        f"{ret5_text.replace('.', 'p')}_{scalar_text.replace('.', 'p')}x"
+    )
+
+
+def _low_extension_support_settings(config: dict[str, Any]) -> dict[str, Any]:
+    max_ret5 = _float_or_none(
+        config.get("rank_notional_low_extension_support_max_ret5")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_low_extension_support_scalar")
+    )
+    enabled = bool(
+        config.get("rank_notional_low_extension_support_enabled", True)
+    )
+    return {
+        "enabled": bool(
+            enabled
+            and max_ret5 is not None
+            and scalar is not None
+            and scalar > 0
+        ),
+        "max_ret5": max_ret5,
+        "scalar": scalar,
+        "profile_name": _low_extension_support_profile_name(max_ret5, scalar),
+        "rule_version": RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION,
+    }
+
+
 def _rank2_near_high_support_settings(config: dict[str, Any]) -> dict[str, Any]:
     threshold = _float_or_none(
         config.get("rank_notional_rank2_near_high_support_min")
@@ -1658,6 +1702,20 @@ def _rank_depth_score_volume_applies(
     )
 
 
+def _low_extension_support_applies(
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _low_extension_support_settings(config)
+    ret5 = _float_or_none(((candidate or {}).get("features") or {}).get("ret5"))
+    return bool(
+        settings["enabled"]
+        and ret5 is not None
+        and settings["max_ret5"] is not None
+        and ret5 <= float(settings["max_ret5"])
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1702,6 +1760,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _rank_depth_score_volume_applies(candidate, config):
         settings = _rank_depth_score_volume_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _low_extension_support_applies(candidate, config):
+        settings = _low_extension_support_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -2085,6 +2146,42 @@ def _rank_depth_score_volume_metadata(
     }
 
 
+def _low_extension_support_metadata(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _low_extension_support_settings(config)
+    ret5 = _float_or_none((candidate.get("features") or {}).get("ret5"))
+    qualified = bool(
+        ret5 is not None
+        and settings["max_ret5"] is not None
+        and ret5 <= float(settings["max_ret5"])
+    )
+    applied = _low_extension_support_applies(candidate, config)
+    return {
+        "low_extension_support_applied": bool(applied),
+        "low_extension_support_qualified": bool(qualified),
+        "low_extension_support_profiles_enabled": bool(settings["enabled"]),
+        "low_extension_support_ret5": _round(ret5, 6),
+        "low_extension_support_max_ret5": _round(settings["max_ret5"], 6),
+        "low_extension_support_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "low_extension_support_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "low_extension_support_base_multiplier": _round(base_multiplier, 6),
+        "low_extension_support_profile_name": settings["profile_name"],
+        "low_extension_support_rule_version": settings["rule_version"],
+        "rank_notional_low_extension_support_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -2151,6 +2248,10 @@ def _apply_rank_notional(
     if _absolute_score_support_applies(candidate, config):
         settings = _absolute_score_support_settings(config)
         absolute_score_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    rank_depth_adjusted_base_multiplier = absolute_score_adjusted_base_multiplier
+    if _rank_depth_score_volume_applies(candidate, config):
+        settings = _rank_depth_score_volume_settings(config)
+        rank_depth_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -2240,6 +2341,13 @@ def _apply_rank_notional(
             base_multiplier=absolute_score_adjusted_base_multiplier,
         )
     )
+    candidate.update(
+        _low_extension_support_metadata(
+            candidate,
+            config,
+            base_multiplier=rank_depth_adjusted_base_multiplier,
+        )
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
     candidate["rank_notional_candidate_breadth_rule_version"] = (
@@ -2301,6 +2409,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_rank_depth_score_volume_rule_version"] = (
         RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION
+    )
+    candidate["rank_notional_low_extension_support_rule_version"] = (
+        RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -2490,6 +2601,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     queue_lag_support = _queue_lag_support_settings(cfg)
     absolute_score_support = _absolute_score_support_settings(cfg)
     rank_depth_score_volume = _rank_depth_score_volume_settings(cfg)
+    low_extension_support = _low_extension_support_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -2514,6 +2626,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "queue_lag_support_rule_version": RANK_NOTIONAL_QUEUE_LAG_SUPPORT_RULE_VERSION,
         "absolute_score_support_rule_version": RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION,
         "rank_depth_score_volume_rule_version": RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION,
+        "low_extension_support_rule_version": RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -2813,6 +2926,20 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "rank_depth_score_volume_profile_name": rank_depth_score_volume[
+            "profile_name"
+        ],
+        "low_extension_support_enabled": bool(
+            low_extension_support["enabled"]
+        ),
+        "low_extension_support_max_ret5": _round(
+            low_extension_support["max_ret5"],
+            6,
+        ),
+        "low_extension_support_scalar": _round(
+            low_extension_support["scalar"],
+            6,
+        ),
+        "low_extension_support_profile_name": low_extension_support[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -3827,6 +3954,37 @@ def _fill_pending_entries(
             "rank_depth_score_volume_rule_version": entry.get(
                 "rank_depth_score_volume_rule_version"
             ),
+            "rank_notional_low_extension_support_rule_version": entry.get(
+                "rank_notional_low_extension_support_rule_version"
+            ),
+            "low_extension_support_applied": bool(
+                entry.get("low_extension_support_applied")
+            ),
+            "low_extension_support_qualified": bool(
+                entry.get("low_extension_support_qualified")
+            ),
+            "low_extension_support_profiles_enabled": bool(
+                entry.get("low_extension_support_profiles_enabled")
+            ),
+            "low_extension_support_ret5": entry.get("low_extension_support_ret5"),
+            "low_extension_support_max_ret5": entry.get(
+                "low_extension_support_max_ret5"
+            ),
+            "low_extension_support_configured_scalar": entry.get(
+                "low_extension_support_configured_scalar"
+            ),
+            "low_extension_support_scalar": entry.get(
+                "low_extension_support_scalar"
+            ),
+            "low_extension_support_base_multiplier": entry.get(
+                "low_extension_support_base_multiplier"
+            ),
+            "low_extension_support_profile_name": entry.get(
+                "low_extension_support_profile_name"
+            ),
+            "low_extension_support_rule_version": entry.get(
+                "low_extension_support_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -4312,6 +4470,39 @@ def _add_queue_candidates(
             ),
             "rank_depth_score_volume_rule_version": candidate.get(
                 "rank_depth_score_volume_rule_version"
+            ),
+            "rank_notional_low_extension_support_rule_version": candidate.get(
+                "rank_notional_low_extension_support_rule_version"
+            ),
+            "low_extension_support_applied": bool(
+                candidate.get("low_extension_support_applied")
+            ),
+            "low_extension_support_qualified": bool(
+                candidate.get("low_extension_support_qualified")
+            ),
+            "low_extension_support_profiles_enabled": bool(
+                candidate.get("low_extension_support_profiles_enabled")
+            ),
+            "low_extension_support_ret5": candidate.get(
+                "low_extension_support_ret5"
+            ),
+            "low_extension_support_max_ret5": candidate.get(
+                "low_extension_support_max_ret5"
+            ),
+            "low_extension_support_configured_scalar": candidate.get(
+                "low_extension_support_configured_scalar"
+            ),
+            "low_extension_support_scalar": candidate.get(
+                "low_extension_support_scalar"
+            ),
+            "low_extension_support_base_multiplier": candidate.get(
+                "low_extension_support_base_multiplier"
+            ),
+            "low_extension_support_profile_name": candidate.get(
+                "low_extension_support_profile_name"
+            ),
+            "low_extension_support_rule_version": candidate.get(
+                "low_extension_support_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

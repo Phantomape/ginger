@@ -318,6 +318,23 @@ The rule lives in shared `state_surface_sleeve.py`, is surfaced by the
 production default-off paper path, and has focused parity tests; live/default
 orders remain disabled.
 
+Latest accepted state-surface paper low-extension support result:
+`exp-20260520-001` keeps the accepted `exp-20260519-033` rank-depth
+score-volume stack fixed and adds one production-visible short-term extension
+support scalar. When an already-selected state-surface paper candidate has
+`features.ret5 <= 0.02`, the shared default-off paper path multiplies that
+candidate's active paper notional by `1.05` after the rank-depth score-volume
+stack. Versus the accepted rank-depth score-volume baseline, aggregate
+paper-overlay EV improved `+0.2368` and PnL improved `+$4,925.64`, with all
+three windows EV/PnL-positive and no regression: `late_strong +0.0077` EV /
+`+$161.85`, `mid_weak +0.1873` EV / `+$2,863.53`, and `old_thin +0.0418` EV /
+`+$1,900.26`. The rule adjusted 9 paper trades across all 3 windows, worsened
+max drawdown by at most `0.38pp`, inside the `0.50pp` Gate 4 guardrail, and
+kept single-ticker positive-share concentration inside the `50%` guardrail
+(`43.67% -> 44.49%`). The rule lives in shared `state_surface_sleeve.py`, is
+surfaced by the production default-off paper path, and has focused parity
+tests; live/default orders remain disabled.
+
 Latest accepted broad-market candidate-pool paper result:
 `exp-20260519-036` keeps core metrics unchanged and promotes the fixed
 `exp-20260519-035` `price_floor_40` broad-market leadership candidate
