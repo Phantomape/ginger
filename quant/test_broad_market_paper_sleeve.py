@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from quant.broad_market_paper_sleeve import (
+    broad_market_rank_notional_multiplier,
     build_broad_market_paper_candidates,
     build_broad_market_paper_sleeve_snapshot,
     build_broad_market_feature,
@@ -74,7 +75,19 @@ def test_candidate_builder_excludes_tradeable_and_title_noise():
 
     assert [row["ticker"] for row in candidates] == ["WIN"]
     assert candidates[0]["trade_enabled"] is False
-    assert candidates[0]["intended_notional"] == 7500.0
+    assert candidates[0]["rank_notional_multiplier"] == 1.2
+    assert candidates[0]["intended_notional"] == 9000.0
+
+
+def test_rank_notional_profile_uses_last_multiplier_for_deeper_ranks():
+    assert broad_market_rank_notional_multiplier(1) == 1.2
+    assert broad_market_rank_notional_multiplier(2) == 1.0
+    assert broad_market_rank_notional_multiplier(3) == 0.8
+    assert broad_market_rank_notional_multiplier(4) == 0.8
+    assert broad_market_rank_notional_multiplier(
+        1,
+        {"rank_notional_multipliers": [1.0]},
+    ) == 1.0
 
 
 def test_snapshot_adds_pending_and_fills_next_session_without_orders():

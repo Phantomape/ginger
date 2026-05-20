@@ -23,7 +23,8 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "BROAD_MARKET_LEADERSHIP_PAPER"
-RULE_VERSION = "broad_market_price_floor_leadership_v1"
+RULE_VERSION = "broad_market_price_floor_rank_notional_v1"
+RANK_NOTIONAL_RULE_VERSION = "broad_market_rank_notional_profile_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("broad_market_paper_state")
@@ -53,6 +54,7 @@ DEFAULT_CONFIG = {
     "volume_ratio_20_min": 1.00,
     "decision_close_price_min": 40.0,
     "paper_notional_usd": 7_500.0,
+    "rank_notional_multipliers": [1.20, 1.00, 0.80],
     "max_active_positions": 5,
     "daily_entry_slots": 3,
     "hold_days": 20,
@@ -460,7 +462,8 @@ def backtest_trade_from_feature(
     exit_close = _positive_float(exit_.get("close"))
     if not entry_open or not exit_close:
         return None
-    notional = float(cfg["paper_notional_usd"])
+    rank_notional = broad_market_rank_notional_payload(rank, cfg)
+    notional = float(rank_notional["notional"])
     shares = notional / entry_open
     net_return = exit_close / entry_open - 1.0 - float(cfg["round_trip_cost_pct"])
     return {
@@ -478,6 +481,9 @@ def backtest_trade_from_feature(
         "profile": "price_floor_40",
         "rank": rank,
         "rule_version": RULE_VERSION,
+        "rank_notional_rule_version": RANK_NOTIONAL_RULE_VERSION,
+        "rank_notional_multiplier": rank_notional["multiplier"],
+        "base_paper_notional": rank_notional["base_notional"],
         "ret20_excess_spy": feature["ret20_excess_spy"],
         "ret60": feature["ret60"],
         "volume_ratio_20": feature["volume_ratio_20"],
@@ -496,6 +502,7 @@ def _candidate_from_feature(
 ) -> dict[str, Any]:
     ticker = str(feature["ticker"]).upper()
     decision_id = f"{SLEEVE_NAME}:{RULE_VERSION}:{feature['date']}:{ticker}"
+    rank_notional = broad_market_rank_notional_payload(source_rank, config)
     return {
         "decision_id": decision_id,
         "sleeve": SLEEVE_NAME,
@@ -505,7 +512,10 @@ def _candidate_from_feature(
         "decision_date": feature["date"],
         "source_rank": source_rank,
         "intended_entry_timing": "next_session_open",
-        "intended_notional": float(config["paper_notional_usd"]),
+        "intended_notional": rank_notional["notional"],
+        "base_paper_notional": rank_notional["base_notional"],
+        "rank_notional_multiplier": rank_notional["multiplier"],
+        "rank_notional_rule_version": RANK_NOTIONAL_RULE_VERSION,
         "trade_enabled": False,
         "alters_orders": False,
         "features": deepcopy(feature),
@@ -519,6 +529,39 @@ def _candidate_from_feature(
                 "decision_close_price_min",
             )
         },
+    }
+
+
+def broad_market_rank_notional_multiplier(
+    source_rank: Any,
+    config: dict[str, Any] | None = None,
+) -> float:
+    cfg = _config(config)
+    try:
+        rank = int(source_rank)
+    except (TypeError, ValueError):
+        rank = 1
+    multipliers = cfg.get("rank_notional_multipliers") or [1.0]
+    if not isinstance(multipliers, list) or not multipliers:
+        multipliers = [1.0]
+    idx = max(0, rank - 1)
+    if idx >= len(multipliers):
+        idx = len(multipliers) - 1
+    parsed = _positive_float(multipliers[idx])
+    return round(parsed if parsed is not None else 1.0, 6)
+
+
+def broad_market_rank_notional_payload(
+    source_rank: Any,
+    config: dict[str, Any] | None = None,
+) -> dict[str, float]:
+    cfg = _config(config)
+    base_notional = float(cfg["paper_notional_usd"])
+    multiplier = broad_market_rank_notional_multiplier(source_rank, cfg)
+    return {
+        "base_notional": round(base_notional, 2),
+        "multiplier": multiplier,
+        "notional": round(base_notional * multiplier, 2),
     }
 
 

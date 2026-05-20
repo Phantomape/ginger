@@ -334,6 +334,21 @@ single-ticker positive share was `11.16%`, top-five positive share was
 and trade count exactly. Treat this as paper candidate-pool alpha, not core
 universe expansion.
 
+Latest accepted broad-market paper rank-notional result:
+`exp-20260519-037` keeps the accepted `exp-20260519-036` candidate definition,
+price floor, hold, slot, and universe controls fixed, but changes the shared
+default-off paper notional profile from flat `$7,500` to rank multipliers
+`[1.20, 1.00, 0.80]` on the same selected candidates. Versus the accepted
+flat-notional broad-market adapter, aggregate paper-overlay EV improved
+`+0.2189` and PnL improved `+$3,876.84`, with all three canonical windows
+EV/PnL-positive and no regression: `late_strong +0.1393` EV / `+$2,334.94`,
+`mid_weak +0.0733` EV / `+$1,255.54`, and `old_thin +0.0063` EV /
+`+$286.36`. The sleeve still selected 90 paper trades across all three
+windows, max drawdown drift was `+0.15pp`, single-ticker positive share was
+`12.24%`, and top-five positive share was `42.63%`. The rule lives in shared
+`broad_market_paper_sleeve.py`, is surfaced by the production default-off
+paper path, and has focused parity tests; live/default orders remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted

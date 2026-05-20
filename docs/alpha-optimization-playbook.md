@@ -762,6 +762,10 @@ production-visible field:
 - nearby broad-market leadership price-floor/profile retunes after
   `exp-20260519-036`; next evidence must be forward paper replacement value or
   a genuinely new production-visible field;
+- nearby broad-market rank-notional profile/scalar retunes after
+  `exp-20260519-037`; keep `[1.20, 1.00, 0.80]` fixed until forward paper
+  outcomes widen the evidence or introduce a distinct production-visible
+  quality/risk field;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining without a new state variable;

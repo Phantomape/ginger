@@ -1,0 +1,76 @@
+{
+  "decision": "accepted_default_off_broad_market_rank_notional_profile",
+  "experiment_id": "exp-20260519-037",
+  "gate4": {
+    "aggregate_ev_delta": 0.2189,
+    "aggregate_pnl_delta": 3876.84,
+    "concentration_guard_passed": true,
+    "drawdown_guard_passed": true,
+    "max_drawdown_worse_guardrail": 0.005,
+    "max_drawdown_worse_max": 0.0015,
+    "max_single_ticker_positive_share": 0.5,
+    "max_top5_positive_share": 0.7,
+    "minimum_selected_trades": 30,
+    "minimum_selected_windows": 3,
+    "passed": true,
+    "sample_guard_passed": true,
+    "selected_trade_count": 90,
+    "selected_windows": 3,
+    "single_ticker_positive_share": 0.122408,
+    "top5_positive_share": 0.426334,
+    "window_guard_passed": true,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "The accepted broad-market price-floor leadership paper sleeve can increase replacement value by routing more default-off paper notional to rank-1 candidates and less to rank-3 candidates while leaving candidate eligibility unchanged.",
+  "lane": "alpha_search",
+  "next_evidence_needed": "Collect forward broad-market paper outcomes under the rank-notional profile; do not retune adjacent broad-market thresholds without new forward evidence or a distinct production-visible field.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_order_path_changed": false,
+    "parity_test_added": true,
+    "production_signal_path_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "related_files": {
+    "artifact": "experiments/artifacts/exp-20260519-037_broad_market_rank_notional_profile.md",
+    "baseline": "data/experiments/exp-20260519-036/broad_market_shared_paper_adapter.json",
+    "experiment_log": "docs/experiment_log.jsonl",
+    "log": "experiments/logs/exp-20260519-037.json",
+    "output": "data/experiments/exp-20260519-037/broad_market_rank_notional_profile.json",
+    "script": "quant/experiments/exp_20260519_037_broad_market_rank_notional_profile.py",
+    "shared_module": "quant/broad_market_paper_sleeve.py",
+    "shared_test": "quant/test_broad_market_paper_sleeve.py",
+    "ticket": "experiments/tickets/exp-20260519-037.json"
+  },
+  "shared_adapter_parity": {
+    "default_config_rank_notional_multipliers": [
+      1.2,
+      1.0,
+      0.8
+    ],
+    "passed": true,
+    "rank1_multiplier_from_shared_helper": 1.2,
+    "rank2_multiplier_from_shared_helper": 1.0,
+    "rank3_multiplier_from_shared_helper": 0.8,
+    "rank_notional_rule_version": "broad_market_rank_notional_profile_v1",
+    "selected_rank_notional_multipliers": [
+      1.2,
+      1.0,
+      0.8
+    ],
+    "shared_rule_version": "broad_market_price_floor_rank_notional_v1"
+  },
+  "status": "accepted"
+}

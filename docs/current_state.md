@@ -482,6 +482,21 @@ shared `broad_market_paper_sleeve.py`, is surfaced by `run.py` and
 `report_generator.py`, and has focused parity tests; forward promotion still
 requires a candidate feed and closed replacement-value outcomes.
 
+Latest accepted broad-market paper allocation refinement:
+`exp-20260519-037` keeps the accepted `exp-20260519-036` broad-market
+candidate definition, price floor, hold, slot, and universe controls fixed, but
+changes the shared default-off paper notional profile from flat `$7,500` to
+rank multipliers `[1.20, 1.00, 0.80]`. Versus the flat-notional adapter,
+three-window paper overlay EV improved `+0.2189` and PnL improved
+`+$3,876.84`: `late_strong +0.1393` EV / `+$2,334.94`, `mid_weak +0.0733`
+EV / `+$1,255.54`, and `old_thin +0.0063` EV / `+$286.36`. The sleeve still
+selected 90 paper trades across all three windows, worsened max drawdown by at
+most `0.15pp`, kept single-ticker positive share at `12.24%`, and kept top-five
+positive share at `42.63%`. The accepted rule lives in shared
+`broad_market_paper_sleeve.py`, is surfaced by `run.py` and
+`report_generator.py`, and has focused parity tests; live/default orders remain
+disabled.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The
