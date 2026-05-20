@@ -23,8 +23,9 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "BROAD_MARKET_LEADERSHIP_PAPER"
-RULE_VERSION = "broad_market_price_floor_rank_notional_v1"
+RULE_VERSION = "broad_market_price_floor_rank_low_extension_v1"
 RANK_NOTIONAL_RULE_VERSION = "broad_market_rank_notional_profile_v1"
+LOW_EXTENSION_RULE_VERSION = "broad_market_low_extension_notional_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("broad_market_paper_state")
@@ -55,6 +56,8 @@ DEFAULT_CONFIG = {
     "decision_close_price_min": 40.0,
     "paper_notional_usd": 7_500.0,
     "rank_notional_multipliers": [1.20, 1.00, 0.80],
+    "low_extension_ret5_max": 0.02,
+    "low_extension_notional_scalar": 1.15,
     "max_active_positions": 5,
     "daily_entry_slots": 3,
     "hold_days": 20,
@@ -355,11 +358,19 @@ def build_broad_market_feature(
     if spy_idx is None or spy_idx < 20:
         return None
     close = _positive_float(row.get("close"))
+    close_5 = _positive_float(rows[idx - 5].get("close"))
     close_20 = _positive_float(rows[idx - 20].get("close"))
     close_60 = _positive_float(rows[idx - 60].get("close"))
     spy_close = _positive_float(spy_rows[spy_idx].get("close"))
     spy_close_20 = _positive_float(spy_rows[spy_idx - 20].get("close"))
-    if not close or not close_20 or not close_60 or not spy_close or not spy_close_20:
+    if (
+        not close
+        or not close_5
+        or not close_20
+        or not close_60
+        or not spy_close
+        or not spy_close_20
+    ):
         return None
     volume_slice = rows[idx - 20 : idx]
     volume_values = [_positive_float(item.get("volume")) for item in volume_slice]
@@ -378,6 +389,7 @@ def build_broad_market_feature(
     ret20 = close / close_20 - 1.0
     spy_ret20 = spy_close / spy_close_20 - 1.0
     ret60 = close / close_60 - 1.0
+    ret5 = close / close_5 - 1.0
     volume_ratio_20 = float(row["volume"]) / avg_volume_20
     near_high_60 = close / high_60
     score = (
@@ -394,6 +406,7 @@ def build_broad_market_feature(
         "ret20": round(ret20, 6),
         "spy_ret20": round(spy_ret20, 6),
         "ret20_excess_spy": round(ret20 - spy_ret20, 6),
+        "ret5": round(ret5, 6),
         "ret60": round(ret60, 6),
         "volume_ratio_20": round(volume_ratio_20, 6),
         "near_high_60": round(near_high_60, 6),
@@ -462,8 +475,8 @@ def backtest_trade_from_feature(
     exit_close = _positive_float(exit_.get("close"))
     if not entry_open or not exit_close:
         return None
-    rank_notional = broad_market_rank_notional_payload(rank, cfg)
-    notional = float(rank_notional["notional"])
+    notional_payload = broad_market_candidate_notional_payload(rank, feature, cfg)
+    notional = float(notional_payload["notional"])
     shares = notional / entry_open
     net_return = exit_close / entry_open - 1.0 - float(cfg["round_trip_cost_pct"])
     return {
@@ -482,9 +495,15 @@ def backtest_trade_from_feature(
         "rank": rank,
         "rule_version": RULE_VERSION,
         "rank_notional_rule_version": RANK_NOTIONAL_RULE_VERSION,
-        "rank_notional_multiplier": rank_notional["multiplier"],
-        "base_paper_notional": rank_notional["base_notional"],
+        "rank_notional_multiplier": notional_payload["rank_multiplier"],
+        "low_extension_rule_version": LOW_EXTENSION_RULE_VERSION,
+        "low_extension_ret5_max": cfg["low_extension_ret5_max"],
+        "low_extension_notional_scalar": cfg["low_extension_notional_scalar"],
+        "low_extension_notional_multiplier": notional_payload["low_extension_multiplier"],
+        "low_extension_support_applied": notional_payload["low_extension_support_applied"],
+        "base_paper_notional": notional_payload["base_notional"],
         "ret20_excess_spy": feature["ret20_excess_spy"],
+        "ret5": feature.get("ret5"),
         "ret60": feature["ret60"],
         "volume_ratio_20": feature["volume_ratio_20"],
         "near_high_60": feature["near_high_60"],
@@ -502,7 +521,11 @@ def _candidate_from_feature(
 ) -> dict[str, Any]:
     ticker = str(feature["ticker"]).upper()
     decision_id = f"{SLEEVE_NAME}:{RULE_VERSION}:{feature['date']}:{ticker}"
-    rank_notional = broad_market_rank_notional_payload(source_rank, config)
+    notional_payload = broad_market_candidate_notional_payload(
+        source_rank,
+        feature,
+        config,
+    )
     return {
         "decision_id": decision_id,
         "sleeve": SLEEVE_NAME,
@@ -512,10 +535,15 @@ def _candidate_from_feature(
         "decision_date": feature["date"],
         "source_rank": source_rank,
         "intended_entry_timing": "next_session_open",
-        "intended_notional": rank_notional["notional"],
-        "base_paper_notional": rank_notional["base_notional"],
-        "rank_notional_multiplier": rank_notional["multiplier"],
+        "intended_notional": notional_payload["notional"],
+        "base_paper_notional": notional_payload["base_notional"],
+        "rank_notional_multiplier": notional_payload["rank_multiplier"],
         "rank_notional_rule_version": RANK_NOTIONAL_RULE_VERSION,
+        "low_extension_rule_version": LOW_EXTENSION_RULE_VERSION,
+        "low_extension_ret5_max": config["low_extension_ret5_max"],
+        "low_extension_notional_scalar": config["low_extension_notional_scalar"],
+        "low_extension_notional_multiplier": notional_payload["low_extension_multiplier"],
+        "low_extension_support_applied": notional_payload["low_extension_support_applied"],
         "trade_enabled": False,
         "alters_orders": False,
         "features": deepcopy(feature),
@@ -562,6 +590,43 @@ def broad_market_rank_notional_payload(
         "base_notional": round(base_notional, 2),
         "multiplier": multiplier,
         "notional": round(base_notional * multiplier, 2),
+    }
+
+
+def broad_market_low_extension_multiplier(
+    feature: dict[str, Any] | None,
+    config: dict[str, Any] | None = None,
+) -> float:
+    cfg = _config(config)
+    ret5 = _float_or_none((feature or {}).get("ret5"))
+    max_ret5 = _float_or_none(cfg.get("low_extension_ret5_max"))
+    scalar = _positive_float(cfg.get("low_extension_notional_scalar"))
+    if ret5 is None or max_ret5 is None or scalar is None:
+        return 1.0
+    if ret5 <= max_ret5:
+        return round(scalar, 6)
+    return 1.0
+
+
+def broad_market_candidate_notional_payload(
+    source_rank: Any,
+    feature: dict[str, Any] | None = None,
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = _config(config)
+    rank_payload = broad_market_rank_notional_payload(source_rank, cfg)
+    low_extension_multiplier = broad_market_low_extension_multiplier(feature, cfg)
+    notional = (
+        float(rank_payload["base_notional"])
+        * float(rank_payload["multiplier"])
+        * low_extension_multiplier
+    )
+    return {
+        "base_notional": rank_payload["base_notional"],
+        "rank_multiplier": rank_payload["multiplier"],
+        "low_extension_multiplier": low_extension_multiplier,
+        "low_extension_support_applied": low_extension_multiplier != 1.0,
+        "notional": round(notional, 2),
     }
 
 

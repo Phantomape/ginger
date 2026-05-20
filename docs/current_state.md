@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-19.
+Last updated: 2026-05-20.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -509,6 +509,23 @@ selected 90 paper trades across all three windows, worsened max drawdown by at
 most `0.15pp`, kept single-ticker positive share at `12.24%`, and kept top-five
 positive share at `42.63%`. The accepted rule lives in shared
 `broad_market_paper_sleeve.py`, is surfaced by `run.py` and
+`report_generator.py`, and has focused parity tests; live/default orders remain
+disabled.
+
+Latest accepted broad-market paper low-extension refinement:
+`exp-20260520-002` keeps the accepted `exp-20260519-037` broad-market
+candidate definition, price floor, rank-notional profile, hold, slot, and
+universe controls fixed, but adds a production-visible low short-term
+extension paper notional field. When an already-selected broad-market paper
+candidate has `ret5 <= 0.02`, the shared default-off paper path scales that
+candidate's active notional by `1.15` after the `[1.20, 1.00, 0.80]` rank
+profile. Versus the accepted rank-notional baseline, three-window paper
+overlay EV improved `+0.0545` and PnL improved `+$792.70`: `late_strong +0.0170`
+EV / `+$28.58`, `mid_weak +0.0218` EV / `+$474.74`, and `old_thin +0.0157`
+EV / `+$289.38`. Twelve paper trades were adjusted across all three
+windows, max drawdown did not worsen, single-ticker positive share stayed at
+`12.02%`, and top-five positive share stayed at `41.88%`. The accepted rule
+lives in shared `broad_market_paper_sleeve.py`, is surfaced by `run.py` and
 `report_generator.py`, and has focused parity tests; live/default orders remain
 disabled.
 

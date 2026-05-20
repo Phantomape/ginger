@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from quant.broad_market_paper_sleeve import (
+    LOW_EXTENSION_RULE_VERSION,
+    broad_market_candidate_notional_payload,
+    broad_market_low_extension_multiplier,
     broad_market_rank_notional_multiplier,
     build_broad_market_paper_candidates,
     build_broad_market_paper_sleeve_snapshot,
@@ -53,6 +56,7 @@ def test_broad_market_feature_and_price_floor_gate():
 
     assert high_feature is not None
     assert high_feature["close"] >= 40.0
+    assert high_feature["ret5"] > 0.02
     assert candidate_passes_profile(high_feature)
     assert low_feature is not None
     assert low_feature["close"] < 40.0
@@ -77,6 +81,22 @@ def test_candidate_builder_excludes_tradeable_and_title_noise():
     assert candidates[0]["trade_enabled"] is False
     assert candidates[0]["rank_notional_multiplier"] == 1.2
     assert candidates[0]["intended_notional"] == 9000.0
+    assert candidates[0]["low_extension_support_applied"] is False
+
+
+def test_low_extension_support_scales_paper_notional_only_when_ret5_is_low():
+    low_extension_feature = {"ret5": 0.01}
+    extended_feature = {"ret5": 0.03}
+
+    assert broad_market_low_extension_multiplier(low_extension_feature) == 1.15
+    assert broad_market_low_extension_multiplier(extended_feature) == 1.0
+
+    payload = broad_market_candidate_notional_payload(1, low_extension_feature)
+    assert payload["base_notional"] == 7500.0
+    assert payload["rank_multiplier"] == 1.2
+    assert payload["low_extension_multiplier"] == 1.15
+    assert payload["low_extension_support_applied"] is True
+    assert payload["notional"] == 10350.0
 
 
 def test_rank_notional_profile_uses_last_multiplier_for_deeper_ranks():
@@ -106,6 +126,7 @@ def test_snapshot_adds_pending_and_fills_next_session_without_orders():
     assert first["new_pending_count"] == 1
     assert first["pending_count"] == 1
     assert first["production_impact"]["alters_orders"] is False
+    assert first["candidates"][0]["low_extension_rule_version"] == LOW_EXTENSION_RULE_VERSION
 
     state = empty_broad_market_paper_state()
     state["pending_entries"] = first["pending_entries"]

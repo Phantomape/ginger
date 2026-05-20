@@ -366,6 +366,23 @@ windows, max drawdown drift was `+0.15pp`, single-ticker positive share was
 `broad_market_paper_sleeve.py`, is surfaced by the production default-off
 paper path, and has focused parity tests; live/default orders remain disabled.
 
+Latest accepted broad-market paper low-extension result:
+`exp-20260520-002` keeps the accepted `exp-20260519-037` candidate definition,
+price floor, rank-notional profile, hold, slot, and universe controls fixed,
+but adds one production-visible short-term extension support field. When an
+already-selected broad-market paper candidate has `ret5 <= 0.02`, the shared
+default-off paper path multiplies that candidate's active paper notional by
+`1.15` after the accepted `[1.20, 1.00, 0.80]` rank profile. Versus the
+accepted broad-market rank-notional baseline, aggregate paper-overlay EV
+improved `+0.0545` and PnL improved `+$792.70`, with all three canonical
+windows EV/PnL-positive and no regression: `late_strong +0.0170` EV /
+`+$28.58`, `mid_weak +0.0218` EV / `+$474.74`, and `old_thin +0.0157` EV /
+`+$289.38`. The rule adjusted 12 paper trades across all three windows, did
+not worsen max drawdown, kept single-ticker positive share at `12.02%`, and
+kept top-five positive share at `41.88%`. The rule lives in shared
+`broad_market_paper_sleeve.py`, is surfaced by the production default-off
+paper path, and has focused parity tests; live/default orders remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted

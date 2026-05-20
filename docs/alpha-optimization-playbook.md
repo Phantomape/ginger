@@ -13,7 +13,7 @@ external research into:
 - field-building standards;
 - the current alpha research queue.
 
-Last refreshed: 2026-05-19.
+Last refreshed: 2026-05-20.
 
 ## How To Use This Playbook
 
@@ -769,6 +769,10 @@ production-visible field:
   `exp-20260519-037`; keep `[1.20, 1.00, 0.80]` fixed until forward paper
   outcomes widen the evidence or introduce a distinct production-visible
   quality/risk field;
+- nearby broad-market low-extension `ret5 <= 0.02` scalar retries after
+  `exp-20260520-002`; keep the accepted `1.15x` fixed until forward paper
+  outcomes widen the evidence or introduce a distinct production-visible
+  extension/crowding field;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining without a new state variable;
