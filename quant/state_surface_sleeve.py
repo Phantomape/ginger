@@ -110,6 +110,9 @@ RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION = (
 RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION = (
     "state_surface_low_extension_support_notional_v1"
 )
+RANK_NOTIONAL_TREND_STABILITY_SUPPORT_RULE_VERSION = (
+    "state_surface_trend_stability_support_notional_v1"
+)
 RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION = (
     "state_surface_recent_ticker_repeat_notional_v1"
 )
@@ -202,6 +205,9 @@ DEFAULT_CONFIG = {
     "rank_notional_low_extension_support_enabled": True,
     "rank_notional_low_extension_support_max_ret5": 0.02,
     "rank_notional_low_extension_support_scalar": 1.05,
+    "rank_notional_trend_stability_support_enabled": True,
+    "rank_notional_trend_stability_support_max_acceleration": 0.06,
+    "rank_notional_trend_stability_support_scalar": 1.15,
     "rank_notional_recent_ticker_repeat_profiles_enabled": True,
     "rank_notional_recent_ticker_repeat_lookback_days": 60,
     "rank_notional_recent_ticker_repeat_scalar": 1.5,
@@ -1001,6 +1007,48 @@ def _low_extension_support_settings(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _trend_stability_support_profile_name(
+    max_acceleration: float | None,
+    scalar: float | None,
+) -> str:
+    if max_acceleration is None or scalar is None:
+        return "trend_stability_support_disabled"
+    accel_text = str(round(float(max_acceleration), 6)).rstrip("0").rstrip(".")
+    scalar_text = str(round(float(scalar), 6)).rstrip("0").rstrip(".")
+    return (
+        "trend_stability_accel_le_"
+        f"{accel_text.replace('-', 'm').replace('.', 'p')}_"
+        f"{scalar_text.replace('.', 'p')}x"
+    )
+
+
+def _trend_stability_support_settings(config: dict[str, Any]) -> dict[str, Any]:
+    max_acceleration = _float_or_none(
+        config.get("rank_notional_trend_stability_support_max_acceleration")
+    )
+    scalar = _float_or_none(
+        config.get("rank_notional_trend_stability_support_scalar")
+    )
+    enabled = bool(
+        config.get("rank_notional_trend_stability_support_enabled", True)
+    )
+    return {
+        "enabled": bool(
+            enabled
+            and max_acceleration is not None
+            and scalar is not None
+            and scalar > 0
+        ),
+        "max_acceleration": max_acceleration,
+        "scalar": scalar,
+        "profile_name": _trend_stability_support_profile_name(
+            max_acceleration,
+            scalar,
+        ),
+        "rule_version": RANK_NOTIONAL_TREND_STABILITY_SUPPORT_RULE_VERSION,
+    }
+
+
 def _rank2_near_high_support_settings(config: dict[str, Any]) -> dict[str, Any]:
     threshold = _float_or_none(
         config.get("rank_notional_rank2_near_high_support_min")
@@ -1716,6 +1764,36 @@ def _low_extension_support_applies(
     )
 
 
+def _trend_stability_values(
+    candidate: dict[str, Any] | None,
+) -> tuple[float | None, float | None, float | None]:
+    row = candidate or {}
+    features = row.get("features") or {}
+    ret20_excess_spy = _float_or_none(row.get("ret20_excess_spy"))
+    if ret20_excess_spy is None:
+        ret20_excess_spy = _float_or_none(features.get("ret20_excess_spy"))
+    ret60 = _float_or_none(row.get("ret60"))
+    if ret60 is None:
+        ret60 = _float_or_none(features.get("ret60"))
+    if ret20_excess_spy is None or ret60 is None:
+        return ret20_excess_spy, ret60, None
+    return ret20_excess_spy, ret60, ret20_excess_spy - (ret60 / 3.0)
+
+
+def _trend_stability_support_applies(
+    candidate: dict[str, Any] | None,
+    config: dict[str, Any],
+) -> bool:
+    settings = _trend_stability_support_settings(config)
+    _, _, acceleration = _trend_stability_values(candidate)
+    return bool(
+        settings["enabled"]
+        and acceleration is not None
+        and settings["max_acceleration"] is not None
+        and acceleration <= float(settings["max_acceleration"])
+    )
+
+
 def _rank_notional_multiplier(
     queue_rank: Any,
     config: dict[str, Any],
@@ -1763,6 +1841,9 @@ def _rank_notional_multiplier(
         base = base * float(settings["scalar"] or 1.0)
     if _low_extension_support_applies(candidate, config):
         settings = _low_extension_support_settings(config)
+        base = base * float(settings["scalar"] or 1.0)
+    if _trend_stability_support_applies(candidate, config):
+        settings = _trend_stability_support_settings(config)
         base = base * float(settings["scalar"] or 1.0)
     return base
 
@@ -2182,6 +2263,50 @@ def _low_extension_support_metadata(
     }
 
 
+def _trend_stability_support_metadata(
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    base_multiplier: float,
+) -> dict[str, Any]:
+    settings = _trend_stability_support_settings(config)
+    ret20_excess_spy, ret60, acceleration = _trend_stability_values(candidate)
+    qualified = bool(
+        acceleration is not None
+        and settings["max_acceleration"] is not None
+        and acceleration <= float(settings["max_acceleration"])
+    )
+    applied = _trend_stability_support_applies(candidate, config)
+    return {
+        "trend_stability_support_applied": bool(applied),
+        "trend_stability_support_qualified": bool(qualified),
+        "trend_stability_support_profiles_enabled": bool(settings["enabled"]),
+        "trend_stability_support_ret20_excess_spy": _round(
+            ret20_excess_spy,
+            6,
+        ),
+        "trend_stability_support_ret60": _round(ret60, 6),
+        "trend_stability_support_acceleration": _round(acceleration, 6),
+        "trend_stability_support_max_acceleration": _round(
+            settings["max_acceleration"],
+            6,
+        ),
+        "trend_stability_support_configured_scalar": _round(
+            settings["scalar"],
+            6,
+        ),
+        "trend_stability_support_scalar": _round(settings["scalar"], 6)
+        if applied
+        else None,
+        "trend_stability_support_base_multiplier": _round(base_multiplier, 6),
+        "trend_stability_support_profile_name": settings["profile_name"],
+        "trend_stability_support_rule_version": settings["rule_version"],
+        "rank_notional_trend_stability_support_rule_version": settings[
+            "rule_version"
+        ],
+    }
+
+
 def _event_notional_for_queue_rank(
     queue_rank: Any,
     config: dict[str, Any],
@@ -2252,6 +2377,10 @@ def _apply_rank_notional(
     if _rank_depth_score_volume_applies(candidate, config):
         settings = _rank_depth_score_volume_settings(config)
         rank_depth_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
+    low_extension_adjusted_base_multiplier = rank_depth_adjusted_base_multiplier
+    if _low_extension_support_applies(candidate, config):
+        settings = _low_extension_support_settings(config)
+        low_extension_adjusted_base_multiplier *= float(settings["scalar"] or 1.0)
     multiplier = _rank_notional_multiplier(queue_rank, config, market_regime, candidate)
     candidate["rank_notional_multiplier"] = _round(multiplier, 6)
     candidate["event_notional_usd"] = _event_notional_for_queue_rank(
@@ -2348,6 +2477,13 @@ def _apply_rank_notional(
             base_multiplier=rank_depth_adjusted_base_multiplier,
         )
     )
+    candidate.update(
+        _trend_stability_support_metadata(
+            candidate,
+            config,
+            base_multiplier=low_extension_adjusted_base_multiplier,
+        )
+    )
     candidate["rank_notional_rule_version"] = RANK_NOTIONAL_RULE_VERSION
     candidate["rank_notional_regime_rule_version"] = RANK_NOTIONAL_REGIME_RULE_VERSION
     candidate["rank_notional_candidate_breadth_rule_version"] = (
@@ -2412,6 +2548,9 @@ def _apply_rank_notional(
     )
     candidate["rank_notional_low_extension_support_rule_version"] = (
         RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION
+    )
+    candidate["rank_notional_trend_stability_support_rule_version"] = (
+        RANK_NOTIONAL_TREND_STABILITY_SUPPORT_RULE_VERSION
     )
     candidate["rank_notional_profile_name"] = profile_name
     candidate["market_regime"] = deepcopy(market_regime or {})
@@ -2602,6 +2741,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
     absolute_score_support = _absolute_score_support_settings(cfg)
     rank_depth_score_volume = _rank_depth_score_volume_settings(cfg)
     low_extension_support = _low_extension_support_settings(cfg)
+    trend_stability_support = _trend_stability_support_settings(cfg)
     base_notional = float(cfg.get("event_notional_usd") or 0.0)
     return {
         "rule_version": RANK_NOTIONAL_RULE_VERSION,
@@ -2627,6 +2767,7 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
         "absolute_score_support_rule_version": RANK_NOTIONAL_ABSOLUTE_SCORE_SUPPORT_RULE_VERSION,
         "rank_depth_score_volume_rule_version": RANK_NOTIONAL_RANK_DEPTH_SCORE_VOLUME_RULE_VERSION,
         "low_extension_support_rule_version": RANK_NOTIONAL_LOW_EXTENSION_SUPPORT_RULE_VERSION,
+        "trend_stability_support_rule_version": RANK_NOTIONAL_TREND_STABILITY_SUPPORT_RULE_VERSION,
         "recent_ticker_repeat_rule_version": RANK_NOTIONAL_RECENT_TICKER_REPEAT_RULE_VERSION,
         "base_event_notional_usd": _round(base_notional, 2),
         "rank_notional_multipliers": [_round(value, 6) for value in values],
@@ -2940,6 +3081,20 @@ def _rank_notional_profile_payload(config: dict[str, Any]) -> dict[str, Any]:
             6,
         ),
         "low_extension_support_profile_name": low_extension_support[
+            "profile_name"
+        ],
+        "trend_stability_support_enabled": bool(
+            trend_stability_support["enabled"]
+        ),
+        "trend_stability_support_max_acceleration": _round(
+            trend_stability_support["max_acceleration"],
+            6,
+        ),
+        "trend_stability_support_scalar": _round(
+            trend_stability_support["scalar"],
+            6,
+        ),
+        "trend_stability_support_profile_name": trend_stability_support[
             "profile_name"
         ],
         "recent_ticker_repeat_profiles_enabled": bool(
@@ -3985,6 +4140,45 @@ def _fill_pending_entries(
             "low_extension_support_rule_version": entry.get(
                 "low_extension_support_rule_version"
             ),
+            "rank_notional_trend_stability_support_rule_version": entry.get(
+                "rank_notional_trend_stability_support_rule_version"
+            ),
+            "trend_stability_support_applied": bool(
+                entry.get("trend_stability_support_applied")
+            ),
+            "trend_stability_support_qualified": bool(
+                entry.get("trend_stability_support_qualified")
+            ),
+            "trend_stability_support_profiles_enabled": bool(
+                entry.get("trend_stability_support_profiles_enabled")
+            ),
+            "trend_stability_support_ret20_excess_spy": entry.get(
+                "trend_stability_support_ret20_excess_spy"
+            ),
+            "trend_stability_support_ret60": entry.get(
+                "trend_stability_support_ret60"
+            ),
+            "trend_stability_support_acceleration": entry.get(
+                "trend_stability_support_acceleration"
+            ),
+            "trend_stability_support_max_acceleration": entry.get(
+                "trend_stability_support_max_acceleration"
+            ),
+            "trend_stability_support_configured_scalar": entry.get(
+                "trend_stability_support_configured_scalar"
+            ),
+            "trend_stability_support_scalar": entry.get(
+                "trend_stability_support_scalar"
+            ),
+            "trend_stability_support_base_multiplier": entry.get(
+                "trend_stability_support_base_multiplier"
+            ),
+            "trend_stability_support_profile_name": entry.get(
+                "trend_stability_support_profile_name"
+            ),
+            "trend_stability_support_rule_version": entry.get(
+                "trend_stability_support_rule_version"
+            ),
             "recent_ticker_repeat_notional_applied": bool(
                 entry.get("recent_ticker_repeat_notional_applied")
             ),
@@ -4503,6 +4697,45 @@ def _add_queue_candidates(
             ),
             "low_extension_support_rule_version": candidate.get(
                 "low_extension_support_rule_version"
+            ),
+            "rank_notional_trend_stability_support_rule_version": candidate.get(
+                "rank_notional_trend_stability_support_rule_version"
+            ),
+            "trend_stability_support_applied": bool(
+                candidate.get("trend_stability_support_applied")
+            ),
+            "trend_stability_support_qualified": bool(
+                candidate.get("trend_stability_support_qualified")
+            ),
+            "trend_stability_support_profiles_enabled": bool(
+                candidate.get("trend_stability_support_profiles_enabled")
+            ),
+            "trend_stability_support_ret20_excess_spy": candidate.get(
+                "trend_stability_support_ret20_excess_spy"
+            ),
+            "trend_stability_support_ret60": candidate.get(
+                "trend_stability_support_ret60"
+            ),
+            "trend_stability_support_acceleration": candidate.get(
+                "trend_stability_support_acceleration"
+            ),
+            "trend_stability_support_max_acceleration": candidate.get(
+                "trend_stability_support_max_acceleration"
+            ),
+            "trend_stability_support_configured_scalar": candidate.get(
+                "trend_stability_support_configured_scalar"
+            ),
+            "trend_stability_support_scalar": candidate.get(
+                "trend_stability_support_scalar"
+            ),
+            "trend_stability_support_base_multiplier": candidate.get(
+                "trend_stability_support_base_multiplier"
+            ),
+            "trend_stability_support_profile_name": candidate.get(
+                "trend_stability_support_profile_name"
+            ),
+            "trend_stability_support_rule_version": candidate.get(
+                "trend_stability_support_rule_version"
             ),
             "rank_notional_multiplier": _float_or_none(
                 candidate.get("rank_notional_multiplier")

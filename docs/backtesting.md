@@ -335,6 +335,23 @@ kept single-ticker positive-share concentration inside the `50%` guardrail
 surfaced by the production default-off paper path, and has focused parity
 tests; live/default orders remain disabled.
 
+Latest accepted state-surface paper trend-stability support result:
+`exp-20260520-006` keeps the accepted `exp-20260520-001` low-extension stack
+fixed and adds one production-visible trend-stability support scalar. When an
+already-selected state-surface paper candidate has
+`features.ret20_excess_spy - features.ret60 / 3 <= 0.06`, the shared
+default-off paper path multiplies that candidate's active paper notional by
+`1.15` after the low-extension stack. Versus the accepted low-extension
+baseline, aggregate paper-overlay EV improved `+0.5528` and PnL improved
+`+$10,140.40`, with all three windows EV/PnL-positive and no regression:
+`late_strong +0.0710` EV / `+$1,490.95`, `mid_weak +0.4103` EV /
+`+$6,691.96`, and `old_thin +0.0715` EV / `+$1,957.49`. The rule adjusted 13
+paper trades across all 3 windows, worsened max drawdown by at most `0.02pp`,
+inside the `0.50pp` Gate 4 guardrail, and kept single-ticker positive-share
+concentration inside the `50%` guardrail (`44.49% -> 44.74%`). The rule lives
+in shared `state_surface_sleeve.py`, is surfaced by the production default-off
+paper path, and has focused parity tests; live/default orders remain disabled.
+
 Latest accepted broad-market candidate-pool paper result:
 `exp-20260519-036` keeps core metrics unchanged and promotes the fixed
 `exp-20260519-035` `price_floor_40` broad-market leadership candidate

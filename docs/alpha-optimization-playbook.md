@@ -57,8 +57,8 @@ Recent evidence only strengthens that view:
 - accepted core work kept entry and exit logic mostly fixed and improved EV via
   small post-sizing promotions on production-visible states;
 - accepted state-surface work kept the candidate queue tight and improved paper
-  EV via orthogonal quality fields, especially rank-depth and residual queue
-  structure;
+  EV via orthogonal quality fields, especially rank-depth, low-extension,
+  trend-stability, and residual queue structure;
 - accepted SEC work came from narrow context-aware event allocation, not broad
   language scalars;
 - accepted Space work now also fits the narrow allocation pattern: the
@@ -764,6 +764,10 @@ production-visible field:
 - nearby state-surface low-extension `ret5 <= 0.02` scalar retries after
   `exp-20260520-001`; keep the accepted `1.05x` fixed until forward outcomes
   widen the sample or introduce a distinct crowding/extension field;
+- nearby state-surface trend-stability
+  `ret20_excess_spy - ret60 / 3 <= 0.06` threshold/scalar retries after
+  `exp-20260520-006`; keep the accepted `1.15x` fixed until forward outcomes
+  widen the sample or introduce a distinct quality/risk field;
 - nearby broad-market leadership price-floor/profile retunes after
   `exp-20260519-036`; next evidence must be forward paper replacement value or
   a genuinely new production-visible field;
