@@ -529,6 +529,23 @@ lives in shared `broad_market_paper_sleeve.py`, is surfaced by `run.py` and
 `report_generator.py`, and has focused parity tests; live/default orders remain
 disabled.
 
+Latest accepted broad-market paper high-volatility refinement:
+`exp-20260520-003` keeps the accepted `exp-20260520-002` broad-market stack
+fixed and adds a production-visible realized-volatility paper notional field.
+When an already-selected broad-market paper candidate has
+`realized_volatility_20 >= 0.055`, the shared default-off paper path scales
+that candidate's active notional by `1.15` after the accepted rank and
+low-extension stack. Versus the low-extension baseline, three-window paper
+overlay EV improved `+0.1097` and PnL improved `+$2,164.26`:
+`late_strong +0.0516` EV / `+$1,109.90`, `mid_weak +0.0525` EV / `+$798.82`,
+and `old_thin +0.0056` EV / `+$255.54`. Nine paper trades were adjusted
+across all three windows, max drawdown worsened by only `0.01pp`,
+single-ticker positive share stayed at `13.25%`, and top-five positive share
+stayed at `43.28%`. The accepted rule lives in shared
+`broad_market_paper_sleeve.py`, is surfaced by `run.py` and
+`report_generator.py`, and has focused parity tests; live/default orders remain
+disabled.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The

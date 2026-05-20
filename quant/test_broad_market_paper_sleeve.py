@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from quant.broad_market_paper_sleeve import (
+    HIGH_VOLATILITY_RULE_VERSION,
     LOW_EXTENSION_RULE_VERSION,
     broad_market_candidate_notional_payload,
+    broad_market_high_volatility_multiplier,
     broad_market_low_extension_multiplier,
     broad_market_rank_notional_multiplier,
     build_broad_market_paper_candidates,
@@ -57,6 +59,7 @@ def test_broad_market_feature_and_price_floor_gate():
     assert high_feature is not None
     assert high_feature["close"] >= 40.0
     assert high_feature["ret5"] > 0.02
+    assert high_feature["realized_volatility_20"] >= 0.0
     assert candidate_passes_profile(high_feature)
     assert low_feature is not None
     assert low_feature["close"] < 40.0
@@ -97,6 +100,30 @@ def test_low_extension_support_scales_paper_notional_only_when_ret5_is_low():
     assert payload["low_extension_multiplier"] == 1.15
     assert payload["low_extension_support_applied"] is True
     assert payload["notional"] == 10350.0
+
+
+def test_high_volatility_support_scales_paper_notional_after_low_extension():
+    high_volatility_feature = {"ret5": 0.03, "realized_volatility_20": 0.06}
+    low_volatility_feature = {"ret5": 0.03, "realized_volatility_20": 0.04}
+
+    assert broad_market_high_volatility_multiplier(high_volatility_feature) == 1.15
+    assert broad_market_high_volatility_multiplier(low_volatility_feature) == 1.0
+
+    payload = broad_market_candidate_notional_payload(1, high_volatility_feature)
+    assert payload["base_notional"] == 7500.0
+    assert payload["rank_multiplier"] == 1.2
+    assert payload["low_extension_multiplier"] == 1.0
+    assert payload["high_volatility_multiplier"] == 1.15
+    assert payload["high_volatility_support_applied"] is True
+    assert payload["notional"] == 10350.0
+
+    stacked = broad_market_candidate_notional_payload(
+        1,
+        {"ret5": 0.01, "realized_volatility_20": 0.06},
+    )
+    assert stacked["low_extension_multiplier"] == 1.15
+    assert stacked["high_volatility_multiplier"] == 1.15
+    assert stacked["notional"] == 11902.5
 
 
 def test_rank_notional_profile_uses_last_multiplier_for_deeper_ranks():
@@ -140,3 +167,4 @@ def test_snapshot_adds_pending_and_fills_next_session_without_orders():
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
     assert second["trade_enabled"] is False
+    assert second["open_positions"][0]["source_candidate"]["high_volatility_rule_version"] == HIGH_VOLATILITY_RULE_VERSION

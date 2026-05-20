@@ -68,8 +68,10 @@ Recent evidence only strengthens that view:
   field exists;
 - broad-market discovery is now useful only when treated as a default-off
   paper candidate-pool problem: the price-floor leadership cohort passed the
-  three-window gate after moving into a shared adapter, but it still needs
-  forward replacement-value evidence before any core expansion;
+  three-window gate after moving into a shared adapter, and the accepted
+  rank/low-extension/high-volatility allocation fields improved it without
+  changing core; it still needs forward replacement-value evidence before any
+  core expansion;
 - recent tail diagnostics showed that paper EV alone is not enough when gains
   are too concentrated.
 
@@ -773,6 +775,10 @@ production-visible field:
   `exp-20260520-002`; keep the accepted `1.15x` fixed until forward paper
   outcomes widen the evidence or introduce a distinct production-visible
   extension/crowding field;
+- nearby broad-market realized-volatility support scalar or threshold retries
+  after `exp-20260520-003`; keep the accepted `realized_volatility_20 >=
+  0.055` and `1.15x` fixed until forward paper outcomes widen the evidence or
+  introduce a distinct risk/quality field;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
   green-deceleration scalar mining without a new state variable;
