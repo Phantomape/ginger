@@ -58,7 +58,8 @@ Recent evidence only strengthens that view:
   small post-sizing promotions on production-visible states;
 - accepted state-surface work kept the candidate queue tight and improved paper
   EV via orthogonal quality fields, especially rank-depth, low-extension,
-  trend-stability, and residual queue structure;
+  and residual queue structure; trend-stability scalar tuning was reclassified
+  as too weak under the stricter state-surface scalar gate;
 - accepted SEC work came from narrow context-aware event allocation, not broad
   language scalars;
 - accepted Space work now also fits the narrow allocation pattern: the
@@ -766,8 +767,10 @@ production-visible field:
   widen the sample or introduce a distinct crowding/extension field;
 - nearby state-surface trend-stability
   `ret20_excess_spy - ret60 / 3 <= 0.06` threshold/scalar retries after
-  `exp-20260520-006`; keep the accepted `1.15x` fixed until forward outcomes
-  widen the sample or introduce a distinct quality/risk field;
+  `exp-20260520-006`; the `1.15x` candidate was rejected because aggregate EV
+  improved only `+3.487%`, below the strict `>10%` state-surface scalar gate;
+  retry only with a broader sample, a distinct quality/risk field, or strict
+  `>10%` aggregate EV evidence;
 - nearby broad-market leadership price-floor/profile retunes after
   `exp-20260519-036`; next evidence must be forward paper replacement value or
   a genuinely new production-visible field;

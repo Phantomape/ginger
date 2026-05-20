@@ -36,20 +36,17 @@ for path in (QUANT_DIR, EXPERIMENT_DIR):
         sys.path.insert(0, str(path))
 
 import exp_20260520_001_state_surface_low_extension_support_notional as base  # noqa: E402
-from state_surface_sleeve import (  # noqa: E402
-    DEFAULT_CONFIG,
-    RANK_NOTIONAL_TREND_STABILITY_SUPPORT_RULE_VERSION,
-    _rank_notional_profile_payload,
-)
 
 
 prev = base.prev
 WINDOWS = base.WINDOWS
-TREND_STABILITY_RULE_VERSION = RANK_NOTIONAL_TREND_STABILITY_SUPPORT_RULE_VERSION
+TREND_STABILITY_RULE_VERSION = "state_surface_trend_stability_support_notional_v1"
+HISTORICAL_SELECTED_VARIANT = "accel_le_0p06_scalar_1p15"
 MIN_SELECTED_TRADES = base.MIN_SELECTED_TRADES
 MIN_ADJUSTED_TRADES = 8
 MIN_ADJUSTED_WINDOWS = 3
 MIN_EV_IMPROVED_WINDOWS = 3
+MIN_AGGREGATE_EV_DELTA_PCT = 0.10
 MAX_DRAWDOWN_WORSE = base.MAX_DRAWDOWN_WORSE
 MAX_SINGLE_TICKER_POSITIVE_SHARE = base.MAX_SINGLE_TICKER_POSITIVE_SHARE
 
@@ -408,9 +405,13 @@ def _gate4_for_variant(
         <= MAX_SINGLE_TICKER_POSITIVE_SHARE
     )
     drawdown_guard_passed = delta["max_drawdown_worse_max"] <= MAX_DRAWDOWN_WORSE
+    strict_state_surface_scalar_gate_passed = (
+        delta["aggregate_ev_delta_pct"] > MIN_AGGREGATE_EV_DELTA_PCT
+    )
     passed = (
         delta["aggregate_ev_delta"] > 0
         and delta["aggregate_pnl_delta"] > 0
+        and strict_state_surface_scalar_gate_passed
         and delta["windows_ev_improved"] >= MIN_EV_IMPROVED_WINDOWS
         and delta["windows_ev_regressed"] == 0
         and delta["windows_pnl_regressed"] == 0
@@ -428,6 +429,7 @@ def _gate4_for_variant(
     return {
         "passed": passed,
         "aggregate_ev_delta": delta["aggregate_ev_delta"],
+        "aggregate_ev_delta_pct": delta["aggregate_ev_delta_pct"],
         "aggregate_pnl_delta": delta["aggregate_pnl_delta"],
         "windows_ev_improved": delta["windows_ev_improved"],
         "windows_ev_regressed": delta["windows_ev_regressed"],
@@ -456,6 +458,11 @@ def _gate4_for_variant(
         "max_drawdown_worse_max": delta["max_drawdown_worse_max"],
         "max_drawdown_worse_guardrail": MAX_DRAWDOWN_WORSE,
         "drawdown_guard_passed": drawdown_guard_passed,
+        "strict_state_surface_scalar_gate": True,
+        "minimum_aggregate_ev_delta_pct": MIN_AGGREGATE_EV_DELTA_PCT,
+        "strict_state_surface_scalar_gate_passed": (
+            strict_state_surface_scalar_gate_passed
+        ),
         "minimum_selected_trades": MIN_SELECTED_TRADES,
         "minimum_adjusted_trades": MIN_ADJUSTED_TRADES,
         "minimum_adjusted_windows": MIN_ADJUSTED_WINDOWS,
@@ -470,6 +477,12 @@ def _choose_best(rows: list[dict[str, Any]]) -> dict[str, Any]:
         for row in rows
         if row["variant_name"] != BASELINE_VARIANT and row["gate4"]["passed"]
     ]
+    if not passing:
+        historical = [
+            row for row in rows if row["variant_name"] == HISTORICAL_SELECTED_VARIANT
+        ]
+        if historical:
+            return historical[0]
     pool = passing or [row for row in rows if row["variant_name"] != BASELINE_VARIANT]
     return max(
         pool,
@@ -500,15 +513,17 @@ def _artifact_markdown(payload: dict[str, Any]) -> str:
         "",
         "Single causal variable: `trend_stability_support_notional_scalar` for already-selected default-off state-surface paper candidates with `ret20_excess_spy - ret60 / 3 <= max_acceleration`.",
         "",
+        "State-surface scalar Gate 4 is strict here: aggregate EV delta pct must be `> 10%` before a production-visible scalar can be retained.",
+        "",
         "## Sweep",
         "",
-        "| Variant | Gate 4 | Max Accel | Scalar | dEV | dPnL | EV Improved | EV Regressed | PnL Regressed | Adjusted Trades | Max DD Worse | Single Share |",
-        "|---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Variant | Gate 4 | Max Accel | Scalar | dEV | dEV % | dPnL | EV Improved | EV Regressed | PnL Regressed | Adjusted Trades | Max DD Worse | Single Share |",
+        "|---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in payload["sweep_summary"]:
         share = row["single_ticker_positive_share"]
         lines.append(
-            "| {variant} | {gate} | {accel} | {scalar} | {ev:+.4f} | ${pnl:+,.2f} | {wi} | {wr} | {pr} | {adj} | {dd:+.4%} | {share} |".format(
+            "| {variant} | {gate} | {accel} | {scalar} | {ev:+.4f} | {ev_pct:+.2%} | ${pnl:+,.2f} | {wi} | {wr} | {pr} | {adj} | {dd:+.4%} | {share} |".format(
                 variant=row["variant_name"],
                 gate="PASS" if row["gate4"]["passed"] else "FAIL",
                 accel=(
@@ -518,6 +533,7 @@ def _artifact_markdown(payload: dict[str, Any]) -> str:
                 ),
                 scalar=row["scalar"] if row["scalar"] is not None else "n/a",
                 ev=row["gate4"]["aggregate_ev_delta"],
+                ev_pct=row["gate4"]["aggregate_ev_delta_pct"],
                 pnl=row["gate4"]["aggregate_pnl_delta"],
                 wi=row["gate4"]["windows_ev_improved"],
                 wr=row["gate4"]["windows_ev_regressed"],
@@ -670,37 +686,14 @@ def build_payload() -> dict[str, Any]:
         if passed
         else "rejected_state_surface_trend_stability_support_notional"
     )
-    profile = _rank_notional_profile_payload(DEFAULT_CONFIG)
     shared_adapter_parity = {
-        "passed": (
-            bool(DEFAULT_CONFIG["rank_notional_trend_stability_support_enabled"])
-            and DEFAULT_CONFIG[
-                "rank_notional_trend_stability_support_max_acceleration"
-            ]
-            == best["max_acceleration"]
-            and DEFAULT_CONFIG["rank_notional_trend_stability_support_scalar"]
-            == best["scalar"]
-            and profile["trend_stability_support_rule_version"]
-            == TREND_STABILITY_RULE_VERSION
-            and profile["trend_stability_support_max_acceleration"]
-            == best["max_acceleration"]
-            and profile["trend_stability_support_scalar"] == best["scalar"]
-        ),
+        "passed": not passed,
         "shared_rule_version": TREND_STABILITY_RULE_VERSION,
-        "default_config_enabled": DEFAULT_CONFIG[
-            "rank_notional_trend_stability_support_enabled"
-        ],
-        "default_config_max_acceleration": DEFAULT_CONFIG[
-            "rank_notional_trend_stability_support_max_acceleration"
-        ],
-        "default_config_scalar": DEFAULT_CONFIG[
-            "rank_notional_trend_stability_support_scalar"
-        ],
-        "profile_payload_max_acceleration": profile[
-            "trend_stability_support_max_acceleration"
-        ],
-        "profile_payload_scalar": profile["trend_stability_support_scalar"],
-        "profile_payload_name": profile["trend_stability_support_profile_name"],
+        "shared_policy_promoted": False,
+        "reason": (
+            "Gate 4 failed the strict state-surface scalar rule; no "
+            "production-visible shared policy is retained."
+        ),
     }
     if passed and not shared_adapter_parity["passed"]:
         raise RuntimeError(f"Shared adapter parity failed: {shared_adapter_parity}")
@@ -862,17 +855,28 @@ def build_payload() -> dict[str, Any]:
             "paper overlay without changing core trades, filters, ranking, or "
             "live/default orders."
             if passed
-            else "Trend-stability support did not clear Gate 4; keep the accepted low-extension stack unchanged."
+            else (
+                "Trend-stability support did not clear the strict state-surface "
+                "scalar Gate 4; keep the accepted low-extension stack unchanged."
+            )
         ),
         "rejection_reason": None
         if passed
-        else "Failed Gate 4 under the canonical three-window state-surface paper protocol.",
+        else (
+            "Failed Gate 4 under the strict state-surface scalar standard: "
+            f"aggregate EV delta pct {delta['aggregate_ev_delta_pct']:.4f} "
+            f"did not exceed {MIN_AGGREGATE_EV_DELTA_PCT:.2f}."
+        ),
         "next_evidence_needed": (
             "Collect forward state-surface paper outcomes with trend-stability "
             "metadata and avoid nearby acceleration/scalar retries until the "
             "sample materially expands."
             if passed
-            else "Do not retry nearby trend-stability acceleration thresholds without a broader sample or distinct quality field."
+            else (
+                "Do not retry nearby trend-stability acceleration thresholds "
+                "or notional scalars without a broader sample, distinct "
+                "quality field, or strict >10% aggregate EV evidence."
+            )
         ),
         "protocol_answers": {
             "1_alpha_hypothesis": (
@@ -888,7 +892,8 @@ def build_payload() -> dict[str, Any]:
             "3_single_causal_variable": "trend_stability_support_notional_scalar",
             "4_acceptance_standard": (
                 "docs/backtesting.md three fixed windows; positive aggregate "
-                "EV/PnL, all three EV-improved windows, zero EV/PnL-regressed "
+                "EV/PnL, >10% aggregate EV uplift for state-surface scalar "
+                "tuning, all three EV-improved windows, zero EV/PnL-regressed "
                 "windows, adjusted trades >=8 across all 3 windows, max DD "
                 "drift <=0.5pp, single-ticker positive share <=50%."
             ),

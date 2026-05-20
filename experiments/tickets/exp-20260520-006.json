@@ -1,9 +1,10 @@
 {
-  "decision": "accepted_default_off_state_surface_trend_stability_support_notional",
+  "decision": "rejected_state_surface_trend_stability_support_notional",
   "experiment_id": "exp-20260520-006",
   "gate4": {
     "adjusted_guard_passed": true,
     "aggregate_ev_delta": 0.5528,
+    "aggregate_ev_delta_pct": 0.03487,
     "aggregate_pnl_delta": 10140.4,
     "baseline_single_ticker_positive_share": 0.44485,
     "concentration_guard_passed": true,
@@ -65,13 +66,16 @@
     "max_single_ticker_positive_share": 0.5,
     "minimum_adjusted_trades": 8,
     "minimum_adjusted_windows": 3,
+    "minimum_aggregate_ev_delta_pct": 0.1,
     "minimum_ev_improved_windows": 3,
     "minimum_selected_trades": 9,
-    "passed": true,
+    "passed": false,
     "sample_guard_passed": true,
     "selected_trade_count": 24,
     "single_ticker_positive_share": 0.447406,
     "single_ticker_positive_share_delta": 0.002556,
+    "strict_state_surface_scalar_gate": true,
+    "strict_state_surface_scalar_gate_passed": false,
     "trend_stability_support_adjusted_trade_count": 13,
     "trend_stability_support_adjusted_windows": [
       "late_strong",
@@ -91,16 +95,16 @@
   },
   "hypothesis": "Already-selected state-surface paper candidates with steady medium-term trend, measured as ret20_excess_spy - ret60 / 3 <= a small acceleration cap, may deserve a bounded support scalar after the accepted low-extension stack.",
   "lane": "alpha_search",
-  "next_evidence_needed": "Collect forward state-surface paper outcomes with trend-stability metadata and avoid nearby acceleration/scalar retries until the sample materially expands.",
+  "next_evidence_needed": "Do not retry nearby trend-stability acceleration thresholds or notional scalars without a broader sample, distinct quality field, or strict >10% aggregate EV evidence.",
   "production_impact": {
     "backtester_adapter_changed": false,
     "core_metrics_changed": false,
     "default_off_paper_only": true,
     "live_default_orders_changed": false,
-    "parity_test_added": true,
+    "parity_test_added": false,
     "replay_only": false,
-    "run_adapter_changed": true,
-    "shared_policy_changed": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
     "trade_enabled": false
   },
   "related_files": {
@@ -115,14 +119,10 @@
     "ticket": "experiments/tickets/exp-20260520-006.json"
   },
   "shared_adapter_parity": {
-    "default_config_enabled": true,
-    "default_config_max_acceleration": 0.06,
-    "default_config_scalar": 1.15,
     "passed": true,
-    "profile_payload_max_acceleration": 0.06,
-    "profile_payload_name": "trend_stability_accel_le_0p06_1p15x",
-    "profile_payload_scalar": 1.15,
+    "reason": "Gate 4 failed the strict state-surface scalar rule; no production-visible shared policy is retained.",
+    "shared_policy_promoted": false,
     "shared_rule_version": "state_surface_trend_stability_support_notional_v1"
   },
-  "status": "accepted"
+  "status": "rejected"
 }
