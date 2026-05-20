@@ -135,6 +135,8 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 `expected_value_score` 提升 > 10% 可以作为**强接受信号**，但不作为硬性最低门槛。小幅但稳定的边际提升在策略系统中可能有价值，尤其当它同时降低复杂度、降低尾部风险、改善生产一致性或提升可归因性。
 
+**state-surface 加严规则**：`state_surface_sleeve` 已经叠加了多层 paper notional scalar / rank profile / support / haircut 规则，继续做同类阈值、profile、notional scalar 或 capital allocation 调参时，`expected_value_score` 提升 > 10% 必须作为 Gate 4 的硬性最低门槛，而不是强接受信号。计算口径以 `docs/backtesting.md` 的标准多窗口 before/after aggregate `expected_value_score` 为准。若 aggregate EV 未提升超过 10%，默认必须回滚策略改动并记录为失败实验；不得用“小幅但稳定”“三窗口都改善”“PnL 改善”“paper-only”“不影响生产订单”等理由保留。例外只允许 `measurement_repair`，且必须说明它修复了哪一个会扭曲 alpha 评估或生产 / 回测一致性的阻断项。
+
 默认保留规则：
 
 1. **强保留**：`expected_value_score` 明显提升，且 drawdown、尾部风险、trade count、survival rate 没有不可接受恶化。
