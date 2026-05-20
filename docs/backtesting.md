@@ -402,6 +402,24 @@ stayed at `43.28%`. The rule lives in shared
 `broad_market_paper_sleeve.py`, is surfaced by the production default-off
 paper path, and has focused parity tests; live/default orders remain disabled.
 
+Latest accepted broad-market paper trend-persistence result:
+`exp-20260520-004` keeps the accepted `exp-20260520-003` broad-market stack
+fixed, but adds one production-visible trend-persistence support field. When
+an already-selected broad-market paper candidate has
+`positive_day_ratio_20 >= 0.55`, the shared default-off paper path multiplies
+that candidate's active paper notional by `1.15` after the accepted
+rank-notional, low-extension, and high-volatility stack. Versus the accepted
+high-volatility baseline, aggregate paper-overlay EV improved `+0.1197` and
+PnL improved `+$3,502.29`, with all three canonical windows EV/PnL-positive
+and no regression: `late_strong +0.0788` EV / `+$2,038.69`,
+`mid_weak +0.0315` EV / `+$1,031.18`, and `old_thin +0.0094` EV /
+`+$432.42`. The rule adjusted 79 paper trades across all three windows, max
+drawdown worsened by at most `0.05pp`, single-ticker positive share stayed at
+`13.52%`, and top-five positive share stayed at `42.72%`. The rule lives in
+shared `broad_market_paper_sleeve.py`, is surfaced by the production
+default-off paper path, and has focused parity tests; live/default orders
+remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted

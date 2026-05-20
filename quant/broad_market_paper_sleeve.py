@@ -23,10 +23,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "BROAD_MARKET_LEADERSHIP_PAPER"
-RULE_VERSION = "broad_market_price_floor_rank_low_extension_high_volatility_v1"
+RULE_VERSION = "broad_market_price_floor_rank_low_extension_high_volatility_trend_persistence_v1"
 RANK_NOTIONAL_RULE_VERSION = "broad_market_rank_notional_profile_v1"
 LOW_EXTENSION_RULE_VERSION = "broad_market_low_extension_notional_v1"
 HIGH_VOLATILITY_RULE_VERSION = "broad_market_high_volatility_notional_v1"
+TREND_PERSISTENCE_RULE_VERSION = "broad_market_trend_persistence_notional_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("broad_market_paper_state")
@@ -61,6 +62,8 @@ DEFAULT_CONFIG = {
     "low_extension_notional_scalar": 1.15,
     "high_volatility_20_min": 0.055,
     "high_volatility_notional_scalar": 1.15,
+    "trend_persistence_positive_day_ratio_20_min": 0.55,
+    "trend_persistence_notional_scalar": 1.15,
     "max_active_positions": 5,
     "daily_entry_slots": 3,
     "hold_days": 20,
@@ -366,6 +369,28 @@ def _realized_volatility(
     return variance ** 0.5
 
 
+def _positive_day_ratio(
+    rows: list[dict[str, Any]],
+    idx: int,
+    lookback: int,
+) -> float | None:
+    if idx < lookback:
+        return None
+    positive_days = 0
+    observed_days = 0
+    for cursor in range(idx - lookback + 1, idx + 1):
+        prev_close = _positive_float(rows[cursor - 1].get("close"))
+        close = _positive_float(rows[cursor].get("close"))
+        if not prev_close or not close:
+            return None
+        observed_days += 1
+        if close > prev_close:
+            positive_days += 1
+    if observed_days != lookback:
+        return None
+    return positive_days / observed_days
+
+
 def build_broad_market_feature(
     *,
     ticker: str,
@@ -419,6 +444,9 @@ def build_broad_market_feature(
     realized_volatility_20 = _realized_volatility(rows, idx, 20)
     if realized_volatility_20 is None:
         return None
+    positive_day_ratio_20 = _positive_day_ratio(rows, idx, 20)
+    if positive_day_ratio_20 is None:
+        return None
     score = (
         ret20 - spy_ret20
         + 0.50 * ret60
@@ -438,6 +466,7 @@ def build_broad_market_feature(
         "volume_ratio_20": round(volume_ratio_20, 6),
         "near_high_60": round(near_high_60, 6),
         "realized_volatility_20": round(realized_volatility_20, 6),
+        "positive_day_ratio_20": round(positive_day_ratio_20, 6),
         "score": round(score, 6),
     }
 
@@ -534,6 +563,11 @@ def backtest_trade_from_feature(
         "high_volatility_notional_scalar": cfg["high_volatility_notional_scalar"],
         "high_volatility_notional_multiplier": notional_payload["high_volatility_multiplier"],
         "high_volatility_support_applied": notional_payload["high_volatility_support_applied"],
+        "trend_persistence_rule_version": TREND_PERSISTENCE_RULE_VERSION,
+        "trend_persistence_positive_day_ratio_20_min": cfg["trend_persistence_positive_day_ratio_20_min"],
+        "trend_persistence_notional_scalar": cfg["trend_persistence_notional_scalar"],
+        "trend_persistence_notional_multiplier": notional_payload["trend_persistence_multiplier"],
+        "trend_persistence_support_applied": notional_payload["trend_persistence_support_applied"],
         "base_paper_notional": notional_payload["base_notional"],
         "ret20_excess_spy": feature["ret20_excess_spy"],
         "ret5": feature.get("ret5"),
@@ -541,6 +575,7 @@ def backtest_trade_from_feature(
         "volume_ratio_20": feature["volume_ratio_20"],
         "near_high_60": feature["near_high_60"],
         "realized_volatility_20": feature["realized_volatility_20"],
+        "positive_day_ratio_20": feature["positive_day_ratio_20"],
         "decision_close": feature["close"],
         "decision_close_price_min": cfg["decision_close_price_min"],
         "score": feature["score"],
@@ -583,6 +618,11 @@ def _candidate_from_feature(
         "high_volatility_notional_scalar": config["high_volatility_notional_scalar"],
         "high_volatility_notional_multiplier": notional_payload["high_volatility_multiplier"],
         "high_volatility_support_applied": notional_payload["high_volatility_support_applied"],
+        "trend_persistence_rule_version": TREND_PERSISTENCE_RULE_VERSION,
+        "trend_persistence_positive_day_ratio_20_min": config["trend_persistence_positive_day_ratio_20_min"],
+        "trend_persistence_notional_scalar": config["trend_persistence_notional_scalar"],
+        "trend_persistence_notional_multiplier": notional_payload["trend_persistence_multiplier"],
+        "trend_persistence_support_applied": notional_payload["trend_persistence_support_applied"],
         "trade_enabled": False,
         "alters_orders": False,
         "features": deepcopy(feature),
@@ -662,6 +702,21 @@ def broad_market_high_volatility_multiplier(
     return 1.0
 
 
+def broad_market_trend_persistence_multiplier(
+    feature: dict[str, Any] | None,
+    config: dict[str, Any] | None = None,
+) -> float:
+    cfg = _config(config)
+    ratio = _float_or_none((feature or {}).get("positive_day_ratio_20"))
+    min_ratio = _float_or_none(cfg.get("trend_persistence_positive_day_ratio_20_min"))
+    scalar = _positive_float(cfg.get("trend_persistence_notional_scalar"))
+    if ratio is None or min_ratio is None or scalar is None:
+        return 1.0
+    if ratio >= min_ratio:
+        return round(scalar, 6)
+    return 1.0
+
+
 def broad_market_candidate_notional_payload(
     source_rank: Any,
     feature: dict[str, Any] | None = None,
@@ -671,11 +726,13 @@ def broad_market_candidate_notional_payload(
     rank_payload = broad_market_rank_notional_payload(source_rank, cfg)
     low_extension_multiplier = broad_market_low_extension_multiplier(feature, cfg)
     high_volatility_multiplier = broad_market_high_volatility_multiplier(feature, cfg)
+    trend_persistence_multiplier = broad_market_trend_persistence_multiplier(feature, cfg)
     notional = (
         float(rank_payload["base_notional"])
         * float(rank_payload["multiplier"])
         * low_extension_multiplier
         * high_volatility_multiplier
+        * trend_persistence_multiplier
     )
     return {
         "base_notional": rank_payload["base_notional"],
@@ -684,6 +741,8 @@ def broad_market_candidate_notional_payload(
         "low_extension_support_applied": low_extension_multiplier != 1.0,
         "high_volatility_multiplier": high_volatility_multiplier,
         "high_volatility_support_applied": high_volatility_multiplier != 1.0,
+        "trend_persistence_multiplier": trend_persistence_multiplier,
+        "trend_persistence_support_applied": trend_persistence_multiplier != 1.0,
         "notional": round(notional, 2),
     }
 
