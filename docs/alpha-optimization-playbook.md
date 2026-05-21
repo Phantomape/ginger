@@ -591,6 +591,9 @@ production-visible field:
 - nearby event-overlay state-rank, source-capacity, or adjacent source-scalar
   retries once the source/context family has just been tested, unless new
   forward rows or a new source-quality field exist;
+- Space candidate-pool pruning that keeps only mature same-theme replacement
+  winners, or repackages the same VSAT/satcom extension, without new closed
+  forward rows or a genuinely new catalyst-quality field;
 - buyback work that only adds keyword coverage;
 - Form 4 work that ignores options-market context;
 - ticker-specific exception mining once an exception is already accepted.
