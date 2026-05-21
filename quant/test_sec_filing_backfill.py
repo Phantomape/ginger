@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+import sec_filing_backfill as backfill
 from sec_filing_backfill import parse_acceptance_datetime, parse_filing_rows, usable_trade_date
 
 
@@ -47,3 +48,20 @@ def test_parse_filing_rows_filters_forms_and_window():
     assert rows[0]["usable_trade_date"] == "2025-01-03"
     assert rows[1]["is_amendment"] is True
     assert rows[1]["archive_url"].endswith("/000032019325000010/q.htm")
+
+
+def test_ticker_to_cik_map_falls_back_to_shared_reference(tmp_path, monkeypatch):
+    monkeypatch.setattr(backfill, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(
+        backfill,
+        "load_company_ticker_map",
+        lambda: {
+            "0000320193": {"ticker": "AAPL", "cik": "0000320193"},
+            "0000789019": {"ticker": "MSFT", "cik": "0000789019"},
+        },
+    )
+
+    mapping = backfill._ticker_to_cik_map()
+
+    assert mapping["AAPL"] == "0000320193"
+    assert mapping["MSFT"] == "0000789019"

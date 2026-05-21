@@ -12,7 +12,7 @@ from typing import Any
 
 from data_paths import resolve_daily_artifact_path
 from sec_submissions import fetch_submission
-from sec_ticker_map import normalize_cik
+from sec_ticker_map import load_company_ticker_map, normalize_cik
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -101,15 +101,23 @@ def usable_trade_date(accepted_at: datetime | None, filing_date: str | None) -> 
 def _ticker_to_cik_map() -> dict[str, str]:
     payload = _load_json(DATA_DIR / "sec_company_tickers.json", {})
     rows = payload.values() if isinstance(payload, dict) else payload
-    out: dict[str, str] = {}
+    direct: dict[str, str] = {}
     for row in rows or []:
         if not isinstance(row, dict):
             continue
         ticker = str(row.get("ticker") or "").upper()
         cik = normalize_cik(row.get("cik_str") or row.get("cik"))
         if ticker and cik:
-            out.setdefault(ticker, cik)
-    return out
+            direct.setdefault(ticker, cik)
+    if direct:
+        return direct
+
+    mapping: dict[str, str] = {}
+    for cik, row in load_company_ticker_map().items():
+        ticker = str(row.get("ticker") or "").upper()
+        if ticker:
+            mapping.setdefault(ticker, cik)
+    return mapping
 
 
 def _universe_tickers(segments: tuple[str, ...]) -> list[str]:
