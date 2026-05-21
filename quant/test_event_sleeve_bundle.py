@@ -132,6 +132,7 @@ def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> 
                 {
                     "ticker": "ABC",
                     "usable_trade_date": "2026-05-04",
+                    "reaction_bucket": "reaction_-2_to_0",
                     "counterfactual": counterfactual,
                 },
             ],
@@ -149,6 +150,8 @@ def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> 
         "sec_negative_reaction",
         "form4_meaningful_purchase",
     }
+    abc = [row for row in snapshot["candidates"] if row["ticker"] == "ABC"]
+    assert abc[0]["reaction_bucket"] == "reaction_-2_to_0"
     assert all(row["alters_orders"] is False for row in snapshot["candidates"])
 
 
@@ -487,6 +490,111 @@ def test_event_sleeve_bundle_applies_governance_source_quality_tilt_without_orde
     assert summary["source_quality_tilt_incremental_notional_usd"] == 35000.0
     assert summary["parameters"]["source_quality_source"] == "sec_governance_procedural"
     assert summary["parameters"]["source_quality_tilt_scalar"] == 2.0
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
+def test_event_sleeve_bundle_applies_negative_reaction_tilt_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-21",
+        sec_negative_event_queue={
+            "rule_version": "sec_negative_rule",
+            "candidates": [
+                {
+                    "ticker": "NNEG",
+                    "usable_trade_date": "2026-05-21",
+                    "reaction_bucket": "reaction_-2_to_0",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+        sec_governance_event_queue={
+            "rule_version": "sec_governance_rule",
+            "candidates": [
+                {
+                    "ticker": "GNEG",
+                    "usable_trade_date": "2026-05-21",
+                    "reaction_bucket": "negative_excess_0_to_minus_2pct",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "GPOS",
+                    "usable_trade_date": "2026-05-21",
+                    "reaction_bucket": "positive_excess_0_to_2pct",
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 8,
+            "scored_candidates": [
+                {
+                    "ticker": "NNEG",
+                    "rank": 2,
+                    "score": 0.84,
+                    "surface": "broad_breadth_trend_persistence",
+                    "breadth_bucket": "broad_breadth",
+                    "decision_date": "2026-05-21",
+                },
+                {
+                    "ticker": "GNEG",
+                    "rank": 6,
+                    "score": 0.91,
+                    "surface": "balanced_state_leadership",
+                    "breadth_bucket": "mixed_breadth",
+                    "decision_date": "2026-05-21",
+                },
+                {
+                    "ticker": "GPOS",
+                    "rank": 7,
+                    "score": 0.76,
+                    "surface": "balanced_state_leadership",
+                    "breadth_bucket": "mixed_breadth",
+                    "decision_date": "2026-05-21",
+                },
+            ],
+        },
+    )
+
+    by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
+    neg = by_ticker["NNEG"]["state_surface_addon"]
+    assert neg["eligible"] is True
+    assert neg["broad_breadth_tilt"] is True
+    assert neg["negative_reaction_tilt"] is True
+    assert neg["negative_reaction_bucket"] == "reaction_-2_to_0"
+    assert neg["state_surface_scalar"] == 2.5
+    assert neg["negative_reaction_scalar"] == 2.0
+    assert neg["scalar"] == 5.0
+    assert by_ticker["NNEG"]["paper_event_notional_usd"] == 50000.0
+    assert by_ticker["NNEG"]["alters_orders"] is False
+
+    gov_neg = by_ticker["GNEG"]["state_surface_addon"]
+    assert gov_neg["eligible"] is False
+    assert gov_neg["source_quality_tilt"] is True
+    assert gov_neg["negative_reaction_tilt"] is True
+    assert gov_neg["source_quality_scalar"] == 2.0
+    assert gov_neg["negative_reaction_scalar"] == 2.0
+    assert gov_neg["scalar"] == 4.0
+    assert (
+        gov_neg["reason"]
+        == "generic_state_surface_sec_governance_source_quality_negative_reaction_support"
+    )
+    assert by_ticker["GNEG"]["paper_event_notional_usd"] == 40000.0
+
+    gov_pos = by_ticker["GPOS"]["state_surface_addon"]
+    assert gov_pos["source_quality_tilt"] is True
+    assert gov_pos["negative_reaction_tilt"] is False
+    assert gov_pos["scalar"] == 2.0
+    assert by_ticker["GPOS"]["paper_event_notional_usd"] == 20000.0
+
+    summary = snapshot["state_surface_addon"]
+    assert summary["source_quality_tilt_candidate_count"] == 2
+    assert summary["negative_reaction_tilt_candidate_count"] == 2
+    assert summary["source_quality_tilt_incremental_notional_usd"] == 20000.0
+    assert summary["negative_reaction_tilt_incremental_notional_usd"] == 45000.0
+    assert summary["incremental_notional_usd"] == 80000.0
+    assert "reaction_-2_to_0" in summary["parameters"]["negative_reaction_buckets"]
+    assert summary["parameters"]["negative_reaction_tilt_scalar"] == 2.0
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
