@@ -29,7 +29,7 @@ SOURCE_PRIORITY = {
 }
 
 STATE_SURFACE_ADDON_RULE_VERSION = (
-    "non_generic_positive_state_surface_rotation_tilt_v1"
+    "non_generic_positive_state_surface_front_rank_rotation_tilt_v2"
 )
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
 STATE_SURFACE_ROTATION_TILT_SURFACE = "rotation_breakout_leadership"
@@ -79,6 +79,9 @@ DEFAULT_CONFIG = {
     "state_surface_addon_scalar": 2.0,
     "state_surface_rotation_tilt_surface": STATE_SURFACE_ROTATION_TILT_SURFACE,
     "state_surface_rotation_tilt_scalar": 3.0,
+    "state_surface_front_rank_rotation_tilt_enabled": True,
+    "state_surface_front_rank_rotation_max_rank_pct": 0.20,
+    "state_surface_front_rank_rotation_tilt_scalar": 4.0,
     "state_surface_addon_generic_surface": STATE_SURFACE_GENERIC_SURFACE,
 }
 
@@ -802,13 +805,23 @@ def _state_surface_candidates_by_ticker(
         or state_surface_queue.get("candidates")
         or []
     )
+    scored_count = _int(
+        state_surface_queue.get("scored_candidate_count")
+        or len(rows)
+        or state_surface_queue.get("candidate_count")
+    )
     out: dict[str, dict[str, Any]] = {}
     for row in rows:
         if not isinstance(row, dict):
             continue
         ticker = str(row.get("ticker") or "").upper()
         if ticker:
-            out[ticker] = row
+            candidate = deepcopy(row)
+            if candidate.get("state_rank_pct") in (None, "") and scored_count:
+                rank = _int(candidate.get("rank"))
+                if rank > 0:
+                    candidate["state_rank_pct"] = round(rank / scored_count, 6)
+            out[ticker] = candidate
     return out
 
 
@@ -825,7 +838,10 @@ def _with_state_surface_addon(
     surface = None
     score = None
     decision_date = None
+    state_rank = None
+    state_rank_pct = None
     rotation_tilt = False
+    front_rank_rotation_tilt = False
 
     if not bool(config.get("state_surface_addon_paper_enabled", True)):
         reason = "state_surface_addon_disabled"
@@ -833,6 +849,10 @@ def _with_state_surface_addon(
         surface = state_row.get("surface") or state_row.get("state_surface")
         score = _float_or_none(state_row.get("score") or state_row.get("state_score"))
         decision_date = state_row.get("decision_date") or state_row.get("date")
+        state_rank = _int(state_row.get("rank")) or None
+        state_rank_pct = _float_or_none(
+            state_row.get("state_rank_pct") or state_row.get("rank_pct")
+        )
         generic_surface = str(
             config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
         )
@@ -850,8 +870,24 @@ def _with_state_surface_addon(
             )
             rotation_tilt = str(surface or "") == rotation_surface
             if rotation_tilt:
-                scalar = float(config["state_surface_rotation_tilt_scalar"])
-                reason = "eligible_rotation_breakout_positive_state_surface"
+                front_rank_enabled = bool(
+                    config.get("state_surface_front_rank_rotation_tilt_enabled", True)
+                )
+                front_rank_max_pct = _float_or_none(
+                    config.get("state_surface_front_rank_rotation_max_rank_pct")
+                )
+                if (
+                    front_rank_enabled
+                    and state_rank_pct is not None
+                    and front_rank_max_pct is not None
+                    and state_rank_pct <= front_rank_max_pct
+                ):
+                    scalar = float(config["state_surface_front_rank_rotation_tilt_scalar"])
+                    reason = "eligible_front_rank_rotation_breakout_positive_state_surface"
+                    front_rank_rotation_tilt = True
+                else:
+                    scalar = float(config["state_surface_rotation_tilt_scalar"])
+                    reason = "eligible_rotation_breakout_positive_state_surface"
             else:
                 scalar = float(config["state_surface_addon_scalar"])
                 reason = "eligible_non_generic_positive_state_surface"
@@ -870,7 +906,10 @@ def _with_state_surface_addon(
         "state_score": score,
         "state_surface": surface,
         "state_decision_date": decision_date,
+        "state_rank": state_rank,
+        "state_rank_pct": round(state_rank_pct, 6) if state_rank_pct is not None else None,
         "rotation_tilt": rotation_tilt,
+        "front_rank_rotation_tilt": front_rank_rotation_tilt,
         "alters_orders": False,
     }
     out["paper_event_notional_usd"] = round(adjusted_notional, 2)
@@ -887,9 +926,16 @@ def _state_surface_addon_summary(
     rows = [row.get("state_surface_addon") or {} for row in candidates]
     eligible = [row for row in rows if row.get("eligible")]
     rotation_eligible = [row for row in eligible if row.get("rotation_tilt")]
+    front_rank_rotation_eligible = [
+        row for row in rotation_eligible if row.get("front_rank_rotation_tilt")
+    ]
     incremental = sum(_money(row.get("incremental_notional_usd")) for row in eligible)
     rotation_incremental = sum(
         _money(row.get("incremental_notional_usd")) for row in rotation_eligible
+    )
+    front_rank_rotation_incremental = sum(
+        _money(row.get("incremental_notional_usd"))
+        for row in front_rank_rotation_eligible
     )
     scored_count = 0
     if isinstance(state_surface_queue, dict):
@@ -905,10 +951,15 @@ def _state_surface_addon_summary(
         "candidate_count": len(candidates),
         "eligible_candidate_count": len(eligible),
         "rotation_tilt_candidate_count": len(rotation_eligible),
+        "front_rank_rotation_tilt_candidate_count": len(front_rank_rotation_eligible),
         "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
         "scored_candidate_count": scored_count,
         "incremental_notional_usd": round(incremental, 2),
         "rotation_tilt_incremental_notional_usd": round(rotation_incremental, 2),
+        "front_rank_rotation_tilt_incremental_notional_usd": round(
+            front_rank_rotation_incremental,
+            2,
+        ),
         "eligible_surfaces": sorted(
             {
                 str(row.get("state_surface"))
@@ -925,12 +976,22 @@ def _state_surface_addon_summary(
             "rotation_tilt_scalar": float(
                 config["state_surface_rotation_tilt_scalar"]
             ),
+            "front_rank_rotation_tilt_enabled": bool(
+                config.get("state_surface_front_rank_rotation_tilt_enabled", True)
+            ),
+            "front_rank_rotation_max_rank_pct": float(
+                config["state_surface_front_rank_rotation_max_rank_pct"]
+            ),
+            "front_rank_rotation_tilt_scalar": float(
+                config["state_surface_front_rank_rotation_tilt_scalar"]
+            ),
             "generic_surface_not_eligible": str(
                 config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
             ),
             "eligibility_rule": (
                 "score > 0 and state_surface != generic_surface; "
-                "rotation_breakout_leadership uses rotation_tilt_scalar"
+                "rotation_breakout_leadership uses rotation_tilt_scalar; "
+                "front-rank rotation rows use front_rank_rotation_tilt_scalar"
             ),
         },
         "production_impact": {
@@ -950,10 +1011,12 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "candidate_count": 0,
         "eligible_candidate_count": 0,
         "rotation_tilt_candidate_count": 0,
+        "front_rank_rotation_tilt_candidate_count": 0,
         "eligible_fraction": None,
         "scored_candidate_count": 0,
         "incremental_notional_usd": 0.0,
         "rotation_tilt_incremental_notional_usd": 0.0,
+        "front_rank_rotation_tilt_incremental_notional_usd": 0.0,
         "eligible_surfaces": [],
         "status": "blocked",
         "reason": reason,

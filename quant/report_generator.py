@@ -1449,6 +1449,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{state_surface_addon.get('candidate_count', 0)} "
                 f"incremental=${state_surface_addon.get('incremental_notional_usd', 0.0):,.2f} "
                 f"rotation={state_surface_addon.get('rotation_tilt_candidate_count', 0)} "
+                f"front_rank={state_surface_addon.get('front_rank_rotation_tilt_candidate_count', 0)} "
                 f"surfaces={surface_text}"
             )
         gate = event_sleeve_bundle.get("forward_paper_gate") or {}

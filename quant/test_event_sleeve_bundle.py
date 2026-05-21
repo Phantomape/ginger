@@ -242,6 +242,75 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
+def test_event_sleeve_bundle_applies_front_rank_rotation_tilt_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-20",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "LITE",
+                    "usable_trade_date": "2026-05-20",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "SLOW",
+                    "usable_trade_date": "2026-05-20",
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 10,
+            "scored_candidates": [
+                {
+                    "ticker": "LITE",
+                    "rank": 1,
+                    "score": 1.24,
+                    "surface": "rotation_breakout_leadership",
+                    "decision_date": "2026-05-20",
+                },
+                {
+                    "ticker": "SLOW",
+                    "rank": 5,
+                    "score": 0.71,
+                    "surface": "rotation_breakout_leadership",
+                    "decision_date": "2026-05-20",
+                },
+            ],
+        },
+    )
+
+    by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
+    front = by_ticker["LITE"]["state_surface_addon"]
+    assert front["eligible"] is True
+    assert front["reason"] == "eligible_front_rank_rotation_breakout_positive_state_surface"
+    assert front["scalar"] == 4.0
+    assert front["state_rank"] == 1
+    assert front["state_rank_pct"] == 0.1
+    assert front["rotation_tilt"] is True
+    assert front["front_rank_rotation_tilt"] is True
+    assert by_ticker["LITE"]["paper_event_notional_usd"] == 40000.0
+    assert by_ticker["LITE"]["trade_enabled"] is False
+    assert by_ticker["LITE"]["alters_orders"] is False
+
+    slower = by_ticker["SLOW"]["state_surface_addon"]
+    assert slower["reason"] == "eligible_rotation_breakout_positive_state_surface"
+    assert slower["scalar"] == 3.0
+    assert slower["state_rank_pct"] == 0.5
+    assert slower["front_rank_rotation_tilt"] is False
+
+    summary = snapshot["state_surface_addon"]
+    assert summary["rotation_tilt_candidate_count"] == 2
+    assert summary["front_rank_rotation_tilt_candidate_count"] == 1
+    assert summary["rotation_tilt_incremental_notional_usd"] == 50000.0
+    assert summary["front_rank_rotation_tilt_incremental_notional_usd"] == 30000.0
+    assert summary["parameters"]["front_rank_rotation_max_rank_pct"] == 0.2
+    assert summary["parameters"]["front_rank_rotation_tilt_scalar"] == 4.0
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
 def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
     snapshot = build_event_sleeve_bundle_snapshot(
@@ -437,4 +506,5 @@ def test_report_generator_renders_event_state_surface_addon_attribution() -> Non
     assert "eligible=1/1" in report
     assert "incremental=$20,000.00" in report
     assert "rotation=1" in report
+    assert "front_rank=0" in report
     assert "surfaces=rotation_breakout_leadership" in report
