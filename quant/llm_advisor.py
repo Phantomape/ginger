@@ -603,7 +603,19 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     return system_message, user_message
 
 
-def _save_decision_log(date_str, trade_news, trend_signals):
+def _cwd_is_inside_repo():
+    try:
+        Path.cwd().resolve().relative_to(DATA_ROOT.parent.resolve())
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+def _prompt_data_dir_for_current_context():
+    return None if _cwd_is_inside_repo() else Path("data")
+
+
+def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
     """
     Save a structured log of what the code pre-decided before handing off to LLM.
 
@@ -662,7 +674,7 @@ def _save_decision_log(date_str, trade_news, trend_signals):
             "manual_trade_conflicts": manual_trade_conflicts,
         }
 
-        log_file = str(daily_artifact_path("llm_decision_log", date_str))
+        log_file = str(daily_artifact_path("llm_decision_log", date_str, data_dir))
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
         with open(log_file, "w", encoding="utf-8") as f:
             json.dump(log_entry, f, indent=2, ensure_ascii=False)
@@ -672,13 +684,15 @@ def _save_decision_log(date_str, trade_news, trend_signals):
         logger.warning(f"Failed to save decision log: {e}")
 
 
-def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_signals):
-    """Persist the rendered prompt for auditability, regardless of API usage."""
-    prompt_file = str(daily_artifact_path("llm_prompt", date_str))
+def _legacy_prompt_file_path(date_str):
+    return Path("data") / f"llm_prompt_{date_str}.txt"
 
-    os.makedirs(os.path.dirname(prompt_file), exist_ok=True)
 
-    with open(prompt_file, "w", encoding="utf-8") as f:
+def _write_prompt_body(path, system_message, user_message):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(path, "w", encoding="utf-8") as f:
         f.write("=" * 80 + "\n")
         f.write("SYSTEM MESSAGE\n")
         f.write("=" * 80 + "\n\n")
@@ -690,12 +704,28 @@ def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_
         f.write(user_message)
         f.write("\n")
 
+
+def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_signals):
+    """Persist the rendered prompt for auditability, regardless of API usage."""
+    data_dir = _prompt_data_dir_for_current_context()
+    prompt_file = (
+        _legacy_prompt_file_path(date_str)
+        if data_dir is not None
+        else daily_artifact_path("llm_prompt", date_str)
+    )
+
+    _write_prompt_body(prompt_file, system_message, user_message)
     logger.info(f"Prompt saved to {prompt_file}")
+
+    legacy_prompt_file = _legacy_prompt_file_path(date_str)
+    if legacy_prompt_file.resolve() != Path(prompt_file).resolve():
+        _write_prompt_body(str(legacy_prompt_file), system_message, user_message)
+        logger.info(f"Legacy prompt mirror saved to {legacy_prompt_file}")
 
     # Save decision log: what signals/positions the code pre-decided,
     # so we can later compare LLM veto/pass against actual outcomes.
-    _save_decision_log(date_str, trade_news, trend_signals)
-    return prompt_file
+    _save_decision_log(date_str, trade_news, trend_signals, data_dir=data_dir)
+    return str(prompt_file)
 
 
 def get_investment_advice(trade_news, open_positions=None, trend_signals=None, model="gpt-4o", max_tokens=4000, save_prompt_only=True):

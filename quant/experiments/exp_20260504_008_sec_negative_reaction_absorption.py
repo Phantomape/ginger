@@ -20,6 +20,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = REPO_ROOT / "data"
+OHLCV_DIR = DATA_DIR / "ohlcv"
 EXPERIMENT_ID = "exp-20260504-008"
 TEXT_PATH = DATA_DIR / "non_ohlcv" / "sec_filing_text_20241002_20260421.jsonl"
 OUT_DIR = DATA_DIR / "experiments" / EXPERIMENT_ID
@@ -35,9 +36,9 @@ REPORT_MD = (
 EXPERIMENT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 
 SNAPSHOT_FILES = {
-    "old_thin": DATA_DIR / "ohlcv_snapshot_20241002_20250422.json",
-    "mid_weak": DATA_DIR / "ohlcv_snapshot_20250423_20251022.json",
-    "late_strong": DATA_DIR / "ohlcv_snapshot_20251023_20260421.json",
+    "old_thin": OHLCV_DIR / "ohlcv_snapshot_20241002_20250422.json",
+    "mid_weak": OHLCV_DIR / "ohlcv_snapshot_20250423_20251022.json",
+    "late_strong": OHLCV_DIR / "ohlcv_snapshot_20251023_20260421.json",
 }
 WINDOWS = OrderedDict(
     [
