@@ -1,0 +1,77 @@
+{
+  "experiment_id": "exp-20260520-021",
+  "timestamp": "2026-05-20T10:30:00-07:00",
+  "status": "rejected",
+  "decision": "rejected_rolled_back",
+  "hypothesis": "Promoting only CIEN from broad-market paper evidence into the shared core watchlist may capture the useful part of the expanded ticker-pool alpha without the six-name batch displacement problem.",
+  "change_type": "candidate_pool",
+  "changed_variable": "CIEN core watchlist promotion with correct Technology sector taxonomy",
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows using CIEN-augmented OHLCV snapshots from exp-20260520-019; sector-valid rerun classified CIEN as Technology before evaluation.",
+  "date_range": {
+    "late_strong": {"start": "2025-10-23", "end": "2026-04-21"},
+    "mid_weak": {"start": "2025-04-23", "end": "2025-10-22"},
+    "old_thin": {"start": "2024-10-02", "end": "2025-04-22"}
+  },
+  "before_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "late_strong": {"expected_value_score": 5.1628, "total_pnl": 117072.92, "trade_count": 18, "survival_rate": 0.8039, "max_drawdown_pct": 0.0665, "worst_trade_pct": -0.039653, "max_consecutive_losses": 2, "tail_loss_share": 0.5146},
+    "mid_weak": {"expected_value_score": 2.1402, "total_pnl": 78110.11, "trade_count": 21, "survival_rate": 0.7925, "max_drawdown_pct": 0.1119, "worst_trade_pct": -0.089651, "max_consecutive_losses": 6, "tail_loss_share": 0.5493},
+    "old_thin": {"expected_value_score": 0.5911, "total_pnl": 39667.96, "trade_count": 22, "survival_rate": 0.8667, "max_drawdown_pct": 0.1001, "worst_trade_pct": -0.063499, "max_consecutive_losses": 4, "tail_loss_share": 0.5193}
+  },
+  "after_metrics": {
+    "aggregate_expected_value_score": 7.8941,
+    "aggregate_total_pnl": 234850.99,
+    "late_strong": {"expected_value_score": 5.1628, "total_pnl": 117072.92, "trade_count": 18, "survival_rate": 0.8039, "max_drawdown_pct": 0.0665, "worst_trade_pct": -0.039653, "max_consecutive_losses": 2, "tail_loss_share": 0.5146, "cien_selected_trades": 0},
+    "mid_weak": {"expected_value_score": 2.1402, "total_pnl": 78110.11, "trade_count": 21, "survival_rate": 0.7925, "max_drawdown_pct": 0.1119, "worst_trade_pct": -0.089651, "max_consecutive_losses": 6, "tail_loss_share": 0.5493, "cien_selected_trades": 0},
+    "old_thin": {"expected_value_score": 0.5911, "total_pnl": 39667.96, "trade_count": 22, "survival_rate": 0.8667, "max_drawdown_pct": 0.1001, "worst_trade_pct": -0.063499, "max_consecutive_losses": 4, "tail_loss_share": 0.5193, "cien_selected_trades": 0}
+  },
+  "delta_metrics": {
+    "aggregate_expected_value_score": 0.0,
+    "aggregate_total_pnl": 0.0,
+    "late_strong": {"expected_value_score": 0.0, "total_pnl": 0.0},
+    "mid_weak": {"expected_value_score": 0.0, "total_pnl": 0.0},
+    "old_thin": {"expected_value_score": 0.0, "total_pnl": 0.0}
+  },
+  "diagnostic_unknown_sector_result": {
+    "decision": "invalid_for_promotion",
+    "reason": "CIEN initially appeared attractive only while sector was Unknown, which bypassed Technology risk haircuts and sizing diagnostics. Correct sector taxonomy must be part of any production-grade promotion.",
+    "aggregate_expected_value_score": 8.1078,
+    "aggregate_total_pnl": 244715.81,
+    "aggregate_expected_value_score_delta": 0.2137,
+    "aggregate_total_pnl_delta": 9864.82,
+    "mid_weak_cien_trade": {"entry_date": "2025-09-05", "exit_date": "2025-09-17", "sector": "Unknown", "strategy": "trend_long", "pnl": 14604.59, "exit_reason": "target"}
+  },
+  "gate4": {
+    "passed": false,
+    "reason": "With CIEN correctly classified as Technology, the promotion produced zero selected CIEN trades and no EV/PnL improvement in the three canonical windows.",
+    "windows_ev_improved": 0,
+    "windows_ev_regressed": 0,
+    "windows_pnl_improved": 0,
+    "windows_pnl_regressed": 0,
+    "survival_rate_min_after": 0.7925,
+    "risk_distribution_worsened": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "parity_test_added": false,
+    "rolled_back": true,
+    "temporary_files_touched": ["quant/filter.py", "quant/risk_engine.py"]
+  },
+  "rejection_reason": "The apparent CIEN-only alpha was a sector-taxonomy artifact. Properly classified CIEN did not improve canonical core results, so the watchlist and sector-map changes were rolled back.",
+  "next_evidence_needed": [
+    "Forward closed CIEN paper outcomes under Technology sector risk controls",
+    "Replacement-value evidence showing CIEN beats the existing core slot it would displace",
+    "A separate CIEN-specific sizing or sleeve test if future signals remain attractive after Technology haircuts"
+  ],
+  "related_files": [
+    "data/experiments/exp-20260520-019/cien_only_ohlcv_snapshot_build.json",
+    "data/experiments/exp-20260520-019/ohlcv/",
+    "quant/filter.py",
+    "quant/risk_engine.py",
+    "docs/experiment_log.jsonl"
+  ]
+}

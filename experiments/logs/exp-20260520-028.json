@@ -1,0 +1,199 @@
+{
+  "acceptance_status": {
+    "observed_only_artifact_created": true,
+    "reason": "No trading decision, ranking, sizing, entry, exit, or fill policy changed.",
+    "strategy_gate4_required": false
+  },
+  "after_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "before_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "change_summary": "Create observed-only state_surface_concentration_context alpha experiment ledger.",
+  "change_type": "observed_only_alpha_experiment",
+  "changed_variable": "state_surface_concentration_context",
+  "component": "quant/state_surface_sleeve.py",
+  "current_evidence": {
+    "current_snapshot": {
+      "asof_date": "2026-05-19",
+      "candidate_count": 0,
+      "closed_outcome_count": null,
+      "closed_position_count": 0,
+      "data_source": {
+        "decision_date": "2026-05-19",
+        "source": "ohlcv_by_ticker",
+        "status": "loaded",
+        "ticker_count": 57
+      },
+      "forward_paper_gate": {
+        "checks": {
+          "min_closed_trades": false,
+          "min_win_rate": false,
+          "positive_net_pnl": false,
+          "tail_gate": true
+        },
+        "metrics": {
+          "closed_trades": 0,
+          "realized_pnl": 0,
+          "win_rate": null
+        },
+        "passed": false,
+        "reasons": [
+          "min_closed_trades",
+          "min_win_rate",
+          "positive_net_pnl"
+        ],
+        "status": "blocked",
+        "tail_diagnostics": {
+          "gate_report": {
+            "hard_failures": [
+              "insufficient_sample",
+              "non_positive_expected_value"
+            ],
+            "passed": false,
+            "preferred_distribution_prefix": "pnl",
+            "thresholds": {
+              "max_drawdown_pct": 0.12,
+              "max_excess_kurtosis": 12.0,
+              "max_hhi_concentration": 0.35,
+              "max_live_vs_backtest_r_gap": 0.5,
+              "max_top_5_contribution_pct": 0.6,
+              "min_avg_r_multiple": 0.0,
+              "min_expected_value_usd": 0.0,
+              "min_sharpe_ratio": 0.75,
+              "min_skewness": -1.5,
+              "min_tail_ratio": 0.8,
+              "min_trades_for_promotion": 15
+            },
+            "warnings": []
+          },
+          "metrics_for_gates": {
+            "expected_value_usd": 0.0,
+            "pnl_excess_kurtosis": null,
+            "pnl_hhi_concentration": null,
+            "pnl_skewness": null,
+            "pnl_tail_ratio": null,
+            "pnl_top_5_contribution_pct": null,
+            "total_pnl": 0,
+            "total_trades": 0,
+            "win_rate": null
+          },
+          "notes": [
+            "True R-multiple is unavailable for this default-off paper sleeve; PnL distribution is used for forward promotion diagnostics.",
+            "This diagnostics block does not alter orders, candidates, rank, notional, or paper fills."
+          ],
+          "read_only": true,
+          "schema_version": 1,
+          "scope": "state_surface_forward_paper_closed_positions"
+        },
+        "trade_enabled_after_gate": false
+      },
+      "open_position_count": 3,
+      "path": "data/paper_sleeves/state_surface/snapshots.jsonl",
+      "pending_count": 0,
+      "primary_closed_outcome_count": null,
+      "realized_inverse_pnl_to_date": null,
+      "realized_no_trade_value_to_date": null,
+      "realized_pnl_to_date": 0
+    },
+    "field_status": "implemented_in_shared_paper_sleeve_next_snapshot",
+    "sample_concentration_context": {
+      "alters_orders": false,
+      "alters_sizing": false,
+      "notes": "Observation field only; future scalar/profile changes still need the strict state-surface aggregate EV gate.",
+      "pit_safe": true,
+      "queue_candidate_count": 2,
+      "queue_independence_bucket": "low",
+      "read_only": true,
+      "recent_winner_contribution": {
+        "closed_winner_count": 0,
+        "positive_pnl_total": 0,
+        "same_sector_closed_winner_count": 0,
+        "same_sector_positive_pnl": 0,
+        "same_sector_positive_pnl_share": null,
+        "same_ticker_closed_winner_count": 0,
+        "same_ticker_positive_pnl": 0,
+        "same_ticker_positive_pnl_share": null
+      },
+      "rule_version": "state_surface_concentration_context_v1",
+      "same_sector_candidate_count": 2,
+      "same_sector_queue_share": 1.0,
+      "same_surface_candidate_count": 2,
+      "same_surface_queue_share": 1.0,
+      "same_ticker_candidate_count": 1,
+      "schema_version": 1,
+      "sector": "Technology",
+      "theme": "rotation",
+      "ticker": "SAMPLE",
+      "top_queue_sector": "Technology",
+      "top_queue_sector_count": 2,
+      "top_queue_surface": "rotation",
+      "top_queue_surface_count": 2,
+      "trade_enabled": false
+    }
+  },
+  "date_range": {
+    "as_of": "2026-05-20"
+  },
+  "decision": "observed_only_launch_recorded",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260520-028",
+  "hypothesis": "State-surface scalar mining should pause until candidates expose a PIT-safe concentration field for same ticker, sector, theme, recent winner contribution, and queue independence.",
+  "lane": "alpha_search",
+  "mechanism_family": "state_surface_concentration",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260507-026",
+    "exp-20260509-007",
+    "exp-20260509-012",
+    "exp-20260510-005",
+    "exp-20260509-013",
+    "exp-20260509-014",
+    "exp-20260509-025",
+    "exp-20260509-015",
+    "exp-20260507-019",
+    "exp-20260508-005"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "next_evidence_needed": "Wait for selected paper candidates carrying the field, then only test scalars if the strict >10% aggregate EV gate is pre-registered.",
+  "parameters": {
+    "core_strategy_metrics_expected_to_change": false,
+    "live_orders_changed": false,
+    "most_recent_failure": {
+      "decision": "rejected_full_stack_replacement",
+      "experiment_id": "exp-20260509-013",
+      "rejection_reason": "Fails the correct marginal comparison against the full exp-20260509-012 stack: aggregate EV and PnL both regress, with EV improving in only late_strong versus the full stack."
+    },
+    "observed_only": true
+  },
+  "prior_trial_count": 21,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_visible_attribution_changed": true,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/state_surface_sleeve.py",
+    "data/experiments/exp-20260520-028/state_surface_concentration_context.json",
+    "experiments/logs/exp-20260520-028.json",
+    "experiments/artifacts/exp-20260520-028_state_surface_concentration_context.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-05-20T17:54:07.737916+00:00",
+  "trial_family": "state_surface_concentration_context",
+  "trial_variant_id": "context_field_v1"
+}

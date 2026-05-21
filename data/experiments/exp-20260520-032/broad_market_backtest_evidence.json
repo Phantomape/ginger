@@ -1,0 +1,113 @@
+{
+  "acceptance_status": {
+    "forward_outcome_only": false,
+    "reason": "This record attaches existing metrics; it does not alter orders, ranking, sizing, entries, exits, or fill policy.",
+    "strategy_backtest_evidence": true,
+    "strategy_backtest_or_forward_outcome_evidence_attached": true,
+    "strategy_logic_promoted": false
+  },
+  "after_metrics": {
+    "metric_evidence_collected": true,
+    "strategy_logic_changed": false
+  },
+  "before_metrics": {
+    "strategy_logic_changed": false
+  },
+  "change_summary": "Backfill metric-backed evidence for broad_market_backtest_evidence.",
+  "change_type": "metric_backfill_no_strategy_change",
+  "changed_variable": "technology_haircut_exception_for_cien",
+  "component": "quant/run.py",
+  "current_evidence": {
+    "after_aggregate": {
+      "cien_selected_trade_count": 1,
+      "expected_value_score": 8.3175,
+      "total_pnl": 250987.67,
+      "trade_count": 61
+    },
+    "baseline_experiment": "exp-20260520-021",
+    "before_aggregate": {
+      "expected_value_score": 7.8941,
+      "total_pnl": 234850.99,
+      "trade_count": 61
+    },
+    "decision": "rejected_and_rolled_back",
+    "delta_aggregate": {
+      "expected_value_score": 0.4234,
+      "total_pnl": 16136.68,
+      "trade_count": 0
+    },
+    "evidence_type": "canonical_three_window_backtest",
+    "gate_assessment": {
+      "gate_1_baseline": "pass",
+      "gate_2_fields": "pass",
+      "gate_3_survival_rate": "pass",
+      "gate_4": "fail",
+      "reason": "The improvement is entirely explained by one CIEN trade in one window. That confirms a potential mechanism conflict but is too sample-thin and ticker-specific for live core promotion."
+    },
+    "rejection_reason": "Positive aggregate result is a single-trade CIEN contribution in mid_weak only; high multiple-testing and ticker-specific exception risk. Keep as paper/default-off sleeve candidate rather than production core rule.",
+    "selected_trade_count": 1,
+    "source_artifact": "data/experiments/exp-20260520-022/cien_technology_haircut_exception_summary.json",
+    "source_experiment": "exp-20260520-022"
+  },
+  "date_range": {
+    "as_of": "2026-05-20"
+  },
+  "decision": "rejected_existing_backtest_single_trade_concentration",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260520-032",
+  "hypothesis": "A broad-market leadership candidate can replace overly blunt sector haircuts only if the effect survives multi-window replay without single-trade dependence.",
+  "lane": "alpha_search",
+  "mechanism_family": "broad_market_forward_maturation",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260520-022",
+    "exp-20260520-009",
+    "exp-20260520-017",
+    "exp-20260519-035",
+    "exp-20260520-005",
+    "exp-20260519-034",
+    "exp-20260520-019",
+    "exp-20260520-003",
+    "exp-20260520-002",
+    "exp-20260519-036"
+  ],
+  "new_evidence_type": "canonical_three_window_backtest",
+  "next_evidence_needed": "Collect broader closed replacement-value outcomes beyond one CIEN trade before any core exception.",
+  "parameters": {
+    "core_strategy_logic_changed": false,
+    "live_orders_changed": false,
+    "metric_backfill": true,
+    "most_recent_failure": {
+      "decision": "rejected_and_rolled_back",
+      "experiment_id": "exp-20260520-022",
+      "rejection_reason": "Positive aggregate result is a single-trade CIEN contribution in mid_weak only; high multiple-testing and ticker-specific exception risk. Keep as paper/default-off sleeve candidate rather than production core rule."
+    }
+  },
+  "prior_trial_count": 17,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "data/experiments/exp-20260520-032/broad_market_backtest_evidence.json",
+    "experiments/logs/exp-20260520-032.json",
+    "experiments/artifacts/exp-20260520-032_broad_market_backtest_evidence.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-05-20T18:04:39.613205+00:00",
+  "trial_family": "broad_market_leadership_forward_maturation",
+  "trial_variant_id": "cien_technology_haircut_exception_reference_v1"
+}

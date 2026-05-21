@@ -1,0 +1,150 @@
+{
+  "acceptance_status": {
+    "observed_only_artifact_created": true,
+    "reason": "No trading decision, ranking, sizing, entry, exit, or fill policy changed.",
+    "strategy_gate4_required": false
+  },
+  "after_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "before_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "change_summary": "Create observed-only broad_market_forward_maturation alpha experiment ledger.",
+  "change_type": "observed_only_alpha_experiment",
+  "changed_variable": "broad_market_replacement_value_report",
+  "component": "quant/broad_market_paper_sleeve.py",
+  "current_evidence": {
+    "current_snapshot": {
+      "asof_date": "2026-05-19",
+      "candidate_count": 0,
+      "closed_outcome_count": null,
+      "closed_position_count": 0,
+      "data_source": {
+        "path": "D:\\Github\\ginger\\data\\state\\broad_market_paper\\universe.json",
+        "status": "missing",
+        "ticker_count": 0
+      },
+      "forward_paper_gate": {
+        "checks": {
+          "max_single_ticker_positive_share": false,
+          "max_top5_positive_share": false,
+          "min_closed_trades": false,
+          "min_win_rate": false,
+          "positive_net_pnl": false
+        },
+        "metrics": {
+          "closed_trades": 0,
+          "realized_pnl": 0,
+          "single_ticker_positive_share": null,
+          "top5_positive_share": null,
+          "win_rate": null
+        },
+        "passed": false,
+        "reasons": [
+          "min_closed_trades",
+          "positive_net_pnl",
+          "min_win_rate",
+          "max_single_ticker_positive_share",
+          "max_top5_positive_share"
+        ],
+        "status": "blocked",
+        "trade_enabled_after_gate": false
+      },
+      "open_position_count": 0,
+      "path": "data/paper_sleeves/broad_market/snapshots.jsonl",
+      "pending_count": 0,
+      "primary_closed_outcome_count": null,
+      "realized_inverse_pnl_to_date": null,
+      "realized_no_trade_value_to_date": null,
+      "realized_pnl_to_date": 0
+    },
+    "field_status": "implemented_in_shared_paper_sleeve_next_snapshot",
+    "replacement_value_report": {
+      "alters_orders": false,
+      "by_ticker": {},
+      "candidate_count": 0,
+      "closed_count": 0,
+      "closed_pnl": 0,
+      "displaced_resource_default": "paper_cash_slot",
+      "forward_outcome_horizon_days": 20,
+      "open_count": 0,
+      "open_unrealized_pnl": 0,
+      "pending_count": 0,
+      "positive_closed_pnl": 0,
+      "promotion_blockers": [
+        "needs_closed_forward_outcomes",
+        "needs_replacement_value_vs_core_or_cash"
+      ],
+      "read_only": true,
+      "rule_version": "broad_market_forward_replacement_value_v1",
+      "schema_version": 1,
+      "skipped_count": 0,
+      "top_ticker_positive_pnl_share": null,
+      "trade_enabled": false
+    }
+  },
+  "date_range": {
+    "as_of": "2026-05-20"
+  },
+  "decision": "observed_only_launch_recorded",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260520-027",
+  "hypothesis": "Broad-market leadership should mature as a daily paper ledger with closed/open/pending replacement value before any core expansion.",
+  "lane": "alpha_search",
+  "mechanism_family": "broad_market_forward_maturation",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260520-022",
+    "exp-20260520-009",
+    "exp-20260520-017",
+    "exp-20260519-035",
+    "exp-20260520-005",
+    "exp-20260519-034",
+    "exp-20260520-003",
+    "exp-20260520-002",
+    "exp-20260519-036",
+    "exp-20260520-004"
+  ],
+  "new_evidence_type": "new_replacement_value_report",
+  "next_evidence_needed": "Populate the candidate universe feed, then collect closed 20d replacement-value outcomes versus paper cash or displaced core slots.",
+  "parameters": {
+    "core_strategy_metrics_expected_to_change": false,
+    "live_orders_changed": false,
+    "most_recent_failure": {
+      "decision": "rejected_and_rolled_back",
+      "experiment_id": "exp-20260520-022",
+      "rejection_reason": "Positive aggregate result is a single-trade CIEN contribution in mid_weak only; high multiple-testing and ticker-specific exception risk. Keep as paper/default-off sleeve candidate rather than production core rule."
+    },
+    "observed_only": true
+  },
+  "prior_trial_count": 15,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_visible_attribution_changed": true,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/broad_market_paper_sleeve.py",
+    "data/experiments/exp-20260520-027/broad_market_forward_maturation.json",
+    "experiments/logs/exp-20260520-027.json",
+    "experiments/artifacts/exp-20260520-027_broad_market_forward_maturation.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-05-20T17:54:07.737916+00:00",
+  "trial_family": "broad_market_forward_maturation",
+  "trial_variant_id": "replacement_value_report_v1"
+}

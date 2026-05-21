@@ -1,0 +1,147 @@
+{
+  "acceptance_status": {
+    "observed_only_artifact_created": true,
+    "reason": "No trading decision, ranking, sizing, entry, exit, or fill policy changed.",
+    "strategy_gate4_required": false
+  },
+  "after_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "before_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "change_summary": "Create observed-only sec_fact_tone_gap_field alpha experiment ledger.",
+  "change_type": "observed_only_alpha_experiment",
+  "changed_variable": "fact_tone_gap_bucket",
+  "component": "quant/sec_financial_report_event_sleeve.py",
+  "current_evidence": {
+    "current_snapshot": {
+      "asof_date": "2026-05-19",
+      "candidate_count": 0,
+      "closed_outcome_count": null,
+      "closed_position_count": 0,
+      "data_source": {
+        "loaded_row_count": 0,
+        "path": "D:\\Github\\ginger\\data\\non_ohlcv\\sec_filing_events_20260519.jsonl",
+        "skipped_not_pit_safe_count": 0,
+        "status": "loaded",
+        "t1_evaluated_count": 0
+      },
+      "forward_paper_gate": null,
+      "open_position_count": 0,
+      "path": "data/paper_sleeves/sec_financial_report/snapshots.jsonl",
+      "pending_count": 0,
+      "primary_closed_outcome_count": null,
+      "realized_inverse_pnl_to_date": null,
+      "realized_no_trade_value_to_date": null,
+      "realized_pnl_to_date": 0
+    },
+    "field_status": "implemented_in_shared_paper_sleeve_next_snapshot",
+    "sample_fact_tone_gap_attribution": {
+      "alters_orders": false,
+      "alters_sizing": false,
+      "default_off_attribution_only": true,
+      "evidence_counts": {
+        "guidance_cut_hits": 0,
+        "guidance_raise_hits": 1,
+        "negative_phrase_hits": 0,
+        "positive_phrase_hits": 1
+      },
+      "evidence_span": [
+        {
+          "field": "positive_phrase_hits",
+          "source": "sec_financial_report_t1_queue",
+          "text": "revenue increased"
+        },
+        {
+          "field": "guidance_raise_hits",
+          "source": "sec_financial_report_t1_queue",
+          "text": "raised outlook"
+        }
+      ],
+      "fact_tone_gap_bucket": "fact_improvement_positive_tone",
+      "language_bucket": "positive_language",
+      "notes": "This field supports forward attribution only; it does not expand LLM authority or change paper/live orders.",
+      "provenance": {
+        "accession_number": "sample",
+        "event_family": "earnings_8k",
+        "form_base": "8-K",
+        "ticker": "SAMPLE",
+        "usable_trade_date": "2026-05-20"
+      },
+      "read_only": true,
+      "rule_version": "sec_fact_tone_gap_bucket_v1",
+      "schema_version": 1,
+      "text_event_type": "earnings_release_text",
+      "trade_enabled": false
+    },
+    "state_counts": {
+      "closed": 0,
+      "open": 0,
+      "pending": 0
+    }
+  },
+  "date_range": {
+    "as_of": "2026-05-20"
+  },
+  "decision": "observed_only_launch_recorded",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260520-029",
+  "hypothesis": "SEC earnings attribution should separate factual improvement, tone packaging, and fact-tone divergence before testing another notional scalar.",
+  "lane": "alpha_search",
+  "mechanism_family": "sec_earnings_semantic_field",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260507-900",
+    "exp-20260507-033",
+    "exp-20260519-008",
+    "exp-20260512-034",
+    "exp-20260512-011",
+    "exp-20260512-006",
+    "exp-20260518-009",
+    "exp-20260512-002",
+    "exp-20260511-114",
+    "exp-20260512-020"
+  ],
+  "new_evidence_type": "new_production_visible_field",
+  "next_evidence_needed": "Collect forward returns, replacement value, and veto/allow attribution by fact_tone_gap_bucket.",
+  "parameters": {
+    "core_strategy_metrics_expected_to_change": false,
+    "live_orders_changed": false,
+    "most_recent_failure": {
+      "decision": "rejected",
+      "experiment_id": "exp-20260507-033",
+      "rejection_reason": "Best variant `far_earnings_1_50x_cap_aware` failed Gate 4: EV delta 0.3173 (0.039119), PnL delta 8678.54 (0.052339), windows improved/regressed 2/1, changed trades 18 of 29 touched, max DD worsening 0.0105, single ticker positive share 0.4244."
+    },
+    "observed_only": true
+  },
+  "prior_trial_count": 33,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_visible_attribution_changed": true,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/sec_financial_report_event_sleeve.py",
+    "data/experiments/exp-20260520-029/sec_fact_tone_gap_field.json",
+    "experiments/logs/exp-20260520-029.json",
+    "experiments/artifacts/exp-20260520-029_sec_fact_tone_gap_field.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-05-20T17:54:07.737916+00:00",
+  "trial_family": "sec_fact_tone_gap_bucket",
+  "trial_variant_id": "fact_tone_gap_bucket_v1"
+}

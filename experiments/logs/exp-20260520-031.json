@@ -1,0 +1,180 @@
+{
+  "acceptance_status": {
+    "observed_only_artifact_created": true,
+    "reason": "No trading decision, ranking, sizing, entry, exit, or fill policy changed.",
+    "strategy_gate4_required": false
+  },
+  "after_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "before_metrics": {
+    "canonical_core_metrics_changed": false
+  },
+  "change_summary": "Create observed-only execution_leakage_attribution alpha experiment ledger.",
+  "change_type": "observed_only_alpha_experiment",
+  "changed_variable": "execution_leakage_report",
+  "component": "quant/backtester.py",
+  "current_evidence": {
+    "entry_execution_attribution": {
+      "adverse_gap_down_cancel_count": 1,
+      "candidate_events": 52,
+      "entered_count": 22,
+      "gap_cancel_count": 5,
+      "reason_counts": {
+        "adverse_gap_down_cancel": 1,
+        "entered": 22,
+        "gap_cancel": 5,
+        "no_shares": 9,
+        "scarce_slot_breakout_deferred": 6,
+        "slot_sliced": 9
+      },
+      "sample_skips": [
+        {
+          "available_slots_at_entry_loop": 3,
+          "candidate_rank": 3,
+          "date": "2024-10-18",
+          "decision": "gap_cancel",
+          "details": {
+            "adverse_gap_cancel_pct": 0.02,
+            "cancel_gap_pct": 0.015,
+            "fill_date": "2024-10-21",
+            "fill_price": 31.13,
+            "signal_entry": 30.64
+          },
+          "strategy": "breakout_long",
+          "ticker": "SLV"
+        },
+        {
+          "available_slots_at_entry_loop": 1,
+          "candidate_rank": null,
+          "date": "2024-10-21",
+          "decision": "scarce_slot_breakout_deferred",
+          "details": {
+            "active_positions": 4,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "defer_breakout_slots_lte": 1,
+            "min_index_pct_from_ma": null
+          },
+          "strategy": "breakout_long",
+          "ticker": "APP"
+        },
+        {
+          "available_slots_at_entry_loop": 1,
+          "candidate_rank": 1,
+          "date": "2024-10-29",
+          "decision": "no_shares",
+          "details": {
+            "has_sizing": true,
+            "risk_multipliers": {
+              "tqs_risk_multiplier_applied": 0.25,
+              "trend_mid_sector_dispersion_risk_multiplier_applied": 1.25,
+              "trend_tech_tight_gap_risk_multiplier_applied": 0.0
+            },
+            "risk_pct_after": null,
+            "risk_pct_before": null,
+            "shares_to_buy": 0
+          },
+          "strategy": "trend_long",
+          "ticker": "GOOG"
+        },
+        {
+          "available_slots_at_entry_loop": 1,
+          "candidate_rank": 1,
+          "date": "2024-10-30",
+          "decision": "gap_cancel",
+          "details": {
+            "adverse_gap_cancel_pct": 0.02,
+            "cancel_gap_pct": 0.015,
+            "fill_date": "2024-10-31",
+            "fill_price": 187.2252,
+            "signal_entry": 176.54
+          },
+          "strategy": "trend_long",
+          "ticker": "BKNG"
+        },
+        {
+          "available_slots_at_entry_loop": 1,
+          "candidate_rank": null,
+          "date": "2024-10-30",
+          "decision": "scarce_slot_breakout_deferred",
+          "details": {
+            "active_positions": 4,
+            "defer_breakout_max_min_index_pct_from_ma": null,
+            "defer_breakout_slots_lte": 1,
+            "min_index_pct_from_ma": null
+          },
+          "strategy": "breakout_long",
+          "ticker": "GOOG"
+        }
+      ],
+      "skip_rate": 0.5769,
+      "skipped_count": 30
+    },
+    "manual_delay_source_available": false,
+    "next_required_field": "live_order_decision_timestamp_vs_planned_next_open",
+    "source_backtest": "data/backtests/backtest_results_20260520.json"
+  },
+  "date_range": {
+    "as_of": "2026-05-20"
+  },
+  "decision": "observed_only_launch_recorded",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260520-031",
+  "hypothesis": "Execution alpha should quantify planned next-open fills, gap erosion, cancel reasons, and missing live delay telemetry before testing a shared execution policy variable.",
+  "lane": "alpha_search",
+  "mechanism_family": "execution_slippage_leakage",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260505-002",
+    "exp-20260516-007",
+    "exp-20260502-026",
+    "exp-20260428-021",
+    "exp-20260428-022",
+    "exp-20260428-024",
+    "exp-20260508-009",
+    "exp-20260508-014",
+    "exp-20260508-018",
+    "exp-20260428-023"
+  ],
+  "new_evidence_type": "new_execution_attribution_report",
+  "next_evidence_needed": "Add live planned-vs-actual timestamp and fill telemetry; only then test one shared execution policy variable such as net R:R invalidation.",
+  "parameters": {
+    "core_strategy_metrics_expected_to_change": false,
+    "live_orders_changed": false,
+    "most_recent_failure": {
+      "decision": "rejected",
+      "experiment_id": "exp-20260505-002",
+      "rejection_reason": "No variant improved expected_value_score in a majority of windows while also clearing a Gate 4 materiality threshold."
+    },
+    "observed_only": true
+  },
+  "prior_trial_count": 10,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "production_visible_attribution_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/backtester.py",
+    "data/experiments/exp-20260520-031/execution_leakage_attribution.json",
+    "experiments/logs/exp-20260520-031.json",
+    "experiments/artifacts/exp-20260520-031_execution_leakage_attribution.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "observed_only",
+  "timestamp": "2026-05-20T17:54:07.737916+00:00",
+  "trial_family": "execution_leakage_report",
+  "trial_variant_id": "entry_execution_attribution_v1"
+}

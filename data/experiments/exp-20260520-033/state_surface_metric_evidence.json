@@ -1,0 +1,108 @@
+{
+  "acceptance_status": {
+    "forward_outcome_only": false,
+    "reason": "This record attaches existing metrics; it does not alter orders, ranking, sizing, entries, exits, or fill policy.",
+    "strategy_backtest_evidence": true,
+    "strategy_backtest_or_forward_outcome_evidence_attached": true,
+    "strategy_logic_promoted": false
+  },
+  "after_metrics": {
+    "metric_evidence_collected": true,
+    "strategy_logic_changed": false
+  },
+  "before_metrics": {
+    "strategy_logic_changed": false
+  },
+  "change_summary": "Backfill metric-backed evidence for state_surface_metric_evidence.",
+  "change_type": "metric_backfill_no_strategy_change",
+  "changed_variable": "state_surface_trend_stability_support_notional",
+  "component": "quant/state_surface_sleeve.py",
+  "current_evidence": {
+    "decision": "rejected_state_surface_trend_stability_support_notional",
+    "evidence_type": "state_surface_paper_replay_and_tail_gate",
+    "rejection_reason": "Failed Gate 4 under the strict state-surface scalar standard: aggregate EV delta pct 0.0349 did not exceed 0.10.",
+    "source_artifact": "data/experiments/exp-20260520-006/state_surface_trend_stability_notional.json",
+    "source_experiment": "exp-20260520-006",
+    "strict_state_surface_gate": {
+      "actual_aggregate_ev_delta_pct": 0.03487,
+      "aggregate_ev_delta": 0.5528,
+      "aggregate_pnl_delta": 10140.4,
+      "minimum_aggregate_ev_delta_pct": 0.1,
+      "passed": false,
+      "windows_ev_improved": 3,
+      "windows_ev_regressed": 0
+    },
+    "tail_gate_reference": {
+      "block_reasons": [
+        "tail_gate"
+      ],
+      "closed_trades": 24,
+      "passed": false,
+      "realized_pnl": 48529.4,
+      "source_artifact": "data/experiments/exp-20260518-006/state_surface_forward_tail_gate.json",
+      "source_experiment": "exp-20260518-006",
+      "win_rate": 0.7917
+    }
+  },
+  "date_range": {
+    "as_of": "2026-05-20"
+  },
+  "decision": "blocked_strict_state_surface_gate_not_met",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260520-033",
+  "hypothesis": "State-surface concentration work should not add another scalar unless the aggregate EV improvement exceeds the strict >10% gate.",
+  "lane": "alpha_search",
+  "mechanism_family": "state_surface_concentration",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260507-026",
+    "exp-20260509-007",
+    "exp-20260509-012",
+    "exp-20260510-005",
+    "exp-20260509-013",
+    "exp-20260509-014",
+    "exp-20260509-025",
+    "exp-20260509-015",
+    "exp-20260507-019",
+    "exp-20260508-005"
+  ],
+  "new_evidence_type": "paper_replay_strict_gate_evidence",
+  "next_evidence_needed": "Use the new concentration context field to explain queue concentration before another scalar/profile test.",
+  "parameters": {
+    "core_strategy_logic_changed": false,
+    "live_orders_changed": false,
+    "metric_backfill": true,
+    "most_recent_failure": {
+      "decision": "rejected_full_stack_replacement",
+      "experiment_id": "exp-20260509-013",
+      "rejection_reason": "Fails the correct marginal comparison against the full exp-20260509-012 stack: aggregate EV and PnL both regress, with EV improving in only late_strong versus the full stack."
+    }
+  },
+  "prior_trial_count": 21,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "data/experiments/exp-20260520-033/state_surface_metric_evidence.json",
+    "experiments/logs/exp-20260520-033.json",
+    "experiments/artifacts/exp-20260520-033_state_surface_metric_evidence.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "rejected",
+  "timestamp": "2026-05-20T18:04:39.613205+00:00",
+  "trial_family": "state_surface_concentration_context",
+  "trial_variant_id": "prior_scalar_evidence_backfill_v1"
+}
