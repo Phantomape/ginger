@@ -43,6 +43,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "STATE_SURFACE_SATELLITE_PAPER"
 QUEUE_NAME = "STATE_SURFACE_SATELLITE_QUEUE"
 RULE_VERSION = "state_surface_full_v1"
+CONCENTRATION_CONTEXT_RULE_VERSION = "state_surface_concentration_context_v1"
 BENCHMARK_MOMENTUM_GATE_RULE_VERSION = "state_surface_benchmark_momentum_gate_v1"
 RET20_EXCESS_SPY_GATE_RULE_VERSION = "state_surface_ret20_excess_spy_gate_v1"
 RANK_NOTIONAL_RULE_VERSION = "state_surface_rank_notional_v2"
@@ -497,15 +498,19 @@ def build_state_surface_sleeve_snapshot(
         current_prices=closes,
         config=cfg,
     )
+    enriched_queue = _queue_with_concentration_context(
+        state_surface_queue or {},
+        closed_positions=working_state.get("closed_positions") or [],
+    )
     new_pending = _add_queue_candidates(
         working_state,
-        state_surface_queue or {},
+        enriched_queue,
         as_of=as_of_date,
         config=cfg,
     )
     snapshot = _snapshot_payload(
         working_state,
-        state_surface_queue or {},
+        enriched_queue,
         as_of=as_of_date,
         config=cfg,
         new_pending=new_pending,
@@ -3330,6 +3335,159 @@ def _rank3_near_high_for_candidates(candidates: list[dict[str, Any]]) -> dict[st
     }
 
 
+def _queue_with_concentration_context(
+    queue: dict[str, Any],
+    *,
+    closed_positions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    enriched = deepcopy(queue)
+    candidates = [
+        row for row in (enriched.get("candidates") or []) if isinstance(row, dict)
+    ]
+    enriched["candidates"] = [
+        {
+            **deepcopy(candidate),
+            "state_surface_concentration_context": (
+                build_state_surface_concentration_context(
+                    candidate,
+                    candidates,
+                    closed_positions=closed_positions,
+                )
+            ),
+        }
+        for candidate in candidates
+    ]
+    return enriched
+
+
+def build_state_surface_concentration_context(
+    candidate: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    *,
+    closed_positions: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Read-only concentration attribution for default-off paper candidates."""
+
+    peers = [row for row in candidates or [] if isinstance(row, dict)]
+    ticker = str(candidate.get("ticker") or "").upper()
+    sector = str(candidate.get("sector") or _sector_for_ticker(ticker))
+    surface = str(candidate.get("surface") or candidate.get("theme") or "unknown")
+    queue_count = len(peers)
+    same_ticker_count = sum(
+        1 for row in peers if str(row.get("ticker") or "").upper() == ticker
+    )
+    same_sector_count = sum(
+        1
+        for row in peers
+        if str(row.get("sector") or _sector_for_ticker(row.get("ticker"))) == sector
+    )
+    same_surface_count = sum(
+        1 for row in peers if str(row.get("surface") or row.get("theme") or "") == surface
+    )
+    sector_counts: dict[str, int] = {}
+    surface_counts: dict[str, int] = {}
+    for row in peers:
+        row_ticker = str(row.get("ticker") or "").upper()
+        row_sector = str(row.get("sector") or _sector_for_ticker(row_ticker))
+        row_surface = str(row.get("surface") or row.get("theme") or "unknown")
+        sector_counts[row_sector] = sector_counts.get(row_sector, 0) + 1
+        surface_counts[row_surface] = surface_counts.get(row_surface, 0) + 1
+    top_sector, top_sector_count = _top_count(sector_counts)
+    top_surface, top_surface_count = _top_count(surface_counts)
+    same_sector_share = (
+        same_sector_count / queue_count if queue_count else None
+    )
+    same_surface_share = (
+        same_surface_count / queue_count if queue_count else None
+    )
+    if same_ticker_count > 1 or (same_sector_share or 0.0) >= 0.67:
+        independence = "low"
+    elif same_sector_count > 1 or (same_surface_share or 0.0) >= 0.67:
+        independence = "medium"
+    else:
+        independence = "high"
+    recent = _recent_winner_contribution(
+        ticker=ticker,
+        sector=sector,
+        closed_positions=closed_positions or [],
+    )
+    return {
+        "schema_version": 1,
+        "rule_version": CONCENTRATION_CONTEXT_RULE_VERSION,
+        "pit_safe": True,
+        "read_only": True,
+        "ticker": ticker,
+        "sector": sector,
+        "theme": surface,
+        "queue_candidate_count": queue_count,
+        "same_ticker_candidate_count": same_ticker_count,
+        "same_sector_candidate_count": same_sector_count,
+        "same_surface_candidate_count": same_surface_count,
+        "same_sector_queue_share": _round(same_sector_share, 4),
+        "same_surface_queue_share": _round(same_surface_share, 4),
+        "top_queue_sector": top_sector,
+        "top_queue_sector_count": top_sector_count,
+        "top_queue_surface": top_surface,
+        "top_queue_surface_count": top_surface_count,
+        "queue_independence_bucket": independence,
+        "recent_winner_contribution": recent,
+        "trade_enabled": False,
+        "alters_orders": False,
+        "alters_sizing": False,
+        "notes": (
+            "Observation field only; future scalar/profile changes still need "
+            "the strict state-surface aggregate EV gate."
+        ),
+    }
+
+
+def _top_count(counts: dict[str, int]) -> tuple[str | None, int]:
+    if not counts:
+        return None, 0
+    key, value = max(counts.items(), key=lambda item: (item[1], item[0]))
+    return key, value
+
+
+def _recent_winner_contribution(
+    *,
+    ticker: str,
+    sector: str,
+    closed_positions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    winners = [
+        row for row in closed_positions or [] if _money(row.get("pnl")) > 0.0
+    ]
+    total_positive = round(sum(_money(row.get("pnl")) for row in winners), 2)
+    same_ticker = [
+        row
+        for row in winners
+        if str(row.get("ticker") or "").upper() == ticker
+    ]
+    same_sector = [
+        row
+        for row in winners
+        if str(row.get("sector") or _sector_for_ticker(row.get("ticker"))) == sector
+    ]
+    same_ticker_pnl = round(sum(_money(row.get("pnl")) for row in same_ticker), 2)
+    same_sector_pnl = round(sum(_money(row.get("pnl")) for row in same_sector), 2)
+    return {
+        "closed_winner_count": len(winners),
+        "positive_pnl_total": total_positive,
+        "same_ticker_closed_winner_count": len(same_ticker),
+        "same_sector_closed_winner_count": len(same_sector),
+        "same_ticker_positive_pnl": same_ticker_pnl,
+        "same_sector_positive_pnl": same_sector_pnl,
+        "same_ticker_positive_pnl_share": _round(
+            same_ticker_pnl / total_positive if total_positive > 0 else None,
+            4,
+        ),
+        "same_sector_positive_pnl_share": _round(
+            same_sector_pnl / total_positive if total_positive > 0 else None,
+            4,
+        ),
+    }
+
+
 def _candidate_payload(
     row: dict[str, Any],
     *,
@@ -4031,6 +4189,13 @@ def _fill_pending_entries(
             "trade_enabled": False,
             "paper_status": "open",
             "source_candidate": entry.get("candidate") or {},
+            "state_surface_concentration_context": deepcopy(
+                entry.get("state_surface_concentration_context")
+                or (entry.get("candidate") or {}).get(
+                    "state_surface_concentration_context"
+                )
+                or {}
+            ),
         }
         if position["last_price"] is not None:
             _mark_unrealized(position, float(position["last_price"]), cost)
@@ -4094,6 +4259,9 @@ def _add_queue_candidates(
             "top2_sector_cohesion_sector": candidate.get("top2_sector_cohesion_sector"),
             "top2_sector_cohesion_sample_size": candidate.get(
                 "top2_sector_cohesion_sample_size"
+            ),
+            "state_surface_concentration_context": deepcopy(
+                candidate.get("state_surface_concentration_context") or {}
             ),
             "candidate_breadth_profile_name": candidate.get(
                 "rank_notional_profile_name"

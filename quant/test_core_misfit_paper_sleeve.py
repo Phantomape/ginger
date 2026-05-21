@@ -4,6 +4,7 @@ from core_misfit_paper_sleeve import (
     DEFAULT_TARGET_STRATEGIES,
     RULE_VERSION,
     SLEEVE_NAME,
+    build_core_misfit_no_trade_alpha_report,
     build_core_misfit_paper_candidates,
     build_core_misfit_paper_sleeve_snapshot,
     empty_core_misfit_paper_state,
@@ -153,6 +154,30 @@ def test_core_misfit_sleeve_tracks_no_trade_and_inverse_paper_outcomes():
     assert outcome["inverse_short_pnl"] > 0
     assert third["realized_no_trade_value_to_date"] > 0
     assert third["realized_inverse_pnl_to_date"] > 0
+    assert third["no_trade_alpha_report"]["read_only"] is True
+    assert third["no_trade_alpha_report"]["primary_closed_outcome_count"] == 0
+    assert third["no_trade_alpha_report"]["next_allowed_action"] == (
+        "observed_only_until_min_closed_10d_outcomes"
+    )
+
+
+def test_core_misfit_no_trade_alpha_report_blocks_until_sample_matures():
+    report = build_core_misfit_no_trade_alpha_report(
+        primary_closed_outcomes=[
+            {
+                "ticker": "TSM",
+                "no_trade_avoided_value_pnl": 100.0,
+                "inverse_short_pnl": 90.0,
+            }
+        ],
+        open_positions=[],
+        config={"forward_gate_min_closed_primary_outcomes": 2},
+    )
+
+    assert report["rule_version"] == "core_misfit_no_trade_alpha_report_v1"
+    assert report["realized_no_trade_avoided_value"] == 100.0
+    assert report["closed_outcomes_remaining_before_gate_test"] == 1
+    assert report["alters_orders"] is False
 
 
 def test_report_generator_renders_core_misfit_paper_without_orders():

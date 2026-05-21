@@ -14,6 +14,7 @@ from sec_financial_report_event_sleeve import (
     DEFAULT_NEUTRAL_UNDERREACTION_SPY_T1_RETURN_MIN,
     DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR,
     SLEEVE_NAME,
+    build_fact_tone_gap_attribution,
     build_sec_financial_report_event_sleeve_snapshot,
     empty_sec_financial_report_event_sleeve_state,
 )
@@ -39,6 +40,10 @@ def _candidate(
     language_bucket: str | None = None,
     spy_t1_return: float | None = None,
     text_event_type: str | None = None,
+    positive_phrase_hits: list[str] | None = None,
+    negative_phrase_hits: list[str] | None = None,
+    guidance_raise_hits: list[str] | None = None,
+    guidance_cut_hits: list[str] | None = None,
 ) -> dict[str, object]:
     candidate = {
         "ticker": ticker,
@@ -57,6 +62,14 @@ def _candidate(
         candidate["spy_t1_return"] = spy_t1_return
     if text_event_type is not None:
         candidate["text_event_type"] = text_event_type
+    if positive_phrase_hits is not None:
+        candidate["positive_phrase_hits"] = positive_phrase_hits
+    if negative_phrase_hits is not None:
+        candidate["negative_phrase_hits"] = negative_phrase_hits
+    if guidance_raise_hits is not None:
+        candidate["guidance_raise_hits"] = guidance_raise_hits
+    if guidance_cut_hits is not None:
+        candidate["guidance_cut_hits"] = guidance_cut_hits
     return candidate
 
 
@@ -67,6 +80,26 @@ def _state_from_snapshot(snapshot: dict[str, object]) -> dict[str, object]:
     state["closed_positions"] = list(snapshot.get("closed_positions") or [])
     state["skipped_entries"] = list(snapshot.get("skipped_entries") or [])
     return state
+
+
+def test_fact_tone_gap_attribution_is_read_only_with_provenance():
+    attribution = build_fact_tone_gap_attribution(
+        _candidate(
+            "ERN",
+            language_bucket="positive_language",
+            text_event_type="earnings_release_text",
+            positive_phrase_hits=["revenue increased"],
+            guidance_raise_hits=["raised outlook"],
+        )
+    )
+
+    assert attribution["rule_version"] == "sec_fact_tone_gap_bucket_v1"
+    assert attribution["fact_tone_gap_bucket"] == "fact_improvement_positive_tone"
+    assert attribution["default_off_attribution_only"] is True
+    assert attribution["provenance"]["ticker"] == "ERN"
+    assert attribution["evidence_counts"]["positive_phrase_hits"] == 1
+    assert attribution["evidence_span"][0]["source"] == "sec_financial_report_t1_queue"
+    assert attribution["alters_orders"] is False
 
 
 def test_financial_report_sleeve_freezes_pending_then_paper_fills_and_closes():
@@ -113,6 +146,42 @@ def test_financial_report_sleeve_freezes_pending_then_paper_fills_and_closes():
     assert third["open_position_count"] == 0
     assert third["realized_pnl_to_date"] == pytest.approx(1447.5)
     assert third["closed_positions_today"][0]["trade_enabled"] is False
+
+
+def test_financial_report_sleeve_exposes_fact_tone_gap_bucket_on_paper_candidates():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(
+            _candidate(
+                "ERN",
+                "0001",
+                0.04,
+                language_bucket="positive_language",
+                text_event_type="earnings_release_text",
+                positive_phrase_hits=["net sales improved"],
+            )
+        ),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        persist=False,
+    )
+    attribution = first["candidates"][0]["fact_tone_gap_attribution"]
+
+    assert attribution["fact_tone_gap_bucket"] == "fact_improvement_positive_tone"
+    assert first["pending_entries"][0]["candidate"]["fact_tone_gap_attribution"] == attribution
+
+    second = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"ERN": 100.0},
+        current_prices={"ERN": 101.0},
+        state=_state_from_snapshot(first),
+        persist=False,
+    )
+
+    assert second["open_positions"][0]["fact_tone_gap_bucket"] == (
+        "fact_improvement_positive_tone"
+    )
+    assert second["open_positions"][0]["fact_tone_gap_attribution"]["read_only"] is True
 
 
 def test_financial_report_sleeve_prioritizes_strongest_t1_excess():

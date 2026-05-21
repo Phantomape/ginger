@@ -24,6 +24,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 SLEEVE_NAME = "CORE_MISFIT_PAPER"
 RULE_VERSION = "core_misfit_negative_signal_v2"
+NO_TRADE_ALPHA_REPORT_RULE_VERSION = "core_misfit_no_trade_alpha_report_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("core_misfit_paper_state")
@@ -512,6 +513,11 @@ def _snapshot_payload(
         2,
     )
     gate = _forward_paper_gate(primary_closed, config)
+    no_trade_alpha_report = build_core_misfit_no_trade_alpha_report(
+        primary_closed_outcomes=primary_closed,
+        open_positions=state["open_positions"],
+        config=config,
+    )
     return {
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
@@ -539,6 +545,7 @@ def _snapshot_payload(
         "unrealized_inverse_pnl": unrealized_inverse,
         "ticker_summary": _ticker_summary(closed, state["open_positions"], candidates),
         "horizon_summary": _horizon_summary(closed),
+        "no_trade_alpha_report": no_trade_alpha_report,
         "parameters": dict(config),
         "data_source": {
             "status": "loaded",
@@ -668,6 +675,61 @@ def _close_horizon(
         "trade_enabled": False,
         "paper_status": "closed_horizon",
         "source_candidate": deepcopy(position.get("source_candidate") or {}),
+    }
+
+
+def build_core_misfit_no_trade_alpha_report(
+    *,
+    primary_closed_outcomes: list[dict[str, Any]],
+    open_positions: list[dict[str, Any]],
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = _config(config)
+    closed = [
+        row for row in primary_closed_outcomes or [] if isinstance(row, dict)
+    ]
+    open_rows = [row for row in open_positions or [] if isinstance(row, dict)]
+    min_closed = int(cfg["forward_gate_min_closed_primary_outcomes"])
+    no_trade = round(
+        sum(_money(row.get("no_trade_avoided_value_pnl")) for row in closed),
+        2,
+    )
+    inverse = round(sum(_money(row.get("inverse_short_pnl")) for row in closed), 2)
+    unrealized_no_trade = round(
+        sum(_money(row.get("no_trade_avoided_value_if_closed_now")) for row in open_rows),
+        2,
+    )
+    unrealized_inverse = round(
+        sum(_money(row.get("inverse_short_pnl_if_closed_now")) for row in open_rows),
+        2,
+    )
+    status = (
+        "gate_test_allowed"
+        if len(closed) >= min_closed
+        else "observed_only_until_min_closed_10d_outcomes"
+    )
+    return {
+        "schema_version": 1,
+        "rule_version": NO_TRADE_ALPHA_REPORT_RULE_VERSION,
+        "read_only": True,
+        "primary_horizon_days": int(cfg["primary_horizon_days"]),
+        "primary_closed_outcome_count": len(closed),
+        "min_closed_primary_outcomes": min_closed,
+        "closed_outcomes_remaining_before_gate_test": max(
+            0,
+            min_closed - len(closed),
+        ),
+        "realized_no_trade_avoided_value": no_trade,
+        "realized_inverse_short_pnl": inverse,
+        "unrealized_no_trade_avoided_value": unrealized_no_trade,
+        "unrealized_inverse_short_pnl": unrealized_inverse,
+        "next_allowed_action": status,
+        "trade_enabled": False,
+        "alters_orders": False,
+        "notes": (
+            "Live short or exclusion tests stay blocked until the closed 10d "
+            "no-trade avoided-value sample reaches the configured gate."
+        ),
     }
 
 

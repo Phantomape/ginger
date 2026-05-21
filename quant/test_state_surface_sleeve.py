@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from report_generator import generate_daily_report
 from state_surface_sleeve import (
     SLEEVE_NAME,
+    build_state_surface_concentration_context,
     build_state_surface_forward_tail_diagnostics,
     build_state_surface_queue,
     build_state_surface_sleeve_snapshot,
@@ -82,6 +83,32 @@ def _ohlcv_broad_rotation():
         "BBB": _rows(50.0, 0.0016),
         "CCC": _rows(50.0, 0.0012),
     }
+
+
+def test_state_surface_concentration_context_is_read_only_and_pit_safe():
+    candidates = [
+        {"ticker": "AAA", "sector": "Technology", "surface": "rotation"},
+        {"ticker": "BBB", "sector": "Technology", "surface": "rotation"},
+        {"ticker": "CCC", "sector": "Health Care", "surface": "quality"},
+    ]
+    context = build_state_surface_concentration_context(
+        candidates[0],
+        candidates,
+        closed_positions=[
+            {"ticker": "BBB", "sector": "Technology", "pnl": 1200.0},
+            {"ticker": "CCC", "sector": "Health Care", "pnl": 300.0},
+            {"ticker": "AAA", "sector": "Technology", "pnl": -50.0},
+        ],
+    )
+
+    assert context["rule_version"] == "state_surface_concentration_context_v1"
+    assert context["pit_safe"] is True
+    assert context["read_only"] is True
+    assert context["queue_independence_bucket"] == "medium"
+    assert context["same_sector_candidate_count"] == 2
+    assert context["same_sector_queue_share"] == 0.6667
+    assert context["recent_winner_contribution"]["same_sector_closed_winner_count"] == 1
+    assert context["alters_orders"] is False
 
 
 def _ohlcv_broad_rotation_many():

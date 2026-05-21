@@ -24,6 +24,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 SLEEVE_NAME = "BROAD_MARKET_LEADERSHIP_PAPER"
 RULE_VERSION = "broad_market_price_floor_rank_low_extension_high_volatility_trend_persistence_v1"
+REPLACEMENT_VALUE_RULE_VERSION = "broad_market_forward_replacement_value_v1"
 RANK_NOTIONAL_RULE_VERSION = "broad_market_rank_notional_profile_v1"
 LOW_EXTENSION_RULE_VERSION = "broad_market_low_extension_notional_v1"
 HIGH_VOLATILITY_RULE_VERSION = "broad_market_high_volatility_notional_v1"
@@ -623,6 +624,16 @@ def _candidate_from_feature(
         "trend_persistence_notional_scalar": config["trend_persistence_notional_scalar"],
         "trend_persistence_notional_multiplier": notional_payload["trend_persistence_multiplier"],
         "trend_persistence_support_applied": notional_payload["trend_persistence_support_applied"],
+        "replacement_value_context": {
+            "rule_version": REPLACEMENT_VALUE_RULE_VERSION,
+            "read_only": True,
+            "displaced_resource": "paper_cash_slot",
+            "displaced_core_candidate": None,
+            "forward_outcome_horizon_days": int(config["hold_days"]),
+            "replacement_value_pending": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
         "trade_enabled": False,
         "alters_orders": False,
         "features": deepcopy(feature),
@@ -909,6 +920,14 @@ def _snapshot_payload(
     realized = round(sum(_money(row.get("pnl")) for row in closed), 2)
     unrealized = round(sum(_money(row.get("unrealized_pnl")) for row in open_positions), 2)
     gate = _forward_paper_gate(closed, config)
+    replacement_value_report = build_broad_market_replacement_value_report(
+        candidates=candidates,
+        pending_entries=state["pending_entries"],
+        open_positions=open_positions,
+        closed_positions=closed,
+        skipped_entries=state["skipped_entries"],
+        config=config,
+    )
     return {
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
@@ -930,6 +949,7 @@ def _snapshot_payload(
         "realized_pnl_to_date": realized,
         "unrealized_pnl": unrealized,
         "ticker_summary": _ticker_summary(closed, open_positions, candidates),
+        "replacement_value_report": replacement_value_report,
         "parameters": dict(config),
         "data_source": {
             "status": data_source.get("status"),
@@ -985,6 +1005,108 @@ def _forward_paper_gate(
             "top5_positive_share": top5_share,
         },
         "trade_enabled_after_gate": False,
+    }
+
+
+def build_broad_market_replacement_value_report(
+    *,
+    candidates: list[dict[str, Any]],
+    pending_entries: list[dict[str, Any]],
+    open_positions: list[dict[str, Any]],
+    closed_positions: list[dict[str, Any]],
+    skipped_entries: list[dict[str, Any]],
+    config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cfg = _config(config)
+    closed = [row for row in closed_positions or [] if isinstance(row, dict)]
+    open_rows = [row for row in open_positions or [] if isinstance(row, dict)]
+    pending = [row for row in pending_entries or [] if isinstance(row, dict)]
+    skipped = [row for row in skipped_entries or [] if isinstance(row, dict)]
+    positive_closed = [row for row in closed if _money(row.get("pnl")) > 0.0]
+    positive_pnl = round(sum(_money(row.get("pnl")) for row in positive_closed), 2)
+    by_ticker: dict[str, dict[str, Any]] = {}
+    for bucket, rows in (
+        ("candidate", candidates or []),
+        ("pending", pending),
+        ("open", open_rows),
+        ("closed", closed),
+        ("skipped", skipped),
+    ):
+        for row in rows:
+            ticker = str(row.get("ticker") or "").upper()
+            if not ticker and isinstance(row.get("candidate"), dict):
+                ticker = str(row["candidate"].get("ticker") or "").upper()
+            if not ticker:
+                continue
+            rec = by_ticker.setdefault(
+                ticker,
+                {
+                    "candidate_count": 0,
+                    "pending_count": 0,
+                    "open_count": 0,
+                    "closed_count": 0,
+                    "skipped_count": 0,
+                    "closed_pnl": 0.0,
+                    "positive_closed_pnl": 0.0,
+                },
+            )
+            rec[f"{bucket}_count"] += 1
+            if bucket == "closed":
+                pnl = _money(row.get("pnl"))
+                rec["closed_pnl"] = round(float(rec["closed_pnl"]) + pnl, 2)
+                if pnl > 0:
+                    rec["positive_closed_pnl"] = round(
+                        float(rec["positive_closed_pnl"]) + pnl,
+                        2,
+                    )
+    for rec in by_ticker.values():
+        rec["positive_pnl_share"] = (
+            round(float(rec["positive_closed_pnl"]) / positive_pnl, 4)
+            if positive_pnl > 0
+            else None
+        )
+    top_positive_share = (
+        max(
+            (
+                float(row.get("positive_pnl_share") or 0.0)
+                for row in by_ticker.values()
+            ),
+            default=0.0,
+        )
+        if positive_pnl > 0
+        else None
+    )
+    return {
+        "schema_version": 1,
+        "rule_version": REPLACEMENT_VALUE_RULE_VERSION,
+        "read_only": True,
+        "forward_outcome_horizon_days": int(cfg["hold_days"]),
+        "displaced_resource_default": "paper_cash_slot",
+        "candidate_count": len(candidates or []),
+        "pending_count": len(pending),
+        "open_count": len(open_rows),
+        "closed_count": len(closed),
+        "skipped_count": len(skipped),
+        "closed_pnl": round(sum(_money(row.get("pnl")) for row in closed), 2),
+        "open_unrealized_pnl": round(
+            sum(_money(row.get("unrealized_pnl")) for row in open_rows),
+            2,
+        ),
+        "positive_closed_pnl": positive_pnl,
+        "top_ticker_positive_pnl_share": top_positive_share,
+        "by_ticker": dict(sorted(by_ticker.items())),
+        "promotion_blockers": [
+            blocker
+            for blocker in (
+                "needs_closed_forward_outcomes"
+                if len(closed) < int(cfg["forward_gate_min_closed_trades"])
+                else None,
+                "needs_replacement_value_vs_core_or_cash",
+            )
+            if blocker
+        ],
+        "trade_enabled": False,
+        "alters_orders": False,
     }
 
 

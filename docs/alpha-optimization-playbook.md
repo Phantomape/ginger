@@ -13,7 +13,7 @@ external research into:
 - anti-repeat rules;
 - the current alpha research queue.
 
-Last refreshed: 2026-05-20.
+Last refreshed: 2026-05-21.
 
 ## How To Use This Playbook
 
@@ -29,46 +29,48 @@ Default workflow:
 
 1. Prefer `alpha_search` over `measurement_repair` unless measurement directly
    blocks a high-value alpha lane.
-2. Prefer fixed candidate sets plus better capital routing over broad new
-   filters.
-3. Prefer one new explanatory field over one more scalar retune.
-4. Prefer shared production-visible policy over backtest-only logic.
-5. Prefer default-off paper sleeves before live promotion.
+2. Prefer one new explanatory field over one more scalar retune.
+3. Prefer sleeve/accounting work over broad core expansion.
+4. Prefer shared production-visible policy over replay-only cleverness.
+5. Prefer forward replacement-value maturity before any live promotion.
 
 ## Executive Summary
 
-Ginger is still best understood as an event-enhanced medium-term trend /
-breakout system. The strongest durable repo prior is now clearer than before:
+Ginger is still an event-enhanced medium-term trend / breakout system.
+The durable repo prior is now tighter:
 
-1. Core alpha mostly comes from narrow state-conditioned allocation changes on
-   already-qualified signals.
-2. New sleeves should incubate as default-off paper paths with explicit
-   replacement-value and concentration accounting.
-3. Broad filters, broad reranking, and broad lifecycle rewrites are usually
-   worse than field creation plus capital routing.
-4. Event alpha matters only when it proves replacement value against the next
-   use of capital.
-5. LLM value comes from extraction, decomposition, provenance, and attribution
-   rather than direct risk or execution authority.
+1. Core live alpha mostly comes from small allocation changes on already
+   selected signals, not from broad entry rewrites.
+2. Paper sleeves are the right incubator for new candidate pools, event
+   families, and suspect cohorts.
+3. The best next alpha usually comes from a new production-visible field, not
+   from another threshold or notional sweep.
+4. Standalone event PnL is not enough; replacement value, concentration, and
+   forward maturity decide whether a sleeve deserves capital.
+5. LLM value is highest in decomposition, extraction, provenance, and
+   attribution, not direct sizing or execution authority.
 
-Recent repository evidence sharpened that interpretation:
+## What Changed Recently
 
-- accepted live-grade core work kept entry and exit logic mostly fixed and
-  improved EV through small post-sizing top-ups on already-selected signals;
-- accepted `STATE_SURFACE_SATELLITE` work kept the candidate set tight and
-  improved paper EV through orthogonal rank-quality fields, but a new strict
-  scalar gate now blocks casual profile mining;
-- accepted `BROAD_MARKET_LEADERSHIP_PAPER` work shows that all-market discovery
-  is useful only as a governed paper queue with fixed rank semantics and
-  forward replacement-value follow-through;
-- accepted SEC work still comes from narrow context-aware event allocation, not
-  from generic language tone;
-- suspicious cohorts such as `CORE_MISFIT_PAPER` are better handled as paper
-  governance and no-trade accounting before any live short or exclusion logic.
+Recent logs changed the playbook in three durable ways:
 
-Interpretation: the next useful alpha is more likely to come from new
-production-visible fields and better sleeve governance than from another round
-of adjacent threshold tuning.
+1. `STATE_SURFACE_SATELLITE` is now field-hungry, not threshold-hungry.
+   The sleeve already has accepted paper edge. Further nearby queue/profile/
+   scalar/notional tuning is now low-value unless a new field explains
+   concentration, crowding, or independence.
+2. `BROAD_MARKET_LEADERSHIP_PAPER` is now a governed paper queue, not a broad-
+   market scouting toy. Accepted work validated rank plus low-extension,
+   high-volatility, and trend-persistence support. The next valid step is
+   forward replacement value and concentration evidence, not more local tuning.
+3. The external event overlay lane matured from direction proof to governed
+   adapter design. Front-rank rotation, broad-breadth context, and
+   `sec_governance_procedural` source quality now have accepted default-off
+   paper evidence. The bottleneck is forward replacement-value maturity, not
+   more same-family replay mining.
+
+Interpretation: the next useful alpha is more likely to come from sleeve
+governance, source/context quality, and replay-safe semantic fields than from
+another round of adjacent scalar tuning.
 
 ## Durable Mechanism Priors
 
@@ -86,19 +88,13 @@ Weak prior:
 - broad new filters;
 - broad slot reranking;
 - broad quality overlays;
-- broad candidate-pool expansion into core;
-- mirror-image penalties without independent evidence.
+- broad lifecycle rewrites;
+- mirror-image penalty rules without independent evidence.
 
-Default rule:
+### 2. One Good Field Beats One More Rule
 
-- if a proposal broadly changes who is allowed to trade, start skeptical;
-- if it only changes how already-good candidates are sized, start less
-  skeptical.
-
-### 2. One Good Field Beats One More Generic Rule
-
-Noisy cohorts are rarely rescued by stacking more generic guards. They improve
-when one ex-ante explanatory field is added and then used for paper ranking,
+Noisy cohorts rarely improve through stacked generic guards. They improve when
+one ex-ante explanatory field is added and then used for paper ranking,
 paper allocation, or narrow live sizing.
 
 Default rule:
@@ -107,37 +103,17 @@ Default rule:
 - keep the candidate set fixed when possible;
 - if an idea needs many exceptions, it is probably overfit.
 
-### 3. Replacement Value Beats Narrative Quality
+### 3. Replacement Value Beats Standalone PnL
 
-Event stories are not enough. A sleeve earns attention only when it can answer:
+Event sleeves, broad-market sleeves, and suspect cohorts should answer:
 
-- why this candidate deserves capital over the next core slot;
-- whether the outcome beats cash or the displaced candidate;
-- whether the edge survives outside one cluster of winners.
+- does this beat cash?
+- does this beat the displaced core use of capital?
+- does it survive outside one winner cluster?
 
-Default rule:
+If not, it is still research, not promoted alpha.
 
-- event work must eventually produce replacement-value evidence;
-- semantic quality without capital-routing evidence is research, not alpha.
-
-### 4. Small, Capped, Conditional Changes Beat Big Rewrites
-
-Accepted changes are usually:
-
-- small in magnitude;
-- narrow in scope;
-- based on already-known fields;
-- neutral to trade count and survival;
-- controlled on drawdown drift.
-
-Rejected changes are usually:
-
-- global retunes;
-- broad lifecycle rewrites;
-- broad slot-priority changes;
-- nearby scalar mining after a state is already accepted.
-
-### 5. Default-Off Sleeves Are The Right Incubator
+### 4. Default-Off Sleeves Are The Right Incubator
 
 New candidate pools, thematic cohorts, suspicious long cohorts, and event
 families should first live in a default-off paper sleeve with explicit:
@@ -151,35 +127,13 @@ families should first live in a default-off paper sleeve with explicit:
 
 Broadening core is usually the wrong first step.
 
-### 6. Tail Concentration Is A Promotion Blocker
+### 5. Concentration Is A Promotion Blocker
 
-Paper EV and win rate are not enough when gains are dominated by one ticker or
-one small winner cluster.
+Paper EV and win rate are not enough when gains come from one ticker or one
+small cluster. Promotion requires evidence that the edge is not just
+concentrated beta, one issuer, or one crowding state.
 
-Default rule:
-
-- every sleeve candidate must be judged on concentration and tail shape, not
-  only EV and PnL;
-- if a sleeve improves mostly through one ticker cluster, promotion is blocked
-  until concentration is solved or explicitly bounded.
-
-### 7. Bad Longs Are Not Automatically Good Shorts
-
-`CORE_MISFIT_PAPER` supports three separate questions:
-
-- is the cohort negative EV for core longs?
-- is there a no-trade or fast-exit rescue?
-- is there true inverse alpha after costs and sample controls?
-
-Current prior:
-
-- no-trade avoided value is real and paper-worthy;
-- inverse evidence is still research until borrow, locate, and forward paper
-  maturity are good enough;
-- suspicious cohorts should first move into explicit paper governance, not
-  directly into live exclusion or live shorting.
-
-### 8. LLM Value Comes From Structure, Not Authority
+### 6. LLM Value Comes From Structure, Not Authority
 
 Code owns:
 
@@ -192,101 +146,143 @@ Code owns:
 LLM owns:
 
 - event understanding;
-- topic extraction;
 - contradiction detection;
+- topic extraction;
 - commitment and credibility tagging;
-- catastrophe-style veto candidates;
-- semantic surprise and attention structure.
+- semantic surprise and attention structure;
+- catastrophe-style veto candidates.
 
-Default rule:
+Every useful LLM output should become schema-bound fields with provenance,
+not free-form trade authority.
 
-- every LLM contribution should become schema-bound fields with provenance and
-  attribution, not free-form trade authority.
+## Alpha Factory Doctrine
 
-## What The Recent Logs Actually Mean
+The next research phase should behave like an alpha factory:
 
-This section is interpretation, not an experiment replay.
+1. Expand discovery through PIT-safe paper sleeves before touching core.
+2. Convert narratives into fields before changing capital.
+3. Measure replacement value against cash and displaced core candidates.
+4. Route capital at the sleeve/portfolio layer instead of stacking local
+   thresholds.
+5. Promote only through bounded, kill-switchable experiments after canonical
+   or forward evidence clears the gate.
 
-### What Is Working
+### Current Highest-Value Lanes
 
-- Core alpha is still mostly allocation alpha. The best live-grade additions
-  remain small post-sizing promotions on already-selected candidates rather
-  than new filters or new entry logic.
-- `STATE_SURFACE_SATELLITE` alpha is real when it uses orthogonal queue-quality
-  fields. The durable gains came from residual queue structure, rank-depth,
-  queue displacement, absolute score, low extension, near-high support, volume
-  confirmation, and positive short-term follow-through. The sleeve is now field
-  hungry, not threshold hungry.
-- `BROAD_MARKET_LEADERSHIP_PAPER` is now a valid research surface. The accepted
-  queue is not a random universe expansion; it is a governed paper sleeve with
-  fixed price/trend/near-high/volume semantics plus accepted rank, low-
-  extension, high-volatility, and trend-persistence notional support.
-- SEC / event-overlay alpha is real when event text and market state are used
-  narrowly and contextually. The working pattern is not "positive language is good";
-  it is "specific filing/event subsets with favorable reaction or positive-state
-  context deserve more capital."
-- Core-misfit work is strongest as candidate-pool governance. Narrowing scope
-  and maturing no-trade / inverse paper evidence is more credible than broad
-  live exclusion or immediate short activation.
+#### 1. State-Surface concentration-solving fields
 
-### What Is Not Working
+Why it stays high:
 
-- broad slot-priority reranking;
-- broad lifecycle target-width rewrites;
-- broad positive/negative language scalars without a new context field;
-- nearby retunes of already accepted state-surface thresholds;
-- nearby retunes of already accepted broad-market paper thresholds;
-- thin interaction mining that only changes a tiny frozen sample;
-- broad theme or sector overlays that behave like hidden beta leverage.
+- the sleeve already has accepted paper edge;
+- promotion is blocked by concentration and forward maturity;
+- same-family scalar tuning now has a stricter anti-repeat bar.
 
-### The 2026-05-20 Update
+Preferred directions:
 
-Three durable changes now matter:
+- crowding proxies that are visible at decision time;
+- queue independence / overlap fields;
+- sector/theme concentration fields;
+- persistence-vs-extension discriminators;
+- replacement-value comparisons versus displaced queue ranks.
 
-1. `STATE_SURFACE_SATELLITE` scalar mining is formally tighter.
-   Same-family notional retunes now need more than "positive in all windows";
-   they need strict aggregate EV improvement under the sleeve-specific gate.
-2. `BROAD_MARKET_LEADERSHIP_PAPER` graduated from a broad-market scout into a
-   governed paper sleeve with accepted rank plus extension/volatility/trend
-   support. The next valid step is forward replacement value, not more local
-   threshold mining.
-3. Strong-close crowding haircuts looked plausible but failed once evaluated as
-   a production-usable crowding discriminator. This reinforces the prior that
-   crowding fields need forward evidence, not frozen-sample tuning.
+Do not do:
 
-## Candidate-Pool And Sleeve Doctrine
+- nearby queue-rank/profile/notional retunes on the frozen sample.
 
-Candidate-pool work is valid alpha search when treated as capital governance,
-not casual ticker picking.
+#### 2. Event overlay forward maturation
 
-### Valid Sleeve Roles
+Why it moved up:
 
-- `CORE` for proven live capital;
-- `STATE_SURFACE_SATELLITE` for default-off rotation-surface expansion;
-- `BROAD_MARKET_LEADERSHIP_PAPER` for all-market leadership discovery;
-- SEC and earnings event sleeves;
-- Form 4 sleeves;
-- buyback credibility sleeves;
-- passive-flow or index-event sleeves;
-- `CORE_MISFIT_PAPER` for suspicious long cohorts;
-- narrow thematic sleeves when the event definition is explicit.
+- recent accepted work validated front-rank rotation, broad-breadth context,
+  governance/procedural source quality, negative first-reaction context, and
+  positive state-score confirmation inside the default-off overlay;
+- the missing piece is closed forward replacement-value maturity.
 
-### Each Sleeve Must Have
+Preferred directions:
 
-- its own candidate definition;
-- paper/live status;
-- capital and slot semantics;
-- forward gate;
-- replacement-value metrics;
-- concentration diagnostics;
-- promotion and kill criteria.
+- source overlap and source crowding fields;
+- event family x market-state decomposition;
+- same-day displacement accounting against core candidates and cash;
+- forward closed-outcome tracking by source family.
 
-### Current Governance Prior
+Do not do:
 
-- moving a cohort to paper observation is often the right first step;
-- broadening core is usually the wrong first step;
-- all-market discovery is valid only if it starts outside core with PIT
-  controls and replacement-value comparisons.
+- more same-family state-rank, source-capacity, or adjacent scalar mining
+  without new forward evidence or a new source/context field.
+
+#### 3. Broad-market leadership maturation
+
+Why it stays high:
+
+- upside is large;
+- accepted paper evidence already exists;
+- the real blocker is governance, not the existence of a paper queue.
+
+Preferred directions:
+
+- forward closed outcomes;
+- replacement value versus core and cash;
+- concentration and crowding diagnostics;
+- quality/context fields that explain when broad leaders are merely beta.
+
+Do not do:
+
+- nearby price/trend/extension/volatility/persistence threshold retunes on the
+  frozen sample.
+
+#### 4. SEC / earnings semantic expansion
+
+Why it stays high:
+
+- it fits the doctrine of event-enhanced trend trading;
+- accepted evidence says generic tone is too blunt;
+- this lane is field-limited, not alpha-empty.
+
+Preferred fields:
+
+- `fact_tone_gap_bucket`
+- `guidance_delta_direction`
+- `topic_attention_divergence_bucket`
+- `manager_nonresponse_bucket`
+- `cross_channel_tone_gap_flag`
+- `temporal_focus_shift_bucket`
+- `attention_persistence_bucket`
+- `in_call_information_timing_bucket`
+
+#### 5. Ticker-pool governance and no-trade alpha
+
+Why it matters:
+
+- the accepted core stack is already dense;
+- some cohorts are more likely to deserve sleeve routing, no-trade treatment,
+  or risk haircut than another generic core filter.
+
+Preferred directions:
+
+- contribution tables by ticker, setup family, and regime;
+- no-trade avoided value;
+- forward paper evidence for suspect cohorts;
+- capital-routing alternatives before live exclusion.
+
+#### 6. Execution leakage attribution
+
+Why it matters:
+
+- live return can be capped by fill delay, slippage, and order timing even if
+  strategy alpha is real;
+- this is a likely medium-term EV leak with lower overfit risk than new core
+  thresholds.
+
+Preferred directions:
+
+- gap erosion and missed-fill attribution;
+- fill-delay cohorts by ticker/liquidity/state;
+- execution drift versus planned next-open assumptions.
+
+Do not do:
+
+- add execution-specific strategy logic before the leakage is measured and
+  stable enough to justify one shared policy variable.
 
 ## Field-Building Standards
 
@@ -337,233 +333,75 @@ At minimum, evaluate by:
 - retrieval miss rate versus reasoning error rate;
 - attribution of approved versus rejected candidates.
 
-If a field cannot survive those dimensions, it is still research
-infrastructure, not production alpha.
+## Research Themes Worth Converting Into Fields
 
-## Current High-Value Search Priorities
+This section is a research filter, not acceptance evidence.
+Refreshed on 2026-05-21.
 
-Priority order reflects expected value, replayability, implementation clarity,
-and consistency with repo evidence.
+### 1. Dialogue structure beats raw tone
 
-### 1. State-Surface Maturation Through New Concentration-Solving Fields
+Research anchors:
 
-Why this stays first:
+- Zicheng Xiao and Tengfei Zhang, "Measuring Information Quality by Topic
+  Attention Divergence: Evidence from Earnings Calls" (SSRN, 2024):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4723491>
+- Oh, "Price Discovery Within Earnings Calls" (SSRN, 2026):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6105146>
+- Brull, Marshall, and Moss, "Sustained investor attention" (SSRN, 2026):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5318279>
 
-- the sleeve already has accepted paper edge;
-- promotion is blocked by concentration and forward maturity, not by lack of
-  raw EV;
-- the strict scalar gate now makes another nearby profile sweep low value.
+Implication:
 
-Preferred directions:
-
-- fields that explain when top-ranked rotation names are crowded rather than
-  clean;
-- fields that reward rank-depth quality without just broadening exposure;
-- fields that distinguish healthy persistence from late-stage extension.
-
-Do not do:
-
-- nearby queue-rank, breadth, or profile retunes on the same frozen sample.
-
-### 2. Broad-Market Leadership Forward Maturation
-
-Why this stays near the top:
-
-- upside is large;
-- PIT and leakage risk are also large;
-- the paper queue is now strong enough that the bottleneck is forward
-  replacement-value maturity, not sleeve existence.
-
-Preferred work:
-
-- collect closed forward paper outcomes;
-- measure replacement value against cash and displaced core use of capital;
-- test new fields only if they explain crowding, quality, or concentration.
-
-Do not do:
-
-- nearby price-floor, ret20, ret60, near-high, volume, low-extension,
-  high-volatility, or trend-persistence threshold retunes on the frozen sample.
-
-### 3. Event Rotation Replacement-Value Maturation
-
-Why it matters:
-
-- replay-only event allocation remains one of the strongest paper edges;
-- it preserves the core candidate set;
-- the missing piece is closed forward replacement-value maturity.
-
-Preferred work:
-
-- mature forward paper outcomes;
-- decompose edge by event family and displaced candidate;
-- build trade-enabled adapters only after the forward gate clears.
-
-### 4. Current Ticker Pool Governance
-
-Why it matters:
-
-- the accepted core stack is dense enough that negative contribution and
-  replacement value matter more than another generic filter;
-- some cohorts likely belong in sleeves rather than in the same live budget.
-
-Preferred work:
-
-- contribution tables by ticker, setup family, and regime;
-- no-trade avoided value;
-- paper routing for suspect cohorts;
-- separate promotion or exclusion experiments only after paper evidence.
-
-### 5. SEC / Earnings Semantic Expansion
-
-Why it matters:
-
-- it fits the doctrine of event-enhanced trend trading;
-- accepted evidence says the opportunity is semantic decomposition, not broad
-  text tone;
-- this lane is field-limited, not alpha-empty.
-
-Preferred fields:
-
-- `semantic_surprise_direction`
-- `semantic_surprise_strength`
-- `guidance_delta_direction`
-- `topic_attention_divergence_bucket`
-- `manager_nonresponse_bucket`
-- `cross_channel_tone_gap_flag`
-- `fact_tone_gap_bucket`
-- `temporal_focus_shift_bucket`
-
-### 6. Buyback Credibility Sleeve v2
-
-Default framing:
-
-- resume only as a commitment-quality branch, not a keyword branch.
-
-Preferred fields:
-
-- `buyback_disclosure_type`
-- `buyback_guidance_present`
-- `buyback_commitment_strength_bucket`
-- `buyback_remaining_capacity_signal`
-- `repurchase_consistency_bucket`
-- `repurchase_transparency_flag`
-
-### 7. High-Quality Insider Buying
-
-Default framing:
-
-- raw filing presence is not enough;
-- Form 4 needs options-market and credibility context.
-
-Preferred fields:
-
-- `options_activity_bucket`
-- `cluster_buying_flag`
-- `open_market_only_flag`
-- `officer_seniority_bucket`
-- `non_10b5_1_flag`
-- `dollar_size_bucket`
-
-### 8. Mechanical Index / Passive-Flow Event Sleeve
-
-Why it matters:
-
-- it is interpretable, deterministic, and less dependent on LLM ambiguity.
-
-Preferred fields:
-
-- `index_event_type`
-- `effective_date`
-- `pre_event_rank_distance`
-- `rebalance_flow_window`
-- `passive_flow_pressure_bucket`
-
-### 9. Core-Misfit Paper Maturation
-
-Default framing:
-
-- this is a forward evidence program, not yet a live short or exclusion rule.
-
-Preferred work:
-
-- mature no-trade avoided value;
-- mature inverse-paper value;
-- cluster by ticker, setup family, and market state;
-- prove any future exclusion is not one-window overfit.
-
-### 10. Diagnostic Oracle Gap Analysis
-
-Default framing:
-
-- oracle work is a hypothesis generator, not acceptance evidence.
-
-Preferred work:
-
-- fixed-entry exit gap analysis;
-- entry-oracle labels for selected, sliced, and rejected candidates;
-- feature mining that converts observed gaps into one production-visible field.
-
-## Research Refresh: External Themes Worth Converting Into Fields
-
-This section is a research filter, not acceptance evidence. Reviewed on
-2026-05-20.
-
-### 1. Topic attention divergence is more useful than raw tone
-
-Research signal:
-
-- Xiao, "Measuring Information Quality by Topic Attention Divergence: Evidence
-  from Earnings Calls" (SSRN, 2024), argues that divergence between management
-  and analyst topic attention is an information-quality signal rather than a
-  sentiment proxy.
-
-Repository implication:
-
-- call alpha should separate what management emphasizes from what analysts keep
-  pressing on;
-- topic mismatch belongs in quality fields, not in one blended tone score.
+- call alpha should separate management emphasis, analyst pushback, and the
+  timing/persistence of information release;
+- one blended sentiment score is too weak.
 
 Candidate fields:
 
 - `topic_attention_divergence_bucket`
 - `manager_analyst_topic_gap_flag`
-- `topic_followup_pressure_bucket`
+- `analyst_question_quality_bucket`
+- `in_call_information_timing_bucket`
+- `attention_persistence_bucket`
 
-### 2. Communication style contains risk information beyond content
+### 2. Style abnormality and inconsistency carry risk information
 
-Research signal:
+Research anchors:
 
 - Beckmann, Beckmeyer, Filippou, Menze, and Zhou, "Unusual Financial
-  Communication: ChatGPT, Earnings Calls, and Financial Markets" (SSRN, 2024;
-  revised 2025), finds that atypical communication style is associated with
-  lower returns, higher volatility, and more analyst uncertainty.
+  Communication: ChatGPT, Earnings Calls, and Financial Markets"
+  (SSRN / Journal version available): <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4699231>
+- Guo and Lo, "Formal and Informal Language in Earnings Conference Calls"
+  (SSRN, 2025): <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5174884>
+- Park, "Narrative Consistency and Bid-ask Spread" (SSRN, 2025):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5368466>
 
-Repository implication:
+Implication:
 
-- the useful object is not "positive tone" but style abnormality,
-  inconsistency, evasiveness, and conversational instability.
+- useful signal is not "positive wording";
+- useful signal is abnormality, evasiveness, mixed messaging, or suspiciously
+  low-information consistency.
 
 Candidate fields:
 
 - `unusual_communication_bucket`
-- `cross_channel_tone_gap_flag`
 - `manager_nonresponse_bucket`
 - `mixed_message_strength_bucket`
+- `formal_informal_gap_bucket`
+- `narrative_consistency_extreme_bucket`
 
 ### 3. Facts and tone should be separated explicitly
 
-Research signal:
+Research anchors:
 
 - Gong, Li, and Zhang, "Decrypting Corporate Speak: GPT-Assisted Measurement of
-  Facts and Tones in Earnings Calls" (SSRN, 2024), shows that factual
-  positivity and tonal positivity are distinct dimensions.
+  Facts and Tones in Earnings Calls" (SSRN, 2024):
+  <https://papers.ssrn.com/sol3/Delivery.cfm/4950924.pdf?abstractid=4950924&mirid=1>
 
-Repository implication:
+Implication:
 
-- "positive language" is too blunt;
-- the next SEC / earnings branch should distinguish factual improvement from
-  promotional tone.
+- factual improvement and promotional language are different objects;
+- fact/tone disagreement is more portable than broad positive-language scores.
 
 Candidate fields:
 
@@ -572,66 +410,19 @@ Candidate fields:
 - `fact_tone_gap_bucket`
 - `operational_fact_density_bucket`
 
-### 4. Analyst question quality and within-call price discovery are usable market-structure fields
+### 4. Extraction should be span-grounded structured output
 
-Research signal:
-
-- Yezegel, Zhang, and Zhao, "Measuring Analyst Question Quality in Conference
-  Calls" (SSRN, 2024), links higher-quality questions to better liquidity,
-  lower volatility, and lower abnormal volume.
-- Oh, "Price Discovery Within Earnings Calls" (SSRN, 2026), shows that the
-  timing and location of new information inside the call matters, not just the
-  full-transcript summary.
-
-Repository implication:
-
-- call quality is not only management quality;
-- the analyst side and the within-call information release pattern both help
-  decide whether an event deserves more or less capital.
-
-Candidate fields:
-
-- `analyst_question_quality_bucket`
-- `forward_open_question_share_bucket`
-- `analyst_aggressiveness_bucket`
-- `in_call_information_timing_bucket`
-
-### 5. Sustained investor attention matters more than one-day excitement
-
-Research signal:
-
-- Choi, Drake, and Quinn, "Sustained Investor Attention and Price Discovery in
-  Earnings Calls" (SSRN, 2026), argues that persistent post-call attention is
-  more informative than a one-day reaction spike.
-
-Repository implication:
-
-- event follow-through fields should track whether attention persists after the
-  initial reaction;
-- this supports sleeve logic that distinguishes underreaction from one-bar
-  excitement.
-
-Candidate fields:
-
-- `attention_persistence_bucket`
-- `post_event_attention_decay_bucket`
-- `followthrough_attention_gap_flag`
-
-### 6. Financial event extraction should be span-grounded structured output
-
-Research signal:
+Research anchors:
 
 - "Harnessing Generative LLMs for Enhanced Financial Event Entity Extraction
-  Performance" (arXiv:2504.14633, 2025-04-20) reframes financial event
-  extraction as text-to-structured-output generation with explicit character
-  spans.
+  Performance" (arXiv:2504.14633, 2025-04-20):
+  <https://arxiv.org/abs/2504.14633>
 
-Repository implication:
+Implication:
 
-- event extraction should produce replayable JSON plus evidence spans, not just
-  ungrounded summaries;
-- span-grounded output is the right bridge between LLM extraction and
-  deterministic backtest logic.
+- event extraction should output replayable JSON plus evidence spans;
+- grounded extraction is the bridge between LLM interpretation and deterministic
+  backtest logic.
 
 Candidate fields:
 
@@ -640,85 +431,65 @@ Candidate fields:
 - `evidence_span_count`
 - `extraction_consistency_bucket`
 
-### 7. SEC LLM evaluation must stress longitudinal and cross-entity reasoning
+### 5. SEC LLM evaluation must stress time and entity consistency
 
-Research signal:
+Research anchors:
 
 - "Fin-RATE: A Real-world Financial Analytics and Tracking Evaluation Benchmark
-  for LLMs on SEC Filings" (arXiv:2602.07294, 2026-02-07) reports that model
-  accuracy degrades sharply once tasks require cross-period or cross-entity
-  reasoning, with errors driven by temporal and entity mismatches.
+  for LLMs on SEC Filings" (arXiv:2602.07294, 2026-02-07):
+  <https://arxiv.org/abs/2602.07294>
+- "Benchmarking Multi-Agent LLM Architectures for Financial Document
+  Processing" (arXiv:2603.22651, 2026-03-24):
+  <https://arxiv.org/abs/2603.22651>
 
-Repository implication:
+Implication:
 
-- replay-safe evaluation cannot stop at document-local extraction;
-- any SEC field should be tested for same-firm-over-time and cross-firm
-  comparison stability before becoming alpha.
+- document-local extraction quality is not enough;
+- SEC fields should be audited for same-firm-over-time stability, peer-set
+  confusion, and orchestration cost/accuracy tradeoffs.
 
 Candidate controls:
 
-- longitudinal consistency tests for the same issuer;
-- entity-confusion audits across peer sets;
-- retrieval-failure versus reasoning-failure breakdowns.
+- longitudinal consistency audits;
+- cross-entity confusion audits;
+- retrieval-failure versus reasoning-failure breakdowns;
+- multi-stage extractor cost/error attribution.
 
-### 8. Geopolitical exposure belongs at the issuer level
+### 6. Event sleeves should respect source credibility and disclosure quality
 
-Research signal:
+Research anchors:
 
-- D'Orazio, Ferriani, and Gazzani, "Firm-level exposure to geopolitical risk:
-  economic and financial effects" (SSRN, 2024), plus follow-on 2025 work,
-  supports issuer-specific exposure rather than only market-wide risk labels.
+- Dechow, Ge, Loh, and McVay, "Beyond Earnings Quality: Evaluating the Quality
+  of Corporate Disclosure Practices" (SSRN, 2025):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5257154>
+- Hu and Shohfi, "Special Conference Calls" (SSRN, 2025):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5598490>
 
-Repository implication:
+Implication:
 
-- semis, AI infra, defense, commodities, and supply-chain names should carry
-  firm-specific geopolitical exposure metadata;
-- this belongs in issuer-level fields and event overlays, not only in macro
-  regime switches.
-
-Candidate fields:
-
-- `firm_geopolitical_risk_bucket`
-- `geopolitical_exposure_change_flag`
-- `geopolitical_topic_path`
-- `foreign_revenue_risk_bucket`
-
-### 9. Peer spillovers should use explicit relatedness and options pressure
-
-Research signal:
-
-- recent work on peer option momentum and shared-attention spillovers suggests
-  that peer-event transmission is strongest when links are explicit, not when
-  peers are defined only by industry buckets.
-
-Repository implication:
-
-- peer-event logic should use shared coverage, related reaction intensity, and
-  crowding pressure rather than a crude peer flag.
+- disclosure quality and special-call context likely matter more than raw event
+  count;
+- source family should remain a first-class field in sleeve design.
 
 Candidate fields:
 
-- `peer_event_relatedness_bucket`
-- `shared_analyst_coverage_flag`
-- `peer_reaction_strength_bucket`
-- `peer_event_crowding_flag`
-- `peer_iv_spillover_risk_bucket`
+- `disclosure_quality_bucket`
+- `special_call_flag`
+- `management_commitment_specificity_bucket`
+- `source_credibility_bucket`
 
-### 10. Buyback alpha depends on credibility and transparency
+### 7. Buyback alpha depends on credibility and follow-through
 
-Research signal:
+Research anchors:
 
-- Hou, "Does the Credibility of Open Market Share Repurchase Matter?" (2024),
-  and Bargeron, Bonaime, Docimo, Feng, and Thomas, "Voluntary Disclosures
-  Regarding Open Market Repurchase Programs" (SSRN, 2024), both point toward
-  disclosure credibility, transparency, and follow-through as the useful
-  dimensions.
+- Bargeron, Bonaime, Docimo, Feng, and Thomas, "Voluntary Disclosures Regarding
+  Open Market Repurchase Programs" (SSRN, 2024):
+  <https://papers.ssrn.com/sol3/Delivery.cfm/SSRN_ID4707512_code84189.pdf?abstractid=2486843&mirid=1>
 
-Repository implication:
+Implication:
 
 - keyword-level buyback work is too weak;
-- the next buyback sleeve should emphasize commitment quality and whether the
-  firm communicates suspensions, progress, and remaining capacity.
+- commitment quality, transparency, and remaining capacity should dominate.
 
 Candidate fields:
 
@@ -727,19 +498,19 @@ Candidate fields:
 - `repurchase_transparency_flag`
 - `repurchase_followthrough_bucket`
 
-### 11. Insider-buying alpha should respect options-market competition
+### 8. Insider-buying alpha should respect options-market competition
 
-Research signal:
+Research anchors:
 
 - Jeon and Sulaeman, "Corporate Insider Purchases and the Options Market:
-  Competition among Informed Investors" (SSRN, 2024), suggests insider signal
-  quality interacts with options activity rather than standing alone.
+  Competition among Informed Investors" (Journal / SSRN, 2024):
+  <https://papers.ssrn.com/sol3/Delivery.cfm/4864272.pdf?abstractid=4864272&mirid=1>
 
-Repository implication:
+Implication:
 
-- Form 4 work should not treat all open-market purchases equally;
-- options activity can explain when insider buying is crowded, substituted
-  away, or informationally weaker.
+- raw Form 4 presence is not enough;
+- options activity helps explain when insider buying is crowded or less
+  informative.
 
 Candidate fields:
 
@@ -748,6 +519,53 @@ Candidate fields:
 - `insider_purchase_context_quality`
 - `cluster_buying_flag`
 
+### 9. Firm-specific geopolitical exposure belongs at issuer level
+
+Research anchors:
+
+- D'Orazio, Ferriani, and Gazzani, "Firm-level exposure to geopolitical risk:
+  economic and financial effects" (SSRN, 2024):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4736011>
+- Xuan Zhou, "Firm-level Geopolitical Risk" (SSRN, 2025):
+  <https://papers.ssrn.com/sol3/Delivery.cfm/5211535.pdf?abstractid=5211535&mirid=1&type=2>
+- Coqueret and Zhou, "Geopolitical Risk and Equity Returns: Evidence From
+  Global Markets" (SSRN, 2026):
+  <https://papers.ssrn.com/sol3/Delivery.cfm/6426223.pdf?abstractid=6426223&mirid=1>
+
+Implication:
+
+- semis, AI infra, defense, commodities, and supply-chain names should carry
+  issuer-level geopolitical exposure metadata, not only macro regime tags.
+
+Candidate fields:
+
+- `firm_geopolitical_risk_bucket`
+- `geopolitical_exposure_change_flag`
+- `foreign_revenue_risk_bucket`
+- `supply_chain_dependency_bucket`
+
+### 10. Passive-flow and index mechanics deserve a deterministic sleeve
+
+Research anchors:
+
+- Sammon and Shim, "Who Clears the Market When Passive Investors Trade?"
+  (SSRN, revised 2026): <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4777585>
+- Kastenholz, "The Index Event Horizon" (SSRN, 2026):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6430698>
+
+Implication:
+
+- passive-flow pressure is interpretable and deterministic;
+- index/rebalance work fits Ginger better as a mechanical sleeve than as an LLM
+  judgment task.
+
+Candidate fields:
+
+- `index_event_type`
+- `effective_date`
+- `passive_flow_pressure_bucket`
+- `index_crowding_risk_bucket`
+
 ## Anti-Repeat Rules
 
 Do not retry the following without new evidence, a wider cohort, or a new
@@ -755,31 +573,27 @@ production-visible field:
 
 - broad core filters and broad sector or strategy gates;
 - broad slot, heat, or capacity sweeps;
-- nearby scarce-slot or ample-slot scalar retries on the same accepted state;
-- nearby `RS20`, `RS60`, own-candle, `clean_spy`, `price_vs_200ma`, or
-  green-deceleration scalar mining without a new state variable;
 - broad lifecycle target-width, runner, or trailing-stop retunes;
 - broad slot-priority reranking;
-- broad SEC financial-report `positive_language`, `negative_language`, or
-  generic `earnings_release_text` scalars without an added context field;
-- buyback work that only adds keyword coverage;
-- Form 4 work that ignores options-market context;
+- broad positive/negative language scalars without a new context field;
 - LLM veto or ranking expansion without attribution fields and replay-safe
   provenance;
 - learned event scorers that bypass schema fields, sleeve gates, or
   replacement-value accounting;
 - nearby state-surface queue/profile/notional retunes on the frozen rotation
-  sample after the accepted low-extension stack and the strict scalar gate;
+  sample after the accepted low-extension stack and the stricter same-family
+  gate;
 - nearby broad-market price/trend/extension/volatility/persistence retunes on
   the frozen `BROAD_MARKET_LEADERSHIP_PAPER` sample after the accepted
   rank/low-extension/high-volatility/trend-persistence stack;
-- nearby strong-close crowding haircuts on the same broad-market sample without
+- nearby broad-market strong-close crowding haircuts on the same sample without
   forward outcomes or a distinct crowding field;
-- nearby Space dual-catalyst benchmark-breadth scalar retunes on the frozen
-  sample without new closed forward rows or a genuinely new catalyst-quality
-  field;
-- nearby ticker-specific residual retunes once an exception is already
-  accepted.
+- nearby event-overlay state-rank, source-capacity, or adjacent source-scalar
+  retries once the source/context family has just been tested, unless new
+  forward rows or a new source-quality field exist;
+- buyback work that only adds keyword coverage;
+- Form 4 work that ignores options-market context;
+- ticker-specific exception mining once an exception is already accepted.
 
 ## Update Discipline
 

@@ -31,6 +31,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 SLEEVE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER"
 STATE_SCHEMA_VERSION = 1
+FACT_TONE_GAP_RULE_VERSION = "sec_fact_tone_gap_bucket_v1"
 DEFAULT_EVENT_NOTIONAL_USD = 15_000.0
 DEFAULT_PERIODIC_REPORT_NOTIONAL_SCALAR = 1.25
 DEFAULT_10Q_PERIODIC_REPORT_NOTIONAL_SCALAR = 2.0
@@ -162,16 +163,19 @@ def build_sec_financial_report_event_sleeve_snapshot(
         current_prices=closes,
         config=cfg,
     )
+    enriched_queue = _queue_with_fact_tone_gap_attribution(
+        sec_financial_report_t1_queue or {}
+    )
     new_pending = _add_queue_candidates(
         working_state,
-        sec_financial_report_t1_queue or {},
+        enriched_queue,
         as_of=as_of_date,
         config=cfg,
     )
 
     snapshot = _snapshot_payload(
         working_state,
-        sec_financial_report_t1_queue or {},
+        enriched_queue,
         as_of=as_of_date,
         config=cfg,
         new_pending=new_pending,
@@ -320,6 +324,7 @@ def _fill_pending_entries(
             continue
 
         candidate = entry.get("candidate") or {}
+        fact_tone_gap_attribution = candidate.get("fact_tone_gap_attribution") or {}
         notional, notional_scalar, notional_rule = _candidate_event_notional(
             candidate,
             config,
@@ -335,6 +340,10 @@ def _fill_pending_entries(
             "base_event_notional_usd": float(config["event_notional_usd"]),
             "event_notional_scalar": notional_scalar,
             "event_notional_rule": notional_rule,
+            "fact_tone_gap_bucket": fact_tone_gap_attribution.get(
+                "fact_tone_gap_bucket"
+            ),
+            "fact_tone_gap_attribution": deepcopy(fact_tone_gap_attribution),
             "shares": round(notional / entry_open, 8),
             "hold_days": int(config["hold_days"]),
             "observed_trading_days": 0,
@@ -446,6 +455,116 @@ def _candidate_earnings_release_text_spy_t1_context(
     if spy_t1_return is None or min_spy_t1_return is None:
         return False
     return spy_t1_return >= min_spy_t1_return
+
+
+def _queue_with_fact_tone_gap_attribution(queue: dict[str, Any]) -> dict[str, Any]:
+    enriched = deepcopy(queue)
+    enriched["candidates"] = [
+        {
+            **deepcopy(candidate),
+            "fact_tone_gap_attribution": build_fact_tone_gap_attribution(candidate),
+        }
+        for candidate in (enriched.get("candidates") or [])
+        if isinstance(candidate, dict)
+    ]
+    return enriched
+
+
+def build_fact_tone_gap_attribution(candidate: dict[str, Any]) -> dict[str, Any]:
+    """Read-only SEC semantic attribution field for paper-sleeve candidates."""
+
+    language = str(candidate.get("language_bucket") or "unknown")
+    text_event_type = str(candidate.get("text_event_type") or "unknown")
+    positive_hits = _hit_count(candidate.get("positive_phrase_hits"))
+    negative_hits = _hit_count(candidate.get("negative_phrase_hits"))
+    guidance_raise_hits = _hit_count(candidate.get("guidance_raise_hits"))
+    guidance_cut_hits = _hit_count(candidate.get("guidance_cut_hits"))
+    fact_positive = positive_hits + guidance_raise_hits
+    fact_negative = negative_hits + guidance_cut_hits
+    if fact_negative > 0 and fact_positive > 0:
+        bucket = "fact_tone_divergence"
+    elif fact_negative > 0:
+        bucket = "fact_negative_or_guidance_cut"
+    elif fact_positive > 0 and language == "positive_language":
+        bucket = "fact_improvement_positive_tone"
+    elif fact_positive > 0 and language in {
+        "neutral_language",
+        "neutral_or_mixed_language",
+        "mixed_language",
+    }:
+        bucket = "fact_improvement_neutral_tone"
+    elif fact_positive == 0 and language == "positive_language":
+        bucket = "tone_packaging_without_fact"
+    else:
+        bucket = "unclassified_insufficient_evidence"
+    return {
+        "schema_version": 1,
+        "rule_version": FACT_TONE_GAP_RULE_VERSION,
+        "read_only": True,
+        "default_off_attribution_only": True,
+        "fact_tone_gap_bucket": bucket,
+        "text_event_type": text_event_type,
+        "language_bucket": language,
+        "evidence_counts": {
+            "positive_phrase_hits": positive_hits,
+            "negative_phrase_hits": negative_hits,
+            "guidance_raise_hits": guidance_raise_hits,
+            "guidance_cut_hits": guidance_cut_hits,
+        },
+        "provenance": {
+            "ticker": str(candidate.get("ticker") or "").upper(),
+            "usable_trade_date": str(candidate.get("usable_trade_date") or "")[:10],
+            "accession_number": candidate.get("accession_number"),
+            "event_family": candidate.get("event_family"),
+            "form_base": _candidate_form_base(candidate),
+        },
+        "evidence_span": _evidence_span(candidate),
+        "trade_enabled": False,
+        "alters_orders": False,
+        "alters_sizing": False,
+        "notes": (
+            "This field supports forward attribution only; it does not expand "
+            "LLM authority or change paper/live orders."
+        ),
+    }
+
+
+def _hit_count(value: Any) -> int:
+    if isinstance(value, (list, tuple, set)):
+        return len(value)
+    if isinstance(value, dict):
+        return len(value)
+    if isinstance(value, (int, float)):
+        return int(value)
+    return 1 if str(value or "").strip() else 0
+
+
+def _evidence_span(candidate: dict[str, Any]) -> list[dict[str, Any]]:
+    spans = []
+    for field in (
+        "positive_phrase_hits",
+        "negative_phrase_hits",
+        "guidance_raise_hits",
+        "guidance_cut_hits",
+    ):
+        raw = candidate.get(field)
+        if isinstance(raw, dict):
+            values = list(raw.values())
+        elif isinstance(raw, (list, tuple, set)):
+            values = list(raw)
+        elif raw not in (None, ""):
+            values = [raw]
+        else:
+            values = []
+        for value in values[:3]:
+            spans.append(
+                {
+                    "field": field,
+                    "text": str(value)[:240],
+                    "source": "sec_financial_report_t1_queue",
+                }
+            )
+    return spans
 
 
 def _candidate_form_base(candidate: dict[str, Any]) -> str:
@@ -616,6 +735,7 @@ def _snapshot_payload(
         "unrealized_pnl": unrealized,
         "parameters": dict(config),
         "data_source": queue.get("data_source") or {},
+        "candidates": deepcopy(queue.get("candidates") or []),
         "new_pending_entries": deepcopy(new_pending),
         "filled_entries": deepcopy(filled_today),
         "closed_positions_today": deepcopy(closed_today),

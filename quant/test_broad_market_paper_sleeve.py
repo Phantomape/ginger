@@ -5,12 +5,14 @@ from datetime import date, timedelta
 from quant.broad_market_paper_sleeve import (
     HIGH_VOLATILITY_RULE_VERSION,
     LOW_EXTENSION_RULE_VERSION,
+    REPLACEMENT_VALUE_RULE_VERSION,
     TREND_PERSISTENCE_RULE_VERSION,
     broad_market_candidate_notional_payload,
     broad_market_high_volatility_multiplier,
     broad_market_low_extension_multiplier,
     broad_market_rank_notional_multiplier,
     broad_market_trend_persistence_multiplier,
+    build_broad_market_replacement_value_report,
     build_broad_market_paper_candidates,
     build_broad_market_paper_sleeve_snapshot,
     build_broad_market_feature,
@@ -195,5 +197,34 @@ def test_snapshot_adds_pending_and_fills_next_session_without_orders():
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
     assert second["trade_enabled"] is False
+    assert second["replacement_value_report"]["rule_version"] == REPLACEMENT_VALUE_RULE_VERSION
+    assert second["replacement_value_report"]["open_count"] == 1
     assert second["open_positions"][0]["source_candidate"]["high_volatility_rule_version"] == HIGH_VOLATILITY_RULE_VERSION
     assert second["open_positions"][0]["source_candidate"]["trend_persistence_rule_version"] == TREND_PERSISTENCE_RULE_VERSION
+
+
+def test_broad_market_replacement_value_report_tracks_cash_slot_ledger():
+    report = build_broad_market_replacement_value_report(
+        candidates=[
+            {
+                "ticker": "WIN",
+                "replacement_value_context": {
+                    "displaced_resource": "paper_cash_slot"
+                },
+            }
+        ],
+        pending_entries=[{"ticker": "WIN"}],
+        open_positions=[{"ticker": "OPEN", "unrealized_pnl": 125.5}],
+        closed_positions=[
+            {"ticker": "WIN", "pnl": 200.0},
+            {"ticker": "LOSS", "pnl": -50.0},
+        ],
+        skipped_entries=[{"ticker": "SKIP"}],
+    )
+
+    assert report["read_only"] is True
+    assert report["closed_count"] == 2
+    assert report["closed_pnl"] == 150.0
+    assert report["positive_closed_pnl"] == 200.0
+    assert report["by_ticker"]["WIN"]["positive_pnl_share"] == 1.0
+    assert report["alters_orders"] is False
