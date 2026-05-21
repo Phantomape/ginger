@@ -311,6 +311,89 @@ def test_event_sleeve_bundle_applies_front_rank_rotation_tilt_without_orders() -
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
+def test_event_sleeve_bundle_applies_broad_breadth_event_tilt_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-21",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "WIDE",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "BREAD",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "PLAIN",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 10,
+            "scored_candidates": [
+                {
+                    "ticker": "WIDE",
+                    "rank": 1,
+                    "score": 1.24,
+                    "surface": "rotation_breakout_leadership",
+                    "breadth_bucket": "broad_breadth",
+                    "decision_date": "2026-05-21",
+                },
+                {
+                    "ticker": "BREAD",
+                    "rank": 4,
+                    "score": 0.84,
+                    "surface": "broad_breadth_trend_persistence",
+                    "breadth_bucket": "broad_breadth",
+                    "decision_date": "2026-05-21",
+                },
+                {
+                    "ticker": "PLAIN",
+                    "rank": 5,
+                    "score": 0.71,
+                    "surface": "broad_breadth_trend_persistence",
+                    "breadth_bucket": "mixed_breadth",
+                    "decision_date": "2026-05-21",
+                },
+            ],
+        },
+    )
+
+    by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
+    front = by_ticker["WIDE"]["state_surface_addon"]
+    assert front["front_rank_rotation_tilt"] is True
+    assert front["broad_breadth_tilt"] is True
+    assert front["broad_breadth_scalar"] == 1.25
+    assert front["scalar"] == 5.0
+    assert by_ticker["WIDE"]["paper_event_notional_usd"] == 50000.0
+    assert by_ticker["WIDE"]["alters_orders"] is False
+
+    broad = by_ticker["BREAD"]["state_surface_addon"]
+    assert broad["reason"] == "eligible_non_generic_positive_state_surface_broad_breadth_support"
+    assert broad["broad_breadth_tilt"] is True
+    assert broad["scalar"] == 2.5
+    assert by_ticker["BREAD"]["paper_event_notional_usd"] == 25000.0
+
+    plain = by_ticker["PLAIN"]["state_surface_addon"]
+    assert plain["broad_breadth_tilt"] is False
+    assert plain["scalar"] == 2.0
+    assert by_ticker["PLAIN"]["paper_event_notional_usd"] == 20000.0
+
+    summary = snapshot["state_surface_addon"]
+    assert summary["broad_breadth_tilt_candidate_count"] == 2
+    assert summary["broad_breadth_tilt_incremental_notional_usd"] == 15000.0
+    assert summary["parameters"]["broad_breadth_bucket"] == "broad_breadth"
+    assert summary["parameters"]["broad_breadth_tilt_scalar"] == 1.25
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
 def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
     snapshot = build_event_sleeve_bundle_snapshot(

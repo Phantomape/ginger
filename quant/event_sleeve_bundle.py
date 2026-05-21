@@ -29,10 +29,11 @@ SOURCE_PRIORITY = {
 }
 
 STATE_SURFACE_ADDON_RULE_VERSION = (
-    "non_generic_positive_state_surface_front_rank_rotation_tilt_v2"
+    "non_generic_positive_state_surface_front_rank_broad_breadth_tilt_v3"
 )
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
 STATE_SURFACE_ROTATION_TILT_SURFACE = "rotation_breakout_leadership"
+STATE_SURFACE_BROAD_BREADTH_BUCKET = "broad_breadth"
 TRADE_PLAN_RULE_VERSION = "event_bundle_forward_gated_trade_plan_v1"
 
 DEFAULT_SOURCE_RULE_VERSIONS = {
@@ -82,6 +83,9 @@ DEFAULT_CONFIG = {
     "state_surface_front_rank_rotation_tilt_enabled": True,
     "state_surface_front_rank_rotation_max_rank_pct": 0.20,
     "state_surface_front_rank_rotation_tilt_scalar": 4.0,
+    "state_surface_broad_breadth_tilt_enabled": True,
+    "state_surface_broad_breadth_bucket": STATE_SURFACE_BROAD_BREADTH_BUCKET,
+    "state_surface_broad_breadth_tilt_scalar": 1.25,
     "state_surface_addon_generic_surface": STATE_SURFACE_GENERIC_SURFACE,
 }
 
@@ -840,8 +844,11 @@ def _with_state_surface_addon(
     decision_date = None
     state_rank = None
     state_rank_pct = None
+    breadth_bucket = None
     rotation_tilt = False
     front_rank_rotation_tilt = False
+    broad_breadth_tilt = False
+    broad_breadth_scalar = 1.0
 
     if not bool(config.get("state_surface_addon_paper_enabled", True)):
         reason = "state_surface_addon_disabled"
@@ -852,6 +859,11 @@ def _with_state_surface_addon(
         state_rank = _int(state_row.get("rank")) or None
         state_rank_pct = _float_or_none(
             state_row.get("state_rank_pct") or state_row.get("rank_pct")
+        )
+        breadth_bucket = (
+            state_row.get("breadth_bucket")
+            or state_row.get("state_breadth_bucket")
+            or (state_row.get("state") or {}).get("breadth_bucket")
         )
         generic_surface = str(
             config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
@@ -891,6 +903,20 @@ def _with_state_surface_addon(
             else:
                 scalar = float(config["state_surface_addon_scalar"])
                 reason = "eligible_non_generic_positive_state_surface"
+            broad_bucket = str(
+                config.get("state_surface_broad_breadth_bucket")
+                or STATE_SURFACE_BROAD_BREADTH_BUCKET
+            )
+            if (
+                bool(config.get("state_surface_broad_breadth_tilt_enabled", True))
+                and str(breadth_bucket or "") == broad_bucket
+            ):
+                broad_breadth_scalar = float(
+                    config["state_surface_broad_breadth_tilt_scalar"]
+                )
+                scalar *= broad_breadth_scalar
+                broad_breadth_tilt = True
+                reason = f"{reason}_broad_breadth_support"
 
     adjusted_notional = base_notional * scalar
     out["state_surface_addon"] = {
@@ -908,8 +934,11 @@ def _with_state_surface_addon(
         "state_decision_date": decision_date,
         "state_rank": state_rank,
         "state_rank_pct": round(state_rank_pct, 6) if state_rank_pct is not None else None,
+        "breadth_bucket": breadth_bucket,
         "rotation_tilt": rotation_tilt,
         "front_rank_rotation_tilt": front_rank_rotation_tilt,
+        "broad_breadth_tilt": broad_breadth_tilt,
+        "broad_breadth_scalar": round(broad_breadth_scalar, 4),
         "alters_orders": False,
     }
     out["paper_event_notional_usd"] = round(adjusted_notional, 2)
@@ -929,6 +958,7 @@ def _state_surface_addon_summary(
     front_rank_rotation_eligible = [
         row for row in rotation_eligible if row.get("front_rank_rotation_tilt")
     ]
+    broad_breadth_eligible = [row for row in eligible if row.get("broad_breadth_tilt")]
     incremental = sum(_money(row.get("incremental_notional_usd")) for row in eligible)
     rotation_incremental = sum(
         _money(row.get("incremental_notional_usd")) for row in rotation_eligible
@@ -936,6 +966,17 @@ def _state_surface_addon_summary(
     front_rank_rotation_incremental = sum(
         _money(row.get("incremental_notional_usd"))
         for row in front_rank_rotation_eligible
+    )
+    broad_breadth_incremental = sum(
+        _money(row.get("adjusted_event_notional_usd"))
+        - (
+            _money(row.get("base_event_notional_usd"))
+            * (
+                _money(row.get("scalar"))
+                / max(_money(row.get("broad_breadth_scalar")) or 1.0, 1e-9)
+            )
+        )
+        for row in broad_breadth_eligible
     )
     scored_count = 0
     if isinstance(state_surface_queue, dict):
@@ -952,12 +993,17 @@ def _state_surface_addon_summary(
         "eligible_candidate_count": len(eligible),
         "rotation_tilt_candidate_count": len(rotation_eligible),
         "front_rank_rotation_tilt_candidate_count": len(front_rank_rotation_eligible),
+        "broad_breadth_tilt_candidate_count": len(broad_breadth_eligible),
         "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
         "scored_candidate_count": scored_count,
         "incremental_notional_usd": round(incremental, 2),
         "rotation_tilt_incremental_notional_usd": round(rotation_incremental, 2),
         "front_rank_rotation_tilt_incremental_notional_usd": round(
             front_rank_rotation_incremental,
+            2,
+        ),
+        "broad_breadth_tilt_incremental_notional_usd": round(
+            broad_breadth_incremental,
             2,
         ),
         "eligible_surfaces": sorted(
@@ -985,13 +1031,24 @@ def _state_surface_addon_summary(
             "front_rank_rotation_tilt_scalar": float(
                 config["state_surface_front_rank_rotation_tilt_scalar"]
             ),
+            "broad_breadth_tilt_enabled": bool(
+                config.get("state_surface_broad_breadth_tilt_enabled", True)
+            ),
+            "broad_breadth_bucket": str(
+                config.get("state_surface_broad_breadth_bucket")
+                or STATE_SURFACE_BROAD_BREADTH_BUCKET
+            ),
+            "broad_breadth_tilt_scalar": float(
+                config["state_surface_broad_breadth_tilt_scalar"]
+            ),
             "generic_surface_not_eligible": str(
                 config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
             ),
             "eligibility_rule": (
                 "score > 0 and state_surface != generic_surface; "
                 "rotation_breakout_leadership uses rotation_tilt_scalar; "
-                "front-rank rotation rows use front_rank_rotation_tilt_scalar"
+                "front-rank rotation rows use front_rank_rotation_tilt_scalar; "
+                "broad_breadth rows multiply the active scalar"
             ),
         },
         "production_impact": {
@@ -1012,11 +1069,13 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "eligible_candidate_count": 0,
         "rotation_tilt_candidate_count": 0,
         "front_rank_rotation_tilt_candidate_count": 0,
+        "broad_breadth_tilt_candidate_count": 0,
         "eligible_fraction": None,
         "scored_candidate_count": 0,
         "incremental_notional_usd": 0.0,
         "rotation_tilt_incremental_notional_usd": 0.0,
         "front_rank_rotation_tilt_incremental_notional_usd": 0.0,
+        "broad_breadth_tilt_incremental_notional_usd": 0.0,
         "eligible_surfaces": [],
         "status": "blocked",
         "reason": reason,

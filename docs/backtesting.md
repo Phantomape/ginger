@@ -513,6 +513,19 @@ fixed windows EV-positive (`late_strong +0.3138`, `mid_weak +0.2171`,
 change; promotion still requires a shared trade-enabled adapter,
 run/backtester parity tests, and closed forward replacement-value evidence.
 
+Latest accepted default-off event adapter refinement: `exp-20260521-001` keeps
+the accepted `exp-20260520-044` front-rank event adapter fixed, but adds one
+production-visible broad-breadth event quality scalar. When an eligible
+default-off event paper row has `breadth_bucket == broad_breadth`, the shared
+event adapter multiplies its already active paper notional by `1.25x`. Versus
+the accepted front-rank adapter baseline, aggregate paper-overlay EV improved
+`+0.3383` and PnL improved `+$5,550.72`, with all three canonical windows
+EV/PnL-positive and no regression: `late_strong +0.0060` EV / `+$124.60`,
+`mid_weak +0.3198` EV / `+$4,908.89`, and `old_thin +0.0125` EV / `+$517.23`.
+The rule adjusted 15 paper trades across all three windows, max single positive
+target contribution was `38.82%`, lives in shared `event_sleeve_bundle.py`, and
+is surfaced by production reporting while live/default orders remain disabled.
+
 Previous accepted core-sizing result: core `exp-20260516-020` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but reduces the existing `trend_long` Technology 44-64 DTE risk
