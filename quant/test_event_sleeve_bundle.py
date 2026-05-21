@@ -218,28 +218,37 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
     by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
     addon = by_ticker["EVT"]["state_surface_addon"]
     assert addon["eligible"] is True
-    assert addon["reason"] == "eligible_rotation_breakout_positive_state_surface"
-    assert addon["scalar"] == 3.0
+    assert addon["reason"] == "eligible_rotation_breakout_positive_state_surface_positive_state_context"
+    assert addon["scalar"] == 3.75
     assert addon["base_event_notional_usd"] == 10000.0
-    assert addon["adjusted_event_notional_usd"] == 30000.0
-    assert addon["incremental_notional_usd"] == 20000.0
+    assert addon["adjusted_event_notional_usd"] == 37500.0
+    assert addon["incremental_notional_usd"] == 27500.0
     assert addon["rotation_tilt"] is True
-    assert by_ticker["EVT"]["paper_event_notional_usd"] == 30000.0
+    assert addon["positive_state_context_tilt"] is True
+    assert by_ticker["EVT"]["paper_event_notional_usd"] == 37500.0
     assert by_ticker["EVT"]["event_notional_usd"] == 10000.0
     assert by_ticker["EVT"]["trade_enabled"] is False
     assert by_ticker["EVT"]["alters_orders"] is False
     bread = by_ticker["BREAD"]["state_surface_addon"]
-    assert bread["reason"] == "eligible_non_generic_positive_state_surface"
-    assert bread["scalar"] == 2.0
+    assert bread["reason"] == "eligible_non_generic_positive_state_surface_positive_state_context"
+    assert bread["scalar"] == 2.5
     assert bread["rotation_tilt"] is False
-    assert by_ticker["BAL"]["state_surface_addon"]["reason"] == "generic_state_surface"
+    assert (
+        by_ticker["BAL"]["state_surface_addon"]["reason"]
+        == "generic_state_surface_positive_state_context"
+    )
     assert by_ticker["NEG"]["state_surface_addon"]["reason"] == "nonpositive_state_surface_score"
     assert snapshot["state_surface_addon"]["eligible_candidate_count"] == 2
     assert snapshot["state_surface_addon"]["rotation_tilt_candidate_count"] == 1
-    assert snapshot["state_surface_addon"]["incremental_notional_usd"] == 30000.0
+    assert snapshot["state_surface_addon"]["positive_state_context_tilt_candidate_count"] == 3
+    assert snapshot["state_surface_addon"]["incremental_notional_usd"] == 45000.0
     assert (
         snapshot["state_surface_addon"]["rotation_tilt_incremental_notional_usd"]
         == 20000.0
+    )
+    assert (
+        snapshot["state_surface_addon"]["positive_state_context_tilt_incremental_notional_usd"]
+        == 15000.0
     )
     assert snapshot["state_surface_addon"]["production_impact"]["alters_orders"] is False
     assert snapshot["trade_plan"]["trade_enabled"] is False
@@ -288,25 +297,26 @@ def test_event_sleeve_bundle_applies_front_rank_rotation_tilt_without_orders() -
     by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
     front = by_ticker["LITE"]["state_surface_addon"]
     assert front["eligible"] is True
-    assert front["reason"] == "eligible_front_rank_rotation_breakout_positive_state_surface"
-    assert front["scalar"] == 4.0
+    assert front["reason"] == "eligible_front_rank_rotation_breakout_positive_state_surface_positive_state_context"
+    assert front["scalar"] == 5.0
     assert front["state_rank"] == 1
     assert front["state_rank_pct"] == 0.1
     assert front["rotation_tilt"] is True
     assert front["front_rank_rotation_tilt"] is True
-    assert by_ticker["LITE"]["paper_event_notional_usd"] == 40000.0
+    assert by_ticker["LITE"]["paper_event_notional_usd"] == 50000.0
     assert by_ticker["LITE"]["trade_enabled"] is False
     assert by_ticker["LITE"]["alters_orders"] is False
 
     slower = by_ticker["SLOW"]["state_surface_addon"]
-    assert slower["reason"] == "eligible_rotation_breakout_positive_state_surface"
-    assert slower["scalar"] == 3.0
+    assert slower["reason"] == "eligible_rotation_breakout_positive_state_surface_positive_state_context"
+    assert slower["scalar"] == 3.75
     assert slower["state_rank_pct"] == 0.5
     assert slower["front_rank_rotation_tilt"] is False
 
     summary = snapshot["state_surface_addon"]
     assert summary["rotation_tilt_candidate_count"] == 2
     assert summary["front_rank_rotation_tilt_candidate_count"] == 1
+    assert summary["positive_state_context_tilt_candidate_count"] == 2
     assert summary["rotation_tilt_incremental_notional_usd"] == 50000.0
     assert summary["front_rank_rotation_tilt_incremental_notional_usd"] == 30000.0
     assert summary["parameters"]["front_rank_rotation_max_rank_pct"] == 0.2
@@ -374,23 +384,24 @@ def test_event_sleeve_bundle_applies_broad_breadth_event_tilt_without_orders() -
     assert front["front_rank_rotation_tilt"] is True
     assert front["broad_breadth_tilt"] is True
     assert front["broad_breadth_scalar"] == 1.25
-    assert front["scalar"] == 5.0
-    assert by_ticker["WIDE"]["paper_event_notional_usd"] == 50000.0
+    assert front["scalar"] == 6.25
+    assert by_ticker["WIDE"]["paper_event_notional_usd"] == 62500.0
     assert by_ticker["WIDE"]["alters_orders"] is False
 
     broad = by_ticker["BREAD"]["state_surface_addon"]
-    assert broad["reason"] == "eligible_non_generic_positive_state_surface_broad_breadth_support"
+    assert broad["reason"] == "eligible_non_generic_positive_state_surface_broad_breadth_support_positive_state_context"
     assert broad["broad_breadth_tilt"] is True
-    assert broad["scalar"] == 2.5
-    assert by_ticker["BREAD"]["paper_event_notional_usd"] == 25000.0
+    assert broad["scalar"] == 3.125
+    assert by_ticker["BREAD"]["paper_event_notional_usd"] == 31250.0
 
     plain = by_ticker["PLAIN"]["state_surface_addon"]
     assert plain["broad_breadth_tilt"] is False
-    assert plain["scalar"] == 2.0
-    assert by_ticker["PLAIN"]["paper_event_notional_usd"] == 20000.0
+    assert plain["scalar"] == 2.5
+    assert by_ticker["PLAIN"]["paper_event_notional_usd"] == 25000.0
 
     summary = snapshot["state_surface_addon"]
     assert summary["broad_breadth_tilt_candidate_count"] == 2
+    assert summary["positive_state_context_tilt_candidate_count"] == 3
     assert summary["broad_breadth_tilt_incremental_notional_usd"] == 15000.0
     assert summary["parameters"]["broad_breadth_bucket"] == "broad_breadth"
     assert summary["parameters"]["broad_breadth_tilt_scalar"] == 1.25
@@ -460,12 +471,12 @@ def test_event_sleeve_bundle_applies_governance_source_quality_tilt_without_orde
     by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
     gov = by_ticker["GOV"]["state_surface_addon"]
     assert gov["eligible"] is False
-    assert gov["reason"] == "generic_state_surface_sec_governance_source_quality"
+    assert gov["reason"] == "generic_state_surface_sec_governance_source_quality_positive_state_context"
     assert gov["source_quality_tilt"] is True
     assert gov["source_quality_scalar"] == 2.0
     assert gov["state_surface_scalar"] == 1.0
-    assert gov["scalar"] == 2.0
-    assert by_ticker["GOV"]["paper_event_notional_usd"] == 20000.0
+    assert gov["scalar"] == 2.5
+    assert by_ticker["GOV"]["paper_event_notional_usd"] == 25000.0
     assert by_ticker["GOV"]["alters_orders"] is False
 
     gov_broad = by_ticker["GBRD"]["state_surface_addon"]
@@ -473,19 +484,20 @@ def test_event_sleeve_bundle_applies_governance_source_quality_tilt_without_orde
     assert gov_broad["broad_breadth_tilt"] is True
     assert gov_broad["source_quality_tilt"] is True
     assert gov_broad["state_surface_scalar"] == 2.5
-    assert gov_broad["scalar"] == 5.0
-    assert by_ticker["GBRD"]["paper_event_notional_usd"] == 50000.0
+    assert gov_broad["scalar"] == 6.25
+    assert by_ticker["GBRD"]["paper_event_notional_usd"] == 62500.0
 
     neg_broad = by_ticker["NBRD"]["state_surface_addon"]
     assert neg_broad["source_quality_tilt"] is False
-    assert neg_broad["scalar"] == 2.5
-    assert by_ticker["NBRD"]["paper_event_notional_usd"] == 25000.0
+    assert neg_broad["scalar"] == 3.125
+    assert by_ticker["NBRD"]["paper_event_notional_usd"] == 31250.0
 
     summary = snapshot["state_surface_addon"]
     assert summary["eligible_candidate_count"] == 2
     assert summary["broad_breadth_tilt_candidate_count"] == 2
     assert summary["source_quality_tilt_candidate_count"] == 2
-    assert summary["incremental_notional_usd"] == 65000.0
+    assert summary["positive_state_context_tilt_candidate_count"] == 3
+    assert summary["incremental_notional_usd"] == 88750.0
     assert summary["broad_breadth_tilt_incremental_notional_usd"] == 10000.0
     assert summary["source_quality_tilt_incremental_notional_usd"] == 35000.0
     assert summary["parameters"]["source_quality_source"] == "sec_governance_procedural"
@@ -561,40 +573,48 @@ def test_event_sleeve_bundle_applies_negative_reaction_tilt_without_orders() -> 
     assert neg["eligible"] is True
     assert neg["broad_breadth_tilt"] is True
     assert neg["negative_reaction_tilt"] is True
+    assert neg["positive_state_context_tilt"] is True
     assert neg["negative_reaction_bucket"] == "reaction_-2_to_0"
     assert neg["state_surface_scalar"] == 2.5
     assert neg["negative_reaction_scalar"] == 2.0
-    assert neg["scalar"] == 5.0
-    assert by_ticker["NNEG"]["paper_event_notional_usd"] == 50000.0
+    assert neg["positive_state_context_scalar"] == 1.25
+    assert neg["scalar"] == 6.25
+    assert by_ticker["NNEG"]["paper_event_notional_usd"] == 62500.0
     assert by_ticker["NNEG"]["alters_orders"] is False
 
     gov_neg = by_ticker["GNEG"]["state_surface_addon"]
     assert gov_neg["eligible"] is False
     assert gov_neg["source_quality_tilt"] is True
     assert gov_neg["negative_reaction_tilt"] is True
+    assert gov_neg["positive_state_context_tilt"] is True
     assert gov_neg["source_quality_scalar"] == 2.0
     assert gov_neg["negative_reaction_scalar"] == 2.0
-    assert gov_neg["scalar"] == 4.0
+    assert gov_neg["positive_state_context_scalar"] == 1.25
+    assert gov_neg["scalar"] == 5.0
     assert (
         gov_neg["reason"]
-        == "generic_state_surface_sec_governance_source_quality_negative_reaction_support"
+        == "generic_state_surface_sec_governance_source_quality_negative_reaction_support_positive_state_context"
     )
-    assert by_ticker["GNEG"]["paper_event_notional_usd"] == 40000.0
+    assert by_ticker["GNEG"]["paper_event_notional_usd"] == 50000.0
 
     gov_pos = by_ticker["GPOS"]["state_surface_addon"]
     assert gov_pos["source_quality_tilt"] is True
     assert gov_pos["negative_reaction_tilt"] is False
-    assert gov_pos["scalar"] == 2.0
-    assert by_ticker["GPOS"]["paper_event_notional_usd"] == 20000.0
+    assert gov_pos["positive_state_context_tilt"] is True
+    assert gov_pos["scalar"] == 2.5
+    assert by_ticker["GPOS"]["paper_event_notional_usd"] == 25000.0
 
     summary = snapshot["state_surface_addon"]
     assert summary["source_quality_tilt_candidate_count"] == 2
     assert summary["negative_reaction_tilt_candidate_count"] == 2
+    assert summary["positive_state_context_tilt_candidate_count"] == 3
     assert summary["source_quality_tilt_incremental_notional_usd"] == 20000.0
     assert summary["negative_reaction_tilt_incremental_notional_usd"] == 45000.0
-    assert summary["incremental_notional_usd"] == 80000.0
+    assert summary["positive_state_context_tilt_incremental_notional_usd"] == 27500.0
+    assert summary["incremental_notional_usd"] == 107500.0
     assert "reaction_-2_to_0" in summary["parameters"]["negative_reaction_buckets"]
     assert summary["parameters"]["negative_reaction_tilt_scalar"] == 2.0
+    assert summary["parameters"]["positive_state_context_tilt_scalar"] == 1.25
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
@@ -673,7 +693,7 @@ def test_event_bundle_trade_plan_emits_same_gated_action_when_gate_passes() -> N
     assert action["notional_usd"] == 2500.0
     assert action["entry_timing"] == "next_session_open"
     assert action["state_surface_addon"]["trade_enabled"] is True
-    assert action["state_surface_addon"]["scalar"] == 3.0
+    assert action["state_surface_addon"]["scalar"] == 3.75
     assert trade_plan["production_impact"]["alters_orders"] is True
 
 
@@ -791,7 +811,8 @@ def test_report_generator_renders_event_state_surface_addon_attribution() -> Non
 
     assert "State-surface add-on:" in report
     assert "eligible=1/1" in report
-    assert "incremental=$20,000.00" in report
+    assert "incremental=$27,500.00" in report
     assert "rotation=1" in report
     assert "front_rank=0" in report
+    assert "positive_state=1" in report
     assert "surfaces=rotation_breakout_leadership" in report

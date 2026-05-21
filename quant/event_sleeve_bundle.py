@@ -29,7 +29,7 @@ SOURCE_PRIORITY = {
 }
 
 STATE_SURFACE_ADDON_RULE_VERSION = (
-    "non_generic_positive_state_surface_front_rank_broad_breadth_governance_source_negative_reaction_v5"
+    "non_generic_positive_state_surface_front_rank_broad_breadth_governance_source_negative_reaction_positive_state_context_v6"
 )
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
 STATE_SURFACE_ROTATION_TILT_SURFACE = "rotation_breakout_leadership"
@@ -99,6 +99,8 @@ DEFAULT_CONFIG = {
     "event_negative_reaction_tilt_enabled": True,
     "event_negative_reaction_buckets": list(EVENT_NEGATIVE_REACTION_BUCKETS),
     "event_negative_reaction_tilt_scalar": 2.0,
+    "event_positive_state_context_tilt_enabled": True,
+    "event_positive_state_context_tilt_scalar": 1.25,
 }
 
 
@@ -875,6 +877,8 @@ def _with_state_surface_addon(
     negative_reaction_tilt = False
     negative_reaction_bucket = str(out.get("reaction_bucket") or "")
     negative_reaction_scalar = 1.0
+    positive_state_context_tilt = False
+    positive_state_context_scalar = 1.0
 
     if not bool(config.get("state_surface_addon_paper_enabled", True)):
         reason = "state_surface_addon_disabled"
@@ -973,6 +977,19 @@ def _with_state_surface_addon(
         negative_reaction_tilt = True
         reason = f"{reason}_negative_reaction_support"
 
+    negative_adjusted_notional = base_notional * scalar
+    if (
+        bool(config.get("event_positive_state_context_tilt_enabled", True))
+        and score is not None
+        and score > 0
+    ):
+        positive_state_context_scalar = float(
+            config["event_positive_state_context_tilt_scalar"]
+        )
+        scalar *= positive_state_context_scalar
+        positive_state_context_tilt = True
+        reason = f"{reason}_positive_state_context"
+
     adjusted_notional = base_notional * scalar
     out["state_surface_addon"] = {
         "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
@@ -988,9 +1005,12 @@ def _with_state_surface_addon(
         "negative_reaction_tilt": negative_reaction_tilt,
         "negative_reaction_bucket": negative_reaction_bucket or None,
         "negative_reaction_scalar": round(negative_reaction_scalar, 4),
+        "positive_state_context_tilt": positive_state_context_tilt,
+        "positive_state_context_scalar": round(positive_state_context_scalar, 4),
         "base_event_notional_usd": round(base_notional, 2),
         "state_adjusted_event_notional_usd": round(state_adjusted_notional, 2),
         "source_adjusted_event_notional_usd": round(source_adjusted_notional, 2),
+        "negative_adjusted_event_notional_usd": round(negative_adjusted_notional, 2),
         "adjusted_event_notional_usd": round(adjusted_notional, 2),
         "incremental_notional_usd": round(adjusted_notional - base_notional, 2),
         "state_surface_incremental_notional_usd": round(
@@ -1002,7 +1022,11 @@ def _with_state_surface_addon(
             2,
         ),
         "negative_reaction_incremental_notional_usd": round(
-            adjusted_notional - source_adjusted_notional,
+            negative_adjusted_notional - source_adjusted_notional,
+            2,
+        ),
+        "positive_state_context_incremental_notional_usd": round(
+            adjusted_notional - negative_adjusted_notional,
             2,
         ),
         "state_score": score,
@@ -1037,6 +1061,9 @@ def _state_surface_addon_summary(
     broad_breadth_eligible = [row for row in eligible if row.get("broad_breadth_tilt")]
     source_quality_eligible = [row for row in rows if row.get("source_quality_tilt")]
     negative_reaction_eligible = [row for row in rows if row.get("negative_reaction_tilt")]
+    positive_state_context_eligible = [
+        row for row in rows if row.get("positive_state_context_tilt")
+    ]
     adjusted = [row for row in rows if _money(row.get("incremental_notional_usd")) != 0.0]
     incremental = sum(_money(row.get("incremental_notional_usd")) for row in adjusted)
     rotation_incremental = sum(
@@ -1066,6 +1093,10 @@ def _state_surface_addon_summary(
         _money(row.get("negative_reaction_incremental_notional_usd"))
         for row in negative_reaction_eligible
     )
+    positive_state_context_incremental = sum(
+        _money(row.get("positive_state_context_incremental_notional_usd"))
+        for row in positive_state_context_eligible
+    )
     scored_count = 0
     if isinstance(state_surface_queue, dict):
         scored_count = _int(
@@ -1084,6 +1115,7 @@ def _state_surface_addon_summary(
         "broad_breadth_tilt_candidate_count": len(broad_breadth_eligible),
         "source_quality_tilt_candidate_count": len(source_quality_eligible),
         "negative_reaction_tilt_candidate_count": len(negative_reaction_eligible),
+        "positive_state_context_tilt_candidate_count": len(positive_state_context_eligible),
         "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
         "scored_candidate_count": scored_count,
         "incremental_notional_usd": round(incremental, 2),
@@ -1102,6 +1134,10 @@ def _state_surface_addon_summary(
         ),
         "negative_reaction_tilt_incremental_notional_usd": round(
             negative_reaction_incremental,
+            2,
+        ),
+        "positive_state_context_tilt_incremental_notional_usd": round(
+            positive_state_context_incremental,
             2,
         ),
         "eligible_surfaces": sorted(
@@ -1158,6 +1194,12 @@ def _state_surface_addon_summary(
             "negative_reaction_tilt_scalar": float(
                 config["event_negative_reaction_tilt_scalar"]
             ),
+            "positive_state_context_tilt_enabled": bool(
+                config.get("event_positive_state_context_tilt_enabled", True)
+            ),
+            "positive_state_context_tilt_scalar": float(
+                config["event_positive_state_context_tilt_scalar"]
+            ),
             "generic_surface_not_eligible": str(
                 config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
             ),
@@ -1167,7 +1209,8 @@ def _state_surface_addon_summary(
                 "front-rank rotation rows use front_rank_rotation_tilt_scalar; "
                 "broad_breadth rows multiply the active scalar; "
                 "sec_governance_procedural rows multiply the current paper notional; "
-                "negative reaction buckets multiply the final paper notional"
+                "negative reaction buckets multiply the current paper notional; "
+                "positive state-score rows multiply the final paper notional"
             ),
         },
         "production_impact": {
@@ -1191,6 +1234,7 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "broad_breadth_tilt_candidate_count": 0,
         "source_quality_tilt_candidate_count": 0,
         "negative_reaction_tilt_candidate_count": 0,
+        "positive_state_context_tilt_candidate_count": 0,
         "eligible_fraction": None,
         "scored_candidate_count": 0,
         "incremental_notional_usd": 0.0,
@@ -1199,6 +1243,7 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "broad_breadth_tilt_incremental_notional_usd": 0.0,
         "source_quality_tilt_incremental_notional_usd": 0.0,
         "negative_reaction_tilt_incremental_notional_usd": 0.0,
+        "positive_state_context_tilt_incremental_notional_usd": 0.0,
         "eligible_surfaces": [],
         "status": "blocked",
         "reason": reason,

@@ -221,9 +221,10 @@ This section is interpretation, not an experiment replay.
   queue is not a random universe expansion; it is a governed paper sleeve with
   fixed price/trend/near-high/volume semantics plus accepted rank, low-
   extension, high-volatility, and trend-persistence notional support.
-- SEC / earnings alpha is real when event text is used narrowly and
-  contextually. The working pattern is not "positive language is good"; it is
-  "specific filing subsets with favorable market context deserve more capital."
+- SEC / event-overlay alpha is real when event text and market state are used
+  narrowly and contextually. The working pattern is not "positive language is good";
+  it is "specific filing/event subsets with favorable reaction or positive-state
+  context deserve more capital."
 - Core-misfit work is strongest as candidate-pool governance. Narrowing scope
   and maturing no-trade / inverse paper evidence is more credible than broad
   live exclusion or immediate short activation.

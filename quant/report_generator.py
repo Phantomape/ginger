@@ -1453,6 +1453,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"broad_breadth={state_surface_addon.get('broad_breadth_tilt_candidate_count', 0)} "
                 f"source_quality={state_surface_addon.get('source_quality_tilt_candidate_count', 0)} "
                 f"negative_reaction={state_surface_addon.get('negative_reaction_tilt_candidate_count', 0)} "
+                f"positive_state={state_surface_addon.get('positive_state_context_tilt_candidate_count', 0)} "
                 f"surfaces={surface_text}"
             )
         gate = event_sleeve_bundle.get("forward_paper_gate") or {}
