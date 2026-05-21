@@ -618,6 +618,57 @@ def test_event_sleeve_bundle_applies_negative_reaction_tilt_without_orders() -> 
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
+def test_event_sleeve_bundle_applies_non_narrow_state_context_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-21",
+        form4_event_queue={
+            "rule_version": "form4_rule",
+            "candidates": [
+                {
+                    "ticker": "NNR",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 3,
+            "scored_candidates": [
+                {
+                    "ticker": "NNR",
+                    "rank": 2,
+                    "score": -0.10,
+                    "surface": "balanced_state_leadership",
+                    "state_bucket": "balanced_risk_on",
+                    "breadth_bucket": "mixed_breadth",
+                    "decision_date": "2026-05-21",
+                }
+            ],
+        },
+    )
+
+    addon = snapshot["candidates"][0]["state_surface_addon"]
+    assert addon["eligible"] is False
+    assert addon["positive_state_context_tilt"] is False
+    assert addon["non_narrow_state_context_tilt"] is True
+    assert addon["state_bucket"] == "balanced_risk_on"
+    assert addon["non_narrow_state_context_scalar"] == 1.15
+    assert addon["scalar"] == 1.15
+    assert snapshot["candidates"][0]["paper_event_notional_usd"] == 11500.0
+    assert snapshot["candidates"][0]["alters_orders"] is False
+
+    summary = snapshot["state_surface_addon"]
+    assert summary["non_narrow_state_context_tilt_candidate_count"] == 1
+    assert summary["non_narrow_state_context_tilt_incremental_notional_usd"] == 1500.0
+    assert summary["parameters"]["non_narrow_state_context_tilt_scalar"] == 1.15
+    assert (
+        "balanced_risk_on"
+        in summary["parameters"]["non_narrow_state_context_state_buckets"]
+    )
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
 def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
     snapshot = build_event_sleeve_bundle_snapshot(
