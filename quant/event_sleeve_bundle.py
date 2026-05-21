@@ -29,11 +29,12 @@ SOURCE_PRIORITY = {
 }
 
 STATE_SURFACE_ADDON_RULE_VERSION = (
-    "non_generic_positive_state_surface_front_rank_broad_breadth_tilt_v3"
+    "non_generic_positive_state_surface_front_rank_broad_breadth_governance_source_v4"
 )
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
 STATE_SURFACE_ROTATION_TILT_SURFACE = "rotation_breakout_leadership"
 STATE_SURFACE_BROAD_BREADTH_BUCKET = "broad_breadth"
+EVENT_SOURCE_QUALITY_SOURCE = "sec_governance_procedural"
 TRADE_PLAN_RULE_VERSION = "event_bundle_forward_gated_trade_plan_v1"
 
 DEFAULT_SOURCE_RULE_VERSIONS = {
@@ -87,6 +88,9 @@ DEFAULT_CONFIG = {
     "state_surface_broad_breadth_bucket": STATE_SURFACE_BROAD_BREADTH_BUCKET,
     "state_surface_broad_breadth_tilt_scalar": 1.25,
     "state_surface_addon_generic_surface": STATE_SURFACE_GENERIC_SURFACE,
+    "event_source_quality_tilt_enabled": True,
+    "event_source_quality_source": EVENT_SOURCE_QUALITY_SOURCE,
+    "event_source_quality_tilt_scalar": 2.0,
 }
 
 
@@ -849,6 +853,11 @@ def _with_state_surface_addon(
     front_rank_rotation_tilt = False
     broad_breadth_tilt = False
     broad_breadth_scalar = 1.0
+    source_quality_tilt = False
+    source_quality_source = str(
+        config.get("event_source_quality_source") or EVENT_SOURCE_QUALITY_SOURCE
+    )
+    source_quality_scalar = 1.0
 
     if not bool(config.get("state_surface_addon_paper_enabled", True)):
         reason = "state_surface_addon_disabled"
@@ -918,6 +927,17 @@ def _with_state_surface_addon(
                 broad_breadth_tilt = True
                 reason = f"{reason}_broad_breadth_support"
 
+    state_surface_scalar = scalar
+    state_adjusted_notional = base_notional * state_surface_scalar
+    if (
+        bool(config.get("event_source_quality_tilt_enabled", True))
+        and str(out.get("source") or "") == source_quality_source
+    ):
+        source_quality_scalar = float(config["event_source_quality_tilt_scalar"])
+        scalar *= source_quality_scalar
+        source_quality_tilt = True
+        reason = f"{reason}_sec_governance_source_quality"
+
     adjusted_notional = base_notional * scalar
     out["state_surface_addon"] = {
         "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
@@ -926,9 +946,22 @@ def _with_state_surface_addon(
         "eligible": eligible,
         "reason": reason,
         "scalar": round(scalar, 4),
+        "state_surface_scalar": round(state_surface_scalar, 4),
+        "source_quality_tilt": source_quality_tilt,
+        "source_quality_source": source_quality_source,
+        "source_quality_scalar": round(source_quality_scalar, 4),
         "base_event_notional_usd": round(base_notional, 2),
+        "state_adjusted_event_notional_usd": round(state_adjusted_notional, 2),
         "adjusted_event_notional_usd": round(adjusted_notional, 2),
         "incremental_notional_usd": round(adjusted_notional - base_notional, 2),
+        "state_surface_incremental_notional_usd": round(
+            state_adjusted_notional - base_notional,
+            2,
+        ),
+        "source_quality_incremental_notional_usd": round(
+            adjusted_notional - state_adjusted_notional,
+            2,
+        ),
         "state_score": score,
         "state_surface": surface,
         "state_decision_date": decision_date,
@@ -959,24 +992,31 @@ def _state_surface_addon_summary(
         row for row in rotation_eligible if row.get("front_rank_rotation_tilt")
     ]
     broad_breadth_eligible = [row for row in eligible if row.get("broad_breadth_tilt")]
-    incremental = sum(_money(row.get("incremental_notional_usd")) for row in eligible)
+    source_quality_eligible = [row for row in rows if row.get("source_quality_tilt")]
+    adjusted = [row for row in rows if _money(row.get("incremental_notional_usd")) != 0.0]
+    incremental = sum(_money(row.get("incremental_notional_usd")) for row in adjusted)
     rotation_incremental = sum(
-        _money(row.get("incremental_notional_usd")) for row in rotation_eligible
+        _money(row.get("state_surface_incremental_notional_usd"))
+        for row in rotation_eligible
     )
     front_rank_rotation_incremental = sum(
-        _money(row.get("incremental_notional_usd"))
+        _money(row.get("state_surface_incremental_notional_usd"))
         for row in front_rank_rotation_eligible
     )
     broad_breadth_incremental = sum(
-        _money(row.get("adjusted_event_notional_usd"))
+        _money(row.get("state_adjusted_event_notional_usd"))
         - (
             _money(row.get("base_event_notional_usd"))
             * (
-                _money(row.get("scalar"))
+                _money(row.get("state_surface_scalar"))
                 / max(_money(row.get("broad_breadth_scalar")) or 1.0, 1e-9)
             )
         )
         for row in broad_breadth_eligible
+    )
+    source_quality_incremental = sum(
+        _money(row.get("source_quality_incremental_notional_usd"))
+        for row in source_quality_eligible
     )
     scored_count = 0
     if isinstance(state_surface_queue, dict):
@@ -994,6 +1034,7 @@ def _state_surface_addon_summary(
         "rotation_tilt_candidate_count": len(rotation_eligible),
         "front_rank_rotation_tilt_candidate_count": len(front_rank_rotation_eligible),
         "broad_breadth_tilt_candidate_count": len(broad_breadth_eligible),
+        "source_quality_tilt_candidate_count": len(source_quality_eligible),
         "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
         "scored_candidate_count": scored_count,
         "incremental_notional_usd": round(incremental, 2),
@@ -1004,6 +1045,10 @@ def _state_surface_addon_summary(
         ),
         "broad_breadth_tilt_incremental_notional_usd": round(
             broad_breadth_incremental,
+            2,
+        ),
+        "source_quality_tilt_incremental_notional_usd": round(
+            source_quality_incremental,
             2,
         ),
         "eligible_surfaces": sorted(
@@ -1041,6 +1086,15 @@ def _state_surface_addon_summary(
             "broad_breadth_tilt_scalar": float(
                 config["state_surface_broad_breadth_tilt_scalar"]
             ),
+            "source_quality_tilt_enabled": bool(
+                config.get("event_source_quality_tilt_enabled", True)
+            ),
+            "source_quality_source": str(
+                config.get("event_source_quality_source") or EVENT_SOURCE_QUALITY_SOURCE
+            ),
+            "source_quality_tilt_scalar": float(
+                config["event_source_quality_tilt_scalar"]
+            ),
             "generic_surface_not_eligible": str(
                 config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
             ),
@@ -1048,7 +1102,8 @@ def _state_surface_addon_summary(
                 "score > 0 and state_surface != generic_surface; "
                 "rotation_breakout_leadership uses rotation_tilt_scalar; "
                 "front-rank rotation rows use front_rank_rotation_tilt_scalar; "
-                "broad_breadth rows multiply the active scalar"
+                "broad_breadth rows multiply the active scalar; "
+                "sec_governance_procedural rows multiply the final paper notional"
             ),
         },
         "production_impact": {
@@ -1070,12 +1125,14 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "rotation_tilt_candidate_count": 0,
         "front_rank_rotation_tilt_candidate_count": 0,
         "broad_breadth_tilt_candidate_count": 0,
+        "source_quality_tilt_candidate_count": 0,
         "eligible_fraction": None,
         "scored_candidate_count": 0,
         "incremental_notional_usd": 0.0,
         "rotation_tilt_incremental_notional_usd": 0.0,
         "front_rank_rotation_tilt_incremental_notional_usd": 0.0,
         "broad_breadth_tilt_incremental_notional_usd": 0.0,
+        "source_quality_tilt_incremental_notional_usd": 0.0,
         "eligible_surfaces": [],
         "status": "blocked",
         "reason": reason,

@@ -526,6 +526,22 @@ The rule adjusted 15 paper trades across all three windows, max single positive
 target contribution was `38.82%`, lives in shared `event_sleeve_bundle.py`, and
 is surfaced by production reporting while live/default orders remain disabled.
 
+Latest accepted default-off event source-quality refinement:
+`exp-20260521-006` keeps the accepted event broad-breadth/front-rank adapter
+fixed, but adds the production-visible `sec_governance_procedural` source
+quality scalar from the positive `exp-20260521-005` scout. When a default-off
+event paper row has `source == sec_governance_procedural`, the shared event
+adapter multiplies its already active paper notional by `2.0x`; this stacks
+after existing rotation, front-rank rotation, and broad-breadth paper tilts.
+Versus the accepted `exp-20260521-001` broad-breadth baseline, aggregate
+paper-overlay EV improved `+0.8812` and PnL improved `+$14,372.88`, with all
+three canonical windows EV/PnL-positive and no EV regression:
+`late_strong +0.0751` EV / `+$1,266.72`, `mid_weak +0.7078` EV / `+$9,564.38`, and
+`old_thin +0.0983` EV / `+$3,541.78`. The rule adjusted 13 target paper trades
+across all three windows and 9 tickers, max single positive target contribution
+was `27.49%`, lives in shared `event_sleeve_bundle.py`, is surfaced by
+production reporting, and keeps live/default orders disabled.
+
 Previous accepted core-sizing result: core `exp-20260516-020` keeps entries,
 exits, ranking, universe, filters, targets, heat, slots, LLM, and news logic
 unchanged, but reduces the existing `trend_long` Technology 44-64 DTE risk

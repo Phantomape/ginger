@@ -394,6 +394,102 @@ def test_event_sleeve_bundle_applies_broad_breadth_event_tilt_without_orders() -
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
+def test_event_sleeve_bundle_applies_governance_source_quality_tilt_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-21",
+        sec_governance_event_queue={
+            "rule_version": "sec_governance_rule",
+            "candidates": [
+                {
+                    "ticker": "GOV",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "GBRD",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+        sec_negative_event_queue={
+            "rule_version": "sec_negative_rule",
+            "candidates": [
+                {
+                    "ticker": "NBRD",
+                    "usable_trade_date": "2026-05-21",
+                    "counterfactual": counterfactual,
+                }
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 8,
+            "scored_candidates": [
+                {
+                    "ticker": "GOV",
+                    "rank": 6,
+                    "score": 0.91,
+                    "surface": "balanced_state_leadership",
+                    "breadth_bucket": "mixed_breadth",
+                    "decision_date": "2026-05-21",
+                },
+                {
+                    "ticker": "GBRD",
+                    "rank": 3,
+                    "score": 1.03,
+                    "surface": "broad_breadth_trend_persistence",
+                    "breadth_bucket": "broad_breadth",
+                    "decision_date": "2026-05-21",
+                },
+                {
+                    "ticker": "NBRD",
+                    "rank": 4,
+                    "score": 0.88,
+                    "surface": "broad_breadth_trend_persistence",
+                    "breadth_bucket": "broad_breadth",
+                    "decision_date": "2026-05-21",
+                },
+            ],
+        },
+    )
+
+    by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
+    gov = by_ticker["GOV"]["state_surface_addon"]
+    assert gov["eligible"] is False
+    assert gov["reason"] == "generic_state_surface_sec_governance_source_quality"
+    assert gov["source_quality_tilt"] is True
+    assert gov["source_quality_scalar"] == 2.0
+    assert gov["state_surface_scalar"] == 1.0
+    assert gov["scalar"] == 2.0
+    assert by_ticker["GOV"]["paper_event_notional_usd"] == 20000.0
+    assert by_ticker["GOV"]["alters_orders"] is False
+
+    gov_broad = by_ticker["GBRD"]["state_surface_addon"]
+    assert gov_broad["eligible"] is True
+    assert gov_broad["broad_breadth_tilt"] is True
+    assert gov_broad["source_quality_tilt"] is True
+    assert gov_broad["state_surface_scalar"] == 2.5
+    assert gov_broad["scalar"] == 5.0
+    assert by_ticker["GBRD"]["paper_event_notional_usd"] == 50000.0
+
+    neg_broad = by_ticker["NBRD"]["state_surface_addon"]
+    assert neg_broad["source_quality_tilt"] is False
+    assert neg_broad["scalar"] == 2.5
+    assert by_ticker["NBRD"]["paper_event_notional_usd"] == 25000.0
+
+    summary = snapshot["state_surface_addon"]
+    assert summary["eligible_candidate_count"] == 2
+    assert summary["broad_breadth_tilt_candidate_count"] == 2
+    assert summary["source_quality_tilt_candidate_count"] == 2
+    assert summary["incremental_notional_usd"] == 65000.0
+    assert summary["broad_breadth_tilt_incremental_notional_usd"] == 10000.0
+    assert summary["source_quality_tilt_incremental_notional_usd"] == 35000.0
+    assert summary["parameters"]["source_quality_source"] == "sec_governance_procedural"
+    assert summary["parameters"]["source_quality_tilt_scalar"] == 2.0
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
 def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
     snapshot = build_event_sleeve_bundle_snapshot(
