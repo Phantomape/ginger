@@ -50,6 +50,17 @@ DELTA_ALIASES = {
     "trades": ("trades", "trades_delta", "trade_count_delta"),
 }
 
+TRIAL_METADATA_KEYS = (
+    "mechanism_family",
+    "trial_family",
+    "trial_variant_id",
+    "changed_variable",
+    "prior_trial_count",
+    "nearby_prior_experiments",
+    "multiple_testing_risk_bucket",
+    "new_evidence_type",
+)
+
 ALLOCATION_FAMILIES = {
     "position_cap_or_cap_release",
     "risk_scalar_or_topup",
@@ -218,6 +229,84 @@ def _change_type(record):
 
 def _component(record):
     return str(record.get("component") or record.get("primary_component") or "unknown")
+
+
+def _normalize_label(value, default="unknown"):
+    text = str(value or "").strip()
+    if not text:
+        return default
+    return "_".join(text.lower().replace("-", "_").split())
+
+
+def _mechanism_family(record):
+    return _normalize_label(
+        record.get("mechanism_family")
+        or record.get("trial_family")
+        or classify_research_family(record)
+    )
+
+
+def _trial_family(record):
+    return _normalize_label(
+        record.get("trial_family")
+        or record.get("mechanism_family")
+        or classify_research_family(record)
+    )
+
+
+def _changed_variable(record):
+    direct = record.get("changed_variable") or record.get("single_causal_variable")
+    if direct:
+        return _normalize_label(direct)
+
+    parameters = _as_dict(record.get("parameters"))
+    if len(parameters) == 1:
+        return _normalize_label(next(iter(parameters)))
+
+    return _normalize_label(_change_type(record))
+
+
+def _trial_variant_id(record):
+    return str(record.get("trial_variant_id") or _experiment_id(record))
+
+
+def _new_evidence_type(record):
+    return _normalize_label(record.get("new_evidence_type"), default="not_declared")
+
+
+def _declared_prior_trial_count(record):
+    return int(max(0, _float(record.get("prior_trial_count"), 0.0)))
+
+
+def _nearby_prior_experiment_count(record):
+    value = record.get("nearby_prior_experiments")
+    if isinstance(value, list):
+        return len(value)
+    if isinstance(value, dict):
+        return len(value)
+    if isinstance(value, str) and value.strip():
+        return len([part for part in value.split(",") if part.strip()])
+    return 0
+
+
+def _dedupe_records_by_experiment_id(records):
+    """Keep one record per experiment id for trial counting.
+
+    load_experiment_logs intentionally loads both JSONL and per-experiment logs.
+    Trial accounting should count research attempts, not storage copies.
+    """
+    by_id = {}
+    for record in records:
+        experiment_id = _experiment_id(record)
+        current = by_id.get(experiment_id)
+        if current is None:
+            by_id[experiment_id] = record
+            continue
+        if len(json.dumps(record, sort_keys=True, default=str)) > len(
+            json.dumps(current, sort_keys=True, default=str)
+        ):
+            by_id[experiment_id] = record
+    return list(by_id.values())
 
 
 def _delta(record, key):
@@ -661,6 +750,149 @@ def build_freeze_candidates(records):
     return candidates
 
 
+def _multiple_testing_risk_bucket(trial_count, accepted_count, new_evidence_types):
+    declared_new_evidence = {
+        item for item in new_evidence_types if item and item != "not_declared"
+    }
+    accept_rate = accepted_count / trial_count if trial_count else 0.0
+    if trial_count >= 20:
+        return "high"
+    if trial_count >= 10 and not declared_new_evidence:
+        return "high"
+    if trial_count >= 8:
+        return "moderate"
+    if trial_count >= 5 and accept_rate <= 0.2:
+        return "moderate"
+    if trial_count >= 3:
+        return "low"
+    return "minimal"
+
+
+def _trial_retry_guidance(trial_count, accepted_count, risk_bucket, new_evidence_types):
+    declared_new_evidence = {
+        item for item in new_evidence_types if item and item != "not_declared"
+    }
+    accept_rate = accepted_count / trial_count if trial_count else 0.0
+    if risk_bucket == "high":
+        return "freeze_nearby_retries_until_new_forward_or_field_evidence"
+    if risk_bucket == "moderate" and not declared_new_evidence:
+        return "require_new_evidence_type_before_more_parameter_search"
+    if trial_count >= 5 and accept_rate <= 0.2:
+        return "allow_only_materially_different_discriminator"
+    return "allow_with_standard_gate4_and_trial_disclosure"
+
+
+def build_trial_accounting(records):
+    """Summarize research degrees of freedom by trial family and variable.
+
+    This is an audit surface, not strategy logic. It helps agents understand how
+    much nearby search has already happened before they run another experiment.
+    """
+    strategy_records = _dedupe_records_by_experiment_id(
+        [r for r in records if is_strategy_iteration_record(r)]
+    )
+    groups = defaultdict(list)
+    for record in strategy_records:
+        groups[(_trial_family(record), _changed_variable(record))].append(record)
+
+    group_rows = []
+    for (trial_family, changed_variable), rows in groups.items():
+        accepted = [r for r in rows if _is_accepted_decision(r)]
+        rejected = [r for r in rows if _is_rejected_decision(r)]
+        ev_deltas = [_delta(r, "expected_value_score") for r in rows]
+        pnl_deltas = [_delta(r, "total_pnl") or _delta(r, "pnl") for r in rows]
+        new_evidence_types = sorted({_new_evidence_type(r) for r in rows})
+        declared_prior_trial_count = max(
+            [_declared_prior_trial_count(r) for r in rows] or [0]
+        )
+        nearby_prior_experiment_count = sum(
+            _nearby_prior_experiment_count(r) for r in rows
+        )
+        effective_trial_count = max(
+            len(rows),
+            declared_prior_trial_count + 1,
+            nearby_prior_experiment_count + len(rows),
+        )
+        risk_bucket = _multiple_testing_risk_bucket(
+            effective_trial_count,
+            len(accepted),
+            new_evidence_types,
+        )
+        most_recent_failure = None
+        if rejected:
+            failure = rejected[-1]
+            most_recent_failure = {
+                "experiment_id": _experiment_id(failure),
+                "decision": _decision(failure),
+                "rejection_reason": str(
+                    failure.get("rejection_reason")
+                    or failure.get("next_evidence_needed")
+                    or failure.get("next_retry_requires")
+                    or ""
+                )[:500],
+            }
+
+        group_rows.append({
+            "trial_family": trial_family,
+            "changed_variable": changed_variable,
+            "mechanism_families": sorted({_mechanism_family(r) for r in rows}),
+            "experiments": len(rows),
+            "effective_trial_count": effective_trial_count,
+            "accepted": len(accepted),
+            "rejected": len(rejected),
+            "accept_rate": round(len(accepted) / len(rows), 4) if rows else 0.0,
+            "sum_ev_delta": round(sum(ev_deltas), 4),
+            "sum_pnl_delta": round(sum(pnl_deltas), 2),
+            "multiple_testing_risk_bucket": risk_bucket,
+            "new_evidence_types": new_evidence_types,
+            "declared_prior_trial_count_max": declared_prior_trial_count,
+            "nearby_prior_experiment_count": nearby_prior_experiment_count,
+            "recent_experiments": [_experiment_id(r) for r in rows[-5:]],
+            "most_recent_failure": most_recent_failure,
+            "retry_guidance": _trial_retry_guidance(
+                effective_trial_count,
+                len(accepted),
+                risk_bucket,
+                new_evidence_types,
+            ),
+        })
+
+    risk_rank = {"high": 0, "moderate": 1, "low": 2, "minimal": 3}
+    group_rows = sorted(
+        group_rows,
+        key=lambda row: (
+            risk_rank.get(row["multiple_testing_risk_bucket"], 9),
+            -row["effective_trial_count"],
+            row["trial_family"],
+            row["changed_variable"],
+        ),
+    )
+
+    missing_counts = {key: 0 for key in TRIAL_METADATA_KEYS}
+    for record in strategy_records:
+        for key in TRIAL_METADATA_KEYS:
+            if key not in record:
+                missing_counts[key] += 1
+
+    return {
+        "read_only": True,
+        "records_counted": len(strategy_records),
+        "group_count": len(group_rows),
+        "grouping": "trial_family + changed_variable",
+        "missing_metadata_counts": missing_counts,
+        "high_risk_groups": [
+            row for row in group_rows
+            if row["multiple_testing_risk_bucket"] == "high"
+        ],
+        "groups": group_rows,
+        "notes": [
+            "Trial accounting counts research attempts, not storage copies.",
+            "The bucket is a multiple-testing risk warning, not a trading signal.",
+            "High-risk groups need new forward evidence, a new production-visible field, or a materially different discriminator before another nearby retry.",
+        ],
+    }
+
+
 def build_recommendations(records):
     by_family = _aggregate(records, classify_research_family)
     priorities = build_research_priorities(records)
@@ -773,6 +1005,7 @@ def build_chinese_explanation(
             "novelty_score": "是否还有新信息，是否只是重复扫旧参数。",
             "risk_control_score": "是否容易控制回撤、存活率和尾部风险。",
             "meta_score": "单个实验的粗略历史证据分，不是收益预测。",
+            "trial_accounting": "按 trial_family + changed_variable 统计同族试验次数、接受率、最近失败和 multiple-testing 风险。",
         },
         "当前前五策略研究方向": top_priorities,
         "当前测量修复方向": top_measurement,
@@ -812,9 +1045,10 @@ def build_meta_report(root=DEFAULT_ROOT):
     freeze_candidates = build_freeze_candidates(records)
     recommendations = build_recommendations(strategy_records)
     data_quality_warnings = build_data_quality_warnings(records)
+    trial_accounting = build_trial_accounting(records)
 
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "read_only": True,
         "records_loaded": len(records),
         "record_counts": {
@@ -833,6 +1067,7 @@ def build_meta_report(root=DEFAULT_ROOT):
             data_quality_warnings,
         ),
         "data_quality_warnings": data_quality_warnings,
+        "trial_accounting": trial_accounting,
         "strategy_research_priorities": strategy_research_priorities,
         "measurement_repair_priorities": measurement_repair_priorities,
         "research_priorities": research_priorities,

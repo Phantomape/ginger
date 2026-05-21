@@ -119,6 +119,36 @@ def test_create_ticket_file_slug_overrides_auto_generated_file_stem():
     )
 
 
+def test_create_ticket_records_trial_accounting_fields():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    ticket = create_ticket(
+        registry,
+        lane="alpha_discovery",
+        hypothesis="Mature one broad-market paper source.",
+        change_type="default_off_paper_forward_maturation",
+        single_causal_variable="broad-market replacement value ledger",
+        mechanism_family="broad_market_leadership",
+        trial_family="broad_market_forward_maturation",
+        trial_variant_id="replacement_value_v1",
+        changed_variable="broad_market_forward_ledger_fields",
+        prior_trial_count=4,
+        nearby_prior_experiments=["exp-20990101-001"],
+        multiple_testing_risk_bucket="moderate",
+        new_evidence_type="new_forward_rows",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
+    )
+
+    assert ticket["mechanism_family"] == "broad_market_leadership"
+    assert ticket["trial_family"] == "broad_market_forward_maturation"
+    assert ticket["trial_variant_id"] == "replacement_value_v1"
+    assert ticket["changed_variable"] == "broad_market_forward_ledger_fields"
+    assert ticket["prior_trial_count"] == 4
+    assert ticket["nearby_prior_experiments"] == ["exp-20990101-001"]
+    assert ticket["multiple_testing_risk_bucket"] == "moderate"
+    assert ticket["new_evidence_type"] == "new_forward_rows"
+
+
 def test_default_file_stem_falls_back_when_slug_has_no_ascii():
     assert default_file_stem("exp-20990101-001", "坏交易") == (
         "exp_20990101_001_experiment"
@@ -345,6 +375,8 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
 
     assert draft["status"] == "observed_only"
     assert draft["decision"] == "observed_only"
+    assert draft["trial_family"] == "measurement_instrumentation"
+    assert draft["changed_variable"] == "log append path"
     assert draft["rejection_reason"] is None
     assert experiment_id_exists_in_log(log_path, ticket["experiment_id"])
 

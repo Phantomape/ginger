@@ -249,6 +249,21 @@ production_impact:
 
 若 `shared_policy_changed=true` 且 `run_adapter_changed=false`，默认禁止提交，除非 `replay_only=true` 且差异已记录。
 
+### 5.12 强制 trial accounting
+
+每次 `alpha_search` 开始前，必须把本轮研究自由度显式写出来，避免在同一族参数附近反复搜索后把偶然好看的回测当成 alpha。
+
+最低必填：
+
+- `trial_family`：本轮属于哪个机制族或近邻实验族；
+- `changed_variable`：本轮唯一改变的因果变量；
+- `prior_trial_count`：同一 `trial_family + changed_variable` 或明显近邻变量此前试过多少次；
+- `nearby_prior_experiments`：最近或最相关的历史实验 ID；
+- `multiple_testing_risk_bucket`：`minimal` / `low` / `moderate` / `high`；
+- `new_evidence_type`：本轮相比近邻重试新增了什么证据，例如 `new_forward_rows`、`new_production_visible_field`、`new_replacement_value_cohort`、`new_pit_universe` 或 `not_declared`。
+
+若 `multiple_testing_risk_bucket` 为 `moderate` 或 `high`，不得只因为固定窗口回测改善就保留近邻阈值、profile、notional scalar 或 ticker 例外；必须同时说明新增证据为何足以降低同族多重检验风险。`trial_accounting` 是研究审计，不是交易信号，不能替代 Gate 1-4。
+
 ---
 
 ## 6. 收敛标准
@@ -335,12 +350,13 @@ production_impact:
 
 1. 读取 `docs/backtesting.md`、`docs/alpha-optimization-playbook.md`、当前状态、历史实验、失败记录和最新 backtest；
 2. 写出本轮最值得测试的 `alpha_hypothesis`；
-3. 若本轮不做 alpha，说明被哪个测量缺陷阻断，以及修完后要测试哪个 alpha；
-4. 确认本轮只改变一个独立因果变量；
-5. 执行 Gate 1-4；
-6. 策略逻辑改动必须按 `docs/backtesting.md` 执行标准多窗口回测；
-7. 记录成功或失败实验；
-8. 提交时写清前后指标、未改模块、主要风险和生产影响。
+3. 声明 `trial_family`、`changed_variable`、历史同族/近邻实验数量、最近失败原因和本轮新增证据；
+4. 若本轮不做 alpha，说明被哪个测量缺陷阻断，以及修完后要测试哪个 alpha；
+5. 确认本轮只改变一个独立因果变量；
+6. 执行 Gate 1-4；
+7. 策略逻辑改动必须按 `docs/backtesting.md` 执行标准多窗口回测；
+8. 记录成功或失败实验；
+9. 提交时写清前后指标、未改模块、主要风险和生产影响。
 
 提交说明至少包含：
 
@@ -348,6 +364,9 @@ production_impact:
 hypothesis:
 change_type:
 changed_variable:
+trial_family:
+prior_trial_count:
+new_evidence_type:
 backtest_protocol:
 baseline_metrics:
 after_metrics:

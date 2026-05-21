@@ -36,6 +36,17 @@
   "hypothesis": "放松某个过滤器后，可能提高 expected_value_score 且不显著恶化回撤",
   "change_summary": "将某阈值从 A 调整到 B",
   "change_type": "threshold",
+  "mechanism_family": "core_entry_filtering",
+  "trial_family": "neutral_confidence_threshold",
+  "trial_variant_id": "neutral_confidence_0p88",
+  "changed_variable": "neutral_confidence_threshold",
+  "prior_trial_count": 3,
+  "nearby_prior_experiments": [
+    "exp-20260410-001",
+    "exp-20260411-002"
+  ],
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "new_forward_rows",
   "component": "quant/signal_engine.py",
   "parameters": {
     "threshold_name": {
@@ -125,6 +136,14 @@
 | `hypothesis` | 是 | 本次实验要验证的因果假设 |
 | `change_summary` | 是 | 一句话描述改动 |
 | `change_type` | 是 | 如 `threshold` / `filter` / `llm_prompt` / `data_fix` / `parity_fix` |
+| `mechanism_family` | alpha 推荐 | 机制级研究族，如 `state_surface_concentration`、`broad_market_forward_maturation` |
+| `trial_family` | alpha 必填 | 用于 trial accounting 的近邻实验族；同族重试必须累计 |
+| `trial_variant_id` | alpha 推荐 | 本次具体变体 ID，便于区分同族 sweep 或 scout |
+| `changed_variable` | alpha 必填 | 本次唯一独立因果变量 |
+| `prior_trial_count` | alpha 必填 | 本轮开始前同一 `trial_family + changed_variable` 或明显近邻变量已试次数 |
+| `nearby_prior_experiments` | alpha 必填 | 相关历史实验 ID 列表，尤其是最近失败和已接受基线 |
+| `multiple_testing_risk_bucket` | alpha 必填 | `minimal` / `low` / `moderate` / `high`，表示同族多重检验风险 |
+| `new_evidence_type` | alpha 必填 | 本轮新增证据类型，如 `new_forward_rows`、`new_production_visible_field`、`new_replacement_value_cohort`、`new_pit_universe`、`not_declared` |
 | `component` | 是 | 主要修改模块或文件 |
 | `parameters` | 是 | 改动参数，新旧值都要保留 |
 | `date_range` | 是 | 主实验窗口 |
@@ -149,6 +168,10 @@
 - `timestamp`
 - `hypothesis`
 - `change_type`
+- `changed_variable`
+- `trial_family`
+- `prior_trial_count`
+- `new_evidence_type`
 - `parameters`
 - `date_range`
 - `before_metrics`

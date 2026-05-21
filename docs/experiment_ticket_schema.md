@@ -44,7 +44,15 @@ large shared JSON document.
   "owner": null,
   "hypothesis": "Breakout losses cluster in one reproducible follow-through failure mode.",
   "change_type": "analysis_only",
+  "mechanism_family": "breakout_loss_attribution",
+  "trial_family": "breakout_follow_through_taxonomy",
+  "trial_variant_id": "breakout_follow_through_taxonomy_v1",
   "single_causal_variable": "breakout follow-through taxonomy",
+  "changed_variable": "breakout follow-through taxonomy",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_failure_taxonomy",
   "baseline_result_file": "data/backtests/backtest_results_20260425.json",
   "allowed_write_scope": [
     "quant/experiments/exp_20260425_001_breakout_follow_through_taxonomy.py",
@@ -81,6 +89,29 @@ large shared JSON document.
   "result": null
 }
 ```
+
+Trial accounting fields are required for `alpha_discovery`, `universe_scout`,
+and `alpha_search` style tickets. They let `quant/meta_research_engine.py`
+count nearby research attempts without changing strategy behavior:
+
+| Field | Meaning |
+| --- | --- |
+| `mechanism_family` | Durable mechanism-level family used for playbook synthesis. |
+| `trial_family` | Narrow family used with `changed_variable` for repeated-trial counting. |
+| `trial_variant_id` | Specific variant name for this sweep/scout/run. |
+| `changed_variable` | The one causal variable changed or measured by the ticket. |
+| `prior_trial_count` | Known count of prior same-family or nearby trials before this run. |
+| `nearby_prior_experiments` | Relevant accepted/rejected experiment IDs. |
+| `multiple_testing_risk_bucket` | `minimal`, `low`, `moderate`, or `high`. |
+| `new_evidence_type` | What makes this more than another nearby retry, or `not_declared`. |
+
+For pure `measurement_repair` tickets these fields are recommended but may be
+omitted when no alpha family is being evaluated.
+
+`scripts/create_experiment_ticket.py` exposes matching optional flags:
+`--mechanism-family`, `--trial-family`, `--trial-variant-id`,
+`--changed-variable`, `--prior-trial-count`, `--nearby-prior-experiments`,
+`--multiple-testing-risk-bucket`, and `--new-evidence-type`.
 
 ## Acceptance Rule
 

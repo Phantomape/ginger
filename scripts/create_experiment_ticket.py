@@ -19,6 +19,18 @@ def main():
     parser.add_argument("--hypothesis", required=True)
     parser.add_argument("--change-type", required=True)
     parser.add_argument("--single-causal-variable", required=True)
+    parser.add_argument("--mechanism-family")
+    parser.add_argument("--trial-family")
+    parser.add_argument("--trial-variant-id")
+    parser.add_argument("--changed-variable")
+    parser.add_argument("--prior-trial-count", type=int, default=0)
+    parser.add_argument("--nearby-prior-experiments", default="")
+    parser.add_argument(
+        "--multiple-testing-risk-bucket",
+        choices=["minimal", "low", "moderate", "high"],
+        default="minimal",
+    )
+    parser.add_argument("--new-evidence-type", default="not_declared")
     parser.add_argument("--baseline-result-file")
     parser.add_argument("--allowed-write-scope", default="")
     parser.add_argument(
@@ -53,6 +65,14 @@ def main():
             hypothesis=args.hypothesis,
             change_type=args.change_type,
             single_causal_variable=args.single_causal_variable,
+            mechanism_family=args.mechanism_family,
+            trial_family=args.trial_family,
+            trial_variant_id=args.trial_variant_id,
+            changed_variable=args.changed_variable,
+            prior_trial_count=args.prior_trial_count,
+            nearby_prior_experiments=parse_csv(args.nearby_prior_experiments),
+            multiple_testing_risk_bucket=args.multiple_testing_risk_bucket,
+            new_evidence_type=args.new_evidence_type,
             baseline_result_file=args.baseline_result_file,
             allowed_write_scope=parse_csv(args.allowed_write_scope),
             must_not_touch=parse_csv(args.must_not_touch),
