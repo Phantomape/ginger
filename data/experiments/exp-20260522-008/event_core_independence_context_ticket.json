@@ -1,0 +1,26 @@
+{
+  "acceptance_criteria": {
+    "gate4": "aggregate expected_value_score improvement with all standard windows checked",
+    "production_parity": "replay-only unless a shared production core-position context adapter is added",
+    "protocol": "docs/backtesting.md standard three non-overlapping half-year windows",
+    "sample_guard": "target >=15 trades, 3 windows, >=10 tickers, win rate >=60%, concentration guarded"
+  },
+  "change_type": "alpha_search",
+  "changed_variable": "event_core_independent_notional_scalar",
+  "experiment_id": "exp-20260522-008",
+  "hypothesis": "Event overlay rows that are independent of active core positions have higher replacement value than rows duplicating existing core exposure, so a small independent-context notional scalar may improve expected_value_score without adding noisy tickers.",
+  "only_changed_one_causal_variable": true,
+  "trial_accounting": {
+    "changed_variable": "event_core_independent_notional_scalar",
+    "multiple_testing_risk_bucket": "moderate",
+    "nearby_prior_experiments": [
+      "exp-20260521-019_event_attention_persistence_rejected_sparse_repeat_context",
+      "exp-20260521-020_event_same_day_core_overlap_signal_rejected_sparse_probe",
+      "exp-20260522-007_event_governance_503_haircut_accepted"
+    ],
+    "new_evidence_type": "new_core_backtest_overlap_context_after_exp007",
+    "prior_trial_count": 1,
+    "trial_family": "event_overlay_replacement_value_core_overlap_context"
+  },
+  "why_this_direction": "LLM soft-ranking remains attribution-sparse, broad-market local allocation is blocked by candidate-universe identity drift, and state-surface allocation/profile retunes face the strict >10% aggregate EV gate after many nearby trials."
+}
