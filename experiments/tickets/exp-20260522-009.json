@@ -1,0 +1,354 @@
+{
+  "backtest_protocol": {
+    "config": {
+      "REGIME_AWARE_EXIT": true,
+      "REPLAY_PARTIAL_REDUCES": true,
+      "event_overlay": "default_off_paper_replay"
+    },
+    "source": "docs/backtesting.md canonical fixed-snapshot three-window replay plus default-off event paper overlay accounting",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "changed_variable": "event_operational_specificity_scalar",
+  "decision": "rejected_event_operational_specificity_flag",
+  "decision_summary": "Rejected: operational_specificity_flag scalar did not clear Gate 4.",
+  "expected_value_score_delta": 1.0907,
+  "experiment_id": "exp-20260522-009",
+  "gate1": {
+    "baseline_artifact": "data/experiments/exp-20260522-007/event_governance_503_haircut.json",
+    "baseline_name": "accepted_event_governance_503_haircut_adapter"
+  },
+  "gate2": {
+    "operator_position_field_check": {
+      "missing_entry_date_or_target_price": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 8
+    },
+    "passed": true,
+    "required_fields": [
+      "event source",
+      "ticker",
+      "entry_date",
+      "exit_date",
+      "pnl",
+      "accession_number",
+      "SEC semantic_text archive row",
+      "reaction_bucket",
+      "eight_k_item_codes"
+    ],
+    "selection": {
+      "all_event_trade_count": 27,
+      "specificity_patterns": {
+        "commercial_activity": [
+          "\\bcontract(?:s|ed|ing)?\\b",
+          "\\bagreement(?:s)?\\b",
+          "\\border(?:s)?\\b",
+          "\\bbacklog\\b",
+          "\\bcustomer(?:s)?\\b",
+          "\\baward(?:ed|s)?\\b"
+        ],
+        "forward_commitment": [
+          "\\bguidance\\b",
+          "\\boutlook\\b",
+          "\\bexpects?\\b",
+          "\\bforecast\\b",
+          "\\breaffirms?\\b",
+          "\\braises?\\b",
+          "\\blowers?\\b"
+        ],
+        "operational_milestone": [
+          "\\bshipment(?:s)?\\b",
+          "\\bproduction\\b",
+          "\\blaunch(?:ed|es)?\\b",
+          "\\bapproval\\b",
+          "\\btrial\\b",
+          "\\bmilestone(?:s)?\\b",
+          "\\bdeliver(?:y|ies|ed)?\\b"
+        ],
+        "quantified_financial": [
+          "\\$\\s?\\d",
+          "\\b\\d+(?:\\.\\d+)?\\s?%",
+          "\\b(?:revenue|sales|eps|ebitda|margin|cash flow)\\b.{0,80}\\b\\d"
+        ]
+      },
+      "target_by_window": {
+        "late_strong": {
+          "hit_categories": [
+            "commercial_activity",
+            "forward_commitment",
+            "operational_milestone",
+            "quantified_financial"
+          ],
+          "sources": [
+            "sec_negative_reaction"
+          ],
+          "text_join_count": 5,
+          "tickers": [
+            "DE",
+            "ISRG",
+            "LITE",
+            "MCD"
+          ],
+          "total_pnl": 52074.66,
+          "trade_count": 5,
+          "wins": 4
+        },
+        "mid_weak": {
+          "hit_categories": [
+            "commercial_activity",
+            "forward_commitment",
+            "operational_milestone",
+            "quantified_financial"
+          ],
+          "sources": [
+            "sec_negative_reaction"
+          ],
+          "text_join_count": 6,
+          "tickers": [
+            "CRDO",
+            "DIS",
+            "GS",
+            "MCD"
+          ],
+          "total_pnl": 56723.1,
+          "trade_count": 6,
+          "wins": 6
+        },
+        "old_thin": {
+          "hit_categories": [
+            "commercial_activity",
+            "forward_commitment",
+            "operational_milestone",
+            "quantified_financial"
+          ],
+          "sources": [
+            "sec_negative_reaction"
+          ],
+          "text_join_count": 3,
+          "tickers": [
+            "GS",
+            "MCD",
+            "RTX"
+          ],
+          "total_pnl": -658.67,
+          "trade_count": 3,
+          "wins": 2
+        }
+      },
+      "target_category_counts": [
+        [
+          "commercial_activity",
+          13
+        ],
+        [
+          "forward_commitment",
+          14
+        ],
+        [
+          "operational_milestone",
+          13
+        ],
+        [
+          "quantified_financial",
+          14
+        ]
+      ],
+      "target_field": "operational_specificity_flag",
+      "target_max_single_positive_pnl_share": 0.4639,
+      "target_rule": "text_join_available AND at least 2 specificity categories are present",
+      "target_scaled_total_pnl": 108139.09,
+      "target_sources": [
+        [
+          "sec_negative_reaction",
+          14
+        ]
+      ],
+      "target_tickers": [
+        "CRDO",
+        "DE",
+        "DIS",
+        "GS",
+        "ISRG",
+        "LITE",
+        "MCD",
+        "RTX"
+      ],
+      "target_trade_count": 14,
+      "target_win_rate": 0.8571,
+      "target_windows_present": 3,
+      "target_wins": 12,
+      "text_join_count": 14
+    }
+  },
+  "gate3": {
+    "filter_added": false,
+    "passed": true,
+    "signals_generated": {
+      "late_strong": 51,
+      "mid_weak": 53,
+      "old_thin": 60
+    },
+    "signals_survived": {
+      "late_strong": 41,
+      "mid_weak": 42,
+      "old_thin": 52
+    },
+    "survival_rate_by_window": {
+      "late_strong": 0.8039,
+      "mid_weak": 0.7925,
+      "old_thin": 0.8667
+    }
+  },
+  "gate4": {
+    "by_window": {
+      "late_strong": {
+        "drawdown_improvement_pct": 0.0003,
+        "ev_delta_pct": 0.063216,
+        "passes_drawdown": false,
+        "passes_material_ev": false,
+        "passes_pnl": true,
+        "passes_sharpe": false,
+        "passes_trade_count": false,
+        "pnl_delta_pct": 0.061051,
+        "sharpe_daily_delta": 0.01,
+        "trade_count_increased_with_win_rate_not_down": false
+      },
+      "mid_weak": {
+        "drawdown_improvement_pct": 0.0009,
+        "ev_delta_pct": 0.059242,
+        "passes_drawdown": false,
+        "passes_material_ev": false,
+        "passes_pnl": true,
+        "passes_sharpe": false,
+        "passes_trade_count": false,
+        "pnl_delta_pct": 0.055059,
+        "sharpe_daily_delta": 0.02,
+        "trade_count_increased_with_win_rate_not_down": false
+      },
+      "old_thin": {
+        "drawdown_improvement_pct": -0.0009,
+        "ev_delta_pct": -0.006433,
+        "passes_drawdown": false,
+        "passes_material_ev": false,
+        "passes_pnl": false,
+        "passes_sharpe": false,
+        "passes_trade_count": false,
+        "pnl_delta_pct": -0.001695,
+        "sharpe_daily_delta": -0.01,
+        "trade_count_increased_with_win_rate_not_down": false
+      }
+    },
+    "delta": {
+      "after_ev_sum": 20.7665,
+      "after_pnl_sum": 460647.63,
+      "aggregate_ev_delta": 1.0907,
+      "aggregate_ev_delta_pct": 0.055434,
+      "aggregate_pnl_delta": 20827.33,
+      "aggregate_pnl_delta_pct": 0.047354,
+      "baseline_ev_sum": 19.6758,
+      "baseline_pnl_sum": 439820.3,
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.5295,
+          "max_drawdown_pct": -0.0003,
+          "sharpe_daily": 0.01,
+          "survival_rate": 0.0,
+          "total_pnl": 10414.92,
+          "total_return_pct": 0.1042,
+          "trade_count": 0.0,
+          "win_rate": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.5718,
+          "max_drawdown_pct": -0.0009,
+          "sharpe_daily": 0.02,
+          "survival_rate": 0.0,
+          "total_pnl": 10544.14,
+          "total_return_pct": 0.1054,
+          "trade_count": 0.0,
+          "win_rate": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": -0.0106,
+          "max_drawdown_pct": 0.0009,
+          "sharpe_daily": -0.01,
+          "survival_rate": 0.0,
+          "total_pnl": -131.73,
+          "total_return_pct": -0.0013,
+          "trade_count": 0.0,
+          "win_rate": 0.0
+        }
+      },
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 2,
+      "windows_pnl_regressed": 1
+    },
+    "max_drawdown_drift_limit": 0.02,
+    "max_window_drawdown_drift": 0.0009,
+    "passed": false,
+    "risk_guard_passed": true,
+    "rule": "EV first over the three canonical backtesting.md windows; require majority-window EV improvement, zero EV regression, and one Gate 4 materiality trigger.",
+    "sample_guard": {
+      "actual_target_max_single_positive_pnl_share": 0.4639,
+      "actual_target_scaled_total_pnl": 108139.09,
+      "actual_target_tickers": [
+        "CRDO",
+        "DE",
+        "DIS",
+        "GS",
+        "ISRG",
+        "LITE",
+        "MCD",
+        "RTX"
+      ],
+      "actual_target_trades": 14,
+      "actual_target_win_rate": 0.8571,
+      "actual_target_windows": 3,
+      "max_target_positive_pnl_share": 0.45,
+      "min_target_tickers": 6,
+      "min_target_trades": 10,
+      "min_target_win_rate": 0.55,
+      "min_target_windows": 3,
+      "requires_positive_baseline_target_pnl": true
+    },
+    "sample_guard_passed": false
+  },
+  "hypothesis": "Inside the accepted default-off event overlay, SEC event rows whose archived filing text contains concrete operating or financial specificity may have higher replacement value than generic event rows. A single paper-notional scalar tests that disclosure-quality field without touching core entries, exits, ranking, or source capacity.",
+  "known_risks": [
+    "SEC text archive is historical replay evidence; positive results need a shared production-visible payload field before behavior changes.",
+    "Moderate multiple-testing risk remains because this is another SEC disclosure-quality field on the same frozen windows.",
+    "Text regexes may capture generic boilerplate despite the two-category specificity guard."
+  ],
+  "lane": "alpha_search",
+  "multiple_testing_risk_bucket": "moderate",
+  "new_evidence_type": "new_historical_sec_text_specificity_field",
+  "prior_trial_count": 1,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "notes": "No strategy behavior was changed in this experiment. Any positive result must first be promoted through a shared SEC text-derived candidate field and default-off event_sleeve_bundle adapter before it can affect production paper accounting.",
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "timestamp": "2026-05-22T09:11:23+00:00",
+  "total_pnl_delta": 20827.33,
+  "trial_family": "event_operational_specificity_disclosure_quality"
+}
