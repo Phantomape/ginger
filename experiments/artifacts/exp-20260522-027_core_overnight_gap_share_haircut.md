@@ -1,4 +1,4 @@
-# exp-20260522-025 core_downside_path_haircut
+# exp-20260522-027 core_overnight_gap_share_haircut
 
 ## Hypothesis
 Already-qualified core stock signals with top-quartile prior-20-day overnight-gap share are more event-driven and gap-risk exposed. A risk haircut should improve expected_value_score and tail risk without changing entry, exit, ranking, universe, news, or LLM logic.

@@ -533,7 +533,12 @@ def run() -> dict[str, Any]:
     base._write_json(LOG_JSON, payload)
     base._write_json(TICKET_JSON, payload)
     ARTIFACT_MD.parent.mkdir(parents=True, exist_ok=True)
-    ARTIFACT_MD.write_text(base._artifact(payload), encoding="utf-8")
+    artifact = base._artifact(payload).replace(
+        f"# {base.EXPERIMENT_ID} {base.STEM}",
+        f"# {EXPERIMENT_ID} {STEM}",
+        1,
+    )
+    ARTIFACT_MD.write_text(artifact, encoding="utf-8")
     base._append_jsonl(EXPERIMENT_LOG_JSONL, payload)
     return payload
 
