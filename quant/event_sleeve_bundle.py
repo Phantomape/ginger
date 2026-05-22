@@ -29,7 +29,7 @@ SOURCE_PRIORITY = {
 }
 
 STATE_SURFACE_ADDON_RULE_VERSION = (
-    "non_generic_positive_state_surface_front_rank_broad_breadth_governance_source_negative_reaction_positive_state_non_narrow_context_v7"
+    "non_generic_positive_state_surface_front_rank_broad_breadth_governance_source_negative_reaction_positive_state_non_narrow_context_governance_503_haircut_v8"
 )
 STATE_SURFACE_GENERIC_SURFACE = "balanced_state_leadership"
 STATE_SURFACE_ROTATION_TILT_SURFACE = "rotation_breakout_leadership"
@@ -45,6 +45,7 @@ EVENT_NEGATIVE_REACTION_BUCKETS = (
     "reaction_-2_to_0",
     "reaction_-5_to_-2",
 )
+EVENT_GOVERNANCE_503_ITEM_CODES = ("5.03",)
 TRADE_PLAN_RULE_VERSION = "event_bundle_forward_gated_trade_plan_v1"
 
 DEFAULT_SOURCE_RULE_VERSIONS = {
@@ -109,6 +110,10 @@ DEFAULT_CONFIG = {
     "event_non_narrow_state_context_tilt_enabled": True,
     "event_non_narrow_state_context_state_buckets": list(EVENT_NON_NARROW_STATE_BUCKETS),
     "event_non_narrow_state_context_tilt_scalar": 1.15,
+    "event_governance_503_haircut_enabled": True,
+    "event_governance_503_haircut_source": EVENT_SOURCE_QUALITY_SOURCE,
+    "event_governance_503_item_codes": list(EVENT_GOVERNANCE_503_ITEM_CODES),
+    "event_governance_503_haircut_scalar": 0.25,
 }
 
 
@@ -681,6 +686,12 @@ def _normalise_candidate_row(
         or candidate.get("event_notional_usd")
         or config.get("event_notional_usd")
     )
+    eight_k_item_codes = _string_list(
+        raw.get("eight_k_item_codes")
+        or candidate.get("eight_k_item_codes")
+        or raw.get("item_codes")
+        or candidate.get("item_codes")
+    )
     hold_days = _int(raw.get("hold_days") or candidate.get("hold_days") or config.get("hold_days"))
     decision_id = str(raw.get("decision_id") or candidate.get("decision_id") or "")
     source_unique_key = "|".join(
@@ -706,6 +717,7 @@ def _normalise_candidate_row(
             or raw.get("target_reaction_bucket")
             or candidate.get("target_reaction_bucket")
         ),
+        "eight_k_item_codes": eight_k_item_codes,
         "event_notional_usd": event_notional,
         "hold_days": hold_days,
         "dedupe_key": source_unique_key,
@@ -890,6 +902,8 @@ def _with_state_surface_addon(
     positive_state_context_scalar = 1.0
     non_narrow_state_context_tilt = False
     non_narrow_state_context_scalar = 1.0
+    governance_503_haircut = False
+    governance_503_haircut_scalar = 1.0
 
     if not bool(config.get("state_surface_addon_paper_enabled", True)):
         reason = "state_surface_addon_disabled"
@@ -1025,6 +1039,37 @@ def _with_state_surface_addon(
         non_narrow_state_context_tilt = True
         reason = f"{reason}_non_narrow_state_context"
 
+    pre_governance_503_adjusted_notional = base_notional * scalar
+    governance_503_source = str(
+        config.get("event_governance_503_haircut_source")
+        or EVENT_SOURCE_QUALITY_SOURCE
+    )
+    governance_503_codes = {
+        str(code)
+        for code in (
+            config.get("event_governance_503_item_codes")
+            or EVENT_GOVERNANCE_503_ITEM_CODES
+        )
+    }
+    candidate_item_codes = set(
+        _string_list(
+            out.get("eight_k_item_codes")
+            or (out.get("source_payload") or {}).get("eight_k_item_codes")
+            or (out.get("source_payload") or {}).get("item_codes")
+        )
+    )
+    if (
+        bool(config.get("event_governance_503_haircut_enabled", True))
+        and str(out.get("source") or "") == governance_503_source
+        and bool(candidate_item_codes.intersection(governance_503_codes))
+    ):
+        governance_503_haircut_scalar = float(
+            config["event_governance_503_haircut_scalar"]
+        )
+        scalar *= governance_503_haircut_scalar
+        governance_503_haircut = True
+        reason = f"{reason}_governance_503_haircut"
+
     adjusted_notional = base_notional * scalar
     out["state_surface_addon"] = {
         "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
@@ -1044,11 +1089,18 @@ def _with_state_surface_addon(
         "positive_state_context_scalar": round(positive_state_context_scalar, 4),
         "non_narrow_state_context_tilt": non_narrow_state_context_tilt,
         "non_narrow_state_context_scalar": round(non_narrow_state_context_scalar, 4),
+        "governance_503_haircut": governance_503_haircut,
+        "governance_503_haircut_scalar": round(governance_503_haircut_scalar, 4),
+        "governance_503_item_codes": sorted(candidate_item_codes),
         "base_event_notional_usd": round(base_notional, 2),
         "state_adjusted_event_notional_usd": round(state_adjusted_notional, 2),
         "source_adjusted_event_notional_usd": round(source_adjusted_notional, 2),
         "negative_adjusted_event_notional_usd": round(negative_adjusted_notional, 2),
         "positive_adjusted_event_notional_usd": round(positive_adjusted_notional, 2),
+        "pre_governance_503_adjusted_event_notional_usd": round(
+            pre_governance_503_adjusted_notional,
+            2,
+        ),
         "adjusted_event_notional_usd": round(adjusted_notional, 2),
         "incremental_notional_usd": round(adjusted_notional - base_notional, 2),
         "state_surface_incremental_notional_usd": round(
@@ -1068,7 +1120,11 @@ def _with_state_surface_addon(
             2,
         ),
         "non_narrow_state_context_incremental_notional_usd": round(
-            adjusted_notional - positive_adjusted_notional,
+            pre_governance_503_adjusted_notional - positive_adjusted_notional,
+            2,
+        ),
+        "governance_503_haircut_incremental_notional_usd": round(
+            adjusted_notional - pre_governance_503_adjusted_notional,
             2,
         ),
         "state_score": score,
@@ -1110,6 +1166,9 @@ def _state_surface_addon_summary(
     non_narrow_state_context_eligible = [
         row for row in rows if row.get("non_narrow_state_context_tilt")
     ]
+    governance_503_haircut_rows = [
+        row for row in rows if row.get("governance_503_haircut")
+    ]
     adjusted = [row for row in rows if _money(row.get("incremental_notional_usd")) != 0.0]
     incremental = sum(_money(row.get("incremental_notional_usd")) for row in adjusted)
     rotation_incremental = sum(
@@ -1147,6 +1206,10 @@ def _state_surface_addon_summary(
         _money(row.get("non_narrow_state_context_incremental_notional_usd"))
         for row in non_narrow_state_context_eligible
     )
+    governance_503_haircut_incremental = sum(
+        _money(row.get("governance_503_haircut_incremental_notional_usd"))
+        for row in governance_503_haircut_rows
+    )
     scored_count = 0
     if isinstance(state_surface_queue, dict):
         scored_count = _int(
@@ -1169,6 +1232,7 @@ def _state_surface_addon_summary(
         "non_narrow_state_context_tilt_candidate_count": len(
             non_narrow_state_context_eligible
         ),
+        "governance_503_haircut_candidate_count": len(governance_503_haircut_rows),
         "eligible_fraction": round(len(eligible) / len(candidates), 4) if candidates else None,
         "scored_candidate_count": scored_count,
         "incremental_notional_usd": round(incremental, 2),
@@ -1195,6 +1259,10 @@ def _state_surface_addon_summary(
         ),
         "non_narrow_state_context_tilt_incremental_notional_usd": round(
             non_narrow_state_context_incremental,
+            2,
+        ),
+        "governance_503_haircut_incremental_notional_usd": round(
+            governance_503_haircut_incremental,
             2,
         ),
         "eligible_surfaces": sorted(
@@ -1267,6 +1335,20 @@ def _state_surface_addon_summary(
             "non_narrow_state_context_tilt_scalar": float(
                 config["event_non_narrow_state_context_tilt_scalar"]
             ),
+            "governance_503_haircut_enabled": bool(
+                config.get("event_governance_503_haircut_enabled", True)
+            ),
+            "governance_503_haircut_source": str(
+                config.get("event_governance_503_haircut_source")
+                or EVENT_SOURCE_QUALITY_SOURCE
+            ),
+            "governance_503_item_codes": list(
+                config.get("event_governance_503_item_codes")
+                or EVENT_GOVERNANCE_503_ITEM_CODES
+            ),
+            "governance_503_haircut_scalar": float(
+                config["event_governance_503_haircut_scalar"]
+            ),
             "generic_surface_not_eligible": str(
                 config.get("state_surface_addon_generic_surface") or STATE_SURFACE_GENERIC_SURFACE
             ),
@@ -1278,7 +1360,9 @@ def _state_surface_addon_summary(
                 "sec_governance_procedural rows multiply the current paper notional; "
                 "negative reaction buckets multiply the current paper notional; "
                 "positive state-score rows multiply the current paper notional; "
-                "non-narrow state buckets multiply the final paper notional"
+                "non-narrow state buckets multiply the current paper notional; "
+                "sec_governance_procedural rows containing item 5.03 receive "
+                "the final governance_503_haircut_scalar"
             ),
         },
         "production_impact": {
@@ -1304,6 +1388,7 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "negative_reaction_tilt_candidate_count": 0,
         "positive_state_context_tilt_candidate_count": 0,
         "non_narrow_state_context_tilt_candidate_count": 0,
+        "governance_503_haircut_candidate_count": 0,
         "eligible_fraction": None,
         "scored_candidate_count": 0,
         "incremental_notional_usd": 0.0,
@@ -1314,6 +1399,7 @@ def _empty_state_surface_addon_summary(reason: str) -> dict[str, Any]:
         "negative_reaction_tilt_incremental_notional_usd": 0.0,
         "positive_state_context_tilt_incremental_notional_usd": 0.0,
         "non_narrow_state_context_tilt_incremental_notional_usd": 0.0,
+        "governance_503_haircut_incremental_notional_usd": 0.0,
         "eligible_surfaces": [],
         "status": "blocked",
         "reason": reason,
@@ -1553,6 +1639,16 @@ def _int(value: Any) -> int:
         return int(value or 0)
     except (TypeError, ValueError):
         return 0
+
+
+def _string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value] if value else []
+    if isinstance(value, (list, tuple, set)):
+        return [str(item) for item in value if str(item)]
+    return [str(value)]
 
 
 def _money(value: Any) -> float:

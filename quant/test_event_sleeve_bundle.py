@@ -618,6 +618,79 @@ def test_event_sleeve_bundle_applies_negative_reaction_tilt_without_orders() -> 
     assert snapshot["trade_plan"]["trade_enabled"] is False
 
 
+def test_event_sleeve_bundle_applies_governance_503_haircut_without_orders() -> None:
+    counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
+    snapshot = build_event_sleeve_bundle_snapshot(
+        as_of="2026-05-22",
+        sec_governance_event_queue={
+            "rule_version": "sec_governance_rule",
+            "candidates": [
+                {
+                    "ticker": "G503",
+                    "usable_trade_date": "2026-05-22",
+                    "eight_k_item_codes": ["5.03", "9.01"],
+                    "counterfactual": counterfactual,
+                },
+                {
+                    "ticker": "GN03",
+                    "usable_trade_date": "2026-05-22",
+                    "eight_k_item_codes": ["9.01"],
+                    "counterfactual": counterfactual,
+                },
+            ],
+        },
+        state_surface_queue={
+            "scored_candidate_count": 2,
+            "scored_candidates": [
+                {
+                    "ticker": "G503",
+                    "score": 0.64,
+                    "surface": "balanced_state_leadership",
+                    "state_bucket": "narrow_cap_weight_leadership",
+                    "decision_date": "2026-05-22",
+                },
+                {
+                    "ticker": "GN03",
+                    "score": 0.64,
+                    "surface": "balanced_state_leadership",
+                    "state_bucket": "narrow_cap_weight_leadership",
+                    "decision_date": "2026-05-22",
+                },
+            ],
+        },
+    )
+
+    by_ticker = {row["ticker"]: row for row in snapshot["candidates"]}
+    haircut = by_ticker["G503"]["state_surface_addon"]
+    assert by_ticker["G503"]["eight_k_item_codes"] == ["5.03", "9.01"]
+    assert haircut["source_quality_tilt"] is True
+    assert haircut["positive_state_context_tilt"] is True
+    assert haircut["governance_503_haircut"] is True
+    assert haircut["governance_503_haircut_scalar"] == 0.25
+    assert haircut["scalar"] == 0.625
+    assert haircut["pre_governance_503_adjusted_event_notional_usd"] == 25000.0
+    assert haircut["governance_503_haircut_incremental_notional_usd"] == -18750.0
+    assert by_ticker["G503"]["paper_event_notional_usd"] == 6250.0
+    assert by_ticker["G503"]["alters_orders"] is False
+
+    no_haircut = by_ticker["GN03"]["state_surface_addon"]
+    assert no_haircut["source_quality_tilt"] is True
+    assert no_haircut["positive_state_context_tilt"] is True
+    assert no_haircut["governance_503_haircut"] is False
+    assert no_haircut["scalar"] == 2.5
+    assert by_ticker["GN03"]["paper_event_notional_usd"] == 25000.0
+
+    summary = snapshot["state_surface_addon"]
+    assert summary["governance_503_haircut_candidate_count"] == 1
+    assert summary["source_quality_tilt_incremental_notional_usd"] == 20000.0
+    assert summary["positive_state_context_tilt_incremental_notional_usd"] == 10000.0
+    assert summary["governance_503_haircut_incremental_notional_usd"] == -18750.0
+    assert summary["incremental_notional_usd"] == 11250.0
+    assert summary["parameters"]["governance_503_haircut_scalar"] == 0.25
+    assert "5.03" in summary["parameters"]["governance_503_item_codes"]
+    assert snapshot["trade_plan"]["trade_enabled"] is False
+
+
 def test_event_sleeve_bundle_applies_non_narrow_state_context_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
     snapshot = build_event_sleeve_bundle_snapshot(
