@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import argparse
 from datetime import date
+
+import pytest
 
 import sec_filing_backfill as backfill
 from sec_filing_backfill import parse_acceptance_datetime, parse_filing_rows, usable_trade_date
@@ -65,3 +68,33 @@ def test_ticker_to_cik_map_falls_back_to_shared_reference(tmp_path, monkeypatch)
 
     assert mapping["AAPL"] == "0000320193"
     assert mapping["MSFT"] == "0000789019"
+
+
+def test_backfill_fails_when_requested_tickers_have_zero_cik_mapping(tmp_path, monkeypatch):
+    monkeypatch.setattr(backfill, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(backfill, "_ticker_to_cik_map", lambda: {})
+
+    args = argparse.Namespace(
+        start="2026-05-18",
+        end="2026-05-18",
+        segments=["core"],
+        tickers=["AAPL,MSFT"],
+        include_etfs=False,
+        max_ciks=None,
+        forms=["8-K"],
+        cache_dir=str(tmp_path / "cache"),
+        refresh_submissions=False,
+        refresh_chunks=False,
+        fetch_all_overlap_chunks=False,
+        no_fetch_overlap_chunks=True,
+        sleep_seconds=0.0,
+        user_agent="test",
+        output=str(tmp_path / "sec_filing_events.jsonl"),
+        summary_output=str(tmp_path / "summary.json"),
+    )
+
+    with pytest.raises(RuntimeError, match="SEC CIK mapping quality gate failed"):
+        backfill.backfill_sec_filing_events(args)
+
+    assert not (tmp_path / "sec_filing_events.jsonl").exists()
+    assert not (tmp_path / "summary.json").exists()

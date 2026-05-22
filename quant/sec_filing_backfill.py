@@ -338,6 +338,14 @@ def backfill_sec_filing_events(args: argparse.Namespace) -> dict[str, Any]:
     forms = {str(form).upper() for item in args.forms for form in item.split(",") if form.strip()}
     tickers = _resolve_tickers(args)
     ticker_to_cik = _ticker_to_cik_map()
+    mapped_requested_tickers = [ticker for ticker in tickers if ticker_to_cik.get(ticker)]
+    if tickers and not mapped_requested_tickers:
+        raise RuntimeError(
+            "SEC CIK mapping quality gate failed: 0 of "
+            f"{len(tickers)} requested tickers mapped. Refusing to write an "
+            "empty SEC filing artifact; check data/reference/sec_company_tickers.json "
+            "and the shared sec_ticker_map fallback."
+        )
     cache_dir = _repo_path(args.cache_dir)
     rows: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
