@@ -85,9 +85,12 @@ def test_report_adds_market_state_attribution_and_readiness():
 
     assert report["schema_version"] == 2
     assert report["trade_count"] == 2
-    assert report["prediction_readiness"]["status"] == "attribution_only"
+    assert report["prediction_readiness"]["status"] == "attribution_ready_policy_blocked"
+    assert report["prediction_readiness"]["attribution_ready"] is True
+    assert report["prediction_readiness"]["policy_research_ready"] is False
     assert report["prediction_readiness"]["point_in_time_safe_trades"] == 1
-    assert report["state_policy_research_hints"]["status"] == "measurement_first"
+    assert report["state_policy_research_hints"]["status"] == "historical_attribution_only"
+    assert report["state_policy_research_hints"]["attribution_ready"] is True
     states = {
         row["market_state"]: row
         for row in report["market_state_trade_attribution"]

@@ -423,6 +423,8 @@ def _prediction_readiness(trades):
     if not total:
         return {
             "status": "no_trades",
+            "attribution_ready": False,
+            "policy_research_ready": False,
             "trade_count": 0,
             "point_in_time_safe_coverage": 0.0,
             "prediction_usable_coverage": 0.0,
@@ -443,13 +445,16 @@ def _prediction_readiness(trades):
             "single-variable policy experiment."
         )
     else:
-        status = "attribution_only"
+        status = "attribution_ready_policy_blocked"
         recommendation = (
-            "Do not promote a market-state policy from this report alone. Persist "
-            "entry-day state features in backtest artifacts first."
+            "Historical attribution is ready. Do not promote a predictive "
+            "market-state policy from this report alone unless entry-day state "
+            "features are persisted in backtest artifacts."
         )
     return {
         "status": status,
+        "attribution_ready": True,
+        "policy_research_ready": pit_coverage >= 0.8,
         "trade_count": total,
         "point_in_time_safe_trades": pit,
         "prediction_usable_trades": usable,
@@ -485,10 +490,11 @@ def _state_policy_research_hints(market_state_rows, readiness):
     policy_ready = readiness.get("status") == "research_ready"
     return {
         "policy_ready": policy_ready,
+        "attribution_ready": bool(readiness.get("attribution_ready")),
         "status": (
             "ready_for_single_variable_experiment"
             if policy_ready
-            else "measurement_first"
+            else "historical_attribution_only"
         ),
         "constructive_state_candidates": positive[:5],
         "fragile_state_candidates": fragile[:5],
@@ -496,7 +502,10 @@ def _state_policy_research_hints(market_state_rows, readiness):
             "Choose one state x strategy or state x sector variable and run the "
             "standard three-window Gate 1-4 protocol."
             if policy_ready
-            else "Persist entry-day market-state fields in trade artifacts before changing strategy policy."
+            else (
+                "Use this for past-trade explanation now; persist entry-day "
+                "market-state fields only before changing strategy policy."
+            )
         ),
     }
 
