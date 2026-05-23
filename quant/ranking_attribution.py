@@ -31,14 +31,12 @@ def _extract_rank_map(ranking_surface):
     if isinstance(ranking_surface, dict):
         rows.extend(ranking_surface.get("leaders") or [])
         rows.extend(ranking_surface.get("laggards") or [])
-        # Some callers may pass a complete rows field in future versions.
         rows.extend(ranking_surface.get("rows") or [])
     by_ticker = {}
     for row in rows:
         ticker = str(row.get("ticker") or "").upper()
         if not ticker:
             continue
-        # Preserve the richer row if duplicated.
         old = by_ticker.get(ticker)
         if old is None or row.get("alpha_score") is not None:
             by_ticker[ticker] = row
@@ -99,8 +97,30 @@ def annotate_trades_with_ranking(result, ranking_surface):
         out["alpha_score_components"] = rank_row.get("components")
         out["alpha_score_rank_pct"] = round(pct, 4) if pct is not None else None
         out["alpha_score_bucket"] = _bucket_for_percentile(pct)
+        out["r_multiple"] = _r_multiple(out)
         trades.append(out)
     return trades
+
+
+def _compact_trade_for_validation(trade):
+    """Keep validation payload useful without duplicating huge trade blobs."""
+    return {
+        "ticker": trade.get("ticker"),
+        "strategy": trade.get("strategy"),
+        "entry_date": trade.get("entry_date"),
+        "exit_date": trade.get("exit_date"),
+        "pnl": trade.get("pnl") if trade.get("pnl") is not None else trade.get("profit_loss"),
+        "profit_loss": trade.get("profit_loss"),
+        "entry_price": trade.get("entry_price"),
+        "exit_price": trade.get("exit_price"),
+        "stop_price": trade.get("stop_price"),
+        "shares": trade.get("shares"),
+        "r_multiple": trade.get("r_multiple"),
+        "alpha_score": trade.get("alpha_score"),
+        "alpha_score_components": trade.get("alpha_score_components"),
+        "alpha_score_rank_pct": trade.get("alpha_score_rank_pct"),
+        "alpha_score_bucket": trade.get("alpha_score_bucket"),
+    }
 
 
 def _summarize_bucket(trades):
@@ -116,7 +136,7 @@ def _summarize_bucket(trades):
         pnl_values.append(pnl)
         if pnl > 0:
             wins += 1
-        r = _r_multiple(trade)
+        r = trade.get("r_multiple") if trade.get("r_multiple") is not None else _r_multiple(trade)
         if r is not None:
             r_values.append(r)
     n = len(pnl_values)
@@ -131,7 +151,7 @@ def _summarize_bucket(trades):
     }
 
 
-def build_ranking_attribution(result, ranking_surface):
+def build_ranking_attribution(result, ranking_surface, *, include_annotated_trades=True):
     annotated = annotate_trades_with_ranking(result, ranking_surface)
     buckets = {}
     for trade in annotated:
@@ -162,7 +182,7 @@ def build_ranking_attribution(result, ranking_surface):
             continue
         for key, value in components.items():
             bucket = "high" if _float(value, 0.0) >= 0.70 else "low" if _float(value, 0.0) <= 0.30 else "mid"
-            component_attribution.setdefault(key, {}).setdefault(bucket, []).append({"pnl": pnl, "r": _r_multiple(trade)})
+            component_attribution.setdefault(key, {}).setdefault(bucket, []).append({"pnl": pnl, "r": trade.get("r_multiple")})
 
     component_summary = {}
     for component, by_bucket in component_attribution.items():
@@ -177,8 +197,8 @@ def build_ranking_attribution(result, ranking_surface):
                 "total_pnl": round(sum(pnl_values), 2) if pnl_values else 0.0,
             }
 
-    return {
-        "schema_version": 1,
+    report = {
+        "schema_version": 2,
         "read_only": True,
         "source_period": result.get("period"),
         "source_expected_value_score": result.get("expected_value_score"),
@@ -192,9 +212,12 @@ def build_ranking_attribution(result, ranking_surface):
         "notes": [
             "Read-only attribution of continuous alpha_score vs realized replay trades.",
             "Use this to decide whether the ranking surface deserves a future default-off sizing experiment.",
-            "If many trades are unknown, persist full daily ranking surfaces before stronger conclusions.",
+            "Annotated trades are compact and included only to support longitudinal validation.",
         ],
     }
+    if include_annotated_trades:
+        report["annotated_trades"] = [_compact_trade_for_validation(t) for t in annotated]
+    return report
 
 
 def main():
@@ -202,11 +225,16 @@ def main():
     parser.add_argument("result_json")
     parser.add_argument("ranking_surface_json")
     parser.add_argument("--output", default=None)
+    parser.add_argument("--no-annotated-trades", action="store_true")
     args = parser.parse_args()
 
     result = _load_json(args.result_json)
     ranking_surface = _load_json(args.ranking_surface_json)
-    report = build_ranking_attribution(result, ranking_surface)
+    report = build_ranking_attribution(
+        result,
+        ranking_surface,
+        include_annotated_trades=not args.no_annotated_trades,
+    )
 
     result_path = Path(args.result_json)
     output = Path(args.output) if args.output else result_path.with_name(result_path.stem + "_ranking_attribution.json")
