@@ -127,6 +127,7 @@ def main():
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
+    from market_state_analysis import build_market_state_snapshot
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
     from backfill_non_ohlcv import (
         catch_up_missing_non_ohlcv,
@@ -719,6 +720,22 @@ def main():
     _regime_str = market_regime.get("regime", "").upper()
 
     log.info(f"Signals generated: {len(signals)}")
+    market_state_snapshot = build_market_state_snapshot(
+        market_context=market_context,
+        signals=signals,
+        source="production_daily_quant",
+    )
+    _state_regime = (
+        market_state_snapshot.get("market_regime_report") or {}
+    ).get("regime")
+    _state_sentiment = (
+        market_state_snapshot.get("sentiment_surface") or {}
+    ).get("sentiment")
+    log.info(
+        "Market-state snapshot: regime_engine=%s sentiment=%s",
+        _state_regime,
+        _state_sentiment,
+    )
 
     pilot_signals = []
     pilot_entry_filter_audit = {
@@ -1569,6 +1586,7 @@ def main():
     trend_signals_dict["addon_actions"] = addon_actions
     trend_signals_dict["entry_filter_audit"] = entry_filter_audit
     trend_signals_dict["entry_execution_plan"] = entry_execution_plan
+    trend_signals_dict["market_state_snapshot"] = market_state_snapshot
     trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
     trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
     trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
@@ -1607,6 +1625,7 @@ def main():
         metrics          = metrics,
         market_regime    = market_regime,
         open_positions   = open_positions,
+        market_state_snapshot = market_state_snapshot,
         dropped_signals  = last_dropped_signals or None,
         addon_actions    = addon_actions,
         entry_execution_plan = entry_execution_plan,
@@ -1648,6 +1667,7 @@ def main():
         "addon_audit":    addon_audit,
         "entry_filter_audit": entry_filter_audit,
         "entry_execution_plan": entry_execution_plan,
+        "market_state_snapshot": market_state_snapshot,
         "pilot_entry_filter_audit": pilot_entry_filter_audit,
         "pilot_entry_execution_plan": pilot_entry_execution_plan,
         "pilot_decision_snapshots": pilot_decision_snapshots,

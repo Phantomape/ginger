@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            metrics=None, market_regime=None, open_positions=None,
+                           market_state_snapshot=None,
                            dropped_signals=None, addon_actions=None,
                            entry_execution_plan=None,
                            pilot_attribution=None,
@@ -73,6 +74,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         portfolio_heat   (dict):        Output of portfolio_engine.compute_portfolio_heat()
         metrics          (dict):        Output of performance_engine.compute_metrics()
         market_regime    (dict):        Output of regime.compute_market_regime()
+        market_state_snapshot (dict):   Read-only regime/sentiment analysis payload
         open_positions   (dict):        Raw open_positions.json content
         dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
@@ -134,6 +136,35 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 )
 
     # ── Portfolio heat ──────────────────────────────────────────────────────
+    if market_state_snapshot:
+        regime_report = market_state_snapshot.get("market_regime_report") or {}
+        sentiment = market_state_snapshot.get("sentiment_surface") or {}
+        mix = market_state_snapshot.get("signal_mix") or {}
+        coverage = market_state_snapshot.get("context_coverage") or {}
+        missing = coverage.get("missing_fields") or []
+        lines.append("\nMARKET STATE SNAPSHOT:")
+        lines.append(
+            "  Regime engine: "
+            f"{regime_report.get('regime', 'unknown')} "
+            f"(confidence={regime_report.get('confidence', 'n/a')})"
+        )
+        lines.append(
+            "  Sentiment: "
+            f"{sentiment.get('sentiment', 'unknown')} "
+            f"(confidence={sentiment.get('confidence', 'n/a')})"
+        )
+        lines.append(
+            "  Signal mix: "
+            f"total={mix.get('total_signals', 0)} "
+            f"breakout={mix.get('breakout_signal_count', 0)} "
+            f"theme={mix.get('theme_signal_count', 0)}"
+        )
+        if missing:
+            lines.append(
+                "  Missing context: "
+                + ", ".join(str(field) for field in missing[:6])
+            )
+
     if non_ohlcv_snapshot:
         status = non_ohlcv_snapshot.get("status")
         manifest = non_ohlcv_snapshot.get("coverage_manifest") or {}

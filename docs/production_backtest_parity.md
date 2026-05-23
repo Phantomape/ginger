@@ -26,6 +26,7 @@ in shared modules such as:
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |
 | --- | --- | --- | --- | --- |
 | Universe and features | `data_layer.py`, `feature_layer.py` | historical/snapshot OHLCV | latest OHLCV | data date only |
+| Read-only market-state / sentiment analysis | `regime_engine.py`, `sentiment_surface.py`, `market_state_analysis.py`, `backtest_sentiment_attribution.py`, `report_generator.py` | emits `result["market_state_sentiment_attribution"]` after canonical metrics are computed; diagnostic only | emits `market_state_snapshot` in daily quant artifacts and report; diagnostic only | no entry, ranking, sizing, exit, heat, LLM/news, or order behavior may read this block without a separate Gate 1-4 experiment |
 | Universe governance / pilot eligibility | `universe_manager.py`, `universe_adapter.py`, `pilot_sleeve.py` | point-in-time disclosure by default; `--include-pilot-sleeve` replays trade-enabled pilot eligibility day by day | daily run can emit separate `pilot_signals` for trade-enabled pilot records | pilot started on `2026-05-01`, so pre-activation historical windows cannot treat it as then-known production universe |
 | Entry signal generation | `signal_engine.py` | required | required | none |
 | Risk enrichment / targets | `risk_engine.py`, `regime_exit.py` | required | required | none |

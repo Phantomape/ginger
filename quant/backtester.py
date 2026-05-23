@@ -477,6 +477,42 @@ def build_exit_advisory_shadow_attribution(events, closed_trades):
     }
 
 
+def build_market_state_sentiment_attribution(result):
+    """Attach read-only market-state/sentiment trade attribution.
+
+    This wraps the sidecar attribution module so canonical backtest artifacts
+    expose the same mechanism by default. It must not mutate the source result
+    or feed any executable policy.
+    """
+    try:
+        from backtest_sentiment_attribution import build_sentiment_report
+
+        report = build_sentiment_report(result, include_trades=False)
+        report["diagnostic_only"] = True
+        report["production_backtest_parity"] = {
+            "shared_policy_changed": False,
+            "backtester_adapter_changed": True,
+            "run_adapter_changed": False,
+            "replay_only": False,
+            "strategy_behavior_changed": False,
+        }
+        report.setdefault("notes", []).append(
+            "Canonical backtester attachment only; use production daily market_state_snapshot for live-day context."
+        )
+        return report
+    except Exception as exc:
+        return {
+            "schema_version": 1,
+            "read_only": True,
+            "diagnostic_only": True,
+            "error": str(exc),
+            "notes": [
+                "Market-state sentiment attribution failed after canonical metrics were computed.",
+                "Failure does not change trade generation, fills, sizing, exits, or expected_value_score.",
+            ],
+        }
+
+
 def should_cancel_gap(fill_price, signal_entry, sig=None, today=None, ohlcv_all=None):
     """Return True when the next open is too far above signal entry.
 
@@ -4135,6 +4171,9 @@ class BacktestEngine:
         result["expected_value_score"] = compute_expected_value_score(result)
         result["convergence"] = compute_convergence(result)
         result["single_window_quality"] = _build_multi_window_robustness([result])
+        result["market_state_sentiment_attribution"] = (
+            build_market_state_sentiment_attribution(result)
+        )
 
         # v2 shadow verdict — what convergence WOULD say if we also required
         # sharpe_daily >= sharpe_min. Does not mutate the real verdict.
