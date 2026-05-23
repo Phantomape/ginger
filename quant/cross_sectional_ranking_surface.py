@@ -200,10 +200,13 @@ def build_cross_sectional_ranking_surface(
     ranked = sorted(rows, key=lambda r: r["alpha_score"], reverse=True)
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "read_only": True,
         "weights": weights or DEFAULT_COMPONENT_WEIGHTS,
         "universe_count": len(ranked),
+        # Full rows are intentionally persisted so downstream attribution and
+        # canonical vectors do not silently cover only leaders/laggards.
+        "rows": ranked,
         "leaders": ranked[:25],
         "laggards": ranked[-15:],
         "distribution": {
@@ -215,5 +218,6 @@ def build_cross_sectional_ranking_surface(
             "Continuous replayable ranking surface.",
             "No signal gating or sizing decisions are made here.",
             "The goal is to evaluate whether continuous ranking contains more predictive information than hard thresholds.",
+            "Full ranked rows are included for downstream validation coverage.",
         ],
     }

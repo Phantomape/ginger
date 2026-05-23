@@ -6,6 +6,7 @@ This module builds a replayable, append-only context snapshot covering:
   - Post-Earnings Drift state
   - Theme Density
   - Relative Strength Surface
+  - Unified Market-State Bundle
 
 It is passive intelligence: it must not alter entries, exits, ranking, sizing,
 or orders. Production run.py can call persist_daily_context_archive(...) once
@@ -17,6 +18,8 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
+
+from market_state_bundle import build_market_state_bundle
 
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[1]
@@ -115,7 +118,6 @@ def build_breadth_context(features_dict):
     above_200ma = [f for f in rows if f.get("above_200ma") is True]
 
     sector_map = {}
-    # Most feature rows do not carry sector; keep this hook for future enrichment.
     for f in rows:
         sector = str(f.get("sector") or "unknown")
         sector_map.setdefault(sector, {"count": 0, "breakouts": 0, "mom20_positive": 0})
@@ -243,9 +245,6 @@ def build_post_earnings_drift_context(features_dict, earnings_dict=None):
         avg_surprise = _safe_feature(features, "avg_historical_surprise_pct")
         mom10 = _safe_feature(features, "momentum_10d_pct")
         mom20 = _safe_feature(features, "momentum_20d_pct")
-        # Current data_layer mostly stores upcoming earnings, not exact days-since-last.
-        # This still archives PEAD-relevant state so future snapshots can link
-        # post-event momentum with surprise history and estimate revisions.
         if avg_surprise is None and dte is None:
             continue
         rows.append({
@@ -280,9 +279,30 @@ def build_daily_context_archive(
     earnings_dict=None,
     market_regime=None,
     estimate_revision_summary=None,
+    expectation_snapshot_history=None,
 ):
+    earnings_context = build_earnings_estimate_revision_context(
+        features_dict,
+        earnings_dict=earnings_dict,
+        estimate_revision_summary=estimate_revision_summary,
+    )
+    breadth_context = build_breadth_context(features_dict)
+    theme_density_context = build_theme_density_context(features_dict)
+    relative_strength = build_relative_strength_surface(features_dict)
+    post_earnings = build_post_earnings_drift_context(
+        features_dict,
+        earnings_dict=earnings_dict,
+    )
+    market_state_bundle = build_market_state_bundle(
+        features_dict=features_dict,
+        breadth_context=breadth_context,
+        theme_density_context=theme_density_context,
+        expectation_context=earnings_context,
+        expectation_snapshot_history=expectation_snapshot_history or {},
+    )
+
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "as_of_date": as_of_date,
         "generated_at": datetime.now().isoformat(),
         "read_only": True,
@@ -294,18 +314,12 @@ def build_daily_context_archive(
         },
         "universe": sorted(str(t).upper() for t in (universe or [])),
         "market_regime": market_regime or {},
-        "earnings_estimate_revision": build_earnings_estimate_revision_context(
-            features_dict,
-            earnings_dict=earnings_dict,
-            estimate_revision_summary=estimate_revision_summary,
-        ),
-        "breadth_internal_structure": build_breadth_context(features_dict),
-        "theme_density": build_theme_density_context(features_dict),
-        "relative_strength_surface": build_relative_strength_surface(features_dict),
-        "post_earnings_drift": build_post_earnings_drift_context(
-            features_dict,
-            earnings_dict=earnings_dict,
-        ),
+        "earnings_estimate_revision": earnings_context,
+        "breadth_internal_structure": breadth_context,
+        "theme_density": theme_density_context,
+        "relative_strength_surface": relative_strength,
+        "post_earnings_drift": post_earnings,
+        "market_state_bundle": market_state_bundle,
         "notes": [
             "Passive daily context archive for future replay/attribution.",
             "The archive intentionally does not affect production trading decisions.",
@@ -322,6 +336,7 @@ def persist_daily_context_archive(
     earnings_dict=None,
     market_regime=None,
     estimate_revision_summary=None,
+    expectation_snapshot_history=None,
     output_dir=DEFAULT_CONTEXT_DIR,
 ):
     payload = build_daily_context_archive(
@@ -331,6 +346,7 @@ def persist_daily_context_archive(
         earnings_dict=earnings_dict,
         market_regime=market_regime,
         estimate_revision_summary=estimate_revision_summary,
+        expectation_snapshot_history=expectation_snapshot_history,
     )
     date_key = str(as_of_date).replace("-", "")
     output_dir = Path(output_dir)
@@ -351,4 +367,5 @@ def persist_daily_context_archive(
             }
             for theme, data in payload["theme_density"]["themes"].items()
         },
+        "market_state_summary": payload["market_state_bundle"].get("summary", {}),
     }
