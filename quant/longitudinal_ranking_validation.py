@@ -10,6 +10,10 @@ This module is read-only and attribution-only.
 
 from __future__ import annotations
 
+import argparse
+import json
+from pathlib import Path
+
 
 def _float(value, default=None):
     try:
@@ -18,6 +22,10 @@ def _float(value, default=None):
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def _load_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8-sig"))
 
 
 def _bucket_from_rank(rank_pct):
@@ -36,6 +44,7 @@ def _bucket_from_rank(rank_pct):
 
 def _summarize(rows):
     pnl_values = []
+    r_values = []
     win_count = 0
     for row in rows:
         pnl = _float(row.get("pnl"), None)
@@ -46,6 +55,9 @@ def _summarize(rows):
         pnl_values.append(pnl)
         if pnl > 0:
             win_count += 1
+        r = _float(row.get("r_multiple"), None)
+        if r is not None:
+            r_values.append(r)
 
     n = len(pnl_values)
     return {
@@ -53,6 +65,7 @@ def _summarize(rows):
         "win_rate": round(win_count / n, 4) if n else None,
         "total_pnl": round(sum(pnl_values), 2) if pnl_values else 0.0,
         "avg_pnl": round(sum(pnl_values) / n, 2) if n else None,
+        "avg_r": round(sum(r_values) / len(r_values), 4) if r_values else None,
         "best_trade": round(max(pnl_values), 2) if pnl_values else None,
         "worst_trade": round(min(pnl_values), 2) if pnl_values else None,
     }
@@ -125,19 +138,44 @@ def extract_component_predictive_value(trades):
             else:
                 bucket = "weak"
 
-            component_stats.setdefault(component, {}).setdefault(bucket, []).append(pnl)
+            component_stats.setdefault(component, {}).setdefault(bucket, []).append({
+                "pnl": pnl,
+                "r_multiple": _float(trade.get("r_multiple"), None),
+            })
 
     out = {}
     for component, buckets in component_stats.items():
         out[component] = {}
-        for bucket, pnl_values in buckets.items():
+        for bucket, values in buckets.items():
+            pnl_values = [v["pnl"] for v in values]
+            r_values = [v["r_multiple"] for v in values if v["r_multiple"] is not None]
             out[component][bucket] = {
                 "trades": len(pnl_values),
                 "avg_pnl": round(sum(pnl_values) / len(pnl_values), 2),
+                "avg_r": round(sum(r_values) / len(r_values), 4) if r_values else None,
                 "total_pnl": round(sum(pnl_values), 2),
             }
 
     return out
+
+
+def _component_evidence_summary(component_predictive_value):
+    evidence = []
+    for component, buckets in sorted((component_predictive_value or {}).items()):
+        elite = buckets.get("elite") or buckets.get("strong")
+        weak = buckets.get("weak")
+        if not elite or not weak:
+            continue
+        elite_avg = _float(elite.get("avg_pnl"), None)
+        weak_avg = _float(weak.get("avg_pnl"), None)
+        if elite_avg is not None and weak_avg is not None and elite_avg > weak_avg:
+            evidence.append({
+                "component": component,
+                "evidence": "high_component_bucket_outperforms_weak_bucket",
+                "high_avg_pnl": elite_avg,
+                "weak_avg_pnl": weak_avg,
+            })
+    return evidence
 
 
 def build_longitudinal_validation_report(
@@ -175,19 +213,28 @@ def build_longitudinal_validation_report(
         None,
     )
 
+    top_vs_bottom = None
     if top_decile and bottom_quintile:
         top_avg = _float(top_decile.get("avg_pnl"), 0.0)
         bottom_avg = _float(bottom_quintile.get("avg_pnl"), 0.0)
+        top_vs_bottom = round(top_avg - bottom_avg, 2)
         if top_avg > bottom_avg:
             evidence.append(
                 "top-ranked names outperform bottom-ranked names"
             )
 
+    component_evidence = _component_evidence_summary(predictive_components)
+
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "read_only": True,
+        "source_period": ranking_attribution_report.get("source_period"),
+        "source_expected_value_score": ranking_attribution_report.get("source_expected_value_score"),
+        "coverage": ranking_attribution_report.get("coverage", {}),
         "ranking_monotonicity": monotonicity,
+        "top_decile_minus_bottom_quintile_avg_pnl": top_vs_bottom,
         "component_predictive_value": predictive_components,
+        "component_evidence_summary": component_evidence,
         "evidence_summary": evidence,
         "notes": [
             "Evidence extraction layer for continuous ranking.",
@@ -195,3 +242,26 @@ def build_longitudinal_validation_report(
             "Do not add more features until existing surfaces demonstrate stable evidence.",
         ],
     }
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("ranking_attribution_json")
+    parser.add_argument("--output", default=None)
+    args = parser.parse_args()
+
+    attribution = _load_json(args.ranking_attribution_json)
+    report = build_longitudinal_validation_report(
+        ranking_attribution_report=attribution,
+    )
+
+    input_path = Path(args.ranking_attribution_json)
+    output = Path(args.output) if args.output else input_path.with_name(
+        input_path.stem + "_longitudinal_validation.json"
+    )
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(str(output))
+
+
+if __name__ == "__main__":
+    main()
