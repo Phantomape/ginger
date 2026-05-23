@@ -1,0 +1,26 @@
+{
+  "acceptance_criteria": {
+    "gate4": "positive aggregate EV/PnL, at least two EV-improved windows, zero EV-regressed windows, drawdown drift <=2pp, survival >=5%",
+    "production_parity": "replay-only scout unless shared production core-overlap adapter is added",
+    "protocol": "docs/backtesting.md standard three non-overlapping half-year windows",
+    "sample_guard": "target >=8 overlap trades, >=2 windows, >=4 tickers, concentration guarded"
+  },
+  "change_type": "alpha_search",
+  "changed_variable": "event_core_overlap_notional_scalar",
+  "experiment_id": "exp-20260523-005",
+  "hypothesis": "Default-off event overlay rows that duplicate an active same-ticker core position may have lower incremental replacement value than independent event rows; applying a bounded paper-notional haircut to overlap rows could improve EV and risk without changing event eligibility, source queues, ranking, exits, live orders, LLM, or news.",
+  "only_changed_one_causal_variable": true,
+  "trial_accounting": {
+    "changed_variable": "event_core_overlap_notional_scalar",
+    "multiple_testing_risk_bucket": "moderate",
+    "nearby_prior_experiments": [
+      "exp-20260509-002",
+      "exp-20260521-020",
+      "exp-20260522-008"
+    ],
+    "new_evidence_type": "new_overlap_side_of_existing_core_context_field",
+    "prior_trial_count": 2,
+    "trial_family": "event_overlay_replacement_value_core_overlap_context"
+  },
+  "why_this_direction": "This follows the playbook's event overlay displacement/core-overlap priority while avoiding data-limited LLM soft-ranking, recently rejected SEC fact/tone slices, state-surface profile mining, and the failed AI optical candidate-pool family."
+}
