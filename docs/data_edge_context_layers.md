@@ -201,6 +201,20 @@ Attribution outputs:
 
 Agent rule: use ranking attribution to validate the ranking surface before proposing any live sizing or ranking experiment.
 
+### `quant/entry_day_ranking_attribution.py`
+
+Purpose: rebuild ranking and canonical state-vector context as of the trading day before each filled entry, then attribute realized trade outcomes to that point-in-time context.
+
+Usage:
+
+```powershell
+python quant/entry_day_ranking_attribution.py <result_json> <ohlcv_snapshot_json>
+```
+
+Output: `<result_stem>_entry_day_ranking_attribution.json`
+
+Agent rule: use this for predictive ranking / allocation research. A single static ranking surface is acceptable for historical explanation, but not for promoting a forward-looking ranking or sizing rule.
+
 ---
 
 ## Tail / allocation / decay / heat diagnostics

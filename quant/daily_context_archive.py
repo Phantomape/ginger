@@ -19,6 +19,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from canonical_state_vectors import build_canonical_state_vectors
 from market_state_bundle import build_market_state_bundle
 
 
@@ -300,6 +301,13 @@ def build_daily_context_archive(
         expectation_context=earnings_context,
         expectation_snapshot_history=expectation_snapshot_history or {},
     )
+    canonical_state_vectors = build_canonical_state_vectors(
+        market_state_bundle=market_state_bundle,
+        breadth_context=breadth_context,
+        earnings_context=earnings_context,
+        post_earnings_context=post_earnings,
+        market_regime=market_regime,
+    )
 
     return {
         "schema_version": 2,
@@ -320,6 +328,7 @@ def build_daily_context_archive(
         "relative_strength_surface": relative_strength,
         "post_earnings_drift": post_earnings,
         "market_state_bundle": market_state_bundle,
+        "canonical_state_vectors": canonical_state_vectors,
         "notes": [
             "Passive daily context archive for future replay/attribution.",
             "The archive intentionally does not affect production trading decisions.",

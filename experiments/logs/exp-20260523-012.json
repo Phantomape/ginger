@@ -1,0 +1,99 @@
+{
+  "experiment_id": "exp-20260523-012",
+  "timestamp": "2026-05-23T23:10:00+00:00",
+  "lane": "measurement_repair",
+  "change_type": "entry_day_ranking_vector_attribution",
+  "hypothesis": "The new continuous ranking and canonical state-vector layers are only usable for predictive allocation research if they can be reconstructed from entry-day visible context for each historical trade.",
+  "trial_family": "canonical_state_vector_ranking_validation",
+  "changed_variable": "entry_day_ranking_vector_attribution_surface",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "e3a220f1",
+    "b441c221",
+    "998431d1",
+    "8798861b"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "entry_day_pit_canonical_vector_coverage",
+  "backtest_protocol": "docs/backtesting.md canonical three-window result artifacts plus matching OHLCV snapshots; attribution-only, no strategy replay mutation",
+  "coverage": {
+    "late_strong": {
+      "trades_total": 18,
+      "point_in_time_safe_trades": 18,
+      "trades_with_alpha_score": 18,
+      "point_in_time_safe_coverage": 1.0,
+      "policy_research_ready": true
+    },
+    "mid_weak": {
+      "trades_total": 21,
+      "point_in_time_safe_trades": 21,
+      "trades_with_alpha_score": 21,
+      "point_in_time_safe_coverage": 1.0,
+      "policy_research_ready": true
+    },
+    "old_thin": {
+      "trades_total": 22,
+      "point_in_time_safe_trades": 22,
+      "trades_with_alpha_score": 22,
+      "point_in_time_safe_coverage": 1.0,
+      "policy_research_ready": true
+    },
+    "aggregate": {
+      "trades_total": 61,
+      "point_in_time_safe_trades": 61,
+      "trades_with_alpha_score": 61,
+      "point_in_time_safe_coverage": 1.0
+    }
+  },
+  "ranking_readout": {
+    "top_decile": {
+      "trades": 56,
+      "total_pnl": 194570.0
+    },
+    "top_quartile": {
+      "trades": 5,
+      "total_pnl": 40280.99
+    },
+    "interpretation": "alpha_score has limited within-core discrimination because almost all filled core trades rank in the top entry-day buckets."
+  },
+  "canonical_vector_readout": {
+    "leadership_strong": {
+      "trades": 9,
+      "total_pnl": 47744.41,
+      "avg_pnl": 5304.93
+    },
+    "leadership_neutral": {
+      "trades": 52,
+      "total_pnl": 187106.58,
+      "avg_pnl": 3598.2
+    },
+    "strong_nonhot": {
+      "trades": 9,
+      "total_pnl": 47744.41
+    }
+  },
+  "decision": "accepted_measurement_repair_no_strategy_change",
+  "expected_value_score_delta": null,
+  "rejection_reason": null,
+  "next_evidence_needed": "Run a separate Gate 1-4 alpha experiment for a small shared-policy post-sizing top-up on entry-day leadership_vector.state == strong and non-hot risk state; do not promote from attribution alone.",
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": true,
+    "parity_test_added": false,
+    "production_orders_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "related_files": [
+    "quant/daily_context_archive.py",
+    "quant/entry_day_ranking_attribution.py",
+    "quant/test_entry_day_ranking_attribution.py",
+    "data/experiments/exp-20260523-012/late_strong_entry_day_ranking_attribution.json",
+    "data/experiments/exp-20260523-012/mid_weak_entry_day_ranking_attribution.json",
+    "data/experiments/exp-20260523-012/old_thin_entry_day_ranking_attribution.json",
+    "experiments/artifacts/exp-20260523-012_entry_day_ranking_vector_validation.md",
+    "docs/data_edge_context_layers.md",
+    "docs/experiment_log.jsonl"
+  ]
+}
