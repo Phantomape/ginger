@@ -71,11 +71,13 @@ data/backtest_results_*.json
 data/backtests/backtest_results_*.json
 ```
 
-其中，`docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
-
-`docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
-
-`docs/data_edge_context_layers.md` 是 passive intelligence、context accumulation、continuous ranking、tail diagnostics、meta research 与 attribution 工具的单一真相源。新增 context layer、ranking surface、diagnostics 或 attribution sidecar 时，必须同步更新该文档，而不是把工具说明散落在实验脚本里。
+- `docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
+- `docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
+- `docs/data_edge_context_layers.md` 是 passive intelligence、context accumulation、continuous ranking、tail diagnostics、meta research 与 attribution 工具的单一真相源。新增 context layer、ranking surface、diagnostics 或 attribution sidecar 时，必须同步更新该文档，而不是把工具说明散落在实验脚本里。
+- `scripts/list_experiments.py`：看 registry 里的 proposed/claimed/running 实验
+- `scripts/claim_experiment.py`：多代理并行时 claim ticket
+- `scripts/judge_experiment.py`：before/after artifact 判定和生成日志草稿
+- `quant/meta_research_engine.py`：研究历史/冻结方向/优先队列
 
 每次开始前必须回答五个问题：
 
@@ -86,6 +88,22 @@ data/backtests/backtest_results_*.json
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
 
 若无法回答第 2、3、4、5 点，禁止开始策略逻辑改动。
+
+### 3.1 推荐启动工具
+
+选择新的 `alpha_search` 方向前，优先运行或读取 meta research 报告：
+
+```powershell
+.\.venv\Scripts\python.exe quant\meta_research_engine.py --output data\meta_research_report_latest.json
+```
+
+该报告只用于研究队列排序，不是交易信号，也不能替代
+`docs/backtesting.md`、`docs/current_state.md` 或 Gate 1-4。优先用它回答：
+
+- 哪些 mechanism / trial family 历史上更值得继续；
+- 哪些方向属于 `freeze_candidates`，重试前需要新证据；
+- 本轮是否是近邻重复实验；
+- 实验日志是否存在会降低结论可信度的数据质量警告。
 
 ---
 

@@ -1,0 +1,987 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 12.536996,
+    "max_drawdown_pct_max": 0.119589,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 52,
+    "sleeve_total_pnl_sum": 100832.69,
+    "total_pnl_sum": 337727.2,
+    "trade_count_sum": 113
+  },
+  "anti_js": "No JavaScript was used.",
+  "backtest_protocol": "docs/backtesting.md canonical three fixed windows for core baseline, plus production SEC financial-report paper-sleeve replay over the same snapshots.",
+  "before_metrics": {
+    "expected_value_score_sum": 11.863502,
+    "max_drawdown_pct_max": 0.116971,
+    "min_survival_rate": 0.792453,
+    "sleeve_closed_trade_count_sum": 52,
+    "sleeve_total_pnl_sum": 87338.65,
+    "total_pnl_sum": 324233.16,
+    "trade_count_sum": 113
+  },
+  "best_variant": "repeat_scalar_2_00",
+  "candidate_counts_after_current_queue_filter": {
+    "late_strong": 39,
+    "mid_weak": 29,
+    "old_thin": 40
+  },
+  "change_summary": "Sweep one paper-notional scalar for candidates whose ticker already appears in pending, open, or closed SEC paper-sleeve state within 60 calendar days.",
+  "change_type": "alpha_search_sec_state_allocation",
+  "changed_variable": "sec_same_ticker_repeat_60d_notional_scalar",
+  "component": "offline_sec_financial_report_paper_sleeve_replay",
+  "decision": "rejected_sec_same_ticker_repeat_scalar",
+  "delta_metrics": {
+    "aggregate": {
+      "expected_value_score_sum_delta": 0.673494,
+      "expected_value_score_sum_delta_pct": 0.05677,
+      "max_drawdown_pct_max_delta": 0.002618,
+      "max_drawdown_pct_max_delta_pct": 0.022382,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": 0.0,
+      "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+      "sleeve_total_pnl_sum_delta": 13494.04,
+      "sleeve_total_pnl_sum_delta_pct": 0.154503,
+      "total_pnl_sum_delta": 13494.04,
+      "total_pnl_sum_delta_pct": 0.041618,
+      "trade_count_sum_delta": 0.0,
+      "trade_count_sum_delta_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.605794,
+        "max_drawdown_pct": -0.00231,
+        "sharpe_daily": 0.196106,
+        "total_pnl": 9784.71
+      },
+      "old_thin": {
+        "expected_value_score": 0.0677,
+        "max_drawdown_pct": 0.002618,
+        "sharpe_daily": -0.014509,
+        "total_pnl": 3709.33
+      }
+    }
+  },
+  "expected_value_score_delta": 0.673494,
+  "experiment_id": "exp-20260524-005",
+  "gate": {
+    "aggregate_delta": {
+      "expected_value_score_sum_delta": 0.673494,
+      "expected_value_score_sum_delta_pct": 0.05677,
+      "max_drawdown_pct_max_delta": 0.002618,
+      "max_drawdown_pct_max_delta_pct": 0.022382,
+      "min_survival_rate_delta": 0.0,
+      "min_survival_rate_delta_pct": 0.0,
+      "sleeve_closed_trade_count_sum_delta": 0.0,
+      "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+      "sleeve_total_pnl_sum_delta": 13494.04,
+      "sleeve_total_pnl_sum_delta_pct": 0.154503,
+      "total_pnl_sum_delta": 13494.04,
+      "total_pnl_sum_delta_pct": 0.041618,
+      "trade_count_sum_delta": 0.0,
+      "trade_count_sum_delta_pct": 0.0
+    },
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 0.0,
+        "max_drawdown_pct": 0.0,
+        "sharpe_daily": 0.0,
+        "total_pnl": 0.0
+      },
+      "mid_weak": {
+        "expected_value_score": 0.605794,
+        "max_drawdown_pct": -0.00231,
+        "sharpe_daily": 0.196106,
+        "total_pnl": 9784.71
+      },
+      "old_thin": {
+        "expected_value_score": 0.0677,
+        "max_drawdown_pct": 0.002618,
+        "sharpe_daily": -0.014509,
+        "total_pnl": 3709.33
+      }
+    },
+    "checks": {
+      "adjusted_trade_sample": true,
+      "adjusted_window_coverage": true,
+      "drawdown_worse_guard": true,
+      "ev_improved_window_coverage": true,
+      "hhi_concentration_cap": false,
+      "no_ev_regressed_windows": true,
+      "positive_aggregate_ev": true,
+      "positive_aggregate_pnl": true,
+      "single_ticker_positive_share_cap": false,
+      "top5_contribution_cap": false
+    },
+    "metrics": {
+      "adjusted_trade_count": 7,
+      "adjusted_windows": [
+        "mid_weak",
+        "old_thin"
+      ],
+      "max_drawdown_worse": 0.002618,
+      "max_single_positive_pnl_share": 0.6214,
+      "pnl_hhi_concentration": 0.5295,
+      "pnl_top_5_contribution_pct": 1.0,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 0
+    },
+    "passed": false,
+    "rules": {
+      "metric_gate": "aggregate EV/PnL positive, at least two EV-improved windows, zero EV-regressed windows, and max drawdown worsening <= 0.5pp",
+      "sample_guard": {
+        "min_adjusted_trades": 6,
+        "min_adjusted_windows": 2
+      },
+      "tail_guard": {
+        "max_hhi_concentration": 0.35,
+        "max_single_ticker_positive_share": 0.5,
+        "max_top5_contribution": 0.6
+      }
+    }
+  },
+  "gate2_required_fields": {
+    "checked_position_count": 8,
+    "exists": true,
+    "missing_entry_date_count": 0,
+    "missing_target_price_count": 0,
+    "passed": true,
+    "path": "operator_inputs\\open_positions.json",
+    "sample_missing_entry_date": [],
+    "sample_missing_target_price": []
+  },
+  "hypothesis": "Within the default-off SEC financial-report paper sleeve, repeated same-ticker entries inside a 60-calendar-day lookback may represent a distinct replacement-value state. A bounded paper-notional scalar can test whether that state should be faded for concentration control or expanded for continuation value without changing eligibility, ranking, exits, LLM authority, or live orders.",
+  "interpretation": "No same-ticker repeat scalar cleared the three-window, tail-aware SEC paper-sleeve gate on top of the accepted stack.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "blocker_relation": "The run uses deterministic SEC paper state; no new LLM authority or prompt dependency is introduced.",
+    "llm_role_changed": false,
+    "used_llm": false
+  },
+  "next_evidence_needed": "Do not retry same-ticker repeat notional scalars on the frozen SEC sample without a new state variable or forward concentration evidence.",
+  "parameters": {
+    "accepted_earnings_release_spy_context_scalar": 1.1,
+    "anti_js": "No JavaScript was used.",
+    "base_event_notional_usd": 15000.0,
+    "baseline_target_scalar": 1.0,
+    "best_target_scalar": 2.0,
+    "max_positions": 3,
+    "periodic_report_scalar": 1.25,
+    "repeat_lookback_days": 60,
+    "target_scalar_variants": {
+      "repeat_scalar_0_00": 0.0,
+      "repeat_scalar_0_25": 0.25,
+      "repeat_scalar_0_50": 0.5,
+      "repeat_scalar_0_75": 0.75,
+      "repeat_scalar_1_00": 1.0,
+      "repeat_scalar_1_10": 1.1,
+      "repeat_scalar_1_25": 1.25,
+      "repeat_scalar_1_50": 1.5,
+      "repeat_scalar_2_00": 2.0
+    },
+    "tenq_periodic_report_scalar": 2.0
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_default_orders_changed": false,
+    "parity_test_added": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "protocol_answers": {
+    "1_alpha_hypothesis": "capital/risk allocation: repeated same-ticker SEC paper entries inside 60 calendar days may deserve one notional scalar.",
+    "2_history_check": "exp-20260519-008 improved the accepted SEC paper stack but left a concentration blocker; exp-20260522-011 rejected a semantic haircut due window/concentration failures; exp-20260524-004 added language provenance only.",
+    "3_single_causal_variable": "sec_same_ticker_repeat_60d_notional_scalar",
+    "4_acceptance_standard": {
+      "metric_gate": "aggregate EV/PnL positive, at least two EV-improved windows, zero EV-regressed windows, and max drawdown worsening <= 0.5pp",
+      "sample_guard": {
+        "min_adjusted_trades": 6,
+        "min_adjusted_windows": 2
+      },
+      "tail_guard": {
+        "max_hhi_concentration": 0.35,
+        "max_single_ticker_positive_share": 0.5,
+        "max_top5_contribution": 0.6
+      }
+    },
+    "5_reproducibility": ".venv\\Scripts\\python.exe quant\\experiments\\exp_20260524_005_sec_same_ticker_repeat_scalar.py"
+  },
+  "rejection_reason": "No same-ticker repeat scalar cleared the three-window, tail-aware SEC paper-sleeve gate on top of the accepted stack.",
+  "related_files": [
+    "quant/experiments/exp_20260524_005_sec_same_ticker_repeat_scalar.py",
+    "data/experiments/exp-20260524-005/exp_20260524_005_sec_same_ticker_repeat_scalar.json",
+    "experiments/logs/exp-20260524-005.json",
+    "experiments/tickets/exp-20260524-005.json",
+    "experiments/artifacts/exp-20260524-005_sec_same_ticker_repeat_scalar.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "selection": {
+    "adjusted_trade_count": 7,
+    "by_ticker_count": {
+      "CRDO": 3,
+      "LLY": 1,
+      "TSLA": 3
+    },
+    "by_ticker_incremental_pnl": {
+      "CRDO": 5533.6,
+      "LLY": -1121.8,
+      "TSLA": 9082.25
+    },
+    "by_window_count": {
+      "mid_weak": 5,
+      "old_thin": 2
+    },
+    "by_window_incremental_pnl": {
+      "mid_weak": 9784.71,
+      "old_thin": 3709.34
+    },
+    "max_single_positive_incremental_pnl": 9082.25,
+    "max_single_positive_pnl_share": 0.6214,
+    "pnl_hhi_concentration": 0.5295,
+    "pnl_top_5_contribution_pct": 1.0,
+    "positive_by_ticker_incremental_pnl": {
+      "CRDO": 5533.6,
+      "TSLA": 9082.25
+    },
+    "positive_incremental_pnl": 14615.85,
+    "sample_rows": [
+      {
+        "adjusted_pnl": 5894.23,
+        "baseline_pnl": 2947.11,
+        "entry_date": "2025-04-28",
+        "event_family": "periodic_report",
+        "event_notional_rule": "periodic_report_10q_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 4.0,
+        "exit_date": "2025-05-12",
+        "form_base": "10-Q",
+        "incremental_pnl": 2947.11,
+        "language_bucket": null,
+        "notional": 60000.0,
+        "repeat_prior_age_days": 0,
+        "repeat_prior_bucket": "open_positions",
+        "repeat_prior_entry_date": "2025-04-25",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": 0.007225,
+        "t1_excess_return_vs_spy": 0.090806,
+        "t1_return": 0.098031,
+        "text_event_type": null,
+        "ticker": "TSLA",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 1713.95,
+        "baseline_pnl": 856.98,
+        "entry_date": "2025-07-07",
+        "event_family": "periodic_report",
+        "event_notional_rule": "periodic_report_default_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 2.5,
+        "exit_date": "2025-07-21",
+        "form_base": "10-K",
+        "incremental_pnl": 856.98,
+        "language_bucket": null,
+        "notional": 37500.0,
+        "repeat_prior_age_days": 28,
+        "repeat_prior_bucket": "closed_positions",
+        "repeat_prior_entry_date": "2025-06-05",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": 0.007881,
+        "t1_excess_return_vs_spy": 0.039562,
+        "t1_return": 0.047443,
+        "text_event_type": null,
+        "ticker": "CRDO",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 2608.0,
+        "baseline_pnl": 1304.0,
+        "entry_date": "2025-07-29",
+        "event_family": "periodic_report",
+        "event_notional_rule": "periodic_report_10q_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 4.0,
+        "exit_date": "2025-08-12",
+        "form_base": "10-Q",
+        "incremental_pnl": 1304.0,
+        "language_bucket": null,
+        "notional": 60000.0,
+        "repeat_prior_age_days": 0,
+        "repeat_prior_bucket": "open_positions",
+        "repeat_prior_entry_date": "2025-07-28",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": -0.000251,
+        "t1_excess_return_vs_spy": 0.030404,
+        "t1_return": 0.030152,
+        "text_event_type": null,
+        "ticker": "TSLA",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 4420.37,
+        "baseline_pnl": 2210.19,
+        "entry_date": "2025-09-08",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 2.2,
+        "exit_date": "2025-09-22",
+        "form_base": "8-K",
+        "incremental_pnl": 2210.19,
+        "language_bucket": "negative_language",
+        "notional": 33000.0,
+        "repeat_prior_age_days": 60,
+        "repeat_prior_bucket": "closed_positions",
+        "repeat_prior_entry_date": "2025-07-07",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": -0.002896,
+        "t1_excess_return_vs_spy": 0.053792,
+        "t1_return": 0.050896,
+        "text_event_type": "earnings_release_text",
+        "ticker": "CRDO",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 4932.86,
+        "baseline_pnl": 2466.43,
+        "entry_date": "2025-09-09",
+        "event_family": "periodic_report",
+        "event_notional_rule": "periodic_report_10q_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 4.0,
+        "exit_date": "2025-09-23",
+        "form_base": "10-Q",
+        "incremental_pnl": 2466.43,
+        "language_bucket": null,
+        "notional": 60000.0,
+        "repeat_prior_age_days": 0,
+        "repeat_prior_bucket": "open_positions",
+        "repeat_prior_entry_date": "2025-09-08",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": 0.002457,
+        "t1_excess_return_vs_spy": 0.045193,
+        "t1_return": 0.047649,
+        "text_event_type": null,
+        "ticker": "CRDO",
+        "window": "mid_weak"
+      },
+      {
+        "adjusted_pnl": 9662.28,
+        "baseline_pnl": 4831.14,
+        "entry_date": "2024-10-28",
+        "event_family": "earnings_8k",
+        "event_notional_rule": "base+earnings_release_text_spy_t1_context_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 2.2,
+        "exit_date": "2024-11-11",
+        "form_base": "8-K",
+        "incremental_pnl": 4831.14,
+        "language_bucket": "neutral_or_mixed_language",
+        "notional": 33000.0,
+        "repeat_prior_age_days": 18,
+        "repeat_prior_bucket": "closed_positions",
+        "repeat_prior_entry_date": "2024-10-07",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": -0.000345,
+        "t1_excess_return_vs_spy": 0.033784,
+        "t1_return": 0.033438,
+        "text_event_type": "earnings_release_text",
+        "ticker": "TSLA",
+        "window": "old_thin"
+      },
+      {
+        "adjusted_pnl": -2243.6,
+        "baseline_pnl": -1121.8,
+        "entry_date": "2025-02-24",
+        "event_family": "periodic_report",
+        "event_notional_rule": "periodic_report_default_scalar+same_ticker_repeat_60d_scalar",
+        "event_notional_scalar": 2.5,
+        "exit_date": "2025-03-10",
+        "form_base": "10-K",
+        "incremental_pnl": -1121.8,
+        "language_bucket": null,
+        "notional": 37500.0,
+        "repeat_prior_age_days": 35,
+        "repeat_prior_bucket": "closed_positions",
+        "repeat_prior_entry_date": "2025-01-17",
+        "repeat_state": "repeat_within_60d",
+        "spy_t1_return": -0.017104,
+        "t1_excess_return_vs_spy": 0.017746,
+        "t1_return": 0.000641,
+        "text_event_type": null,
+        "ticker": "LLY",
+        "window": "old_thin"
+      }
+    ],
+    "windows_present": 2
+  },
+  "single_causal_variable": "sec_same_ticker_repeat_60d_notional_scalar",
+  "status": "rejected",
+  "target_coverage_summary": {
+    "aggregate": {
+      "enqueued": 108,
+      "repeat_candidates": 9,
+      "repeat_share": 0.08333333333333333
+    },
+    "by_window": {
+      "late_strong": {
+        "enqueued": 39,
+        "repeat_candidates": 1,
+        "repeat_tickers": {
+          "CRDO": 1
+        },
+        "state_counts": {
+          "first_or_outside_lookback": 38,
+          "repeat_within_60d": 1
+        }
+      },
+      "mid_weak": {
+        "enqueued": 29,
+        "repeat_candidates": 5,
+        "repeat_tickers": {
+          "CRDO": 3,
+          "TSLA": 2
+        },
+        "state_counts": {
+          "first_or_outside_lookback": 24,
+          "repeat_within_60d": 5
+        }
+      },
+      "old_thin": {
+        "enqueued": 40,
+        "repeat_candidates": 3,
+        "repeat_tickers": {
+          "AVGO": 1,
+          "LLY": 1,
+          "TSLA": 1
+        },
+        "state_counts": {
+          "first_or_outside_lookback": 37,
+          "repeat_within_60d": 3
+        }
+      }
+    },
+    "target_definition": {
+      "field": "sec_same_ticker_repeat_state",
+      "lookback_days": 60,
+      "prior_buckets": [
+        "pending_entries",
+        "open_positions",
+        "closed_positions"
+      ],
+      "target": "repeat_within_60d"
+    }
+  },
+  "target_definition": {
+    "field": "sec_same_ticker_repeat_state",
+    "lookback_days": 60,
+    "prior_state_buckets": [
+      "pending_entries",
+      "open_positions",
+      "closed_positions"
+    ],
+    "target": "repeat_within_60d"
+  },
+  "text_coverage_summary": {
+    "aggregate": {
+      "candidate_count": 108,
+      "coverage_rate": 0.5926,
+      "coverage_status": {
+        "covered": 64,
+        "missing_text_archive": 44
+      },
+      "covered_candidate_count": 64,
+      "language_bucket": {
+        "negative_language": 13,
+        "neutral_or_mixed_language": 38,
+        "positive_language": 13,
+        "uncovered": 44
+      }
+    },
+    "by_window": {
+      "late_strong": {
+        "candidate_count": 39,
+        "coverage_status": {
+          "covered": 23,
+          "missing_text_archive": 16
+        },
+        "language_bucket": {
+          "negative_language": 3,
+          "neutral_or_mixed_language": 17,
+          "positive_language": 3,
+          "uncovered": 16
+        }
+      },
+      "mid_weak": {
+        "candidate_count": 29,
+        "coverage_status": {
+          "covered": 18,
+          "missing_text_archive": 11
+        },
+        "language_bucket": {
+          "negative_language": 4,
+          "neutral_or_mixed_language": 8,
+          "positive_language": 6,
+          "uncovered": 11
+        }
+      },
+      "old_thin": {
+        "candidate_count": 40,
+        "coverage_status": {
+          "covered": 23,
+          "missing_text_archive": 17
+        },
+        "language_bucket": {
+          "negative_language": 6,
+          "neutral_or_mixed_language": 13,
+          "positive_language": 4,
+          "uncovered": 17
+        }
+      }
+    }
+  },
+  "text_load_stats": [
+    {
+      "bytes": 12541135,
+      "path": "data\\non_ohlcv\\sec_filing_text_20241002_20260421.jsonl",
+      "rows_loaded": 306
+    }
+  ],
+  "timestamp": "2026-05-24T01:31:15Z",
+  "total_pnl_delta": 13494.04,
+  "trial_accounting": {
+    "changed_variable": "sec_same_ticker_repeat_60d_notional_scalar",
+    "multiple_testing_risk_bucket": "moderate",
+    "nearby_prior_experiments": [
+      "exp-20260519-008",
+      "exp-20260522-011",
+      "exp-20260524-004"
+    ],
+    "new_evidence_type": "stateful same-ticker repeat exposure derived from production-visible SEC paper sleeve state",
+    "prior_trial_count": 0,
+    "trial_family": "sec_repeat_ticker_state_allocation"
+  },
+  "trial_family": "sec_repeat_ticker_state_allocation",
+  "variant_summaries": {
+    "repeat_scalar_0_00": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.759113,
+        "expected_value_score_sum_delta_pct": -0.063987,
+        "max_drawdown_pct_max_delta": -0.002743,
+        "max_drawdown_pct_max_delta_pct": -0.02345,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -13494.04,
+        "sleeve_total_pnl_sum_delta_pct": -0.154503,
+        "total_pnl_sum_delta": -13494.04,
+        "total_pnl_sum_delta_pct": -0.041618,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.682034,
+          "max_drawdown_pct": 0.002421,
+          "sharpe_daily": -0.308872,
+          "total_pnl": -9784.7
+        },
+        "old_thin": {
+          "expected_value_score": -0.077079,
+          "max_drawdown_pct": -0.002743,
+          "sharpe_daily": 0.004102,
+          "total_pnl": -3709.34
+        }
+      },
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 2,
+      "max_drawdown_delta_max": 0.002421,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 2,
+      "sec_same_ticker_repeat_60d_notional_scalar": 0.0
+    },
+    "repeat_scalar_0_25": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.564129,
+        "expected_value_score_sum_delta_pct": -0.047552,
+        "max_drawdown_pct_max_delta": -0.002045,
+        "max_drawdown_pct_max_delta_pct": -0.017483,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -10120.53,
+        "sleeve_total_pnl_sum_delta_pct": -0.115877,
+        "total_pnl_sum_delta": -10120.53,
+        "total_pnl_sum_delta_pct": -0.031214,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.507272,
+          "max_drawdown_pct": 0.001805,
+          "sharpe_daily": -0.222123,
+          "total_pnl": -7338.53
+        },
+        "old_thin": {
+          "expected_value_score": -0.056857,
+          "max_drawdown_pct": -0.002045,
+          "sharpe_daily": 0.00422,
+          "total_pnl": -2782.0
+        }
+      },
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 2,
+      "max_drawdown_delta_max": 0.001805,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 2,
+      "sec_same_ticker_repeat_60d_notional_scalar": 0.25
+    },
+    "repeat_scalar_0_50": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.371972,
+        "expected_value_score_sum_delta_pct": -0.031354,
+        "max_drawdown_pct_max_delta": -0.001356,
+        "max_drawdown_pct_max_delta_pct": -0.011593,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -6747.02,
+        "sleeve_total_pnl_sum_delta_pct": -0.077251,
+        "total_pnl_sum_delta": -6747.02,
+        "total_pnl_sum_delta_pct": -0.020809,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.334689,
+          "max_drawdown_pct": 0.001196,
+          "sharpe_daily": -0.141403,
+          "total_pnl": -4892.35
+        },
+        "old_thin": {
+          "expected_value_score": -0.037283,
+          "max_drawdown_pct": -0.001356,
+          "sharpe_daily": 0.003543,
+          "total_pnl": -1854.67
+        }
+      },
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 2,
+      "max_drawdown_delta_max": 0.001196,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 2,
+      "sec_same_ticker_repeat_60d_notional_scalar": 0.5
+    },
+    "repeat_scalar_0_75": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": -0.183628,
+        "expected_value_score_sum_delta_pct": -0.015478,
+        "max_drawdown_pct_max_delta": -0.000674,
+        "max_drawdown_pct_max_delta_pct": -0.005762,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": -3373.51,
+        "sleeve_total_pnl_sum_delta_pct": -0.038626,
+        "total_pnl_sum_delta": -3373.51,
+        "total_pnl_sum_delta_pct": -0.010405,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": -0.165291,
+          "max_drawdown_pct": 0.000594,
+          "sharpe_daily": -0.06723,
+          "total_pnl": -2446.17
+        },
+        "old_thin": {
+          "expected_value_score": -0.018337,
+          "max_drawdown_pct": -0.000674,
+          "sharpe_daily": 0.00212,
+          "total_pnl": -927.34
+        }
+      },
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 2,
+      "max_drawdown_delta_max": 0.000594,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 2,
+      "sec_same_ticker_repeat_60d_notional_scalar": 0.75
+    },
+    "repeat_scalar_1_00": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.0,
+        "expected_value_score_sum_delta_pct": 0.0,
+        "max_drawdown_pct_max_delta": 0.0,
+        "max_drawdown_pct_max_delta_pct": 0.0,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 0.0,
+        "sleeve_total_pnl_sum_delta_pct": 0.0,
+        "total_pnl_sum_delta": 0.0,
+        "total_pnl_sum_delta_pct": 0.0,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "old_thin": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        }
+      },
+      "ev_positive_windows": 0,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.0,
+      "pnl_positive_windows": 0,
+      "pnl_regressed_windows": 0,
+      "sec_same_ticker_repeat_60d_notional_scalar": 1.0
+    },
+    "repeat_scalar_1_10": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.07195,
+        "expected_value_score_sum_delta_pct": 0.006065,
+        "max_drawdown_pct_max_delta": 0.000267,
+        "max_drawdown_pct_max_delta_pct": 0.002283,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 1349.4,
+        "sleeve_total_pnl_sum_delta_pct": 0.01545,
+        "total_pnl_sum_delta": 1349.4,
+        "total_pnl_sum_delta_pct": 0.004162,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.06478,
+          "max_drawdown_pct": -0.000236,
+          "sharpe_daily": 0.024884,
+          "total_pnl": 978.47
+        },
+        "old_thin": {
+          "expected_value_score": 0.00717,
+          "max_drawdown_pct": 0.000267,
+          "sharpe_daily": -0.001033,
+          "total_pnl": 370.93
+        }
+      },
+      "ev_positive_windows": 2,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.000267,
+      "pnl_positive_windows": 2,
+      "pnl_regressed_windows": 0,
+      "sec_same_ticker_repeat_60d_notional_scalar": 1.1
+    },
+    "repeat_scalar_1_25": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.17812,
+        "expected_value_score_sum_delta_pct": 0.015014,
+        "max_drawdown_pct_max_delta": 0.000666,
+        "max_drawdown_pct_max_delta_pct": 0.005694,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 3373.51,
+        "sleeve_total_pnl_sum_delta_pct": 0.038626,
+        "total_pnl_sum_delta": 3373.51,
+        "total_pnl_sum_delta_pct": 0.010405,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.16037,
+          "max_drawdown_pct": -0.000588,
+          "sharpe_daily": 0.060021,
+          "total_pnl": 2446.18
+        },
+        "old_thin": {
+          "expected_value_score": 0.01775,
+          "max_drawdown_pct": 0.000666,
+          "sharpe_daily": -0.002769,
+          "total_pnl": 927.33
+        }
+      },
+      "ev_positive_windows": 2,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.000666,
+      "pnl_positive_windows": 2,
+      "pnl_regressed_windows": 0,
+      "sec_same_ticker_repeat_60d_notional_scalar": 1.25
+    },
+    "repeat_scalar_1_50": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.350067,
+        "expected_value_score_sum_delta_pct": 0.029508,
+        "max_drawdown_pct_max_delta": 0.001324,
+        "max_drawdown_pct_max_delta_pct": 0.011319,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 6747.02,
+        "sleeve_total_pnl_sum_delta_pct": 0.077251,
+        "total_pnl_sum_delta": 6747.02,
+        "total_pnl_sum_delta_pct": 0.020809,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.315132,
+          "max_drawdown_pct": -0.001168,
+          "sharpe_daily": 0.112696,
+          "total_pnl": 4892.35
+        },
+        "old_thin": {
+          "expected_value_score": 0.034935,
+          "max_drawdown_pct": 0.001324,
+          "sharpe_daily": -0.006141,
+          "total_pnl": 1854.67
+        }
+      },
+      "ev_positive_windows": 2,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.001324,
+      "pnl_positive_windows": 2,
+      "pnl_regressed_windows": 0,
+      "sec_same_ticker_repeat_60d_notional_scalar": 1.5
+    },
+    "repeat_scalar_2_00": {
+      "aggregate_delta": {
+        "expected_value_score_sum_delta": 0.673494,
+        "expected_value_score_sum_delta_pct": 0.05677,
+        "max_drawdown_pct_max_delta": 0.002618,
+        "max_drawdown_pct_max_delta_pct": 0.022382,
+        "min_survival_rate_delta": 0.0,
+        "min_survival_rate_delta_pct": 0.0,
+        "sleeve_closed_trade_count_sum_delta": 0.0,
+        "sleeve_closed_trade_count_sum_delta_pct": 0.0,
+        "sleeve_total_pnl_sum_delta": 13494.04,
+        "sleeve_total_pnl_sum_delta_pct": 0.154503,
+        "total_pnl_sum_delta": 13494.04,
+        "total_pnl_sum_delta_pct": 0.041618,
+        "trade_count_sum_delta": 0.0,
+        "trade_count_sum_delta_pct": 0.0
+      },
+      "by_window": {
+        "late_strong": {
+          "expected_value_score": 0.0,
+          "max_drawdown_pct": 0.0,
+          "sharpe_daily": 0.0,
+          "total_pnl": 0.0
+        },
+        "mid_weak": {
+          "expected_value_score": 0.605794,
+          "max_drawdown_pct": -0.00231,
+          "sharpe_daily": 0.196106,
+          "total_pnl": 9784.71
+        },
+        "old_thin": {
+          "expected_value_score": 0.0677,
+          "max_drawdown_pct": 0.002618,
+          "sharpe_daily": -0.014509,
+          "total_pnl": 3709.33
+        }
+      },
+      "ev_positive_windows": 2,
+      "ev_regressed_windows": 0,
+      "max_drawdown_delta_max": 0.002618,
+      "pnl_positive_windows": 2,
+      "pnl_regressed_windows": 0,
+      "sec_same_ticker_repeat_60d_notional_scalar": 2.0
+    }
+  },
+  "why_not_other_changes": "Skipped core state-surface and risk-scalar retunes because recent logs show low materiality and higher multiple-testing risk. This run uses one production-visible SEC state variable tied to the current concentration blocker.",
+  "windows": {
+    "late_strong": {
+      "end": "2026-04-21",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "start": "2025-10-23"
+    },
+    "mid_weak": {
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    "old_thin": {
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  }
+}

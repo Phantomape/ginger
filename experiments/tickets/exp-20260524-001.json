@@ -1,0 +1,20 @@
+{
+  "experiment_id": "exp-20260524-001",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair_no_strategy_change",
+  "title": "Expose AI infra pilot promotion readiness blockers",
+  "problem": "The best production-relevant alpha lane is AI_INFRA_AGGRESSIVE pilot allocation, but the live sleeve has no closed outcome records, so added capital or promotion should be visibly blocked before any order logic changes.",
+  "change": "Add a read-only promotion_readiness block to ai_infra_aggressive_attribution and document it in the context/parity docs.",
+  "acceptance_evidence": [
+    "AI_INFRA_AGGRESSIVE pilot summary currently has 4 decision snapshots and 0 outcome records.",
+    "promotion_readiness reports closed outcome, PnL, replacement-value, risk-adjusted replacement-value, concentration, drawdown, theme-beta, event-risk, and slippage blockers.",
+    "py_compile passed for quant/pilot_sleeve.py and quant/test_pilot_sleeve.py.",
+    "Focused pytest passed: 20 tests."
+  ],
+  "production_impact": {
+    "orders_changed": false,
+    "run_py_changed": false,
+    "strategy_logic_changed": false
+  },
+  "follow_up": "After closed pilot outcomes exist, evaluate direct PnL, replacement value, risk-adjusted replacement value, concentration, drawdown, theme beta, event risk, and slippage before testing any AI infra slot/risk/status promotion."
+}

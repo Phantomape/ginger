@@ -1,0 +1,104 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "after_metrics": null,
+  "backtest_protocol": "docs/backtesting.md measurement-repair path; no strategy replay mutation",
+  "change_summary": "Expose read-only AI_INFRA_AGGRESSIVE pilot promotion-readiness blockers in the existing pilot attribution surface.",
+  "change_type": "measurement_repair",
+  "changed_variable": "ai_infra_promotion_readiness_surface",
+  "component": "quant/pilot_sleeve.py",
+  "decision": "accepted_measurement_repair_no_strategy_change",
+  "delta_metrics": null,
+  "experiment_id": "exp-20260524-001",
+  "gate1": {
+    "baseline_protocol": "docs/backtesting.md standard core baseline remains exp-20260517-009 for strategy EV; no strategy backtest rerun required for this read-only surface",
+    "current_ai_infra_decision_snapshots": 4,
+    "current_ai_infra_outcome_records": 0,
+    "passed": true,
+    "repair_scope": "pilot attribution and promotion-readiness reporting only"
+  },
+  "gate2": {
+    "field_check": {
+      "missing_required_fields": 0,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 8,
+      "required_fields": [
+        "entry_date",
+        "target_price"
+      ]
+    },
+    "new_strategy_fields": [],
+    "passed": true,
+    "required_position_fields_affected": false
+  },
+  "gate3": {
+    "adds_filter": false,
+    "passed": true,
+    "survival_rate_affected": false
+  },
+  "gate4": {
+    "passed": true,
+    "reason": "Measurement repair only; no entry, exit, ranking, sizing, filter, risk budget, LLM, or order behavior changed."
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "AI_INFRA_AGGRESSIVE is the best production-relevant alpha lane to pursue next, but added pilot capital or promotion should require closed replacement-value evidence.",
+    "2_history_check": "Recent core allocation retunes exp-20260523-013, exp-20260523-014, and exp-20260523-015 failed Gate 4. Pilot promotion is governed separately by docs/universe_promotion_protocol.md and currently has zero closed AI infra outcomes.",
+    "3_single_causal_variable": "No strategy causal variable changed; only a read-only promotion-readiness report block was added.",
+    "4_acceptance_standard": "Expose current promotion blockers, keep orders unchanged, and pass focused pilot sleeve tests.",
+    "5_reproducibility": "Run summarize_pilot_competition(sleeve=AI_INFRA_AGGRESSIVE) and build_ai_infra_aggressive_attribution to reproduce the zero-outcome blockers."
+  },
+  "hypothesis": "AI_INFRA_AGGRESSIVE can be a valuable production alpha lane, but the next capital-allocation experiment is blocked until the daily surface makes closed-outcome and replacement-value promotion requirements explicit.",
+  "known_risks": [
+    "This does not create closed pilot outcomes or repair missing slippage/theme-beta/drawdown measurements.",
+    "The concentration check is conservative when the summary does not include all per-trade outcome details."
+  ],
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260523-013",
+    "exp-20260523-014",
+    "exp-20260523-015",
+    "exp-20260523-016"
+  ],
+  "new_evidence_type": "production_visible_pilot_promotion_gate",
+  "next_evidence_needed": "Close pilot trades with frozen counterfactuals, then audit direct PnL, replacement value, risk-adjusted replacement value, concentration, drawdown, theme beta, event risk, and slippage before any AI infra slot/risk/status promotion.",
+  "parameters": {
+    "profit_concentration_limit": 0.7,
+    "readiness_output_key": "ai_infra_aggressive_attribution.promotion_readiness",
+    "target_transition": "pilot_to_limited_production"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": true,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/pilot_sleeve.py",
+    "quant/test_pilot_sleeve.py",
+    "docs/data_edge_context_layers.md",
+    "docs/production_backtest_parity.md",
+    "experiments/logs/exp-20260524-001.json",
+    "experiments/tickets/exp-20260524-001.json",
+    "experiments/artifacts/exp-20260524-001_ai_infra_promotion_readiness.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "accepted_measurement_repair_no_strategy_change",
+  "timestamp": "2026-05-24T00:45:25+00:00",
+  "verification": {
+    "field_check": "passed: operator_inputs/open_positions.json has 8 positions and 0 missing entry_date/target_price fields",
+    "py_compile": "passed: quant/pilot_sleeve.py and quant/test_pilot_sleeve.py",
+    "pytest": "passed: 20 tests in quant/test_pilot_sleeve.py and quant/test_backtester_pilot_sleeve.py",
+    "surface_probe": "passed: AI_INFRA_AGGRESSIVE summary has 4 decision snapshots, 0 outcome records, and promotion_readiness blocks limited-production review"
+  },
+  "why_not_other_changes": "The top production-relevant alpha lane is pilot allocation, but direct slot/risk/status promotion is blocked by zero closed AI infra outcomes. This change records that blocker in production-visible attribution before any future capital change."
+}

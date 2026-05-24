@@ -106,6 +106,44 @@ Agent rule: do not confuse current EPS availability with expectation drift. The 
 
 ---
 
+## SEC financial-report language provenance
+
+### `quant/sec_event_queue.py`
+
+Purpose: attach replayable SEC filing-text semantics to the default-off
+financial-report T+1 drift queue before any fact/tone or guidance-language
+allocation rule is promoted.
+
+Production source pairing:
+
+- `sec_filing_events_*.jsonl` supplies the event row and point-in-time
+  `usable_trade_date`.
+- `sec_filing_text_*.jsonl` supplies the semantic text used by
+  `language_features(...)`.
+- Rows are matched by `(ticker, accession_number)` with an accession-only
+  fallback.
+
+Candidate provenance fields:
+
+- `language_bucket`
+- `language_score`
+- `positive_phrase_hits`
+- `negative_phrase_hits`
+- `guidance_raise_hits`
+- `guidance_cut_hits`
+- `text_event_type`
+- `sec_text_coverage_status`
+- `sec_text_accession_matched`
+- `sec_text_primary_document`
+- `language_feature_rule_version`
+
+Agent rule: these fields are read-only context and attribution inputs. They
+may support `fact_tone_gap_attribution`, but must not change paper/live
+allocation until a separate Gate 1-4 experiment proves bucket-level predictive
+value and updates production/backtest parity.
+
+---
+
 ## Sentiment and regime attribution surfaces
 
 ### `quant/sentiment_surface.py`
@@ -213,7 +251,82 @@ python quant/entry_day_ranking_attribution.py <result_json> <ohlcv_snapshot_json
 
 Output: `<result_stem>_entry_day_ranking_attribution.json`
 
+Attribution outputs:
+
+- ranking bucket attribution by point-in-time `alpha_score` rank;
+- component attribution by high / mid / low point-in-time component score,
+  including coverage, value range, unique-value count, and constant-field
+  diagnostics;
+- canonical leadership / risk heat vector attribution and the combined
+  leadership-risk state.
+
 Agent rule: use this for predictive ranking / allocation research. A single static ranking surface is acceptable for historical explanation, but not for promoting a forward-looking ranking or sizing rule.
+
+### `quant/pilot_sleeve.py` AI infra promotion readiness
+
+Purpose: expose `AI_INFRA_AGGRESSIVE` pilot promotion blockers from the same
+daily attribution surface that reports selected/sliced pilot candidates and
+replacement-value metrics.
+
+Output key: `ai_infra_aggressive_attribution.promotion_readiness`
+
+Checks mirror `docs/universe_promotion_protocol.md` for `pilot ->
+limited_production`: closed outcomes, direct pilot PnL, replacement value,
+risk-adjusted replacement value, single-trade profit concentration, sleeve
+drawdown, theme-beta explanation, event-risk clearance, and live slippage.
+
+Agent rule: this is a read-only promotion-readiness diagnostic. It must not be
+used to add slots, increase risk, or promote a ticker without a separate Gate
+1-4 experiment and explicit production/backtest parity update.
+
+### `quant/broad_market_paper_sleeve.py`
+
+Purpose: maintain the default-off `BROAD_MARKET_LEADERSHIP_PAPER` forward
+observation ledger for accepted broad-market leadership paper alpha.
+
+Candidate feed order:
+
+1. `data/state/broad_market_paper/universe.json` when present.
+2. `broad_market_universe_state_observation_feed_v1`, derived from the daily
+   persisted `universe_state` observation records when the static feed is
+   missing.
+
+The fallback feed excludes already tradeable core/pilot/governance names,
+benchmarks, ETF/theme-beta benchmark rows, quarantined rows, and non-research /
+non-specialist records. It is a measurement-repair path for forward evidence
+collection, not a live candidate-pool promotion.
+
+Agent rule: this feed may create pending/open/closed default-off paper rows and
+replacement-value evidence. It must not enable orders, core universe expansion,
+ranking, or sizing without a separate Gate 1-4 activation experiment.
+
+### `quant/default_off_alpha_attribution.py`
+
+Purpose: roll up promotion readiness and blocker reasons across default-off
+alpha sleeves in one production-visible report surface.
+
+Inputs:
+
+- `pilot_attribution` / `ai_infra_aggressive_attribution`
+- `sec_financial_report_event_sleeve`
+- `event_sleeve_bundle`
+- `state_surface_sleeve`
+- `low_deployment_etf_overlay`
+- `core_misfit_paper_sleeve`
+- `broad_market_paper_sleeve`
+
+Output keys:
+
+- `default_off_alpha_attribution.surface_count`
+- `default_off_alpha_attribution.status_counts`
+- `default_off_alpha_attribution.eligible_for_separate_activation_review`
+- `default_off_alpha_attribution.top_blockers`
+- `default_off_alpha_attribution.surfaces`
+
+Agent rule: this is a read-only activation and blocker dashboard. It may help
+choose the next alpha or production-activation experiment, but no trade rule,
+LLM prompt, sizing path, ranking path, exit path, or order adapter may consume
+it without a separate Gate 1-4 promotion.
 
 ---
 

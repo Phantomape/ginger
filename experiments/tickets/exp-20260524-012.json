@@ -1,0 +1,24 @@
+{
+  "experiment_id": "exp-20260524-012",
+  "title": "Add PIT component attribution to entry-day ranking reports",
+  "status": "accepted_measurement_repair_no_strategy_change",
+  "lane": "measurement_repair",
+  "created_at": "2026-05-24T00:00:00-07:00",
+  "summary": "Upgrade the read-only entry-day ranking attribution report so it summarizes alpha_score_components by high/mid/low PIT buckets with coverage and constant-field diagnostics.",
+  "acceptance": [
+    "quant/test_entry_day_ranking_attribution.py passes",
+    "py_compile passes for the attribution tool and focused test",
+    "three canonical reports regenerate as schema v2 with 61/61 PIT-safe trades",
+    "no strategy or production order path changes"
+  ],
+  "next_steps": [
+    "Use component_attribution before proposing another component-aware allocation rule.",
+    "Do not retry raw expectation_revision, post_earnings_drift, or trend scalars on frozen windows without new forward evidence or a materially different interaction."
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "production_orders_changed": false
+  }
+}

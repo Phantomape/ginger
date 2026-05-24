@@ -1,0 +1,82 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "after_metrics": null,
+  "backtest_protocol": "docs/backtesting.md artifact persistence path; no strategy replay mutation",
+  "change_summary": "Backtest JSON artifacts are now saved through a same-directory temporary file followed by atomic replace, reducing the risk of malformed same-date artifacts when outputs are overwritten.",
+  "change_type": "measurement_repair",
+  "changed_variable": "backtest_result_atomic_json_write",
+  "component": "quant/backtester.py",
+  "decision": "accepted_measurement_repair_no_strategy_change",
+  "delta_metrics": null,
+  "experiment_id": "exp-20260523-016",
+  "gate1": {
+    "baseline_artifact_issue": "data/backtests/backtest_results_20260522.json parsed one JSON object but had extra trailing data after byte 2007649 of 2010969.",
+    "passed": true,
+    "repair_scope": "artifact persistence only"
+  },
+  "gate2": {
+    "new_strategy_fields": [],
+    "passed": true,
+    "required_position_fields_affected": false
+  },
+  "gate3": {
+    "adds_filter": false,
+    "passed": true,
+    "survival_rate_affected": false
+  },
+  "gate4": {
+    "passed": true,
+    "reason": "Measurement repair only; no entry, exit, ranking, sizing, filter, risk budget, LLM, or order behavior changed."
+  },
+  "hypothesis": "Backtest result artifacts must be atomically written so experiment conclusions are reproducible and not vulnerable to partially overwritten JSON files.",
+  "known_risks": [
+    "This does not repair already-malformed historical artifacts.",
+    "Atomic replace protects complete-file visibility but does not serialize concurrent writers choosing the same output filename."
+  ],
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260523-015"
+  ],
+  "new_evidence_type": "artifact_integrity_repair",
+  "next_evidence_needed": "Future canonical backtests should overwrite same-date result artifacts through the atomic write helper and remain parseable.",
+  "parameters": {
+    "atomic_helper": "_atomic_write_json",
+    "writes_updated": [
+      "entry candidate event artifact",
+      "OHLCV snapshot artifact",
+      "daily backtest result artifact"
+    ]
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": true,
+    "parity_test_added": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/backtester.py",
+    "experiments/logs/exp-20260523-016.json",
+    "experiments/tickets/exp-20260523-016.json",
+    "experiments/artifacts/exp-20260523-016_backtest_atomic_json_write.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "status": "accepted_measurement_repair_no_strategy_change",
+  "timestamp": "2026-05-24T00:33:42.734840+00:00",
+  "verification": {
+    "atomic_helper_probe": "passed: parsed atomically written JSON and found no leftover .tmp files",
+    "py_compile": "passed: quant/backtester.py and exp_20260523_015_core_alpha_upper_quartile_topup.py",
+    "pytest": "passed: 6 tests in quant/test_entry_day_ranking_attribution.py and quant/test_backtester_pilot_sleeve.py"
+  },
+  "why_not_other_changes": "After exp-20260523-015 failed Gate 4, only the artifact-integrity defect was repaired; no new alpha or production order behavior was changed."
+}

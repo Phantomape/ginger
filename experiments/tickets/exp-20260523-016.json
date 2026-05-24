@@ -1,0 +1,20 @@
+{
+  "experiment_id": "exp-20260523-016",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair_no_strategy_change",
+  "title": "Atomic JSON writes for backtest artifacts",
+  "problem": "The latest same-date backtest artifact was malformed with trailing data after a complete JSON object, which can corrupt Gate 1 baselines and future experiment comparisons.",
+  "change": "Route backtest result, OHLCV snapshot, and entry-candidate JSON artifact saves through a same-directory temp file plus os.replace.",
+  "acceptance_evidence": [
+    "data/backtests/backtest_results_20260522.json had extra trailing data after the first parsed object.",
+    "Atomic helper probe wrote parseable JSON and left no .tmp files behind.",
+    "py_compile passed for quant/backtester.py and the new exp015 script.",
+    "Focused pytest passed: 6 tests."
+  ],
+  "production_impact": {
+    "orders_changed": false,
+    "run_py_changed": false,
+    "strategy_logic_changed": false
+  },
+  "follow_up": "Do not use the malformed 20260522 artifact as a trusted baseline unless regenerated."
+}

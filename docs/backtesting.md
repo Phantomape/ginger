@@ -433,6 +433,17 @@ shared `broad_market_paper_sleeve.py`, is surfaced by the production
 default-off paper path, and has focused parity tests; live/default orders
 remain disabled.
 
+Latest accepted broad-market measurement repair: `exp-20260524-008` changes no
+canonical core backtest metric and does not alter the broad-market paper
+profile, thresholds, notional scalars, hold period, slots, or trade-enabled
+state. It only lets `run.py` use a conservative
+`broad_market_universe_state_observation_feed_v1` fallback from daily
+`universe_state` observation records when the static
+`data/state/broad_market_paper/universe.json` feed is missing. This is
+accepted as feed/forward-evidence repair, not as strategy alpha; future
+broad-market activation still requires closed replacement-value outcomes and a
+separate Gate 1-4 promotion.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted
