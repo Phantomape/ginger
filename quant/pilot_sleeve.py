@@ -34,6 +34,7 @@ SPACE_CATALYST_SHADOW_SLEEVE_NAME = "SPACE_CATALYST_SHADOW"
 PILOT_SLEEVE_NAME = AI_INFRA_AGGRESSIVE_SLEEVE_NAME
 PILOT_TRADEABLE_STATUSES = {"pilot", "limited_production"}
 MAX_CONCURRENT_PILOT_POSITIONS = 1
+PILOT_PROMOTION_PROFIT_CONCENTRATION_LIMIT = 0.70
 
 AI_INFRA_THEME_SEGMENTS = {
     "ai_semiconductor_turnaround": "compute_memory_semis",
@@ -778,6 +779,151 @@ def _signal_summary(signal: dict) -> dict:
     }
 
 
+def _promotion_gate(
+    *,
+    passed,
+    value=None,
+    threshold=None,
+    status: str | None = None,
+) -> dict:
+    gate = {"passed": passed}
+    if value is not None:
+        gate["value"] = value
+    if threshold is not None:
+        gate["threshold"] = threshold
+    if status:
+        gate["status"] = status
+    return gate
+
+
+def _single_trade_profit_concentration(attribution: dict) -> float | None:
+    outcome_count = int(attribution.get("outcome_records") or 0)
+    latest_outcomes = list(attribution.get("latest_outcomes") or [])
+    if outcome_count <= 0 or len(latest_outcomes) < outcome_count:
+        return None
+
+    positive_trade_pnls = [
+        max(0.0, _as_float(outcome.get("pilot_pnl")))
+        for outcome in latest_outcomes[:outcome_count]
+    ]
+    total_profit = sum(positive_trade_pnls)
+    if total_profit <= 0:
+        return None
+    return round(max(positive_trade_pnls) / total_profit, 6)
+
+
+def build_ai_infra_promotion_readiness(pilot_attribution: dict | None = None) -> dict:
+    """Expose protocol blockers for AI infra pilot promotion without trading effects."""
+    attribution = pilot_attribution or {}
+    outcome_count = int(attribution.get("outcome_records") or 0)
+    complete_replacement_outcomes = int(
+        attribution.get("complete_replacement_outcomes") or 0
+    )
+    direct_pnl = _as_float(attribution.get("direct_pilot_pnl"))
+    replacement_value = attribution.get("replacement_value")
+    risk_adjusted_replacement_value = attribution.get(
+        "risk_adjusted_replacement_value_avg"
+    )
+    profit_concentration = _single_trade_profit_concentration(attribution)
+
+    requirements = {
+        "closed_pilot_outcomes": _promotion_gate(
+            passed=outcome_count > 0,
+            value=outcome_count,
+            threshold="> 0",
+        ),
+        "direct_pilot_pnl_positive": _promotion_gate(
+            passed=direct_pnl > 0,
+            value=round(direct_pnl, 2),
+            threshold="> 0",
+        ),
+        "replacement_value_positive": _promotion_gate(
+            passed=(
+                complete_replacement_outcomes > 0
+                and replacement_value is not None
+                and _as_float(replacement_value) > 0
+            ),
+            value=replacement_value,
+            threshold="> 0",
+            status=(
+                "complete"
+                if complete_replacement_outcomes > 0
+                else "pending_closed_counterfactual_outcomes"
+            ),
+        ),
+        "risk_adjusted_replacement_value_positive": _promotion_gate(
+            passed=(
+                risk_adjusted_replacement_value is not None
+                and _as_float(risk_adjusted_replacement_value) > 0
+            ),
+            value=risk_adjusted_replacement_value,
+            threshold="> 0",
+            status=(
+                "complete"
+                if risk_adjusted_replacement_value is not None
+                else "pending_closed_counterfactual_outcomes"
+            ),
+        ),
+        "single_trade_profit_concentration_ok": _promotion_gate(
+            passed=(
+                profit_concentration is not None
+                and profit_concentration <= PILOT_PROMOTION_PROFIT_CONCENTRATION_LIMIT
+            ),
+            value=profit_concentration,
+            threshold=f"<= {PILOT_PROMOTION_PROFIT_CONCENTRATION_LIMIT}",
+            status=(
+                "complete"
+                if profit_concentration is not None
+                else "pending_multiple_positive_closed_outcomes"
+            ),
+        ),
+        "max_drawdown_inside_sleeve_limit": _promotion_gate(
+            passed=attribution.get("max_drawdown_inside_sleeve_limit"),
+            status=(
+                "complete"
+                if attribution.get("max_drawdown_inside_sleeve_limit") is not None
+                else "requires_sleeve_drawdown_audit"
+            ),
+        ),
+        "theme_beta_not_primary_driver": _promotion_gate(
+            passed=attribution.get("theme_beta_not_primary_driver"),
+            status=(
+                "complete"
+                if attribution.get("theme_beta_not_primary_driver") is not None
+                else "requires_theme_beta_audit"
+            ),
+        ),
+        "event_risk_clear": _promotion_gate(
+            passed=attribution.get("event_risk_clear"),
+            status=(
+                "complete"
+                if attribution.get("event_risk_clear") is not None
+                else "requires_event_risk_review"
+            ),
+        ),
+        "live_slippage_inside_expected": _promotion_gate(
+            passed=attribution.get("live_slippage_inside_expected"),
+            status=(
+                "complete"
+                if attribution.get("live_slippage_inside_expected") is not None
+                else "requires_live_slippage_audit"
+            ),
+        ),
+    }
+    blocked_reasons = [
+        name
+        for name, requirement in requirements.items()
+        if requirement.get("passed") is not True
+    ]
+    return {
+        "protocol_source": "docs/universe_promotion_protocol.md",
+        "target_transition": "pilot_to_limited_production",
+        "eligible_for_limited_production_review": not blocked_reasons,
+        "blocked_reasons": blocked_reasons,
+        "requirements": requirements,
+    }
+
+
 def build_ai_infra_aggressive_attribution(
     *,
     pilot_signals: list[dict],
@@ -817,6 +963,7 @@ def build_ai_infra_aggressive_attribution(
         "selected": selected,
         "sliced": sliced,
         "segments_observed": segments,
+        "direct_pilot_pnl": attribution.get("direct_pilot_pnl"),
         "cash_relative_pnl": attribution.get("cash_relative_pnl"),
         "core_replacement_value": attribution.get("replacement_value"),
         "same_theme_replacement_value": attribution.get(
@@ -830,4 +977,5 @@ def build_ai_infra_aggressive_attribution(
             "risk_adjusted_replacement_value_avg"
         ),
         "by_ticker": attribution.get("by_ticker", {}),
+        "promotion_readiness": build_ai_infra_promotion_readiness(attribution),
     }

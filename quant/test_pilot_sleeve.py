@@ -9,6 +9,8 @@ from pilot_sleeve import (  # noqa: E402
     AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
     CONSUMER_PLATFORM_SLEEVE_NAME,
     SPACE_CATALYST_SHADOW_SLEEVE_NAME,
+    build_ai_infra_aggressive_attribution,
+    build_ai_infra_promotion_readiness,
     apply_pilot_sizing_policy,
     build_counterfactual_snapshots,
     mark_pilot_signals,
@@ -478,3 +480,88 @@ def test_counterfactual_snapshot_freezes_same_sleeve_sliced_candidate():
     assert "pilot_sliced" in {
         item["status"] for item in snapshots[0]["ranking_snapshot"]
     }
+
+
+def test_ai_infra_attribution_blocks_promotion_without_closed_outcomes():
+    surface = build_ai_infra_aggressive_attribution(
+        pilot_signals=[],
+        pilot_entry_execution_plan={
+            "by_sleeve": {
+                AI_INFRA_AGGRESSIVE_SLEEVE_NAME: {
+                    "bull_booster_active": True,
+                    "max_concurrent_positions": 2,
+                    "sleeve_max_capital_pct": 0.18,
+                    "pilot_slot_sliced_signals": [],
+                }
+            }
+        },
+        pilot_attribution={
+            "decision_snapshots": 6,
+            "outcome_records": 0,
+            "direct_pilot_pnl": 0.0,
+            "replacement_value": None,
+            "risk_adjusted_replacement_value_avg": None,
+        },
+    )
+
+    readiness = surface["promotion_readiness"]
+    assert readiness["eligible_for_limited_production_review"] is False
+    assert "closed_pilot_outcomes" in readiness["blocked_reasons"]
+    assert (
+        readiness["requirements"]["closed_pilot_outcomes"]["value"] == 0
+    )
+    assert (
+        readiness["requirements"]["replacement_value_positive"]["status"]
+        == "pending_closed_counterfactual_outcomes"
+    )
+
+
+def test_ai_infra_promotion_readiness_blocks_single_trade_concentration():
+    readiness = build_ai_infra_promotion_readiness(
+        {
+            "outcome_records": 1,
+            "direct_pilot_pnl": 120.0,
+            "complete_replacement_outcomes": 1,
+            "replacement_value": 25.0,
+            "risk_adjusted_replacement_value_avg": 0.3,
+            "latest_outcomes": [{"pilot_pnl": 120.0}],
+            "max_drawdown_inside_sleeve_limit": True,
+            "theme_beta_not_primary_driver": True,
+            "event_risk_clear": True,
+            "live_slippage_inside_expected": True,
+        }
+    )
+
+    concentration = readiness["requirements"][
+        "single_trade_profit_concentration_ok"
+    ]
+    assert readiness["eligible_for_limited_production_review"] is False
+    assert "single_trade_profit_concentration_ok" in readiness["blocked_reasons"]
+    assert concentration["value"] == 1.0
+
+
+def test_ai_infra_promotion_readiness_passes_when_protocol_checks_pass():
+    readiness = build_ai_infra_promotion_readiness(
+        {
+            "outcome_records": 2,
+            "direct_pilot_pnl": 200.0,
+            "complete_replacement_outcomes": 2,
+            "replacement_value": 75.0,
+            "risk_adjusted_replacement_value_avg": 0.4,
+            "latest_outcomes": [
+                {"pilot_pnl": 120.0},
+                {"pilot_pnl": 80.0},
+            ],
+            "max_drawdown_inside_sleeve_limit": True,
+            "theme_beta_not_primary_driver": True,
+            "event_risk_clear": True,
+            "live_slippage_inside_expected": True,
+        }
+    )
+
+    assert readiness["blocked_reasons"] == []
+    assert readiness["eligible_for_limited_production_review"] is True
+    assert (
+        readiness["requirements"]["single_trade_profit_concentration_ok"]["value"]
+        == 0.6
+    )

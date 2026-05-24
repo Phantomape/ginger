@@ -105,3 +105,10 @@ def test_entry_day_ranking_attribution_uses_previous_trading_day_context():
     assert trade["point_in_time_safe"] is True
     assert trade["alpha_score"] is not None
     assert trade["leadership_vector_state"] in {"strong", "neutral", "weak"}
+
+    component_attribution = report["component_attribution"]
+    assert "trend" in component_attribution
+    trend = component_attribution["trend"]
+    assert trend["coverage"]["coverage"] == 1.0
+    assert trend["value_diagnostics"]["unique_value_count"] >= 1
+    assert sum(row["trades"] for row in trend["buckets"]) == 1

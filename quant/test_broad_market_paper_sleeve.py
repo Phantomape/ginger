@@ -7,11 +7,13 @@ from quant.broad_market_paper_sleeve import (
     LOW_EXTENSION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     TREND_PERSISTENCE_RULE_VERSION,
+    UNIVERSE_STATE_FEED_RULE_VERSION,
     broad_market_candidate_notional_payload,
     broad_market_high_volatility_multiplier,
     broad_market_low_extension_multiplier,
     broad_market_rank_notional_multiplier,
     broad_market_trend_persistence_multiplier,
+    build_broad_market_candidate_universe_from_universe_state,
     build_broad_market_replacement_value_report,
     build_broad_market_paper_candidates,
     build_broad_market_paper_sleeve_snapshot,
@@ -201,6 +203,80 @@ def test_snapshot_adds_pending_and_fills_next_session_without_orders():
     assert second["replacement_value_report"]["open_count"] == 1
     assert second["open_positions"][0]["source_candidate"]["high_volatility_rule_version"] == HIGH_VOLATILITY_RULE_VERSION
     assert second["open_positions"][0]["source_candidate"]["trend_persistence_rule_version"] == TREND_PERSISTENCE_RULE_VERSION
+
+
+def test_universe_state_feed_uses_observation_records_without_tradeable_names():
+    universe_state = {
+        "as_of": "2026-05-22",
+        "artifact_path": "data/daily/universe/universe_state_20260522.json",
+        "core_trade_universe": ["CORE"],
+        "pilot_trade_universe": ["PILOT"],
+        "governance_tradeable_universe": ["GOV"],
+        "observation_universe": ["WIN", "CORE", "PILOT", "GOV", "ARKX", "QUAR"],
+        "records": {
+            "WIN": {
+                "ticker": "WIN",
+                "status": "research",
+                "theme": "ai_optical_connectivity",
+                "theme_segment": "optical_connectivity",
+                "eligible_as_of": "2026-05-01",
+            },
+            "ARKX": {
+                "ticker": "ARKX",
+                "status": "research",
+                "theme": "space_theme_etf",
+                "theme_segment": "theme_beta_benchmark",
+                "eligible_as_of": "2026-05-01",
+            },
+            "QUAR": {
+                "ticker": "QUAR",
+                "status": "quarantine",
+                "eligible_as_of": "2026-05-01",
+            },
+        },
+    }
+
+    feed = build_broad_market_candidate_universe_from_universe_state(universe_state)
+
+    assert feed["status"] == "universe_state_observation_feed"
+    assert feed["rule_version"] == UNIVERSE_STATE_FEED_RULE_VERSION
+    assert feed["tickers"] == ["WIN"]
+    assert feed["records"]["WIN"]["feed_rule_version"] == UNIVERSE_STATE_FEED_RULE_VERSION
+    assert feed["excluded_count"] == 5
+
+
+def test_snapshot_accepts_universe_state_feed_when_static_feed_is_absent():
+    spy_rows = _rows(100.0, 0.02)
+    win_rows = _rows(50.0, 0.35)
+    ohlcv = {"SPY": spy_rows, "WIN": win_rows}
+    feed = build_broad_market_candidate_universe_from_universe_state(
+        {
+            "as_of": spy_rows[60]["date"],
+            "artifact_path": "data/daily/universe/universe_state_20260522.json",
+            "observation_universe": ["WIN"],
+            "records": {
+                "WIN": {
+                    "ticker": "WIN",
+                    "status": "research",
+                    "eligible_as_of": "2026-01-01",
+                },
+            },
+        }
+    )
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=spy_rows[60]["date"],
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=feed,
+        state=empty_broad_market_paper_state(),
+        persist=False,
+    )
+
+    assert snapshot["data_source"]["status"] == "universe_state_observation_feed"
+    assert snapshot["data_source"]["rule_version"] == UNIVERSE_STATE_FEED_RULE_VERSION
+    assert snapshot["candidate_count"] == 1
+    assert snapshot["new_pending_count"] == 1
+    assert snapshot["production_impact"]["alters_orders"] is False
 
 
 def test_broad_market_replacement_value_report_tracks_cash_slot_ledger():

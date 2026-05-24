@@ -52,6 +52,36 @@ PROXY_ENV_VARS = (
     "GIT_HTTPS_PROXY",
 )
 
+
+def _atomic_write_json(path, payload, *, default=None, trailing_newline=False):
+    """Write JSON through a same-directory temp file and atomic replace."""
+    directory = os.path.dirname(os.path.abspath(path))
+    os.makedirs(directory, exist_ok=True)
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=directory,
+            prefix=f".{os.path.basename(path)}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            tmp_path = handle.name
+            json.dump(payload, handle, indent=2, ensure_ascii=False, default=default)
+            if trailing_newline:
+                handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_path, path)
+        tmp_path = None
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                logger.warning("Could not remove temporary JSON file: %s", tmp_path)
+
 # ── Defaults ────────────────────────────────────────────────────────────────
 
 # Ensure quant/ is on sys.path before importing from constants (supports both
@@ -1109,10 +1139,7 @@ class BacktestEngine:
                 "This artifact is for shadow attribution and must not be interpreted as a production signal path.",
             ],
         }
-        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as handle:
-            json.dump(payload, handle, indent=2, ensure_ascii=False, default=str)
-            handle.write("\n")
+        _atomic_write_json(path, payload, default=str, trailing_newline=True)
 
     def _build_inline_oracle_diagnostics(self, result, ohlcv):
         """Attach observation-only oracle metrics to the saved backtest result."""
@@ -1220,10 +1247,8 @@ class BacktestEngine:
 
     def _write_ohlcv_snapshot(self, ohlcv, path, download_start, download_end):
         """Persist a deterministic OHLCV snapshot for later reruns."""
-        os.makedirs(os.path.dirname(path), exist_ok=True)
         payload = self._serialize_ohlcv_snapshot(ohlcv, download_start, download_end)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(payload, f, indent=2, ensure_ascii=False)
+        _atomic_write_json(path, payload)
         logger.info("Saved OHLCV snapshot -> %s", path)
 
     def _load_ohlcv_snapshot(self, path):
@@ -1253,9 +1278,12 @@ class BacktestEngine:
         return ohlcv
 
     def _load_earnings_snapshots(self):
-        """Load all data/earnings_snapshot_YYYYMMDD.json files (written by run.py P-ERN).
+        """Load earnings_snapshot_YYYYMMDD.json daily replay artifacts.
 
-        Returns dict keyed by YYYYMMDD string → {ticker: earnings_data_dict}.
+        The resolver prefers data/daily/snapshots/earnings/ and falls back to
+        legacy root-level files for older checkouts or custom test directories.
+
+        Returns dict keyed by YYYYMMDD string -> {ticker: earnings_data_dict}.
         Silently skips malformed files so missing data never crashes the backtest.
         """
         snaps = {}
@@ -4710,8 +4738,7 @@ def main():
         else:
             save_data = primary_save
 
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(save_data, f, indent=2, ensure_ascii=False)
+        _atomic_write_json(out_path, save_data)
         print(f"Results saved → {out_path}")
 
 

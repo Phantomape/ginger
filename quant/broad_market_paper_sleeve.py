@@ -29,6 +29,7 @@ RANK_NOTIONAL_RULE_VERSION = "broad_market_rank_notional_profile_v1"
 LOW_EXTENSION_RULE_VERSION = "broad_market_low_extension_notional_v1"
 HIGH_VOLATILITY_RULE_VERSION = "broad_market_high_volatility_notional_v1"
 TREND_PERSISTENCE_RULE_VERSION = "broad_market_trend_persistence_notional_v1"
+UNIVERSE_STATE_FEED_RULE_VERSION = "broad_market_universe_state_observation_feed_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("broad_market_paper_state")
@@ -47,6 +48,11 @@ TITLE_EXCLUSION_KEYWORDS = (
     " PREFERRED",
     " DEPOSITARY",
 )
+
+BROAD_MARKET_FEED_EXCLUDED_TICKERS = {
+    "ARKX",
+    "UFO",
+}
 
 DEFAULT_CONFIG = {
     "enabled": False,
@@ -206,6 +212,92 @@ def load_broad_market_candidate_universe(
     }
 
 
+def build_broad_market_candidate_universe_from_universe_state(
+    universe_state: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a conservative paper feed from the daily governance snapshot.
+
+    This is a fallback for forward observation only. A maintained
+    ``data/state/broad_market_paper/universe.json`` file remains authoritative
+    when present.
+    """
+    if not isinstance(universe_state, dict):
+        return {
+            "status": "universe_state_missing",
+            "path": None,
+            "tickers": [],
+            "records": {},
+            "rule_version": UNIVERSE_STATE_FEED_RULE_VERSION,
+        }
+    raw_records = universe_state.get("records")
+    records_by_ticker = raw_records if isinstance(raw_records, dict) else {}
+    as_of = universe_state.get("as_of")
+    tradeable = {
+        str(ticker).upper()
+        for key in (
+            "core_trade_universe",
+            "pilot_trade_universe",
+            "governance_tradeable_universe",
+        )
+        for ticker in (universe_state.get(key) or [])
+        if ticker
+    }
+    observation = {
+        str(ticker).upper()
+        for ticker in (universe_state.get("observation_universe") or [])
+        if ticker
+    }
+    if not observation:
+        observation = {
+            str(ticker).upper()
+            for ticker in records_by_ticker
+            if ticker
+        }
+
+    records: dict[str, dict[str, Any]] = {}
+    excluded: list[dict[str, Any]] = []
+    for ticker in sorted(observation):
+        raw_record = records_by_ticker.get(ticker) or {}
+        record = dict(raw_record) if isinstance(raw_record, dict) else {}
+        record["ticker"] = ticker
+        reasons = _broad_market_feed_exclusion_reasons(
+            ticker,
+            record,
+            as_of=as_of,
+            tradeable=tradeable,
+        )
+        if reasons:
+            excluded.append({"ticker": ticker, "reasons": reasons})
+            continue
+        records[ticker] = {
+            "ticker": ticker,
+            "title": record.get("title") or record.get("company_name") or "",
+            "status": record.get("status"),
+            "theme": record.get("theme"),
+            "theme_segment": record.get("theme_segment"),
+            "eligible_as_of": record.get("eligible_as_of"),
+            "source": record.get("source"),
+            "source_reason": record.get("source_reason"),
+            "feed_rule_version": UNIVERSE_STATE_FEED_RULE_VERSION,
+        }
+
+    return {
+        "status": "universe_state_observation_feed",
+        "path": universe_state.get("artifact_path") or universe_state.get("path"),
+        "as_of": as_of,
+        "rule_version": UNIVERSE_STATE_FEED_RULE_VERSION,
+        "tickers": sorted(records),
+        "records": records,
+        "excluded_count": len(excluded),
+        "excluded_sample": excluded[:25],
+        "source_counts": {
+            "observation_universe": len(observation),
+            "tradeable_universe": len(tradeable),
+            "records": len(records_by_ticker),
+        },
+    }
+
+
 def build_broad_market_paper_sleeve_snapshot(
     *,
     as_of: str,
@@ -327,7 +419,7 @@ def build_broad_market_paper_candidates(
         if ticker in tradeable or ticker in active or ticker in {"SPY", "QQQ"}:
             continue
         record = metadata.get(ticker) or {}
-        if _excluded_title(record.get("title")):
+        if _excluded_candidate_record(record):
             continue
         rows = rows_by_ticker.get(ticker) or []
         idx = _latest_index_on_or_before(rows, as_of)
@@ -954,7 +1046,9 @@ def _snapshot_payload(
         "data_source": {
             "status": data_source.get("status"),
             "path": data_source.get("path"),
+            "rule_version": data_source.get("rule_version"),
             "ticker_count": len(data_source.get("tickers") or []),
+            "excluded_count": data_source.get("excluded_count"),
         },
         "candidates": deepcopy(candidates),
         "new_pending_entries": deepcopy(new_pending),
@@ -1127,6 +1221,8 @@ def _normalise_candidate_universe(value: dict[str, Any] | list[str] | None) -> d
         return {
             "status": value.get("status") or "provided",
             "path": value.get("path"),
+            "rule_version": value.get("rule_version"),
+            "excluded_count": value.get("excluded_count"),
             "tickers": sorted(tickers),
             "records": {
                 str(key).upper(): dict(row or {})
@@ -1215,6 +1311,48 @@ def _latest_index_on_or_before(rows: list[dict[str, Any]], as_of: str) -> int | 
 def _excluded_title(title: Any) -> bool:
     upper = f" {str(title or '').upper()} "
     return any(keyword in upper for keyword in TITLE_EXCLUSION_KEYWORDS)
+
+
+def _excluded_candidate_record(record: dict[str, Any]) -> bool:
+    if _excluded_title(record.get("title")):
+        return True
+    if record.get("broad_market_excluded") is True:
+        return True
+    ticker = str(record.get("ticker") or "").upper()
+    if ticker in BROAD_MARKET_FEED_EXCLUDED_TICKERS:
+        return True
+    status = str(record.get("status") or "").lower()
+    if status == "quarantine":
+        return True
+    theme_segment = str(record.get("theme_segment") or "").lower()
+    theme = str(record.get("theme") or "").lower()
+    return any(
+        token in f"{theme_segment} {theme}"
+        for token in ("theme_beta_benchmark", "benchmark_etf", "space_theme_etf")
+    )
+
+
+def _broad_market_feed_exclusion_reasons(
+    ticker: str,
+    record: dict[str, Any],
+    *,
+    as_of: Any,
+    tradeable: set[str],
+) -> list[str]:
+    reasons: list[str] = []
+    if ticker in tradeable:
+        reasons.append("already_tradeable")
+    if ticker in {"SPY", "QQQ"}:
+        reasons.append("benchmark")
+    if _excluded_candidate_record(record):
+        reasons.append("record_exclusion")
+    status = str(record.get("status") or "").lower()
+    if status and status not in {"research", "specialist"}:
+        reasons.append(f"status_{status}")
+    eligible_as_of = str(record.get("eligible_as_of") or "")[:10]
+    if as_of and eligible_as_of and eligible_as_of > str(as_of)[:10]:
+        reasons.append("not_yet_eligible")
+    return reasons
 
 
 def _existing_decision_ids(state: dict[str, Any]) -> set[str]:

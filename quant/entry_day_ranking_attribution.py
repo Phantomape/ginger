@@ -33,6 +33,13 @@ RANK_BUCKET_ORDER = {
     "unknown": 5,
 }
 
+COMPONENT_BUCKET_ORDER = {
+    "high": 0,
+    "mid": 1,
+    "low": 2,
+    "unknown": 3,
+}
+
 
 def _float(value, default=None):
     try:
@@ -241,6 +248,67 @@ def _aggregate_by_field(trades, field, *, order=None):
     return sorted(rows, key=sort_key)
 
 
+def _component_bucket(value):
+    score = _float(value, None)
+    if score is None:
+        return "unknown"
+    if score >= 0.70:
+        return "high"
+    if score <= 0.30:
+        return "low"
+    return "mid"
+
+
+def _aggregate_component_attribution(trades):
+    component_names = sorted({
+        str(key)
+        for trade in trades
+        for key in (trade.get("alpha_score_components") or {}).keys()
+    })
+    out = {}
+    total = len(trades)
+
+    for component in component_names:
+        buckets = {}
+        values = []
+        missing = 0
+        for trade in trades:
+            components = trade.get("alpha_score_components") or {}
+            raw_value = components.get(component)
+            value = _float(raw_value, None)
+            if value is None:
+                missing += 1
+            else:
+                values.append(value)
+            bucket = _component_bucket(raw_value)
+            buckets.setdefault(bucket, []).append(trade)
+
+        rounded_values = sorted({round(value, 6) for value in values})
+        out[component] = {
+            "coverage": {
+                "trades_total": total,
+                "trades_with_component": len(values),
+                "missing_trades": missing,
+                "coverage": round(len(values) / total, 4) if total else 0.0,
+            },
+            "value_diagnostics": {
+                "min": round(min(values), 6) if values else None,
+                "max": round(max(values), 6) if values else None,
+                "unique_value_count": len(rounded_values),
+                "unique_value_sample": rounded_values[:10],
+                "is_constant": bool(values and len(rounded_values) == 1),
+            },
+            "buckets": sorted(
+                [
+                    {"bucket": bucket, **_summarize(items)}
+                    for bucket, items in buckets.items()
+                ],
+                key=lambda row: COMPONENT_BUCKET_ORDER.get(row["bucket"], 99),
+            ),
+        }
+    return out
+
+
 def annotate_trades_with_entry_day_ranking(result, ohlcv):
     contexts = {}
     annotated = []
@@ -314,7 +382,7 @@ def build_entry_day_ranking_attribution(
     coverage = round(pit_count / total, 4) if total else 0.0
 
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "read_only": True,
         "source_period": result.get("period"),
         "source_expected_value_score": result.get("expected_value_score"),
@@ -331,6 +399,12 @@ def build_entry_day_ranking_attribution(
             "alpha_score_bucket",
             order=RANK_BUCKET_ORDER,
         ),
+        "component_bucket_thresholds": {
+            "high": "score >= 0.70",
+            "mid": "0.30 < score < 0.70",
+            "low": "score <= 0.30",
+        },
+        "component_attribution": _aggregate_component_attribution(annotated),
         "leadership_vector_attribution": _aggregate_by_field(
             annotated,
             "leadership_vector_state",

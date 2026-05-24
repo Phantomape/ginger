@@ -43,6 +43,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            entry_execution_plan=None,
                            pilot_attribution=None,
                            ai_infra_aggressive_attribution=None,
+                           default_off_alpha_attribution=None,
                            form4_event_queue=None,
                            form4_event_sleeve=None,
                            sec_event_queue=None,
@@ -80,6 +81,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
         pilot_attribution (dict):       Pilot direct/replacement-value summary
         ai_infra_aggressive_attribution (dict): AI infra sleeve daily surface
+        default_off_alpha_attribution (dict): Read-only default-off alpha blocker surface
         form4_event_queue (dict):       Default-off Form 4 observation queue
         form4_event_sleeve (dict):      Default-off Form 4 paper event sleeve
         sec_event_queue (dict):         Default-off SEC negative-reaction queue
@@ -1146,6 +1148,42 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             lines.append(f"  Core replacement value: ${repl_value:,.2f}")
         else:
             lines.append("  Core replacement value: pending")
+
+    if default_off_alpha_attribution:
+        lines.append("\n" + "-" * 60)
+        lines.append("DEFAULT-OFF ALPHA ATTRIBUTION")
+        lines.append("-" * 60)
+        lines.append(
+            "  Read-only: "
+            f"{default_off_alpha_attribution.get('read_only', True)}  |  "
+            "Trade enabled: "
+            f"{default_off_alpha_attribution.get('trade_enabled', False)}"
+        )
+        counts = default_off_alpha_attribution.get("status_counts") or {}
+        lines.append(
+            "  Surfaces: "
+            f"{default_off_alpha_attribution.get('surface_count', 0)}  |  "
+            f"eligible={len(default_off_alpha_attribution.get('eligible_for_separate_activation_review') or [])} "
+            f"blocked={counts.get('blocked', 0)} inactive={counts.get('inactive', 0)}"
+        )
+        blockers = default_off_alpha_attribution.get("top_blockers") or []
+        if blockers:
+            top = blockers[0]
+            lines.append(
+                f"  Top blocker: {top.get('reason', 'unknown')} "
+                f"({top.get('count', 0)} surfaces)"
+            )
+        for surface in (default_off_alpha_attribution.get("surfaces") or [])[:7]:
+            surface_counts = surface.get("counts") or {}
+            blocker_text = ", ".join((surface.get("blockers") or [])[:3]) or "none"
+            lines.append(
+                "  "
+                f"{surface.get('label', surface.get('name', '?'))}: "
+                f"{surface.get('status', 'unknown')} "
+                f"open={surface_counts.get('open', 0)} "
+                f"closed_today={surface_counts.get('closed_today', 0)} "
+                f"blocked_by={blocker_text}"
+            )
 
     if form4_event_queue and (
         form4_event_queue.get("candidate_count", 0) > 0

@@ -127,6 +127,9 @@ def main():
     )
     from performance_engine import compute_metrics
     from report_generator   import generate_daily_report, save_report
+    from default_off_alpha_attribution import (
+        build_default_off_alpha_attribution_report,
+    )
     from market_state_analysis import build_market_state_snapshot
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
     from backfill_non_ohlcv import (
@@ -194,6 +197,7 @@ def main():
         empty_core_misfit_paper_sleeve_snapshot,
     )
     from broad_market_paper_sleeve import (
+        build_broad_market_candidate_universe_from_universe_state,
         build_broad_market_paper_sleeve_snapshot,
         empty_broad_market_paper_sleeve_snapshot,
         load_broad_market_candidate_universe,
@@ -1360,6 +1364,7 @@ def main():
                 spy_ohlcv=spy_ohlcv,
                 core_signals=signals,
                 source_path=non_ohlcv_paths.get("sec_filing_events"),
+                text_source_path=non_ohlcv_paths.get("sec_filing_text"),
             )
         )
         if sec_financial_report_t1_queue.get("candidate_count", 0) > 0:
@@ -1507,6 +1512,26 @@ def main():
 
     try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
+        if (
+            broad_market_candidate_universe.get("status") == "missing"
+            and universe_governance_state is not None
+        ):
+            broad_market_source_state = dict(universe_governance_state)
+            broad_market_source_state.setdefault(
+                "artifact_path",
+                str(daily_artifact_path("universe_state", today)),
+            )
+            broad_market_candidate_universe = (
+                build_broad_market_candidate_universe_from_universe_state(
+                    broad_market_source_state,
+                )
+            )
+        if broad_market_candidate_universe.get("status") != "missing":
+            log.info(
+                "Broad-market paper universe feed: status=%s tickers=%d",
+                broad_market_candidate_universe.get("status"),
+                len(broad_market_candidate_universe.get("tickers") or []),
+            )
         broad_market_ohlcv = {}
         broad_market_tickers = set(broad_market_candidate_universe.get("tickers") or [])
         if broad_market_tickers:
@@ -1579,6 +1604,18 @@ def main():
         log.warning(f"BTC/USD crypto sleeve unavailable: {e}")
         crypto_sleeve = empty_crypto_sleeve_advice(e)
 
+    default_off_alpha_attribution = build_default_off_alpha_attribution_report(
+        as_of=today_iso,
+        pilot_attribution=pilot_attribution,
+        ai_infra_aggressive_attribution=ai_infra_aggressive_attribution,
+        sec_financial_report_event_sleeve=sec_financial_report_event_sleeve,
+        event_sleeve_bundle=event_sleeve_bundle,
+        state_surface_sleeve=state_surface_sleeve,
+        low_deployment_etf_overlay=low_deployment_etf_overlay,
+        core_misfit_paper_sleeve=core_misfit_paper_sleeve,
+        broad_market_paper_sleeve=broad_market_paper_sleeve,
+    )
+
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
     # pre-computed target_price, risk_reward_ratio, trade_quality_score, strategy.
     trend_signals_dict["quant_signals"] = signals
@@ -1592,6 +1629,7 @@ def main():
     trend_signals_dict["pilot_decision_hashes"] = pilot_decision_hashes
     trend_signals_dict["pilot_attribution"] = pilot_attribution
     trend_signals_dict["ai_infra_aggressive_attribution"] = ai_infra_aggressive_attribution
+    trend_signals_dict["default_off_alpha_attribution"] = default_off_alpha_attribution
     trend_signals_dict["form4_event_queue"] = form4_event_queue
     trend_signals_dict["form4_event_sleeve"] = form4_event_sleeve
     trend_signals_dict["sec_event_queue"] = sec_event_queue
@@ -1631,6 +1669,7 @@ def main():
         entry_execution_plan = entry_execution_plan,
         pilot_attribution = pilot_attribution,
         ai_infra_aggressive_attribution = ai_infra_aggressive_attribution,
+        default_off_alpha_attribution = default_off_alpha_attribution,
         form4_event_queue = form4_event_queue,
         form4_event_sleeve = form4_event_sleeve,
         sec_event_queue = sec_event_queue,
@@ -1674,6 +1713,7 @@ def main():
         "pilot_decision_hashes": pilot_decision_hashes,
         "pilot_attribution": pilot_attribution,
         "ai_infra_aggressive_attribution": ai_infra_aggressive_attribution,
+        "default_off_alpha_attribution": default_off_alpha_attribution,
         "form4_event_queue": form4_event_queue,
         "form4_event_sleeve": form4_event_sleeve,
         "sec_event_queue": sec_event_queue,

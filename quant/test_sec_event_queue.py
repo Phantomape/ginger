@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from sec_event_queue import (
@@ -181,6 +182,49 @@ def test_financial_report_t1_queue_is_default_off_and_uses_positive_excess_drift
     assert candidate["trade_enabled"] is False
     assert candidate["counterfactual"]["alternatives"][0]["ticker"] == "NVDA"
     assert queue["production_impact"]["alters_orders"] is False
+
+
+def test_financial_report_t1_queue_joins_text_language_features_by_accession():
+    event_row = _row(
+        ticker="FRPT",
+        accession_number="0004",
+        eight_k_item_codes=["2.02", "9.01"],
+        combined_text="Event metadata only.",
+    )
+    text_row = _row(
+        ticker="FRPT",
+        accession_number="0004",
+        primary_document="frpt-20260504.htm",
+        combined_text=(
+            "Quarterly results showed record revenue, net income and earnings per share. "
+            "Management cited strong demand, margin expansion and raised guidance."
+        ),
+    )
+
+    queue = build_sec_financial_report_t1_queue(
+        [event_row],
+        as_of="2026-05-05",
+        ohlcv_by_ticker={"FRPT": _ohlcv_rows([100.0, 103.0, 104.0])},
+        spy_ohlcv=_ohlcv_rows([100.0, 101.0, 101.5]),
+        source_path="data/non_ohlcv/sec_filing_events_sample.jsonl",
+        text_rows=[text_row],
+        text_source_path="data/non_ohlcv/sec_filing_text_sample.jsonl",
+        text_source_status="loaded",
+    )
+
+    assert queue["candidate_count"] == 1
+    assert queue["data_source"]["text_status"] == "loaded"
+    assert queue["data_source"]["loaded_text_row_count"] == 1
+    assert queue["data_source"]["language_covered_count"] == 1
+    candidate = queue["candidates"][0]
+    assert candidate["language_bucket"] == "positive_language"
+    assert candidate["positive_phrase_hits"] >= 3
+    assert candidate["guidance_raise_hits"] == 1
+    assert candidate["text_event_type"] == "earnings_release_text"
+    assert candidate["sec_text_coverage_status"] == "covered"
+    assert candidate["sec_text_accession_matched"] is True
+    assert candidate["sec_text_primary_document"] == "frpt-20260504.htm"
+    assert candidate["language_feature_rule_version"] == "sec_language_features_v1"
 
 
 def test_financial_report_t1_queue_rejects_nonfinancial_or_nonexcess_rows():
@@ -429,6 +473,43 @@ def test_build_forward_financial_report_t1_queue_handles_missing_source(tmp_path
     assert queue["enabled"] is False
     assert queue["candidate_count"] == 0
     assert queue["data_source"]["status"] == "missing_sec_filing_events_jsonl"
+
+
+def test_build_forward_financial_report_t1_queue_uses_explicit_text_source(tmp_path: Path):
+    event_row = _row(
+        ticker="WRAP",
+        accession_number="0012",
+        eight_k_item_codes=["2.02", "9.01"],
+        combined_text="Event metadata only.",
+    )
+    text_row = _row(
+        ticker="WRAP",
+        accession_number="0012",
+        combined_text=(
+            "Quarterly results showed record revenue, net income and earnings per share. "
+            "Management cited strong demand, margin expansion and raised guidance."
+        ),
+    )
+    event_path = tmp_path / "sec_filing_events_20260504.jsonl"
+    text_path = tmp_path / "sec_filing_text_20260504.jsonl"
+    event_path.write_text(json.dumps(event_row) + "\n", encoding="utf-8")
+    text_path.write_text(json.dumps(text_row) + "\n", encoding="utf-8")
+
+    queue = build_forward_financial_report_t1_queue_from_sec_filing_events(
+        data_dir=tmp_path,
+        as_of="2026-05-05",
+        ohlcv_by_ticker={"WRAP": _ohlcv_rows([100.0, 103.0, 104.0])},
+        spy_ohlcv=_ohlcv_rows([100.0, 101.0, 101.5]),
+        source_path=event_path,
+        text_source_path=text_path,
+    )
+
+    assert queue["candidate_count"] == 1
+    assert queue["data_source"]["path"] == str(event_path)
+    assert queue["data_source"]["text_path"] == str(text_path)
+    assert queue["data_source"]["text_status"] == "loaded"
+    assert queue["candidates"][0]["language_bucket"] == "positive_language"
+    assert queue["candidates"][0]["sec_text_coverage_status"] == "covered"
 
 
 def test_shared_queue_policy_replays_exp010_primary_packet():

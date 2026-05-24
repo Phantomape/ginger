@@ -15,6 +15,7 @@ LEADERSHIP_QUEUE_NAME = "SEC_LEADERSHIP_CHANGE_FORWARD_QUEUE"
 LEADERSHIP_RULE_VERSION = "sec_leadership_change_negative_reaction_v1"
 FINANCIAL_REPORT_T1_QUEUE_NAME = "SEC_FINANCIAL_REPORT_T1_DRIFT_FORWARD_QUEUE"
 FINANCIAL_REPORT_T1_RULE_VERSION = "sec_financial_report_positive_t1_excess_ge_1pct_non_platform_v3"
+LANGUAGE_FEATURE_RULE_VERSION = "sec_language_features_v1"
 PRIMARY_HORIZON_TRADING_DAYS = 10
 MAX_COUNTERFACTUAL_SIGNALS = 3
 REQUIRED_ITEM_CODE = "2.02"
@@ -94,6 +95,15 @@ EARNINGS_RELEASE_PHRASES = (
     "earnings release",
     "net income",
     "earnings per share",
+)
+LANGUAGE_FEATURE_FIELDS = (
+    "language_score",
+    "language_bucket",
+    "positive_phrase_hits",
+    "negative_phrase_hits",
+    "guidance_raise_hits",
+    "guidance_cut_hits",
+    "text_event_type",
 )
 
 
@@ -219,6 +229,79 @@ def language_features(row: dict[str, Any]) -> dict[str, Any]:
         "negative_phrase_hits": negative_hits,
         "guidance_raise_hits": guidance_raise_hits,
         "guidance_cut_hits": guidance_cut_hits,
+    }
+
+
+def _accession_key(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
+def _text_row_maps(
+    rows: list[dict[str, Any]],
+) -> tuple[dict[tuple[str, str], dict[str, Any]], dict[str, dict[str, Any]]]:
+    by_ticker_accession: dict[tuple[str, str], dict[str, Any]] = {}
+    by_accession: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        accession = _accession_key(row.get("accession_number"))
+        if not accession:
+            continue
+        ticker = str(row.get("ticker") or "").upper()
+        if ticker:
+            by_ticker_accession.setdefault((ticker, accession), row)
+        by_accession.setdefault(accession, row)
+    return by_ticker_accession, by_accession
+
+
+def _text_row_for_event(
+    row: dict[str, Any],
+    by_ticker_accession: dict[tuple[str, str], dict[str, Any]],
+    by_accession: dict[str, dict[str, Any]],
+) -> dict[str, Any] | None:
+    accession = _accession_key(row.get("accession_number"))
+    if not accession:
+        return None
+    ticker = str(row.get("ticker") or "").upper()
+    if ticker:
+        matched = by_ticker_accession.get((ticker, accession))
+        if matched is not None:
+            return matched
+    return by_accession.get(accession)
+
+
+def _financial_report_language_features(
+    row: dict[str, Any],
+    by_ticker_accession: dict[tuple[str, str], dict[str, Any]],
+    by_accession: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    text_row = _text_row_for_event(row, by_ticker_accession, by_accession)
+    if text_row is not None:
+        return {
+            **language_features(text_row),
+            "sec_text_coverage_status": "covered",
+            "sec_text_accession_matched": True,
+            "sec_text_primary_document": text_row.get("primary_document"),
+            "language_feature_rule_version": LANGUAGE_FEATURE_RULE_VERSION,
+        }
+
+    embedded = {
+        field: row.get(field)
+        for field in LANGUAGE_FEATURE_FIELDS
+        if row.get(field) is not None
+    }
+    if embedded:
+        return {
+            **embedded,
+            "sec_text_coverage_status": "embedded_event_language",
+            "sec_text_accession_matched": False,
+            "sec_text_primary_document": row.get("primary_document"),
+            "language_feature_rule_version": LANGUAGE_FEATURE_RULE_VERSION,
+        }
+
+    return {
+        "sec_text_coverage_status": "missing_text_row",
+        "sec_text_accession_matched": False,
+        "sec_text_primary_document": None,
+        "language_feature_rule_version": LANGUAGE_FEATURE_RULE_VERSION,
     }
 
 
@@ -713,10 +796,21 @@ def build_sec_financial_report_t1_queue(
     core_signals: list[dict[str, Any]] | None = None,
     source_path: str | Path | None = None,
     source_status: str = "loaded",
+    text_rows: list[dict[str, Any]] | None = None,
+    text_source_path: str | Path | None = None,
+    text_source_status: str | None = None,
 ) -> dict[str, Any]:
     ohlcv_by_ticker = ohlcv_by_ticker or {}
+    text_rows = text_rows or []
+    text_by_ticker_accession, text_by_accession = _text_row_maps(text_rows)
+    effective_text_status = text_source_status or (
+        "loaded" if text_rows else "not_provided"
+    )
     candidates: list[dict[str, Any]] = []
     evaluated_count = 0
+    language_covered_count = 0
+    language_embedded_event_count = 0
+    language_missing_text_count = 0
     skipped_not_pit_safe = 0
     as_of_date = str(as_of)[:10]
     seen_shadow_keys: set[tuple[str, str, str]] = set()
@@ -735,11 +829,23 @@ def build_sec_financial_report_t1_queue(
             "ticker": ticker,
             "event_family": family,
             "item_codes": list(sec_event_item_codes(row)),
+            **_financial_report_language_features(
+                row,
+                text_by_ticker_accession,
+                text_by_accession,
+            ),
             **evaluate_t1_excess_drift(row, ohlcv_by_ticker, spy_ohlcv),
         }
         if event.get("t1_date") != as_of_date:
             continue
         evaluated_count += 1
+        coverage_status = str(event.get("sec_text_coverage_status") or "")
+        if coverage_status == "covered":
+            language_covered_count += 1
+        elif coverage_status == "embedded_event_language":
+            language_embedded_event_count += 1
+        elif coverage_status == "missing_text_row":
+            language_missing_text_count += 1
         shadow_key = (
             ticker,
             str(event.get("event_trading_date") or ""),
@@ -773,7 +879,13 @@ def build_sec_financial_report_t1_queue(
             "status": source_status,
             "path": str(source_path) if source_path else None,
             "loaded_row_count": len(rows),
+            "text_status": effective_text_status,
+            "text_path": str(text_source_path) if text_source_path else None,
+            "loaded_text_row_count": len(text_rows),
             "t1_evaluated_count": evaluated_count,
+            "language_covered_count": language_covered_count,
+            "language_embedded_event_count": language_embedded_event_count,
+            "language_missing_text_count": language_missing_text_count,
             "skipped_not_pit_safe_count": skipped_not_pit_safe,
         },
         "parameters": {
@@ -877,6 +989,7 @@ def build_forward_financial_report_t1_queue_from_sec_filing_events(
     spy_ohlcv: Any = None,
     core_signals: list[dict[str, Any]] | None = None,
     source_path: str | Path | None = None,
+    text_source_path: str | Path | None = None,
 ) -> dict[str, Any]:
     path = Path(source_path) if source_path else latest_sec_filing_events_path(data_dir)
     if path is None or not path.exists():
@@ -884,6 +997,16 @@ def build_forward_financial_report_t1_queue_from_sec_filing_events(
             as_of,
             "missing_sec_filing_events_jsonl",
         )
+    text_path = (
+        Path(text_source_path)
+        if text_source_path
+        else latest_sec_filing_text_path(data_dir)
+    )
+    text_rows: list[dict[str, Any]] = []
+    text_status = "missing_sec_filing_text_jsonl"
+    if text_path is not None and text_path.exists():
+        text_rows = load_sec_filing_text_rows(text_path)
+        text_status = "loaded"
     rows = load_sec_filing_event_rows(path)
     return build_sec_financial_report_t1_queue(
         rows,
@@ -892,6 +1015,9 @@ def build_forward_financial_report_t1_queue_from_sec_filing_events(
         spy_ohlcv=spy_ohlcv,
         core_signals=core_signals,
         source_path=path,
+        text_rows=text_rows,
+        text_source_path=text_path,
+        text_source_status=text_status,
     )
 
 
@@ -1046,6 +1172,10 @@ def _financial_report_t1_candidate_payload(
         "guidance_raise_hits": event.get("guidance_raise_hits"),
         "guidance_cut_hits": event.get("guidance_cut_hits"),
         "text_event_type": event.get("text_event_type"),
+        "sec_text_coverage_status": event.get("sec_text_coverage_status"),
+        "sec_text_accession_matched": event.get("sec_text_accession_matched"),
+        "sec_text_primary_document": event.get("sec_text_primary_document"),
+        "language_feature_rule_version": event.get("language_feature_rule_version"),
         "t1_return": event.get("t1_return"),
         "spy_t1_return": event.get("spy_t1_return"),
         "t1_excess_return_vs_spy": event.get("t1_excess_return_vs_spy"),
