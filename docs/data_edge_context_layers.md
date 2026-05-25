@@ -326,6 +326,31 @@ not enable orders, promote optical names into the core universe, alter pilot
 slots, ranking, sizing, or exits without a separate Gate 1-4 activation
 experiment and parity update.
 
+
+### `quant/volatility_contraction_paper_sleeve.py`
+
+Purpose: maintain the default-off
+`VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER` forward observation ledger for the
+accepted replay lead from `exp-20260525-022`.
+
+Candidate route:
+
+- Uses the daily loaded OHLCV universe plus `SPY` / `QQQ`.
+- Requires the same volatility-contraction breakout source as exp-20260525-022:
+  short ATR below long ATR, close above the prior 20-day high, close above the
+  50-day moving average, positive same-day RS vs SPY, and adequate dollar
+  volume.
+- Requires the free-data market confirmation
+  `QQQ 20d close-to-close return > SPY 20d close-to-close return`.
+- Tracks fixed `$10k` paper notional, next-open paper entry, 10-trading-day
+  paper hold, closed outcomes, replacement-value summary, and concentration
+  blockers only.
+
+Agent rule: this sleeve may collect forward replacement-value evidence. It must
+not enable orders, expand the core universe, alter ranking, sizing, exits,
+LLM/news, or consume live capital without a separate Gate 1-4 activation
+experiment and parity update.
+
 ### `quant/default_off_alpha_attribution.py`
 
 Purpose: roll up promotion readiness and blocker reasons across default-off

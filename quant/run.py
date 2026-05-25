@@ -207,6 +207,10 @@ def main():
         build_ai_optical_paper_sleeve_snapshot,
         empty_ai_optical_paper_sleeve_snapshot,
     )
+    from volatility_contraction_paper_sleeve import (
+        build_volatility_contraction_paper_sleeve_snapshot,
+        empty_volatility_contraction_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_observation_slot,
@@ -1667,6 +1671,51 @@ def main():
         )
 
     try:
+        volatility_contraction_ohlcv = dict(ohlcv_dict)
+        volatility_contraction_ohlcv["SPY"] = spy_ohlcv
+        if "QQQ" not in volatility_contraction_ohlcv or volatility_contraction_ohlcv.get("QQQ") is None:
+            volatility_contraction_ohlcv["QQQ"] = _cached_ohlcv("QQQ")
+        volatility_candidate_universe = {
+            "status": "daily_data_universe",
+            "tickers": sorted(
+                ticker
+                for ticker, frame in volatility_contraction_ohlcv.items()
+                if frame is not None and str(ticker).upper() not in {"SPY", "QQQ"}
+            ),
+        }
+        volatility_contraction_paper_sleeve = (
+            build_volatility_contraction_paper_sleeve_snapshot(
+                as_of=today_iso,
+                ohlcv_by_ticker=volatility_contraction_ohlcv,
+                candidate_universe=volatility_candidate_universe,
+                open_prices=current_open_prices,
+                current_prices=current_prices,
+            )
+        )
+        if (
+            volatility_contraction_paper_sleeve.get("candidate_count", 0) > 0
+            or volatility_contraction_paper_sleeve.get("pending_count", 0) > 0
+            or volatility_contraction_paper_sleeve.get("open_position_count", 0) > 0
+            or volatility_contraction_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Volatility-contraction paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                volatility_contraction_paper_sleeve.get("candidate_count", 0),
+                volatility_contraction_paper_sleeve.get("pending_count", 0),
+                volatility_contraction_paper_sleeve.get("open_position_count", 0),
+                volatility_contraction_paper_sleeve.get("closed_count_today", 0),
+                volatility_contraction_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Volatility-contraction paper sleeve unavailable: {e}")
+        volatility_contraction_paper_sleeve = (
+            empty_volatility_contraction_paper_sleeve_snapshot(
+                today_iso,
+                "volatility_contraction_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -1771,6 +1820,7 @@ def main():
         core_misfit_paper_sleeve=core_misfit_paper_sleeve,
         broad_market_paper_sleeve=broad_market_paper_sleeve,
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
+        volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
     )
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
@@ -1804,6 +1854,7 @@ def main():
     trend_signals_dict["core_misfit_paper_sleeve"] = core_misfit_paper_sleeve
     trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
+    trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -1844,6 +1895,7 @@ def main():
         core_misfit_paper_sleeve = core_misfit_paper_sleeve,
         broad_market_paper_sleeve = broad_market_paper_sleeve,
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
+        volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -1890,6 +1942,7 @@ def main():
         "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
         "broad_market_paper_sleeve": broad_market_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
+        "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,

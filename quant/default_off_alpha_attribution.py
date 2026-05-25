@@ -222,6 +222,7 @@ def build_default_off_alpha_attribution_report(
     core_misfit_paper_sleeve: dict[str, Any] | None = None,
     broad_market_paper_sleeve: dict[str, Any] | None = None,
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
+    volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a daily read-only activation/blocker dashboard."""
 
@@ -262,6 +263,11 @@ def build_default_off_alpha_attribution_report(
             name="ai_optical_iwm_confirmed",
             label="AI_OPTICAL_IWM_CONFIRMED_PAPER",
             snapshot=ai_optical_paper_sleeve,
+        ),
+        _surface_summary(
+            name="volatility_contraction_qqq_confirmed",
+            label="VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER",
+            snapshot=volatility_contraction_paper_sleeve,
         ),
     ]
 

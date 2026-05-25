@@ -60,6 +60,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            core_misfit_paper_sleeve=None,
                            broad_market_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
+                           volatility_contraction_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -99,6 +100,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
+        volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -1175,7 +1177,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  Top blocker: {top.get('reason', 'unknown')} "
                 f"({top.get('count', 0)} surfaces)"
             )
-        for surface in (default_off_alpha_attribution.get("surfaces") or [])[:8]:
+        for surface in (default_off_alpha_attribution.get("surfaces") or [])[:10]:
             surface_counts = surface.get("counts") or {}
             blocker_text = ", ".join((surface.get("blockers") or [])[:3]) or "none"
             lines.append(
@@ -1849,6 +1851,69 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"{candidate.get('strategy', '?')} "
                 f"TQS={candidate.get('trade_quality_score')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if volatility_contraction_paper_sleeve and (
+        volatility_contraction_paper_sleeve.get("candidate_count", 0) > 0
+        or volatility_contraction_paper_sleeve.get("pending_count", 0) > 0
+        or volatility_contraction_paper_sleeve.get("open_position_count", 0) > 0
+        or volatility_contraction_paper_sleeve.get("closed_count_today", 0) > 0
+        or volatility_contraction_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("VOLATILITY CONTRACTION QQQ-CONFIRMED PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {volatility_contraction_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {volatility_contraction_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if volatility_contraction_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {volatility_contraction_paper_sleeve.get('error')}"
+            )
+        source = volatility_contraction_paper_sleeve.get("candidate_universe") or {}
+        market = volatility_contraction_paper_sleeve.get("market_confirmation") or {}
+        lines.append(
+            f"  Source: {source.get('status', 'unknown')}  |  "
+            f"Tickers: {source.get('ticker_count', 0)}"
+        )
+        lines.append(
+            f"  QQQ/SPY gate: {market.get('status', 'unknown')}  |  "
+            f"spread={market.get('qqq_minus_spy_return_20d')}"
+        )
+        lines.append(
+            f"  Candidates: {volatility_contraction_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {volatility_contraction_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {volatility_contraction_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {volatility_contraction_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {volatility_contraction_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${volatility_contraction_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${volatility_contraction_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = volatility_contraction_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (volatility_contraction_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"ATR ratio={candidate.get('short_to_long_atr_ratio')} "
+                f"RS={candidate.get('candidate_day_rs_vs_spy')} "
                 f"notional={notional_text} (paper only)"
             )
 
