@@ -59,6 +59,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            low_deployment_etf_overlay=None,
                            core_misfit_paper_sleeve=None,
                            broad_market_paper_sleeve=None,
+                           ai_optical_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -97,6 +98,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         low_deployment_etf_overlay (dict): Default-off low-deployment ETF paper overlay
         core_misfit_paper_sleeve (dict): Default-off core-misfit paper attribution
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
+        ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -1173,7 +1175,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  Top blocker: {top.get('reason', 'unknown')} "
                 f"({top.get('count', 0)} surfaces)"
             )
-        for surface in (default_off_alpha_attribution.get("surfaces") or [])[:7]:
+        for surface in (default_off_alpha_attribution.get("surfaces") or [])[:8]:
             surface_counts = surface.get("counts") or {}
             blocker_text = ", ".join((surface.get("blockers") or [])[:3]) or "none"
             lines.append(
@@ -1785,6 +1787,68 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"score={features.get('score')} "
                 f"ret20_spy={features.get('ret20_excess_spy')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if ai_optical_paper_sleeve and (
+        ai_optical_paper_sleeve.get("candidate_count", 0) > 0
+        or ai_optical_paper_sleeve.get("pending_count", 0) > 0
+        or ai_optical_paper_sleeve.get("open_position_count", 0) > 0
+        or ai_optical_paper_sleeve.get("closed_count_today", 0) > 0
+        or ai_optical_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("AI OPTICAL IWM-CONFIRMED PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {ai_optical_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {ai_optical_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if ai_optical_paper_sleeve.get("error"):
+            lines.append(f"  Source status: {ai_optical_paper_sleeve.get('error')}")
+        source = ai_optical_paper_sleeve.get("data_source") or {}
+        market = ai_optical_paper_sleeve.get("market_confirmation") or {}
+        lines.append(
+            f"  Source: {source.get('status', 'unknown')}  |  "
+            f"Tickers: {source.get('ticker_count', 0)}"
+        )
+        lines.append(
+            f"  IWM/SPY gate: {market.get('status', 'unknown')}  |  "
+            f"spread={market.get('iwm_spy_momentum_spread')} "
+            f"min={market.get('min_iwm_spy_momentum_spread')}"
+        )
+        lines.append(
+            f"  Candidates: {ai_optical_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {ai_optical_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {ai_optical_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {ai_optical_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {ai_optical_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${ai_optical_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${ai_optical_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = ai_optical_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (ai_optical_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"{candidate.get('strategy', '?')} "
+                f"TQS={candidate.get('trade_quality_score')} "
                 f"notional={notional_text} (paper only)"
             )
 

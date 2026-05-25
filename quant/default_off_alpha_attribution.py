@@ -221,6 +221,7 @@ def build_default_off_alpha_attribution_report(
     low_deployment_etf_overlay: dict[str, Any] | None = None,
     core_misfit_paper_sleeve: dict[str, Any] | None = None,
     broad_market_paper_sleeve: dict[str, Any] | None = None,
+    ai_optical_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a daily read-only activation/blocker dashboard."""
 
@@ -256,6 +257,11 @@ def build_default_off_alpha_attribution_report(
             name="broad_market_leadership",
             label="BROAD_MARKET_LEADERSHIP_PAPER",
             snapshot=broad_market_paper_sleeve,
+        ),
+        _surface_summary(
+            name="ai_optical_iwm_confirmed",
+            label="AI_OPTICAL_IWM_CONFIRMED_PAPER",
+            snapshot=ai_optical_paper_sleeve,
         ),
     ]
 

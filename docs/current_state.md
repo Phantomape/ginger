@@ -676,6 +676,20 @@ accepted only as `measurement_repair`: core EV/PnL delta is `0.0`, trade-enabled
 state remains `false`, and the next evidence requirement is closed 20-day
 replacement-value outcomes before any activation experiment.
 
+Latest accepted AI optical candidate-pool result: `exp-20260525-003` tested a
+no-displacement, fixed `$10k` paper sleeve for the governed
+`ai_optical_connectivity` / `optical_connectivity` cohort, admitted only when
+prior-close `IWM` 20-day momentum beat `SPY` by at least `30bp`. Across the
+three standard windows, aggregate EV improved `+0.4482` (`+5.68%`) and PnL
+improved `+$7,372.78`, with all three windows EV/PnL-positive:
+`late_strong +0.2918` EV / `+$3,332.91`, `mid_weak +0.1435` EV /
+`+$3,447.35`, and `old_thin +0.0129` EV / `+$592.52`. The target sample was
+10 paper trades across all three windows, max drawdown drift was only `0.07pp`,
+max single positive share was `32.80%`, and positive PnL HHI was `0.2785`.
+`ai_optical_paper_sleeve.py` now surfaces this as a shared default-off
+production-visible paper adapter with focused parity tests; live/default
+orders, core universe membership, ranking, sizing, and exits remain unchanged.
+
 Latest rejected default-off paper alpha result: `exp-20260517-015` tested
 whether the rotation-only state-surface sleeve should require a stronger
 `max(SPY, QQQ)` 20-day benchmark return before admitting paper candidates. The

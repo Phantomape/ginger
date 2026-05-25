@@ -444,6 +444,24 @@ accepted as feed/forward-evidence repair, not as strategy alpha; future
 broad-market activation still requires closed replacement-value outcomes and a
 separate Gate 1-4 promotion.
 
+Latest accepted AI optical paper result: `exp-20260525-003` keeps the core
+universe, core entries, ranking, sizing, exits, heat, news, LLM, and live
+orders unchanged, but adds a no-displacement fixed `$10k` paper sleeve for the
+governed `ai_optical_connectivity` / `optical_connectivity` cohort when
+prior-close `IWM` 20-day momentum beats `SPY` by at least `0.003`. The
+standard-window replay uses the same three date windows; target discovery uses
+the existing observation-universe OHLCV snapshots because the canonical core
+snapshots do not contain the governed optical target tickers. Aggregate EV
+improved `+0.4482` (`7.8918 -> 8.3400`) and PnL improved `+$7,372.78`
+(`$234,700.13 -> $242,072.91`), with all three windows positive:
+`late_strong +0.2918` EV / `+$3,332.91`, `mid_weak +0.1435` EV /
+`+$3,447.35`, and `old_thin +0.0129` EV / `+$592.52`. The sleeve observed 10
+target trades across all three windows, max drawdown drift was at most
+`0.07pp`, max single positive share was `32.80%`, and positive PnL HHI was
+`0.2785`. The rule now lives in shared `ai_optical_paper_sleeve.py`, is
+surfaced by the production default-off paper path, and has focused parity
+tests; live/default orders remain disabled.
+
 Latest accepted default-off SEC paper result: `exp-20260519-008` keeps core
 metrics unchanged and keeps the accepted financial-report T+1 paper queue,
 10-trading-day hold, max position count, periodic-report scalars, accepted

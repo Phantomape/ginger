@@ -300,6 +300,32 @@ Agent rule: this feed may create pending/open/closed default-off paper rows and
 replacement-value evidence. It must not enable orders, core universe expansion,
 ranking, or sizing without a separate Gate 1-4 activation experiment.
 
+### `quant/ai_optical_paper_sleeve.py`
+
+Purpose: maintain the default-off `AI_OPTICAL_IWM_CONFIRMED_PAPER` forward
+observation ledger for the accepted AI optical candidate-pool lead from
+`exp-20260525-003`.
+
+Candidate feed:
+
+- Derived from the daily persisted `universe_state` observation records.
+- Requires `theme == ai_optical_connectivity`,
+  `theme_segment == optical_connectivity`, `status in {pilot, research}`,
+  `history_class == full_history`, and `liquidity_tier in {ok, watch}`.
+- Excludes current core-trade-universe names and benchmarks, but keeps pilot
+  and research optical names because the experiment was a no-displacement
+  paper sleeve rather than a core promotion.
+
+The paper route reuses the normal trend/breakout signal stack for candidate
+signals, applies a free-data IWM/SPY confirmation gate
+(`IWM 20d momentum - SPY 20d momentum >= 0.003`), tracks fixed `$10k` paper
+notional, and emits pending/open/closed replacement-value rows only.
+
+Agent rule: this feed may collect forward replacement-value evidence. It must
+not enable orders, promote optical names into the core universe, alter pilot
+slots, ranking, sizing, or exits without a separate Gate 1-4 activation
+experiment and parity update.
+
 ### `quant/default_off_alpha_attribution.py`
 
 Purpose: roll up promotion readiness and blocker reasons across default-off
@@ -314,6 +340,7 @@ Inputs:
 - `low_deployment_etf_overlay`
 - `core_misfit_paper_sleeve`
 - `broad_market_paper_sleeve`
+- `ai_optical_paper_sleeve`
 
 Output keys:
 

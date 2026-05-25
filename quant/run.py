@@ -202,6 +202,11 @@ def main():
         empty_broad_market_paper_sleeve_snapshot,
         load_broad_market_candidate_universe,
     )
+    from ai_optical_paper_sleeve import (
+        build_ai_optical_candidate_universe_from_universe_state,
+        build_ai_optical_paper_sleeve_snapshot,
+        empty_ai_optical_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_observation_slot,
@@ -1511,6 +1516,157 @@ def main():
         )
 
     try:
+        ai_optical_source_state = dict(universe_governance_state or {})
+        if ai_optical_source_state:
+            ai_optical_source_state.setdefault(
+                "artifact_path",
+                str(daily_artifact_path("universe_state", today)),
+            )
+        ai_optical_candidate_universe = (
+            build_ai_optical_candidate_universe_from_universe_state(
+                ai_optical_source_state,
+                current_core_universe=universe,
+            )
+        )
+        ai_optical_tickers = set(ai_optical_candidate_universe.get("tickers") or [])
+        if ai_optical_tickers:
+            log.info(
+                "AI optical paper universe feed: status=%s tickers=%d",
+                ai_optical_candidate_universe.get("status"),
+                len(ai_optical_tickers),
+            )
+        ai_optical_ohlcv = {}
+        for ticker in sorted(ai_optical_tickers | {"IWM", "SPY"}):
+            if ticker in ohlcv_dict:
+                ai_optical_ohlcv[ticker] = ohlcv_dict[ticker]
+                continue
+            if ticker == "SPY" and spy_ohlcv is not None:
+                ai_optical_ohlcv[ticker] = spy_ohlcv
+                continue
+            try:
+                ai_optical_ohlcv[ticker] = _cached_ohlcv(ticker)
+            except Exception as ticker_error:
+                log.warning(
+                    "AI optical paper OHLCV unavailable for %s: %s",
+                    ticker,
+                    ticker_error,
+                )
+
+        ai_optical_features = {}
+        for ticker in sorted(ai_optical_tickers):
+            if features_dict.get(ticker):
+                ai_optical_features[ticker] = features_dict[ticker]
+                continue
+            try:
+                ticker_ohlcv = ai_optical_ohlcv.get(ticker)
+                if ticker_ohlcv is None:
+                    ticker_ohlcv = _cached_ohlcv(ticker)
+                ticker_earnings = earnings_dict.get(ticker)
+                if ticker_earnings is None:
+                    ticker_earnings = _cached_earnings(ticker)
+                ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
+                if ticker_features:
+                    ai_optical_features[ticker] = ticker_features
+            except Exception as ticker_error:
+                log.warning(
+                    "AI optical paper features unavailable for %s: %s",
+                    ticker,
+                    ticker_error,
+                )
+
+        ai_optical_candidate_signals = []
+        ai_optical_signal_features = {
+            ticker: features
+            for ticker, features in ai_optical_features.items()
+            if ticker in ai_optical_tickers
+        }
+        if ai_optical_signal_features:
+            ai_optical_feature_context = {
+                **features_dict,
+                **ai_optical_features,
+            }
+            ai_optical_candidate_signals = generate_signals(
+                ai_optical_signal_features,
+                market_context=market_context,
+                enabled_strategies=ENABLED_STRATEGIES,
+                breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
+            )
+            if BREAKOUT_RANK_BY_52W_HIGH:
+                ai_optical_candidate_signals = rank_signals_for_allocation(
+                    ai_optical_candidate_signals
+                )
+            _pre_ai_optical_dropped_signals = list(last_dropped_signals)
+            ai_optical_candidate_signals = enrich_signals(
+                ai_optical_candidate_signals,
+                ai_optical_feature_context,
+                atr_target_mult=atr_target_mult,
+            )
+            last_dropped_signals.clear()
+            last_dropped_signals.extend(_pre_ai_optical_dropped_signals)
+            if REGIME_AWARE_EXIT:
+                for s in ai_optical_candidate_signals:
+                    s["target_mult_used"] = exit_profile["target_mult"]
+                    s["regime_exit_bucket"] = exit_profile["bucket"]
+                    s["regime_exit_score"] = exit_profile["score"]
+            ai_optical_candidate_signals, _ai_optical_entry_filter_audit = (
+                filter_entry_signal_candidates(
+                    ai_optical_candidate_signals,
+                    open_positions=open_positions,
+                    market_regime=market_regime.get("regime", "").upper(),
+                    spy_pct_from_ma=spy_pct_from_ma,
+                    qqq_pct_from_ma=qqq_pct_from_ma,
+                )
+            )
+
+        ai_optical_current_prices = dict(current_prices)
+        ai_optical_open_prices = dict(current_open_prices)
+        for ticker, ohlcv in ai_optical_ohlcv.items():
+            if ohlcv is None or getattr(ohlcv, "empty", False):
+                continue
+            try:
+                if ticker not in ai_optical_current_prices:
+                    raw_close = ohlcv["Close"].iloc[-1]
+                    ai_optical_current_prices[ticker] = float(
+                        raw_close.item() if hasattr(raw_close, "item") else raw_close
+                    )
+                if ticker not in ai_optical_open_prices:
+                    raw_open = ohlcv["Open"].iloc[-1]
+                    ai_optical_open_prices[ticker] = float(
+                        raw_open.item() if hasattr(raw_open, "item") else raw_open
+                    )
+            except Exception:
+                pass
+
+        ai_optical_paper_sleeve = build_ai_optical_paper_sleeve_snapshot(
+            as_of=today_iso,
+            candidate_signals=ai_optical_candidate_signals,
+            ohlcv_by_ticker=ai_optical_ohlcv,
+            candidate_universe=ai_optical_candidate_universe,
+            open_prices=ai_optical_open_prices,
+            current_prices=ai_optical_current_prices,
+        )
+        if (
+            ai_optical_paper_sleeve.get("candidate_count", 0) > 0
+            or ai_optical_paper_sleeve.get("pending_count", 0) > 0
+            or ai_optical_paper_sleeve.get("open_position_count", 0) > 0
+            or ai_optical_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "AI optical paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                ai_optical_paper_sleeve.get("candidate_count", 0),
+                ai_optical_paper_sleeve.get("pending_count", 0),
+                ai_optical_paper_sleeve.get("open_position_count", 0),
+                ai_optical_paper_sleeve.get("closed_count_today", 0),
+                ai_optical_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"AI optical paper sleeve unavailable: {e}")
+        ai_optical_paper_sleeve = empty_ai_optical_paper_sleeve_snapshot(
+            today_iso,
+            "ai_optical_paper_sleeve_build_failed",
+        )
+
+    try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -1614,6 +1770,7 @@ def main():
         low_deployment_etf_overlay=low_deployment_etf_overlay,
         core_misfit_paper_sleeve=core_misfit_paper_sleeve,
         broad_market_paper_sleeve=broad_market_paper_sleeve,
+        ai_optical_paper_sleeve=ai_optical_paper_sleeve,
     )
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
@@ -1646,6 +1803,7 @@ def main():
     trend_signals_dict["low_deployment_etf_overlay"] = low_deployment_etf_overlay
     trend_signals_dict["core_misfit_paper_sleeve"] = core_misfit_paper_sleeve
     trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
+    trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -1685,6 +1843,7 @@ def main():
         low_deployment_etf_overlay = low_deployment_etf_overlay,
         core_misfit_paper_sleeve = core_misfit_paper_sleeve,
         broad_market_paper_sleeve = broad_market_paper_sleeve,
+        ai_optical_paper_sleeve = ai_optical_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -1730,6 +1889,7 @@ def main():
         "low_deployment_etf_overlay": low_deployment_etf_overlay,
         "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
         "broad_market_paper_sleeve": broad_market_paper_sleeve,
+        "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
