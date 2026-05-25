@@ -175,6 +175,22 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 - 把 default-off sleeve 的 paper PnL 直接并入 core metrics；
 - 在没有 closed forward rows 时为 paper uplift 找 promotion 借口。
 
+### 1.1 Volatility-contraction + QQQ confirmation lead
+
+2026-05-25 `exp-20260525-022` converted the rejected
+volatility-contraction top-1 paper sleeve into a stronger replay-only lead by
+adding one orthogonal, production-visible market field: `QQQ 20d return > SPY
+20d return` on the signal date. Three-window aggregate EV delta improved by
+`+1.2493` (`+15.83%`) and PnL by `$23,409.56`; late_strong moved from the
+exp-020 failure to a small positive `+$322.04`, with drawdown drift only
+`+0.02pp`.
+
+Next default action: do not retune volatility-compression, breakout, sector, or
+rank thresholds on the frozen sample. Build/track a default-off forward paper
+adapter with the same QQQ/SPY close-to-close field, replacement-value ledger,
+concentration guard, and production/backtest parity check before any live
+promotion discussion.
+
 ### 2. State-surface：从调 profile 转向解 concentration
 
 现状：
