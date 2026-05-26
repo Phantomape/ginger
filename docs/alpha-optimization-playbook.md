@@ -246,6 +246,32 @@ thresholds on the frozen sample. The next valid work is forward closed
 replacement-value collection for the exact top-2 adapter, or a genuinely
 orthogonal production-visible field after forward evidence arrives.
 
+
+### 1.2 Volume-breadth breakout lead
+
+机制结论：
+
+- `exp-20260526-013` 显示，免费 OHLCV 的市场内部结构字段可以改善候选池：
+  same-date up-volume breadth thrust + liquid breakout top-1 在三窗口里都提高
+  EV/PnL，且 drawdown 与集中度通过。
+- `exp-20260526-014` 后，该方向的正确边界是 shared default-off paper adapter，
+  用生产可见的 daily OHLCV + `SPY` 生成 forward ledger，而不是继续在冻结样本上
+  重扫 breadth / breakout / volume threshold。
+- 这条线索更像“候选池质量 + 市场参与度确认”，不同于已经冻结的 gap-and-hold、
+  smooth momentum、undercut reclaim、long-base、pocket-pivot、pullback-reclaim
+  机械形态 retread。
+
+保留规则：
+
+- 当前固定对象是 `VOLUME_BREADTH_BREAKOUT_PAPER` default-off paper adapter：
+  top-1/day、固定 `$10k` paper notional、next-open entry、10-trading-day close
+  exit、trade_enabled=false。
+- 下一步只能收集 closed forward replacement-value rows、concentration、
+  same-day core displacement / cash-relative value 和 kill-gate 状态。
+- 禁止在同一冻结样本上继续 retune up-volume breadth、market-up fraction、
+  above-50d fraction、candidate volume ratio、breakout lookback、top-1/top-N 或
+  fixed notional，除非有 forward rows 或一个真正新的生产可见确认字段。
+
 ### 2. State-surface：从调 profile 转向解 concentration
 
 现状：

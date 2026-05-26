@@ -73,6 +73,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/volatility_contraction/state.json",
         "volatility_contraction_paper_state.json",
     ),
+    "volume_breadth_breakout_paper_snapshots": (
+        "paper_sleeves/volume_breadth_breakout/snapshots.jsonl",
+        "volume_breadth_breakout_paper_snapshots.jsonl",
+    ),
+    "volume_breadth_breakout_paper_state": (
+        "paper_sleeves/volume_breadth_breakout/state.json",
+        "volume_breadth_breakout_paper_state.json",
+    ),
     "broad_market_paper_universe": (
         "state/broad_market_paper/universe.json",
         "broad_market_paper_universe.json",

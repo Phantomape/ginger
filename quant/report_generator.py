@@ -61,6 +61,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            broad_market_paper_sleeve=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
+                           volume_breadth_breakout_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -101,6 +102,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         broad_market_paper_sleeve (dict): Default-off broad-market leadership paper sleeve
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
+        volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -1914,6 +1916,72 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  {candidate.get('ticker', '?')}: "
                 f"ATR ratio={candidate.get('short_to_long_atr_ratio')} "
                 f"RS={candidate.get('candidate_day_rs_vs_spy')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if volume_breadth_breakout_paper_sleeve and (
+        volume_breadth_breakout_paper_sleeve.get("candidate_count", 0) > 0
+        or volume_breadth_breakout_paper_sleeve.get("pending_count", 0) > 0
+        or volume_breadth_breakout_paper_sleeve.get("open_position_count", 0) > 0
+        or volume_breadth_breakout_paper_sleeve.get("closed_count_today", 0) > 0
+        or volume_breadth_breakout_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("VOLUME-BREADTH BREAKOUT PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {volume_breadth_breakout_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {volume_breadth_breakout_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if volume_breadth_breakout_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {volume_breadth_breakout_paper_sleeve.get('error')}"
+            )
+        source = volume_breadth_breakout_paper_sleeve.get("candidate_universe") or {}
+        breadth = volume_breadth_breakout_paper_sleeve.get("volume_breadth_context") or {}
+        lines.append(
+            f"  Source: {source.get('status', 'unknown')}  |  "
+            f"Tickers: {source.get('ticker_count', 0)}"
+        )
+        lines.append(
+            f"  Breadth gate: {breadth.get('status', 'unknown')}  |  "
+            f"up-volume={breadth.get('volume_breadth_fraction')} "
+            f"market-up={breadth.get('market_up_fraction')} "
+            f"above-50d={breadth.get('above_50d_fraction')}"
+        )
+        lines.append(
+            f"  Candidates: {volume_breadth_breakout_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {volume_breadth_breakout_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {volume_breadth_breakout_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {volume_breadth_breakout_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {volume_breadth_breakout_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${volume_breadth_breakout_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${volume_breadth_breakout_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = volume_breadth_breakout_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (volume_breadth_breakout_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={candidate.get('volume_breadth_score')} "
+                f"RS={candidate.get('candidate_day_rs_vs_spy')} "
+                f"vol={candidate.get('volume_ratio_20')} "
                 f"notional={notional_text} (paper only)"
             )
 

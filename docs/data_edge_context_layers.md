@@ -383,6 +383,33 @@ experiment and parity update. The pocket-pivot fields are metadata only because
 top-2 expansion is default-off paper only until forward closed outcomes clear
 the promotion gate.
 
+### `quant/volume_breadth_breakout_paper_sleeve.py`
+
+Purpose: maintain the default-off `VOLUME_BREADTH_BREAKOUT_PAPER` forward
+observation ledger for the accepted shared-adapter replay from
+`exp-20260526-014`, which productionizes the positive replay-only
+`exp-20260526-013` breadth/internal-structure lead.
+
+Candidate route:
+
+- Uses the daily loaded OHLCV universe plus `SPY`.
+- Requires the fixed `volume_breadth_thrust_confirmed_breakout_v1` context:
+  at least 30 eligible tickers, up-volume spike breadth >= 12%, market-up
+  fraction >= 52%, and above-50d fraction >= 45%.
+- Requires the candidate to close above its prior 20-day high and prior 50-day
+  moving average, trade at least `$40m` signal-day dollar volume, have
+  signal-day volume ratio >= 1.25, and beat SPY on the signal day.
+- Emits ranked candidates but opens at most one paper entry per day, with fixed
+  `$10k` paper notional, next-open paper entry, 10-trading-day close exit,
+  closed outcomes, replacement-value summary, and concentration blockers.
+
+Agent rule: this sleeve may collect forward replacement-value evidence. It
+must not enable orders, expand the core universe, alter live ranking, sizing,
+exits, LLM/news, or consume live capital without a separate Gate 1-4 activation
+experiment and parity update. Do not retune the breadth, breakout, volume, or
+top-1 thresholds on the frozen sample; use forward rows or an orthogonal
+production-visible field.
+
 ### `quant/default_off_alpha_attribution.py`
 
 Purpose: roll up promotion readiness and blocker reasons across default-off
@@ -398,6 +425,7 @@ Inputs:
 - `core_misfit_paper_sleeve`
 - `broad_market_paper_sleeve`
 - `ai_optical_paper_sleeve`
+- `volume_breadth_breakout_paper_sleeve`
 
 Output keys:
 

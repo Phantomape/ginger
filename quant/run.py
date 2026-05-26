@@ -211,6 +211,10 @@ def main():
         build_volatility_contraction_paper_sleeve_snapshot,
         empty_volatility_contraction_paper_sleeve_snapshot,
     )
+    from volume_breadth_breakout_paper_sleeve import (
+        build_volume_breadth_breakout_paper_sleeve_snapshot,
+        empty_volume_breadth_breakout_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_observation_slot,
@@ -1716,6 +1720,49 @@ def main():
         )
 
     try:
+        volume_breadth_ohlcv = dict(ohlcv_dict)
+        volume_breadth_ohlcv["SPY"] = spy_ohlcv
+        volume_breadth_candidate_universe = {
+            "status": "daily_data_universe",
+            "tickers": sorted(
+                ticker
+                for ticker, frame in volume_breadth_ohlcv.items()
+                if frame is not None and str(ticker).upper() != "SPY"
+            ),
+        }
+        volume_breadth_breakout_paper_sleeve = (
+            build_volume_breadth_breakout_paper_sleeve_snapshot(
+                as_of=today_iso,
+                ohlcv_by_ticker=volume_breadth_ohlcv,
+                candidate_universe=volume_breadth_candidate_universe,
+                open_prices=current_open_prices,
+                current_prices=current_prices,
+            )
+        )
+        if (
+            volume_breadth_breakout_paper_sleeve.get("candidate_count", 0) > 0
+            or volume_breadth_breakout_paper_sleeve.get("pending_count", 0) > 0
+            or volume_breadth_breakout_paper_sleeve.get("open_position_count", 0) > 0
+            or volume_breadth_breakout_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Volume-breadth breakout paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                volume_breadth_breakout_paper_sleeve.get("candidate_count", 0),
+                volume_breadth_breakout_paper_sleeve.get("pending_count", 0),
+                volume_breadth_breakout_paper_sleeve.get("open_position_count", 0),
+                volume_breadth_breakout_paper_sleeve.get("closed_count_today", 0),
+                volume_breadth_breakout_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Volume-breadth breakout paper sleeve unavailable: {e}")
+        volume_breadth_breakout_paper_sleeve = (
+            empty_volume_breadth_breakout_paper_sleeve_snapshot(
+                today_iso,
+                "volume_breadth_breakout_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -1821,6 +1868,7 @@ def main():
         broad_market_paper_sleeve=broad_market_paper_sleeve,
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
+        volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
     )
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
@@ -1855,6 +1903,7 @@ def main():
     trend_signals_dict["broad_market_paper_sleeve"] = broad_market_paper_sleeve
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
+    trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -1896,6 +1945,7 @@ def main():
         broad_market_paper_sleeve = broad_market_paper_sleeve,
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
+        volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -1943,6 +1993,7 @@ def main():
         "broad_market_paper_sleeve": broad_market_paper_sleeve,
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
+        "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
