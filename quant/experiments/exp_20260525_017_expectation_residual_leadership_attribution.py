@@ -303,6 +303,46 @@ def classify_expectation(row: dict[str, Any] | None) -> dict[str, Any]:
     }
 
 
+def classify_scout_expectation(row: dict[str, Any] | None) -> dict[str, Any]:
+    """Classify expectation drift for reconstructed scout analysis.
+
+    Unlike the primary bucket, this view may use non-PIT/reconstructed rows
+    when a 7d delta exists. It is explicitly not eligible for promotion.
+    """
+    if not row:
+        return {
+            "scout_expectation_positive": False,
+            "scout_expectation_join_status": "missing_ledger_row",
+            "scout_expectation_coverage_gap": "missing_ledger_row",
+            "scout_eps_estimate_delta_7d": None,
+            "scout_source_quality": "missing",
+            "scout_pit_caveat": None,
+        }
+    delta_7d = _float(row.get("eps_estimate_delta_7d"), None)
+    source_quality = (
+        "pit_usable"
+        if row.get("estimate_revision_usable")
+        else "non_pit_reconstructed"
+    )
+    if delta_7d is None:
+        return {
+            "scout_expectation_positive": False,
+            "scout_expectation_join_status": f"{source_quality}_missing_7d_delta",
+            "scout_expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+            "scout_eps_estimate_delta_7d": None,
+            "scout_source_quality": source_quality,
+            "scout_pit_caveat": row.get("pit_caveat"),
+        }
+    return {
+        "scout_expectation_positive": delta_7d > 0,
+        "scout_expectation_join_status": f"{source_quality}_with_7d_delta",
+        "scout_expectation_coverage_gap": None,
+        "scout_eps_estimate_delta_7d": delta_7d,
+        "scout_source_quality": source_quality,
+        "scout_pit_caveat": row.get("pit_caveat"),
+    }
+
+
 def classify_bucket(expectation_positive: bool, residual_leader: bool) -> str:
     if expectation_positive and residual_leader:
         return "A_positive_expectation_and_residual_leader"
@@ -491,6 +531,7 @@ def annotate_candidates(
         features = features_by_date.get(as_of, {})
         ledger_row = ledger_map.get((as_of, ticker))
         expectation = classify_expectation(ledger_row)
+        scout_expectation = classify_scout_expectation(ledger_row)
         residual = residual_context_for_candidate(candidate, features)
         base_price = _float(candidate.get("raw_price"), None)
         feature_close = _float((features.get(ticker) or {}).get("close"), None)
@@ -509,14 +550,21 @@ def annotate_candidates(
             bool(expectation["expectation_positive"]),
             bool(residual["residual_leader"]),
         )
+        scout_bucket = classify_bucket(
+            bool(scout_expectation["scout_expectation_positive"]),
+            bool(residual["residual_leader"]),
+        )
         annotated.append(
             {
                 **candidate,
                 **expectation,
+                **scout_expectation,
                 **residual,
                 "bucket": bucket,
+                "scout_bucket": scout_bucket,
                 "ledger_joined": ledger_row is not None,
                 "ledger_usable": bool(ledger_row and ledger_row.get("estimate_revision_usable")),
+                "pit_caveat": ledger_row.get("pit_caveat") if ledger_row else None,
                 "eps_estimate_delta_prev": ledger_row.get("eps_estimate_delta_prev") if ledger_row else None,
                 "revision_direction_prev": ledger_row.get("revision_direction_prev") if ledger_row else None,
                 "forward_outcomes": forward,
@@ -668,6 +716,55 @@ def build_coverage(annotated: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _scout_rows(annotated: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows = []
+    for row in annotated:
+        scout_row = dict(row)
+        scout_row["bucket"] = row.get("scout_bucket")
+        scout_row["expectation_positive"] = row.get("scout_expectation_positive")
+        scout_row["expectation_join_status"] = row.get("scout_expectation_join_status")
+        scout_row["expectation_coverage_gap"] = row.get("scout_expectation_coverage_gap")
+        scout_row["eps_estimate_delta_7d"] = row.get("scout_eps_estimate_delta_7d")
+        rows.append(scout_row)
+    return rows
+
+
+def build_reconstructed_scout(annotated: list[dict[str, Any]]) -> dict[str, Any]:
+    rows = _scout_rows(annotated)
+    bucket_summary = build_bucket_summary(rows)
+    coverage = build_coverage(rows)
+    gate_like_check = evaluate_gate(bucket_summary, coverage)
+    return {
+        "scope": "non_pit_reconstructed_scout_only",
+        "can_promote": False,
+        "not_gate4_evidence": True,
+        "data_policy": (
+            "Uses eps_estimate_delta_7d from both PIT-usable and non-PIT/"
+            "reconstructed estimate_revision_ledger rows. This can guide "
+            "research direction but cannot pass the primary gate."
+        ),
+        "source_quality_counts": dict(
+            Counter(row.get("scout_source_quality") for row in annotated)
+        ),
+        "pit_caveat_counts": dict(
+            Counter(
+                row.get("scout_pit_caveat") or "none"
+                for row in annotated
+                if row.get("scout_source_quality") == "non_pit_reconstructed"
+            )
+        ),
+        "positive_expectation_candidates": coverage["positive_expectation_candidates"],
+        "bucket_a_closed_5d_outcomes": gate_like_check.get("bucket_a_closed_5d_outcomes"),
+        "total_usable_candidates": gate_like_check.get("total_usable_candidates"),
+        "gate_like_check": {
+            **gate_like_check,
+            "decision_scope": "scout_only_not_promotable",
+        },
+        "coverage": coverage,
+        "bucket_summary": bucket_summary,
+    }
+
+
 def _avg_return(bucket_summary: dict[str, Any], bucket: str, horizon: str) -> float | None:
     return bucket_summary[bucket]["horizons"][horizon]["avg_return"]
 
@@ -767,6 +864,13 @@ def _compact_annotated_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "expectation_positive": row.get("expectation_positive"),
                 "expectation_join_status": row.get("expectation_join_status"),
                 "eps_estimate_delta_7d": row.get("eps_estimate_delta_7d"),
+                "pit_caveat": row.get("pit_caveat"),
+                "scout_bucket": row.get("scout_bucket"),
+                "scout_expectation_positive": row.get("scout_expectation_positive"),
+                "scout_expectation_join_status": row.get("scout_expectation_join_status"),
+                "scout_eps_estimate_delta_7d": row.get("scout_eps_estimate_delta_7d"),
+                "scout_source_quality": row.get("scout_source_quality"),
+                "scout_pit_caveat": row.get("scout_pit_caveat"),
                 "residual_leader": row.get("residual_leader"),
                 "residual_state": row.get("residual_state"),
                 "residual_strength_score": row.get("residual_strength_score"),
@@ -832,6 +936,50 @@ def _artifact_markdown(payload: dict[str, Any]) -> str:
                 h10_avg="" if h10["avg_return"] is None else f"{h10['avg_return']:.4%}",
             )
         )
+    scout = payload.get("reconstructed_scout")
+    if scout:
+        lines.extend(
+            [
+                "",
+                "## Reconstructed Scout",
+                "",
+                "Non-PIT reconstructed rows are shown only for research triage. They cannot pass the primary gate or promote live logic.",
+                "",
+                "```json",
+                json.dumps(
+                    {
+                        "scope": scout["scope"],
+                        "can_promote": scout["can_promote"],
+                        "not_gate4_evidence": scout["not_gate4_evidence"],
+                        "source_quality_counts": scout["source_quality_counts"],
+                        "pit_caveat_counts": scout["pit_caveat_counts"],
+                        "positive_expectation_candidates": scout["positive_expectation_candidates"],
+                        "bucket_a_closed_5d_outcomes": scout["bucket_a_closed_5d_outcomes"],
+                        "total_usable_candidates": scout["total_usable_candidates"],
+                        "decision": scout["gate_like_check"]["decision"],
+                    },
+                    indent=2,
+                    sort_keys=True,
+                ),
+                "```",
+                "",
+                "| Scout Bucket | Candidates | 5d Closed | 5d Avg Return | 10d Closed | 10d Avg Return |",
+                "|---|---:|---:|---:|---:|---:|",
+            ]
+        )
+        for bucket, row in scout["bucket_summary"].items():
+            h5 = row["horizons"]["5d"]
+            h10 = row["horizons"]["10d"]
+            lines.append(
+                "| {bucket} | {candidates} | {h5_count} | {h5_avg} | {h10_count} | {h10_avg} |".format(
+                    bucket=bucket,
+                    candidates=row["candidate_count"],
+                    h5_count=h5["closed_outcomes"],
+                    h5_avg="" if h5["avg_return"] is None else f"{h5['avg_return']:.4%}",
+                    h10_count=h10["closed_outcomes"],
+                    h10_avg="" if h10["avg_return"] is None else f"{h10['avg_return']:.4%}",
+                )
+            )
     lines.extend(
         [
             "",
@@ -863,6 +1011,7 @@ def build_payload(data_dir: Path | None = None) -> dict[str, Any]:
     bucket_summary = build_bucket_summary(annotated)
     coverage = build_coverage(annotated)
     gate = evaluate_gate(bucket_summary, coverage)
+    reconstructed_scout = build_reconstructed_scout(annotated)
     field_check = _open_position_field_check()
     decision = gate["decision"]
     status = "observed_only_data_gap" if decision == "observed_only_data_gap" else (
@@ -916,6 +1065,11 @@ def build_payload(data_dir: Path | None = None) -> dict[str, Any]:
             },
             "positive_expectation_definition": "estimate_revision_usable && eps_estimate_delta_7d > 0",
             "no_expectation_fallback": True,
+            "reconstructed_scout_policy": (
+                "Non-PIT/reconstructed estimate_revision_ledger rows may be "
+                "reported only in reconstructed_scout. They cannot satisfy "
+                "the primary gate or promote live strategy behavior."
+            ),
             "residual_leader_states": sorted(RESIDUAL_LEADER_STATES),
             "forward_horizons": list(FORWARD_HORIZONS),
             "paper_notional_usd": PAPER_NOTIONAL_USD,
@@ -992,6 +1146,7 @@ def build_payload(data_dir: Path | None = None) -> dict[str, Any]:
         "coverage": coverage,
         "bucket_summary": bucket_summary,
         "gate": gate,
+        "reconstructed_scout": reconstructed_scout,
         "annotated_candidates": _compact_annotated_rows(annotated),
         "before_metrics": {
             "accepted_core_expected_value_score_sum": 7.8941,
@@ -1081,6 +1236,7 @@ def _experiment_log_entry(payload: dict[str, Any]) -> dict[str, Any]:
             "coverage",
             "bucket_summary",
             "gate",
+            "reconstructed_scout",
             "before_metrics",
             "after_metrics",
             "delta_metrics",

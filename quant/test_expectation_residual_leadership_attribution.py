@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "experiments"))
 from exp_20260525_017_expectation_residual_leadership_attribution import (  # noqa: E402
     classify_bucket,
     classify_expectation,
+    classify_scout_expectation,
     extract_candidate_rows,
     residual_context_for_candidate,
 )
@@ -51,6 +52,22 @@ def test_expectation_join_uses_primary_7d_delta_without_fallback():
     )
     assert unusable["expectation_positive"] is False
     assert unusable["expectation_join_status"] == "ledger_row_not_usable"
+
+
+def test_reconstructed_scout_can_flag_unusable_positive_delta():
+    row = {
+        "estimate_revision_usable": False,
+        "eps_estimate_delta_7d": 0.05,
+        "pit_caveat": "current_snapshot_created_after_asof",
+    }
+
+    primary = classify_expectation(row)
+    scout = classify_scout_expectation(row)
+
+    assert primary["expectation_positive"] is False
+    assert scout["scout_expectation_positive"] is True
+    assert scout["scout_source_quality"] == "non_pit_reconstructed"
+    assert scout["scout_pit_caveat"] == "current_snapshot_created_after_asof"
 
 
 def test_extract_candidate_rows_ignores_feature_only_trend_rows():

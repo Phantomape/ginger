@@ -12,6 +12,11 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from data_paths import resolve_daily_artifact_path
+except ImportError:  # pragma: no cover - package import fallback
+    from quant.data_paths import resolve_daily_artifact_path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_ROOT = REPO_ROOT / "data"
@@ -103,12 +108,12 @@ def artifact_specs(
     non_root = resolve_non_ohlcv_dir(non_ohlcv_dir, data_root=root)
     tag = date_key(trade_date)
     specs = [
-        ArtifactSpec("earnings_snapshot", root / f"earnings_snapshot_{tag}.json", "json"),
+        ArtifactSpec("earnings_snapshot", resolve_daily_artifact_path("earnings_snapshot", tag, root), "json"),
         ArtifactSpec("daily_non_ohlcv_snapshot", non_root / f"daily_non_ohlcv_snapshot_{tag}.json", "json"),
         ArtifactSpec("sec_filing_events", non_root / f"sec_filing_events_{tag}.jsonl", "jsonl"),
         ArtifactSpec("sec_filing_text", non_root / f"sec_filing_text_{tag}.jsonl", "jsonl"),
         ArtifactSpec("form4_transactions", non_root / f"form4_transactions_{tag}.jsonl", "jsonl"),
-        ArtifactSpec("event_snapshot", root / f"event_snapshot_{tag}.json", "json"),
+        ArtifactSpec("event_snapshot", resolve_daily_artifact_path("event_snapshot", tag, root), "json"),
     ]
     if include_filing_features:
         specs.append(

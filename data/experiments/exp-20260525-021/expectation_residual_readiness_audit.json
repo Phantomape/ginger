@@ -1,0 +1,1567 @@
+{
+  "after_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "bucket_a_closed_5d_outcomes": 0,
+    "candidate_objects_total": 21,
+    "ready_to_rerun_attribution": false,
+    "strategy_behavior_changed": false,
+    "total_usable_candidates": 20
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Read-only readiness audit for the existing expectation-residual leadership attribution experiment.",
+  "change_type": "measurement_repair_readiness_audit",
+  "changed_variable": "expectation_residual_readiness_audit_v1",
+  "component": "quant/experiments/exp_20260525_021_expectation_residual_readiness_audit.py",
+  "date_range": {
+    "candidate_artifacts": "data/daily/signals/quant/quant_signals_*.json",
+    "estimate_revision_ledgers": "data/non_ohlcv/estimate_revision_ledger_*.jsonl",
+    "ohlcv_sources": [
+      "data/ohlcv/ohlcv_snapshot_*.json",
+      "data/daily/signals/trend/trend_signals_*.json"
+    ]
+  },
+  "decision": "observed_only_data_gap",
+  "decision_rule": "If readiness_gate.ready_to_rerun_attribution is false, do not advance to PEAD paper sleeve or ranking-score replacement tests.",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_delta": 0,
+    "total_pnl_sum_delta": 0.0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260525-021",
+  "gate1": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "baseline_artifact": "data/experiments/exp-20260517-009/",
+    "baseline_protocol": "docs/backtesting.md canonical three fixed windows",
+    "note": "This readiness audit is read-only; no before/after core metrics are changed.",
+    "passed": true
+  },
+  "gate2": {
+    "field_check": {
+      "checked_positions": 8,
+      "exists": true,
+      "missing_required_fields": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json"
+    },
+    "passed": true,
+    "rule_dependencies": [
+      "daily quant candidate objects",
+      "estimate_revision_ledger rows by as_of_date/ticker",
+      "quant features for residual strength",
+      "local OHLCV/trend close rows for forward returns"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "candidate_pool_changed": false,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "note": "Passing this gate only permits rerunning exp-20260525-017 for read-only interpretation; it does not promote PEAD, ranking, sizing, or live behavior.",
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "measurement repair for the expectation-residual alpha path: determine whether the existing read-only attribution has enough coverage to be interpreted.",
+    "2_history_check": "exp-20260525-017 found Bucket A = 0 and total usable 20, so the alpha result is coverage-blocked rather than accepted or rejected.",
+    "3_single_causal_variable": "expectation_residual_readiness_audit_v1",
+    "4_acceptance_standard": "Readiness gate: Bucket A closed 5d outcomes >= 8 and total 5d closed candidates >= 30, with all non-ready reasons explained.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260525_021_expectation_residual_readiness_audit.py"
+  },
+  "hypothesis": "Expectation drift x residual leadership remains blocked until PIT estimate-revision joins, residual context, and closed forward outcomes produce enough Bucket A observations for attribution.",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "expectation_residual_leadership",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260525-017",
+    "exp-20260524-012"
+  ],
+  "new_evidence_type": "expectation_residual_coverage_readiness_audit",
+  "next_evidence_needed": "Keep accumulating PIT estimate-revision ledgers and daily candidate objects; rerun this audit until Bucket A has >=8 closed 5d outcomes and total usable candidates >=30.",
+  "parameters": {
+    "alpha_interpretation_guardrails": {
+      "max_single_ticker_positive_share": 0.5,
+      "max_top5_positive_share": 0.6
+    },
+    "anti_js": "No JavaScript was used.",
+    "exact_rerun_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260525_017_expectation_residual_leadership_attribution.py",
+    "forward_horizons": [
+      5,
+      10,
+      20
+    ],
+    "no_expectation_fallback": true,
+    "positive_expectation_definition": "estimate_revision_usable && eps_estimate_delta_7d > 0",
+    "readiness_gate_thresholds": {
+      "min_bucket_a_5d_outcomes": 8,
+      "min_total_usable_candidates": 30
+    },
+    "residual_leader_states": [
+      "residual_leader",
+      "strong_residual_leader"
+    ]
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "read_only": true,
+  "readiness_gate": {
+    "bucket_a_closed_5d_outcomes": 0,
+    "data_gap_reasons": [
+      "bucket_a_closed_5d_outcomes",
+      "total_usable_candidates"
+    ],
+    "decision": "observed_only_data_gap",
+    "exact_rerun_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260525_017_expectation_residual_leadership_attribution.py",
+    "interpretation_rule": "Only rerun and interpret exp-20260525-017 when this readiness gate passes.",
+    "minimum_bucket_a_closed_5d_outcomes": 8,
+    "minimum_total_usable_candidates": 30,
+    "passed": false,
+    "ready_to_rerun_attribution": false,
+    "reason": "insufficient_bucket_or_total_sample",
+    "total_usable_candidates": 20
+  },
+  "readiness_summary": {
+    "bucket_a_readiness_blocking_reason_counts": {
+      "expectation:ledger_row_not_usable": 1,
+      "expectation:missing_eps_estimate_delta_7d": 7,
+      "expectation:missing_ledger_row": 13,
+      "forward_5d:missing_5d_forward_price": 1,
+      "residual:insufficient_residual_inputs": 13,
+      "residual:not_residual_leader_neutral": 1
+    },
+    "bucket_counts": {
+      "A_positive_expectation_and_residual_leader": 0,
+      "B_positive_expectation_only": 0,
+      "C_residual_leader_only": 7,
+      "D_neither": 14
+    },
+    "bucket_readiness": {
+      "A_positive_expectation_and_residual_leader": {
+        "bucket_a_readiness_blocking_reason_counts": {},
+        "candidate_count": 0,
+        "candidate_source_breakdown": {},
+        "eps_estimate_delta_30d_available": 0,
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 0,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 0,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "record_type_breakdown": {},
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0,
+        "ticker_count": 0
+      },
+      "B_positive_expectation_only": {
+        "bucket_a_readiness_blocking_reason_counts": {},
+        "candidate_count": 0,
+        "candidate_source_breakdown": {},
+        "eps_estimate_delta_30d_available": 0,
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 0,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 0,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "record_type_breakdown": {},
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0,
+        "ticker_count": 0
+      },
+      "C_residual_leader_only": {
+        "bucket_a_readiness_blocking_reason_counts": {
+          "expectation:missing_eps_estimate_delta_7d": 7
+        },
+        "candidate_count": 7,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.deferred_breakout_signals": 3,
+          "pilot_signals": 4
+        },
+        "eps_estimate_delta_30d_available": 0,
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 7,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 7
+            },
+            "missing": 7
+          },
+          "5d": {
+            "closed": 7,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 7,
+        "ledger_usable_candidates": 7,
+        "positive_expectation_candidates": 0,
+        "record_type_breakdown": {
+          "deferred_breakout_signal": 3,
+          "selected_pilot_signal": 4
+        },
+        "residual_context_ok_candidates": 7,
+        "residual_leader_candidates": 7,
+        "ticker_count": 3
+      },
+      "D_neither": {
+        "bucket_a_readiness_blocking_reason_counts": {
+          "expectation:ledger_row_not_usable": 1,
+          "expectation:missing_ledger_row": 13,
+          "forward_5d:missing_5d_forward_price": 1,
+          "residual:insufficient_residual_inputs": 13,
+          "residual:not_residual_leader_neutral": 1
+        },
+        "candidate_count": 14,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.deferred_breakout_signals": 1,
+          "entry_execution_plan.slot_sliced_signals": 1,
+          "signals": 12
+        },
+        "eps_estimate_delta_30d_available": 0,
+        "eps_estimate_delta_7d_available": 1,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 13,
+            "gap_reason_counts": {
+              "missing_10d_forward_price": 1
+            },
+            "missing": 1
+          },
+          "20d": {
+            "closed": 13,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 1
+            },
+            "missing": 1
+          },
+          "5d": {
+            "closed": 13,
+            "gap_reason_counts": {
+              "missing_5d_forward_price": 1
+            },
+            "missing": 1
+          }
+        },
+        "ledger_joined_candidates": 1,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "record_type_breakdown": {
+          "deferred_breakout_signal": 1,
+          "selected_signal": 12,
+          "slot_sliced_signal": 1
+        },
+        "residual_context_ok_candidates": 1,
+        "residual_leader_candidates": 0,
+        "ticker_count": 10
+      }
+    },
+    "candidate_objects_total": 21,
+    "candidate_readiness_rows": [
+      {
+        "as_of_date": "2026-03-13",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "MU"
+      },
+      {
+        "as_of_date": "2026-04-10",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "TSM"
+      },
+      {
+        "as_of_date": "2026-04-10",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "NFLX"
+      },
+      {
+        "as_of_date": "2026-04-12",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "GE"
+      },
+      {
+        "as_of_date": "2026-04-12",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "UNH"
+      },
+      {
+        "as_of_date": "2026-04-13",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "GE"
+      },
+      {
+        "as_of_date": "2026-04-13",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "UNH"
+      },
+      {
+        "as_of_date": "2026-04-14",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "breakout_long",
+        "ticker": "AMZN"
+      },
+      {
+        "as_of_date": "2026-04-14",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "GE"
+      },
+      {
+        "as_of_date": "2026-04-14",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "earnings_event_long",
+        "ticker": "UNH"
+      },
+      {
+        "as_of_date": "2026-04-14",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "trend_long",
+        "ticker": "CRDO"
+      },
+      {
+        "as_of_date": "2026-04-22",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "selected_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": true,
+        "strategy": "breakout_long",
+        "ticker": "ISRG"
+      },
+      {
+        "as_of_date": "2026-04-29",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_ledger_row",
+          "residual:insufficient_residual_inputs"
+        ],
+        "candidate_source": "entry_execution_plan.slot_sliced_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_ledger_row",
+        "expectation_join_status": "missing_ledger_row",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": true,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": null,
+          "5d": null
+        },
+        "ledger_joined": false,
+        "ledger_usable": false,
+        "record_type": "slot_sliced_signal",
+        "residual_context_status": "insufficient_residual_inputs",
+        "residual_leader": false,
+        "residual_state": null,
+        "residual_strength_score": null,
+        "selected_signal": false,
+        "strategy": "trend_long",
+        "ticker": "V"
+      },
+      {
+        "as_of_date": "2026-05-08",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "pilot_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "selected_pilot_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.881765,
+        "selected_signal": true,
+        "strategy": "breakout_long",
+        "ticker": "INTC"
+      },
+      {
+        "as_of_date": "2026-05-08",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "entry_execution_plan.deferred_breakout_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "deferred_breakout_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.595641,
+        "selected_signal": false,
+        "strategy": "breakout_long",
+        "ticker": "MU"
+      },
+      {
+        "as_of_date": "2026-05-09",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "pilot_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "selected_pilot_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.881765,
+        "selected_signal": true,
+        "strategy": "breakout_long",
+        "ticker": "INTC"
+      },
+      {
+        "as_of_date": "2026-05-09",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "entry_execution_plan.deferred_breakout_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "deferred_breakout_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.595641,
+        "selected_signal": false,
+        "strategy": "breakout_long",
+        "ticker": "MU"
+      },
+      {
+        "as_of_date": "2026-05-10",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "pilot_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "selected_pilot_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.881765,
+        "selected_signal": true,
+        "strategy": "breakout_long",
+        "ticker": "INTC"
+      },
+      {
+        "as_of_date": "2026-05-10",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "entry_execution_plan.deferred_breakout_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "deferred_breakout_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.595641,
+        "selected_signal": false,
+        "strategy": "breakout_long",
+        "ticker": "MU"
+      },
+      {
+        "as_of_date": "2026-05-11",
+        "bucket": "C_residual_leader_only",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:missing_eps_estimate_delta_7d"
+        ],
+        "candidate_source": "pilot_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": null,
+        "expectation_coverage_gap": "missing_eps_estimate_delta_7d",
+        "expectation_join_status": "usable_ledger_missing_7d_delta",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": true,
+          "20d": false,
+          "5d": true
+        },
+        "forward_gap_reasons": {
+          "10d": null,
+          "20d": "missing_20d_forward_price",
+          "5d": null
+        },
+        "ledger_joined": true,
+        "ledger_usable": true,
+        "record_type": "selected_pilot_signal",
+        "residual_context_status": "ok",
+        "residual_leader": true,
+        "residual_state": "strong_residual_leader",
+        "residual_strength_score": 0.12049,
+        "selected_signal": true,
+        "strategy": "breakout_long",
+        "ticker": "COHR"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "bucket": "D_neither",
+        "bucket_a_5d_ready": false,
+        "bucket_a_readiness_blockers": [
+          "expectation:ledger_row_not_usable",
+          "residual:not_residual_leader_neutral",
+          "forward_5d:missing_5d_forward_price"
+        ],
+        "candidate_source": "entry_execution_plan.deferred_breakout_signals",
+        "eps_estimate_delta_30d": null,
+        "eps_estimate_delta_7d": 0.0,
+        "expectation_coverage_gap": "ledger_row_not_usable",
+        "expectation_join_status": "ledger_row_not_usable",
+        "expectation_positive": false,
+        "forward_close_availability": {
+          "10d": false,
+          "20d": false,
+          "5d": false
+        },
+        "forward_gap_reasons": {
+          "10d": "missing_10d_forward_price",
+          "20d": "missing_20d_forward_price",
+          "5d": "missing_5d_forward_price"
+        },
+        "ledger_joined": true,
+        "ledger_usable": false,
+        "record_type": "deferred_breakout_signal",
+        "residual_context_status": "ok",
+        "residual_leader": false,
+        "residual_state": "neutral",
+        "residual_strength_score": -0.01248,
+        "selected_signal": false,
+        "strategy": "breakout_long",
+        "ticker": "GS"
+      }
+    ],
+    "candidate_source_breakdown": {
+      "entry_execution_plan.deferred_breakout_signals": 4,
+      "entry_execution_plan.slot_sliced_signals": 1,
+      "pilot_signals": 4,
+      "signals": 12
+    },
+    "daily_candidate_coverage": {
+      "2026-03-13": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 1
+        },
+        "candidate_count": 1,
+        "candidate_source_breakdown": {
+          "signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-04-10": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 2
+        },
+        "candidate_count": 2,
+        "candidate_source_breakdown": {
+          "signals": 2
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-04-12": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 2
+        },
+        "candidate_count": 2,
+        "candidate_source_breakdown": {
+          "signals": 2
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-04-13": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 2
+        },
+        "candidate_count": 2,
+        "candidate_source_breakdown": {
+          "signals": 2
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-04-14": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 4
+        },
+        "candidate_count": 4,
+        "candidate_source_breakdown": {
+          "signals": 4
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 4,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 4,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 4,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-04-22": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 1
+        },
+        "candidate_count": 1,
+        "candidate_source_breakdown": {
+          "signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-04-29": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 1
+        },
+        "candidate_count": 1,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.slot_sliced_signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "5d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 0,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 0,
+        "residual_leader_candidates": 0
+      },
+      "2026-05-08": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 2,
+          "D_neither": 0
+        },
+        "candidate_count": 2,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.deferred_breakout_signals": 1,
+          "pilot_signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 2
+            },
+            "missing": 2
+          },
+          "5d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 2,
+        "ledger_usable_candidates": 2,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 2,
+        "residual_leader_candidates": 2
+      },
+      "2026-05-09": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 2,
+          "D_neither": 0
+        },
+        "candidate_count": 2,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.deferred_breakout_signals": 1,
+          "pilot_signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 2
+            },
+            "missing": 2
+          },
+          "5d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 2,
+        "ledger_usable_candidates": 2,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 2,
+        "residual_leader_candidates": 2
+      },
+      "2026-05-10": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 2,
+          "D_neither": 0
+        },
+        "candidate_count": 2,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.deferred_breakout_signals": 1,
+          "pilot_signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 2
+            },
+            "missing": 2
+          },
+          "5d": {
+            "closed": 2,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 2,
+        "ledger_usable_candidates": 2,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 2,
+        "residual_leader_candidates": 2
+      },
+      "2026-05-11": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 1,
+          "D_neither": 0
+        },
+        "candidate_count": 1,
+        "candidate_source_breakdown": {
+          "pilot_signals": 1
+        },
+        "eps_estimate_delta_7d_available": 0,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 1
+            },
+            "missing": 1
+          },
+          "5d": {
+            "closed": 1,
+            "gap_reason_counts": {},
+            "missing": 0
+          }
+        },
+        "ledger_joined_candidates": 1,
+        "ledger_usable_candidates": 1,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 1,
+        "residual_leader_candidates": 1
+      },
+      "2026-05-20": {
+        "bucket_counts": {
+          "A_positive_expectation_and_residual_leader": 0,
+          "B_positive_expectation_only": 0,
+          "C_residual_leader_only": 0,
+          "D_neither": 1
+        },
+        "candidate_count": 1,
+        "candidate_source_breakdown": {
+          "entry_execution_plan.deferred_breakout_signals": 1
+        },
+        "eps_estimate_delta_7d_available": 1,
+        "forward_close_availability": {
+          "10d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_10d_forward_price": 1
+            },
+            "missing": 1
+          },
+          "20d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_20d_forward_price": 1
+            },
+            "missing": 1
+          },
+          "5d": {
+            "closed": 0,
+            "gap_reason_counts": {
+              "missing_5d_forward_price": 1
+            },
+            "missing": 1
+          }
+        },
+        "ledger_joined_candidates": 1,
+        "ledger_usable_candidates": 0,
+        "positive_expectation_candidates": 0,
+        "residual_context_ok_candidates": 1,
+        "residual_leader_candidates": 0
+      }
+    },
+    "estimate_revision_delta_availability": {
+      "eps_estimate_delta_30d_available": 0,
+      "eps_estimate_delta_7d_available": 1
+    },
+    "estimate_revision_ledger_join_coverage": {
+      "expectation_join_status_counts": {
+        "ledger_row_not_usable": 1,
+        "missing_ledger_row": 13,
+        "usable_ledger_missing_7d_delta": 7
+      },
+      "ledger_joined_candidates": 8,
+      "ledger_usable_candidates": 7,
+      "positive_expectation_candidates": 0
+    },
+    "forward_close_availability": {
+      "10d": {
+        "closed": 20,
+        "gap_reason_counts": {
+          "missing_10d_forward_price": 1
+        },
+        "missing": 1
+      },
+      "20d": {
+        "closed": 13,
+        "gap_reason_counts": {
+          "missing_20d_forward_price": 8
+        },
+        "missing": 8
+      },
+      "5d": {
+        "closed": 20,
+        "gap_reason_counts": {
+          "missing_5d_forward_price": 1
+        },
+        "missing": 1
+      }
+    },
+    "record_type_breakdown": {
+      "deferred_breakout_signal": 4,
+      "selected_pilot_signal": 4,
+      "selected_signal": 12,
+      "slot_sliced_signal": 1
+    },
+    "residual_context_coverage": {
+      "residual_context_ok_candidates": 8,
+      "residual_context_status_counts": {
+        "insufficient_residual_inputs": 13,
+        "ok": 8
+      },
+      "residual_leader_candidates": 7,
+      "residual_leader_states": [
+        "residual_leader",
+        "strong_residual_leader"
+      ]
+    }
+  },
+  "rejection_reason": "insufficient expectation-residual readiness coverage",
+  "related_files": [
+    "quant/experiments/exp_20260525_021_expectation_residual_readiness_audit.py",
+    "data/experiments/exp-20260525-021/expectation_residual_readiness_audit.json",
+    "experiments/logs/exp-20260525-021.json",
+    "experiments/tickets/exp-20260525-021.json",
+    "experiments/artifacts/exp-20260525-021_expectation_residual_readiness_audit.md",
+    "docs/experiment_log.jsonl"
+  ],
+  "single_causal_variable": "expectation_residual_readiness_audit_v1",
+  "status": "observed_only_data_gap",
+  "timestamp": "2026-05-25T17:38:44Z",
+  "trial_family": "expectation_residual_readiness_audit",
+  "trial_variant_id": "readiness_audit_v1"
+}

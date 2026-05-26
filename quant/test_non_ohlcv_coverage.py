@@ -65,6 +65,29 @@ def test_coverage_record_marks_complete_and_manifest_latest(tmp_path: Path) -> N
     assert latest["2026-05-04"]["mode"] == "daily"
 
 
+def test_coverage_accepts_organized_daily_snapshot_paths(tmp_path: Path) -> None:
+    _write_complete_day(tmp_path)
+    tag = "20260504"
+
+    (tmp_path / f"earnings_snapshot_{tag}.json").unlink()
+    (tmp_path / f"event_snapshot_{tag}.json").unlink()
+    _write_json(
+        tmp_path / "daily" / "snapshots" / "earnings" / f"earnings_snapshot_{tag}.json",
+        {"earnings": {"ACME": {}}},
+    )
+    _write_json(
+        tmp_path / "daily" / "snapshots" / "events" / f"event_snapshot_{tag}.json",
+        {"coverage": {"event_rows_total": 1}},
+    )
+
+    record = build_coverage_record("2026-05-04", mode="daily", data_root=tmp_path)
+
+    assert record["status"] == "complete"
+    assert record["required_missing"] == []
+    assert "daily/snapshots/earnings" in record["artifact_status"]["earnings_snapshot"]["path"]
+    assert "daily/snapshots/events" in record["artifact_status"]["event_snapshot"]["path"]
+
+
 def test_coverage_marks_sec_rows_without_accepted_datetime_as_biased(tmp_path: Path) -> None:
     _write_complete_day(tmp_path)
     tag = "20260504"

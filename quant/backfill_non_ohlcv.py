@@ -18,6 +18,7 @@ from typing import Any, Callable
 try:
     from backfill_earnings_snapshots import backfill_earnings_snapshots
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
+    from data_paths import daily_artifact_path
     from data_layer import get_universe
     from event_shocks import build_event_snapshot
     from non_ohlcv_coverage import (
@@ -39,6 +40,7 @@ try:
 except ImportError:  # pragma: no cover - package-style imports
     from quant.backfill_earnings_snapshots import backfill_earnings_snapshots
     from quant.daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
+    from quant.data_paths import daily_artifact_path
     from quant.data_layer import get_universe
     from quant.event_shocks import build_event_snapshot
     from quant.non_ohlcv_coverage import (
@@ -150,7 +152,13 @@ def ensure_non_ohlcv_coverage(
         errors: list[dict[str, Any]] = []
         try:
             if refresh_earnings:
-                earnings_backfill_fn(day_iso, day_iso, universe=universe, data_dir=str(root))
+                earnings_dir = daily_artifact_path("earnings_snapshot", tag, root).parent
+                earnings_backfill_fn(
+                    day_iso,
+                    day_iso,
+                    universe=universe,
+                    data_dir=str(earnings_dir),
+                )
         except Exception as exc:
             errors.append({"stage": "earnings_snapshot", "error": str(exc)})
             log.warning("non-OHLCV %s earnings snapshot failed for %s: %s", profile, day_iso, exc)

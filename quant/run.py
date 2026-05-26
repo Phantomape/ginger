@@ -12,7 +12,7 @@ Steps:
   6.  Quant signals           — 3 strategies, risk enrichment, position sizing
   7.  Quant report            — daily report + quant_signals_YYYYMMDD.json
   8.  Fetch & filter news     — RSS sources → hygiene → trade filter
-  9.  LLM prompt              — save prompt to data/llm_prompt_YYYYMMDD.txt
+  9.  LLM prompt              — save prompt to data/daily/llm/prompts/
   10. Summary
 
 Usage:
@@ -101,6 +101,49 @@ def _print_section(title):
     log.info("=" * 55)
     log.info(f"  {title}")
     log.info("=" * 55)
+
+
+def _run_expectation_residual_leadership_attribution_observer():
+    """Refresh the read-only expectation/residual attribution artifact."""
+    try:
+        from experiments.exp_20260525_017_expectation_residual_leadership_attribution import (
+            build_payload,
+            persist,
+        )
+
+        payload = build_payload()
+        persist(payload)
+        gate = payload.get("gate") or {}
+        coverage = payload.get("coverage") or {}
+        log.info(
+            "Expectation/residual attribution: decision=%s bucket_a_5d=%s usable=%s candidates=%s",
+            payload.get("decision"),
+            gate.get("bucket_a_closed_5d_outcomes"),
+            gate.get("total_usable_candidates"),
+            coverage.get("candidate_objects_total"),
+        )
+        related_files = payload.get("related_files") or []
+        return {
+            "status": payload.get("status"),
+            "decision": payload.get("decision"),
+            "artifact": related_files[1] if len(related_files) > 1 else None,
+            "gate": gate,
+            "coverage": coverage,
+            "production_impact": payload.get("production_impact"),
+        }
+    except Exception as e:
+        log.warning(f"Expectation/residual attribution observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "decision": "observer_failed",
+            "error": str(e),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_orders": False,
+            },
+        }
 
 
 # ── Main pipeline ─────────────────────────────────────────────────────────────
@@ -2006,6 +2049,8 @@ def main():
         "universe_governance": universe_governance_state,
         "features":       features_dict,
     }, str(daily_artifact_path("quant_signals", today)))
+
+    _run_expectation_residual_leadership_attribution_observer()
 
     # ── Step 8: Fetch & filter news ───────────────────────────────────────────
     _print_section("STEP 8 — News collection")

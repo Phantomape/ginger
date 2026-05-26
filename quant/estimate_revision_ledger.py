@@ -92,7 +92,44 @@ def load_snapshot_records(
             }
         )
 
-    return sorted(records, key=lambda item: item["as_of_date"])
+    return _dedupe_snapshot_records(records, root)
+
+
+def _dedupe_snapshot_records(
+    records: list[dict[str, Any]],
+    root: Path,
+) -> list[dict[str, Any]]:
+    by_date: dict[date, dict[str, Any]] = {}
+    for record in records:
+        as_of = record["as_of_date"]
+        current = by_date.get(as_of)
+        if current is None or _snapshot_record_prefer_key(record, root) < _snapshot_record_prefer_key(
+            current,
+            root,
+        ):
+            by_date[as_of] = record
+    return sorted(by_date.values(), key=lambda item: item["as_of_date"])
+
+
+def _snapshot_record_prefer_key(record: dict[str, Any], root: Path) -> tuple[int, int, datetime, str]:
+    return (
+        0 if _snapshot_pit_safe(record) else 1,
+        _snapshot_path_priority(record["path"], root),
+        record["file_mtime_utc"],
+        _path_text(record["path"]),
+    )
+
+
+def _snapshot_path_priority(path: str | Path, root: Path) -> int:
+    path = Path(path)
+    organized = root / "daily" / "snapshots" / "earnings"
+    try:
+        relative = path.resolve(strict=False).relative_to(organized.resolve(strict=False))
+    except ValueError:
+        return 2
+    if relative.parts and relative.parts[0] == "legacy_root":
+        return 1
+    return 0
 
 
 def build_revision_ledger_rows(

@@ -96,5 +96,7 @@ def test_backfill_is_idempotent_and_records_existing_complete_days(tmp_path: Pat
     assert second["days_generated"] == 0
     assert second["days_recorded_existing"] == 1
     assert calls == {"earnings": 1, "daily": 1, "event": 1, "features": 1}
+    assert (tmp_path / "daily" / "snapshots" / "earnings" / "earnings_snapshot_20260504.json").exists()
+    assert not (tmp_path / "earnings_snapshot_20260504.json").exists()
     assert (tmp_path / "non_ohlcv" / "coverage_manifest.jsonl").exists()
     assert (tmp_path / "non_ohlcv" / "backtest_coverage_20260504_20260504.json").exists()

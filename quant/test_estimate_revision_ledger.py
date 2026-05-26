@@ -190,6 +190,42 @@ def test_revision_ledger_flags_backfilled_snapshots_not_pit(tmp_path):
     assert rows[0]["pit_caveat"] == "current_snapshot_created_after_asof"
 
 
+def test_revision_ledger_prefers_pit_safe_organized_snapshot_duplicate(tmp_path):
+    data_dir = tmp_path / "data"
+    organized_dir = data_dir / "daily" / "snapshots" / "earnings"
+    data_dir.mkdir()
+    organized_dir.mkdir(parents=True)
+    _write_snapshot(
+        organized_dir,
+        "20260519",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.00}},
+        mtime=datetime(2026, 5, 20, 4, 0, tzinfo=timezone.utc),
+    )
+    _write_snapshot(
+        data_dir,
+        "20260519",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 9.00}},
+        mtime=datetime(2026, 5, 24, 4, 0, tzinfo=timezone.utc),
+    )
+    _write_snapshot(
+        organized_dir,
+        "20260520",
+        {"ACME": {"next_earnings_date": "2026-07-30", "eps_estimate": 1.20}},
+        mtime=datetime(2026, 5, 21, 4, 0, tzinfo=timezone.utc),
+    )
+
+    records = load_snapshot_records(data_dir)
+    prior = [record for record in records if record["as_of_date"].isoformat() == "2026-05-19"]
+    rows = build_revision_ledger_rows(records, as_of="2026-05-20")
+
+    assert len(prior) == 1
+    assert prior[0]["path"] == organized_dir / "earnings_snapshot_20260519.json"
+    assert rows[0]["prior_snapshot_eps_estimate"] == 1.0
+    assert rows[0]["prior_snapshot_pit_safe"] is True
+    assert rows[0]["eps_estimate_delta_prev"] == 0.2
+    assert rows[0]["estimate_revision_usable"] is True
+
+
 def test_persist_estimate_revision_ledger_writes_default_off_artifacts(tmp_path):
     data_dir = tmp_path / "data"
     output_dir = tmp_path / "non_ohlcv"
