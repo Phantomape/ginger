@@ -218,6 +218,12 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 - 这条线索更像“候选池质量 + 市场参与度确认”，不同于已经冻结的 gap-and-hold、
   smooth momentum、undercut reclaim、long-base、pocket-pivot、pullback-reclaim
   机械形态 retread。
+- `exp-20260526-021` 显示，动态 breadth recovery（从较弱的 5 日前
+  above-50d 状态恢复）是方向性线索而不是可提升规则：三窗口 EV/PnL
+  全部改善，aggregate EV `+0.2002` / PnL `+$2,796.77`，drawdown 与
+  concentration 通过，但只有 12 笔 paper trade，低于 20 笔样本门槛。
+  这应被视为 forward watch / 新字段候选，不是冻结样本上继续调 recovery
+  lookback、above-50d 或 volume 阈值的许可。
 
 保留规则：
 
@@ -229,6 +235,8 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 - 禁止在同一冻结样本上继续 retune up-volume breadth、market-up fraction、
   above-50d fraction、candidate volume ratio、breakout lookback、top-1/top-N 或
   fixed notional，除非有 forward rows 或一个真正新的生产可见确认字段。
+- 动态 breadth recovery 只能用 forward rows 或正交 source-quality 字段继续；
+  不要把 exp-021 的小样本正向结果改写成新阈值搜索。
 
 ### 2. State-surface：从调 profile 转向解 concentration
 
