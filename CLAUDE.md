@@ -66,12 +66,18 @@ docs/experiment_log.jsonl
 docs/experiment_log_format.md
 docs/production_backtest_parity.md
 docs/alpha-optimization-playbook.md
+docs/data_edge_context_layers.md
 data/backtest_results_*.json
+data/backtests/backtest_results_*.json
 ```
 
-其中，`docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
-
-`docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
+- `docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
+- `docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
+- `docs/data_edge_context_layers.md` 是 passive intelligence、context accumulation、continuous ranking、tail diagnostics、meta research 与 attribution 工具的单一真相源。新增 context layer、ranking surface、diagnostics 或 attribution sidecar 时，必须同步更新该文档，而不是把工具说明散落在实验脚本里。
+- `scripts/list_experiments.py`：看 registry 里的 proposed/claimed/running 实验
+- `scripts/claim_experiment.py`：多代理并行时 claim ticket
+- `scripts/judge_experiment.py`：before/after artifact 判定和生成日志草稿
+- `quant/meta_research_engine.py`：研究历史/冻结方向/优先队列
 
 每次开始前必须回答五个问题：
 
@@ -82,6 +88,22 @@ data/backtest_results_*.json
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
 
 若无法回答第 2、3、4、5 点，禁止开始策略逻辑改动。
+
+### 3.1 推荐启动工具
+
+选择新的 `alpha_search` 方向前，优先运行或读取 meta research 报告：
+
+```powershell
+.\.venv\Scripts\python.exe quant\meta_research_engine.py --output data\meta_research_report_latest.json
+```
+
+该报告只用于研究队列排序，不是交易信号，也不能替代
+`docs/backtesting.md`、`docs/current_state.md` 或 Gate 1-4。优先用它回答：
+
+- 哪些 mechanism / trial family 历史上更值得继续；
+- 哪些方向属于 `freeze_candidates`，重试前需要新证据；
+- 本轮是否是近邻重复实验；
+- 实验日志是否存在会降低结论可信度的数据质量警告。
 
 ---
 
@@ -134,6 +156,8 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 `expected_value_score` 提升 > 10% 可以作为**强接受信号**，但不作为硬性最低门槛。小幅但稳定的边际提升在策略系统中可能有价值，尤其当它同时降低复杂度、降低尾部风险、改善生产一致性或提升可归因性。
 
+**state-surface 加严规则**：`state_surface_sleeve` 已经叠加了多层 paper notional scalar / rank profile / support / haircut 规则，继续做同类阈值、profile、notional scalar 或 capital allocation 调参时，`expected_value_score` 提升 > 10% 必须作为 Gate 4 的硬性最低门槛，而不是强接受信号。计算口径以 `docs/backtesting.md` 的标准多窗口 before/after aggregate `expected_value_score` 为准。若 aggregate EV 未提升超过 10%，默认必须回滚策略改动并记录为失败实验；不得用“小幅但稳定”“三窗口都改善”“PnL 改善”“paper-only”“不影响生产订单”等理由保留。例外只允许 `measurement_repair`，且必须说明它修复了哪一个会扭曲 alpha 评估或生产 / 回测一致性的阻断项。
+
 默认保留规则：
 
 1. **强保留**：`expected_value_score` 明显提升，且 drawdown、尾部风险、trade count、survival rate 没有不可接受恶化。
@@ -142,232 +166,3 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 4. **默认拒绝**：主目标下降、风险明显恶化、只在单一窗口变好、多数窗口退化、复杂度上升但收益证据不足，或无法归因到单一因果变量。
 
 若未通过 Gate 4，必须回滚策略改动，并把失败实验写入 `docs/experiment_log.jsonl`。`pytest` 通过不能替代 Gate 4。
-
----
-
-## 5. 硬规则
-
-以下规则始终有效，除非本文件被明确更新。
-
-### 5.1 禁止无回测数据的阈值调整
-
-修改 ATR multiplier、confidence 门槛、volume ratio、时间窗口等数值阈值前，必须有 sweep 结果证明新值优于旧值。sweep 协议以 `docs/backtesting.md` 为准。
-
-### 5.2 禁止多目标漂移
-
-默认评价顺序：
-
-1. 先看 `expected_value_score`；
-2. 再看 drawdown、尾部风险、trade count、survival rate 是否守住底线；
-3. 最后解释次级指标。
-
-不得用次级指标改善掩盖主目标退化。
-
-### 5.3 禁止幽灵规则
-
-任何规则的前置字段必须在运行时真实存在且非空。不要相信“应该存在”；用 assert、日志或回测输出验证。
-
-### 5.4 禁止为个案交易过拟合
-
-禁止因为 1-3 笔亏损交易就新增规则、调阈值或扩大 LLM 权限。策略改动必须修复一类重复出现的失败模式，并说明会误杀哪些好交易。
-
-### 5.5 禁止一次改多个独立因果变量
-
-每次迭代默认只允许改变一个独立因果变量，例如一个阈值、一个过滤器、一个 LLM 职责边界、一个数据字段缺口或一个回测 / 生产一致性问题。
-
-若必须同时改多项，拆成多轮，并分别记录指标。
-
-### 5.6 禁止失败实验不落盘
-
-任何失败尝试都必须写入仓库记录，优先写入 `docs/experiment_log.jsonl`。
-
-最低字段：
-
-```text
-hypothesis
-change_type
-changed_variable
-parameters
-date_range / backtest_protocol
-before_metrics
-after_metrics
-expected_value_score_delta
-decision
-rejection_reason
-next_evidence_needed
-```
-
-缺少参数、窗口或指标的失败记录，视为不可复现实验。
-
-### 5.7 禁止 Code-Prompt 数值分歧
-
-量化阈值只在代码中定义。LLM prompt 不应重复 ATR、confidence、volume、仓位、止损等硬数值规则。若 prompt 中存在重复量化规则，优先移除。
-
-### 5.8 禁止让 LLM 接管硬风控
-
-代码负责：仓位、止损、目标位、风险预算、组合约束、硬过滤。
-
-LLM 负责：新闻理解、事件分类、语义强弱、灾难 veto、模糊风险解释。
-
-扩大 LLM 权限时，优先让它输出结构化判断字段，而不是最终交易指令。
-
-### 5.9 禁止不计量 LLM 贡献
-
-任何涉及 LLM 的迭代，必须新增或更新至少一个 LLM 归因指标，例如：
-
-- LLM veto 后信号胜率 vs 未 veto 胜率；
-- LLM 放行信号平均收益 vs 全候选平均收益；
-- 事件分类字段与后续收益的相关性；
-- LLM 否决理由的结构化稳定性。
-
-没有归因指标的 LLM 改动不算完成。
-
-### 5.10 禁止只靠 pytest 验证策略改动
-
-`pytest` 只验证代码正确性，不验证策略有效性。策略提交必须包含符合 `docs/backtesting.md` 的回测指标对比。
-
-### 5.11 禁止回测专属策略逻辑
-
-任何影响买、卖、加仓、减仓、仓位、排序、组合热度、仓位槽或 entry skip reason 的逻辑，必须满足以下之一：
-
-1. 位于共享 policy / module 中，并被 `backtester.py` 与 `run.py` 同时调用；
-2. 明确记录为 `docs/production_backtest_parity.md` 中允许的 replay-only 差异。
-
-策略实验 closeout 必须声明：
-
-```text
-production_impact:
-  shared_policy_changed:
-  backtester_adapter_changed:
-  run_adapter_changed:
-  replay_only:
-  parity_test_added:
-```
-
-若 `shared_policy_changed=true` 且 `run_adapter_changed=false`，默认禁止提交，除非 `replay_only=true` 且差异已记录。
-
----
-
-## 6. 收敛标准
-
-收敛判定以 `quant/convergence.py` 为唯一真相源。不要在本文件中重新定义收敛阈值，也不要在本文件记录某个历史日期的收敛状态。
-
-`BacktestEngine.run()` 会在 result 中附带 `convergence` 字段；CLI 会打印每条 criterion 的 PASS / FAIL。
-
-`CONVERGED` 的含义：
-
-- 当前版本已达到最低可用标准；
-- 不需要继续为“能跑、达标”做低价值修补；
-- 可以进入 alpha 扩展、alpha 提升、稳定性增强阶段。
-
-`CONVERGED` 不代表：
-
-- 系统已经最优；
-- 可以停止寻找新 alpha；
-- 当前参数是长期真理；
-- 可以跳过 `docs/backtesting.md` 规定的标准多窗口实验和失败记录。
-
-新增或修改 criterion 时，只改 `quant/convergence.py` 并同步加测试，不要只在本文件写文字标准。
-
----
-
-## 7. LLM 治理
-
-禁止默认把 LLM 当成问题，也禁止默认把 LLM 当成答案。
-
-遇到 LLM 相关问题时，按以下顺序检查：
-
-1. 该判断是否适合 LLM，而不是硬规则？
-2. LLM 输入是否缺少关键上下文？
-3. prompt 是否要求 LLM 做了不该做的量化决策？
-4. 输出是否结构化、可落盘、可回放、可归因？
-5. 是否有指标证明 LLM 提升或损害收益、过滤质量、风险控制？
-
-若 LLM 环节暂时无法完整历史回放，不要直接否定该环节。应先标注评估偏差，并优先补齐结构化输出、日志、回放和归因指标。
-
----
-
-## 8. 策略总纲
-
-[STRATEGY DOCTRINE] 当前系统本质是：
-
-> 事件增强型中短线趋势 / 突破交易系统。
-
-当前 alpha 主要来自：
-
-1. 趋势延续；
-2. 波动突破；
-3. 新闻 / 事件过滤；
-4. 更好的 exit、ranking 与 capital allocation。
-
-具体高价值优化方向、近期机制级启发、已证伪方向和优先级变化，以 `docs/alpha-optimization-playbook.md` 为准。`AGENTS.md` 不维护这些清单，避免 playbook 更新后本文件残留旧判断。
-
-评估质量修复很重要，但它是策略实验的支撑项，不是最终目标。只有当评估缺陷会扭曲当前 alpha 结论时，才应优先于 alpha_search。
-
-未经证据支持，不得写死以下结论：
-
-- “过滤器已经不重要”；
-- “LLM 一定有用”或“LLM 一定没用”；
-- “某策略没交易 = 策略无效”；
-- “当前回测漂亮 = 已证明长期 alpha”。
-
-每次策略实验默认额外检查风险分布：
-
-- `worst_trade_pct`
-- `max_consecutive_losses`
-- `tail_loss_share`
-
-若代码支持，也长期追踪：
-
-- `worst_3_trade_cluster_pct`
-- `alpha_per_heat`
-
-没有风险分布指标时，禁止轻易宣称赚钱期望已提升。
-
----
-
-## 9. 每次会话流程
-
-按以下顺序执行：
-
-1. 读取 `docs/backtesting.md`、`docs/alpha-optimization-playbook.md`、当前状态、历史实验、失败记录和最新 backtest；
-2. 写出本轮最值得测试的 `alpha_hypothesis`；
-3. 若本轮不做 alpha，说明被哪个测量缺陷阻断，以及修完后要测试哪个 alpha；
-4. 确认本轮只改变一个独立因果变量；
-5. 执行 Gate 1-4；
-6. 策略逻辑改动必须按 `docs/backtesting.md` 执行标准多窗口回测；
-7. 记录成功或失败实验；
-8. 提交时写清前后指标、未改模块、主要风险和生产影响。
-
-提交说明至少包含：
-
-```text
-hypothesis:
-change_type:
-changed_variable:
-backtest_protocol:
-baseline_metrics:
-after_metrics:
-expected_value_score_delta:
-production_impact:
-why_not_other_changes:
-known_risks:
-decision:
-```
-
----
-
-## 10. 文档分工
-
-推荐分工：
-
-```text
-AGENTS.md                          # 代理入口、硬规则、流程、长期策略原则
-docs/backtesting.md                     # 回测命令、标准窗口、指标字段、多窗口协议
-docs/alpha-optimization-playbook.md # 默认高价值优化方向、机制级启发、已证伪思路
-docs/experiment_log.jsonl          # 成功 / 失败实验结构化记录
-docs/experiment_log_format.md      # 实验日志字段规范
-docs/production_backtest_parity.md # 生产 / 回测差异
-```
-
-`AGENTS.md` 不应长期承载具体日期、当前基线、当前最高优先级、默认优化方向或历史实验大表。那些内容应进入 `docs/current_state.md`、`docs/alpha-optimization-playbook.md` 或实验日志。

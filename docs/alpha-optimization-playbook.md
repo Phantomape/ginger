@@ -13,8 +13,8 @@
 3. 未来 1-3 轮更值得投入的 alpha / 字段队列；
 4. 最新研究能转成哪些可回放、可归因、可生产可见字段。
 
-Last refreshed: 2026-05-25.
-Research refresh cut: 2026-05-25.
+Last refreshed: 2026-05-26.
+Research refresh cut: 2026-05-26.
 
 ## 使用方式
 
@@ -177,75 +177,33 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 
 ### 1.1 Volatility-contraction + QQQ confirmation lead
 
-2026-05-25 `exp-20260525-022` converted the rejected
-volatility-contraction top-1 paper sleeve into a stronger replay-only lead by
-adding one orthogonal, production-visible market field: `QQQ 20d return > SPY
-20d return` on the signal date. Three-window aggregate EV delta improved by
-`+1.2493` (`+15.83%`) and PnL by `$23,409.56`; late_strong moved from the
-exp-020 failure to a small positive `+$322.04`, with drawdown drift only
-`+0.02pp`.
+机制结论：
 
-2026-05-25 `exp-20260525-024` added the shared default-off forward paper
-adapter for this exact rule. Next default action: do not retune
-volatility-compression, breakout, sector, rank, or QQQ/SPY thresholds on the
-frozen sample. Collect closed forward replacement-value rows, concentration
-metrics, and kill-gate evidence before any live promotion discussion.
+- VCP 的有效增量来自一个正交、生产可见的市场确认字段：
+  `QQQ 20d return > SPY 20d return`。这类字段比继续调压缩、突破、ATR、
+  sector 或 QQQ/SPY 阈值更有价值。
+- top-2 candidate depth 可以作为 default-off paper adapter 的观察路径；它
+  不是 live capital，也不是继续扫 top-N 的许可。
+- 在已固定 top-2 candidate set 上，rank-2 可以小幅高配。当前共享
+  default-off paper adapter 使用 `[1.0, 1.25]` rank-notional profile；它
+  通过的是 paper allocation gate，不是 core sizing gate。
+- pocket-pivot、pre-signal event presence、prior catalyst / volume-support
+  dossier 都更适合做 read-only context 和 forward diagnostics。它们在冻结样本
+  上没有证明自己能替代 QQQ-confirmed VCP allocation gate。
+- late_strong 的弱点更像 rank-depth scarcity / underparticipation，而不是
+  QQQ gate 过严。不要用单窗口低参与度当作放松 gate 的理由。
+- post-entry 3-session follow-through 能解释结果，但不是入场前可知字段；不能
+  直接变成冻结样本上的 exit / risk rule。
 
-2026-05-25 `exp-20260525-027` tested the Kova-style daily
-`pre_signal_pocket_pivot_seen_10d` support field on top of the same exp-022
-candidate set. It produced enough sample (`55` paper trades across all three
-windows) and passed concentration, but failed promotion: aggregate uplift was
-only `+0.7689` EV / `+$13,985.57` versus core, lagging exp-022 by `-0.4804`
-EV / `-$9,423.99`, with EV/PnL regression versus exp-022 in every window. Keep
-pocket-pivot context as read-only metadata / attribution only; do not use it
-as a replacement or allocation gate, and do not retune its scan or volume
-thresholds on the frozen sample.
+保留规则：
 
-2026-05-25 `exp-20260525-030` tested one orthogonal event-context field:
-`pre_signal_event_snapshot_seen_20d`, using only daily event snapshots strictly
-before the VCP signal date. The event-gated variant passed versus core
-(`+0.8533` EV / `+$15,187.18`, 49 trades, all three windows positive, no
-concentration failure), but it still failed as an exp-022 replacement because
-aggregate EV/PnL lagged by `-0.3960` / `-$8,222.38` and `mid_weak` / `old_thin`
-regressed versus exp-022. Treat event context as useful attribution and coverage
-diagnostics, not as a VCP allocation gate. Do not promote event absence/presence
-from this frozen sample; richer event semantics or forward rows are required.
-
-2026-05-25 `exp-20260525-033` built a PIT-safe VCP candidate dossier field,
-`vcp_catalyst_quality_bucket_v1`, on the unchanged exp-022 selected-trade
-path. The replay matched exp-022 exactly (`+1.2493` EV / `+$23,409.56`, 71
-paper trades), and the dossier separated outcomes, but in the wrong direction
-for a Kova-style support gate: the best eligible bucket was
-`F_no_prior_catalyst_or_support` (`16` trades, `+$8,943.61`, `$558.98` average
-PnL), while the broad `C_volume_support_only` bucket had `40` trades and only
-`$221.64` average PnL. Small supportive catalyst buckets were positive but too
-thin to promote. Treat the dossier as read-only explanation and forward
-diagnostics; do not convert prior catalyst/volume support into a VCP gate on
-the frozen sample.
-
-2026-05-25 `exp-20260525-036` audited why exp-022 contributes little in
-`late_strong`. The weakness is not evidence that the QQQ gate should be
-loosened: raw VCP daily top-1 without the QQQ gate lost `-$4,608.43`, and
-QQQ-rejected daily top-1 lost `-$4,930.47` with zero winners. The better
-explanation is underparticipation/rank-depth scarcity: late_strong had only
-`6` QQQ-confirmed candidates across `5` candidate days, and only one day had a
-rank-2 candidate. That single rank-2 alternative (`MU` on `2025-12-10`) added
-`+$915.69`, moving late_strong from `+$322.04` to `+$1,237.73` in the top-2
-diagnostic.
-
-2026-05-25 `exp-20260525-037` resolved the conflicting exp-034 VCP identity by
-rerunning the top-N test under a clean experiment ID and promoting only the
-top-2 variant into the shared default-off paper adapter. The same three-window
-gate compared against both core and exp-022: top-2 added `+2.0730` EV /
-`+$34,795.92` versus core and beat exp-022 by `+0.8237` EV / `+$11,386.36`;
-all three windows improved versus exp-022, drawdown drift was non-worsening,
-and concentration passed (`16.47%` max positive ticker share, `0.0973` HHI).
-This is still observe-only paper, not live capital. Do not retune QQQ/SPY,
-ATR, breakout, pocket-pivot, event-presence, catalyst-quality, or top-N
-thresholds on the frozen sample. The next valid work is forward closed
-replacement-value collection for the exact top-2 adapter, or a genuinely
-orthogonal production-visible field after forward evidence arrives.
-
+- 当前固定对象是 QQQ-confirmed VCP top-2 default-off paper adapter，rank
+  profile 固定为 `[1.0, 1.25]`。
+- 下一步只能收集 closed forward replacement-value rows、concentration、
+  kill-gate、core displacement 证据，或引入真正新的生产可见字段。
+- 禁止在同一冻结样本上继续 retune QQQ/SPY、ATR、breakout、pocket-pivot、
+  event-presence、catalyst-quality、top-N、rank-notional profile 或 post-entry
+  follow-through 阈值。
 
 ### 1.2 Volume-breadth breakout lead
 
@@ -388,6 +346,33 @@ orthogonal production-visible field after forward evidence arrives.
 - next-open 假设与真实执行偏差；
 - liquidity / spread / signal-time 的 drift 分层。
 
+### 8. Expectation revision：先证伪“强者更强”，再做 PEAD sleeve
+
+近期 expectation-revision attribution 的主要价值不是已经产生可交易规则，而是纠正了一个直觉：
+正向 EPS revision 叠加 residual leadership 不一定是更强确认，可能是短线 overextension。
+
+当前先验：
+
+- 严格 PIT-positive 7d EPS revision 是值得继续积累的 event state；
+- `neutral` / `beta_lagging` 的非过度延伸状态，比 `overextended_residual_leader`
+  更像下一轮 PEAD watchlist 的候选方向；
+- 当前样本仍被 closed 10d/20d outcome 成熟度和单 ticker 正贡献集中度阻断；
+- wide watchlist 只能用于覆盖率和候选发现，不能替代严格 PIT primary bucket。
+
+下一步只优先：
+
+- 继续收集 PIT 7d/30d revision ledger 和 closed 5/10/20d outcomes；
+- 把 `non_overextended_revision_positive` 做成 read-only watchlist bucket；
+- 报告 concentration、candidate-hit lag、current-position overlap；
+- 等成熟后再考虑 default-off PEAD paper sleeve。
+
+默认不做：
+
+- 把缺失 revision delta 当作正向 revision；
+- 用 reconstructed / non-PIT scout rows 满足 promotion gate；
+- 把 residual leadership 直接当作确认 top-up；
+- 在 concentration 未过关前做 core ranking 或 sizing 改动。
+
 ## 反复重试禁区
 
 若没有 `new_forward_rows`、`new_production_visible_field`、`new_replacement_value_cohort` 或更广 PIT 样本，不要重试：
@@ -408,7 +393,9 @@ orthogonal production-visible field after forward evidence arrives.
 14. AI infra / compute-memory / optical 子主题在同一冻结样本上继续换 fixed-notional sleeve；
 15. core-misfit cohort 在没有 forward closed outcomes 时继续做硬 no-entry 或长仓 haircut；
 16. SEC text archive missingness 作为 allocation signal；
-17. raw ranking component threshold / scalar，尤其是字段近似常量或覆盖不足时。
+17. raw ranking component threshold / scalar，尤其是字段近似常量或覆盖不足时；
+18. expectation-revision 方向里把 residual leadership 当作默认确认信号；
+19. VCP top-2 方向里继续扫 rank-notional、top-N 或 post-entry follow-through 阈值。
 
 ## 研究到字段的落地地图
 
@@ -602,19 +589,31 @@ orthogonal production-visible field after forward evidence arrives.
   <https://jfqa.org/2026/05/12/measuring-the-cost-of-regulation-a-text-based-approach/>
 - Byerly, *AURA Policy Uncertainty Index* (SSRN, 2026-04-22 revision):
   <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6239958>
+- Calomiris, Mamaysky & Yang, *Measuring the Cost of Regulation: A Text-Based Approach* (SSRN, last revised 2026-05-13):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3550922>
+- Baz et al., *Climate Regulatory Exposure and the Stock Market: Evidence from the Trump Elections* (SSRN, 2026):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6106614>
+- Ran, *Managerial Attention to Financial Markets: Evidence from Managers' Own Discussion* (SSRN, revised 2026-04-23):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5241047>
 
 对 Ginger 的含义：
 
-- regulatory exposure 不是简单负面新闻；研究显示它可能影响成长、杠杆、盈利和 post-call equity returns；
+- regulatory / policy exposure 不是简单负面新闻；它可能同时代表成本、风险、放松监管后的重估和管理层对融资条件的关注；
 - prediction-market implied uncertainty 更适合作为 market-state / risk-allocation context，而不是单票 entry 信号；
-- 先做 read-only event state 与 market-state attribution。
+- 先做 read-only event state 与 market-state attribution，再分行业、规模、融资需求和政策事件窗口判断。
 
 优先字段：
 
 - `regulatory_exposure_bucket`
+- `regulatory_exposure_direction_bucket`
+- `regulatory_relief_sensitivity_bucket`
+- `climate_regulatory_exposure_bucket`
+- `manager_market_attention_bucket`
+- `financing_need_context_bucket`
 - `policy_uncertainty_pressure_bucket`
 - `policy_repricing_intensity_bucket`
 - `event_contract_dispersion_bucket`
+- `policy_event_window_id`
 
 ### 9. Buyback 不是看到 repurchase 就加分
 
@@ -708,6 +707,8 @@ orthogonal production-visible field after forward evidence arrives.
 
 - Khan & Messaoudi, *Latent Information Reconstruction via Vector Divergence in Market Microstructure* (SSRN, 2026-02-01):
   <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6272018>
+- *TradeFM: A Generative Foundation Model for Trade-flow and Market Microstructure* (arXiv:2602.23784, 2026-02-27):
+  <https://arxiv.org/abs/2602.23784>
 
 对 Ginger 的含义：
 
@@ -721,6 +722,58 @@ orthogonal production-visible field after forward evidence arrives.
 - `pre_news_price_pressure_bucket`
 - `volume_acceleration_pre_event_bucket`
 - `public_information_lag_bucket`
+
+### 14. Financial retrieval 比一次性长上下文更重要
+
+主要研究：
+
+- *FinRetrieval: A Benchmark for Financial Data Retrieval by AI Agents* (arXiv:2603.04403, 2026-03):
+  <https://arxiv.org/abs/2603.04403>
+- *Fin-RATE* (arXiv:2602.07294, 2026-02-07):
+  <https://arxiv.org/abs/2602.07294>
+- *SECQUE* (ACL Anthology / GEM 2025):
+  <https://aclanthology.org/2025.gem-1.16/>
+
+对 Ginger 的含义：
+
+- LLM 金融系统的瓶颈通常不是“模型是否聪明”，而是能否检索到正确
+  filing、section、period、numeric value 和历史版本；
+- 对 SEC / earnings 字段，必须把 retrieval miss 与 reasoning miss 分开记录；
+- 不能把长上下文整份塞给模型后直接相信输出。先做 section routing、numeric
+  evidence binding、cross-period consistency，再让 LLM 生成 bucket。
+
+优先字段 / 流程：
+
+- `retrieval_source_doc_id`
+- `retrieval_section_id`
+- `retrieval_period_end`
+- `retrieval_value_evidence_json`
+- `retrieval_failure_bucket`
+- `cross_period_consistency_bucket`
+
+### 15. 机械路径 alpha 必须先证明 replacement value
+
+最新 daily-return、gap-and-hold、smooth-momentum、undercut-reclaim、long-base
+breakout 等 candidate-pool scout 的共同教训是：机械价格形态可以产生漂亮局部
+PnL，但很容易被 hidden beta、single-window uplift、candidate displacement 或
+thin breadth 吃掉。
+
+对 Ginger 的含义：
+
+- 机械形态先进入 default-off candidate source，不直接扩 core；
+- 必须报告同日 core displacement、cash-relative PnL、rank-depth breadth、
+  hidden beta、single-ticker / sector HHI；
+- 如果一个形态需要连续叠加 QQQ gate、sector gate、quality gate、cooldown 才看起来
+  成立，通常说明它不是当前最优 alpha 搜索方向。
+
+优先字段：
+
+- `mechanical_pattern_family`
+- `pattern_rank_depth`
+- `same_day_core_displacement_pnl`
+- `hidden_beta_bucket`
+- `pattern_breadth_bucket`
+- `pattern_decay_after_first_hit_bucket`
 
 ## LLM 字段的最低工程标准
 

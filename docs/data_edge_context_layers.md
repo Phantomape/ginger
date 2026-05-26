@@ -572,6 +572,28 @@ metadata, not a trade queue. It must not change entries, exits, ranking,
 sizing, LLM/news, paper sleeves, or orders. A passing strict primary readout
 only unlocks a separate PEAD paper sleeve or ranking-component experiment.
 
+### `quant/experiments/exp_20260526_006_expectation_revision_overextension_attribution.py`
+
+Purpose: read-only follow-up to the expectation-revision watchlist inversion.
+It starts from the strict PIT-positive `eps_estimate_delta_7d > 0` rows emitted
+by `exp-20260525-034` and tests whether residual leadership behaves more like
+an overextension state than a confirmation state.
+
+Output:
+
+```text
+data/experiments/exp-20260526-006/expectation_revision_overextension_attribution.json
+experiments/artifacts/exp-20260526-006_expectation_revision_overextension_attribution.md
+experiments/logs/exp-20260526-006.json
+```
+
+Agent rule: this experiment may report `non_overextended` versus
+`overextended_residual_leader` bucket evidence only. It must not change
+entries, exits, ranking, sizing, LLM/news, paper sleeves, or orders. A
+directional result can only justify a separate forward default-off watchlist or
+ranking-component experiment after concentration and closed-outcome maturity
+are sufficient.
+
 ---
 
 ## Tail / allocation / decay / heat diagnostics
