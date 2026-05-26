@@ -684,10 +684,6 @@ def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
         logger.warning(f"Failed to save decision log: {e}")
 
 
-def _legacy_prompt_file_path(date_str):
-    return Path("data") / f"llm_prompt_{date_str}.txt"
-
-
 def _write_prompt_body(path, system_message, user_message):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -708,11 +704,7 @@ def _write_prompt_body(path, system_message, user_message):
 def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_signals):
     """Persist the rendered prompt for auditability, regardless of API usage."""
     data_dir = _prompt_data_dir_for_current_context()
-    prompt_file = (
-        _legacy_prompt_file_path(date_str)
-        if data_dir is not None
-        else daily_artifact_path("llm_prompt", date_str)
-    )
+    prompt_file = daily_artifact_path("llm_prompt", date_str, data_dir)
 
     _write_prompt_body(prompt_file, system_message, user_message)
     logger.info(f"Prompt saved to {prompt_file}")

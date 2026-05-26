@@ -20,13 +20,13 @@ from estimate_revision_ledger import (  # noqa: E402
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", default="data", help="Directory containing earnings_snapshot_YYYYMMDD.json files.")
+    parser.add_argument("--data-dir", default="data", help="Directory containing organized or legacy earnings snapshots.")
     parser.add_argument("--output-dir", default="data/non_ohlcv", help="Directory for ledger JSONL and summary output.")
     parser.add_argument("--as-of", required=True, help="Snapshot date to ledger, YYYY-MM-DD.")
     parser.add_argument("--start", help="Optional earliest snapshot date to load, YYYY-MM-DD.")
     parser.add_argument(
         "--signal-data-dir",
-        help="Directory containing quant_signals_YYYYMMDD.json and trend_signals_YYYYMMDD.json. Defaults to --data-dir.",
+        help="Directory containing organized or legacy quant/trend signal snapshots. Defaults to --data-dir.",
     )
     parser.add_argument(
         "--skip-signal-match",

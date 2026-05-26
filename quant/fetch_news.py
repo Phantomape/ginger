@@ -8,9 +8,9 @@ Usage:
 
 import json
 import logging
-import os
 from datetime import datetime
 
+from data_paths import daily_artifact_path
 from sources import get_all_sources
 from parser import parse_feed_with_diagnostics, deduplicate_items, sort_items_by_date
 
@@ -77,31 +77,27 @@ def save_to_file(items, output_dir="data"):
     Returns:
         str: Path to the saved file
     """
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
-
     # Generate filename with today's date
     today = datetime.now().strftime("%Y%m%d")
-    filename = f"news_{today}.json"
-    filepath = os.path.join(output_dir, filename)
+    filepath = daily_artifact_path("news", today, output_dir)
+    filepath.parent.mkdir(parents=True, exist_ok=True)
 
     # Save to JSON file
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(items, f, indent=2, ensure_ascii=False)
 
     logger.info(f"Saved {len(items)} items to {filepath}")
-    return filepath
+    return str(filepath)
 
 
 def save_source_stats(source_stats, output_dir="data"):
-    os.makedirs(output_dir, exist_ok=True)
     today = datetime.now().strftime("%Y%m%d")
-    filename = f"news_source_stats_{today}.json"
-    filepath = os.path.join(output_dir, filename)
+    filepath = daily_artifact_path("news_source_stats", today, output_dir)
+    filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(source_stats, f, indent=2, ensure_ascii=False)
     logger.info(f"Saved {len(source_stats)} source stats to {filepath}")
-    return filepath
+    return str(filepath)
 
 
 def main():

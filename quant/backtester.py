@@ -2963,8 +2963,9 @@ class BacktestEngine:
             total_signals_survived += len(signals)
 
             # ── 2b. LLM gate replay (optional; off by default). ─────────────
-            # When on, closes production/backtest parity for dates where
-            # data/llm_prompt_resp_YYYYMMDD.json exists. See llm_replay.py.
+            # When on, closes production/backtest parity for dates where an
+            # organized or legacy llm_prompt_resp_YYYYMMDD.json exists.
+            # See llm_replay.py.
             if self.replay_llm:
                 from llm_replay import get_llm_decision_for_date, apply_llm_gate
                 if signals:
@@ -3021,8 +3022,9 @@ class BacktestEngine:
 
             # ── 2c. News T1-negative gate (optional; off by default). ────────
             # When on, vetoes signals for tickers with T1-negative headlines
-            # in data/clean_trade_news_YYYYMMDD.json. Closes §6.1 parity gap
-            # for dates where the archive exists. See news_replay.py.
+            # in organized or legacy clean_trade_news_YYYYMMDD.json archives.
+            # Closes §6.1 parity gap for dates where the archive exists.
+            # See news_replay.py.
             if self.replay_news:
                 from news_replay import get_news_for_date, apply_news_gate
                 news_dec = get_news_for_date(today, self.data_dir)
@@ -4603,11 +4605,11 @@ def main():
     parser.add_argument("--no-secondary", action="store_true",
                         help="Skip the non-overlapping secondary-window diagnostic run")
     parser.add_argument("--replay-llm", action="store_true",
-                        help="Apply LLM gate using data/llm_prompt_resp_YYYYMMDD.json "
+                        help="Apply LLM gate using organized or legacy llm_prompt_resp_YYYYMMDD.json "
                              "when the file exists (§6.1 parity fix). Default: off.")
     parser.add_argument("--replay-news", action="store_true",
                         help="Apply T1-negative news veto using "
-                             "data/clean_trade_news_YYYYMMDD.json when the file exists. "
+                             "organized or legacy clean_trade_news_YYYYMMDD.json when the file exists. "
                              "Default: off.")
     parser.add_argument("--replay-partial-reduces",
                         action=argparse.BooleanOptionalAction,

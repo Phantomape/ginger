@@ -6802,7 +6802,7 @@ def test_save_advice_attaches_archive_context_when_decision_log_exists(tmp_path)
 
 
 def test_get_investment_advice_api_mode_still_saves_prompt(tmp_path, monkeypatch):
-    """API mode must still persist llm_prompt_YYYYMMDD.txt for audit/replay workflows."""
+    """API mode must still persist the rendered prompt for audit/replay workflows."""
     import os
     from llm_advisor import get_investment_advice
 
@@ -6852,7 +6852,7 @@ def test_get_investment_advice_api_mode_still_saves_prompt(tmp_path, monkeypatch
     )
 
     assert result["success"] is True
-    prompt_path = tmp_path / "data" / "llm_prompt_20260422.txt"
+    prompt_path = tmp_path / "data" / "daily" / "llm" / "prompts" / "llm_prompt_20260422.txt"
     assert prompt_path.exists(), "Prompt file must be written even when API mode is enabled"
     prompt_text = prompt_path.read_text(encoding="utf-8")
     assert "system body" in prompt_text

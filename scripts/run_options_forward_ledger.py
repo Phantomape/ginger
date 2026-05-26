@@ -1,7 +1,8 @@
 """Build a default-off forward ledger for EOD options structure tags.
 
 The ledger is deliberately shadow-only. It joins already-existing Ginger
-candidate snapshots from ``data/quant_signals_YYYYMMDD.json`` to local
+candidate snapshots from organized or legacy ``quant_signals_YYYYMMDD.json``
+files to local
 OnClickMedia option-chain snapshots collected for the same EOD quote date.
 Rows carry the option ``usable_trade_date`` so downstream research cannot
 silently use EOD option data before it was available.
@@ -13,6 +14,7 @@ import argparse
 import json
 import math
 import statistics
+import sys
 from collections import Counter, defaultdict
 from datetime import date, datetime
 from pathlib import Path
@@ -20,6 +22,12 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+QUANT_DIR = REPO_ROOT / "quant"
+if str(QUANT_DIR) not in sys.path:
+    sys.path.insert(0, str(QUANT_DIR))
+
+from data_paths import resolve_daily_artifact_path  # noqa: E402
+
 EXPERIMENT_ID = "exp-20260507-091"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "experiments" / EXPERIMENT_ID
 DEFAULT_CHAIN_DIR = REPO_ROOT / "data" / "non_ohlcv"
@@ -53,6 +61,10 @@ def _json_default(value: Any) -> Any:
 
 def _read_json(path: str | Path) -> Any:
     return json.loads(_repo_path(path).read_text(encoding="utf-8"))
+
+
+def _quant_signal_path(signal_dir: str | Path, date_tag: str) -> Path:
+    return resolve_daily_artifact_path("quant_signals", date_tag, _repo_path(signal_dir))
 
 
 def _read_jsonl(path: str | Path) -> list[dict[str, Any]]:
@@ -882,7 +894,7 @@ def build_ledger(args: argparse.Namespace) -> dict[str, Any]:
             mode=args.candidate_join_date_mode,
         )
         date_tag = candidate_join_date.replace("-", "")
-        signal_file = _repo_path(args.quant_signal_dir) / f"quant_signals_{date_tag}.json"
+        signal_file = _quant_signal_path(args.quant_signal_dir, date_tag)
         candidates, diagnostics = collect_candidates(signal_file, candidate_join_date)
         candidate_diagnostics[quote_date] = {
             **diagnostics,

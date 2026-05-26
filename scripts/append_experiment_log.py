@@ -130,7 +130,7 @@ rows.append({
     "experiment_id": "exp-20260417-004",
     "timestamp": "2026-04-17T15:10:00-07:00",
     "status": "accepted",
-    "hypothesis": "Wiring the backtester to replay LLM decisions from data/llm_prompt_resp_YYYYMMDD.json when present (default off) closes the §6.1 production-vs-backtest parity gap without degrading off-mode metrics, and produces the first §4.2-compliant LLM attribution bucket.",
+    "hypothesis": "Wiring the backtester to replay LLM decisions from organized or legacy llm_prompt_resp_YYYYMMDD.json archives when present (default off) closes the §6.1 production-vs-backtest parity gap without degrading off-mode metrics, and produces the first §4.2-compliant LLM attribution bucket.",
     "change_summary": "New quant/llm_replay.py module; BacktestEngine gained --replay-llm flag; known_biases.llm_gate_unreplayed restructured from bool to dict{enabled,coverage_fraction,dates_covered,dates_missing_n}; result['llm_attribution'] added.",
     "change_type": "parity_fix",
     "component": "quant/llm_replay.py + quant/backtester.py",

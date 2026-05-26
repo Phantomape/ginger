@@ -957,10 +957,11 @@ def main():
     if args.file:
         files = [args.file]
     else:
-        # Pipeline saves advice as investment_advice_YYYYMMDD.json
+        # Pipeline saves advice as organized daily investment_advice_YYYYMMDD.json
+        # files; daily_artifact_glob also keeps legacy root archives visible.
         files = daily_artifact_glob("investment_advice", DATA_DIR)
         if not files:
-            print(f"No investment_advice_*.json files found in {DATA_DIR}/")
+            print(f"No organized or legacy investment_advice_*.json files found under {DATA_DIR}/")
             return
 
     evaluated = 0

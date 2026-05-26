@@ -2,19 +2,21 @@
 """
 Manual-import helper for LLM trading advice.
 
-Current workflow: user runs run.py → gets data/llm_prompt_<date>.txt → pastes it
+Current workflow: user runs run.py → gets
+data/daily/llm/prompts/llm_prompt_<date>.txt → pastes it
 into ChatGPT / Claude web → copies the JSON response back. Without this helper,
 the response is thrown away and forward_tester has nothing to grade.
 
 This script takes the pasted response (which may include markdown fences,
 leading commentary, or partial JSON) and writes it into TWO files:
 
-1. ``data/investment_advice_<date>.json`` — wrapper format that forward_tester
-   expects (``{advice_raw, advice_parsed, token_usage, timestamp}``).
+1. ``data/daily/llm/advice/investment_advice_<date>.json`` — wrapper format
+   that forward_tester expects (``{advice_raw, advice_parsed, token_usage,
+   timestamp}``).
 
-2. ``data/llm_prompt_resp_<date>.json`` — same content, consumed by the
-   backtester's ``--replay-llm`` path (llm_replay.py) to close the
-   production/backtest parity gap for the LLM new-trade gate.
+2. ``data/daily/llm/responses/llm_prompt_resp_<date>.json`` — same content,
+   consumed by the backtester's ``--replay-llm`` path (llm_replay.py) to close
+   the production/backtest parity gap for the LLM new-trade gate.
 
 Usage:
     # From a saved file
@@ -264,9 +266,11 @@ def import_advice(
     output_dir: str = DATA_DIR,
 ) -> str:
     """
-    Parse raw LLM response text and write it to two files:
-      - ``<output_dir>/investment_advice_<YYYYMMDD>.json``  (forward_tester)
-      - ``<output_dir>/llm_prompt_resp_<YYYYMMDD>.json``    (backtester --replay-llm)
+    Parse raw LLM response text and write it to two files.
+
+    With the default data directory, files land under data/daily/llm/advice/
+    and data/daily/llm/responses/. A custom output_dir preserves the legacy
+    flat filename layout inside that directory.
 
     Args:
         date_str:   YYYYMMDD (produced by _parse_date_arg)
@@ -408,7 +412,7 @@ def main() -> None:
     )
 
     parser = argparse.ArgumentParser(
-        description="Import a pasted LLM advice response into data/investment_advice_<date>.json",
+        description="Import a pasted LLM advice response into the dated LLM advice archive",
     )
     parser.add_argument("--date", type=str, default=None,
                         help="Recommendation date (YYYY-MM-DD or YYYYMMDD). Default: today.")

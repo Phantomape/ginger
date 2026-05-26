@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import importlib.util
 
 
 def test_save_prompt_file_uses_organized_path_inside_repo(tmp_path: Path, monkeypatch) -> None:
@@ -26,3 +27,73 @@ def test_save_prompt_file_uses_organized_path_inside_repo(tmp_path: Path, monkey
     assert Path(prompt_path) == data_root / "daily" / "llm" / "prompts" / "llm_prompt_20260525.txt"
     assert Path(prompt_path).exists()
     assert not (data_root / "llm_prompt_20260525.txt").exists()
+
+
+def test_fetch_news_writes_organized_daily_paths(tmp_path: Path, monkeypatch) -> None:
+    import fetch_news
+
+    class _FixedDateTime:
+        @classmethod
+        def now(cls):
+            import datetime as _dt
+
+            return _dt.datetime(2026, 5, 25, 12, 0, 0)
+
+    data_root = tmp_path / "data"
+    monkeypatch.setattr(fetch_news, "datetime", _FixedDateTime)
+
+    news_path = Path(fetch_news.save_to_file([{"title": "item"}], output_dir=data_root))
+    stats_path = Path(fetch_news.save_source_stats([{"source": "feed"}], output_dir=data_root))
+
+    assert news_path == data_root / "daily" / "news" / "raw" / "news_20260525.json"
+    assert stats_path == data_root / "daily" / "news" / "source_stats" / "news_source_stats_20260525.json"
+    assert not (data_root / "news_20260525.json").exists()
+    assert not (data_root / "news_source_stats_20260525.json").exists()
+
+
+def test_options_forward_ledger_reads_organized_quant_signals(tmp_path: Path) -> None:
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "run_options_forward_ledger.py"
+    spec = importlib.util.spec_from_file_location("run_options_forward_ledger_for_test", script_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    data_root = tmp_path / "data"
+    organized = data_root / "daily" / "signals" / "quant" / "quant_signals_20260525.json"
+    organized.parent.mkdir(parents=True)
+    organized.write_text('{"signals": []}', encoding="utf-8")
+
+    assert module._quant_signal_path(data_root, "20260525") == organized
+
+    legacy_root = tmp_path / "legacy_data"
+    legacy = legacy_root / "quant_signals_20260524.json"
+    legacy_root.mkdir()
+    legacy.write_text('{"signals": []}', encoding="utf-8")
+
+    assert module._quant_signal_path(legacy_root, "20260524") == legacy
+
+
+def test_import_advice_default_writes_organized_llm_archives(tmp_path: Path, monkeypatch) -> None:
+    import data_paths
+    import import_advice
+    import llm_advisor
+
+    repo_root = tmp_path / "repo"
+    data_root = repo_root / "data"
+    repo_root.mkdir()
+    monkeypatch.chdir(repo_root)
+    monkeypatch.setattr(data_paths, "DATA_ROOT", data_root)
+    monkeypatch.setattr(llm_advisor, "DATA_ROOT", data_root)
+
+    out_path = Path(import_advice.import_advice(
+        "20260525",
+        '{"new_trade": "NO NEW TRADE", "position_actions": []}',
+    ))
+
+    advice_path = data_root / "daily" / "llm" / "advice" / "investment_advice_20260525.json"
+    replay_path = data_root / "daily" / "llm" / "responses" / "llm_prompt_resp_20260525.json"
+    assert out_path == advice_path
+    assert advice_path.exists()
+    assert replay_path.exists()
+    assert not (data_root / "investment_advice_20260525.json").exists()
+    assert not (data_root / "llm_prompt_resp_20260525.json").exists()
