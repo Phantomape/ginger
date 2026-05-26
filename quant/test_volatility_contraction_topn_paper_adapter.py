@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from quant.volatility_contraction_paper_sleeve import (
+    RANK_NOTIONAL_PROFILE_RULE_VERSION,
     RULE_VERSION,
     TOPN_CANDIDATE_RULE_VERSION,
     build_volatility_contraction_paper_sleeve_snapshot,
@@ -67,7 +68,12 @@ def _volatility_contraction_rows(
     return rows
 
 
-def _snapshot(config: dict | None = None) -> dict:
+def _snapshot(
+    config: dict | None = None,
+    *,
+    state: dict | None = None,
+    day_index: int = 60,
+) -> dict:
     spy_rows = _market_rows(100.0, 0.05)
     qqq_rows = _market_rows(100.0, 0.25)
     aaa_rows = _volatility_contraction_rows(
@@ -80,7 +86,7 @@ def _snapshot(config: dict | None = None) -> dict:
         signal_close=74.0,
         post_step=0.20,
     )
-    as_of = aaa_rows[60]["date"]
+    as_of = aaa_rows[day_index]["date"]
     return build_volatility_contraction_paper_sleeve_snapshot(
         as_of=as_of,
         ohlcv_by_ticker={
@@ -90,7 +96,7 @@ def _snapshot(config: dict | None = None) -> dict:
             "BBB": bbb_rows,
         },
         candidate_universe=["AAA", "BBB"],
-        state=empty_volatility_contraction_paper_state(),
+        state=state or empty_volatility_contraction_paper_state(),
         config=config,
         persist=False,
     )
@@ -111,6 +117,18 @@ def test_default_adapter_emits_top2_pending_entries_without_orders():
         TOPN_CANDIDATE_RULE_VERSION
     }
     assert {row["max_paper_trades_per_day"] for row in snapshot["candidates"]} == {2}
+    assert [row["rank_notional_scalar"] for row in snapshot["candidates"]] == [1.0, 1.25]
+    assert [row["intended_notional"] for row in snapshot["candidates"]] == [
+        10_000.0,
+        12_500.0,
+    ]
+    assert {
+        row["rank_notional_profile_rule_version"] for row in snapshot["candidates"]
+    } == {RANK_NOTIONAL_PROFILE_RULE_VERSION}
+    assert [row["notional"] for row in snapshot["new_pending_entries"]] == [
+        10_000.0,
+        12_500.0,
+    ]
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["alters_orders"] is False
 
@@ -126,3 +144,31 @@ def test_daily_entry_slots_override_can_keep_top1_behavior():
         "daily_topn_or_capacity_limit"
     ]
     assert snapshot["candidates"][0]["max_paper_trades_per_day"] == 1
+
+
+def test_rank_notional_profile_override_can_keep_equal_notional():
+    snapshot = _snapshot({"rank_notional_profile": [1.0, 1.0]})
+
+    assert [row["rank_notional_scalar"] for row in snapshot["candidates"]] == [1.0, 1.0]
+    assert [row["intended_notional"] for row in snapshot["candidates"]] == [
+        10_000.0,
+        10_000.0,
+    ]
+
+
+def test_next_open_fill_uses_candidate_rank_notional_profile():
+    first = _snapshot()
+    state = empty_volatility_contraction_paper_state()
+    state["pending_entries"] = first["pending_entries"]
+
+    second = _snapshot(state=state, day_index=61)
+
+    assert second["filled_count"] == 2
+    assert [row["notional"] for row in second["filled_entries"]] == [
+        10_000.0,
+        12_500.0,
+    ]
+    assert [row["rank_notional_scalar"] for row in second["filled_entries"]] == [
+        1.0,
+        1.25,
+    ]

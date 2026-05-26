@@ -30,6 +30,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER"
 RULE_VERSION = "volatility_contraction_qqq_confirmed_top2_v1"
 TOPN_CANDIDATE_RULE_VERSION = "vcp_qqq_confirmed_topn_equal_notional_v1"
+RANK_NOTIONAL_PROFILE_RULE_VERSION = "vcp_top2_rank_notional_profile_v1"
 MARKET_CONFIRMATION_RULE_VERSION = "volatility_contraction_qqq_gt_spy20_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "volatility_contraction_forward_replacement_value_v1"
 POCKET_PIVOT_CONTEXT_RULE_VERSION = "pre_signal_pocket_pivot_10d_v1"
@@ -62,6 +63,7 @@ DEFAULT_CONFIG = {
     "paper_enabled": True,
     "trade_enabled": False,
     "paper_notional_usd": 10_000.0,
+    "rank_notional_profile": [1.0, 1.25],
     "short_atr_days": 10,
     "long_atr_days": 50,
     "breakout_lookback_days": 20,
@@ -382,6 +384,7 @@ def build_volatility_contraction_candidates(
         candidate["topn_candidate_rule_version"] = TOPN_CANDIDATE_RULE_VERSION
         candidate["vcp_candidate_rank_on_signal_date"] = rank
         candidate["max_paper_trades_per_day"] = int(cfg["daily_entry_slots"])
+        _apply_rank_notional_profile(candidate, rank=rank, config=cfg)
     return accepted, rejected, market
 
 
@@ -716,6 +719,55 @@ def _candidate_for_ticker(
     }
 
 
+def _apply_rank_notional_profile(
+    candidate: dict[str, Any],
+    *,
+    rank: int,
+    config: dict[str, Any],
+) -> None:
+    profile = _normalise_rank_notional_profile(config)
+    base_notional = float(config["paper_notional_usd"])
+    scalar = _rank_notional_scalar(rank, profile)
+    candidate["rank_notional_profile_rule_version"] = RANK_NOTIONAL_PROFILE_RULE_VERSION
+    candidate["rank_notional_profile"] = profile
+    candidate["rank_notional_scalar"] = round(scalar, 6)
+    candidate["base_paper_notional_usd"] = base_notional
+    candidate["intended_notional"] = round(base_notional * scalar, 2)
+    candidate["trade_enabled"] = False
+    candidate["alters_orders"] = False
+
+
+def _normalise_rank_notional_profile(config: dict[str, Any]) -> list[float]:
+    raw_profile = config.get("rank_notional_profile")
+    if not isinstance(raw_profile, (list, tuple)) or not raw_profile:
+        return [1.0]
+    profile: list[float] = []
+    for raw_scalar in raw_profile:
+        scalar = _float_or_none(raw_scalar)
+        profile.append(scalar if scalar is not None and scalar > 0 else 1.0)
+    return profile
+
+
+def _rank_notional_scalar(rank: int, profile: list[float]) -> float:
+    if rank <= 0:
+        return 1.0
+    idx = rank - 1
+    if idx >= len(profile):
+        return 1.0
+    return profile[idx]
+
+
+def _entry_notional(entry: dict[str, Any], config: dict[str, Any]) -> float:
+    notional = _positive_float(entry.get("notional"))
+    if notional is not None:
+        return notional
+    candidate = entry.get("candidate") or {}
+    candidate_notional = _positive_float(candidate.get("intended_notional"))
+    if candidate_notional is not None:
+        return candidate_notional
+    return float(config["paper_notional_usd"])
+
+
 def _advance_open_positions(
     state: dict[str, Any],
     *,
@@ -806,6 +858,8 @@ def _fill_pending_entries(
             state["skipped_entries"].append(skipped_entry)
             continue
         entry_price = apply_entry_fill(open_price)
+        notional = _entry_notional(entry, config)
+        candidate = entry.get("candidate") or {}
         position = {
             "decision_id": entry.get("decision_id"),
             "sleeve": SLEEVE_NAME,
@@ -813,15 +867,18 @@ def _fill_pending_entries(
             "strategy": "volatility_contraction_breakout",
             "entry_date": as_of,
             "entry_price": entry_price,
-            "decision_close_price": entry.get("candidate", {}).get("close"),
-            "notional": float(config["paper_notional_usd"]),
-            "shares": round(float(config["paper_notional_usd"]) / entry_price, 6)
-            if entry_price
-            else None,
+            "decision_close_price": candidate.get("close"),
+            "notional": notional,
+            "shares": round(notional / entry_price, 6) if entry_price else None,
             "observed_trading_days": 0,
             "last_price": current_prices.get(ticker),
             "status": "open",
-            "candidate": deepcopy(entry.get("candidate") or {}),
+            "candidate": deepcopy(candidate),
+            "rank_notional_profile_rule_version": candidate.get(
+                "rank_notional_profile_rule_version"
+            ),
+            "rank_notional_scalar": candidate.get("rank_notional_scalar"),
+            "base_paper_notional_usd": candidate.get("base_paper_notional_usd"),
             "trade_enabled": False,
         }
         if current_prices.get(ticker) and entry_price:
@@ -844,13 +901,16 @@ def _pending_entry_from_candidate(
     config: dict[str, Any],
 ) -> dict[str, Any]:
     ticker = str(candidate.get("ticker") or "").upper()
+    notional = _positive_float(candidate.get("intended_notional"))
+    if notional is None:
+        notional = float(config["paper_notional_usd"])
     return {
         "decision_id": f"{SLEEVE_NAME}:{as_of}:{ticker}",
         "sleeve": SLEEVE_NAME,
         "ticker": ticker,
         "created_asof": as_of,
         "status": "pending_next_open",
-        "notional": float(config["paper_notional_usd"]),
+        "notional": notional,
         "candidate": deepcopy(candidate),
         "trade_enabled": False,
         "alters_orders": False,
