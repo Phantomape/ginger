@@ -717,11 +717,6 @@ def _save_prompt_file(date_str, system_message, user_message, trade_news, trend_
     _write_prompt_body(prompt_file, system_message, user_message)
     logger.info(f"Prompt saved to {prompt_file}")
 
-    legacy_prompt_file = _legacy_prompt_file_path(date_str)
-    if legacy_prompt_file.resolve() != Path(prompt_file).resolve():
-        _write_prompt_body(str(legacy_prompt_file), system_message, user_message)
-        logger.info(f"Legacy prompt mirror saved to {legacy_prompt_file}")
-
     # Save decision log: what signals/positions the code pre-decided,
     # so we can later compare LLM veto/pass against actual outcomes.
     _save_decision_log(date_str, trade_news, trend_signals, data_dir=data_dir)
