@@ -4,11 +4,13 @@ from datetime import date, timedelta
 
 from quant.volatility_contraction_paper_sleeve import (
     MARKET_CONFIRMATION_RULE_VERSION,
+    POCKET_PIVOT_CONTEXT_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     RULE_VERSION,
     build_qqq_spy_market_confirmation,
     build_volatility_contraction_paper_sleeve_snapshot,
     build_volatility_contraction_replacement_value_report,
+    compute_pre_signal_pocket_pivot_context,
     empty_volatility_contraction_paper_state,
 )
 
@@ -64,6 +66,27 @@ def _volatility_contraction_rows(*, days: int = 80) -> list[dict]:
     return rows
 
 
+def _pocket_rows(
+    closes: list[float],
+    volumes: list[float],
+    *,
+    start: date = date(2026, 1, 1),
+) -> list[dict]:
+    rows = []
+    for idx, (close, volume) in enumerate(zip(closes, volumes)):
+        rows.append(
+            {
+                "date": (start + timedelta(days=idx)).isoformat(),
+                "open": close,
+                "high": close * 1.01,
+                "low": close * 0.99,
+                "close": close,
+                "volume": volume,
+            }
+        )
+    return rows
+
+
 def test_qqq_spy_market_confirmation_uses_same_close_to_close_field():
     spy_rows = _market_rows(100.0, 0.05)
     qqq_rows = _market_rows(100.0, 0.25)
@@ -102,6 +125,11 @@ def test_snapshot_adds_top1_candidate_only_when_qqq_leads_spy():
     assert snapshot["candidates"][0]["rule_version"] == RULE_VERSION
     assert snapshot["candidates"][0]["market_confirmation"]["passed"] is True
     assert snapshot["candidates"][0]["intended_notional"] == 10_000.0
+    assert snapshot["candidates"][0]["pocket_pivot_context_rule_version"] == (
+        POCKET_PIVOT_CONTEXT_RULE_VERSION
+    )
+    assert "pre_signal_pocket_pivot_seen_10d" in snapshot["candidates"][0]
+    assert snapshot["candidates"][0]["alters_orders"] is False
     assert snapshot["production_impact"]["alters_orders"] is False
     assert snapshot["trade_enabled"] is False
 
@@ -190,3 +218,71 @@ def test_replacement_value_report_tracks_cash_slot_and_concentration():
     assert report["by_ticker"]["NVDA"]["positive_pnl_share"] == 1.0
     assert report["trade_enabled"] is False
     assert report["alters_orders"] is False
+
+
+def test_pre_signal_pocket_pivot_passes_when_up_volume_beats_prior_down_volume():
+    rows = _pocket_rows(
+        [100, 99, 98, 99, 98, 99, 98, 99, 98, 99, 98, 99, 100, 100.5, 101],
+        [90, 80, 100, 90, 110, 100, 95, 105, 100, 90, 95, 100, 111, 90, 90],
+    )
+
+    context = compute_pre_signal_pocket_pivot_context(rows, rows[14]["date"])
+
+    assert context["pre_signal_pocket_pivot_seen_10d"] is True
+    assert context["pre_signal_pocket_pivot_count_10d"] == 1
+    assert context["latest_pre_signal_pocket_pivot_date"] == rows[12]["date"]
+    assert context["latest_pre_signal_pocket_pivot_volume_ratio"] == 1.009091
+    assert context["pocket_pivot_context_status"] == "available"
+    assert context["trade_enabled"] is False
+    assert context["alters_orders"] is False
+
+
+def test_pre_signal_pocket_pivot_equal_volume_does_not_pass():
+    rows = _pocket_rows(
+        [100, 99, 98, 99, 98, 99, 98, 99, 98, 99, 98, 99, 100, 100.5, 101],
+        [90, 80, 100, 90, 110, 100, 95, 105, 100, 90, 95, 100, 110, 90, 90],
+    )
+
+    context = compute_pre_signal_pocket_pivot_context(rows, rows[14]["date"])
+
+    assert context["pre_signal_pocket_pivot_seen_10d"] is False
+    assert context["pre_signal_pocket_pivot_count_10d"] == 0
+    assert context["latest_pre_signal_pocket_pivot_date"] is None
+    assert context["pocket_pivot_context_status"] == "available"
+
+
+def test_pre_signal_pocket_pivot_excludes_signal_date():
+    rows = _pocket_rows(
+        [100, 99, 98, 99, 98, 99, 98, 99, 98, 99, 98, 99, 100, 100.5, 105],
+        [90, 80, 100, 90, 110, 100, 95, 105, 100, 90, 95, 100, 110, 90, 1000],
+    )
+
+    context = compute_pre_signal_pocket_pivot_context(rows, rows[14]["date"])
+
+    assert context["pre_signal_pocket_pivot_seen_10d"] is False
+    assert context["latest_pre_signal_pocket_pivot_date"] is None
+
+
+def test_pre_signal_pocket_pivot_missing_down_day_volume_is_unavailable_false():
+    rows = _pocket_rows(
+        [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111],
+        [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111],
+    )
+
+    context = compute_pre_signal_pocket_pivot_context(rows, rows[11]["date"])
+
+    assert context["pre_signal_pocket_pivot_seen_10d"] is False
+    assert context["pre_signal_pocket_pivot_count_10d"] == 0
+    assert context["pocket_pivot_context_status"] == "no_prior_down_volume"
+
+
+def test_pre_signal_pocket_pivot_does_not_inspect_future_rows():
+    rows = _pocket_rows(
+        [100, 99, 98, 99, 98, 99, 98, 99, 98, 99, 98, 99, 100, 101, 102, 104],
+        [90, 80, 100, 90, 110, 100, 95, 105, 100, 90, 95, 100, 110, 90, 1000, 1200],
+    )
+
+    context = compute_pre_signal_pocket_pivot_context(rows, rows[13]["date"])
+
+    assert context["pre_signal_pocket_pivot_seen_10d"] is False
+    assert context["latest_pre_signal_pocket_pivot_date"] is None

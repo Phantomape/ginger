@@ -185,11 +185,66 @@ adding one orthogonal, production-visible market field: `QQQ 20d return > SPY
 exp-020 failure to a small positive `+$322.04`, with drawdown drift only
 `+0.02pp`.
 
-Next default action: do not retune volatility-compression, breakout, sector, or
-rank thresholds on the frozen sample. Build/track a default-off forward paper
-adapter with the same QQQ/SPY close-to-close field, replacement-value ledger,
-concentration guard, and production/backtest parity check before any live
-promotion discussion.
+2026-05-25 `exp-20260525-024` added the shared default-off forward paper
+adapter for this exact rule. Next default action: do not retune
+volatility-compression, breakout, sector, rank, or QQQ/SPY thresholds on the
+frozen sample. Collect closed forward replacement-value rows, concentration
+metrics, and kill-gate evidence before any live promotion discussion.
+
+2026-05-25 `exp-20260525-027` tested the Kova-style daily
+`pre_signal_pocket_pivot_seen_10d` support field on top of the same exp-022
+candidate set. It produced enough sample (`55` paper trades across all three
+windows) and passed concentration, but failed promotion: aggregate uplift was
+only `+0.7689` EV / `+$13,985.57` versus core, lagging exp-022 by `-0.4804`
+EV / `-$9,423.99`, with EV/PnL regression versus exp-022 in every window. Keep
+pocket-pivot context as read-only metadata / attribution only; do not use it
+as a replacement or allocation gate, and do not retune its scan or volume
+thresholds on the frozen sample.
+
+2026-05-25 `exp-20260525-030` tested one orthogonal event-context field:
+`pre_signal_event_snapshot_seen_20d`, using only daily event snapshots strictly
+before the VCP signal date. The event-gated variant passed versus core
+(`+0.8533` EV / `+$15,187.18`, 49 trades, all three windows positive, no
+concentration failure), but it still failed as an exp-022 replacement because
+aggregate EV/PnL lagged by `-0.3960` / `-$8,222.38` and `mid_weak` / `old_thin`
+regressed versus exp-022. Treat event context as useful attribution and coverage
+diagnostics, not as a VCP allocation gate. Do not promote event absence/presence
+from this frozen sample; richer event semantics or forward rows are required.
+
+2026-05-25 `exp-20260525-033` built a PIT-safe VCP candidate dossier field,
+`vcp_catalyst_quality_bucket_v1`, on the unchanged exp-022 selected-trade
+path. The replay matched exp-022 exactly (`+1.2493` EV / `+$23,409.56`, 71
+paper trades), and the dossier separated outcomes, but in the wrong direction
+for a Kova-style support gate: the best eligible bucket was
+`F_no_prior_catalyst_or_support` (`16` trades, `+$8,943.61`, `$558.98` average
+PnL), while the broad `C_volume_support_only` bucket had `40` trades and only
+`$221.64` average PnL. Small supportive catalyst buckets were positive but too
+thin to promote. Treat the dossier as read-only explanation and forward
+diagnostics; do not convert prior catalyst/volume support into a VCP gate on
+the frozen sample.
+
+2026-05-25 `exp-20260525-036` audited why exp-022 contributes little in
+`late_strong`. The weakness is not evidence that the QQQ gate should be
+loosened: raw VCP daily top-1 without the QQQ gate lost `-$4,608.43`, and
+QQQ-rejected daily top-1 lost `-$4,930.47` with zero winners. The better
+explanation is underparticipation/rank-depth scarcity: late_strong had only
+`6` QQQ-confirmed candidates across `5` candidate days, and only one day had a
+rank-2 candidate. That single rank-2 alternative (`MU` on `2025-12-10`) added
+`+$915.69`, moving late_strong from `+$322.04` to `+$1,237.73` in the top-2
+diagnostic.
+
+2026-05-25 `exp-20260525-037` resolved the conflicting exp-034 VCP identity by
+rerunning the top-N test under a clean experiment ID and promoting only the
+top-2 variant into the shared default-off paper adapter. The same three-window
+gate compared against both core and exp-022: top-2 added `+2.0730` EV /
+`+$34,795.92` versus core and beat exp-022 by `+0.8237` EV / `+$11,386.36`;
+all three windows improved versus exp-022, drawdown drift was non-worsening,
+and concentration passed (`16.47%` max positive ticker share, `0.0973` HHI).
+This is still observe-only paper, not live capital. Do not retune QQQ/SPY,
+ATR, breakout, pocket-pivot, event-presence, catalyst-quality, or top-N
+thresholds on the frozen sample. The next valid work is forward closed
+replacement-value collection for the exact top-2 adapter, or a genuinely
+orthogonal production-visible field after forward evidence arrives.
 
 ### 2. State-surface：从调 profile 转向解 concentration
 

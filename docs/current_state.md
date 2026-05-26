@@ -66,7 +66,7 @@ These counts are experiment records, not unique independent strategies.
 | Pilot / `AI_INFRA_AGGRESSIVE` | Production can emit `pilot_signals`; canonical core backtest stays core-only unless `--include-pilot-sleeve` is used | Fixed historical windows predate pilot activation, so zero pilot entries can be correct PIT behavior | Return is capped by explicit sleeve isolation and limited post-activation forward evidence | Enable bounded pilot slots or include pilot sleeve in an explicit validation run | Thin forward sample, implementation risk, and no old-window evidence |
 | `STATE_SURFACE_SATELLITE` | Default-off paper only; live/default orders disabled | Many accepted paper refinements; latest low-extension increment `exp-20260520-001` added `+0.2368` EV / `+$4,925.64` with 9 adjusted paper trades | No trade-enabled adapter; tail-aware forward gate and concentration controls still block promotion | Trade-enabled satellite sleeve with small slots, max notional, and kill switch after a dedicated activation experiment | Paper overfit, rank-profile mining, and winner concentration |
 | `BROAD_MARKET_LEADERSHIP_PAPER` | Default-off paper only; live/default orders disabled | Shared adapter plus accepted refinements add about `+1.2236` paper EV / `+$28,975.55` across documented increments; 90 selected paper trades in the base adapter | Static all-market feed is still optional, but `exp-20260524-008` added a conservative `universe_state` fallback feed; still needs closed replacement-value outcomes and explicit trade adapter before core expansion | Small broad-market sleeve with fixed or governance-derived feed and replacement-value monitoring | Universe/feed leakage, all-market crowding, and hidden beta exposure |
-| Volatility-contraction QQQ-confirmed paper sleeve | Default-off paper only; live/default orders disabled | `exp-20260525-022` replay lead improved 3/3 windows by `+1.2493` EV / `+$23,409.56`; `exp-20260525-024` added the shared forward paper adapter | Needs closed forward replacement-value rows and concentration/kill-gate evidence before activation | Small paper sleeve review only after forward gate clears; no frozen-sample threshold retuning | Replay-selected discriminator may decay; hidden Nasdaq beta and concentration need monitoring |
+| Volatility-contraction QQQ-confirmed paper sleeve | Default-off paper only; live/default orders disabled | `exp-20260525-022` replay lead improved 3/3 windows by `+1.2493` EV / `+$23,409.56`; `exp-20260525-024` added the shared forward paper adapter; `exp-20260525-027` rejected Kova pocket-pivot support as a replacement gate; `exp-20260525-030` found pre-signal event context passed vs core (`+0.8533` EV / `+$15,187.18`) but lagged exp-022 by `-0.3960` EV / `-$8,222.38`; `exp-20260525-033` replayed exp-022 exactly and found dossier separation, but the best eligible bucket was `F_no_prior_catalyst_or_support`, not a supportive catalyst/volume bucket; `exp-20260525-036` found late_strong weakness is underparticipation/rank-depth scarcity, not QQQ-gate damage; `exp-20260525-037` reran the clean top-N Gate 4 test and accepted top-2 as observe-only paper: `+2.0730` EV / `+$34,795.92` vs core, `+0.8237` EV / `+$11,386.36` vs exp-022, no window regression vs exp-022, non-worsening drawdown, 117 paper trades, and concentration passed | Needs closed forward replacement-value rows and concentration/kill-gate evidence before activation; pocket-pivot, event-context, dossier support buckets, and top-N rank metadata are attribution/observe-only; top-2 is now the shared default-off paper adapter, not live capital | Small paper sleeve review only after forward gate clears; no frozen-sample threshold retuning, pocket-pivot allocation gate, event-presence gate, catalyst-quality gate, top-N sweep, or QQQ/SPY retune | Replay-selected discriminator may decay; hidden Nasdaq beta, support/event-field overfit, rank-depth overfit, and concentration need monitoring |
 | SEC financial-report T+1 paper sleeve | Default-off paper only; live/default orders disabled | Current paper baseline had sleeve PnL `$48,332.18`; latest earnings-release market-context increment added `+0.1885` EV / `+$5,461.48` | No explicit trade adapter; positive incremental PnL still has concentration risk (`51.17%` max single-ticker share in latest increment) | Trade a narrow, capped SEC event sleeve only after forward replacement-value gate clears | Filing timing errors, thin semantic slices, and single-name event concentration |
 | SEC negative / governance / procedural queues | Observe-only paper queues | Production can emit queues and snapshots; default core backtests do not trade them | Missing forward replacement-value evidence and explicit shared trade adapter | Promote only one queue family at a time after closed forward evidence | Semantic false positives and event-family overfitting |
 | Default-off external event overlay bundle | Default-off / replay-only attribution | `exp-20260517-010` event notional replay improved `+0.5389` EV / `+$7,987.90` but remained replay-only | Closed forward replacement-value evidence and trade-enabled adapter do not exist yet | Enable a tiny event bundle sleeve with source-priority dedupe and kill switch | Event overlap, duplicate exposure, and replay-only optimism |
@@ -117,6 +117,31 @@ in all three windows, while `trend` was always in the high bucket. This is
 measurement repair only; no entries, exits, ranking, sizing, risk, LLM/news,
 `run.py`, or orders changed. Use this surface before any future component-aware
 allocation test.
+
+Latest accepted state-surface promotion-readiness repair: `exp-20260525-035`
+joins the accepted default-off state-surface paper sleeve trades (from
+`exp-20260520-001`, `24` selected paper trades totaling `$164,570.94`) with
+same-window core entries from a fresh canonical three-window backtest, which
+reproduced the canonical accepted aggregate EV `7.8941` and aggregate PnL
+`$234,850.99` exactly (drift `0.0` on both). At trading-day lookbacks N=0/3/5,
+the share of state-surface paper PnL coming from tickers core also entered in
+the same window is `5.13%` / `21.23%` / `36.26%` (positive-only PnL share
+`4.96%` / `21.96%` / `36.49%`). The aggregate falls in the
+`mixed_overlap_with_core` bucket (between `20%` and `50%` at N=5), so this is
+not promotion evidence for a state-surface core-overlap allocation rule. Per-
+window N=5 shares are concentrated in `late_strong` (6 of 9 trades overlap,
+`$34,829.30` of `$31,755.45` net paper PnL after losers — the >100% reflects
+non-overlap losses, not over-attribution) while `old_thin` is largely
+independent (1 of 3 trades). Do not propose a frozen-sample state-surface
+allocation gate keyed on this overlap field: per the recorded decision rule,
+N=5 share `> 50%` would have been the only condition that opens a `1.05x`
+non-overlap / `0.5x` overlap notional Gate 4 alpha_search (still subject to
+the state-surface tightened `>10%` aggregate EV requirement); `20-50%`
+requires closed forward replacement-value rows first; `< 20%` would have
+pivoted next research toward sector/theme crowding or queue-independence
+fields. No entries, exits, ranking, sizing, slots, heat, LLM/news,
+`state_surface_sleeve.py`, `run.py`, paper notional, or live/default orders
+changed.
 
 Latest rejected low-theme ranking-component scout: `exp-20260524-013` tested a
 cap-aware post-sizing top-up for already-qualified core signals with entry-day

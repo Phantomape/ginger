@@ -28,9 +28,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER"
-RULE_VERSION = "volatility_contraction_qqq_confirmed_top1_v1"
+RULE_VERSION = "volatility_contraction_qqq_confirmed_top2_v1"
+TOPN_CANDIDATE_RULE_VERSION = "vcp_qqq_confirmed_topn_equal_notional_v1"
 MARKET_CONFIRMATION_RULE_VERSION = "volatility_contraction_qqq_gt_spy20_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "volatility_contraction_forward_replacement_value_v1"
+POCKET_PIVOT_CONTEXT_RULE_VERSION = "pre_signal_pocket_pivot_10d_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("volatility_contraction_paper_state")
@@ -68,7 +70,7 @@ DEFAULT_CONFIG = {
     "min_candidate_rs_vs_spy": 0.0,
     "min_dollar_volume": 25_000_000.0,
     "market_confirmation_lookback_days": 20,
-    "daily_entry_slots": 1,
+    "daily_entry_slots": 2,
     "max_active_positions": 5,
     "hold_days": 10,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
@@ -255,7 +257,7 @@ def build_volatility_contraction_paper_sleeve_snapshot(
             working_state["pending_entries"].append(entry)
             new_pending.append(entry)
     for candidate in candidates[len(new_pending):]:
-        rejected.append({**candidate, "reasons": ["daily_top1_or_capacity_limit"]})
+        rejected.append({**candidate, "reasons": ["daily_topn_or_capacity_limit"]})
 
     closed = working_state.get("closed_positions") or []
     open_positions = working_state.get("open_positions") or []
@@ -349,6 +351,7 @@ def build_volatility_contraction_candidates(
         candidate = _candidate_for_ticker(rows_by_ticker, ticker, rows, as_of_date, cfg)
         if candidate is None:
             continue
+        candidate.update(compute_pre_signal_pocket_pivot_context(rows, as_of_date))
         reasons = []
         if market["passed"] is not True:
             reasons.append("qqq_spy_confirmation_failed")
@@ -375,6 +378,10 @@ def build_volatility_contraction_candidates(
             row["ticker"],
         )
     )
+    for rank, candidate in enumerate(accepted, start=1):
+        candidate["topn_candidate_rule_version"] = TOPN_CANDIDATE_RULE_VERSION
+        candidate["vcp_candidate_rank_on_signal_date"] = rank
+        candidate["max_paper_trades_per_day"] = int(cfg["daily_entry_slots"])
     return accepted, rejected, market
 
 
@@ -413,6 +420,103 @@ def build_qqq_spy_market_confirmation(
         "known_at": "after_signal_date_close_before_next_open_paper_entry",
         "trade_enabled": False,
         "alters_orders": False,
+    }
+
+
+def compute_pre_signal_pocket_pivot_context(
+    rows: list[dict[str, Any]],
+    signal_date: str,
+    *,
+    scan_days: int = 10,
+    down_volume_lookback_days: int = 10,
+) -> dict[str, Any]:
+    """Return PIT-safe pocket-pivot support metadata before a signal date."""
+    normalised = _normalise_ohlcv_rows(rows)
+    signal_idx = _latest_index_on_or_before(normalised, _date10(signal_date))
+    base = {
+        "pocket_pivot_context_rule_version": POCKET_PIVOT_CONTEXT_RULE_VERSION,
+        "pre_signal_pocket_pivot_seen_10d": False,
+        "pre_signal_pocket_pivot_count_10d": 0,
+        "latest_pre_signal_pocket_pivot_date": None,
+        "latest_pre_signal_pocket_pivot_volume_ratio": None,
+        "pocket_pivot_context_status": "unavailable",
+        "pocket_pivot_scan_days": int(scan_days),
+        "pocket_pivot_down_volume_lookback_days": int(down_volume_lookback_days),
+        "known_at": "after_signal_date_close_before_next_open_paper_entry",
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+    if signal_idx is None or str(normalised[signal_idx].get("date") or "") != _date10(signal_date):
+        return {**base, "pocket_pivot_context_status": "missing_signal_date"}
+    if signal_idx <= 0 or scan_days <= 0 or down_volume_lookback_days <= 0:
+        return {**base, "pocket_pivot_context_status": "insufficient_history"}
+
+    scan_start = max(1, signal_idx - int(scan_days))
+    hits: list[dict[str, Any]] = []
+    prior_up_days = 0
+    up_days_without_down_volume = 0
+    up_days_with_down_volume = 0
+
+    for pivot_idx in range(scan_start, signal_idx):
+        cur_close = _positive_float(normalised[pivot_idx].get("close"))
+        prev_close = _positive_float(normalised[pivot_idx - 1].get("close"))
+        volume = _positive_float(normalised[pivot_idx].get("volume"))
+        if cur_close is None or prev_close is None or volume is None:
+            continue
+        if cur_close <= prev_close:
+            continue
+        prior_up_days += 1
+        down_volumes: list[float] = []
+        lookback_start = max(1, pivot_idx - int(down_volume_lookback_days))
+        for prior_idx in range(lookback_start, pivot_idx):
+            prior_close = _positive_float(normalised[prior_idx].get("close"))
+            prior_prev_close = _positive_float(normalised[prior_idx - 1].get("close"))
+            prior_volume = _positive_float(normalised[prior_idx].get("volume"))
+            if prior_close is None or prior_prev_close is None or prior_volume is None:
+                continue
+            if prior_close < prior_prev_close:
+                down_volumes.append(prior_volume)
+        if not down_volumes:
+            up_days_without_down_volume += 1
+            continue
+        up_days_with_down_volume += 1
+        max_down_volume = max(down_volumes)
+        volume_ratio = volume / max_down_volume if max_down_volume > 0 else None
+        if volume > max_down_volume:
+            hits.append(
+                {
+                    "date": normalised[pivot_idx]["date"],
+                    "volume_ratio": _round(volume_ratio, 6),
+                    "volume": _round(volume, 2),
+                    "max_prior_down_volume": _round(max_down_volume, 2),
+                }
+            )
+
+    if hits:
+        latest = hits[-1]
+        return {
+            **base,
+            "pre_signal_pocket_pivot_seen_10d": True,
+            "pre_signal_pocket_pivot_count_10d": len(hits),
+            "latest_pre_signal_pocket_pivot_date": latest["date"],
+            "latest_pre_signal_pocket_pivot_volume_ratio": latest["volume_ratio"],
+            "pocket_pivot_context_status": "available",
+            "prior_up_days_checked": prior_up_days,
+            "prior_up_days_with_down_volume": up_days_with_down_volume,
+            "prior_up_days_without_down_volume": up_days_without_down_volume,
+        }
+    if up_days_with_down_volume:
+        status = "available"
+    elif prior_up_days:
+        status = "no_prior_down_volume"
+    else:
+        status = "no_prior_up_day"
+    return {
+        **base,
+        "pocket_pivot_context_status": status,
+        "prior_up_days_checked": prior_up_days,
+        "prior_up_days_with_down_volume": up_days_with_down_volume,
+        "prior_up_days_without_down_volume": up_days_without_down_volume,
     }
 
 

@@ -104,6 +104,25 @@ data/daily/earnings_expectations/earnings_expectations_YYYYMMDD.json
 
 Agent rule: do not confuse current EPS availability with expectation drift. The value comes from daily historical snapshots.
 
+### `quant/estimate_revision_ledger.py`
+
+Purpose: build the default-off PIT estimate-revision ledger from daily earnings
+snapshots, including same-event EPS estimate deltas and candidate/signal match
+metadata.
+
+Output:
+
+```text
+data/non_ohlcv/estimate_revision_ledger_YYYYMMDD.jsonl
+data/non_ohlcv/estimate_revision_ledger_summary_YYYYMMDD.json
+```
+
+Agent rule: when organized and legacy earnings snapshots exist for the same
+as-of date, ledger construction must de-duplicate before computing revision
+deltas. Prefer PIT-safe organized snapshots over later legacy/root copies so a
+compatibility artifact cannot create a false `current_snapshot_created_after_asof`
+or `prior_snapshot_created_after_asof` blocker.
+
 ---
 
 ## SEC financial-report language provenance
@@ -326,12 +345,12 @@ not enable orders, promote optical names into the core universe, alter pilot
 slots, ranking, sizing, or exits without a separate Gate 1-4 activation
 experiment and parity update.
 
-
 ### `quant/volatility_contraction_paper_sleeve.py`
 
 Purpose: maintain the default-off
 `VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER` forward observation ledger for the
-accepted replay lead from `exp-20260525-022`.
+accepted replay lead from `exp-20260525-022` and the accepted top-2
+candidate-depth paper expansion from `exp-20260525-037`.
 
 Candidate route:
 
@@ -342,14 +361,27 @@ Candidate route:
   volume.
 - Requires the free-data market confirmation
   `QQQ 20d close-to-close return > SPY 20d close-to-close return`.
+- Emits up to two ranked same-day candidates. `vcp_candidate_rank_on_signal_date`
+  and `max_paper_trades_per_day` are paper metadata, not live ranking inputs.
+- Emits read-only Kova pocket-pivot support metadata from
+  `exp-20260525-027`: `pre_signal_pocket_pivot_seen_10d`,
+  `pre_signal_pocket_pivot_count_10d`,
+  `latest_pre_signal_pocket_pivot_date`,
+  `latest_pre_signal_pocket_pivot_volume_ratio`, and
+  `pocket_pivot_context_status`. The scan uses only the prior 10 trading days
+  before the signal date, excludes the signal date, and marks missing prior
+  down-day volume as unavailable/false rather than guessed.
 - Tracks fixed `$10k` paper notional, next-open paper entry, 10-trading-day
   paper hold, closed outcomes, replacement-value summary, and concentration
   blockers only.
 
 Agent rule: this sleeve may collect forward replacement-value evidence. It must
-not enable orders, expand the core universe, alter ranking, sizing, exits,
+not enable orders, expand the core universe, alter live ranking, sizing, exits,
 LLM/news, or consume live capital without a separate Gate 1-4 activation
-experiment and parity update.
+experiment and parity update. The pocket-pivot fields are metadata only because
+`exp-20260525-027` failed the replacement gate versus `exp-20260525-022`; the
+top-2 expansion is default-off paper only until forward closed outcomes clear
+the promotion gate.
 
 ### `quant/default_off_alpha_attribution.py`
 
@@ -379,6 +411,138 @@ Agent rule: this is a read-only activation and blocker dashboard. It may help
 choose the next alpha or production-activation experiment, but no trade rule,
 LLM prompt, sizing path, ranking path, exit path, or order adapter may consume
 it without a separate Gate 1-4 promotion.
+
+### `quant/experiments/exp_20260525_017_expectation_residual_leadership_attribution.py`
+
+Purpose: production-visible, read-only attribution for the Expectation Drift x
+Residual Leadership direction. `quant/run.py` refreshes it after the daily
+`quant_signals_YYYYMMDD.json` artifact is written, so it can join persisted
+candidate objects to PIT estimate-revision ledger rows and residual-strength
+context without affecting the daily decision path.
+
+Output:
+
+```text
+data/experiments/exp-20260525-017/expectation_residual_leadership_attribution.json
+experiments/artifacts/exp-20260525-017_expectation_residual_leadership_attribution.md
+experiments/logs/exp-20260525-017_expectation_residual_leadership_attribution.json
+```
+
+Agent rule: this observer may update coverage, bucket outcomes, and gate status
+only. Its Bucket A/B/C/D result must not change entries, exits, ranking, sizing,
+LLM prompts, paper sleeves, or orders. A passing result only unlocks a separate
+Gate 1-4 PEAD paper sleeve or ranking-component experiment.
+
+The artifact may also include `reconstructed_scout`, a non-PIT historical
+triage view that reads reconstructed ledger 7d deltas when present. Scout rows
+can help decide whether more PIT accumulation or a paid PIT data source is worth
+pursuing, but they cannot satisfy the primary gate, alter the Bucket A/B/C/D
+decision, or promote live logic.
+
+### `quant/experiments/exp_20260525_021_expectation_residual_readiness_audit.py`
+
+Purpose: read-only readiness audit for the Expectation Drift x Residual
+Leadership attribution path. It explains whether `exp-20260525-017` has enough
+PIT estimate-revision joins, residual-strength context, and closed 5/10/20-day
+forward outcomes to be interpreted.
+
+Output:
+
+```text
+data/experiments/exp-20260525-021/expectation_residual_readiness_audit.json
+experiments/artifacts/exp-20260525-021_expectation_residual_readiness_audit.md
+experiments/logs/exp-20260525-021.json
+```
+
+Agent rule: this audit may only report readiness, missing-field reasons, and
+the exact rerun command for `exp-20260525-017`. It must not relax the positive
+expectation definition, create a fallback for missing `eps_estimate_delta_7d`,
+or unlock PEAD/ranking/sizing work unless its readiness gate passes.
+
+### `quant/experiments/exp_20260525_023_expectation_revision_coverage_repair.py`
+
+Purpose: read-only measurement repair for the expectation-revision leg of the
+Expectation Drift x Residual Leadership direction. It explains why persisted
+candidate objects do or do not join to PIT estimate-revision ledger rows and
+why usable 7d/30d EPS deltas are absent.
+
+Output:
+
+```text
+data/experiments/exp-20260525-023/expectation_revision_coverage_repair.json
+experiments/artifacts/exp-20260525-023_expectation_revision_coverage_repair.md
+experiments/logs/exp-20260525-023.json
+```
+
+Agent rule: this repair may classify coverage blockers only. It must not treat
+missing `eps_estimate_delta_7d` as positive expectation, must not change
+candidate generation, ranking, sizing, exits, LLM/news, paper sleeves, or
+orders, and must route any alpha interpretation back through
+`exp-20260525-021` before `exp-20260525-017`.
+
+### `quant/experiments/exp_20260525_025_estimate_revision_snapshot_dedupe_repair.py`
+
+Purpose: measurement-repair record for the estimate-revision snapshot de-dupe
+guard. It audits whether duplicate organized/legacy earnings snapshots change
+candidate-level PIT usability and records the repair evidence.
+
+Output:
+
+```text
+data/experiments/exp-20260525-025/estimate_revision_snapshot_dedupe_repair.json
+experiments/artifacts/exp-20260525-025_estimate_revision_snapshot_dedupe_repair.md
+experiments/logs/exp-20260525-025.json
+```
+
+Agent rule: this experiment may justify rebuilding affected default-off
+estimate-revision ledgers only. It does not unlock Bucket A interpretation,
+PEAD paper sleeves, ranking changes, sizing changes, exits, LLM/news changes,
+or orders unless `exp-20260525-021` later passes.
+
+### `quant/experiments/exp_20260525_031_revision_lead_window_attribution.py`
+
+Purpose: read-only attribution for short-lag EPS estimate-revision leads. It
+tests whether a PIT-usable positive same-event `eps_estimate_delta_prev` can
+appear 0-3 trading days before a persisted Ginger candidate object, including
+weekend snapshot dates whose effective trade date is the next OHLCV trading
+day.
+
+Output:
+
+```text
+data/experiments/exp-20260525-031/revision_lead_window_attribution.json
+experiments/artifacts/exp-20260525-031_revision_lead_window_attribution.md
+experiments/logs/exp-20260525-031.json
+```
+
+Agent rule: this experiment may report candidate buckets, forward outcomes,
+and current-position overlap only. It must not change entries, exits, ranking,
+sizing, LLM/news, paper sleeves, or orders. A promising result only unlocks a
+separate default-off PEAD paper sleeve or ranking-component experiment.
+
+### `quant/experiments/exp_20260525_034_expectation_revision_watchlist_attribution.py`
+
+Purpose: read-only attribution for a larger expectation-revision watchlist.
+Instead of requiring a same-day Ginger candidate object, it starts from every
+PIT-usable `estimate_revision_ledger` row, classifies strict
+`eps_estimate_delta_7d > 0` expectation drift, records a wider non-promotable
+watchlist using 7d / 30d / previous-snapshot positive revision evidence, and
+joins residual leadership, later candidate hits, current-position overlap, and
+5/10/20-day forward outcomes.
+
+Output:
+
+```text
+data/experiments/exp-20260525-034/expectation_revision_watchlist_attribution.json
+experiments/artifacts/exp-20260525-034_expectation_revision_watchlist_attribution.md
+experiments/logs/exp-20260525-034.json
+```
+
+Agent rule: this experiment may grow a default-off research watchlist and
+report bucket evidence only. The wide watchlist is evidence-accumulation
+metadata, not a trade queue. It must not change entries, exits, ranking,
+sizing, LLM/news, paper sleeves, or orders. A passing strict primary readout
+only unlocks a separate PEAD paper sleeve or ranking-component experiment.
 
 ---
 
