@@ -28,7 +28,7 @@ Single variable: a default-off paper sleeve admits at most one liquid breakout c
     "absorption_context_checked": 162,
     "absorption_context_passed": 125,
     "candidate_days": 66,
-    "candidate_source_tickers": 38,
+    "candidate_source_tickers": 39,
     "raw_liquid_breakout_hits": 162,
     "rule_version": "down_volume_absorption_breakout_v1",
     "trading_days": 123,
