@@ -1,0 +1,102 @@
+{
+  "baseline_replay_parity": {
+    "passed": true,
+    "pnl_drift": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "replayed_pnl_by_window": {
+      "late_strong": 10307.76,
+      "mid_weak": 14607.88,
+      "old_thin": 4059.9
+    },
+    "replayed_trade_count_by_window": {
+      "late_strong": 30,
+      "mid_weak": 30,
+      "old_thin": 30
+    },
+    "source_experiment_id": "exp-20260520-004",
+    "source_pnl_by_window": {
+      "late_strong": 10307.76,
+      "mid_weak": 14607.88,
+      "old_thin": 4059.9
+    },
+    "source_trade_count_by_window": {
+      "late_strong": 30,
+      "mid_weak": 30,
+      "old_thin": 30
+    },
+    "trade_count_drift": {
+      "late_strong": 0,
+      "mid_weak": 0,
+      "old_thin": 0
+    }
+  },
+  "decision": "rejected_broad_market_sector_open_crowding_support",
+  "experiment_id": "exp-20260527-021",
+  "gate4": {
+    "adjusted_guard_passed": true,
+    "adjusted_trade_count": 42,
+    "adjusted_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "aggregate_ev_delta": 0.0012,
+    "aggregate_pnl_delta": 650.01,
+    "baseline_replay_parity_passed": true,
+    "concentration_guard_passed": true,
+    "drawdown_guard_passed": true,
+    "max_drawdown_worse": 0.0009,
+    "max_drawdown_worse_allowed": 0.005,
+    "max_single_ticker_positive_share": 0.5,
+    "max_top5_positive_share": 0.7,
+    "minimum_adjusted_trades": 8,
+    "minimum_adjusted_windows": 3,
+    "minimum_ev_improved_windows": 3,
+    "minimum_selected_trades": 30,
+    "minimum_selected_windows": 3,
+    "passed": false,
+    "sample_guard_passed": true,
+    "selected_trade_count": 90,
+    "selected_windows": 3,
+    "single_ticker_positive_share": 0.130168,
+    "top5_positive_share": 0.421566,
+    "window_guard_passed": true,
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "A broad-market paper candidate whose sector is already open may be joining confirmed sector momentum rather than redundant hidden beta. A bounded paper-notional support scalar on same-sector open crowding should improve replacement value without changing candidate discovery.",
+  "lane": "alpha_search",
+  "next_evidence_needed": "If rejected, do not retry adjacent same-sector support scalars without new forward closed outcomes. Next broad-market data edge should use a distinct field such as industry-level leadership breadth or cost-adjusted replacement value.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "production_signal_path_changed": false,
+    "promotion_blocker": "If positive, implement through shared broad_market_paper_sleeve state-aware default-off adapter before retention; this run does not create production/backtest behavior divergence because it does not promote the support scalar.",
+    "replay_only": true,
+    "research_replay_alters_paper_notional": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": {
+    "artifact": "experiments/artifacts/exp-20260527-021_broad_market_sector_open_crowding_support.md",
+    "control": "data/experiments/exp-20260519-036/broad_market_shared_paper_adapter.json",
+    "doc_ticket": "docs/experiments/tickets/exp-20260527-021.json",
+    "experiment_log": "docs/experiment_log.jsonl",
+    "log": "experiments/logs/exp-20260527-021.json",
+    "output": "data/experiments/exp-20260527-021/broad_market_sector_open_crowding_support.json",
+    "script": "quant/experiments/exp_20260527_021_broad_market_sector_open_crowding_support.py",
+    "source": "data/experiments/exp-20260520-004/broad_market_trend_persistence_notional.json",
+    "ticket": "experiments/tickets/exp-20260527-021.json"
+  },
+  "status": "rejected"
+}
