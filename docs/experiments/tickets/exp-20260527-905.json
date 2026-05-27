@@ -1,0 +1,67 @@
+{
+  "decision": "rejected_vcp_cost_liquidity_scalar",
+  "experiment_id": "exp-20260527-905",
+  "gate4": {
+    "adjusted_guard_passed": true,
+    "adjusted_trade_count": 32,
+    "adjusted_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "aggregate_ev_delta_vs_source": 0.4808,
+    "aggregate_pnl_delta_vs_source": 7635.91,
+    "failed_reasons": [
+      "did_not_lift_source_ev_by_5pct"
+    ],
+    "max_drawdown_worse_vs_source": -0.0001,
+    "max_drawdown_worse_vs_source_guardrail": 0.005,
+    "min_ev_lift_required": 0.50927,
+    "min_ev_lift_vs_source": 0.05,
+    "minimum_adjusted_trades": 20,
+    "minimum_adjusted_windows": 3,
+    "passed": false,
+    "source_ev_sum": 10.1854,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.178763,
+      "max_single_positive_pnl_share_guardrail": 0.4,
+      "passed": true,
+      "positive_pnl_hhi": 0.104514,
+      "positive_pnl_hhi_guardrail": 0.3
+    },
+    "windows_ev_regressed": [],
+    "windows_pnl_regressed": []
+  },
+  "hypothesis": "VCP top-2 paper trades with high decision-date OHLCV cost/liquidity proxy may have a distinct expected-value profile. A bounded paper notional scalar on that fixed cohort should improve EV without changing the accepted VCP source, QQQ/SPY gate, top-2 breadth, rank profile, hold period, or live behavior.",
+  "lane": "alpha_search",
+  "next_evidence_needed": "Do not retry adjacent VCP cost/liquidity thresholds or scalars on the frozen windows without new forward closed outcomes.",
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_core_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "promotion_blocker": "If retained, implement the same cost/liquidity scalar through quant/volatility_contraction_paper_sleeve.py plus parity tests. This replay does not alter production/default-off behavior.",
+    "replay_only": true,
+    "research_replay_alters_paper_notional": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": {
+    "artifact": "experiments/artifacts/exp-20260527-905_vcp_cost_liquidity_scalar.md",
+    "doc_ticket": "docs/experiments/tickets/exp-20260527-905.json",
+    "experiment_log": "docs/experiment_log.jsonl",
+    "log": "experiments/logs/exp-20260527-905.json",
+    "output": "data/experiments/exp-20260527-905/vcp_cost_liquidity_scalar.json",
+    "script": "quant/experiments/exp_20260527_905_vcp_cost_liquidity_scalar.py",
+    "source": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+    "ticket": "experiments/tickets/exp-20260527-905.json"
+  },
+  "status": "rejected"
+}
