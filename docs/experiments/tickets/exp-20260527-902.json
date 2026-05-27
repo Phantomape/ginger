@@ -1,0 +1,86 @@
+{
+  "acceptance_rule": {
+    "promotion_allowed_in_this_experiment": false,
+    "readiness_gate": "PIT 15m/60m rows cover at least 20 source trades across at least two standard windows.",
+    "reason": "Coverage audit only; no entry rule is tested or promoted."
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260527_902_kova_intraday_entry_readiness_audit.py",
+    "data/experiments/exp-20260527-902/kova_intraday_entry_readiness_audit.json",
+    "experiments/artifacts/exp-20260527-902_kova_intraday_entry_readiness_audit.md",
+    "experiments/logs/exp-20260527-902.json",
+    "experiments/tickets/exp-20260527-902.json",
+    "docs/experiments/tickets/exp-20260527-902.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260527-902.json",
+    "json": "data/experiments/exp-20260527-902/kova_intraday_entry_readiness_audit.json",
+    "log": "experiments/logs/exp-20260527-902.json",
+    "markdown": "experiments/artifacts/exp-20260527-902_kova_intraday_entry_readiness_audit.md",
+    "ticket": "experiments/tickets/exp-20260527-902.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+  "change_type": "kova_intraday_entry_readiness_audit",
+  "changed_variable": "kova_15m_60m_intraday_coverage_status_v1",
+  "claimed_at": "2026-05-27T06:22:09+00:00",
+  "completed_at": "2026-05-27T06:22:32+00:00",
+  "created_at": "2026-05-27T06:21:58+00:00",
+  "decision": "data_gap_intraday_entry_rows_unavailable",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260527-902",
+  "experiment_uid": "expuid-060d054f4df242d8",
+  "hypothesis": "Kova 15m/60m contraction and pocket-pivot context may improve VCP entry timing, but only if PIT intraday bars exist for historical trade dates.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "intraday data coverage audit only",
+    "entries",
+    "exits",
+    "ranking",
+    "sizing",
+    "universe",
+    "live/default orders"
+  ],
+  "mechanism_family": "kova_intraday_entry_timing",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/volatility_contraction_paper_sleeve.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260526-037",
+    "exp-20260527-001",
+    "exp-20260527-014"
+  ],
+  "new_evidence_type": "intraday_sidecar_coverage_for_vcp_top2_trade_dates",
+  "owner": "codex-kova",
+  "prior_trial_count": 2,
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260527_902_kova_intraday_entry_readiness_audit.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260527-902_kova_intraday_entry_readiness_audit.md",
+    "decision": "data_gap_intraday_entry_rows_unavailable",
+    "json": "data/experiments/exp-20260527-902/kova_intraday_entry_readiness_audit.json",
+    "summary": "The local Kova intraday sidecar does not have PIT 15m/60m bars for the accepted VCP top-2 trade dates. Do not run or promote an intraday Kova entry rule until the sidecar contains real bars."
+  },
+  "single_causal_variable": "kova_15m_60m_intraday_coverage_status_v1",
+  "status": "observed_only",
+  "summary": "The local Kova intraday sidecar does not have PIT 15m/60m bars for the accepted VCP top-2 trade dates. Do not run or promote an intraday Kova entry rule until the sidecar contains real bars.",
+  "trial_family": "kova_intraday_data_readiness",
+  "trial_variant_id": "kova_15m_60m_intraday_coverage_status_v1"
+}

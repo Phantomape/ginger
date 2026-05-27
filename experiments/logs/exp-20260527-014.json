@@ -1,0 +1,106 @@
+{
+  "experiment_id": "exp-20260527-014",
+  "timestamp": "2026-05-27T05:15:22Z",
+  "status": "accepted",
+  "hypothesis": "The Kova free-data sidecar should run inside the daily production pipeline as a cheap default-off data refresh so forward rows accumulate without affecting strategy decisions.",
+  "change_summary": "Wire the Kova default-off data sidecar into quant/run.py using in-memory OHLCV by default and env-gated network refreshes.",
+  "change_type": "production_data_wiring",
+  "mechanism_family": "kova_data_sidecar",
+  "trial_family": "kova_free_data_production_wiring",
+  "trial_variant_id": "run_py_default_off_refresh_v1",
+  "changed_variable": "kova_sidecar_daily_production_refresh_v1",
+  "prior_trial_count": 1,
+  "nearby_prior_experiments": [
+    "exp-20260527-001"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "production_forward_data_accumulation",
+  "component": "quant/run.py, quant/kova_data_sidecar.py, quant/test_kova_data_sidecar.py",
+  "parameters": {
+    "single_causal_variable": "kova_sidecar_daily_production_refresh_v1",
+    "default_intraday_refresh": false,
+    "default_companyfacts_refresh": false,
+    "default_sec13f_refresh": false,
+    "companyfacts_lookback_days_default": 820,
+    "ohlcv_source": "in_memory_production_ohlcv",
+    "env_gates": [
+      "KOVA_REFRESH_INTRADAY",
+      "ALPHA_VANTAGE_API_KEY",
+      "KOVA_INTRADAY_INTERVALS",
+      "KOVA_INTRADAY_MONTH",
+      "KOVA_REFRESH_COMPANYFACTS",
+      "KOVA_COMPANYFACTS_MAX_CIKS",
+      "KOVA_COMPANYFACTS_LOOKBACK_DAYS",
+      "KOVA_SEC13F_ZIP",
+      "KOVA_SEC13F_YEAR",
+      "KOVA_SEC13F_QUARTER",
+      "KOVA_CUSIP_MAP",
+      "KOVA_REFRESH_SEC13F",
+      "KOVA_DATA_SLEEP_SECONDS"
+    ]
+  },
+  "date_range": {
+    "start": "2025-10-23",
+    "end": "2026-04-21"
+  },
+  "secondary_windows": [
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "market_regime_summary": {},
+  "before_metrics": {
+    "strategy_behavior_changed": false,
+    "baseline_result_file": "data/experiments/exp-20260527-001/kova_free_data_sidecar.json"
+  },
+  "after_metrics": {
+    "strategy_behavior_changed": false,
+    "production_sidecar_wired": true,
+    "network_refresh_default_off": true,
+    "uses_duplicate_ohlcv_fetch": false
+  },
+  "delta_metrics": {
+    "strategy_behavior_delta": 0,
+    "expected_value_score_delta": 0.0,
+    "candidate_pool_delta": 0,
+    "order_payload_delta": 0
+  },
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "trade_enabled": false,
+    "parity_test_added": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false
+  },
+  "decision": "accepted_default_off_kova_sidecar_production_wiring",
+  "rejection_reason": null,
+  "next_retry_requires": [
+    "New alpha_search Gate 1-4 experiment before consuming Kova sidecar fields in any strategy path.",
+    "Forward closed outcomes before promoting Kova intraday, fundamental, RS proxy, or institutional surfaces."
+  ],
+  "related_files": [
+    "quant/run.py",
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "scripts/run_kova_data_refresh.py",
+    "data/experiments/exp-20260527-014/kova_sidecar_production_wiring.json",
+    "experiments/artifacts/exp-20260527-014_kova_sidecar_production_wiring.md",
+    "experiments/tickets/exp-20260527-014.json",
+    "docs/experiments/tickets/exp-20260527-014.json"
+  ],
+  "notes": "Accepted as measurement repair only. Default quant/run.py now accumulates Kova context cheaply from in-memory OHLCV/local files; Companyfacts reads are bounded by an 820-day filed-date lookback; Alpha Vantage and SEC 13F network paths remain explicit env-gated."
+}

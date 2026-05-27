@@ -1,0 +1,72 @@
+{
+  "experiment_id": "exp-20260527-014",
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "owner": "codex-kova",
+  "hypothesis": "The Kova free-data sidecar should run inside the daily production pipeline as a cheap default-off data refresh so forward rows accumulate without affecting strategy decisions.",
+  "change_type": "production_data_wiring",
+  "mechanism_family": "kova_data_sidecar",
+  "trial_family": "kova_free_data_production_wiring",
+  "trial_variant_id": "run_py_default_off_refresh_v1",
+  "single_causal_variable": "kova_sidecar_daily_production_refresh_v1",
+  "changed_variable": "kova_sidecar_daily_production_refresh_v1",
+  "prior_trial_count": 1,
+  "nearby_prior_experiments": [
+    "exp-20260527-001"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "production_forward_data_accumulation",
+  "baseline_result_file": "data/experiments/exp-20260527-001/kova_free_data_sidecar.json",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "docs/data_edge_context_layers.md",
+    "docs/current_state.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/artifacts/exp-20260527-014_kova_sidecar_production_wiring.md",
+    "data/experiments/exp-20260527-014/kova_sidecar_production_wiring.json",
+    "experiments/logs/exp-20260527-014.json",
+    "experiments/tickets/exp-20260527-014.json",
+    "docs/experiments/tickets/exp-20260527-014.json"
+  ],
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/volatility_contraction_paper_sleeve.py"
+  ],
+  "locked_variables": [
+    "core_entries",
+    "ranking",
+    "sizing",
+    "exits",
+    "LLM_news",
+    "universe",
+    "live_orders",
+    "VCP_rules"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2025-10-23",
+      "end": "2026-04-21"
+    },
+    {
+      "start": "2025-04-23",
+      "end": "2025-10-22"
+    },
+    {
+      "start": "2024-10-02",
+      "end": "2025-04-22"
+    }
+  ],
+  "acceptance_rule": "Production run writes Kova sidecar snapshot cheaply from in-memory OHLCV/local files by default; network sources remain explicit env-gated; no strategy path consumes the fields.",
+  "created_at": "2026-05-27T05:12:01+00:00",
+  "claimed_at": "2026-05-27T05:13:27+00:00",
+  "completed_at": "2026-05-27T05:15:22Z",
+  "result": {
+    "decision": "accepted_default_off_kova_sidecar_production_wiring",
+    "artifact": "experiments/artifacts/exp-20260527-014_kova_sidecar_production_wiring.md",
+    "json": "data/experiments/exp-20260527-014/kova_sidecar_production_wiring.json",
+    "summary": "Production daily run now writes the Kova sidecar from in-memory OHLCV/local files by default; network refreshes remain explicit env-gated and no strategy path consumes the fields."
+  }
+}

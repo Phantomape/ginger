@@ -1,0 +1,94 @@
+{
+  "acceptance_rule": {
+    "promising_attribution_gate": "target bucket has >=20 trades, positive aggregate PnL, positive PnL in at least two windows, better average PnL than the rest of the sleeve, max single positive contribution <40%, and positive PnL HHI <0.30",
+    "promotion_allowed_in_this_experiment": false,
+    "reason": "Observed-only metadata attribution on a frozen source sleeve."
+  },
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260526_023_kova_remaining_ohlcv_attributions.py",
+    "quant/test_kova_remaining_ohlcv_attributions.py",
+    "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+    "data/experiments/exp-20260526-025/kova_pre_signal_ma_structure_attribution.json",
+    "experiments/artifacts/exp-20260526-025_kova_pre_signal_ma_structure_attribution.md",
+    "experiments/logs/exp-20260526-025.json",
+    "experiments/tickets/exp-20260526-025.json",
+    "docs/experiments/tickets/exp-20260526-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md"
+  ],
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260526-025.json",
+    "json": "data/experiments/exp-20260526-025/kova_pre_signal_ma_structure_attribution.json",
+    "log": "experiments/logs/exp-20260526-025.json",
+    "markdown": "experiments/artifacts/exp-20260526-025_kova_pre_signal_ma_structure_attribution.md",
+    "ticket": "experiments/tickets/exp-20260526-025.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+  "change_type": "kova_pre_signal_ma_structure_attribution",
+  "changed_variable": "pre_signal_ma_structure_bucket_v1",
+  "completed_at": "2026-05-26T17:46:41+00:00",
+  "created_at": "2026-05-26T17:46:41+00:00",
+  "decision": "observed_only_no_actionable_ma_structure_split",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260526-025",
+  "hypothesis": "Kova-style moving-average structure before an accepted VCP breakout may identify leaders with better replacement value inside the default-off VCP top-2 rank-notional paper sleeve.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core entries",
+    "VCP compression and breakout",
+    "QQQ/SPY gate",
+    "top2 selection",
+    "rank-notional profile",
+    "sizing",
+    "exits",
+    "LLM/news",
+    "universe",
+    "live/default orders"
+  ],
+  "mechanism_family": "volatility_contraction_breakout",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/volatility_contraction_paper_sleeve.py",
+    "quant/run.py",
+    "quant/backtester.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260526-022",
+    "exp-20260525-032",
+    "exp-20260526-007",
+    "exp-20260525-027",
+    "exp-20260525-022",
+    "exp-20260525-037"
+  ],
+  "new_evidence_type": "new_production_visible_daily_ohlcv_ma_structure_field",
+  "owner": "codex-kova",
+  "prior_trial_count": 9,
+  "registry_lane": "alpha_discovery",
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260526_023_kova_remaining_ohlcv_attributions.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260526-025_kova_pre_signal_ma_structure_attribution.md",
+    "decision": "observed_only_no_actionable_ma_structure_split",
+    "json": "data/experiments/exp-20260526-025/kova_pre_signal_ma_structure_attribution.json",
+    "summary": "The `bullish_ma_stack_close_above_10_21_50` bucket did not clear the observed-only attribution bar. Keep the VCP top-2 rank-notional sleeve unchanged and do not turn this frozen-sample split into a gate."
+  },
+  "single_causal_variable": "pre_signal_ma_structure_bucket_v1",
+  "status": "observed_only",
+  "summary": "The `bullish_ma_stack_close_above_10_21_50` bucket did not clear the observed-only attribution bar. Keep the VCP top-2 rank-notional sleeve unchanged and do not turn this frozen-sample split into a gate.",
+  "trial_family": "vcp_kova_moving_average_structure_attribution",
+  "trial_variant_id": "pre_signal_ma_stack"
+}

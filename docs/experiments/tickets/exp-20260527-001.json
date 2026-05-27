@@ -1,0 +1,83 @@
+{
+  "acceptance_rule": "Sidecar collectors/loaders are tested, default-off, PIT-as-of tagged, and do not alter orders; alpha promotion requires later Gate 1-4 experiments.",
+  "allowed_write_scope": [
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "scripts/run_kova_data_refresh.py",
+    "docs/data_edge_context_layers.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "data/kova/snapshots/kova_data_snapshot_20260421.json",
+    "data/kova/fundamentals/companyfacts_growth_20260421.jsonl",
+    "data/kova/rs_proxy/rs_proxy_20260421.jsonl",
+    "data/kova/intraday/intraday_ohlcv_20260421.jsonl",
+    "data/kova/institutional/sec13f_ownership_20260421.jsonl",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/artifacts/exp-20260527-001_kova_free_data_sidecar.md",
+    "data/experiments/exp-20260527-001/kova_free_data_sidecar.json",
+    "experiments/logs/exp-20260527-001.json",
+    "experiments/tickets/exp-20260527-001.json",
+    "docs/experiments/tickets/exp-20260527-001.json"
+  ],
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260527-001.json",
+    "json": "data/experiments/exp-20260527-001/kova_free_data_sidecar.json",
+    "log": "experiments/logs/exp-20260527-001.json",
+    "markdown": "experiments/artifacts/exp-20260527-001_kova_free_data_sidecar.md",
+    "sample_snapshot": "data/kova/snapshots/kova_data_snapshot_20260421.json",
+    "ticket": "experiments/tickets/exp-20260527-001.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-037/kova_unavailable_feature_readiness_audit.json",
+  "change_type": "measurement_repair_for_alpha_search",
+  "changed_variable": "kova_free_data_sidecar_available_v1",
+  "completed_at": "2026-05-27T01:59:06+00:00",
+  "created_at": "2026-05-27T01:59:06+00:00",
+  "decision": "accepted_default_off_kova_free_data_sidecar",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260527-001",
+  "hypothesis": "Kova intraday, fundamental-growth, institutional-ownership, and RS surfaces should become PIT sidecars before any new VCP alpha gate or lifecycle replay is attempted.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "core entries",
+    "ranking",
+    "sizing",
+    "exits",
+    "LLM/news",
+    "universe",
+    "live/default orders",
+    "VCP rules"
+  ],
+  "mechanism_family": "kova_data_sidecar",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "quant/volatility_contraction_paper_sleeve.py"
+  ],
+  "owner": "codex-kova",
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B scripts\\run_kova_data_refresh.py --as-of YYYY-MM-DD --tickers AAPL MSFT NVDA --ohlcv-snapshot data\\ohlcv\\ohlcv_snapshot_YYYYMMDD_YYYYMMDD.json",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260527-001_kova_free_data_sidecar.md",
+    "decision": "accepted_default_off_kova_free_data_sidecar",
+    "json": "data/experiments/exp-20260527-001/kova_free_data_sidecar.json",
+    "summary": "Added a default-off Kova data sidecar with Alpha Vantage intraday support, SEC Companyfacts growth derivation, SEC 13F zip ingestion with optional CUSIP map, OHLCV RS proxy, as-of loader, CLI runner, tests, and a local sample snapshot."
+  },
+  "single_causal_variable": "kova_free_data_sidecar_available_v1",
+  "status": "accepted_measurement_repair",
+  "summary": "Added a default-off Kova data sidecar with Alpha Vantage intraday support, SEC Companyfacts growth derivation, SEC 13F zip ingestion with optional CUSIP map, OHLCV RS proxy, as-of loader, CLI runner, tests, and a local sample snapshot.",
+  "trial_family": "kova_free_data_backfill_and_forward_snapshot",
+  "trial_variant_id": "intraday_fundamental_13f_rs_sidecar_v1"
+}

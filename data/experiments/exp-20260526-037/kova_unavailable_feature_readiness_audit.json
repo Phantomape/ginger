@@ -1,0 +1,253 @@
+{
+  "alpha_hypothesis": "Kova ideas that require intraday, fundamental, institutional, or lifecycle risk surfaces should be classified by PIT readiness before any alpha rule is attempted.",
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260526-037.json",
+    "json": "data/experiments/exp-20260526-037/kova_unavailable_feature_readiness_audit.json",
+    "log": "experiments/logs/exp-20260526-037.json",
+    "markdown": "experiments/artifacts/exp-20260526-037_kova_unavailable_feature_readiness_audit.md",
+    "ticket": "experiments/tickets/exp-20260526-037.json"
+  },
+  "change_type": "measurement_repair_for_alpha_search",
+  "changed_variable": "kova_unavailable_feature_coverage_status_v1",
+  "created_at": "2026-05-26T17:49:56+00:00",
+  "decision": "observed_only_data_gap_kova_unavailable_features",
+  "experiment_id": "exp-20260526-037",
+  "gate1": {
+    "baseline": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+    "core_logic_changed": false,
+    "windows": [
+      {
+        "end": "2026-04-21",
+        "name": "late_strong",
+        "start": "2025-10-23"
+      },
+      {
+        "end": "2025-10-22",
+        "name": "mid_weak",
+        "start": "2025-04-23"
+      },
+      {
+        "end": "2025-04-22",
+        "name": "old_thin",
+        "start": "2024-10-02"
+      }
+    ]
+  },
+  "gate2": {
+    "data_surface_audit": "No missing daily OHLCV blocker for this audit; non-daily surfaces are classified below.",
+    "open_positions_audit": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 11
+    }
+  },
+  "gate3": {
+    "reason": "No filter, rank, sizing, exit, or order rule is added.",
+    "survival_impact": "none"
+  },
+  "gate4": {
+    "promotion_allowed": false,
+    "reason": "This audit only records readiness/data gaps for future experiments."
+  },
+  "history_check": {
+    "nearby_daily_ohlcv_kova_experiments": [
+      "exp-20260526-022",
+      "exp-20260526-023",
+      "exp-20260526-024",
+      "exp-20260526-025"
+    ],
+    "result": "Daily-OHLCV candidate metadata ideas were tested separately; remaining ideas are data or lifecycle gated."
+  },
+  "ideas": {
+    "canslim_fundamental_growth": {
+      "can_run_alpha_now": false,
+      "coverage_evidence": {
+        "earnings_or_estimate_files": [
+          "data/daily/snapshots/earnings/earnings_snapshot_20241002.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241003.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241004.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241007.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241008.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241009.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241010.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241011.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241014.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241015.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241016.json",
+          "data/daily/snapshots/earnings/earnings_snapshot_20241017.json"
+        ],
+        "missing_surfaces": [
+          "PIT quarterly EPS growth",
+          "PIT quarterly sales growth",
+          "PIT annual EPS growth",
+          "share float/supply trend",
+          "CAN SLIM composite labels"
+        ]
+      },
+      "kova_idea": "Require CAN SLIM-style EPS/sales growth and leadership context.",
+      "next_unblocker": "Create a forward-audited fundamental-growth sidecar with same-as-of identity before using CAN SLIM-style filters or ranking.",
+      "readiness_status": "partial_non_ohlcv_not_canslim_complete",
+      "reason": "Earnings snapshots and estimate-revision ledgers exist, but they are not a complete PIT CAN SLIM fundamental surface and should not be substituted for explicit growth fields."
+    },
+    "institutional_ownership_13f_accumulation": {
+      "can_run_alpha_now": false,
+      "coverage_evidence": {
+        "institutional_like_files": [
+          "data/cache/options/onclickmedia/15b13f4635287a152548d9ae8028acbb770b62e10917d67b6b7a46319dca2dd3.json",
+          "data/cache/options/onclickmedia/1c88516f27038b59772adf606b997d743b2c3ad4e0365b8635ee13f76b6034c9.json",
+          "data/cache/options/onclickmedia/4a803ec72d4a06b75213fcf930c0135fe650aee535f086ba5ea232aff2e483b1.json",
+          "data/cache/options/onclickmedia/51a9593052925399f13f9bf2b9e353e76a6eaae4da66f58c4c69ef82760589fd.json",
+          "data/cache/options/onclickmedia/b1f1e1e6be13fc5d92ab6eb037dd9a57f3667235896b1cd4fd2339869e574212.json",
+          "data/cache/sec/form4_xml/CIK0000034088/000119312526236842_raw__ownership.xml",
+          "data/cache/sec/form4_xml/CIK0001326801/000095010326006874_raw__ownership.xml",
+          "data/cache/sec/form4_xml/CIK0001326801/000095010326006913_raw__ownership.xml",
+          "data/cache/sec/form4_xml/CIK0001326801/000095010326007078_raw__ownership.xml",
+          "data/cache/sec/form4_xml/CIK0001326801/000095010326007167_raw__ownership.xml",
+          "data/cache/sec/form4_xml/CIK0001326801/000095010326007458_raw__ownership.xml",
+          "data/cache/sec/form4_xml/CIK0001326801/000095010326007460_raw__ownership.xml"
+        ],
+        "required_fields": [
+          "manager filing date",
+          "reported period",
+          "position change",
+          "float-adjusted ownership",
+          "as-of availability date"
+        ]
+      },
+      "kova_idea": "Use institutional sponsorship / 13F accumulation.",
+      "next_unblocker": "Build a vendor/as-of 13F ownership sidecar and only then test institutional sponsorship as metadata or ranking.",
+      "readiness_status": "blocked_no_pit_13f_ownership_surface",
+      "reason": "No usable PIT 13F/institutional ownership surface was found. Using today's ownership data for historical signals would be lookahead."
+    },
+    "intraday_precision_entry_15m_60m": {
+      "can_run_alpha_now": false,
+      "coverage_evidence": {
+        "daily_ohlcv_snapshots": [
+          "data/experiments/exp-20260510-028/space_catalyst_ohlcv_snapshot_build.json",
+          "data/experiments/exp-20260520-007/core_promotion_ohlcv_snapshot_build.json",
+          "data/experiments/exp-20260520-019/cien_only_ohlcv_snapshot_build.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241002.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241003.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241004.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241007.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241008.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241009.json",
+          "data/non_ohlcv/daily_non_ohlcv_snapshot_20241010.json"
+        ],
+        "intraday_like_files": []
+      },
+      "kova_idea": "Use 15-minute/60-minute charts for precise pivot entries.",
+      "next_unblocker": "Add PIT intraday OHLCV snapshots with vendor/as-of timestamps and a replay fill policy before testing intraday pivot timing.",
+      "readiness_status": "blocked_no_pit_intraday_ohlcv",
+      "reason": "The repository has daily OHLCV snapshots for the canonical windows, but no PIT 15m/60m bar archive was found. Daily bars cannot replay Kova's intraday precision entry without lookahead or invented fills."
+    },
+    "pyramid_addon_sequence": {
+      "can_run_alpha_now": false,
+      "coverage_evidence": {
+        "existing_addon_research_files": [
+          "data/experiments/exp-20260427-020/exp_20260427_020_extension_weak_followthrough_audit.json",
+          "data/experiments/exp-20260427-022/exp_20260427_022_extension_weak_followthrough_audit_v2.json",
+          "data/experiments/exp-20260427-032/exp_20260427_032_extension_weak_followthrough_audit_final.json",
+          "data/experiments/exp-20260427-035/exp_20260427_035_second_followthrough_addon.json",
+          "data/experiments/exp-20260428-005/exp_20260428_005_addon_fraction_materiality.json",
+          "data/experiments/exp-20260428-006/exp_20260428_006_addon_position_cap.json",
+          "data/experiments/exp-20260428-031/exp_20260428_031_second_addon_after_cap_promotion.json",
+          "data/experiments/exp-20260429-023/risk_on_unmodified_addon_fraction_0_75.json",
+          "data/experiments/exp-20260430-017/exp_20260430_017_weak_followthrough_reduce.json",
+          "data/experiments/exp-20260430-019/exp_20260430_019_current_stack_second_addon_retry.json",
+          "data/experiments/exp-20260430-030/first_addon_quality_gate_audit.json",
+          "data/experiments/exp-20260501-022/second_addon_enable.json"
+        ],
+        "policy_surface": "Follow-through add-ons already exist as a separate production/backtest family."
+      },
+      "kova_idea": "Pyramid only after confirmation, adding as the position works.",
+      "next_unblocker": "Only revisit with a new ex-ante add-on quality discriminator and a full real replay; do not mine frozen VCP winners for a pyramid rule.",
+      "readiness_status": "requires_separate_lifecycle_replay",
+      "reason": "Pyramiding is a capital-allocation/lifecycle policy, not a candidate metadata bucket. It would change sizing, heat, and fill path and must be tested as one causal add-on policy against the accepted core stack."
+    },
+    "rs_rating_or_leader_laggard": {
+      "can_run_alpha_now": false,
+      "coverage_evidence": {
+        "missing_surfaces": [
+          "proprietary or audited PIT RS Rating field"
+        ],
+        "relative_strength_proxy_files": [
+          "data/diagnostics/platform_rs20_no_gap_forward_watch.jsonl",
+          "data/diagnostics/platform_rs20_no_gap_forward_watch_summary.json",
+          "data/experiments/exp-20260428-014/exp_20260428_014_sector_relative_strength_persistence_universe.json",
+          "data/experiments/exp-20260507-034/platform_rs20_entry_gate.json",
+          "data/experiments/exp-20260507-035/platform_rs20_missed_sleeve_audit.json",
+          "data/experiments/exp-20260507-907/platform_rs20_leader_risk.json",
+          "data/experiments/exp-20260508-007/platform_rs20_no_gap_missed_feature_audit.json",
+          "data/experiments/exp-20260508-008/platform_rs20_forward_watch_adapter.json",
+          "data/experiments/exp-20260510-010/rs20_entry_state_risk.json",
+          "data/experiments/exp-20260510-012/rs20_entry_state_shared_sizing.json",
+          "data/experiments/exp-20260510-013/rs20_fragility_guard.json",
+          "data/experiments/exp-20260510-014/rs60_non_rs20_entry_state_risk.json"
+        ]
+      },
+      "kova_idea": "Use RS Rating / leader-laggard confirmation.",
+      "next_unblocker": "Define a Ginger-native relative-strength proxy with its own frozen baseline, or ingest an audited RS Rating source if available.",
+      "readiness_status": "proxy_only_no_ibd_rs_rating",
+      "reason": "The codebase has relative-strength proxies, but no explicit PIT RS Rating. A proxy can be a separate hypothesis, not the same Kova field."
+    },
+    "stop_under_higher_low_r_multiple": {
+      "can_run_alpha_now": false,
+      "coverage_evidence": {
+        "related_kova_attribution": "exp-20260526-022 computed pre-signal higher-low/base geometry only as metadata.",
+        "stop_or_risk_files": [
+          "data/diagnostics/stop_breach_oracle_20260426.json",
+          "data/experiments/exp-20260502-013/wide_stop_spy_leader_risk.json",
+          "data/experiments/exp-20260502-020/trend_mid_stop_risk_haircut.json",
+          "data/experiments/exp-20260505-002/stop_breach_buffer_entry_cancel.json",
+          "data/experiments/exp-20260513-035/space_breakout_risk_haircut.json",
+          "data/experiments/exp-20260516-035/finra_short_crowding_risk_haircut.json",
+          "data/experiments/exp-20260524-002/core_canonical_non_cool_risk_haircut.json",
+          "data/experiments/exp-20260524-016/core_misfit_trend_long_risk_haircut.json",
+          "data/experiments/legacy-root/exp_20260427_008_wide_stop_distance_audit.json",
+          "data/experiments/oracle_standard_3window_20260501_220042/late_strong_stop_breach_oracle.json",
+          "data/experiments/oracle_standard_3window_20260501_220042/mid_weak_stop_breach_oracle.json",
+          "data/experiments/oracle_standard_3window_20260501_220042/old_thin_stop_breach_oracle.json"
+        ]
+      },
+      "kova_idea": "Place stops under the higher low and evaluate trades in R multiples.",
+      "next_unblocker": "Define a single VCP-specific exit/risk replay with explicit stop timing, gap handling, and R denominator before testing this as alpha.",
+      "readiness_status": "partial_requires_exit_and_risk_policy_replay",
+      "reason": "Daily OHLCV can approximate a prior higher low, and R diagnostics exist, but using that level as a stop or sizing denominator changes exits and risk allocation. That is outside the accepted VCP paper metadata sleeve."
+    }
+  },
+  "lane": "measurement_repair",
+  "production_impact": {
+    "alters_core_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "metadata_only": true
+  },
+  "registry_lane": "measurement_repair",
+  "related_files": [
+    "quant/experiments/exp_20260526_037_kova_unavailable_feature_readiness_audit.py",
+    "data/experiments/exp-20260526-037/kova_unavailable_feature_readiness_audit.json",
+    "experiments/logs/exp-20260526-037.json",
+    "experiments/tickets/exp-20260526-037.json",
+    "docs/experiments/tickets/exp-20260526-037.json",
+    "experiments/artifacts/exp-20260526-037_kova_unavailable_feature_readiness_audit.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260526_037_kova_unavailable_feature_readiness_audit.py",
+  "single_causal_variable": "kova_unavailable_feature_coverage_status_v1",
+  "status": "observed_only_data_gap",
+  "summary": {
+    "blocked_or_not_alpha_ready_count": 6,
+    "can_run_alpha_now_count": 0,
+    "idea_count": 6,
+    "partial_or_policy_gated_count": 4,
+    "recommendation": "Do not implement more Kova filters from these fields until intraday, fundamental, 13F, or lifecycle replay surfaces are explicitly added."
+  },
+  "trial_family": "kova_unavailable_feature_readiness",
+  "trial_variant_id": "daily_ohlcv_gap_audit_v1"
+}

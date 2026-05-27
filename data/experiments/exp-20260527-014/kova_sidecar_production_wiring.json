@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260527-014",
+  "status": "accepted",
+  "lane": "measurement_repair",
+  "decision": "accepted_default_off_kova_sidecar_production_wiring",
+  "hypothesis": "The Kova free-data sidecar should run inside the daily production pipeline as a cheap default-off data refresh so forward rows accumulate without affecting strategy decisions.",
+  "changed_variable": "kova_sidecar_daily_production_refresh_v1",
+  "single_causal_variable": "kova_sidecar_daily_production_refresh_v1",
+  "baseline_result_file": "data/experiments/exp-20260527-001/kova_free_data_sidecar.json",
+  "nearby_prior_experiments": [
+    "exp-20260527-001"
+  ],
+  "implementation": {
+    "run_py_import": "from kova_data_sidecar import persist_kova_data_snapshot",
+    "production_call_site": "quant/run.py Step 4 before feature computation",
+    "snapshot_surface": "non_ohlcv_snapshot.kova_data_sidecar",
+    "data_dir": "data/kova",
+    "default_daily_outputs": [
+      "data/kova/snapshots/kova_data_snapshot_YYYYMMDD.json",
+      "data/kova/fundamentals/companyfacts_growth_YYYYMMDD.jsonl",
+      "data/kova/rs_proxy/rs_proxy_YYYYMMDD.jsonl",
+      "data/kova/intraday/intraday_ohlcv_YYYYMMDD.jsonl",
+      "data/kova/institutional/sec13f_ownership_YYYYMMDD.jsonl"
+    ]
+  },
+  "efficiency_controls": {
+    "ohlcv_source": "production in-memory ohlcv_dict plus SPY when available",
+    "no_duplicate_ohlcv_fetch": true,
+    "companyfacts_default": "read local selected Companyfacts rows inside an 820-day filed-date lookback, skip non-overlapping file ranges, and dedupe overlapping files",
+    "intraday_network_default": "disabled",
+    "sec13f_network_default": "disabled",
+    "env_gates": {
+      "KOVA_REFRESH_INTRADAY": "set to 1 to fetch Alpha Vantage intraday rows",
+      "ALPHA_VANTAGE_API_KEY": "required for intraday fetches",
+      "KOVA_INTRADAY_INTERVALS": "default 15min,60min",
+      "KOVA_INTRADAY_MONTH": "optional Alpha Vantage month",
+      "KOVA_REFRESH_COMPANYFACTS": "set to 1 to refresh Companyfacts inputs",
+      "KOVA_COMPANYFACTS_MAX_CIKS": "optional Companyfacts refresh cap",
+      "KOVA_COMPANYFACTS_LOOKBACK_DAYS": "optional local Companyfacts filed-date read window, default 820",
+      "KOVA_SEC13F_ZIP": "optional local 13F zip",
+      "KOVA_SEC13F_YEAR": "optional SEC 13F dataset year",
+      "KOVA_SEC13F_QUARTER": "optional SEC 13F dataset quarter",
+      "KOVA_CUSIP_MAP": "optional CUSIP-to-ticker map",
+      "KOVA_REFRESH_SEC13F": "set to 1 to download SEC 13F dataset zip",
+      "KOVA_DATA_SLEEP_SECONDS": "network pacing, default 0.11"
+    }
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "replay_only": false,
+    "trade_enabled": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false
+  },
+  "gates": {
+    "gate1": {
+      "passed": true,
+      "baseline": "exp-20260527-001 default-off Kova data sidecar",
+      "baseline_protocol": "measurement repair; no strategy before/after expected_value_score change"
+    },
+    "gate2": {
+      "passed": true,
+      "fields": [
+        "production OHLCV dict",
+        "SPY OHLCV when available",
+        "data/non_ohlcv selected Companyfacts rows",
+        "optional Alpha Vantage API key",
+        "optional SEC 13F zip/year-quarter",
+        "optional CUSIP map"
+      ],
+      "missing_field_behavior": "write skipped or unavailable rows; do not fail production"
+    },
+    "gate3": {
+      "passed": true,
+      "adds_filter": false,
+      "candidate_pool_changed": false,
+      "survival_rate_impact": 0.0
+    },
+    "gate4": {
+      "passed": true,
+      "acceptance_rule": "Production run writes Kova sidecar snapshot cheaply from in-memory OHLCV/local files by default; network sources remain explicit env-gated; no strategy path consumes the fields.",
+      "strategy_metric_delta": 0.0,
+      "promotion_to_alpha_rule": false
+    }
+  },
+  "verification": {
+    "unit_tests": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_kova_data_sidecar.py",
+    "compile": ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\run.py quant\\kova_data_sidecar.py scripts\\run_kova_data_refresh.py",
+    "full_production_run_executed": false,
+    "full_production_run_note": "Not run during closeout because quant/run.py can invoke live data/news/LLM paths; the production sidecar call is covered by direct unit tests and py_compile."
+  },
+  "next_retry_requires": [
+    "A later alpha_search ticket if any Kova field is consumed by VCP gating, ranking, sizing, exits, or live orders.",
+    "Forward rows with closed outcomes before promoting intraday, fundamental, RS proxy, or institutional surfaces."
+  ],
+  "related_files": [
+    "quant/run.py",
+    "quant/kova_data_sidecar.py",
+    "quant/test_kova_data_sidecar.py",
+    "scripts/run_kova_data_refresh.py",
+    "docs/data_edge_context_layers.md",
+    "docs/current_state.md",
+    "experiments/artifacts/exp-20260527-014_kova_sidecar_production_wiring.md",
+    "experiments/logs/exp-20260527-014.json",
+    "experiments/tickets/exp-20260527-014.json",
+    "docs/experiments/tickets/exp-20260527-014.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ]
+}

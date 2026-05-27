@@ -103,6 +103,35 @@ def _print_section(title):
     log.info("=" * 55)
 
 
+def _env_flag(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return bool(default)
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_int(name):
+    value = os.environ.get(name)
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        log.warning("Ignoring invalid integer env %s=%r", name, value)
+        return None
+
+
+def _env_float(name, default):
+    value = os.environ.get(name)
+    if value in (None, ""):
+        return default
+    try:
+        return float(value)
+    except ValueError:
+        log.warning("Ignoring invalid float env %s=%r", name, value)
+        return default
+
+
 def _run_expectation_residual_leadership_attribution_observer():
     """Refresh the read-only expectation/residual attribution artifact."""
     try:
@@ -112,7 +141,7 @@ def _run_expectation_residual_leadership_attribution_observer():
         )
 
         payload = build_payload()
-        persist(payload)
+        persist(payload, update_experiment_log=False)
         gate = payload.get("gate") or {}
         coverage = payload.get("coverage") or {}
         log.info(
@@ -175,6 +204,7 @@ def main():
     )
     from market_state_analysis import build_market_state_snapshot
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
+    from kova_data_sidecar import persist_kova_data_snapshot
     from backfill_non_ohlcv import (
         catch_up_missing_non_ohlcv,
         ensure_non_ohlcv_coverage,
@@ -558,6 +588,64 @@ def main():
 
     # ── Step 4: Feature Layer ─────────────────────────────────────────────────
     _print_section("STEP 4 — Feature layer")
+    try:
+        kova_ohlcv_dict = dict(ohlcv_dict)
+        if spy_ohlcv is not None:
+            kova_ohlcv_dict["SPY"] = spy_ohlcv
+        kova_intervals = tuple(
+            item.strip()
+            for item in os.environ.get("KOVA_INTRADAY_INTERVALS", "15min,60min").replace(";", ",").split(",")
+            if item.strip()
+        )
+        kova_companyfacts_lookback_days = _env_int("KOVA_COMPANYFACTS_LOOKBACK_DAYS")
+        kova_data_snapshot = persist_kova_data_snapshot(
+            asof_date=today_iso,
+            tickers=data_universe,
+            data_dir="data/kova",
+            non_ohlcv_dir="data/non_ohlcv",
+            ohlcv_data=kova_ohlcv_dict,
+            alpha_vantage_api_key=os.environ.get("ALPHA_VANTAGE_API_KEY"),
+            refresh_intraday=_env_flag("KOVA_REFRESH_INTRADAY", False),
+            intervals=kova_intervals,
+            month=os.environ.get("KOVA_INTRADAY_MONTH") or None,
+            refresh_companyfacts=_env_flag("KOVA_REFRESH_COMPANYFACTS", False),
+            companyfacts_max_ciks=_env_int("KOVA_COMPANYFACTS_MAX_CIKS"),
+            companyfacts_lookback_days=(
+                kova_companyfacts_lookback_days
+                if kova_companyfacts_lookback_days is not None
+                else 820
+            ),
+            sec13f_zip=os.environ.get("KOVA_SEC13F_ZIP") or None,
+            sec13f_year=_env_int("KOVA_SEC13F_YEAR"),
+            sec13f_quarter=_env_int("KOVA_SEC13F_QUARTER"),
+            cusip_map=os.environ.get("KOVA_CUSIP_MAP") or None,
+            refresh_sec13f=_env_flag("KOVA_REFRESH_SEC13F", False),
+            sleep_seconds=_env_float("KOVA_DATA_SLEEP_SECONDS", 0.11),
+        )
+        non_ohlcv_snapshot["kova_data_sidecar"] = kova_data_snapshot
+        log.info(
+            "Kova data sidecar: status=%s fundamentals=%s rs=%s intraday=%s institutional=%s",
+            kova_data_snapshot.get("status"),
+            (kova_data_snapshot.get("fundamental_growth") or {}).get("rows_written"),
+            (kova_data_snapshot.get("rs_proxy") or {}).get("rows_written"),
+            (kova_data_snapshot.get("intraday_ohlcv") or {}).get("rows_written"),
+            (kova_data_snapshot.get("institutional_ownership") or {}).get("rows_written"),
+        )
+    except Exception as e:
+        log.warning(f"Kova data sidecar unavailable: {e}")
+        non_ohlcv_snapshot["kova_data_sidecar"] = {
+            "status": "failed",
+            "asof_date": today_iso,
+            "error": str(e),
+            "production_impact": {
+                "alters_signal_generation": False,
+                "alters_candidate_ranking": False,
+                "alters_sizing": False,
+                "alters_exits": False,
+                "alters_orders": False,
+            },
+        }
+
     non_ohlcv_snapshot["estimate_revision_ledger"] = estimate_revision_summary
     features_dict = {}
     for ticker in data_universe:

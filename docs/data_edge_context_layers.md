@@ -42,7 +42,23 @@ The five priority context surfaces are:
 
 5. **Relative Strength Surface**
    - Goal: move from absolute breakout checks to cross-sectional leadership.
-   - Useful fields: ticker vs SPY, ticker vs QQQ, ticker vs theme / peer basket.
+   - Useful fields: ticker vs SPY, ticker vs QQQ, ticker vs theme / peer basket,
+     and ticker vs sector.
+
+### `quant/residual_strength_surface.py`
+
+Purpose: emit read-only residual leadership fields for attribution, including
+`ret20_excess_spy`, `ret20_excess_qqq`, `theme_residuals`, `themes`,
+`ret20_excess_sector`, and `sector`.
+
+Sector residuals depend on sector labels in the feature dictionary. When
+daily quant feature rows do not carry `sector`, expectation/residual
+attribution may enrich them from the offline deterministic
+`data/reference/broad_market_sector_map.json` cache via
+`quant/broad_market_sector_map.py`. This is a replayable public-classification
+proxy, not evidence that production observed the classification point-in-time;
+do not use it for live ranking, sizing, entries, exits, or orders unless a
+separate Gate 1-4 experiment promotes that behavior.
 
 ---
 
@@ -383,6 +399,57 @@ experiment and parity update. The pocket-pivot fields are metadata only because
 top-2 expansion is default-off paper only until forward closed outcomes clear
 the promotion gate.
 
+### `quant/kova_data_sidecar.py`
+
+Purpose: collect default-off Kova support data without changing entries,
+ranking, sizing, exits, LLM/news, universe, or orders. The sidecar gives later
+experiments PIT-tagged rows for ideas that could not be tested from daily OHLCV
+alone.
+
+Surfaces:
+
+- `intraday_ohlcv`: Alpha Vantage 15m/60m bars when
+  `ALPHA_VANTAGE_API_KEY` is provided. Missing key writes explicit `skipped`
+  rows rather than failing production.
+- `sec_companyfacts_growth`: derives EPS / revenue / net-income YoY rows from
+  existing SEC Companyfacts selected rows, using `filed` as `asof_date`.
+- `sec13f_institutional_ownership`: parses SEC 13F data-set zips or supplied
+  zip files; ticker joins require a CUSIP map and otherwise remain explicitly
+  `missing_cusip_ticker_map`.
+- `ginger_rs_proxy`: computes OHLCV-based relative-strength proxy ranks versus
+  `SPY`; this is a Ginger proxy, not IBD RS Rating.
+
+Files:
+
+```text
+data/kova/intraday/intraday_ohlcv_YYYYMMDD.jsonl
+data/kova/fundamentals/companyfacts_growth_YYYYMMDD.jsonl
+data/kova/institutional/sec13f_ownership_YYYYMMDD.jsonl
+data/kova/rs_proxy/rs_proxy_YYYYMMDD.jsonl
+data/kova/snapshots/kova_data_snapshot_YYYYMMDD.json
+```
+
+Runner:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\run_kova_data_refresh.py --as-of YYYY-MM-DD --tickers AAPL MSFT NVDA --ohlcv-snapshot data\ohlcv\ohlcv_snapshot_YYYYMMDD_YYYYMMDD.json
+```
+
+Production wiring: `exp-20260527-014` wires the same sidecar into
+`quant/run.py`. The daily run passes the already-loaded OHLCV dictionary plus
+`SPY` into `persist_kova_data_snapshot`, attaches the result at
+`non_ohlcv_snapshot["kova_data_sidecar"]`, and keeps all heavy external
+refreshes explicit env-gated. Default production behavior performs no extra
+OHLCV fetch, skips Alpha Vantage intraday unless `KOVA_REFRESH_INTRADAY=1` and
+`ALPHA_VANTAGE_API_KEY` are present, skips SEC 13F network work unless the
+13F env inputs are supplied, bounds local Companyfacts reads with
+`KOVA_COMPANYFACTS_LOOKBACK_DAYS` defaulting to `820`, and writes explicit
+skipped rows for unavailable optional sources.
+
+Agent rule: these rows are context only. They may be used by future replay
+experiments through an explicit as-of join, but they must not be consumed by
+live orders or promoted into VCP gates without a separate Gate 1-4 experiment.
+
 ### `quant/volume_breadth_breakout_paper_sleeve.py`
 
 Purpose: maintain the default-off `VOLUME_BREADTH_BREAKOUT_PAPER` forward
@@ -593,6 +660,34 @@ entries, exits, ranking, sizing, LLM/news, paper sleeves, or orders. A
 directional result can only justify a separate forward default-off watchlist or
 ranking-component experiment after concentration and closed-outcome maturity
 are sufficient.
+
+### `quant/experiments/exp_20260526_030_expectation_direction_untried_ideas_suite.py`
+
+Purpose: read-only batch runner for the remaining untried ideas named in
+`docs/alpha_direction_expectation_residual_leadership.md`. It writes separate
+experiment records for revision velocity, PEAD readiness, surprise/guidance
+coverage, ranking replacement proxy, full residual dimensions, promotion-metric
+completeness, and breadth/theme context.
+
+Output:
+
+```text
+data/experiments/exp-20260526-030/expectation_revision_velocity_attribution.json
+data/experiments/exp-20260526-031/expectation_pead_readiness_probe.json
+data/experiments/exp-20260526-032/expectation_guidance_surprise_coverage.json
+data/experiments/exp-20260526-033/expectation_ranking_replacement_probe.json
+data/experiments/exp-20260526-034/expectation_full_residual_dimension_probe.json
+data/experiments/exp-20260526-035/expectation_attribution_metric_completeness.json
+data/experiments/exp-20260526-036/expectation_breadth_theme_context_probe.json
+experiments/artifacts/exp-20260526-030_expectation_revision_velocity_attribution.md
+...
+experiments/artifacts/exp-20260526-036_expectation_breadth_theme_context_probe.md
+```
+
+Agent rule: each output is an observed-only probe with its own single causal
+variable. These probes may identify data gaps or future default-off paper/rank
+tests only. They must not change entries, exits, candidate ranking, sizing,
+LLM prompts, paper sleeves, or orders.
 
 ---
 
