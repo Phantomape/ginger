@@ -1,0 +1,889 @@
+{
+  "after_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Read-only probe for Attribution Metric Completeness Probe from the expectation direction memo. No production behavior changed.",
+  "change_type": "observed_only_expectation_direction_probe",
+  "changed_variable": "expectation_attribution_metric_completeness_v1",
+  "component": "quant/experiments/exp_20260526_030_expectation_direction_untried_ideas_suite.py",
+  "coverage": {
+    "available_proxy_metrics": {
+      "10d_avg_pnl_proxy": 80.45,
+      "10d_total_pnl_proxy": 1287.16,
+      "5d_avg_pnl_proxy": 7.64,
+      "5d_total_pnl_proxy": 251.97
+    },
+    "metric_completeness": {
+      "available_metrics": {
+        "avg_pnl_proxy": {
+          "available": true,
+          "source": "forward_outcomes.*.pnl_proxy"
+        },
+        "avg_return": {
+          "available": true,
+          "source": "forward_outcomes.*.return"
+        },
+        "max_single_ticker_positive_contribution": {
+          "available": true,
+          "source": "forward_outcomes.*.pnl_proxy"
+        },
+        "tail_loss": {
+          "available": true,
+          "source": "forward_outcomes.*.return"
+        },
+        "top5_positive_contribution": {
+          "available": true,
+          "source": "forward_outcomes.*.pnl_proxy"
+        },
+        "total_pnl_proxy": {
+          "available": true,
+          "source": "forward_outcomes.*.pnl_proxy"
+        },
+        "win_rate": {
+          "available": true,
+          "source": "forward_outcomes.*.return"
+        },
+        "worst_row": {
+          "available": true,
+          "source": "forward_outcomes.*.return"
+        }
+      },
+      "missing_promotion_metrics": {
+        "avg_R": {
+          "available": false,
+          "missing_fields": [
+            "entry_price",
+            "initial_stop",
+            "initial_risk_per_share"
+          ]
+        },
+        "max_drawdown_contribution": {
+          "available": false,
+          "missing_fields": [
+            "trade_equity_curve",
+            "portfolio_drawdown_contribution"
+          ]
+        },
+        "replacement_value_vs_next_core_slot": {
+          "available": false,
+          "missing_fields": [
+            "old_alpha_score_rank",
+            "next_rejected_core_candidate",
+            "slot_queue_state"
+          ]
+        }
+      }
+    },
+    "primary_positive_7d_rows": 41
+  },
+  "date_range": {
+    "candidate_artifacts": "data/daily/signals/quant/quant_signals_*.json",
+    "estimate_revision_ledgers": "data/non_ohlcv/estimate_revision_ledger_*.jsonl",
+    "ohlcv_sources": [
+      "data/ohlcv/ohlcv_snapshot_*.json",
+      "data/daily/signals/trend/trend_signals_*.json"
+    ]
+  },
+  "decision": "observed_only_data_gap",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_delta": 0,
+    "total_pnl_sum_delta": 0.0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260526-035",
+  "gate": {
+    "decision": "observed_only_data_gap",
+    "missing_promotion_metrics": [
+      "avg_R",
+      "max_drawdown_contribution",
+      "replacement_value_vs_next_core_slot"
+    ],
+    "promotion_gate_passed": false,
+    "reason": "promotion_critical_metrics_missing"
+  },
+  "gate1": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "baseline_artifact": "data/experiments/exp-20260517-009/",
+    "baseline_protocol": "docs/backtesting.md canonical three fixed windows",
+    "note": "Read-only attribution/probe; no before/after core strategy metrics change.",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "rule_dependencies": [
+      "exp-20260525-034 PIT-safe annotated watchlist rows",
+      "local OHLCV forward outcomes",
+      "daily earnings snapshots when the probe needs surprise/guidance context"
+    ],
+    "source_gate2": {
+      "field_check": {
+        "checked_positions": 11,
+        "exists": true,
+        "missing_required_fields": [],
+        "passed": true,
+        "path": "operator_inputs/open_positions.json"
+      },
+      "passed": true,
+      "rule_dependencies": [
+        "PIT estimate_revision_ledger rows",
+        "daily quant feature context for residual leadership",
+        "persisted candidate objects for candidate-hit attribution",
+        "local OHLCV/trend close rows for forward returns",
+        "operator_inputs/open_positions.json for current-position overlap"
+      ]
+    }
+  },
+  "gate3": {
+    "adds_filter": false,
+    "candidate_pool_changed": false,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "note": "A passing read-only probe can only unlock a later default-off paper or ranking Gate 1-4 experiment.",
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "The expectation direction cannot graduate from attribution until avg_R, max-drawdown contribution, and replacement value can be measured, not just return and PnL proxy.",
+    "2_history_check": "The base expectation/residual attribution is exp-20260525-017; exp-20260525-034 expanded to a PIT-usable watchlist; exp-20260526-006 found non-overextended positive revisions directionally better but concentration/maturity blocked promotion.",
+    "3_single_causal_variable": "expectation_attribution_metric_completeness_v1",
+    "4_acceptance_standard": "Measurement gate: all promotion-critical metrics named in the direction memo must be available or explicitly blocked.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260526_030_expectation_direction_untried_ideas_suite.py"
+  },
+  "hypothesis": "The expectation direction cannot graduate from attribution until avg_R, max-drawdown contribution, and replacement value can be measured, not just return and PnL proxy.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "expectation_drift_residual_pead",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260524-012",
+    "exp-20260525-017",
+    "exp-20260525-021",
+    "exp-20260525-023",
+    "exp-20260525-025",
+    "exp-20260525-031",
+    "exp-20260525-034",
+    "exp-20260526-006"
+  ],
+  "new_evidence_type": "remaining_expectation_direction_memo_probe",
+  "next_evidence_needed": "Join watchlist rows to PIT entry risk, portfolio equity contribution, and next-core-slot queue state.",
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "forward_horizons": [
+      5,
+      10,
+      20
+    ],
+    "paper_notional_usd": 10000.0,
+    "primary_positive_expectation_definition": "estimate_revision_usable && eps_estimate_delta_7d > 0",
+    "required_metrics_from_direction_memo": [
+      "avg_R",
+      "win_rate",
+      "avg_pnl",
+      "total_pnl",
+      "tail_loss",
+      "worst_trade",
+      "top5_contribution",
+      "max_drawdown_contribution",
+      "replacement_value_vs_next_core_slot"
+    ],
+    "source_experiment": "exp-20260525-034",
+    "source_rows": "PIT-usable estimate revision watchlist rows"
+  },
+  "primary_bucket_summary_reference": {
+    "A_positive_expectation_and_residual_leader": {
+      "candidate_hit_counts": {
+        "10td": 0,
+        "3td": 0
+      },
+      "horizons": {
+        "10d": {
+          "avg_return": 0.007018,
+          "closed_outcomes": 10,
+          "max_single_ticker_positive_share": 0.531378,
+          "positive_pnl_by_ticker": {
+            "AAPL": 286.11,
+            "AMD": 1419.62,
+            "DDOG": 689.49,
+            "MTSI": 276.36
+          },
+          "tail_loss": -0.086578,
+          "top5_positive_contribution_share": 1.0,
+          "win_rate": 0.5,
+          "worst_row": {
+            "as_of_date": "2026-05-14",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": 0.01,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-14",
+            "forward_return": -0.086578,
+            "future_date": "2026-05-24",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -865.78,
+            "primary_bucket": "A_positive_expectation_and_residual_leader",
+            "primary_expectation_positive": true,
+            "residual_leader": true,
+            "residual_state": "residual_leader",
+            "residual_strength_score": 0.099558,
+            "ret20_excess_qqq": 0.0647,
+            "ret20_excess_spy": 0.1222,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "NVDA",
+            "watchlist_effective_trade_date": "2026-05-14",
+            "watchlist_signal_basis": [
+              "primary_7d"
+            ],
+            "wide_watchlist_bucket": "A_positive_expectation_and_residual_leader",
+            "wide_watchlist_positive": true
+          }
+        },
+        "20d": {
+          "avg_return": null,
+          "closed_outcomes": 0,
+          "max_single_ticker_positive_share": null,
+          "positive_pnl_by_ticker": {},
+          "tail_loss": null,
+          "top5_positive_contribution_share": null,
+          "win_rate": null,
+          "worst_row": null
+        },
+        "5d": {
+          "avg_return": -0.007459,
+          "closed_outcomes": 16,
+          "max_single_ticker_positive_share": 0.422814,
+          "positive_pnl_by_ticker": {
+            "AAPL": 614.11,
+            "AMD": 553.64,
+            "DDOG": 204.83,
+            "MTSI": 2.93,
+            "MU": 1007.62
+          },
+          "tail_loss": -0.079275,
+          "top5_positive_contribution_share": 0.884589,
+          "win_rate": 0.5,
+          "worst_row": {
+            "as_of_date": "2026-05-14",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": 0.01,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-14",
+            "forward_return": -0.079275,
+            "future_date": "2026-05-19",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -792.75,
+            "primary_bucket": "A_positive_expectation_and_residual_leader",
+            "primary_expectation_positive": true,
+            "residual_leader": true,
+            "residual_state": "strong_residual_leader",
+            "residual_strength_score": 0.477644,
+            "ret20_excess_qqq": 0.4923,
+            "ret20_excess_spy": 0.5498,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "AMD",
+            "watchlist_effective_trade_date": "2026-05-14",
+            "watchlist_signal_basis": [
+              "primary_7d"
+            ],
+            "wide_watchlist_bucket": "A_positive_expectation_and_residual_leader",
+            "wide_watchlist_positive": true
+          }
+        }
+      },
+      "residual_state_breakdown": {
+        "residual_leader": 9,
+        "strong_residual_leader": 9
+      },
+      "row_count": 18,
+      "ticker_count": 8,
+      "tickers": [
+        "AAPL",
+        "AMD",
+        "CAT",
+        "COHR",
+        "DDOG",
+        "MTSI",
+        "MU",
+        "NVDA"
+      ],
+      "watchlist_signal_basis_breakdown": {
+        "primary_7d": 13,
+        "primary_7d+scout_prev": 5
+      }
+    },
+    "B_positive_expectation_only": {
+      "candidate_hit_counts": {
+        "10td": 0,
+        "3td": 0
+      },
+      "horizons": {
+        "10d": {
+          "avg_return": 0.009756,
+          "closed_outcomes": 6,
+          "max_single_ticker_positive_share": 0.959899,
+          "positive_pnl_by_ticker": {
+            "LLY": 1176.98,
+            "NVO": 49.17
+          },
+          "tail_loss": -0.038563,
+          "top5_positive_contribution_share": 1.0,
+          "win_rate": 0.5,
+          "worst_row": {
+            "as_of_date": "2026-05-15",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": 0.06,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-15",
+            "forward_return": -0.038563,
+            "future_date": "2026-05-25",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -385.63,
+            "primary_bucket": "B_positive_expectation_only",
+            "primary_expectation_positive": true,
+            "residual_leader": false,
+            "residual_state": "neutral",
+            "residual_strength_score": -0.014265,
+            "ret20_excess_qqq": -0.0427,
+            "ret20_excess_spy": 0.009,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "APP",
+            "watchlist_effective_trade_date": "2026-05-15",
+            "watchlist_signal_basis": [
+              "primary_7d"
+            ],
+            "wide_watchlist_bucket": "B_positive_expectation_only",
+            "wide_watchlist_positive": true
+          }
+        },
+        "20d": {
+          "avg_return": null,
+          "closed_outcomes": 0,
+          "max_single_ticker_positive_share": null,
+          "positive_pnl_by_ticker": {},
+          "tail_loss": null,
+          "top5_positive_contribution_share": null,
+          "win_rate": null,
+          "worst_row": null
+        },
+        "5d": {
+          "avg_return": 0.008502,
+          "closed_outcomes": 17,
+          "max_single_ticker_positive_share": 0.568618,
+          "positive_pnl_by_ticker": {
+            "AAPL": 368.65,
+            "CAT": 498.0,
+            "COHR": 1615.17,
+            "LLY": 284.94,
+            "NVO": 73.76
+          },
+          "tail_loss": -0.037365,
+          "top5_positive_contribution_share": 0.779192,
+          "win_rate": 0.588235,
+          "worst_row": {
+            "as_of_date": "2026-05-15",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": 0.06,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-15",
+            "forward_return": -0.037365,
+            "future_date": "2026-05-20",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -373.65,
+            "primary_bucket": "B_positive_expectation_only",
+            "primary_expectation_positive": true,
+            "residual_leader": false,
+            "residual_state": "neutral",
+            "residual_strength_score": -0.014265,
+            "ret20_excess_qqq": -0.0427,
+            "ret20_excess_spy": 0.009,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "APP",
+            "watchlist_effective_trade_date": "2026-05-15",
+            "watchlist_signal_basis": [
+              "primary_7d"
+            ],
+            "wide_watchlist_bucket": "B_positive_expectation_only",
+            "wide_watchlist_positive": true
+          }
+        }
+      },
+      "residual_state_breakdown": {
+        "beta_lagging": 9,
+        "neutral": 14
+      },
+      "row_count": 23,
+      "ticker_count": 12,
+      "tickers": [
+        "AAPL",
+        "APP",
+        "CAT",
+        "COHR",
+        "CVX",
+        "DIS",
+        "LLY",
+        "NVDA",
+        "NVO",
+        "RBLX",
+        "SOFI",
+        "V"
+      ],
+      "watchlist_signal_basis_breakdown": {
+        "primary_7d": 20,
+        "primary_7d+scout_prev": 3
+      }
+    },
+    "C_residual_leader_only": {
+      "candidate_hit_counts": {
+        "10td": 9,
+        "3td": 9
+      },
+      "horizons": {
+        "10d": {
+          "avg_return": -0.004806,
+          "closed_outcomes": 126,
+          "max_single_ticker_positive_share": 0.257625,
+          "positive_pnl_by_ticker": {
+            "AAPL": 831.37,
+            "AMD": 922.79,
+            "APLD": 3612.78,
+            "APP": 820.87,
+            "BE": 4709.46,
+            "COHR": 95.18,
+            "CRDO": 999.14,
+            "DDOG": 5239.17,
+            "INTC": 1355.01,
+            "MRVL": 8305.63,
+            "MTSI": 2013.95,
+            "MU": 363.48,
+            "NVDA": 3.19,
+            "SNOW": 2626.83,
+            "UNH": 293.44,
+            "WDC": 46.89
+          },
+          "tail_loss": -0.171025,
+          "top5_positive_contribution_share": 0.202859,
+          "win_rate": 0.388889,
+          "worst_row": {
+            "as_of_date": "2026-05-08",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": null,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-08",
+            "forward_return": -0.171025,
+            "future_date": "2026-05-18",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -1710.25,
+            "primary_bucket": "C_residual_leader_only",
+            "primary_expectation_positive": false,
+            "residual_leader": true,
+            "residual_state": "strong_residual_leader",
+            "residual_strength_score": 0.396341,
+            "ret20_excess_qqq": 0.4124,
+            "ret20_excess_spy": 0.4907,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "CRDO",
+            "watchlist_effective_trade_date": "2026-05-08",
+            "watchlist_signal_basis": [
+              "none"
+            ],
+            "wide_watchlist_bucket": "C_residual_leader_only",
+            "wide_watchlist_positive": false
+          }
+        },
+        "20d": {
+          "avg_return": null,
+          "closed_outcomes": 0,
+          "max_single_ticker_positive_share": null,
+          "positive_pnl_by_ticker": {},
+          "tail_loss": null,
+          "top5_positive_contribution_share": null,
+          "win_rate": null,
+          "worst_row": null
+        },
+        "5d": {
+          "avg_return": -0.012734,
+          "closed_outcomes": 161,
+          "max_single_ticker_positive_share": 0.148181,
+          "positive_pnl_by_ticker": {
+            "AAPL": 209.68,
+            "AMD": 2841.44,
+            "APLD": 5852.19,
+            "APP": 1154.05,
+            "BE": 5312.76,
+            "COHR": 298.35,
+            "CRDO": 45.09,
+            "DDOG": 3473.89,
+            "GOOG": 805.68,
+            "INTC": 2905.55,
+            "LLY": 879.52,
+            "MRVL": 5645.99,
+            "MTSI": 3010.94,
+            "MU": 1881.15,
+            "NVDA": 267.95,
+            "NVO": 372.8,
+            "SNOW": 944.42,
+            "TSLA": 395.0,
+            "UNH": 1291.71,
+            "VRT": 185.86,
+            "WDC": 1719.49
+          },
+          "tail_loss": -0.216014,
+          "top5_positive_contribution_share": 0.232099,
+          "win_rate": 0.453416,
+          "worst_row": {
+            "as_of_date": "2026-05-14",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": null,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-14",
+            "forward_return": -0.216014,
+            "future_date": "2026-05-19",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -2160.14,
+            "primary_bucket": "C_residual_leader_only",
+            "primary_expectation_positive": false,
+            "residual_leader": true,
+            "residual_state": "strong_residual_leader",
+            "residual_strength_score": 0.460125,
+            "ret20_excess_qqq": 0.4285,
+            "ret20_excess_spy": 0.486,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "APLD",
+            "watchlist_effective_trade_date": "2026-05-14",
+            "watchlist_signal_basis": [
+              "none"
+            ],
+            "wide_watchlist_bucket": "C_residual_leader_only",
+            "wide_watchlist_positive": false
+          }
+        }
+      },
+      "residual_state_breakdown": {
+        "residual_leader": 42,
+        "strong_residual_leader": 149
+      },
+      "row_count": 191,
+      "ticker_count": 25,
+      "tickers": [
+        "AAPL",
+        "AMD",
+        "APLD",
+        "APP",
+        "BE",
+        "CAT",
+        "COHR",
+        "COIN",
+        "CRDO",
+        "DDOG",
+        "GOOG",
+        "INTC",
+        "LITE",
+        "LLY",
+        "MRVL",
+        "MTSI",
+        "MU",
+        "NOW",
+        "NVDA",
+        "NVO",
+        "SNOW",
+        "TSLA",
+        "UNH",
+        "VRT",
+        "WDC"
+      ],
+      "watchlist_signal_basis_breakdown": {
+        "none": 183,
+        "scout_prev": 8
+      }
+    },
+    "D_neither": {
+      "candidate_hit_counts": {
+        "10td": 13,
+        "3td": 6
+      },
+      "horizons": {
+        "10d": {
+          "avg_return": 0.019058,
+          "closed_outcomes": 252,
+          "max_single_ticker_positive_share": 0.170095,
+          "positive_pnl_by_ticker": {
+            "AAPL": 1748.82,
+            "AMZN": 101.34,
+            "APP": 776.83,
+            "BKNG": 1653.09,
+            "CRDO": 6055.2,
+            "CVX": 2677.12,
+            "DIS": 27.26,
+            "GE": 1700.37,
+            "GS": 3245.78,
+            "ISRG": 2326.68,
+            "JPM": 1056.86,
+            "LLY": 3978.07,
+            "MA": 741.52,
+            "MCD": 2033.47,
+            "META": 573.13,
+            "MSFT": 1488.1,
+            "NFLX": 2197.09,
+            "NOW": 9266.52,
+            "NVDA": 337.24,
+            "PLTR": 1155.1,
+            "RBLX": 8833.63,
+            "RTX": 416.29,
+            "SNOW": 5916.16,
+            "SOFI": 208.89,
+            "SPOT": 13681.17,
+            "TRIP": 3034.7,
+            "TSLA": 89.29,
+            "TSM": 498.06,
+            "V": 1743.17,
+            "XOM": 2871.49
+          },
+          "tail_loss": -0.127447,
+          "top5_positive_contribution_share": 0.132778,
+          "win_rate": 0.666667,
+          "worst_row": {
+            "as_of_date": "2026-05-14",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": null,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-14",
+            "forward_return": -0.127447,
+            "future_date": "2026-05-24",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -1274.47,
+            "primary_bucket": "D_neither",
+            "primary_expectation_positive": false,
+            "residual_leader": false,
+            "residual_state": "neutral",
+            "residual_strength_score": -0.024365,
+            "ret20_excess_qqq": -0.0628,
+            "ret20_excess_spy": -0.0053,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "COIN",
+            "watchlist_effective_trade_date": "2026-05-14",
+            "watchlist_signal_basis": [
+              "none"
+            ],
+            "wide_watchlist_bucket": "D_neither",
+            "wide_watchlist_positive": false
+          }
+        },
+        "20d": {
+          "avg_return": null,
+          "closed_outcomes": 0,
+          "max_single_ticker_positive_share": null,
+          "positive_pnl_by_ticker": {},
+          "tail_loss": null,
+          "top5_positive_contribution_share": null,
+          "win_rate": null,
+          "worst_row": null
+        },
+        "5d": {
+          "avg_return": 0.007934,
+          "closed_outcomes": 353,
+          "max_single_ticker_positive_share": 0.131098,
+          "positive_pnl_by_ticker": {
+            "AAPL": 963.09,
+            "AMZN": 406.63,
+            "APP": 1428.81,
+            "AVGO": 309.2,
+            "BKNG": 1259.47,
+            "CAT": 54.04,
+            "COHR": 145.38,
+            "CRDO": 9465.03,
+            "CVX": 2680.76,
+            "DE": 101.07,
+            "DIS": 201.81,
+            "GE": 1955.77,
+            "GEV": 666.75,
+            "GS": 2111.91,
+            "HOOD": 52.12,
+            "ISRG": 1231.26,
+            "JPM": 850.78,
+            "LITE": 3646.46,
+            "LLY": 2816.74,
+            "MA": 595.73,
+            "MCD": 973.64,
+            "META": 1283.9,
+            "MSFT": 1695.27,
+            "NFLX": 1253.64,
+            "NOW": 5883.52,
+            "NVDA": 1235.49,
+            "NVO": 153.57,
+            "PLTR": 990.17,
+            "RBLX": 5086.59,
+            "RTX": 657.29,
+            "SNOW": 4181.84,
+            "SOFI": 568.59,
+            "SPOT": 7645.08,
+            "TRIP": 2074.3,
+            "TSLA": 1142.37,
+            "TSM": 769.96,
+            "UNH": 134.88,
+            "V": 990.32,
+            "VRT": 687.36,
+            "XOM": 3847.68
+          },
+          "tail_loss": -0.174747,
+          "top5_positive_contribution_share": 0.17611,
+          "win_rate": 0.555241,
+          "worst_row": {
+            "as_of_date": "2026-05-13",
+            "candidate_hit_10td": false,
+            "candidate_hit_3td": false,
+            "effective_date_source": "known_ohlcv_calendar",
+            "eps_estimate_delta_30d": null,
+            "eps_estimate_delta_7d": null,
+            "eps_estimate_delta_prev": 0.0,
+            "feature_context_date": "2026-05-13",
+            "forward_return": -0.174747,
+            "future_date": "2026-05-18",
+            "pead_status": "missing_last_earnings_date",
+            "pnl_proxy": -1747.47,
+            "primary_bucket": "D_neither",
+            "primary_expectation_positive": false,
+            "residual_leader": false,
+            "residual_state": "neutral",
+            "residual_strength_score": -0.007346,
+            "ret20_excess_qqq": 0.0035,
+            "ret20_excess_spy": 0.0643,
+            "scout_prev_positive": false,
+            "support_30d_positive": false,
+            "ticker": "CRDO",
+            "watchlist_effective_trade_date": "2026-05-13",
+            "watchlist_signal_basis": [
+              "none"
+            ],
+            "wide_watchlist_bucket": "D_neither",
+            "wide_watchlist_positive": false
+          }
+        }
+      },
+      "residual_state_breakdown": {
+        "beta_lagging": 309,
+        "neutral": 108
+      },
+      "row_count": 417,
+      "ticker_count": 41,
+      "tickers": [
+        "AAPL",
+        "AMZN",
+        "APP",
+        "AVGO",
+        "BKNG",
+        "CAT",
+        "COHR",
+        "COIN",
+        "CRDO",
+        "CVX",
+        "DE",
+        "DIS",
+        "GE",
+        "GEV",
+        "GS",
+        "HOOD",
+        "ISRG",
+        "JPM",
+        "LITE",
+        "LLY",
+        "MA",
+        "MCD",
+        "META",
+        "MSFT",
+        "NFLX",
+        "NOW",
+        "NVDA",
+        "NVO",
+        "PLTR",
+        "RBLX",
+        "RTX",
+        "SNOW",
+        "SOFI",
+        "SPOT",
+        "TRIP",
+        "TSLA",
+        "TSM",
+        "UNH",
+        "V",
+        "VRT",
+        "XOM"
+      ],
+      "watchlist_signal_basis_breakdown": {
+        "none": 411,
+        "scout_prev": 6
+      }
+    }
+  },
+  "prior_trial_count": 8,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "observed_only_attribution": true,
+    "parity_test_added": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "avg_R, max drawdown contribution, and replacement value are not measurable from current watchlist rows.",
+  "related_files": [
+    "quant/experiments/exp_20260526_030_expectation_direction_untried_ideas_suite.py",
+    "data/experiments/exp-20260526-035/expectation_attribution_metric_completeness.json",
+    "experiments/logs/exp-20260526-035.json",
+    "experiments/tickets/exp-20260526-035.json",
+    "experiments/artifacts/exp-20260526-035_expectation_attribution_metric_completeness.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "single_causal_variable": "expectation_attribution_metric_completeness_v1",
+  "status": "observed_only_data_gap",
+  "timestamp": "2026-05-26T17:45:50Z",
+  "trial_family": "expectation_attribution_metric_completeness_probe",
+  "trial_variant_id": "expectation_attribution_metric_completeness_v1"
+}

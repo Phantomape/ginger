@@ -390,6 +390,8 @@ def annotate_watchlist_rows(
 
 
 def _compact_row(row: dict[str, Any], horizon_key: str | None = None) -> dict[str, Any]:
+    theme_residuals = row.get("theme_residuals") if isinstance(row.get("theme_residuals"), dict) else {}
+    ret20_excess_theme = max(theme_residuals.values()) if theme_residuals else None
     out = {
         "as_of_date": row.get("as_of_date"),
         "ticker": row.get("ticker"),
@@ -405,11 +407,17 @@ def _compact_row(row: dict[str, Any], horizon_key: str | None = None) -> dict[st
         "eps_estimate_delta_7d": row.get("eps_estimate_delta_7d"),
         "eps_estimate_delta_30d": row.get("eps_estimate_delta_30d"),
         "eps_estimate_delta_prev": row.get("eps_estimate_delta_prev"),
+        "same_event_history_count": row.get("same_event_history_count"),
         "residual_leader": row.get("residual_leader"),
         "residual_state": row.get("residual_state"),
         "residual_strength_score": row.get("residual_strength_score"),
         "ret20_excess_spy": row.get("ret20_excess_spy"),
         "ret20_excess_qqq": row.get("ret20_excess_qqq"),
+        "ret20_excess_sector": row.get("ret20_excess_sector"),
+        "sector": row.get("sector"),
+        "ret20_excess_theme": ret20_excess_theme,
+        "theme_residuals": theme_residuals,
+        "themes": row.get("themes"),
         "feature_context_date": row.get("feature_context_date"),
         "pead_status": row.get("pead_status"),
         "candidate_hit_3td": row.get("candidate_hits", {}).get("3td", {}).get("hit"),

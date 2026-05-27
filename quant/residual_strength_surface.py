@@ -55,6 +55,23 @@ def _theme_average(features_dict, tickers, key):
     return sum(vals) / len(vals)
 
 
+def _sector_average(features_dict, sector, key):
+    if not sector or sector == "Unknown":
+        return None
+    vals = []
+    for features in (features_dict or {}).values():
+        if not isinstance(features, dict):
+            continue
+        if str(features.get("sector") or "Unknown") != sector:
+            continue
+        value = _float(features.get(key), None)
+        if value is not None:
+            vals.append(value)
+    if not vals:
+        return None
+    return sum(vals) / len(vals)
+
+
 def compute_residual_strength(
     ticker,
     features,
@@ -75,9 +92,12 @@ def compute_residual_strength(
 
     spy20 = _float(spy.get("momentum_20d_pct"), 0.0)
     qqq20 = _float(qqq.get("momentum_20d_pct"), 0.0)
+    sector = str(features.get("sector") or "Unknown")
 
     excess_spy20 = mom20 - spy20
     excess_qqq20 = mom20 - qqq20
+    sector20 = _sector_average(features_dict, sector, "momentum_20d_pct")
+    excess_sector20 = mom20 - sector20 if sector20 is not None else None
 
     theme_residuals = {}
     for theme in _themes(ticker):
@@ -109,6 +129,8 @@ def compute_residual_strength(
         "residual_strength_score": round(residual_score, 6),
         "ret20_excess_spy": round(excess_spy20, 6),
         "ret20_excess_qqq": round(excess_qqq20, 6),
+        "ret20_excess_sector": round(excess_sector20, 6) if excess_sector20 is not None else None,
+        "sector": sector,
         "theme_residuals": theme_residuals,
         "themes": _themes(ticker),
         "momentum_20d_pct": round(mom20, 6),

@@ -31,6 +31,7 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 from data_paths import daily_artifact_glob, resolve_daily_artifact_path  # noqa: E402
+from broad_market_sector_map import load_cache, lookup_sector  # noqa: E402
 from residual_strength_surface import compute_residual_strength  # noqa: E402
 
 
@@ -48,6 +49,7 @@ MIN_TOTAL_USABLE_CANDIDATES = 30
 MAX_TOP5_POSITIVE_SHARE = 0.60
 MAX_SINGLE_TICKER_POSITIVE_SHARE = 0.50
 PAPER_NOTIONAL_USD = 10_000.0
+_REFERENCE_SECTOR_CACHE: dict[str, Any] | None = None
 
 TOP_LEVEL_CANDIDATE_KEYS = {
     "signals": ("selected_signal", True),
@@ -125,7 +127,9 @@ def _upsert_jsonl(path: Path, payload: dict[str, Any]) -> None:
 
 def _repo_rel(path: Path | str) -> str:
     try:
-        return str(Path(path).resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
+        raw_path = Path(path)
+        abs_path = raw_path if raw_path.is_absolute() else REPO_ROOT / raw_path
+        return str(abs_path.relative_to(REPO_ROOT)).replace("\\", "/")
     except ValueError:
         return str(path).replace("\\", "/")
 
@@ -354,6 +358,9 @@ def classify_bucket(expectation_positive: bool, residual_leader: bool) -> str:
 
 
 def _feature_dict_from_quant_payload(quant_payload: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    global _REFERENCE_SECTOR_CACHE
+    if _REFERENCE_SECTOR_CACHE is None:
+        _REFERENCE_SECTOR_CACHE = load_cache()
     features = quant_payload.get("features")
     if not isinstance(features, dict):
         return {}
@@ -361,9 +368,16 @@ def _feature_dict_from_quant_payload(quant_payload: dict[str, Any]) -> dict[str,
     for ticker, row in features.items():
         if not isinstance(row, dict):
             continue
+        norm_ticker = str(ticker).upper()
         normalized = dict(row)
-        normalized.setdefault("ticker", str(ticker).upper())
-        out[str(ticker).upper()] = normalized
+        normalized.setdefault("ticker", norm_ticker)
+        if not normalized.get("sector") or normalized.get("sector") == "Unknown":
+            sector_lookup = lookup_sector(norm_ticker, _REFERENCE_SECTOR_CACHE)
+            if sector_lookup.get("sector"):
+                normalized["sector"] = sector_lookup.get("sector")
+                normalized["sector_lookup_status"] = sector_lookup.get("status")
+                normalized["sector_lookup_rule_version"] = sector_lookup.get("rule_version")
+        out[norm_ticker] = normalized
     return out
 
 
@@ -394,7 +408,10 @@ def residual_context_for_candidate(
         "residual_strength_score": residual.get("residual_strength_score"),
         "ret20_excess_spy": residual.get("ret20_excess_spy"),
         "ret20_excess_qqq": residual.get("ret20_excess_qqq"),
+        "ret20_excess_sector": residual.get("ret20_excess_sector"),
+        "sector": residual.get("sector"),
         "theme_residuals": residual.get("theme_residuals"),
+        "themes": residual.get("themes"),
         "residual_leader": residual.get("residual_state") in RESIDUAL_LEADER_STATES,
     }
 
@@ -1253,7 +1270,7 @@ def _experiment_log_entry(payload: dict[str, Any]) -> dict[str, Any]:
     return keep
 
 
-def persist(payload: dict[str, Any]) -> None:
+def persist(payload: dict[str, Any], *, update_experiment_log: bool = True) -> None:
     _write_json(OUT_JSON, payload)
     _write_json(DOC_LOG, payload)
     _write_json(
@@ -1272,7 +1289,8 @@ def persist(payload: dict[str, Any]) -> None:
     )
     DOC_ARTIFACT.parent.mkdir(parents=True, exist_ok=True)
     DOC_ARTIFACT.write_text(_artifact_markdown(payload), encoding="utf-8")
-    _upsert_jsonl(EXPERIMENT_LOG_JSONL, _experiment_log_entry(payload))
+    if update_experiment_log:
+        _upsert_jsonl(EXPERIMENT_LOG_JSONL, _experiment_log_entry(payload))
 
 
 def main() -> int:

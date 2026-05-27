@@ -587,3 +587,43 @@ Expectation Drift × Residual Leadership
 ```
 
 这是当前最符合 Ginger 阶段的 alpha 搜索方向。
+
+---
+
+## 2026-05-27 three-round observed-only suite
+
+`exp-20260527-002` through `exp-20260527-010` ran three observed-only
+rounds for each sub-direction in this memo:
+
+- Expectation revision velocity:
+  `exp-20260527-002` EPS 7d magnitude,
+  `exp-20260527-003` previous-delta confirmation,
+  `exp-20260527-004` same-event history depth.
+- PEAD continuation:
+  `exp-20260527-005` earnings-date readiness,
+  `exp-20260527-006` post-revision 2d failure proxy,
+  `exp-20260527-007` candidate-conversion lag.
+- Residual leadership:
+  `exp-20260527-008` residual-strength magnitude,
+  `exp-20260527-009` SPY/QQQ residual agreement,
+  `exp-20260527-010` residual-state quality.
+
+All nine rounds stayed read-only and changed no entries, exits, ranking,
+sizing, LLM/news prompts, paper sleeves, or orders. After tightening the gate
+so both preferred and comparison buckets need enough closed 5d/10d outcomes,
+all nine ended as `observed_only_data_gap`. A follow-up measurement repair
+passed `same_event_history_count` through the compact watchlist rows and
+reran the suite; `exp-20260527-004` then had full same-event-history coverage,
+but the preferred `history_ge_10` bucket still lacked closed 10d outcomes. The
+same repair also passed through existing `theme_residuals` as
+`ret20_excess_theme`; theme residual coverage is now partial (`180/700` rows in
+the rerun). A second measurement repair added read-only sector residuals from
+`residual_strength_surface` and enriched missing feature-sector labels from the
+offline deterministic `broad_market_sector_map` cache; `ret20_excess_sector`
+coverage is now partial (`316/700` rows), with the caveat that this is a
+replayable public-classification proxy rather than proof production observed
+the label point-in-time. The remaining blockers are thin 10d
+preferred/comparison buckets, missing PIT `last_earnings_date`, and zero
+primary-positive candidate conversions within 10 trading days. Do not promote
+this direction to ranking, sizing, or a PEAD paper sleeve until those fields
+and closed outcomes mature.

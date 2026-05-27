@@ -7,12 +7,14 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent / "experiments"))
 
 from exp_20260525_017_expectation_residual_leadership_attribution import (  # noqa: E402
+    _feature_dict_from_quant_payload,
     classify_bucket,
     classify_expectation,
     classify_scout_expectation,
     extract_candidate_rows,
     residual_context_for_candidate,
 )
+import exp_20260525_017_expectation_residual_leadership_attribution as module_under_test  # noqa: E402
 
 
 def test_classify_bucket_matrix():
@@ -98,12 +100,61 @@ def test_extract_candidate_rows_ignores_feature_only_trend_rows():
     }
 
 
+def test_repo_rel_does_not_resolve_target_file(monkeypatch):
+    def fail_resolve(self, *args, **kwargs):
+        raise OSError(22, "Invalid argument", str(self))
+
+    monkeypatch.setattr(Path, "resolve", fail_resolve)
+
+    assert (
+        module_under_test._repo_rel(module_under_test.EXPERIMENT_LOG_JSONL)
+        == "docs/experiment_log.jsonl"
+    )
+
+
+def test_feature_dict_enriches_missing_sector_from_reference_cache(monkeypatch):
+    monkeypatch.setattr(
+        module_under_test,
+        "_REFERENCE_SECTOR_CACHE",
+        {
+            "entries": {
+                "ZZZ": {
+                    "sector": "Technology",
+                    "industry": "Software",
+                    "status": "ok",
+                    "fetched_at": "2026-05-27T00:00:00Z",
+                }
+            }
+        },
+    )
+
+    features = _feature_dict_from_quant_payload(
+        {
+            "features": {
+                "ZZZ": {
+                    "ticker": "ZZZ",
+                    "momentum_20d_pct": 0.10,
+                }
+            }
+        }
+    )
+
+    assert features["ZZZ"]["sector"] == "Technology"
+    assert features["ZZZ"]["sector_lookup_rule_version"] == "yfinance_gics_proxy_sector_v1"
+
+
 def test_residual_context_uses_existing_residual_strength_logic():
     features = {
         "AAA": {
             "ticker": "AAA",
             "momentum_20d_pct": 0.18,
             "momentum_60d_pct": 0.35,
+            "sector": "Technology",
+        },
+        "BBB": {
+            "ticker": "BBB",
+            "momentum_20d_pct": 0.08,
+            "sector": "Technology",
         },
         "SPY": {"ticker": "SPY", "momentum_20d_pct": 0.02},
         "QQQ": {"ticker": "QQQ", "momentum_20d_pct": 0.03},
@@ -114,3 +165,5 @@ def test_residual_context_uses_existing_residual_strength_logic():
     assert row["residual_context_status"] == "ok"
     assert row["residual_state"] in {"residual_leader", "strong_residual_leader"}
     assert row["residual_leader"] is True
+    assert row["sector"] == "Technology"
+    assert row["ret20_excess_sector"] == 0.05
