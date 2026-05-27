@@ -13,6 +13,7 @@ from experiment_registry import (  # noqa: E402
     append_log_entry,
     build_log_draft,
     claim_ticket,
+    collect_experiment_id_sources,
     create_ticket,
     evaluate_gate,
     experiment_log_exists,
@@ -22,6 +23,7 @@ from experiment_registry import (  # noqa: E402
     judge_results,
     locked_registry_update,
     load_registry,
+    next_experiment_id,
     save_experiment_log_entry,
     save_registry,
     update_result,
@@ -60,6 +62,8 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
 
     assert first["experiment_id"].endswith("-001")
     assert second["experiment_id"].endswith("-002")
+    assert first["experiment_uid"].startswith("expuid-")
+    assert first["experiment_uid"] != second["experiment_uid"]
     assert first["status"] == "proposed"
     assert first["baseline_result_file"] == "data/backtests/backtest_results_20260425.json"
 
@@ -96,6 +100,51 @@ def test_create_ticket_auto_generates_per_experiment_write_scope(tmp_path):
     assert f"experiments/tickets/{ticket['experiment_id']}.json" in scopes
     assert f"experiments/logs/{ticket['experiment_id']}.json" in scopes
     assert "data/" not in scopes
+
+
+def test_next_experiment_id_scans_all_identity_sources(tmp_path):
+    root = tmp_path
+    (root / "docs").mkdir()
+    (root / "data" / "experiments" / "exp-20990101-009").mkdir(parents=True)
+    (root / "experiments" / "tickets").mkdir(parents=True)
+    (root / "docs" / "experiments" / "tickets").mkdir(parents=True)
+    (root / "experiments" / "logs").mkdir(parents=True)
+    (root / "quant" / "experiments").mkdir(parents=True)
+
+    (root / "docs" / "experiment_log.jsonl").write_text(
+        json.dumps({"experiment_id": "exp-20990101-007"}) + "\n",
+        encoding="utf-8",
+    )
+    (root / "experiments" / "tickets" / "exp-20990101-010.json").write_text(
+        json.dumps({"experiment_id": "exp-20990101-010"}),
+        encoding="utf-8",
+    )
+    (root / "docs" / "experiments" / "tickets" / "exp-20990101-011.json").write_text(
+        json.dumps({"experiment_id": "exp-20990101-011"}),
+        encoding="utf-8",
+    )
+    (root / "experiments" / "logs" / "exp-20990101-012.json").write_text(
+        json.dumps({"experiment_id": "exp-20990101-012"}),
+        encoding="utf-8",
+    )
+    (root / "quant" / "experiments" / "exp_20990101_013_runner.py").write_text(
+        "EXPERIMENT_ID = 'exp-20990101-013'\n",
+        encoding="utf-8",
+    )
+    registry = {
+        "schema_version": 1,
+        "updated_at": None,
+        "_repo_root": str(root),
+        "experiments": [{"experiment_id": "exp-20990101-003"}],
+    }
+
+    sources = collect_experiment_id_sources(registry, root=root)
+
+    assert "exp-20990101-007" in sources
+    assert "exp-20990101-009" in sources
+    assert "exp-20990101-011" in sources
+    assert "exp-20990101-013" in sources
+    assert next_experiment_id(registry, today="20990101", root=root) == "exp-20990101-014"
 
 
 def test_create_ticket_file_slug_overrides_auto_generated_file_stem():
@@ -447,6 +496,28 @@ def test_locked_registry_update_serializes_read_modify_write(tmp_path):
     lock_payload = json.loads(lock_path.read_text(encoding="utf-8"))
     assert lock_payload["target"].endswith("experiment_registry.json")
     assert "released_at" in lock_payload
+
+
+def test_locked_registry_update_uses_workspace_ticket_directory_for_docs_registry(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    registry_path = docs_dir / "experiment_registry.json"
+    save_registry({"schema_version": 1, "updated_at": None, "experiments": []}, registry_path)
+
+    def add_ticket(registry):
+        return create_ticket(
+            registry,
+            lane="measurement_repair",
+            hypothesis="Create ticket in workspace experiments directory.",
+            change_type="logging_fix",
+            single_causal_variable="ticket directory split brain",
+            baseline_result_file="data/backtests/backtest_results_20260425.json",
+        )
+
+    ticket = locked_registry_update(registry_path, add_ticket)
+
+    assert (tmp_path / "experiments" / "tickets" / f"{ticket['experiment_id']}.json").exists()
+    assert not (tmp_path / "docs" / "experiments" / "tickets" / f"{ticket['experiment_id']}.json").exists()
 
 
 def test_concurrent_locked_registry_updates_do_not_duplicate_ids(tmp_path):

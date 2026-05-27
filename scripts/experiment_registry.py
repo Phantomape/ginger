@@ -8,6 +8,7 @@ import json
 import re
 import sys
 import time
+import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,6 +33,10 @@ DEFAULT_TICKETS_DIR = DEFAULT_EXPERIMENTS_DIR / "tickets"
 DEFAULT_EXPERIMENT_LOGS_DIR = DEFAULT_EXPERIMENTS_DIR / "logs"
 DEFAULT_LOCK_TIMEOUT_SECONDS = 30
 STALE_LOCK_SECONDS = 300
+EXPERIMENT_ID_RE = re.compile(
+    r"(?<![A-Za-z0-9])exp[-_](\d{8})[-_](\d{3,})(?!\d)",
+    re.IGNORECASE,
+)
 ACTIVE_STATUSES = {"claimed", "running"}
 FINAL_STATUSES = {"accepted", "rejected", "observed_only"}
 SHARED_COORDINATION_SCOPES = {
@@ -54,6 +59,20 @@ VALID_LANES = {
 
 def utc_now_iso():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def new_experiment_uid():
+    return f"expuid-{uuid.uuid4().hex[:16]}"
+
+
+def normalize_experiment_id(value):
+    if value is None:
+        return None
+    match = EXPERIMENT_ID_RE.search(str(value))
+    if not match:
+        return None
+    date, sequence = match.groups()
+    return f"exp-{date}-{int(sequence):03d}"
 
 
 def _repo_relative(path):
@@ -111,6 +130,11 @@ def _registry_tickets_dir(registry):
 
 def _registry_logs_dir(registry):
     return Path(registry.get("_logs_dir", DEFAULT_EXPERIMENT_LOGS_DIR))
+
+
+def _registry_repo_root(registry):
+    value = registry.get("_repo_root")
+    return Path(value) if value else None
 
 
 def load_ticket(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
@@ -230,9 +254,12 @@ def file_lock(path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
 
 def locked_registry_update(path, mutator, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     with file_lock(path, timeout_seconds=timeout_seconds):
+        path = Path(path)
+        workspace_root = path.parent.parent if path.parent.name == "docs" else path.parent
         registry = load_registry(path)
-        registry["_tickets_dir"] = str(Path(path).parent / "experiments" / "tickets")
-        registry["_logs_dir"] = str(Path(path).parent / "experiments" / "logs")
+        registry["_repo_root"] = str(workspace_root)
+        registry["_tickets_dir"] = str(workspace_root / "experiments" / "tickets")
+        registry["_logs_dir"] = str(workspace_root / "experiments" / "logs")
         result = mutator(registry)
         save_registry(registry, path)
         return result
@@ -246,17 +273,145 @@ def latest_backtest_result(data_dir=None):
     return _repo_relative(files[-1])
 
 
-def next_experiment_id(registry, today=None):
+def _remember_id_source(sources, experiment_id, source):
+    normalized = normalize_experiment_id(experiment_id)
+    if normalized:
+        sources.setdefault(normalized, set()).add(source)
+
+
+def _load_json_file(path):
+    try:
+        with Path(path).open(encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _scan_json_id_file(path, sources, source_prefix, *, root):
+    path = Path(path)
+    _remember_id_source(sources, path.name, f"{source_prefix}:filename:{_repo_relative(path)}")
+    data = _load_json_file(path)
+    if isinstance(data, dict):
+        _remember_id_source(
+            sources,
+            data.get("experiment_id"),
+            f"{source_prefix}:json:{_repo_relative(path)}",
+        )
+        for key in ("artifact", "json", "ticket_file", "log_file"):
+            value = data.get(key)
+            if value:
+                _remember_id_source(
+                    sources,
+                    value,
+                    f"{source_prefix}:ref:{_repo_relative(path)}:{key}",
+                )
+        return
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return
+    for match in EXPERIMENT_ID_RE.finditer(text):
+        _remember_id_source(
+            sources,
+            match.group(0),
+            f"{source_prefix}:text:{_repo_relative(path)}",
+        )
+
+
+def collect_experiment_id_sources(registry=None, *, root=None):
+    registry = registry or {}
+    include_filesystem = root is not None or bool(registry.get("_repo_root"))
+    root = Path(root or registry.get("_repo_root", REPO_ROOT))
+    sources = {}
+
+    for exp in registry.get("experiments", []):
+        _remember_id_source(sources, exp.get("experiment_id"), "registry")
+        for key in ("ticket_file", "log_file"):
+            if exp.get(key):
+                _remember_id_source(sources, exp[key], f"registry:{key}")
+        result = exp.get("result")
+        if isinstance(result, dict):
+            for key in ("artifact", "json"):
+                if result.get(key):
+                    _remember_id_source(sources, result[key], f"registry:result:{key}")
+
+    if not include_filesystem:
+        return {experiment_id: sorted(values) for experiment_id, values in sources.items()}
+
+    log_path = root / "docs" / "experiment_log.jsonl"
+    if log_path.exists():
+        try:
+            with log_path.open(encoding="utf-8") as f:
+                for line_number, line in enumerate(f, start=1):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        row = json.loads(line)
+                    except json.JSONDecodeError:
+                        row = {}
+                    if isinstance(row, dict):
+                        _remember_id_source(
+                            sources,
+                            row.get("experiment_id"),
+                            f"jsonl:{_repo_relative(log_path)}:{line_number}",
+                        )
+                    if "exp-" in line or "exp_" in line:
+                        for match in EXPERIMENT_ID_RE.finditer(line):
+                            _remember_id_source(
+                                sources,
+                                match.group(0),
+                                f"jsonl:text:{_repo_relative(log_path)}:{line_number}",
+                            )
+        except OSError:
+            pass
+
+    json_dirs = [
+        (root / "experiments" / "tickets", "ticket"),
+        (root / "docs" / "experiments" / "tickets", "docs_ticket"),
+        (root / "experiments" / "logs", "log"),
+        (root / "docs" / "experiments" / "logs", "docs_log"),
+    ]
+    for directory, source_prefix in json_dirs:
+        if not directory.exists():
+            continue
+        for path in directory.glob("*.json"):
+            _scan_json_id_file(path, sources, source_prefix, root=root)
+
+    path_dirs = [
+        (root / "data" / "experiments", "data_experiment"),
+        (root / "experiments" / "artifacts", "artifact"),
+    ]
+    for directory, source_prefix in path_dirs:
+        if not directory.exists():
+            continue
+        for path in directory.iterdir():
+            _remember_id_source(
+                sources,
+                path.name,
+                f"{source_prefix}:path:{_repo_relative(path)}",
+            )
+
+    quant_experiments = root / "quant" / "experiments"
+    if quant_experiments.exists():
+        for path in quant_experiments.rglob("exp*"):
+            if path.is_file():
+                _remember_id_source(
+                    sources,
+                    path.name,
+                    f"runner:path:{_repo_relative(path)}",
+                )
+
+    return {experiment_id: sorted(values) for experiment_id, values in sources.items()}
+
+
+def next_experiment_id(registry, today=None, *, root=None):
     today = today or datetime.now(timezone.utc).strftime("%Y%m%d")
     prefix = f"exp-{today}-"
     max_seen = 0
-    for exp in registry.get("experiments", []):
-        eid = exp.get("experiment_id", "")
+    for eid in collect_experiment_id_sources(registry, root=root):
         if eid.startswith(prefix):
-            try:
-                max_seen = max(max_seen, int(eid.rsplit("-", 1)[1]))
-            except ValueError:
-                continue
+            max_seen = max(max_seen, int(eid.rsplit("-", 1)[1]))
     return f"{prefix}{max_seen + 1:03d}"
 
 
@@ -388,7 +543,7 @@ def create_ticket(
     if lane not in VALID_LANES:
         raise ValueError(f"lane must be one of {sorted(VALID_LANES)}")
     baseline = baseline_result_file or latest_backtest_result()
-    experiment_id = next_experiment_id(registry)
+    experiment_id = next_experiment_id(registry, root=_registry_repo_root(registry))
     changed_variable = changed_variable or single_causal_variable
     mechanism_family = mechanism_family or change_type
     trial_family = trial_family or mechanism_family
@@ -404,6 +559,7 @@ def create_ticket(
     )
     ticket = {
         "experiment_id": experiment_id,
+        "experiment_uid": new_experiment_uid(),
         "status": "proposed",
         "lane": lane,
         "owner": owner,
