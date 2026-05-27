@@ -1,0 +1,508 @@
+{
+  "after_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "broad_market_baseline_pnl_by_window": {
+      "late_strong": 10307.76,
+      "mid_weak": 14607.88,
+      "old_thin": 4059.9
+    },
+    "sector_coverage_ok_share": 0.998596,
+    "sector_unique_count_selected_trades": 11,
+    "sector_unique_count_warehouse": 11,
+    "strategy_behavior_changed": false
+  },
+  "aggregate_sector_attribution": {
+    "sector_counts": {
+      "Basic Materials": 6,
+      "Communication Services": 8,
+      "Consumer Cyclical": 15,
+      "Consumer Defensive": 4,
+      "Energy": 3,
+      "Financial Services": 4,
+      "Healthcare": 13,
+      "Industrials": 19,
+      "Real Estate": 1,
+      "Technology": 16,
+      "Utilities": 1
+    },
+    "sector_pnl": {
+      "Basic Materials": 6286.27,
+      "Communication Services": 914.48,
+      "Consumer Cyclical": 3727.23,
+      "Consumer Defensive": -343.13,
+      "Energy": -3434.41,
+      "Financial Services": -3095.03,
+      "Healthcare": -3559.21,
+      "Industrials": 11441.83,
+      "Real Estate": -305.98,
+      "Technology": 17472.83,
+      "Utilities": -129.34
+    },
+    "sector_trade_count": {
+      "Basic Materials": 6,
+      "Communication Services": 8,
+      "Consumer Cyclical": 15,
+      "Consumer Defensive": 4,
+      "Energy": 3,
+      "Financial Services": 4,
+      "Healthcare": 13,
+      "Industrials": 19,
+      "Real Estate": 1,
+      "Technology": 16,
+      "Utilities": 1
+    },
+    "sector_unique_count": 11,
+    "status_counts": {
+      "ok": 90
+    },
+    "trade_count": 90
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "broad_market_baseline_pnl_by_window": {
+      "late_strong": 10307.76,
+      "mid_weak": 14607.88,
+      "old_thin": 4059.9
+    },
+    "strategy_behavior_changed": false
+  },
+  "broad_market_baseline_pnl_by_window": {
+    "late_strong": 10307.76,
+    "mid_weak": 14607.88,
+    "old_thin": 4059.9
+  },
+  "broad_market_pnl_parity_drift": {
+    "late_strong": 0.0,
+    "mid_weak": 0.0,
+    "old_thin": 0.0
+  },
+  "broad_market_pnl_parity_passed": true,
+  "change_summary": "Adds read-only sector / industry / coverage lookup module `broad_market_sector_map.py` (yfinance-sourced JSON cache at `data/reference/broad_market_sector_map.json`) plus focused unit tests. Experiment re-runs the accepted `exp-20260520-004` baseline and attaches sector context to the 90 selected paper trades; no entries / exits / sizing / orders change.",
+  "change_type": "measurement_repair_sector_map_field",
+  "changed_variable": "broad_market_sector_map_field",
+  "component": "quant/experiments/exp_20260525_038_broad_market_sector_map_attribution.py",
+  "date_range": {
+    "core_baseline_artifact": "data/experiments/exp-20260517-009/ample_slot_stock_rank1_topup.json",
+    "ohlcv_snapshots": [
+      "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "data/ohlcv/ohlcv_snapshot_20241002_20250422.json"
+    ],
+    "sector_cache_path": "data/reference/broad_market_sector_map.json",
+    "source_artifact": "data/experiments/exp-20260520-004/broad_market_trend_persistence_notional.json"
+  },
+  "decision": "accepted_broad_market_sector_map_attribution",
+  "decision_rule": "Accept iff Gate 1 core EV/PnL drift within tolerance, broad-market PnL parity vs source artifact, and warehouse sector coverage >= 80%. Otherwise reject and do not promote sector field into broad-market production paper sleeve.",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_delta": 0,
+    "total_pnl_sum_delta": 0.0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260525-038",
+  "gate1": {
+    "baseline_artifact": "data/experiments/exp-20260517-009/ample_slot_stock_rank1_topup.json",
+    "baseline_protocol": "docs/backtesting.md canonical three fixed windows",
+    "by_window": {
+      "late_strong": {
+        "expected_value_score": 5.1628,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.41,
+        "signals_generated": 51,
+        "signals_survived": 41,
+        "survival_rate": 0.8039,
+        "total_pnl": 117072.92,
+        "total_return_pct": 1.1707,
+        "trade_count": 18,
+        "win_rate": 0.8333
+      },
+      "mid_weak": {
+        "expected_value_score": 2.1402,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 53,
+        "signals_survived": 42,
+        "survival_rate": 0.7925,
+        "total_pnl": 78110.11,
+        "total_return_pct": 0.7811,
+        "trade_count": 21,
+        "win_rate": 0.5238
+      },
+      "old_thin": {
+        "expected_value_score": 0.5911,
+        "max_drawdown_pct": 0.1001,
+        "sharpe_daily": 1.49,
+        "signals_generated": 60,
+        "signals_survived": 52,
+        "survival_rate": 0.8667,
+        "total_pnl": 39667.96,
+        "total_return_pct": 0.3967,
+        "trade_count": 22,
+        "win_rate": 0.4091
+      }
+    },
+    "canonical_accepted_aggregate_expected_value_score_sum": 7.8941,
+    "canonical_accepted_aggregate_total_pnl_sum": 234850.99,
+    "ev_tolerance": 0.01,
+    "expected_value_score_drift": 0.0,
+    "observed_aggregate_expected_value_score_sum": 7.8941,
+    "observed_aggregate_total_pnl_sum": 234850.99,
+    "passed": true,
+    "pnl_tolerance": 50.0,
+    "total_pnl_drift": 0.0
+  },
+  "gate2": {
+    "field_check": {
+      "checked_positions": 10,
+      "exists": true,
+      "missing_required_fields": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json"
+    },
+    "passed": true,
+    "rule_dependencies": [
+      "operator_inputs/open_positions.json entry_date/target_price",
+      "data/experiments/exp-20260520-004/broad_market_trend_persistence_notional.json",
+      "data/reference/broad_market_sector_map.json",
+      "warehouse ticker_universe + coverage_summary tables",
+      "canonical three-window OHLCV snapshots"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "candidate_pool_changed": false,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "broad_market_pnl_parity_drift": {
+      "late_strong": 0.0,
+      "mid_weak": 0.0,
+      "old_thin": 0.0
+    },
+    "broad_market_pnl_parity_passed": true,
+    "canonical_backtest_required": true,
+    "gate1_passed": true,
+    "note": "Measurement repair: Gate 4 requires core parity, broad-market PnL parity vs the accepted source artifact, and coverage >= 80% on the warehouse universe.",
+    "passed": true,
+    "sector_coverage_observed": 0.998596,
+    "sector_coverage_passed": true,
+    "sector_coverage_target": 0.8,
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "measurement repair: building a broad-market sector field unblocks future broad-market sector concentration / crowding / hidden-beta alpha_search.",
+    "2_history_check": "risk_engine.SECTOR_MAP only covers ~80 hand-curated core tickers; broad-market warehouse universe (1336 tickers) was uncovered, which blocked exp-20260525-(B1 candidate) sector crowding diagnostic.",
+    "3_single_causal_variable": "broad_market_sector_map_field",
+    "4_acceptance_standard": "Gate 1 core EV/PnL drift within tolerance; broad-market PnL parity vs accepted source artifact; sector coverage >= 80%.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\build_broad_market_sector_cache.py; .venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260525_038_broad_market_sector_map_attribution.py"
+  },
+  "hypothesis": "Building a persistent sector cache for the broad-market warehouse universe and attaching sector context to accepted paper trades is the prerequisite for any broad-market sector concentration / crowding / hidden-beta allocation alpha_search; absence of this field is the active blocker.",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "broad_market_sector_attribution",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260517-009",
+    "exp-20260520-004",
+    "exp-20260524-008",
+    "exp-20260525-035"
+  ],
+  "new_evidence_type": "yfinance_sector_cache_with_warehouse_coverage_audit",
+  "next_evidence_needed": "First broad-market sector-aware allocation alpha_search (e.g. haircut on >= N same-sector candidates on the same day), tested via standard broad-market Gate 4 (positive aggregate dEV, 0 EV-regressed windows, concentration guards).",
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "canonical_accepted_aggregate_expected_value_score_sum": 7.8941,
+    "canonical_accepted_aggregate_total_pnl_sum": 234850.99,
+    "ev_tolerance": 0.01,
+    "exact_rerun_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260525_038_broad_market_sector_map_attribution.py",
+    "pnl_tolerance": 50.0,
+    "sector_cache_path": "data/reference/broad_market_sector_map.json",
+    "sector_coverage_target": 0.8,
+    "sector_rule_version": "yfinance_gics_proxy_sector_v1",
+    "sector_source": "yfinance.Ticker.info.sector",
+    "source_artifact": "data/experiments/exp-20260520-004/broad_market_trend_persistence_notional.json",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "parity_test_added": true,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "read_only": true,
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260525_038_broad_market_sector_map_attribution.py",
+    "quant/broad_market_sector_map.py",
+    "quant/build_broad_market_sector_cache.py",
+    "quant/test_broad_market_sector_map.py",
+    "data/reference/broad_market_sector_map.json",
+    "data/experiments/exp-20260525-038/broad_market_sector_map_attribution.json",
+    "experiments/logs/exp-20260525-038.json",
+    "experiments/tickets/exp-20260525-038.json",
+    "experiments/artifacts/exp-20260525-038_broad_market_sector_map_attribution.md",
+    "docs/experiment_log.jsonl",
+    "data/experiments/exp-20260520-004/broad_market_trend_persistence_notional.json"
+  ],
+  "sector_coverage": {
+    "cache_generated_at": "2026-05-27T05:25:19Z",
+    "coverage_target": 0.8,
+    "coverage_target_passed": true,
+    "ok_share": 0.998596,
+    "rule_version": "yfinance_gics_proxy_sector_v1",
+    "scope": "frozen_candidate_universe_from_source_artifact",
+    "sector_counts": {
+      "Basic Materials": 39,
+      "Communication Services": 25,
+      "Consumer Cyclical": 91,
+      "Consumer Defensive": 34,
+      "Energy": 47,
+      "Financial Services": 110,
+      "Healthcare": 85,
+      "Industrials": 112,
+      "Real Estate": 33,
+      "Technology": 109,
+      "Utilities": 26
+    },
+    "sector_unique_count": 11,
+    "source": "yfinance.Ticker.info.sector",
+    "status_counts": {
+      "fetch_error": 1,
+      "missing_info": 0,
+      "missing_ticker": 0,
+      "ok": 711
+    },
+    "status_shares": {
+      "fetch_error": 0.001404,
+      "missing_info": 0.0,
+      "missing_ticker": 0.0,
+      "ok": 0.998596
+    },
+    "tickers_requested": 712,
+    "tickers_unique": 712,
+    "unresolved_sample": [
+      "FNGD"
+    ],
+    "warehouse_diagnostic": {
+      "cache_generated_at": "2026-05-27T05:25:19Z",
+      "ok_share": 0.884644,
+      "rule_version": "yfinance_gics_proxy_sector_v1",
+      "sector_counts": {
+        "Basic Materials": 66,
+        "Communication Services": 41,
+        "Consumer Cyclical": 158,
+        "Consumer Defensive": 61,
+        "Energy": 78,
+        "Financial Services": 168,
+        "Healthcare": 137,
+        "Industrials": 182,
+        "Real Estate": 53,
+        "Technology": 195,
+        "Utilities": 42
+      },
+      "sector_unique_count": 11,
+      "source": "yfinance.Ticker.info.sector",
+      "status_counts": {
+        "fetch_error": 154,
+        "missing_info": 0,
+        "missing_ticker": 0,
+        "ok": 1181
+      },
+      "status_shares": {
+        "fetch_error": 0.115356,
+        "missing_info": 0.0,
+        "missing_ticker": 0.0,
+        "ok": 0.884644
+      },
+      "tickers_requested": 1335,
+      "tickers_unique": 1335,
+      "unresolved_sample": [
+        "FNGD",
+        "GDXU",
+        "SPGI",
+        "SYM",
+        "TECH",
+        "TEL",
+        "TGTX",
+        "THC",
+        "THG",
+        "TPL",
+        "TRNO",
+        "TXNM",
+        "VALE",
+        "VIK",
+        "VLY",
+        "VTR",
+        "WHR",
+        "WK",
+        "WMG",
+        "WRB",
+        "WTW",
+        "WY",
+        "YETI",
+        "ZBH",
+        "ZETA"
+      ]
+    }
+  },
+  "single_causal_variable": "broad_market_sector_map_field",
+  "source_pnl_by_window": {
+    "late_strong": 10307.76,
+    "mid_weak": 14607.88,
+    "old_thin": 4059.9
+  },
+  "status": "accepted",
+  "timestamp": "2026-05-27T05:36:28Z",
+  "trial_family": "broad_market_sector_map_attribution",
+  "trial_variant_id": "yfinance_gics_proxy_sector_v1",
+  "window_sector_attribution": {
+    "late_strong": {
+      "sector_counts": {
+        "Basic Materials": 5,
+        "Communication Services": 2,
+        "Consumer Cyclical": 1,
+        "Consumer Defensive": 1,
+        "Energy": 3,
+        "Financial Services": 1,
+        "Healthcare": 6,
+        "Industrials": 4,
+        "Technology": 7
+      },
+      "sector_pnl": {
+        "Basic Materials": 6708.57,
+        "Communication Services": 1517.88,
+        "Consumer Cyclical": 30.29,
+        "Consumer Defensive": 172.86,
+        "Energy": -3434.41,
+        "Financial Services": -2990.8,
+        "Healthcare": -2196.43,
+        "Industrials": 1395.53,
+        "Technology": 9104.27
+      },
+      "sector_trade_count": {
+        "Basic Materials": 5,
+        "Communication Services": 2,
+        "Consumer Cyclical": 1,
+        "Consumer Defensive": 1,
+        "Energy": 3,
+        "Financial Services": 1,
+        "Healthcare": 6,
+        "Industrials": 4,
+        "Technology": 7
+      },
+      "sector_unique_count": 9,
+      "status_counts": {
+        "ok": 30
+      },
+      "trade_count": 30
+    },
+    "mid_weak": {
+      "sector_counts": {
+        "Basic Materials": 1,
+        "Communication Services": 3,
+        "Consumer Cyclical": 4,
+        "Consumer Defensive": 2,
+        "Financial Services": 1,
+        "Healthcare": 3,
+        "Industrials": 8,
+        "Technology": 7,
+        "Utilities": 1
+      },
+      "sector_pnl": {
+        "Basic Materials": -422.3,
+        "Communication Services": -245.13,
+        "Consumer Cyclical": 2149.56,
+        "Consumer Defensive": -805.35,
+        "Financial Services": -682.52,
+        "Healthcare": 283.71,
+        "Industrials": 7841.81,
+        "Technology": 6617.44,
+        "Utilities": -129.34
+      },
+      "sector_trade_count": {
+        "Basic Materials": 1,
+        "Communication Services": 3,
+        "Consumer Cyclical": 4,
+        "Consumer Defensive": 2,
+        "Financial Services": 1,
+        "Healthcare": 3,
+        "Industrials": 8,
+        "Technology": 7,
+        "Utilities": 1
+      },
+      "sector_unique_count": 9,
+      "status_counts": {
+        "ok": 30
+      },
+      "trade_count": 30
+    },
+    "old_thin": {
+      "sector_counts": {
+        "Communication Services": 3,
+        "Consumer Cyclical": 10,
+        "Consumer Defensive": 1,
+        "Financial Services": 2,
+        "Healthcare": 4,
+        "Industrials": 7,
+        "Real Estate": 1,
+        "Technology": 2
+      },
+      "sector_pnl": {
+        "Communication Services": -358.27,
+        "Consumer Cyclical": 1547.38,
+        "Consumer Defensive": 289.36,
+        "Financial Services": 578.29,
+        "Healthcare": -1646.49,
+        "Industrials": 2204.49,
+        "Real Estate": -305.98,
+        "Technology": 1751.12
+      },
+      "sector_trade_count": {
+        "Communication Services": 3,
+        "Consumer Cyclical": 10,
+        "Consumer Defensive": 1,
+        "Financial Services": 2,
+        "Healthcare": 4,
+        "Industrials": 7,
+        "Real Estate": 1,
+        "Technology": 2
+      },
+      "sector_unique_count": 8,
+      "status_counts": {
+        "ok": 30
+      },
+      "trade_count": 30
+    }
+  }
+}

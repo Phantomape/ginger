@@ -21,8 +21,32 @@ try:
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.constants import ROUND_TRIP_COST_PCT
 
+try:
+    from broad_market_sector_map import (
+        load_cache as _load_sector_cache,
+        lookup_sector as _lookup_sector,
+    )
+except ImportError:  # pragma: no cover - package-style imports in tests
+    from quant.broad_market_sector_map import (
+        load_cache as _load_sector_cache,
+        lookup_sector as _lookup_sector,
+    )
+
 
 SLEEVE_NAME = "BROAD_MARKET_LEADERSHIP_PAPER"
+SECTOR_MAP_RULE_VERSION = "yfinance_gics_proxy_sector_v1"
+
+# Module-level sector cache — loaded once on first lookup, never mutated.
+_BROAD_MARKET_SECTOR_CACHE: dict[str, Any] | None = None
+
+
+def _get_broad_market_sector_cache() -> dict[str, Any]:
+    global _BROAD_MARKET_SECTOR_CACHE
+    if _BROAD_MARKET_SECTOR_CACHE is None:
+        _BROAD_MARKET_SECTOR_CACHE = _load_sector_cache()
+    return _BROAD_MARKET_SECTOR_CACHE
+
+
 RULE_VERSION = "broad_market_price_floor_rank_low_extension_high_volatility_trend_persistence_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "broad_market_forward_replacement_value_v1"
 RANK_NOTIONAL_RULE_VERSION = "broad_market_rank_notional_profile_v1"
@@ -85,6 +109,21 @@ DEFAULT_CONFIG = {
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _sector_fields(ticker: str) -> dict[str, Any]:
+    """Return flat sector / industry / coverage-status fields for a ticker.
+
+    Uses the module-level sector cache (loaded once, offline-deterministic).
+    Safe to call for any ticker; returns None values if the ticker is absent
+    from the cache.  Does not mutate cache or trading state.
+    """
+    result = _lookup_sector(ticker, _get_broad_market_sector_cache())
+    return {
+        "sector": result.get("sector"),
+        "industry": result.get("industry"),
+        "sector_coverage_status": result.get("status"),
+    }
 
 
 def empty_broad_market_paper_state() -> dict[str, Any]:
@@ -672,6 +711,8 @@ def backtest_trade_from_feature(
         "decision_close": feature["close"],
         "decision_close_price_min": cfg["decision_close_price_min"],
         "score": feature["score"],
+        "sector_map_rule_version": SECTOR_MAP_RULE_VERSION,
+        **_sector_fields(ticker),
     }
 
 
@@ -739,6 +780,8 @@ def _candidate_from_feature(
                 "decision_close_price_min",
             )
         },
+        "sector_map_rule_version": SECTOR_MAP_RULE_VERSION,
+        **_sector_fields(ticker),
     }
 
 
