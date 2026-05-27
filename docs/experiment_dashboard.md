@@ -49,12 +49,17 @@ machine-readable index behind the UI.
   coverage, or registry rows missing tickets.
 - `Identity Notes`: non-blocking historical coverage notes, such as archival
   JSONL/data/artifact rows that predate full registry coverage or ticket files
-  mirrored in both ticket directories with matching payloads.
-- `split_brain_ticket_paths`: the same experiment has ticket files in both
-  `experiments/tickets` and `docs/experiments/tickets`, and their JSON payloads
-  disagree.
-- `mirrored_ticket_paths`: matching ticket payloads exist in both ticket
-  directories; this is indexed as an identity note, not an anomaly.
+  mirrored through legacy path aliases.
+- `experiments/tickets` and `experiments/logs` are the canonical dashboard
+  paths. Legacy `docs/experiments/tickets` and `docs/experiments/logs` inputs
+  are normalized to those canonical paths before source and anomaly checks, so
+  duplicate path conventions do not create split-brain rows.
+- Text references to experiment IDs inside another experiment's JSONL/log/ticket
+  payload are indexed as `jsonl_ref`, `log_ref`, or `ticket_ref`. They are useful
+  for search, but they do not count as that experiment's own JSONL row, log file,
+  or ticket file.
+- `split_brain_ticket_paths`: reserved for true ticket identity conflicts after
+  canonical path normalization, not for the legacy docs/experiments alias.
 - `missing_from_registry`: active/proposed work appears in ticket or
   per-experiment log files but not in `docs/experiment_registry.json`.
 - `jsonl_without_per_experiment_log`: a JSONL record exists without a matching

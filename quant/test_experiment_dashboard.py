@@ -89,8 +89,12 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
 
     assert index["next_experiment_id"] == "exp-20990102-004"
     assert "split_brain_ticket_paths" not in by_id["exp-20990102-001"]["anomalies"]
-    assert "mirrored_ticket_paths" in by_id["exp-20990102-001"]["identity_notes"]
-    assert "split_brain_ticket_paths" in by_id["exp-20990102-003"]["anomalies"]
+    assert "docs_ticket" not in by_id["exp-20990102-001"]["sources"]
+    assert "experiments/tickets/exp-20990102-001.json" in by_id["exp-20990102-001"]["files"]
+    assert "docs/experiments/tickets/exp-20990102-001.json" not in by_id[
+        "exp-20990102-001"
+    ]["files"]
+    assert "split_brain_ticket_paths" not in by_id["exp-20990102-003"]["anomalies"]
     assert "missing_from_registry" not in by_id["exp-20990102-002"]["anomalies"]
     assert "archive_missing_from_registry" in by_id["exp-20990102-002"]["identity_notes"]
     assert (
@@ -100,14 +104,14 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     assert by_id["exp-20990102-002"]["card"]["metadata"]["trial_family"] == "log_only_family"
     assert by_id["exp-20990102-002"]["metrics"]["expected_value_score_delta"] == -0.25
     assert index["leaderboards"]["bottom_ev_delta"][0]["experiment_id"] == "exp-20990102-002"
-    assert index["summary"]["anomaly_experiment_count"] == 1
-    assert index["summary"]["identity_note_experiment_count"] >= 2
+    assert index["summary"]["anomaly_experiment_count"] == 0
+    assert index["summary"]["identity_note_experiment_count"] >= 1
     assert any(
         column["field"] == "trial_family" and column["unique"] >= 1
         for column in index["dataset_view"]["columns"]
     )
     assert any(
-        collection["slug"] == "identity_repair" and collection["count"] >= 1
+        collection["slug"] == "archive_identity_notes" and collection["count"] >= 1
         for collection in index["collections"]
     )
 

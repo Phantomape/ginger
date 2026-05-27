@@ -1,11 +1,20 @@
 {
-  "artifact": "data\\experiments\\exp-20260512-106\\signal_day_sector_tape_risk.json",
-  "changed_variable": "max_position_pct_for_commodity_breakout_sleeve",
-  "decision": "accepted_for_shared_policy_implementation",
-  "expected_value_score_delta": 0.1092,
+  "artifact": "data/experiments/exp-20260512-106/signal_day_sector_tape_risk.json",
+  "changed_variable": "signal_day_adverse_sector_tape_risk_multiplier",
+  "decision": "rejected_signal_day_sector_tape_risk",
   "experiment_id": "exp-20260512-106",
-  "gate4_passed": true,
-  "status": "accepted_for_shared_policy_implementation",
-  "summary": "Commodity breakout signals were cap-bound and the selected cap improved the canonical three-window stack without EV regression.",
-  "total_pnl_delta": 2119.18
+  "hypothesis": "Signals fired on days when their sector proxy is already down <=1% open-to-close may have worse next-session follow-through; reduce risk rather than filter them.",
+  "identity_repair": {
+    "attempted_repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260512_106_signal_day_sector_tape_risk.py",
+    "blocked_by": "data/ohlcv_snapshot_20251023_20260421.json missing",
+    "note": "Identity repair only: recreated missing or corrupted experiment identity files without rerunning strategy logic. Historical OHLCV snapshots required for exact replay are not present locally.",
+    "previous_wrong_experiment_id": "exp-20260514-049",
+    "repair_type": "corrupted_payload_identity_repair",
+    "repaired_at": "2026-05-27T17:40:34+00:00"
+  },
+  "lane": "alpha_search",
+  "log": "experiments/logs/exp-20260512-106.json",
+  "owner": "alpha-search",
+  "status": "rejected_signal_day_sector_tape_risk",
+  "summary": "Repaired identity record for rejected adverse sector-tape risk haircut. Prior local data/log/ticket files contained exp-20260514-049 commodity breakout payload."
 }

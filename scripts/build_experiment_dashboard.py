@@ -110,8 +110,16 @@ COLLECTION_RULES = (
 )
 
 COORDINATION_SOURCES = {"registry", "ticket", "docs_ticket", "log", "docs_log"}
-TICKET_SOURCES = {"ticket", "docs_ticket"}
-LOG_SOURCES = {"log", "docs_log"}
+SOURCE_ALIASES = {
+    "docs_ticket": "ticket",
+    "docs_log": "log",
+}
+PATH_PREFIX_ALIASES = (
+    ("docs/experiments/tickets/", "experiments/tickets/"),
+    ("docs/experiments/logs/", "experiments/logs/"),
+)
+TICKET_SOURCES = {"ticket"}
+LOG_SOURCES = {"log"}
 OPEN_STATUS_GROUPS = {"active", "proposed"}
 VOLATILE_TICKET_KEYS = {"updated_at"}
 
@@ -182,6 +190,28 @@ def default_record(experiment_id: str) -> dict:
         "anomalies": [],
         "identity_notes": [],
     }
+
+
+def canonical_source(source: str) -> str:
+    return SOURCE_ALIASES.get(source, source)
+
+
+def source_kind_from_collected_source(source: str) -> str:
+    source_kind, _, detail = source.partition(":")
+    source_kind = canonical_source(source_kind)
+    if detail.startswith("text:") or detail.startswith("ref:"):
+        return f"{source_kind}_ref"
+    return source_kind
+
+
+def canonical_identity_path(path: str | None) -> str | None:
+    if not path:
+        return path
+    normalized = str(path).replace("\\", "/")
+    for old_prefix, new_prefix in PATH_PREFIX_ALIASES:
+        if normalized.startswith(old_prefix):
+            return new_prefix + normalized[len(old_prefix):]
+    return normalized
 
 
 def stable_ticket_payload(value):
@@ -416,6 +446,8 @@ def merge_record(records: dict, experiment_id: str, payload: dict, source: str, 
     experiment_id = normalize_experiment_id(experiment_id)
     if not experiment_id:
         return
+    source = canonical_source(source)
+    path = canonical_identity_path(path)
     record = records.setdefault(
         experiment_id,
         default_record(experiment_id),
@@ -450,7 +482,14 @@ def iter_json_records(root: Path, directory: Path, source: str):
         payload_id = payload.get("experiment_id") if isinstance(payload, dict) else None
         experiment_id = normalize_experiment_id(payload_id) or file_id
         if experiment_id:
-            yield experiment_id, payload or {}, source, repo_relative(path, root), file_id, payload_id
+            yield (
+                experiment_id,
+                payload or {},
+                canonical_source(source),
+                canonical_identity_path(repo_relative(path, root)),
+                file_id,
+                payload_id,
+            )
 
 
 def iter_jsonl_records(root: Path, path: Path):
@@ -544,7 +583,7 @@ def build_experiment_index(root=REPO_ROOT, registry_path=DEFAULT_REGISTRY, today
             default_record(experiment_id),
         )
         for source in sources:
-            source_kind = source.split(":", 1)[0]
+            source_kind = source_kind_from_collected_source(source)
             if source_kind not in record["sources"]:
                 record["sources"].append(source_kind)
 
@@ -563,13 +602,13 @@ def build_experiment_index(root=REPO_ROOT, registry_path=DEFAULT_REGISTRY, today
         if experiment_id in duplicate_ticket_paths:
             record["anomalies"].append("split_brain_ticket_paths")
             record["files"].extend(
-                path for path in duplicate_ticket_paths[experiment_id]
+                canonical_identity_path(path) for path in duplicate_ticket_paths[experiment_id]
                 if path not in record["files"]
             )
         if experiment_id in mirrored_ticket_paths:
             record["identity_notes"].append("mirrored_ticket_paths")
             record["files"].extend(
-                path for path in mirrored_ticket_paths[experiment_id]
+                canonical_identity_path(path) for path in mirrored_ticket_paths[experiment_id]
                 if path not in record["files"]
             )
         if "jsonl" in sources and not LOG_SOURCES.intersection(sources):
@@ -579,7 +618,7 @@ def build_experiment_index(root=REPO_ROOT, registry_path=DEFAULT_REGISTRY, today
                 record["identity_notes"].append("archive_jsonl_without_per_experiment_log")
         record["status_group"] = status_group(record)
         record["sources"] = sorted(sources)
-        record["files"] = sorted(record.get("files") or [])
+        record["files"] = sorted(set(record.get("files") or []))
         record["anomalies"] = sorted(set(record.get("anomalies") or []))
         record["identity_notes"] = sorted(set(record.get("identity_notes") or []))
         record["metrics"] = derive_metrics(record)
