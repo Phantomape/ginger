@@ -13,8 +13,8 @@
 3. 未来 1-3 轮更值得投入的 alpha / 字段队列；
 4. 最新研究能转成哪些可回放、可归因、可生产可见字段。
 
-Last refreshed: 2026-05-26.
-Research refresh cut: 2026-05-26.
+Last refreshed: 2026-05-27.
+Research refresh cut: 2026-05-27.
 
 ## 使用方式
 
@@ -49,6 +49,14 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
    单 ticker、单主题、单 source、单窗口驱动的 uplift，默认不该升级成 live capital。
 6. **LLM 最有价值的职责是结构化解释，不是交易拍板。**
    适合做 event extraction、事实/语气拆分、topic gap、异常披露解释、灾难 veto 候选；不适合接管 sizing、硬风控、slot、exit。
+7. **新的外部数据先证明覆盖率，再谈 alpha。**
+   Kova / intraday / 13F / Companyfacts / RS proxy 这类 sidecar 的第一职责是建立
+   PIT 可用性、缺失原因和 forward ledger；如果历史交易日期没有真实覆盖，不能把
+   “理论上可得”的字段当作 Gate 4 变量。
+8. **多事件关系比单条标题情绪更接近可迁移 alpha。**
+   最新金融新闻研究继续说明，标题/新闻流的价值不只在单条 sentiment，而在事件间
+   关系、source overlap、市场反应顺序和上下文状态；Ginger 应把它落成字段和 sleeve，
+   不是让 LLM 直接输出 Buy/Sell。
 
 ## 仓库稳定经验
 
@@ -69,7 +77,7 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 - 大范围 quality overlay；
 - 没有新字段支撑的 exit retune。
 
-解释：近期最稳定的改善来自“对已经过关的交易分配更多/更少资本”，而不是“让更多规则决定谁能进门”。但 2026-05-24 至 2026-05-25 的实验继续提醒：即使是 allocation，若只是 ticker/cohort/固定 notional 的近邻复用，也会被窗口回归和 concentration 拦下。
+解释：近期最稳定的改善来自“对已经过关的交易分配更多/更少资本”，而不是“让更多规则决定谁能进门”。但同一 allocation 家族连续重扫会快速失效：若只是 ticker/cohort/固定 notional 的近邻复用，通常会被窗口回归、交易成本、hidden beta 或 concentration 拦下。新的 allocation 变量应优先是交易前可见的成本/流动性/状态字段，而不是另一个固定倍数。
 
 ### 2. 一个好字段胜过一串例外规则
 
@@ -154,6 +162,18 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 - 是否绕开硬过滤；
 - 最终交易指令。
 
+### 7. Sidecar 数据先做 readiness，不做幻想 alpha
+
+新的非 OHLCV 或高频数据必须先回答：
+
+- 历史标准窗口里有多少真实 PIT 覆盖，而不是 skipped / missing rows；
+- 覆盖是否跨至少两个窗口，而不是只集中在一个样本段；
+- 缺失原因是 API key、source unavailable、identifier map、filed-date lag 还是 join 失败；
+- 字段是否能在 `run.py` 日报 / snapshot 中稳定出现；
+- 是否能与 closed forward outcome、replacement value 和 concentration 审计连接。
+
+默认规则：coverage 不过关时，只允许写 readiness audit、sidecar 和 forward accumulation。不能把 intraday entry、13F ownership、fundamental growth、RS rating proxy、pyramid add-on 或 stop-under-base idea 直接变成 ranking / sizing / exit 规则。
+
 ## 当前研究队列
 
 以下是当前默认优先级，不是永久真理。若实验日志改变机制结论，再更新这里。
@@ -194,6 +214,10 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
   QQQ gate 过严。不要用单窗口低参与度当作放松 gate 的理由。
 - post-entry 3-session follow-through 能解释结果，但不是入场前可知字段；不能
   直接变成冻结样本上的 exit / risk rule。
+- Kova-style pre-signal higher-low / risk-level base geometry 有解释味道但
+  不够做 gate：`exp-20260526-022` 中 constructive bucket 覆盖 `84/117`
+  trades、总 PnL `+$26,534.93`，但单笔平均 `+$315.89` 低于 nonconstructive
+  bucket 的 `+$336.59`，且 late_strong 没改善。
 
 保留规则：
 
@@ -202,8 +226,21 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 - 下一步只能收集 closed forward replacement-value rows、concentration、
   kill-gate、core displacement 证据，或引入真正新的生产可见字段。
 - 禁止在同一冻结样本上继续 retune QQQ/SPY、ATR、breakout、pocket-pivot、
-  event-presence、catalyst-quality、top-N、rank-notional profile 或 post-entry
-  follow-through 阈值。
+  event-presence、catalyst-quality、base-geometry / higher-low bucket、top-N、
+  rank-notional profile 或 post-entry follow-through 阈值。
+
+Kova / CANSLIM 类数据的长期结论：
+
+- Intraday、fundamental growth、13F ownership、RS proxy 都是可积累的 context
+  sidecar，不是 VCP frozen-sample 的新调参许可。
+- 没有真实 PIT 15m/60m 覆盖时，intraday entry timing 只能停在 readiness audit；
+  不要用“如果有数据可能更好”替代覆盖率证据。
+- Companyfacts / 13F / RS proxy 最适合先做同一 paper sleeve 的解释字段：
+  growth-quality、institutional-pressure、relative-strength-quality、base-risk
+  context。它们只有在 forward rows 足够、replacement value 过关后，才可能进入
+  ranking、filter、stop、pyramid add-on 或 live adapter。
+- Kova-style higher-low、base geometry、pocket-pivot、MA stack、weekly tightness
+  在当前证据下都是 attribution / diagnostics，不是 gate。
 
 ### 1.2 Volume-breadth breakout lead
 
@@ -403,7 +440,12 @@ Ginger 仍然是事件增强型中短线趋势 / 突破系统。仓库证据和�
 16. SEC text archive missingness 作为 allocation signal；
 17. raw ranking component threshold / scalar，尤其是字段近似常量或覆盖不足时；
 18. expectation-revision 方向里把 residual leadership 当作默认确认信号；
-19. VCP top-2 方向里继续扫 rank-notional、top-N 或 post-entry follow-through 阈值。
+19. VCP top-2 方向里继续扫 rank-notional、top-N、base-geometry / higher-low
+    或 post-entry follow-through 阈值；
+20. 在 Kova / intraday / 13F / Companyfacts sidecar 覆盖率不足时，提前测试
+    entry timing、pyramid add-on、stop-under-base 或 institutional ownership gate；
+21. 把多模型 LLM consensus 当作独立交易信号，而不先记录模型分歧、样本数、
+    coverage、成本、与基准/人工流程的增量价值。
 
 ## 研究到字段的落地地图
 
@@ -782,6 +824,112 @@ thin breadth 吃掉。
 - `hidden_beta_bucket`
 - `pattern_breadth_bucket`
 - `pattern_decay_after_first_hit_bucket`
+
+### 16. Headline / news LLM alpha 要从单条情绪转向事件网络
+
+主要研究：
+
+- Affonso & Perlin, *Mining Alpha from Financial Headlines: A Comparative Study of Different LLM Architectures* (SSRN, 2025):
+  <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6597694>
+- *NEXUS: A Multi-Modal Framework for Capturing Financial News Interactions in Market Forecasting* (Expert Systems with Applications, 2026):
+  <https://www.sciencedirect.com/science/article/pii/S0957417426013242>
+- Zhang, *Benchmarking Multi-LLM Investment Signals* (SSRN, 2026):
+  <https://papers.ssrn.com/sol3/Delivery.cfm/6515058.pdf?abstractid=6515058&mirid=1&type=2>
+
+对 Ginger 的含义：
+
+- 单条 headline sentiment 可以作为 raw material，但不应直接进入 live entry；
+- 更值得建的是事件之间的关系：同日多源确认、source disagreement、event burst、
+  ticker-to-theme propagation、market reaction order；
+- 多 LLM consensus 只能做 confidence / disagreement / review-priority 字段。样本小、
+  模型风格差异和 benchmark underperformance 必须显式记录。
+
+优先字段：
+
+- `headline_event_family`
+- `headline_source_consensus_bucket`
+- `source_disagreement_bucket`
+- `same_theme_event_burst_count`
+- `event_interaction_graph_bucket`
+- `first_reaction_vs_followon_event_bucket`
+- `multi_llm_consensus_bucket`
+- `multi_llm_disagreement_reason_bucket`
+
+最低落地标准：
+
+- 每条输出绑定 source、timestamp、ticker、event id、model/version；
+- 先进入 event overlay / default-off paper attribution；
+- 必须报告与已有 event family、state surface、broad-market queue 的重叠和 replacement value。
+
+### 17. Transaction-cost-aware allocation 比事后扣成本更可靠
+
+主要研究：
+
+- Ledoit & Wolf, *Markowitz portfolios under transaction costs* (Quarterly Review of Economics and Finance, 2025):
+  <https://www.sciencedirect.com/science/article/pii/S1062976925000031>
+
+对 Ginger 的含义：
+
+- 对高换手 paper sleeve，不能只先选组合、再事后扣固定成本；
+- 交易成本、spread、liquidity 和 expected turnover 应该在 candidate competition /
+  capital routing 阶段可见；
+- 这支持 Ginger 下一步做 execution leakage attribution 和 cost-aware replacement value，
+  而不是继续调固定 notional。
+
+优先字段：
+
+- `expected_round_trip_cost_bucket`
+- `spread_liquidity_cost_bucket`
+- `turnover_pressure_bucket`
+- `cost_adjusted_replacement_value_pnl`
+- `cost_adjusted_rank_delta`
+- `fill_delay_risk_bucket`
+
+### 18. Cross-sectional changepoint 是风控和重校准字段，不是万能 regime label
+
+主要研究：
+
+- Lleo, Ziemba & Li, *Changepoint detection in the cross-section of stock returns* (Annals of Operations Research, 2026):
+  <https://link.springer.com/article/10.1007/s10479-026-07075-3>
+
+对 Ginger 的含义：
+
+- 长样本里的固定 factor / ranking 权重会被 structural break 稀释；
+- changepoint 更适合做 model-validation、recalibration trigger、tail-risk context；
+- 不要把一个全市场 changepoint flag 直接变成 entry filter。先看它是否解释
+  sleeve decay、sector crowding、hidden beta 和 drawdown cluster。
+
+优先字段：
+
+- `cross_section_changepoint_pressure_bucket`
+- `sector_changepoint_pressure_bucket`
+- `residual_variance_shift_bucket`
+- `model_recalibration_due_flag`
+- `post_changepoint_sleeve_decay_bucket`
+
+### 19. Financial RAG 要记录 retrieval strategy，而不只记录回答
+
+主要研究：
+
+- *Rethinking Retrieval: From Traditional Retrieval Augmented Generation to Agentic and Non-Vector Reasoning Systems in the Financial Domain for Large Language Models* (arXiv, 2025):
+  <https://arxiv.org/abs/2511.18177>
+
+对 Ginger 的含义：
+
+- SEC / earnings RAG 不应只依赖 vector similarity；metadata、period、section、
+  accounting concept、filing type、as-of date 都应参与 retrieval；
+- agentic retrieval 只有在能记录每一步查询、命中文档和失败原因时才可用于生产；
+- 对交易字段，retrieval path 本身就是审计对象。没有 retrieval trace 的 LLM 输出不应参与 Gate 4。
+
+优先字段 / 流程：
+
+- `retrieval_strategy_bucket`
+- `metadata_filter_json`
+- `non_vector_query_plan_json`
+- `retrieval_trace_id`
+- `retrieval_candidate_count`
+- `retrieval_latency_ms`
+- `retrieval_cost_usd`
 
 ## LLM 字段的最低工程标准
 
