@@ -1,0 +1,84 @@
+{
+  "acceptance_rule": "At least 20 accepted VCP trades across at least two canonical windows must have PIT current and prior ticker-mapped SEC 13F rows as of signal_date before an institutional sponsorship alpha replay is attempted.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260527_906_kova_13f_institutional_readiness_audit.py",
+    "data/experiments/exp-20260527-906/exp_20260527_906_kova_13f_institutional_readiness_audit.json",
+    "experiments/artifacts/exp-20260527-906_kova_13f_institutional_readiness_audit.md",
+    "experiments/logs/exp-20260527-906.json",
+    "experiments/tickets/exp-20260527-906.json",
+    "docs/experiments/tickets/exp-20260527-906.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260527-906.json",
+    "json": "data/experiments/exp-20260527-906/exp_20260527_906_kova_13f_institutional_readiness_audit.json",
+    "log": "experiments/logs/exp-20260527-906.json",
+    "markdown": "experiments/artifacts/exp-20260527-906_kova_13f_institutional_readiness_audit.md",
+    "ticket": "experiments/tickets/exp-20260527-906.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+  "change_type": "measurement_repair_for_alpha_search",
+  "changed_variable": "kova_13f_institutional_ownership_coverage_status_v1",
+  "claimed_at": "2026-05-27T17:38:59+00:00",
+  "completed_at": "2026-05-27T17:43:55+00:00",
+  "created_at": "2026-05-27T17:38:50+00:00",
+  "decision": "data_gap_13f_institutional_rows_unavailable",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260527-906",
+  "experiment_uid": "expuid-7dfad3f8d8184c0c",
+  "hypothesis": "Kova institutional sponsorship and 13F accumulation may improve VCP candidate quality, but it must first have PIT ticker-mapped current and prior 13F rows for accepted VCP top-2 trades before any alpha ranking or filter can be tested.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "13F sidecar coverage audit only",
+    "entries",
+    "exits",
+    "ranking",
+    "sizing",
+    "universe",
+    "live/default orders"
+  ],
+  "mechanism_family": "kova_institutional_sponsorship_data_readiness",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "operator_inputs/open_positions.json",
+    "data/experiments/exp-20260527-017/broad_market_sector_open_crowding_haircut.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260526-037",
+    "exp-20260527-001",
+    "exp-20260527-014",
+    "exp-20260527-015",
+    "exp-20260527-902"
+  ],
+  "new_evidence_type": "sidecar_pit_coverage_audit",
+  "owner": "codex-kova",
+  "prior_trial_count": 5,
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260527_906_kova_13f_institutional_readiness_audit.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260527-906_kova_13f_institutional_readiness_audit.md",
+    "decision": "data_gap_13f_institutional_rows_unavailable",
+    "json": "data/experiments/exp-20260527-906/exp_20260527_906_kova_13f_institutional_readiness_audit.json",
+    "summary": "The local Kova SEC 13F sidecar does not have enough PIT ticker-mapped current and prior ownership rows for the accepted VCP top-2 trade dates. Do not run or promote an institutional sponsorship rule until those rows exist."
+  },
+  "single_causal_variable": "kova_13f_institutional_ownership_coverage_status_v1",
+  "status": "observed_only",
+  "summary": "The local Kova SEC 13F sidecar does not have enough PIT ticker-mapped current and prior ownership rows for the accepted VCP top-2 trade dates. Do not run or promote an institutional sponsorship rule until those rows exist.",
+  "trial_family": "kova_13f_institutional_readiness",
+  "trial_variant_id": "kova_13f_current_prior_coverage_audit_v1"
+}

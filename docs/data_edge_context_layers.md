@@ -399,6 +399,53 @@ experiment and parity update. The pocket-pivot fields are metadata only because
 top-2 expansion is default-off paper only until forward closed outcomes clear
 the promotion gate.
 
+### `quant/experiments/exp_20260528_010_kova_distribution_day_regime_attribution.py`
+
+Purpose: read-only Kova market-regime attribution for the accepted
+`VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER` top-2 paper trades. It joins
+signal-date SPY / QQQ OHLCV to a distribution-day pressure bucket and a simple
+confirmed-uptrend proxy, then reports VCP paper outcomes by bucket.
+
+Output:
+
+```text
+data/experiments/exp-20260528-010/kova_distribution_day_regime_attribution.json
+experiments/artifacts/exp-20260528-010_kova_distribution_day_regime_attribution.md
+experiments/logs/exp-20260528-010.json
+```
+
+Agent rule: this attribution is context only. `exp-20260528-010` found full
+coverage on the frozen accepted VCP top-2 sample, but the high-distribution
+pressure bucket remained positive. Do not turn distribution-day counts or the
+confirmed-uptrend proxy into a VCP gate, rank rule, notional scalar, exit, or
+live order input without forward replacement-value evidence and a separate
+Gate 1-4 strategy experiment.
+
+### `quant/experiments/exp_20260528_014_kova_sell_side_lifecycle_taxonomy.py`
+
+Purpose: read-only Kova sell-side lifecycle taxonomy for the accepted
+`VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER` top-2 paper trades. It joins
+post-entry OHLCV inside the source 10-trading-day paper hold and labels
+stop-loss touch, high-volume support break, profit giveback, climax/churning,
+event gap-down proxy, failed low-MFE breakout, and strong follow-through
+patterns without changing exits.
+
+Output:
+
+```text
+data/experiments/exp-20260528-014/kova_sell_side_lifecycle_taxonomy.json
+experiments/artifacts/exp-20260528-014_kova_sell_side_lifecycle_taxonomy.md
+experiments/logs/exp-20260528-014.json
+```
+
+Agent rule: this taxonomy is context only. `exp-20260528-014` found full
+coverage on the frozen accepted VCP top-2 sample and identified
+`failed_breakout_low_mfe` as a populated negative bucket (`14` trades,
+`-$3,935.60`). That can nominate a later shared lifecycle replay, but it must
+not become an exit, stop, gate, scalar, live order input, or prompt instruction
+without an ex-ante trigger and separate Gate 1-4 production/backtest parity
+experiment.
+
 ### `quant/kova_data_sidecar.py`
 
 Purpose: collect default-off Kova support data without changing entries,
@@ -466,16 +513,21 @@ Candidate route:
 - Requires the candidate to close above its prior 20-day high and prior 50-day
   moving average, trade at least `$40m` signal-day dollar volume, have
   signal-day volume ratio >= 1.25, and beat SPY on the signal day.
-- Emits ranked candidates but opens at most one paper entry per day, with fixed
-  `$10k` paper notional, next-open paper entry, 10-trading-day close exit,
-  closed outcomes, replacement-value summary, and concentration blockers.
+- Emits ranked candidates but opens at most one paper entry per day, with a
+  fixed `$10k` base paper notional plus the accepted
+  `exp-20260528-018` breadth-intensity support scalar
+  (`volume_breadth_fraction >= 0.25` -> `1.10x` paper notional) and the
+  accepted `exp-20260528-022` signal-day high-close support scalar
+  (`signal_day_close_location_value >= 0.70` -> `1.10x` paper notional),
+  next-open paper entry, 10-trading-day close exit, closed outcomes,
+  replacement-value summary, and concentration blockers.
 
 Agent rule: this sleeve may collect forward replacement-value evidence. It
 must not enable orders, expand the core universe, alter live ranking, sizing,
 exits, LLM/news, or consume live capital without a separate Gate 1-4 activation
-experiment and parity update. Do not retune the breadth, breakout, volume, or
-top-1 thresholds on the frozen sample; use forward rows or an orthogonal
-production-visible field.
+experiment and parity update. Do not retune the breadth, breakout, volume,
+top-1, breadth-intensity support, or high-close support thresholds/scalars on
+the frozen sample; use forward rows or an orthogonal production-visible field.
 
 ### `quant/fundamental_growth_rs_paper_sleeve.py`
 
@@ -493,16 +545,18 @@ Candidate route:
   windows.
 - Emits ranked candidates but opens at most one paper entry per day, with
   fixed `$10k` base paper notional, next-open paper entry, 10-trading-day close
-  exit, closed outcomes, replacement-value summary, and the accepted
-  closed-ledger ticker profit-cap / global drawdown governor.
+  exit, closed outcomes, replacement-value summary, the accepted closed-ledger
+  ticker profit-cap / global drawdown governor, accepted low-volume and
+  filing-recency paper-notional support, and accepted PIT liabilities/assets
+  low-liability paper-notional support.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha. It must not enable orders, expand the core universe, alter live
 ranking, sizing, exits, LLM/news, or consume live capital without a separate
 Gate 1-4 activation experiment and parity update. Do not retune the
-Companyfacts growth, operating-profit, RS, top-N, hold-day, fixed-notional, or
-closed-ledger-scalar parameters on the frozen sample without forward rows or a
-new production-visible field.
+Companyfacts growth, operating-profit, RS, top-N, hold-day, fixed-notional,
+low-volume, filing-recency, low-liability, or closed-ledger-scalar parameters
+on the frozen sample without forward rows or a new production-visible field.
 
 ### `quant/default_off_alpha_attribution.py`
 
@@ -716,6 +770,93 @@ Agent rule: each output is an observed-only probe with its own single causal
 variable. These probes may identify data gaps or future default-off paper/rank
 tests only. They must not change entries, exits, candidate ranking, sizing,
 LLM prompts, paper sleeves, or orders.
+
+### `quant/experiments/exp_20260528_005_expectation_watchlist_old_alpha_score_join.py`
+
+Purpose: read-only measurement repair for the blocked expectation ranking
+replacement probe. It rebuilds the existing continuous cross-sectional ranking
+surface by `feature_context_date` and joins `old_alpha_score`, rank, rank
+bucket, and component diagnostics back to the expectation-revision watchlist
+rows from `exp-20260525-034`.
+
+Output:
+
+```text
+data/experiments/exp-20260528-005/expectation_watchlist_old_alpha_score_join.json
+experiments/artifacts/exp-20260528-005_expectation_watchlist_old_alpha_score_join.md
+experiments/logs/exp-20260528-005.json
+```
+
+Agent rule: this experiment repairs attribution coverage only. It may unlock a
+future true old-score versus old-score-plus-expectation ranking experiment, but
+it must not change entries, exits, candidate ranking, sizing, LLM prompts,
+paper sleeves, or orders.
+
+### `quant/experiments/exp_20260528_007_expectation_true_ranking_replacement_attribution.py`
+
+Purpose: read-only alpha attribution for the true expectation ranking
+replacement question. For every `feature_context_date` with expectation
+watchlist coverage, it ranks the full daily cross-sectional surface by the old
+`alpha_score` and by `alpha_score + expectation_residual_component_score`, then
+compares the combined top-decile, retained rows, new combined top-decile rows,
+and old top-decile rows that were displaced.
+
+Output:
+
+```text
+data/experiments/exp-20260528-007/expectation_true_ranking_replacement_attribution.json
+experiments/artifacts/exp-20260528-007_expectation_true_ranking_replacement_attribution.md
+experiments/logs/exp-20260528-007.json
+```
+
+Agent rule: this experiment may only report whether the simple additive
+expectation/residual component has replacement value on a full daily ranking
+surface. It must not change entries, exits, candidate ranking, sizing, LLM
+prompts, paper sleeves, or orders. Any promotion requires a separate Gate 1-4
+strategy experiment with shared production-visible ranking logic.
+
+### `quant/experiments/exp_20260528_009_expectation_pead_repaired_bucket_attribution.py`
+
+Purpose: read-only alpha attribution for the expectation-revision PEAD line
+after `exp-20260527-908` repaired PIT `last_earnings_date` and `pead_status`
+coverage. It compares primary-positive revision rows across inside-T+2..T+15
+non-overextended, inside-T+2..T+15 residual-leader, outside-PEAD, and
+still-missing earnings-date buckets using closed 5d/10d/20d forward outcomes.
+
+Output:
+
+```text
+data/experiments/exp-20260528-009/expectation_pead_repaired_bucket_attribution.json
+experiments/artifacts/exp-20260528-009_expectation_pead_repaired_bucket_attribution.md
+experiments/logs/exp-20260528-009.json
+```
+
+Agent rule: this experiment may only decide whether repaired PEAD buckets have
+enough closed outcome evidence to justify a later default-off Gate 1-4 strategy
+experiment. It must not change entries, exits, candidate ranking, sizing, LLM
+prompts, paper sleeves, or orders.
+
+### `quant/experiments/exp_20260528_013_expectation_pead_short_horizon_repaired_attribution.py`
+
+Purpose: read-only alpha attribution for the short-horizon PEAD question after
+the PIT `last_earnings_date` repair. It reads the same
+`exp-20260527-908` enriched watchlist as `exp-20260528-009`, recomputes fresh
+1d/2d/3d forward outcomes from local weekday close snapshots, and compares
+inside-T+2..T+15 non-overextended, inside-T+2..T+15 residual-leader,
+outside-PEAD, and still-missing earnings-date buckets.
+
+Output:
+
+```text
+data/experiments/exp-20260528-013/expectation_pead_short_horizon_repaired_attribution.json
+experiments/artifacts/exp-20260528-013_expectation_pead_short_horizon_repaired_attribution.md
+experiments/logs/exp-20260528-013.json
+```
+
+Agent rule: this experiment may only decide whether the repaired PEAD bucket
+has near-term attribution value before longer 5d/10d outcomes mature. It must
+not change entries, exits, candidate ranking, sizing, LLM prompts, paper
+sleeves, or orders.
 
 ---
 

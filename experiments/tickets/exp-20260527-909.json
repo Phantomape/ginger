@@ -1,0 +1,83 @@
+{
+  "acceptance_rule": "Accept only as an observed candidate if aggregate closed-trade PnL improves by at least 10%, no canonical window PnL regresses, at least 20 trades trigger, and max single positive add-on contribution stays below 40%, while risk-adjusted EV proxy and return on deployed notional do not regress. Strategy promotion would still require a full slot-aware backtester replay.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260527_909_kova_confirmation_pyramid_shadow_replay.py",
+    "data/experiments/exp-20260527-909/exp_20260527_909_kova_confirmation_pyramid_shadow_replay.json",
+    "experiments/artifacts/exp-20260527-909_kova_confirmation_pyramid_shadow_replay.md",
+    "experiments/logs/exp-20260527-909.json",
+    "experiments/tickets/exp-20260527-909.json",
+    "docs/experiments/tickets/exp-20260527-909.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260527-909.json",
+    "json": "data/experiments/exp-20260527-909/exp_20260527_909_kova_confirmation_pyramid_shadow_replay.json",
+    "log": "experiments/logs/exp-20260527-909.json",
+    "markdown": "experiments/artifacts/exp-20260527-909_kova_confirmation_pyramid_shadow_replay.md",
+    "ticket": "experiments/tickets/exp-20260527-909.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+  "change_type": "capital_allocation_shadow_replay",
+  "changed_variable": "kova_confirmation_pyramid_addon_50pct_v1",
+  "claimed_at": "2026-05-27T17:45:33+00:00",
+  "completed_at": "2026-05-27T17:53:31+00:00",
+  "created_at": "2026-05-27T17:45:17+00:00",
+  "decision": "rejected_pnl_positive_but_ev_proxy_regressed_kova_confirmation_pyramid",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260527-909",
+  "experiment_uid": "expuid-303d2541f8aa4d41",
+  "hypothesis": "Kova-style pyramiding after price confirmation may improve the accepted VCP top-2 sleeve by adding limited notional only after the entry works, while avoiding adds to failed breakouts.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "Kova confirmation add-on shadow variable only",
+    "entries",
+    "exits",
+    "ranking",
+    "universe",
+    "live/default orders"
+  ],
+  "mechanism_family": "kova_lifecycle_pyramiding",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "operator_inputs/open_positions.json",
+    "data/experiments/exp-20260527-017/broad_market_sector_open_crowding_haircut.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260428-005",
+    "exp-20260428-006",
+    "exp-20260501-022",
+    "exp-20260526-007",
+    "exp-20260527-016"
+  ],
+  "new_evidence_type": "closed_vcp_trade_lifecycle_shadow_replay",
+  "owner": "codex-kova",
+  "prior_trial_count": 8,
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260527_909_kova_confirmation_pyramid_shadow_replay.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260527-909_kova_confirmation_pyramid_shadow_replay.md",
+    "decision": "rejected_pnl_positive_but_ev_proxy_regressed_kova_confirmation_pyramid",
+    "json": "data/experiments/exp-20260527-909/exp_20260527_909_kova_confirmation_pyramid_shadow_replay.json",
+    "summary": "The confirmation add-on increased closed-trade PnL, but the risk-adjusted EV proxy and/or return on deployed notional regressed. No Kova pyramiding rule should be promoted from this capital-only lift."
+  },
+  "single_causal_variable": "kova_confirmation_pyramid_addon_50pct_v1",
+  "status": "rejected",
+  "summary": "The confirmation add-on increased closed-trade PnL, but the risk-adjusted EV proxy and/or return on deployed notional regressed. No Kova pyramiding rule should be promoted from this capital-only lift.",
+  "trial_family": "kova_confirmation_pyramid_shadow_replay",
+  "trial_variant_id": "kova_confirmation_close_gt_entry_3pct_addon_50pct_v1"
+}

@@ -1,0 +1,91 @@
+{
+  "acceptance_rule": "Accept only as observed candidate if aggregate closed-trade PnL and EV proxy both improve, no canonical window PnL regresses, at least 10 trades trigger, and max single positive delta share stays below 40%. Strategy promotion would still require a full shared lifecycle replay.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260528_002_kova_high_volume_weak_close_exit_shadow_replay.py",
+    "data/experiments/exp-20260528-002/exp_20260528_002_kova_high_volume_weak_close_exit_shadow_replay.json",
+    "experiments/artifacts/exp-20260528-002_kova_high_volume_weak_close_exit_shadow_replay.md",
+    "experiments/logs/exp-20260528-002.json",
+    "experiments/tickets/exp-20260528-002.json",
+    "docs/experiments/tickets/exp-20260528-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "artifacts": {
+    "docs_ticket": "docs/experiments/tickets/exp-20260528-002.json",
+    "json": "data/experiments/exp-20260528-002/exp_20260528_002_kova_high_volume_weak_close_exit_shadow_replay.json",
+    "log": "experiments/logs/exp-20260528-002.json",
+    "markdown": "experiments/artifacts/exp-20260528-002_kova_high_volume_weak_close_exit_shadow_replay.md",
+    "ticket": "experiments/tickets/exp-20260528-002.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+  "change_type": "exit_shadow_replay",
+  "changed_variable": "kova_high_volume_weak_close_exit_shadow_v1",
+  "claimed_at": "2026-05-28T02:52:32+00:00",
+  "completed_at": "2026-05-28T02:56:35+00:00",
+  "created_at": "2026-05-28T02:52:25+00:00",
+  "decision": "rejected_kova_high_volume_weak_close_exit_shadow_replay",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260528-002",
+  "experiment_uid": "expuid-8fbcde4575ac477e",
+  "hypothesis": "Kova defensive sell signals after VCP entry, defined as high-volume weak closes that break or lose short/medium moving-average support, may cut failed accepted VCP top-2 paper trades without truncating valid breakouts.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "kova_high_volume_weak_close_exit_shadow_v1",
+    "VCP top-2 entries",
+    "VCP rank-notional profile",
+    "live/default orders"
+  ],
+  "mechanism_family": "kova_sell_side_lifecycle",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260526-008",
+    "exp-20260527-016",
+    "exp-20260527-910",
+    "exp-20260526-007"
+  ],
+  "new_evidence_type": "closed_vcp_trade_exit_shadow_replay",
+  "owner": "codex-kova",
+  "prediction": {
+    "confidence_reason": "Kova sell rules are untested on this sleeve, but prior simple stops damaged VCP winners.",
+    "expected_ev_delta": 0.01,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "sample_too_small",
+      "winner_truncation",
+      "window_regression"
+    ],
+    "recorded_at": "2026-05-28T02:52:16+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 3,
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260528_002_kova_high_volume_weak_close_exit_shadow_replay.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260528-002_kova_high_volume_weak_close_exit_shadow_replay.md",
+    "decision": "rejected_kova_high_volume_weak_close_exit_shadow_replay",
+    "json": "data/experiments/exp-20260528-002/exp_20260528_002_kova_high_volume_weak_close_exit_shadow_replay.json",
+    "summary": "The Kova high-volume weak-close support-break exit failed Gate 4 because aggregate PnL or EV proxy did not improve. No Kova defensive-exit rule should be promoted from this shadow replay."
+  },
+  "single_causal_variable": "kova_high_volume_weak_close_exit_shadow_v1",
+  "status": "rejected",
+  "summary": "The Kova high-volume weak-close support-break exit failed Gate 4 because aggregate PnL or EV proxy did not improve. No Kova defensive-exit rule should be promoted from this shadow replay.",
+  "trial_family": "kova_defensive_exit_shadow_replay",
+  "trial_variant_id": "kova_high_volume_weak_close_exit_v1"
+}
