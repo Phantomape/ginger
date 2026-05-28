@@ -48,6 +48,50 @@ Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+## 2026-05-28 Experiment Consolidation
+
+Today's experiment set kept core/live trading logic unchanged and mostly
+advanced default-off candidate-pool sleeves and read-only attribution. The
+main accepted alpha evidence is now concentrated in two paper surfaces:
+
+- `FUNDAMENTAL_GROWTH_RS_PAPER`: `exp-20260528-008` accepted the
+  Companyfacts operating-profit quality + RS candidate-pool alpha with the
+  closed-ledger governor, `exp-20260528-011` made it a shared default-off
+  forward adapter, and `exp-20260528-015/016/017` accepted low-volume,
+  filing-recency, and low-liability paper-notional support. Do not keep
+  mining nearby frozen-sample Companyfacts scalars; the next useful work is
+  forward replacement value, concentration, and activation blockers.
+- `VOLUME_BREADTH_BREAKOUT_PAPER`: `exp-20260528-018` accepted
+  breadth-intensity support and `exp-20260528-022` accepted signal-day
+  high-close support. Both remain default-off paper only; no live orders,
+  ranking, sizing, exits, LLM/news, or core universe paths consume them.
+
+Rejected or observe-only conclusions that should guide the next run:
+
+- Broad-market repeat leadership and explosive one-day return-path notional
+  support (`exp-20260528-001/003`) failed the frozen-sample promotion bar.
+- Fundamental-growth cash conversion, gross-margin expansion, working-capital
+  discipline, dual-growth, liquidity sweet spot, and operating-margin
+  durability scouts (`exp-20260528-006/012/019/020/021/023`) did not add a
+  promotable increment on top of the accepted operating-profit stack.
+- Expectation / PEAD work (`exp-20260528-005/007/009/013`) improved or
+  exercised attribution coverage, but did not yet show a promotable ranking or
+  PEAD edge. Keep accumulating PIT estimate-revision and closed forward
+  outcomes before proposing a paper sleeve or ranking change.
+- Kova / VCP work (`exp-20260528-002/010/014`) remains attribution only:
+  high-volume weak-close exit replay was rejected, distribution-day pressure
+  did not justify a gate, and sell-side lifecycle taxonomy only nominated a
+  later ex-ante lifecycle replay.
+- `exp-20260528-024` rejected the RS-line new-high closed-ledger governor
+  because the aggregate gain came with a `late_strong` regression and max
+  drawdown drift far above the Gate 4 guardrail. `exp-20260528-025` found
+  partial score-rank evidence for the accepted fundamental-growth sleeve
+  (top tercile beat bottom overall), but no stable per-window monotonicity, so
+  it remains observe-only and does not justify another scalar or ranking rule.
+
+Regression status for this consolidation run: full unit tests passed
+(`928 passed in 37.49s`). No bug fix or strategy behavior change was required.
+
 ## Return Constraint / Activation Map
 
 This table is the operator-facing view of where paper or replay evidence is
