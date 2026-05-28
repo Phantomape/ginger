@@ -5563,8 +5563,149 @@
           "windows_pnl_regressed": 1
         }
       }
+    },
+    {
+      "acceptance_rule": "Gate 4 canonical 3-window before/after aggregate EV improves without unacceptable drawdown, trade-count, survival, or concentration damage; no production/backtest inconsistency because source remains default-off paper-only.",
+      "allowed_write_scope": [
+        "quant/experiments/exp_*_ticker_accumulation_quality_breakout.py",
+        "data/experiments/exp-*/ticker_accumulation_quality_breakout*",
+        "experiments/artifacts/exp-*ticker_accumulation_quality_breakout*",
+        "experiments/logs/exp-*.json",
+        "docs/experiment_log.jsonl",
+        "docs/experiment_registry.json",
+        "experiments/tickets/exp-*.json",
+        "docs/experiments/tickets/exp-*.json"
+      ],
+      "artifact": "experiments/artifacts/exp-20260528-037_ticker_accumulation_quality_breakout.md",
+      "baseline_result_file": "data/backtests/backtest_results_20260517_203355.json",
+      "card_file": "experiments/cards/exp-20260528-037.md",
+      "change_type": "default_off_paper_candidate_pool",
+      "changed_variable": "ticker_accumulation_quality_breakout_candidate_source_v1",
+      "claimed_at": "2026-05-28T23:11:13+00:00",
+      "completed_at": "2026-05-28T23:18:49+00:00",
+      "created_at": "2026-05-28T23:11:06+00:00",
+      "evaluation_windows": [
+        {
+          "end": "2026-04-21",
+          "start": "2025-10-23"
+        },
+        {
+          "end": "2025-10-22",
+          "start": "2025-04-23"
+        },
+        {
+          "end": "2025-04-22",
+          "start": "2024-10-02"
+        }
+      ],
+      "experiment_id": "exp-20260528-037",
+      "experiment_uid": "expuid-51f7f90790c546ab",
+      "hub_identity": {
+        "namespace": "ginger/experiments",
+        "repo_id": "ginger/experiments/exp-20260528-037",
+        "scheme": "hf_hub_local_v1",
+        "slug": "ticker_accumulation_quality_breakout"
+      },
+      "hypothesis": "Stock-only ticker-level accumulation-quality breakouts may improve candidate-pool replacement value versus the core stack using only free OHLCV fields.",
+      "json": "data/experiments/exp-20260528-037/ticker_accumulation_quality_breakout.json",
+      "lane": "alpha_discovery",
+      "locked_variables": [
+        "core universe membership",
+        "core signal generation",
+        "core ranking",
+        "core position sizing",
+        "core exits",
+        "portfolio heat",
+        "slot rules",
+        "LLM/news replay",
+        "watchlists",
+        "live/default orders"
+      ],
+      "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+      "multiple_testing_risk_bucket": "moderate",
+      "must_not_touch": [],
+      "nearby_prior_experiments": [
+        "exp-20260527-011",
+        "exp-20260528-034",
+        "exp-20260528-035",
+        "exp-20260528-036"
+      ],
+      "new_evidence_type": "free_ohlcv_ticker_level_obv_price_breakout_candidate_source",
+      "owner": "codex-alpha-search",
+      "prediction": {
+        "brier_score": 0.0961,
+        "confidence_reason": "Meta research favors production-visible candidate-pool alpha, but recent OHLCV source refinements have failed often.",
+        "expected_ev_delta": 0.2,
+        "expected_pnl_delta": 3000.0,
+        "main_failure_modes": [
+          "nearby_down_volume_absorption_failure",
+          "thin_sample",
+          "late_strong_regression",
+          "overlap_with_existing_vbb"
+        ],
+        "recorded_at": "2026-05-28T23:10:45+00:00",
+        "success_probability": 0.31
+      },
+      "prior_trial_count": 4,
+      "result": {
+        "acceptance_reasons": [],
+        "after_result_file": "data/experiments/exp-20260528-037/ticker_accumulation_quality_breakout_after_aggregate.json",
+        "artifact": "experiments/artifacts/exp-20260528-037_ticker_accumulation_quality_breakout.md",
+        "before_result_file": "data/experiments/exp-20260528-037/ticker_accumulation_quality_breakout_before_aggregate.json",
+        "decision": "rejected",
+        "delta_metrics": {
+          "expected_value_score": -0.6626,
+          "max_drawdown_delta_max": 0.0426,
+          "target_trade_count": 218,
+          "total_pnl": -4477.43,
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_regressed": 2
+        },
+        "detailed_decision": "rejected_ticker_accumulation_quality_breakout",
+        "gate4": {
+          "aggregate_ev_delta_positive": false,
+          "aggregate_pnl_delta_positive": false,
+          "failed_reasons": [
+            "aggregate_ev_not_positive",
+            "aggregate_pnl_not_positive",
+            "window_ev_regression",
+            "window_pnl_regression",
+            "drawdown_drift_too_high"
+          ],
+          "max_drawdown_worse": 0.0426,
+          "max_drawdown_worse_guardrail": 0.005,
+          "passed": false,
+          "survival_guard_passed": true,
+          "target_concentration": {
+            "max_single_positive_pnl_share": 0.270137,
+            "max_single_positive_pnl_share_guardrail": 0.4,
+            "passed": true,
+            "positive_pnl_hhi": 0.156569,
+            "positive_pnl_hhi_guardrail": 0.3
+          },
+          "target_trade_count": 218,
+          "target_trade_count_min": 20,
+          "target_window_count_min": 3,
+          "target_windows": [
+            "late_strong",
+            "mid_weak",
+            "old_thin"
+          ],
+          "windows_ev_improved": 1,
+          "windows_ev_regressed": 2,
+          "windows_pnl_regressed": 2
+        }
+      },
+      "revision_manifest_file": "experiments/manifests/exp-20260528-037.json",
+      "single_causal_variable": "ticker_accumulation_quality_breakout_candidate_source_v1",
+      "status": "rejected",
+      "summary": "The ticker accumulation-quality breakout sleeve did not clear Gate 4. Do not promote it or retry nearby OBV/price-breakout thresholds on the same frozen windows without forward paper rows or an orthogonal source-quality field.",
+      "ticket_file": "experiments/tickets/exp-20260528-037.json",
+      "trial_family": "ticker_accumulation_quality_breakout_candidate_pool",
+      "trial_variant_id": "ticker_accumulation_quality_breakout_v1"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-05-28T18:12:42+00:00"
+  "updated_at": "2026-05-28T23:18:49+00:00"
 }
