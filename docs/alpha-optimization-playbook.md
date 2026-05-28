@@ -751,6 +751,15 @@ Kova / CANSLIM 类数据的长期结论：
 - `max_daily_return_20_bucket`
 - `reversal_vs_continuation_state`
 
+Recent result:
+
+- 2026-05-28 `exp-20260528-003` tested `max_positive_day_share_20`
+  explosive-path support on the accepted broad-market paper sleeve. Best
+  no-regression variant improved all 3 windows but only by +0.0297 aggregate
+  EV / +$836.03 PnL / +0.18% relative EV, so it was rejected. Do not retry
+  nearby max-positive-day-share thresholds on the frozen sample without new
+  forward paper outcomes or a distinct free-data candidate-pool source.
+
 ### 13. Microstructure / public-narrative divergence 只能先做 diagnostics
 
 主要研究：
