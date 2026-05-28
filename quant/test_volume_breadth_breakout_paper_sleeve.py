@@ -48,6 +48,10 @@ def _rows(
     return rows
 
 
+def _drop_date(rows: list[dict], as_of: str) -> list[dict]:
+    return [row for row in rows if row["date"] != as_of]
+
+
 def _breadth_universe(asof_idx: int = 60) -> dict[str, list[dict]]:
     rows = {"SPY": _rows(base=100.0, step=0.05)}
     rows["WIN"] = _rows(
@@ -249,6 +253,53 @@ def test_snapshot_fills_next_session_and_closes_after_fixed_hold_without_orders(
     assert third["realized_pnl_to_date"] > 0
     assert third["replacement_value_report"]["rule_version"] == REPLACEMENT_VALUE_RULE_VERSION
     assert third["production_impact"]["alters_orders"] is False
+
+
+def test_snapshot_does_not_use_stale_prices_when_asof_ohlcv_is_missing():
+    ohlcv = _breadth_universe()
+    as_of = ohlcv["SPY"][61]["date"]
+    previous = ohlcv["SPY"][60]["date"]
+    state = empty_volume_breadth_breakout_paper_state()
+    state["pending_entries"] = [
+        {
+            "decision_id": "pending-win",
+            "ticker": "WIN",
+            "created_asof": previous,
+            "status": "pending_next_open",
+            "notional": 10_000.0,
+        }
+    ]
+    state["open_positions"] = [
+        {
+            "decision_id": "open-win",
+            "ticker": "WIN",
+            "entry_date": previous,
+            "entry_price": 102.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 9,
+        }
+    ]
+    stale_universe = {
+        ticker: _drop_date(rows, as_of)
+        for ticker, rows in ohlcv.items()
+    }
+
+    snapshot = build_volume_breadth_breakout_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=stale_universe,
+        candidate_universe=list(ohlcv),
+        state=state,
+        open_prices={"WIN": ohlcv["WIN"][60]["open"]},
+        current_prices={"WIN": ohlcv["WIN"][60]["close"]},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 9
 
 
 def test_replacement_value_report_tracks_cash_slot_and_concentration():

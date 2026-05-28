@@ -33,6 +33,10 @@ def _market_rows(start_price: float, step: float, *, days: int = 80) -> list[dic
     return rows
 
 
+def _drop_date(rows: list[dict], as_of: str) -> list[dict]:
+    return [row for row in rows if row["date"] != as_of]
+
+
 def _volatility_contraction_rows(*, days: int = 80) -> list[dict]:
     start = date(2026, 1, 1)
     rows = []
@@ -197,6 +201,55 @@ def test_snapshot_fills_next_session_and_closes_after_fixed_hold_without_orders(
     assert third["realized_pnl_to_date"] > 0
     assert third["replacement_value_report"]["rule_version"] == REPLACEMENT_VALUE_RULE_VERSION
     assert third["production_impact"]["production_orders_changed"] is False
+
+
+def test_snapshot_does_not_use_stale_prices_when_asof_ohlcv_is_missing():
+    spy_rows = _market_rows(100.0, 0.05)
+    qqq_rows = _market_rows(100.0, 0.25)
+    nvda_rows = _volatility_contraction_rows()
+    as_of = nvda_rows[61]["date"]
+    previous = nvda_rows[60]["date"]
+    state = empty_volatility_contraction_paper_state()
+    state["pending_entries"] = [
+        {
+            "decision_id": "pending-nvda",
+            "ticker": "NVDA",
+            "created_asof": previous,
+            "status": "pending_next_open",
+            "notional": 10_000.0,
+        }
+    ]
+    state["open_positions"] = [
+        {
+            "decision_id": "open-nvda",
+            "ticker": "NVDA",
+            "entry_date": previous,
+            "entry_price": 54.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 9,
+        }
+    ]
+
+    snapshot = build_volatility_contraction_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={
+            "SPY": _drop_date(spy_rows, as_of),
+            "QQQ": _drop_date(qqq_rows, as_of),
+            "NVDA": _drop_date(nvda_rows, as_of),
+        },
+        candidate_universe=["NVDA"],
+        state=state,
+        open_prices={"NVDA": nvda_rows[60]["open"]},
+        current_prices={"NVDA": nvda_rows[60]["close"]},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 9
 
 
 def test_replacement_value_report_tracks_cash_slot_and_concentration():

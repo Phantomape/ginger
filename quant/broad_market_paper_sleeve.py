@@ -364,36 +364,34 @@ def build_broad_market_paper_sleeve_snapshot(
     }
     loaded_universe = _normalise_candidate_universe(candidate_universe)
     tradeable = {str(ticker).upper() for ticker in (current_tradeable_universe or set())}
-    current = _normalise_prices(current_prices)
-    opens = _normalise_prices(open_prices)
-    if not current:
-        current = {
-            ticker: rows[idx]["close"]
-            for ticker, rows in rows_by_ticker.items()
-            for idx in [_latest_index_on_or_before(rows, as_of_date)]
-            if idx is not None and _positive_float(rows[idx].get("close")) is not None
-        }
-    if not opens:
-        opens = {
-            ticker: rows[idx]["open"]
-            for ticker, rows in rows_by_ticker.items()
-            for idx in [_latest_index_on_or_before(rows, as_of_date)]
-            if idx is not None and _positive_float(rows[idx].get("open")) is not None
-        }
+    current, opens = _exact_asof_price_maps(
+        rows_by_ticker,
+        as_of=as_of_date,
+        current_prices=current_prices,
+        open_prices=open_prices,
+    )
+    asof_has_benchmark_price = (
+        _index_on_date(rows_by_ticker.get("SPY") or [], as_of_date) is not None
+    )
 
-    closed_today = _advance_open_positions(
-        working_state,
-        as_of=as_of_date,
-        current_prices=current,
-        config=cfg,
-    )
-    filled_today, skipped_today = _fill_pending_entries(
-        working_state,
-        as_of=as_of_date,
-        open_prices=opens,
-        current_prices=current,
-        config=cfg,
-    )
+    if asof_has_benchmark_price:
+        closed_today = _advance_open_positions(
+            working_state,
+            as_of=as_of_date,
+            current_prices=current,
+            config=cfg,
+        )
+        filled_today, skipped_today = _fill_pending_entries(
+            working_state,
+            as_of=as_of_date,
+            open_prices=opens,
+            current_prices=current,
+            config=cfg,
+        )
+    else:
+        closed_today = []
+        filled_today = []
+        skipped_today = []
 
     candidates = build_broad_market_paper_candidates(
         as_of=as_of_date,
@@ -461,7 +459,7 @@ def build_broad_market_paper_candidates(
         if _excluded_candidate_record(record):
             continue
         rows = rows_by_ticker.get(ticker) or []
-        idx = _latest_index_on_or_before(rows, as_of)
+        idx = _index_on_date(rows, as_of)
         if idx is None:
             continue
         feature = build_broad_market_feature(
@@ -1338,8 +1336,52 @@ def _normalise_prices(prices: dict[str, Any] | None) -> dict[str, float]:
     return out
 
 
+def _exact_asof_price_maps(
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    *,
+    as_of: str,
+    current_prices: dict[str, Any] | None,
+    open_prices: dict[str, Any] | None,
+) -> tuple[dict[str, float], dict[str, float]]:
+    exact_current = {
+        ticker: rows[idx]["close"]
+        for ticker, rows in rows_by_ticker.items()
+        for idx in [_index_on_date(rows, as_of)]
+        if idx is not None and _positive_float(rows[idx].get("close")) is not None
+    }
+    exact_opens = {
+        ticker: rows[idx]["open"]
+        for ticker, rows in rows_by_ticker.items()
+        for idx in [_index_on_date(rows, as_of)]
+        if idx is not None and _positive_float(rows[idx].get("open")) is not None
+    }
+    provided_current = _normalise_prices(current_prices)
+    provided_opens = _normalise_prices(open_prices)
+    current = {
+        **exact_current,
+        **{
+            ticker: value
+            for ticker, value in provided_current.items()
+            if ticker in exact_current
+        },
+    }
+    opens = {
+        **exact_opens,
+        **{
+            ticker: value
+            for ticker, value in provided_opens.items()
+            if ticker in exact_opens
+        },
+    }
+    return current, opens
+
+
 def _date_index(rows: list[dict[str, Any]]) -> dict[str, int]:
     return {str(row.get("date") or "")[:10]: idx for idx, row in enumerate(rows)}
+
+
+def _index_on_date(rows: list[dict[str, Any]], as_of: str) -> int | None:
+    return _date_index(rows).get(_date10(as_of))
 
 
 def _latest_index_on_or_before(rows: list[dict[str, Any]], as_of: str) -> int | None:

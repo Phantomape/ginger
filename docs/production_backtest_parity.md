@@ -32,6 +32,16 @@ These fields are production-visible context only. They must not affect entry,
 ranking, sizing, exit, or orders until a separate Gate 1-4 experiment promotes a
 shared policy and updates the decision matrix below.
 
+## Default-Off OHLCV Paper Sleeve Stale-Price Guard
+
+`broad_market_paper_sleeve.py`, `ai_optical_paper_sleeve.py`,
+`volatility_contraction_paper_sleeve.py`, `volume_breadth_breakout_paper_sleeve.py`,
+and `fundamental_growth_rs_paper_sleeve.py` must only fill pending entries,
+advance observed hold days, close paper positions, or accept OHLCV-derived paper
+candidates when the relevant OHLCV data contains an exact `as_of` row. Production
+weekend, holiday, and data-lag runs may report metadata, but stale latest-prior
+prices must not mutate those paper ledgers.
+
 ## Decision Matrix
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |

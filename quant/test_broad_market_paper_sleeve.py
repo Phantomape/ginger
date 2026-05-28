@@ -41,6 +41,10 @@ def _rows(start_price: float, step: float, *, volume_last: float = 1500.0) -> li
     return rows
 
 
+def _drop_date(rows: list[dict], as_of: str) -> list[dict]:
+    return [row for row in rows if row["date"] != as_of]
+
+
 def test_broad_market_feature_and_price_floor_gate():
     spy_rows = _rows(100.0, 0.02)
     high_price_rows = _rows(50.0, 0.35)
@@ -203,6 +207,54 @@ def test_snapshot_adds_pending_and_fills_next_session_without_orders():
     assert second["replacement_value_report"]["open_count"] == 1
     assert second["open_positions"][0]["source_candidate"]["high_volatility_rule_version"] == HIGH_VOLATILITY_RULE_VERSION
     assert second["open_positions"][0]["source_candidate"]["trend_persistence_rule_version"] == TREND_PERSISTENCE_RULE_VERSION
+
+
+def test_snapshot_does_not_use_stale_prices_when_asof_ohlcv_is_missing():
+    spy_rows = _rows(100.0, 0.02)
+    win_rows = _rows(50.0, 0.35)
+    as_of = spy_rows[61]["date"]
+    previous = spy_rows[60]["date"]
+    state = empty_broad_market_paper_state()
+    state["pending_entries"] = [
+        {
+            "decision_id": "pending-win",
+            "ticker": "WIN",
+            "created_asof": previous,
+            "status": "pending_next_session_open",
+            "intended_notional": 10_000.0,
+        }
+    ]
+    state["open_positions"] = [
+        {
+            "decision_id": "open-win",
+            "ticker": "WIN",
+            "entry_date": previous,
+            "entry_price": 50.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 19,
+        }
+    ]
+
+    snapshot = build_broad_market_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={
+            "SPY": _drop_date(spy_rows, as_of),
+            "WIN": _drop_date(win_rows, as_of),
+        },
+        candidate_universe=["WIN"],
+        state=state,
+        open_prices={"WIN": win_rows[60]["open"]},
+        current_prices={"WIN": win_rows[60]["close"]},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 19
 
 
 def test_universe_state_feed_uses_observation_records_without_tradeable_names():
