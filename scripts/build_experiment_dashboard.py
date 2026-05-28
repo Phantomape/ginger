@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -107,6 +108,20 @@ COLLECTION_RULES = (
         "description": "Open work that may need claiming, closing, or cleanup.",
         "predicate": lambda row: row.get("status_group") in {"active", "proposed"},
     },
+)
+
+FORWARD_EVIDENCE_DEFAULT_TARGET = 20
+SURFACE_SLEEVE_ALIASES = (
+    (("state_surface", "state surface", "satellite"), ("state_surface", "state_surface_satellite_paper")),
+    (("broad_market", "broad market", "leadership"), ("broad_market", "broad_market_leadership_paper")),
+    (("volatility", "qqq-confirmed", "qqq confirmed", "vcp"), ("volatility_contraction", "volatility_contraction_qqq_confirmed_paper")),
+    (("sec financial", "financial-report", "financial report"), ("sec_financial_report", "sec_financial_report_paper")),
+    (("sec negative", "negative / governance", "procedural queues"), ("sec_negative", "sec_governance", "sec_leadership")),
+    (("external event", "event overlay"), ("volume_breadth_breakout", "form4")),
+    (("space catalyst",), ("space_catalyst",)),
+    (("core_misfit", "core-misfit", "core misfit"), ("core_misfit", "core_misfit_paper")),
+    (("low-deployment etf", "low deployment etf"), ("low_deployment_etf",)),
+    (("ai optical", "optical"), ("ai_optical",)),
 )
 
 COORDINATION_SOURCES = {"registry", "ticket", "docs_ticket", "log", "docs_log"}
@@ -442,6 +457,592 @@ def build_collections(rows):
     return collections
 
 
+def _slug(value) -> str:
+    text = str(value or "").lower()
+    return re.sub(r"[^a-z0-9]+", "_", text).strip("_")
+
+
+def _compact_text(value, limit=260) -> str:
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    if len(text) <= limit:
+        return text
+    return text[: limit - 1].rstrip() + "..."
+
+
+def _list_value(payload: dict, key: str) -> list:
+    value = payload.get(key)
+    return value if isinstance(value, list) else []
+
+
+def _collect_tickers(value, tickers: set[str], limit=12):
+    if len(tickers) >= limit:
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key in {"ticker", "symbol", "pilot_ticker"} and isinstance(item, str):
+                ticker = item.strip().upper()
+                if ticker:
+                    tickers.add(ticker)
+                    if len(tickers) >= limit:
+                        return
+            else:
+                _collect_tickers(item, tickers, limit=limit)
+    elif isinstance(value, list):
+        for item in value:
+            _collect_tickers(item, tickers, limit=limit)
+            if len(tickers) >= limit:
+                return
+
+
+def _sum_numeric(items, keys):
+    total = 0.0
+    found = False
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        for key in keys:
+            number = _as_number(item.get(key))
+            if number is not None:
+                total += number
+                found = True
+                break
+    return round(total, 2) if found else None
+
+
+def summarize_paper_sleeve_file(root: Path, path: Path):
+    payload = load_json(path)
+    if not isinstance(payload, dict):
+        return None
+    relative = repo_relative(path, root)
+    slug = _slug(path.parent.name)
+    open_positions = _list_value(payload, "open_positions")
+    pending_entries = _list_value(payload, "pending_entries")
+    closed_positions = _list_value(payload, "closed_positions")
+    skipped_entries = _list_value(payload, "skipped_entries")
+    tickers = set()
+    _collect_tickers({
+        "open_positions": open_positions,
+        "pending_entries": pending_entries,
+        "closed_positions": closed_positions,
+        "candidates": payload.get("candidates"),
+    }, tickers)
+    ledger_rows = first_number(payload, [
+        ("ledger_row_count",),
+        ("row_count",),
+        ("forward_row_count",),
+        ("observation_count",),
+    ])
+    candidate_count = first_number(payload, [
+        ("candidate_count",),
+        ("selected_count",),
+        ("signal_count",),
+        ("ten_k_event_count",),
+    ])
+    forward_target = first_number(payload, [
+        ("parameters", "forward_gate_min_closed_trades"),
+        ("tail_diagnostics", "gate_report", "thresholds", "min_trades_for_promotion"),
+    ])
+    sleeve_name = (
+        payload.get("sleeve")
+        or payload.get("watch_name")
+        or payload.get("rule_version")
+        or path.parent.name
+    )
+    return {
+        "slug": slug,
+        "sleeve": str(sleeve_name),
+        "file": relative,
+        "source_kind": path.name,
+        "updated_at": payload.get("updated_at") or payload.get("asof_date") or payload.get("as_of"),
+        "open_count": len(open_positions),
+        "pending_count": len(pending_entries),
+        "closed_count": len(closed_positions),
+        "skipped_count": len(skipped_entries),
+        "ledger_row_count": int(ledger_rows) if ledger_rows is not None else None,
+        "candidate_count": int(candidate_count) if candidate_count is not None else None,
+        "forward_target_count": int(forward_target) if forward_target is not None else None,
+        "ticker_sample": sorted(tickers)[:12],
+        "unrealized_pnl": _sum_numeric(open_positions, ("unrealized_pnl", "net_pnl_if_closed_now")),
+        "closed_pnl": _sum_numeric(closed_positions, ("net_pnl", "pnl", "realized_pnl")),
+        "alters_orders": bool(_nested_get(payload, ("production_impact", "alters_orders"))),
+        "trade_enabled": any(
+            bool(item.get("trade_enabled"))
+            for item in open_positions + pending_entries + closed_positions
+            if isinstance(item, dict)
+        ),
+    }
+
+
+def collect_paper_sleeves(root: Path):
+    sleeve_dir = root / "data" / "paper_sleeves"
+    if not sleeve_dir.exists():
+        return []
+    sleeves = []
+    for path in sorted(sleeve_dir.rglob("*.json")):
+        if path.name not in {"state.json", "summary.json", "observation_slot_summary.json", "event_state_shadow_summary.json"}:
+            continue
+        summary = summarize_paper_sleeve_file(root, path)
+        if summary:
+            sleeves.append(summary)
+    return sleeves
+
+
+def _snapshot_count(payload: dict, direct_paths, list_key: str):
+    number = first_number(payload, direct_paths)
+    if number is not None:
+        return int(number)
+    value = payload.get(list_key)
+    return len(value) if isinstance(value, list) else 0
+
+
+def summarize_snapshot_payload(payload: dict):
+    if not isinstance(payload, dict):
+        return None
+    closed_count = _snapshot_count(payload, [
+        ("closed_position_count",),
+        ("closed_count",),
+        ("replacement_value_report", "closed_count"),
+        ("forward_paper_gate", "metrics", "closed_trades"),
+    ], "closed_positions")
+    open_count = _snapshot_count(payload, [
+        ("open_position_count",),
+        ("open_count",),
+        ("replacement_value_report", "open_count"),
+    ], "open_positions")
+    pending_count = _snapshot_count(payload, [
+        ("pending_count",),
+        ("replacement_value_report", "pending_count"),
+    ], "pending_entries")
+    target_count = first_number(payload, [
+        ("parameters", "forward_gate_min_closed_trades"),
+        ("tail_diagnostics", "gate_report", "thresholds", "min_trades_for_promotion"),
+    ])
+    realized_pnl = first_number(payload, [
+        ("realized_pnl_to_date",),
+        ("replacement_value_report", "closed_pnl"),
+        ("forward_paper_gate", "metrics", "realized_pnl"),
+    ])
+    unrealized_pnl = first_number(payload, [
+        ("unrealized_pnl",),
+        ("replacement_value_report", "open_unrealized_pnl"),
+    ])
+    date = payload.get("asof_date") or payload.get("as_of")
+    if not date and payload.get("generated_at"):
+        date = str(payload["generated_at"])[:10]
+    if not date and payload.get("updated_at"):
+        date = str(payload["updated_at"])[:10]
+    target = int(target_count) if target_count else None
+    closed_pct = round(min(100.0, closed_count / target * 100.0), 2) if target else 0.0
+    pipeline_pct = (
+        round(min(100.0, (closed_count + 0.55 * open_count + 0.2 * pending_count) / target * 100.0), 2)
+        if target
+        else 0.0
+    )
+    return {
+        "date": str(date or ""),
+        "closed_count": closed_count,
+        "open_count": open_count,
+        "pending_count": pending_count,
+        "target_count": target,
+        "closed_pct": closed_pct,
+        "pipeline_pct": pipeline_pct,
+        "realized_pnl": realized_pnl,
+        "unrealized_pnl": unrealized_pnl,
+    }
+
+
+def collect_evidence_curves(root: Path):
+    sleeve_dir = root / "data" / "paper_sleeves"
+    if not sleeve_dir.exists():
+        return []
+    curves = []
+    for path in sorted(sleeve_dir.rglob("snapshots.jsonl")):
+        points = []
+        sleeve_name = path.parent.name
+        try:
+            with path.open(encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        payload = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    point = summarize_snapshot_payload(payload)
+                    if not point:
+                        continue
+                    if isinstance(payload, dict):
+                        sleeve_name = payload.get("sleeve") or payload.get("watch_name") or sleeve_name
+                    points.append(point)
+        except OSError:
+            continue
+        if not points:
+            continue
+        latest = points[-1]
+        target = latest.get("target_count")
+        closed = latest.get("closed_count") or 0
+        open_count = latest.get("open_count") or 0
+        pending_count = latest.get("pending_count") or 0
+        curves.append({
+            "slug": _slug(path.parent.name),
+            "sleeve": str(sleeve_name),
+            "file": repo_relative(path, root),
+            "point_count": len(points),
+            "latest_date": latest.get("date"),
+            "target_count": target,
+            "closed_count": closed,
+            "open_count": open_count,
+            "pending_count": pending_count,
+            "remaining_closed": max(target - closed, 0) if target is not None else None,
+            "closed_pct": latest.get("closed_pct"),
+            "pipeline_pct": latest.get("pipeline_pct"),
+            "points": points[-40:],
+        })
+    curves.sort(
+        key=lambda curve: (
+            curve.get("target_count") is None,
+            -(curve.get("pipeline_pct") or 0),
+            -(curve.get("open_count") or 0),
+            curve.get("sleeve") or "",
+        )
+    )
+    return curves
+
+
+def parse_activation_map(root: Path):
+    path = root / "docs" / "current_state.md"
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+    rows = []
+    in_section = False
+    in_table = False
+    headers = []
+    for line in lines:
+        if line.startswith("## "):
+            if in_section and in_table:
+                break
+            in_section = "Return Constraint / Activation Map" in line
+            in_table = False
+            continue
+        if not in_section:
+            continue
+        if not line.strip().startswith("|"):
+            if in_table:
+                break
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if all(re.fullmatch(r"[:\-\s]+", cell or "") for cell in cells):
+            continue
+        if not headers:
+            headers = [_slug(cell) for cell in cells]
+            in_table = True
+            continue
+        row = dict(zip(headers, cells))
+        if row.get("surface"):
+            rows.append(row)
+    return rows
+
+
+def classify_activation_surface(row: dict) -> str:
+    text = " ".join(str(value or "") for value in row.values()).lower()
+    status = str(row.get("default_execution_status") or "").lower()
+    if "trade-enabled default path" in text:
+        return "executing"
+    if "live slots are zero" in text or "no live space slots" in text:
+        return "blocked"
+    if "replay-only" in text and "paper" not in status and "default-off" not in status:
+        return "replay_only"
+    if any(token in text for token in ("default-off", "paper", "observe-only", "closed forward", "forward replacement", "forward gate")):
+        return "forward_accumulating"
+    if any(token in text for token in (
+        "production can emit",
+        "production advisory",
+        "production live path exists",
+        "manual/live execution",
+    )):
+        return "executing"
+    if "no explicit trade adapter" in text or "trade adapter" in text:
+        return "blocked"
+    return "unknown"
+
+
+def infer_required_closed_forward(row: dict):
+    text = " ".join(str(value or "") for value in row.values()).lower()
+    patterns = (
+        r"at least\s+(\d+)\s+closed",
+        r"(\d+)\s+closed\s+(?:forward\s+)?(?:paper\s+)?outcomes",
+        r"(\d+)\s+closed\s+\d+-day\s+paper\s+outcomes",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            return int(match.group(1)), "explicit"
+    if any(token in text for token in (
+        "closed forward",
+        "closed replacement-value",
+        "forward replacement-value",
+        "forward gate",
+        "replacement-value gate",
+    )):
+        return FORWARD_EVIDENCE_DEFAULT_TARGET, "dashboard_default_forward_gate"
+    return None, None
+
+
+def sleeve_matches_surface(surface: dict, sleeve: dict) -> bool:
+    surface_text = " ".join(str(value or "") for value in surface.values()).lower()
+    sleeve_text = " ".join(
+        str(sleeve.get(key) or "")
+        for key in ("slug", "sleeve", "file")
+    ).lower()
+    surface_slug = _slug(surface_text)
+    sleeve_slug = _slug(sleeve_text)
+    if sleeve.get("slug") and _slug(sleeve["slug"]) in surface_slug:
+        return True
+    for surface_terms, sleeve_terms in SURFACE_SLEEVE_ALIASES:
+        surface_hit = any(term in surface_text or _slug(term) in surface_slug for term in surface_terms)
+        sleeve_hit = any(term in sleeve_text or _slug(term) in sleeve_slug for term in sleeve_terms)
+        if surface_hit and sleeve_hit:
+            return True
+    return False
+
+
+def surface_gap_label(row: dict, state: str, closed_count: int, required: int | None, gap: int | None):
+    text = " ".join(str(value or "") for value in row.values()).lower()
+    if state == "executing":
+        return "Executing in the current production path."
+    if required is not None:
+        if gap and gap > 0:
+            return f"Needs {gap} more closed forward outcomes before activation review."
+        return "Closed-forward sample target is met; review replacement value, drawdown, and concentration."
+    if "live slots are zero" in text:
+        return "Live slots are zero; needs a separate pilot promotion."
+    if "explicit trade adapter" in text or "no trade-enabled adapter" in text:
+        return "Needs an explicit trade adapter plus forward replacement-value evidence."
+    if "replay-only" in text:
+        return "Replay-only evidence; needs a forward ledger before promotion."
+    if closed_count == 0 and "paper" in text:
+        return "Paper ledger exists but has no closed outcomes yet."
+    return "Target is not declared in current_state.md."
+
+
+def build_activation_surfaces(root: Path, sleeves):
+    surfaces = []
+    for row in parse_activation_map(root):
+        state = classify_activation_surface(row)
+        required, target_basis = infer_required_closed_forward(row)
+        matched = [sleeve for sleeve in sleeves if sleeve_matches_surface(row, sleeve)]
+        open_count = sum(sleeve.get("open_count") or 0 for sleeve in matched)
+        pending_count = sum(sleeve.get("pending_count") or 0 for sleeve in matched)
+        closed_count = sum(sleeve.get("closed_count") or 0 for sleeve in matched)
+        skipped_count = sum(sleeve.get("skipped_count") or 0 for sleeve in matched)
+        tickers = sorted({
+            ticker
+            for sleeve in matched
+            for ticker in sleeve.get("ticker_sample") or []
+        })[:12]
+        matched_targets = [
+            sleeve.get("forward_target_count")
+            for sleeve in matched
+            if sleeve.get("forward_target_count") is not None
+        ]
+        if matched_targets and (required is None or target_basis == "dashboard_default_forward_gate"):
+            required = max(matched_targets)
+            target_basis = "paper_sleeve_forward_gate"
+        gap = max(required - closed_count, 0) if required is not None else None
+        limits = row.get("limits") or row.get("what_limits_realized_return")
+        activation_lever = row.get("activation_lever") or row.get("aggressive_activation_lever")
+        risk = row.get("risk") or row.get("main_risk_if_enabled")
+        surfaces.append({
+            "surface": row.get("surface"),
+            "state": state,
+            "stage_label": {
+                "executing": "Executing",
+                "forward_accumulating": "Forward accumulating",
+                "replay_only": "Replay/default-off",
+                "blocked": "Blocked",
+            }.get(state, "Unknown"),
+            "default_execution_status": row.get("default_execution_status"),
+            "current_evidence": _compact_text(row.get("current_evidence"), limit=420),
+            "limits": _compact_text(limits, limit=360),
+            "activation_lever": _compact_text(activation_lever, limit=260),
+            "risk": _compact_text(risk, limit=260),
+            "matched_sleeves": [sleeve.get("slug") for sleeve in matched],
+            "paper_open_count": open_count,
+            "paper_pending_count": pending_count,
+            "paper_closed_count": closed_count,
+            "paper_skipped_count": skipped_count,
+            "required_closed_forward": required,
+            "target_basis": target_basis,
+            "evidence_gap": gap,
+            "gap_label": surface_gap_label(row, state, closed_count, required, gap),
+            "ticker_sample": tickers,
+        })
+    return surfaces
+
+
+def summarize_live_positions(root: Path):
+    payload = load_json(root / "operator_inputs" / "open_positions.json")
+    if not isinstance(payload, dict):
+        return {
+            "count": 0,
+            "positions_count": 0,
+            "observations_count": 0,
+            "ticker_sample": [],
+            "strategy_counts": {},
+        }
+    positions = _list_value(payload, "positions")
+    observations = _list_value(payload, "observations")
+    all_rows = positions + observations
+    tickers = sorted({
+        str(row.get("ticker")).upper()
+        for row in all_rows
+        if isinstance(row, dict) and row.get("ticker")
+    })
+    strategy_counts = Counter(
+        str(row.get("opened_by_strategy") or "unknown")
+        for row in all_rows
+        if isinstance(row, dict)
+    )
+    return {
+        "as_of": payload.get("as_of"),
+        "account": payload.get("account"),
+        "portfolio_value_usd": payload.get("portfolio_value_usd"),
+        "count": len(all_rows),
+        "positions_count": len(positions),
+        "observations_count": len(observations),
+        "ticker_sample": tickers[:18],
+        "strategy_counts": dict(strategy_counts.most_common(12)),
+    }
+
+
+def summarize_pilot_decisions(root: Path):
+    path = root / "data" / "ledgers" / "pilot_competition_decisions.jsonl"
+    if not path.exists():
+        return None
+    count = 0
+    tradeable_count = 0
+    last_timestamp = None
+    tickers = set()
+    sleeves = Counter()
+    try:
+        with path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    payload = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                count += 1
+                last_timestamp = payload.get("timestamp") or payload.get("logged_at") or last_timestamp
+                sleeve = payload.get("sleeve") or _nested_get(payload, ("risk_snapshot", "pilot_sleeve", "name"))
+                if sleeve:
+                    sleeves[str(sleeve)] += 1
+                ticker = payload.get("pilot_ticker")
+                if ticker:
+                    tickers.add(str(ticker).upper())
+                if _nested_get(payload, ("risk_snapshot", "pilot_sizing", "pilot_sleeve_tradeable")) is True:
+                    tradeable_count += 1
+    except OSError:
+        return None
+    if not count:
+        return None
+    return {
+        "decision_count": count,
+        "tradeable_count": tradeable_count,
+        "last_timestamp": last_timestamp,
+        "ticker_sample": sorted(tickers)[:12],
+        "sleeve_counts": dict(sleeves.most_common(8)),
+        "file": repo_relative(path, root),
+    }
+
+
+def append_pilot_surface(surfaces, pilot):
+    if not pilot:
+        return
+    for surface in surfaces:
+        if "AI_INFRA_AGGRESSIVE" not in str(surface.get("surface") or ""):
+            continue
+        if pilot.get("tradeable_count"):
+            surface["state"] = "executing"
+            surface["stage_label"] = "Executing"
+        surface["paper_pending_count"] = pilot.get("decision_count") or 0
+        surface["ticker_sample"] = pilot.get("ticker_sample") or surface.get("ticker_sample") or []
+        surface["gap_label"] = "Pilot sleeve is emitting tradeable decision snapshots; promotion still needs closed evidence review."
+        surface["current_evidence"] = (
+            f"{pilot.get('decision_count')} pilot decision snapshots; "
+            f"{pilot.get('tradeable_count')} marked tradeable."
+        )
+        return
+    surfaces.append({
+        "surface": "AI_INFRA_AGGRESSIVE pilot sleeve",
+        "state": "executing" if pilot.get("tradeable_count") else "forward_accumulating",
+        "stage_label": "Executing" if pilot.get("tradeable_count") else "Forward accumulating",
+        "default_execution_status": "Pilot sleeve decision snapshots",
+        "current_evidence": f"{pilot.get('decision_count')} pilot decision snapshots; {pilot.get('tradeable_count')} marked tradeable.",
+        "limits": "Pilot ledger only; promotion and sizing remain governed by the pilot protocol.",
+        "activation_lever": "Keep monitoring replacement value and concentration before any broader core expansion.",
+        "risk": "Theme and single-name concentration.",
+        "matched_sleeves": [],
+        "paper_open_count": 0,
+        "paper_pending_count": pilot.get("decision_count") or 0,
+        "paper_closed_count": 0,
+        "paper_skipped_count": 0,
+        "required_closed_forward": None,
+        "target_basis": None,
+        "evidence_gap": None,
+        "gap_label": "Pilot sleeve is emitting tradeable decision snapshots; promotion still needs closed evidence review.",
+        "ticker_sample": pilot.get("ticker_sample") or [],
+    })
+
+
+def build_production_compare(root=REPO_ROOT):
+    root = Path(root)
+    sleeves = collect_paper_sleeves(root)
+    evidence_curves = collect_evidence_curves(root)
+    surfaces = build_activation_surfaces(root, sleeves)
+    pilot = summarize_pilot_decisions(root)
+    append_pilot_surface(surfaces, pilot)
+    state_counts = Counter(surface.get("state") for surface in surfaces)
+    paper_closed = sum(sleeve.get("closed_count") or 0 for sleeve in sleeves)
+    paper_open = sum(sleeve.get("open_count") or 0 for sleeve in sleeves)
+    paper_pending = sum(sleeve.get("pending_count") or 0 for sleeve in sleeves)
+    known_gap_count = sum(
+        1
+        for surface in surfaces
+        if (surface.get("evidence_gap") or 0) > 0
+        or surface.get("state") in {"blocked", "replay_only"}
+    )
+    return {
+        "summary": {
+            "surface_count": len(surfaces),
+            "executing_count": state_counts.get("executing", 0),
+            "forward_accumulating_count": state_counts.get("forward_accumulating", 0),
+            "replay_only_count": state_counts.get("replay_only", 0),
+            "blocked_count": state_counts.get("blocked", 0),
+            "known_gap_count": known_gap_count,
+            "paper_open_count": paper_open,
+            "paper_pending_count": paper_pending,
+            "paper_closed_count": paper_closed,
+        },
+        "surfaces": surfaces,
+        "paper_sleeves": sleeves,
+        "evidence_curves": evidence_curves,
+        "live_positions": summarize_live_positions(root),
+        "pilot_decisions": pilot,
+        "generated_from": [
+            "docs/current_state.md",
+            "operator_inputs/open_positions.json",
+            "data/paper_sleeves/**/*.json",
+            "data/ledgers/pilot_competition_decisions.jsonl",
+        ],
+    }
+
+
 def merge_record(records: dict, experiment_id: str, payload: dict, source: str, path=None):
     experiment_id = normalize_experiment_id(experiment_id)
     if not experiment_id:
@@ -653,6 +1254,7 @@ def build_experiment_index(root=REPO_ROOT, registry_path=DEFAULT_REGISTRY, today
         "leaderboards": build_leaderboards(rows),
         "dataset_view": build_dataset_view(rows),
         "collections": build_collections(rows),
+        "production_compare": build_production_compare(root),
         "experiments": rows,
     }
 
@@ -665,310 +1267,915 @@ HTML_TEMPLATE = """<!doctype html>
   <title>Ginger Experiment Dashboard</title>
   <style>
     :root {
-      color-scheme: light;
-      --ink: #18202a;
-      --muted: #64707f;
-      --line: #d8dee6;
-      --panel: #f7f9fb;
-      --good: #147a52;
-      --bad: #b23b3b;
-      --warn: #a56a00;
-      --active: #2463a6;
-      --observed: #6f4aa8;
+      color-scheme: dark;
+      --ink: #abb2bf;
+      --bright: #d7dae0;
+      --muted: #8b93a2;
+      --subtle: #6f7785;
+      --line: #3a404b;
+      --soft-line: #323842;
+      --page: #21252b;
+      --panel: #282c34;
+      --panel-soft: #2c313a;
+      --panel-deep: #1e2229;
+      --blue: #61afef;
+      --blue-soft: rgba(97, 175, 239, 0.14);
+      --green: #98c379;
+      --green-soft: rgba(152, 195, 121, 0.14);
+      --red: #e06c75;
+      --red-soft: rgba(224, 108, 117, 0.14);
+      --amber: #e5c07b;
+      --amber-soft: rgba(229, 192, 123, 0.14);
+      --violet: #c678dd;
+      --violet-soft: rgba(198, 120, 221, 0.14);
+      --cyan: #56b6c2;
+      --shadow: 0 16px 38px rgba(0, 0, 0, 0.32);
     }
-    * { box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      min-width: 0;
+    }
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
       color: var(--ink);
-      background: #ffffff;
+      background: var(--page);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
     }
-    header {
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(33, 37, 43, 0.96);
       border-bottom: 1px solid var(--line);
-      background: #ffffff;
-      padding: 18px 24px 14px;
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 18px 28px 14px;
+    }
+    .title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
     }
     h1 {
       margin: 0;
       font-size: 24px;
+      line-height: 1.2;
       letter-spacing: 0;
-      font-weight: 700;
+      color: var(--bright);
+      overflow-wrap: anywhere;
     }
-    .meta {
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 760px;
+    }
+    .meta-pills {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 18px;
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 280px;
+      max-width: 720px;
     }
-    main { padding: 18px 24px 28px; }
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .metric {
+    .pill,
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      min-height: 24px;
       border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 12px;
-      background: var(--panel);
-      min-height: 72px;
-    }
-    .metric .label {
-      color: var(--muted);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: var(--panel-soft);
+      color: var(--ink);
       font-size: 12px;
-      text-transform: uppercase;
+      line-height: 1.25;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
-    .metric .value {
-      margin-top: 7px;
-      font-size: 22px;
+    .pill strong {
+      margin-left: 5px;
+      color: var(--bright);
       font-weight: 700;
-    }
-    .controls {
-      display: grid;
-      grid-template-columns: minmax(220px, 1.3fr) 180px 180px 160px;
-      gap: 10px;
-      align-items: end;
-      margin-bottom: 12px;
+      overflow-wrap: anywhere;
     }
     .tabs {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin: 0 0 14px;
-      border-bottom: 1px solid var(--line);
+      gap: 4px;
+      margin-top: 16px;
     }
     .tab {
       min-height: 34px;
-      border: 1px solid var(--line);
-      border-bottom: 0;
-      border-radius: 6px 6px 0 0;
-      padding: 7px 11px;
-      background: #f8fafc;
-      color: #344054;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 7px 12px;
+      background: transparent;
+      color: var(--ink);
       cursor: pointer;
       font: inherit;
+      font-size: 14px;
+      line-height: 1.25;
+      transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
     }
+    .tab:hover { background: var(--panel-soft); }
     .tab.active-tab {
-      background: #ffffff;
-      color: var(--ink);
+      border-color: #4b5263;
+      background: var(--panel);
+      color: var(--amber);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    main {
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 18px 28px 30px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .metric {
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: linear-gradient(180deg, #2b3039 0%, #252a32 100%);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    }
+    .metric .label {
+      color: var(--muted);
+      font-size: 11px;
       font-weight: 700;
+      text-transform: uppercase;
+    }
+    .metric .value {
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 750;
+      color: var(--bright);
+    }
+    .hub-shell {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr) 360px;
+      gap: 16px;
+      align-items: start;
+    }
+    .filter-panel,
+    .detail-panel,
+    .surface {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    }
+    .filter-panel,
+    .detail-panel {
+      position: sticky;
+      top: 112px;
+      padding: 14px;
+      overflow: hidden;
+    }
+    .panel-title {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.3;
+      letter-spacing: 0;
+      color: var(--bright);
     }
     label {
       display: grid;
       gap: 5px;
-      font-size: 12px;
+      margin-bottom: 12px;
       color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
     }
-    input, select {
+    input,
+    select {
       width: 100%;
+      max-width: 100%;
       min-height: 36px;
       border: 1px solid var(--line);
       border-radius: 6px;
       padding: 7px 9px;
+      background: var(--panel-deep);
+      color: var(--ink);
       font: inherit;
-      color: var(--ink);
-      background: #ffffff;
+      font-size: 13px;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.22);
     }
-    .toggle {
-      min-height: 36px;
-      align-content: center;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 7px 9px;
-      background: #ffffff;
+    input::placeholder {
+      color: var(--subtle);
     }
-    .toggle label {
+    input:focus,
+    select:focus {
+      outline: 2px solid rgba(97, 175, 239, 0.26);
+      border-color: var(--blue);
+    }
+    .toggle-label {
       display: flex;
-      gap: 8px;
       align-items: center;
-      text-transform: none;
+      gap: 8px;
+      margin: 0;
       color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: none;
     }
-    .toggle input { width: 16px; min-height: 16px; }
+    .toggle-label input {
+      width: 16px;
+      min-height: 16px;
+    }
+    .filter-foot {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--soft-line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .content-stack {
+      display: grid;
+      gap: 12px;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .section-head > div {
+      min-width: 0;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+      color: var(--bright);
+    }
+    .section-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .repo-list,
+    .card-grid,
+    .panel-grid,
+    .shelf-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .card-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .panel-grid {
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+    }
+    .shelf-grid {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+    .repo-card,
+    .experiment-card {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--panel);
+      text-align: left;
+      color: inherit;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    }
+    .repo-card {
+      display: grid;
+      gap: 9px;
+      cursor: pointer;
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
+    }
+    .repo-card:hover {
+      border-color: rgba(97, 175, 239, 0.72);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+    .repo-card.selected {
+      border-color: var(--blue);
+      background: #2b313b;
+      box-shadow: inset 3px 0 0 var(--blue), 0 0 0 2px rgba(97, 175, 239, 0.18);
+    }
+    .repo-top,
+    .card-head,
+    .detail-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .repo-top > div,
+    .card-head > div,
+    .detail-head > div {
+      min-width: 0;
+    }
+    .repo-name,
+    .card-title {
+      margin-top: 3px;
+      color: var(--bright);
+      font-weight: 750;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .id {
+      color: var(--subtle);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .summary-text {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .repo-card .summary-text {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      min-width: 76px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 750;
+      text-align: center;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      max-width: 100%;
+    }
+    .accepted {
+      border: 1px solid rgba(152, 195, 121, 0.5);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .rejected {
+      border: 1px solid rgba(224, 108, 117, 0.52);
+      background: var(--red-soft);
+      color: var(--red);
+    }
+    .active {
+      border: 1px solid rgba(97, 175, 239, 0.5);
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+    .observed {
+      border: 1px solid rgba(198, 120, 221, 0.5);
+      background: var(--violet-soft);
+      color: var(--violet);
+    }
+    .proposed {
+      border: 1px solid rgba(229, 192, 123, 0.52);
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .unknown {
+      border: 1px solid #4b5263;
+      background: #2f3540;
+      color: var(--muted);
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip.source {
+      border-color: #4b5263;
+      background: #2f3540;
+    }
+    .chip.warn {
+      border-color: rgba(229, 192, 123, 0.54);
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .chip.note {
+      border-color: #4b5263;
+      background: #2f3540;
+      color: var(--muted);
+    }
+    .chip.good {
+      border-color: rgba(152, 195, 121, 0.48);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .kv {
+      min-width: 0;
+      border-top: 1px solid var(--soft-line);
+      padding-top: 8px;
+      font-size: 13px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .kv span {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .detail-panel h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.25;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .detail-panel h3,
+    .surface h3 {
+      margin: 16px 0 8px;
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+    .detail-section {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--soft-line);
+    }
+    .file-list {
+      display: grid;
+      gap: 5px;
+      max-height: 160px;
+      overflow: auto;
+      color: var(--ink);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .file-list div {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .surface {
+      padding: 14px;
+    }
+    .surface h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      line-height: 1.3;
+      letter-spacing: 0;
+      color: var(--bright);
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
     .table-wrap {
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: auto;
-      max-height: 68vh;
+      max-height: 420px;
+      background: var(--panel);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1120px;
+      min-width: 680px;
     }
-    th, td {
-      border-bottom: 1px solid var(--line);
+    th,
+    td {
+      border-bottom: 1px solid var(--soft-line);
       padding: 9px 10px;
       text-align: left;
       vertical-align: top;
       font-size: 13px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
     th {
       position: sticky;
       top: 0;
       z-index: 2;
-      background: #eef2f6;
-      color: #3d4854;
-      font-size: 12px;
+      background: var(--panel-soft);
+      color: var(--muted);
+      font-size: 11px;
       text-transform: uppercase;
     }
-    tr:hover td { background: #f8fbff; }
-    .id { font-family: Consolas, "Courier New", monospace; white-space: nowrap; }
-    .status {
-      display: inline-block;
-      min-width: 74px;
-      border-radius: 999px;
-      padding: 3px 7px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #ffffff;
-      text-align: center;
-    }
-    .accepted { background: var(--good); }
-    .rejected { background: var(--bad); }
-    .active { background: var(--active); }
-    .observed { background: var(--observed); }
-    .proposed { background: var(--warn); }
-    .unknown { background: #687383; }
-    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-    .chip {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 2px 6px;
-      color: #334155;
-      background: #ffffff;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    .chip.warn {
-      border-color: #e5b966;
-      color: #7a4a00;
-      background: #fff7e5;
-    }
-    .empty {
-      padding: 28px;
-      text-align: center;
-      color: var(--muted);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-    }
-    .panel-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(280px, 1fr));
-      gap: 12px;
-    }
-    .surface {
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: #ffffff;
-      padding: 14px;
-    }
-    .surface h2 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      letter-spacing: 0;
-    }
-    .surface h3 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      letter-spacing: 0;
-    }
-    .muted { color: var(--muted); }
-    .card-list {
-      display: grid;
-      gap: 10px;
-    }
-    .experiment-card {
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 12px;
-      background: #ffffff;
-    }
-    .card-head {
-      display: flex;
-      gap: 10px;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }
-    .card-title {
-      font-weight: 700;
-      line-height: 1.3;
-    }
-    .card-summary {
-      color: #344054;
-      line-height: 1.4;
-      margin-bottom: 9px;
-    }
-    .kv-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(120px, 1fr));
-      gap: 7px;
-      font-size: 12px;
-    }
-    .kv-grid div span {
-      display: block;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
+    tr:last-child td { border-bottom: 0; }
     .bar-row {
       display: grid;
-      grid-template-columns: minmax(130px, 0.8fr) 1fr 48px;
+      grid-template-columns: minmax(90px, 0.8fr) minmax(90px, 1fr) 48px;
       gap: 8px;
       align-items: center;
-      margin: 6px 0;
+      margin: 7px 0;
       font-size: 12px;
+    }
+    .bar-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .bar {
       height: 9px;
-      background: #e8edf3;
       border-radius: 999px;
+      background: #3a404b;
       overflow: hidden;
     }
     .bar span {
       display: block;
       height: 100%;
-      background: #5a8fca;
+      border-radius: inherit;
+      background: var(--blue);
     }
-    @media (max-width: 900px) {
-      header, main { padding-left: 14px; padding-right: 14px; }
-      .summary { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
-      .controls { grid-template-columns: 1fr; }
-      .table-wrap { max-height: none; }
-      .panel-grid { grid-template-columns: 1fr; }
+    .collection-shelf {
+      display: grid;
+      gap: 10px;
+      min-height: 210px;
+    }
+    .shelf-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .shelf-items .chip {
+      max-width: 100%;
+      white-space: normal;
+    }
+    .compare-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .compare-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+    .compare-column {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-deep);
+      padding: 10px;
+    }
+    .compare-column h2 {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.3;
+      color: var(--bright);
+      overflow-wrap: anywhere;
+    }
+    .compare-column h2 span {
+      color: var(--muted);
+      font-weight: 650;
+    }
+    .compare-card {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+      border: 1px solid var(--soft-line);
+      border-left: 3px solid #4b5263;
+      border-radius: 8px;
+      padding: 11px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .compare-card.stage-executing { border-left-color: var(--green); }
+    .compare-card.stage-forward_accumulating { border-left-color: var(--blue); }
+    .compare-card.stage-replay_only { border-left-color: var(--amber); }
+    .compare-card.stage-blocked { border-left-color: var(--red); }
+    .compare-card h3 {
+      margin: 0;
+      color: var(--bright);
+      font-size: 14px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .mini-stat {
+      min-width: 0;
+      border: 1px solid var(--soft-line);
+      border-radius: 6px;
+      padding: 6px;
+      background: #252a32;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .mini-stat strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--bright);
+      font-size: 16px;
+      line-height: 1.1;
+    }
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #3a404b;
+      overflow: hidden;
+    }
+    .progress-fill {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+    }
+    .compare-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .curve-panel {
+      display: grid;
+      gap: 12px;
+    }
+    .chart-shell {
+      min-height: 330px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: #252a32;
+      padding: 12px;
+      overflow: hidden;
+    }
+    .curve-chart {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 280px;
+    }
+    .axis-line,
+    .grid-line {
+      stroke: #3a404b;
+      stroke-width: 1;
+    }
+    .axis-label {
+      fill: var(--muted);
+      font-size: 11px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .curve-path {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .curve-dot {
+      stroke: #252a32;
+      stroke-width: 2;
+    }
+    .curve-legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .legend-item {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      padding: 9px;
+      background: var(--panel-deep);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow: hidden;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .legend-name {
+      color: var(--bright);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .legend-metric {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .activation-strips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 8px;
+    }
+    .activation-strip {
+      min-width: 0;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--panel-deep);
+      display: grid;
+      gap: 8px;
+    }
+    .strip-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .strip-name {
+      color: var(--bright);
+      font-weight: 700;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    details.surface summary {
+      cursor: pointer;
+      color: var(--bright);
+      font-weight: 750;
+      list-style-position: inside;
+    }
+    .empty {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      background: var(--panel);
+      color: var(--muted);
+      text-align: center;
+    }
+    @media (max-width: 1180px) {
+      .hub-shell {
+        grid-template-columns: 240px minmax(0, 1fr);
+      }
+      .detail-panel {
+        position: static;
+        grid-column: 1 / -1;
+      }
+    }
+    @media (max-width: 820px) {
+      .topbar-inner,
+      main {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .title-row {
+        display: grid;
+        gap: 12px;
+      }
+      .meta-pills {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: flex-start;
+        min-width: 0;
+        max-width: 100%;
+      }
+      .pill {
+        max-width: 100%;
+        justify-content: flex-start;
+      }
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .tab {
+        width: 100%;
+        padding-left: 6px;
+        padding-right: 6px;
+        text-align: center;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding-bottom: 4px;
+      }
+      .metric {
+        min-width: 0;
+        min-height: 64px;
+        padding: 10px;
+      }
+      .metric .value {
+        margin-top: 5px;
+        font-size: 20px;
+      }
+      .hub-shell,
+      .panel-grid,
+      .compare-board,
+      .shelf-grid,
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        display: grid;
+      }
+      .section-head .pill {
+        justify-self: start;
+      }
+      .repo-top,
+      .card-head,
+      .detail-head {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .status {
+        justify-self: start;
+        white-space: normal;
+      }
+      .filter-panel {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .filter-panel .panel-title,
+      .filter-panel label:first-of-type,
+      .filter-foot {
+        grid-column: 1 / -1;
+      }
+      .filter-panel label {
+        margin-bottom: 0;
+      }
+      .bar-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Ginger Experiment Dashboard</h1>
-    <div class="meta">
-      <span id="generated"></span>
-      <span id="next-id"></span>
-      <span id="registry"></span>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-row">
+        <div>
+          <h1>Ginger Experiment Dashboard</h1>
+          <p class="subtitle">Hub-style local browser for experiment identity, evidence, results, and coordination hygiene.</p>
+        </div>
+        <div class="meta-pills" aria-label="Dashboard metadata">
+          <span class="pill">Generated <strong id="generated"></strong></span>
+          <span class="pill">Next <strong id="next-id"></strong></span>
+          <span class="pill">Registry <strong id="registry"></strong></span>
+        </div>
+      </div>
+      <nav class="tabs" aria-label="Dashboard views">
+        <button class="tab active-tab" data-view="experiments">Experiments</button>
+        <button class="tab" data-view="cards">Cards</button>
+        <button class="tab" data-view="leaderboards">Leaderboards</button>
+        <button class="tab" data-view="dataset">Dataset View</button>
+        <button class="tab" data-view="collections">Collections</button>
+        <button class="tab" data-view="production">Prod Compare</button>
+      </nav>
     </div>
   </header>
   <main>
     <section class="summary" id="summary"></section>
-    <nav class="tabs" aria-label="Dashboard views">
-      <button class="tab active-tab" data-view="experiments">Experiments</button>
-      <button class="tab" data-view="cards">Cards</button>
-      <button class="tab" data-view="leaderboards">Leaderboards</button>
-      <button class="tab" data-view="dataset">Dataset View</button>
-      <button class="tab" data-view="collections">Collections</button>
-    </nav>
-    <section class="controls" aria-label="Filters">
-      <label>Search<input id="search" type="search" autocomplete="off"></label>
-      <label>Status<select id="status"></select></label>
-      <label>Source<select id="source"></select></label>
-      <div class="toggle"><label><input id="anomalies" type="checkbox"> anomalies only</label></div>
-    </section>
-    <section id="table"></section>
+    <div class="hub-shell">
+      <aside class="filter-panel" aria-label="Filters">
+        <h2 class="panel-title">Discover</h2>
+        <label>Search<input id="search" type="search" autocomplete="off" placeholder="ID, family, variable, note"></label>
+        <label>Status<select id="status"></select></label>
+        <label>Source<select id="source"></select></label>
+        <label class="toggle-label"><input id="anomalies" type="checkbox"> Anomalies only</label>
+        <div class="filter-foot" id="filter-foot"></div>
+      </aside>
+      <section class="content-stack" id="results" aria-live="polite"></section>
+      <aside class="detail-panel" id="detail" aria-label="Selected experiment"></aside>
+    </div>
   </main>
   <script id="experiment-data" type="application/json">__INDEX_JSON__</script>
   <script>
@@ -978,19 +2185,28 @@ HTML_TEMPLATE = """<!doctype html>
     const statusSelect = document.getElementById("status");
     const sourceSelect = document.getElementById("source");
     const anomaliesOnly = document.getElementById("anomalies");
+    const resultsEl = document.getElementById("results");
+    const detailEl = document.getElementById("detail");
+    const filterFoot = document.getElementById("filter-foot");
     let activeView = "experiments";
+    let selectedId = rows[0]?.experiment_id || null;
 
     function text(value) {
       return value == null ? "" : String(value);
+    }
+    function esc(value) {
+      return text(value).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[ch]));
     }
     function optionList(values) {
       return ["all"].concat(Array.from(new Set(values.filter(Boolean))).sort());
     }
     function fillSelect(select, values) {
-      select.innerHTML = optionList(values).map(v => `<option value="${v}">${v}</option>`).join("");
+      select.innerHTML = optionList(values).map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
     }
     function statusLabel(row) {
-      return row.status_group || "unknown";
+      return row?.status_group || "unknown";
     }
     function rowBlob(row) {
       return [
@@ -1000,28 +2216,6 @@ HTML_TEMPLATE = """<!doctype html>
         row.single_causal_variable, row.summary, (row.sources || []).join(" "),
         (row.anomalies || []).join(" "), (row.identity_notes || []).join(" ")
       ].map(text).join(" ").toLowerCase();
-    }
-    function esc(value) {
-      return text(value).replace(/[&<>"']/g, ch => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[ch]));
-    }
-    function renderSummary() {
-      const s = index.summary || {};
-      const metrics = [
-        ["Experiments", s.experiment_count],
-        ["Registry Rows", s.registry_count],
-        ["Anomaly Rows", s.anomaly_experiment_count || 0],
-        ["Identity Notes", s.identity_note_experiment_count || 0],
-        ["Accepted", (s.status_counts || {}).accepted || 0],
-        ["Rejected", (s.status_counts || {}).rejected || 0]
-      ];
-      document.getElementById("summary").innerHTML = metrics.map(([label, value]) => (
-        `<div class="metric"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
-      )).join("");
-      document.getElementById("generated").textContent = `Generated ${index.generated_at || ""}`;
-      document.getElementById("next-id").textContent = `Next ${index.next_experiment_id || ""}`;
-      document.getElementById("registry").textContent = index.registry_path || "";
     }
     function filteredRows() {
       const q = searchInput.value.trim().toLowerCase();
@@ -1035,54 +2229,178 @@ HTML_TEMPLATE = """<!doctype html>
         return true;
       });
     }
-    function chips(values, warn=false) {
-      return `<div class="chips">${(values || []).map(v => `<span class="chip${warn ? " warn" : ""}">${esc(v)}</span>`).join("")}</div>`;
-    }
     function fmtNumber(value) {
       const n = Number(value);
       if (value == null || !Number.isFinite(n)) return "";
       if (Math.abs(n) >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
       return n.toLocaleString(undefined, { maximumFractionDigits: 4 });
     }
-    function metricText(metrics, key) {
-      return fmtNumber((metrics || {})[key]);
+    function metrics(row) {
+      return row?.metrics || row?.card?.metrics || {};
     }
-    function renderCard(row) {
-      const card = row.card || {};
-      const meta = card.metadata || {};
+    function primaryTitle(row) {
+      const card = row?.card || {};
+      return card.title || row?.trial_variant_id || row?.trial_family || row?.mechanism_family || row?.change_type || row?.experiment_id || "";
+    }
+    function primarySummary(row) {
+      const card = row?.card || {};
+      return card.summary || row?.summary || row?.hypothesis || "";
+    }
+    function chips(values, mode="") {
+      const cls = mode ? ` ${mode}` : "";
+      return `<div class="chips">${(values || []).map(v => `<span class="chip${cls}">${esc(v)}</span>`).join("")}</div>`;
+    }
+    function metricBlock(label, value) {
+      return `<div class="kv"><span>${esc(label)}</span>${esc(value || "")}</div>`;
+    }
+    function renderSummary() {
+      const s = index.summary || {};
+      const metricsList = [
+        ["Experiments", s.experiment_count],
+        ["Registry Rows", s.registry_count],
+        ["Anomaly Rows", s.anomaly_experiment_count || 0],
+        ["Identity Notes", s.identity_note_experiment_count || 0],
+        ["Accepted", (s.status_counts || {}).accepted || 0],
+        ["Rejected", (s.status_counts || {}).rejected || 0]
+      ];
+      document.getElementById("summary").innerHTML = metricsList.map(([label, value]) => (
+        `<div class="metric"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
+      )).join("");
+      document.getElementById("generated").textContent = index.generated_at || "";
+      document.getElementById("next-id").textContent = index.next_experiment_id || "";
+      document.getElementById("registry").textContent = index.registry_path || "";
+    }
+    function selectedRow(matches=filteredRows()) {
+      const current = rows.find(row => row.experiment_id === selectedId);
+      if (current && matches.some(row => row.experiment_id === current.experiment_id)) return current;
+      selectedId = matches[0]?.experiment_id || null;
+      return matches[0] || null;
+    }
+    function renderDetail(row) {
+      if (!row) {
+        detailEl.innerHTML = `<h2>No experiment selected</h2><p class="muted">Change filters to reveal experiments.</p>`;
+        return;
+      }
+      const m = metrics(row);
+      const meta = row.card?.metadata || {};
+      detailEl.innerHTML = `
+        <div class="detail-head">
+          <div>
+            <div class="id">${esc(row.experiment_id)}</div>
+            <h2>${esc(primaryTitle(row))}</h2>
+          </div>
+          <span class="status ${esc(statusLabel(row))}">${esc(statusLabel(row))}</span>
+        </div>
+        <p class="summary-text">${esc(primarySummary(row))}</p>
+        <div class="kv-grid">
+          ${metricBlock("Lane", row.lane)}
+          ${metricBlock("Trial", meta.trial_family || row.trial_family)}
+          ${metricBlock("Variable", meta.changed_variable || row.changed_variable || row.single_causal_variable)}
+          ${metricBlock("EV Delta", fmtNumber(m.expected_value_score_delta))}
+          ${metricBlock("PnL Delta", fmtNumber(m.total_pnl_delta))}
+          ${metricBlock("After EV", fmtNumber(m.after_expected_value_score))}
+        </div>
+        <div class="detail-section">
+          <h3>Sources</h3>
+          ${chips(row.sources || [], "source")}
+        </div>
+        <div class="detail-section">
+          <h3>Anomalies</h3>
+          ${(row.anomalies || []).length ? chips(row.anomalies, "warn") : `<span class="chip good">none</span>`}
+        </div>
+        <div class="detail-section">
+          <h3>Identity Notes</h3>
+          ${(row.identity_notes || []).length ? chips(row.identity_notes, "note") : `<span class="chip good">none</span>`}
+        </div>
+        <div class="detail-section">
+          <h3>Files</h3>
+          <div class="file-list">${(row.files || []).slice(0, 12).map(file => `<div>${esc(file)}</div>`).join("") || `<div class="muted">No files indexed</div>`}</div>
+        </div>`;
+    }
+    function repoCard(row) {
+      const m = metrics(row);
+      const selected = row.experiment_id === selectedId ? " selected" : "";
       return `
-        <article class="experiment-card">
-          <div class="card-head">
+        <article class="repo-card${selected}" data-select-id="${esc(row.experiment_id)}" tabindex="0">
+          <div class="repo-top">
             <div>
-              <div class="id">${esc(card.id || row.experiment_id)}</div>
-              <div class="card-title">${esc(card.title || row.trial_family || "")}</div>
+              <div class="id">${esc(row.experiment_id)}</div>
+              <div class="repo-name">${esc(primaryTitle(row))}</div>
             </div>
             <span class="status ${esc(statusLabel(row))}">${esc(statusLabel(row))}</span>
           </div>
-          <div class="card-summary">${esc(card.summary || "")}</div>
+          <div class="summary-text">${esc(primarySummary(row))}</div>
+          <div class="chips">
+            ${row.lane ? `<span class="chip">${esc(row.lane)}</span>` : ""}
+            ${(row.trial_family || row.mechanism_family) ? `<span class="chip">${esc(row.trial_family || row.mechanism_family)}</span>` : ""}
+            ${(row.changed_variable || row.single_causal_variable) ? `<span class="chip">${esc(row.changed_variable || row.single_causal_variable)}</span>` : ""}
+            ${(row.anomalies || []).length ? `<span class="chip warn">${esc((row.anomalies || []).length)} anomalies</span>` : ""}
+            ${(row.identity_notes || []).length ? `<span class="chip note">${esc((row.identity_notes || []).length)} notes</span>` : ""}
+          </div>
           <div class="kv-grid">
-            <div><span>Lane</span>${esc(card.lane || "")}</div>
-            <div><span>Trial</span>${esc(meta.trial_family || "")}</div>
-            <div><span>Variable</span>${esc(meta.changed_variable || "")}</div>
-            <div><span>EV Delta</span>${esc(metricText(card.metrics, "expected_value_score_delta"))}</div>
-            <div><span>PnL Delta</span>${esc(metricText(card.metrics, "total_pnl_delta"))}</div>
-            <div><span>Anomalies</span>${esc((card.anomalies || []).length)}</div>
-            <div><span>Notes</span>${esc((card.identity_notes || []).length)}</div>
+            ${metricBlock("EV Delta", fmtNumber(m.expected_value_score_delta))}
+            ${metricBlock("PnL Delta", fmtNumber(m.total_pnl_delta))}
           </div>
         </article>`;
     }
-    function renderCards() {
-      const filtered = filteredRows().slice(0, 80);
-      document.getElementById("table").innerHTML = `
+    function bindSelectableCards() {
+      resultsEl.querySelectorAll("[data-select-id]").forEach(card => {
+        const select = () => {
+          selectedId = card.dataset.selectId;
+          renderActive();
+        };
+        card.addEventListener("click", select);
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            select();
+          }
+        });
+      });
+    }
+    function renderExperiments() {
+      const matches = filteredRows();
+      const row = selectedRow(matches);
+      renderDetail(row);
+      filterFoot.textContent = `${matches.length} matches from ${rows.length} indexed experiments.`;
+      if (!matches.length) {
+        resultsEl.innerHTML = `<div class="empty">No matching experiments</div>`;
+        return;
+      }
+      const limit = 140;
+      resultsEl.innerHTML = `
         <section class="surface">
-          <h2>Experiment Cards</h2>
-          <p class="muted">Compact HF-style cards for the current filter. Showing ${filtered.length} of ${filteredRows().length} matches.</p>
-          <div class="card-list">${filtered.map(renderCard).join("")}</div>
+          <div class="section-head">
+            <div>
+              <h2>Experiment Hub</h2>
+              <p>Card-first browsing with status, tags, metrics, and identity hygiene visible before opening details.</p>
+            </div>
+            <span class="pill">Showing <strong>${esc(Math.min(matches.length, limit))}</strong></span>
+          </div>
+          <div class="repo-list">${matches.slice(0, limit).map(repoCard).join("")}</div>
         </section>`;
+      bindSelectableCards();
+    }
+    function renderCards() {
+      const matches = filteredRows();
+      const row = selectedRow(matches);
+      renderDetail(row);
+      filterFoot.textContent = `${matches.length} matching cards.`;
+      resultsEl.innerHTML = `
+        <section class="surface">
+          <div class="section-head">
+            <div>
+              <h2>Experiment Cards</h2>
+              <p>Compact card grid for comparing identities, variables, and before/after signals.</p>
+            </div>
+          </div>
+          <div class="card-grid">${matches.slice(0, 96).map(repoCard).join("") || `<div class="empty">No cards match the filters</div>`}</div>
+        </section>`;
+      bindSelectableCards();
     }
     function leaderboardTable(title, rows, metric) {
       const body = (rows || []).map(row => `
-        <tr>
+        <tr data-select-id="${esc(row.experiment_id)}">
           <td class="id">${esc(row.experiment_id)}</td>
           <td>${esc(row.trial_family || row.mechanism_family || "")}</td>
           <td>${esc(row.changed_variable || "")}</td>
@@ -1098,10 +2416,13 @@ HTML_TEMPLATE = """<!doctype html>
         </section>`;
     }
     function renderLeaderboards() {
+      const row = selectedRow(filteredRows());
+      renderDetail(row);
+      filterFoot.textContent = "Leaderboards use generated metric deltas from the full index.";
       const boards = index.leaderboards || {};
-      const familyRows = (boards.rejected_families || []).map(row => `
-        <tr><td>${esc(row.family)}</td><td>${esc(row.count)}</td></tr>`).join("");
-      document.getElementById("table").innerHTML = `
+      const familyRows = (boards.rejected_families || []).map(item => `
+        <tr><td>${esc(item.family)}</td><td>${esc(item.count)}</td></tr>`).join("");
+      resultsEl.innerHTML = `
         <div class="panel-grid">
           ${leaderboardTable("Top EV Delta", boards.top_ev_delta, "expected_value_score_delta")}
           ${leaderboardTable("Worst EV Delta", boards.bottom_ev_delta, "expected_value_score_delta")}
@@ -1110,12 +2431,16 @@ HTML_TEMPLATE = """<!doctype html>
             <h2>Rejected Families</h2>
             <div class="table-wrap"><table>
               <thead><tr><th>Family</th><th>Rejected</th></tr></thead>
-              <tbody>${familyRows}</tbody>
+              <tbody>${familyRows || `<tr><td colspan="2">No rejected family counts</td></tr>`}</tbody>
             </table></div>
           </section>
         </div>`;
+      bindSelectableCards();
     }
     function renderDatasetView() {
+      const row = selectedRow(filteredRows());
+      renderDetail(row);
+      filterFoot.textContent = "Dataset View summarizes field coverage and dominant values.";
       const columns = (index.dataset_view || {}).columns || [];
       const cards = columns.map(col => {
         const total = Math.max(1, Number(col.present || 0) + Number(col.missing || 0));
@@ -1126,71 +2451,361 @@ HTML_TEMPLATE = """<!doctype html>
             <p class="muted">${esc(col.present)} present, ${esc(col.missing)} missing, ${esc(col.unique)} unique</p>
             ${top.map(item => {
               const pct = Math.round((Number(item.count || 0) / total) * 100);
-              return `<div class="bar-row"><div>${esc(item.value)}</div><div class="bar"><span style="width:${pct}%"></span></div><div>${esc(item.count)}</div></div>`;
+              return `<div class="bar-row"><div class="bar-label">${esc(item.value)}</div><div class="bar"><span style="width:${pct}%"></span></div><div>${esc(item.count)}</div></div>`;
             }).join("")}
           </section>`;
       }).join("");
-      document.getElementById("table").innerHTML = `<div class="panel-grid">${cards}</div>`;
+      resultsEl.innerHTML = `<div class="panel-grid">${cards}</div>`;
     }
     function renderCollections() {
+      const row = selectedRow(filteredRows());
+      renderDetail(row);
+      filterFoot.textContent = "Collections are generated shelves; they do not change experiment state.";
       const collectionRows = (index.collections || []).map(collection => `
-        <section class="surface">
-          <h2>${esc(collection.title)}</h2>
-          <p class="muted">${esc(collection.description)}</p>
-          <div class="metric"><div class="label">Experiments</div><div class="value">${esc(collection.count)}</div></div>
-          <h3>Sample</h3>
-          ${chips((collection.experiment_ids || []).slice(0, 30))}
+        <section class="surface collection-shelf">
+          <div class="section-head">
+            <div>
+              <h2>${esc(collection.title)}</h2>
+              <p>${esc(collection.description)}</p>
+            </div>
+            <span class="pill"><strong>${esc(collection.count)}</strong></span>
+          </div>
+          <div class="shelf-items">${(collection.experiment_ids || []).slice(0, 36).map(id => `<span class="chip source" data-select-id="${esc(id)}">${esc(id)}</span>`).join("") || `<span class="muted">No experiments in this collection</span>`}</div>
         </section>`).join("");
-      document.getElementById("table").innerHTML = `<div class="panel-grid">${collectionRows}</div>`;
+      resultsEl.innerHTML = `<div class="shelf-grid">${collectionRows}</div>`;
+      bindSelectableCards();
     }
-    function renderTable() {
+    function renderProductionCompare() {
+      const compare = index.production_compare || {};
+      const summary = compare.summary || {};
+      const live = compare.live_positions || {};
+      const surfaces = compare.surfaces || [];
+      const sleeves = compare.paper_sleeves || [];
+      filterFoot.textContent = "Production Compare is read-only: it summarizes current_state.md, paper sleeves, pilot ledgers, and open positions.";
+      detailEl.innerHTML = `
+        <h2>Production Snapshot</h2>
+        <div class="detail-section">
+          <h3>Open Positions</h3>
+          <div class="kv-grid">
+            ${metricBlock("Rows", live.count)}
+            ${metricBlock("Positions", live.positions_count)}
+            ${metricBlock("Observations", live.observations_count)}
+            ${metricBlock("As Of", live.as_of)}
+          </div>
+          <div class="detail-section">${chips(live.ticker_sample || [], "source")}</div>
+        </div>
+        <div class="detail-section">
+          <h3>Generated From</h3>
+          ${chips(compare.generated_from || [], "note")}
+        </div>`;
+      const metricCards = [
+        ["Executing", summary.executing_count || 0],
+        ["Forward", summary.forward_accumulating_count || 0],
+        ["Replay", summary.replay_only_count || 0],
+        ["Blocked", summary.blocked_count || 0],
+        ["Paper Open", summary.paper_open_count || 0],
+        ["Paper Pending", summary.paper_pending_count || 0],
+        ["Closed Evidence", summary.paper_closed_count || 0],
+        ["Known Gaps", summary.known_gap_count || 0]
+      ].map(([label, value]) => `<div class="metric"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`).join("");
+      function surfaceCard(surface) {
+        const required = Number(surface.required_closed_forward || 0);
+        const closed = Number(surface.paper_closed_count || 0);
+        const pct = required ? Math.max(0, Math.min(100, Math.round((closed / required) * 100))) : 0;
+        const progress = required ? `
+          <div class="progress-track" title="${esc(closed)} / ${esc(required)} closed outcomes">
+            <span class="progress-fill" style="width:${pct}%"></span>
+          </div>
+          <div class="compare-note">${esc(closed)} / ${esc(required)} closed outcomes / ${esc(surface.target_basis || "")}</div>` : "";
+        return `
+          <article class="compare-card stage-${esc(surface.state || "unknown")}">
+            <div class="repo-top">
+              <h3>${esc(surface.surface)}</h3>
+              <span class="chip source">${esc(surface.stage_label || surface.state || "unknown")}</span>
+            </div>
+            <div class="compare-note">${esc(surface.default_execution_status || "")}</div>
+            <div class="mini-stats">
+              <div class="mini-stat">open<strong>${esc(surface.paper_open_count || 0)}</strong></div>
+              <div class="mini-stat">pending<strong>${esc(surface.paper_pending_count || 0)}</strong></div>
+              <div class="mini-stat">closed<strong>${esc(surface.paper_closed_count || 0)}</strong></div>
+            </div>
+            ${progress}
+            <div class="summary-text">${esc(surface.gap_label || "")}</div>
+            <div class="compare-note">${esc(surface.current_evidence || "")}</div>
+            ${(surface.ticker_sample || []).length ? chips(surface.ticker_sample, "source") : ""}
+          </article>`;
+      }
+      const stages = [
+        ["executing", "Executing Now"],
+        ["forward_accumulating", "Forward Accumulation"],
+        ["replay_only", "Replay / Default-Off"],
+        ["blocked", "Blocked / Needs Adapter"]
+      ];
+      const board = stages.map(([stage, title]) => {
+        const items = surfaces.filter(surface => surface.state === stage);
+        return `
+          <section class="compare-column">
+            <h2>${esc(title)} <span>${esc(items.length)}</span></h2>
+            ${items.map(surfaceCard).join("") || `<div class="compare-note">No surfaces in this stage.</div>`}
+          </section>`;
+      }).join("");
+      const sleeveRows = sleeves.map(sleeve => `
+        <tr>
+          <td>${esc(sleeve.sleeve || sleeve.slug)}</td>
+          <td>${esc(sleeve.updated_at || "")}</td>
+          <td>${esc(sleeve.open_count || 0)}</td>
+          <td>${esc(sleeve.pending_count || 0)}</td>
+          <td>${esc(sleeve.closed_count || 0)}</td>
+          <td>${esc(sleeve.ledger_row_count ?? "")}</td>
+          <td>${esc((sleeve.ticker_sample || []).join(", "))}</td>
+        </tr>`).join("");
+      resultsEl.innerHTML = `
+        <div class="compare-grid">
+          <section class="summary">${metricCards}</section>
+          <section class="surface">
+            <div class="section-head">
+              <div>
+                <h2>Production vs Backtest Activation Map</h2>
+                <p>Which surfaces are live, which are only accumulating forward evidence, and what still blocks activation.</p>
+              </div>
+              <span class="pill">Known gaps <strong>${esc(summary.known_gap_count || 0)}</strong></span>
+            </div>
+            <div class="compare-board">${board}</div>
+          </section>
+          <section class="surface">
+            <div class="section-head">
+              <div>
+                <h2>Paper Sleeve Ledger</h2>
+                <p>Forward/paper files currently feeding the compare view.</p>
+              </div>
+              <span class="pill">Sleeves <strong>${esc(sleeves.length)}</strong></span>
+            </div>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Sleeve</th><th>Updated</th><th>Open</th><th>Pending</th><th>Closed</th><th>Ledger Rows</th><th>Tickers</th></tr></thead>
+              <tbody>${sleeveRows || `<tr><td colspan="7">No paper sleeve states indexed</td></tr>`}</tbody>
+            </table></div>
+          </section>
+        </div>`;
+    }
+    function shortSleeveName(value) {
+      return text(value)
+        .replace(/_PAPER$/i, "")
+        .replace(/_/g, " ")
+        .replace(/\\s+/g, " ")
+        .trim();
+    }
+    function curveColor(index) {
+      return ["#61afef", "#98c379", "#e5c07b", "#c678dd", "#56b6c2", "#e06c75", "#d19a66", "#abb2bf"][index % 8];
+    }
+    function renderEvidenceChart(curves) {
+      const visible = (curves || [])
+        .filter(curve => (curve.points || []).length && curve.target_count)
+        .slice(0, 8);
+      if (!visible.length) {
+        return `<div class="empty">No forward evidence curves yet</div>`;
+      }
+      const width = 900;
+      const height = 320;
+      const left = 54;
+      const right = 20;
+      const top = 22;
+      const bottom = 62;
+      const chartWidth = width - left - right;
+      const chartHeight = height - top - bottom;
+      const y = value => top + (100 - Math.max(0, Math.min(100, Number(value || 0)))) / 100 * chartHeight;
+      const datedPoints = visible.flatMap(curve => (curve.points || [])
+        .map(point => ({ point, time: Date.parse(point.date || "") }))
+        .filter(item => Number.isFinite(item.time)));
+      const minTime = Math.min(...datedPoints.map(item => item.time));
+      const maxTime = Math.max(...datedPoints.map(item => item.time));
+      const xForTime = time => left + (maxTime === minTime ? chartWidth : ((time - minTime) / (maxTime - minTime)) * chartWidth);
+      const formatDate = time => new Date(time).toISOString().slice(5, 10);
+      const xTicks = maxTime === minTime
+        ? [minTime]
+        : [minTime, minTime + (maxTime - minTime) / 2, maxTime];
+      const grid = [0, 25, 50, 75, 100].map(value => `
+        <line class="grid-line" x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}"></line>
+        <text class="axis-label" x="12" y="${y(value) + 4}">${value}%</text>`).join("");
+      const xAxisTicks = xTicks.map(time => `
+        <line class="grid-line" x1="${xForTime(time)}" y1="${top}" x2="${xForTime(time)}" y2="${height - bottom}"></line>
+        <text class="axis-label" x="${xForTime(time) - 18}" y="${height - 34}">${formatDate(time)}</text>`).join("");
+      const paths = visible.map((curve, curveIndex) => {
+        const points = (curve.points || [])
+          .map(point => ({ point, time: Date.parse(point.date || "") }))
+          .filter(item => Number.isFinite(item.time));
+        if (!points.length) return "";
+        const color = curveColor(curveIndex);
+        const coords = points.map(item => [xForTime(item.time), y(item.point.pipeline_pct)]);
+        const path = coords.map(([x, y], idx) => `${idx ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+        const last = coords[coords.length - 1];
+        const lastPoint = points[points.length - 1].point;
+        return `
+          <path class="curve-path" d="${path}" stroke="${color}"><title>${esc(curve.sleeve)} ${esc(lastPoint.date)}: ${esc(Math.round(lastPoint.pipeline_pct || 0))}% maturity, ${esc(lastPoint.closed_count || 0)} closed</title></path>
+          <circle class="curve-dot" cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="4.5" fill="${color}"></circle>`;
+      }).join("");
+      const legend = visible.map((curve, curveIndex) => `
+        <div class="legend-item">
+          <span class="legend-dot" style="background:${curveColor(curveIndex)}"></span>
+          <span class="legend-name" title="${esc(curve.sleeve)}">${esc(shortSleeveName(curve.sleeve))}</span>
+          <span class="legend-metric">${esc(curve.latest_date || "")} / ${esc(Math.round(curve.pipeline_pct || 0))}%</span>
+        </div>`).join("");
+      return `
+        <div class="chart-shell">
+          <svg class="curve-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Forward evidence curves">
+            ${grid}
+            ${xAxisTicks}
+            <line class="axis-line" x1="${left}" y1="${height - bottom}" x2="${width - right}" y2="${height - bottom}"></line>
+            <line class="axis-line" x1="${left}" y1="${top}" x2="${left}" y2="${height - bottom}"></line>
+            ${paths}
+            <text class="axis-label" x="${left}" y="${height - 12}">snapshot date from paper sleeve snapshots.jsonl</text>
+          </svg>
+        </div>
+        <div class="curve-legend">${legend}</div>`;
+    }
+    function activationStrip(surface) {
+      const required = Number(surface.required_closed_forward || 0);
+      const closed = Number(surface.paper_closed_count || 0);
+      const pct = required ? Math.max(0, Math.min(100, Math.round((closed / required) * 100))) : null;
+      const progress = required ? `
+        <div class="progress-track" title="${esc(closed)} / ${esc(required)} closed outcomes">
+          <span class="progress-fill" style="width:${pct}%"></span>
+        </div>` : "";
+      return `
+        <article class="activation-strip">
+          <div class="strip-head">
+            <div class="strip-name">${esc(surface.surface)}</div>
+            <span class="chip source">${esc(surface.stage_label || surface.state || "unknown")}</span>
+          </div>
+          ${progress}
+          <div class="compare-note">${required ? `${esc(closed)} / ${esc(required)} closed, ${esc(surface.evidence_gap || 0)} remaining` : esc(surface.gap_label || "")}</div>
+        </article>`;
+    }
+    function renderProductionCompareVisual() {
+      const compare = index.production_compare || {};
+      const summary = compare.summary || {};
+      const live = compare.live_positions || {};
+      const surfaces = compare.surfaces || [];
+      const sleeves = compare.paper_sleeves || [];
+      const curves = compare.evidence_curves || [];
+      filterFoot.textContent = "Production Compare is read-only. The curve uses paper snapshot history; only closed outcomes count for promotion.";
+      detailEl.innerHTML = `
+        <h2>Production Snapshot</h2>
+        <div class="detail-section">
+          <h3>Open Positions</h3>
+          <div class="kv-grid">
+            ${metricBlock("Rows", live.count)}
+            ${metricBlock("Positions", live.positions_count)}
+            ${metricBlock("Observations", live.observations_count)}
+            ${metricBlock("As Of", live.as_of)}
+          </div>
+          <div class="detail-section">${chips(live.ticker_sample || [], "source")}</div>
+        </div>
+        <div class="detail-section">
+          <h3>Generated From</h3>
+          ${chips(compare.generated_from || [], "note")}
+        </div>`;
+      const metricCards = [
+        ["Executing", summary.executing_count || 0],
+        ["Forward", summary.forward_accumulating_count || 0],
+        ["Blocked", summary.blocked_count || 0],
+        ["Paper Open", summary.paper_open_count || 0],
+        ["Paper Pending", summary.paper_pending_count || 0],
+        ["Closed", summary.paper_closed_count || 0]
+      ].map(([label, value]) => `<div class="metric"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`).join("");
+      const stages = [
+        ["executing", "Executing Now"],
+        ["forward_accumulating", "Forward Accumulation"],
+        ["replay_only", "Replay / Default-Off"],
+        ["blocked", "Blocked / Needs Adapter"]
+      ];
+      function surfaceCard(surface) {
+        return `<article class="compare-card stage-${esc(surface.state || "unknown")}">
+          <div class="repo-top">
+            <h3>${esc(surface.surface)}</h3>
+            <span class="chip source">${esc(surface.stage_label || surface.state || "unknown")}</span>
+          </div>
+          <div class="mini-stats">
+            <div class="mini-stat">open<strong>${esc(surface.paper_open_count || 0)}</strong></div>
+            <div class="mini-stat">pending<strong>${esc(surface.paper_pending_count || 0)}</strong></div>
+            <div class="mini-stat">closed<strong>${esc(surface.paper_closed_count || 0)}</strong></div>
+          </div>
+          <div class="summary-text">${esc(surface.gap_label || "")}</div>
+        </article>`;
+      }
+      const board = stages.map(([stage, title]) => {
+        const items = surfaces.filter(surface => surface.state === stage);
+        return `<section class="compare-column"><h2>${esc(title)} <span>${esc(items.length)}</span></h2>${items.map(surfaceCard).join("") || `<div class="compare-note">No surfaces in this stage.</div>`}</section>`;
+      }).join("");
+      const sleeveRows = sleeves.map(sleeve => `
+        <tr>
+          <td>${esc(sleeve.sleeve || sleeve.slug)}</td>
+          <td>${esc(sleeve.updated_at || "")}</td>
+          <td>${esc(sleeve.open_count || 0)}</td>
+          <td>${esc(sleeve.pending_count || 0)}</td>
+          <td>${esc(sleeve.closed_count || 0)}</td>
+          <td>${esc(sleeve.forward_target_count ?? "")}</td>
+          <td>${esc((sleeve.ticker_sample || []).join(", "))}</td>
+        </tr>`).join("");
+      resultsEl.innerHTML = `
+        <div class="compare-grid">
+          <section class="summary">${metricCards}</section>
+          <section class="surface curve-panel">
+            <div class="section-head">
+              <div>
+                <h2>Forward Evidence Curves</h2>
+                <p>HF-style training-curve view for paper sleeves. X-axis is snapshot date; Y-axis is evidence maturity. Closed samples remain the promotion gate.</p>
+              </div>
+              <span class="pill">Curves <strong>${esc(curves.length)}</strong></span>
+            </div>
+            ${renderEvidenceChart(curves)}
+          </section>
+          <section class="surface">
+            <div class="section-head">
+              <div>
+                <h2>Activation Progress</h2>
+                <p>Compact closed-sample progress for the main production/backtest surfaces.</p>
+              </div>
+              <span class="pill">Known gaps <strong>${esc(summary.known_gap_count || 0)}</strong></span>
+            </div>
+            <div class="activation-strips">${surfaces.map(activationStrip).join("")}</div>
+          </section>
+          <details class="surface">
+            <summary>Activation Map Details</summary>
+            <div class="compare-board">${board}</div>
+          </details>
+          <details class="surface">
+            <summary>Paper Sleeve Ledger</summary>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Sleeve</th><th>Updated</th><th>Open</th><th>Pending</th><th>Closed</th><th>Target</th><th>Tickers</th></tr></thead>
+              <tbody>${sleeveRows || `<tr><td colspan="7">No paper sleeve states indexed</td></tr>`}</tbody>
+            </table></div>
+          </details>
+        </div>`;
+    }
+    function renderActive() {
       if (activeView === "cards") return renderCards();
       if (activeView === "leaderboards") return renderLeaderboards();
       if (activeView === "dataset") return renderDatasetView();
       if (activeView === "collections") return renderCollections();
-      const filtered = filteredRows();
-      if (!filtered.length) {
-        document.getElementById("table").innerHTML = `<div class="empty">No matching experiments</div>`;
-        return;
-      }
-      const body = filtered.map(row => `
-        <tr>
-          <td class="id">${esc(row.experiment_id)}</td>
-          <td><span class="status ${esc(statusLabel(row))}">${esc(statusLabel(row))}</span></td>
-          <td>${esc(row.lane || "")}</td>
-          <td>${esc(row.trial_family || row.mechanism_family || "")}</td>
-          <td>${esc(row.changed_variable || row.single_causal_variable || "")}</td>
-          <td>${esc(row.hypothesis || row.summary || "")}</td>
-          <td>${chips(row.sources || [])}</td>
-          <td>${chips(row.anomalies || [], true)}</td>
-          <td>${chips(row.identity_notes || [])}</td>
-        </tr>`).join("");
-      document.getElementById("table").innerHTML = `
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>ID</th><th>Status</th><th>Lane</th><th>Family</th>
-              <th>Variable</th><th>Hypothesis / Summary</th><th>Sources</th><th>Anomalies</th><th>Notes</th>
-            </tr></thead>
-            <tbody>${body}</tbody>
-          </table>
-        </div>`;
+      if (activeView === "production") return renderProductionCompareVisual();
+      return renderExperiments();
     }
+
     fillSelect(statusSelect, rows.map(statusLabel));
     fillSelect(sourceSelect, rows.flatMap(row => row.sources || []));
     renderSummary();
-    renderTable();
+    renderActive();
     document.querySelectorAll(".tab").forEach(tab => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(other => other.classList.remove("active-tab"));
         tab.classList.add("active-tab");
         activeView = tab.dataset.view;
-        renderTable();
+        renderActive();
       });
     });
     [searchInput, statusSelect, sourceSelect, anomaliesOnly].forEach(el => {
-      el.addEventListener("input", renderTable);
-      el.addEventListener("change", renderTable);
+      el.addEventListener("input", renderActive);
+      el.addEventListener("change", renderActive);
     });
   </script>
 </body>

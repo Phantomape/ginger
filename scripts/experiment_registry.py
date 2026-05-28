@@ -115,10 +115,11 @@ def experiment_log_path(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
     return Path(logs_dir) / f"{experiment_id}.json"
 
 
-def save_ticket(ticket, tickets_dir=DEFAULT_TICKETS_DIR):
+def save_ticket(ticket, tickets_dir=DEFAULT_TICKETS_DIR, *, overwrite=True):
     path = ticket_path(ticket["experiment_id"], tickets_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
+    mode = "w" if overwrite else "x"
+    with path.open(mode, encoding="utf-8") as f:
         json.dump(ticket, f, indent=2, ensure_ascii=False)
         f.write("\n")
     return path
@@ -415,6 +416,20 @@ def next_experiment_id(registry, today=None, *, root=None):
     return f"{prefix}{max_seen + 1:03d}"
 
 
+def require_available_experiment_id(experiment_id, registry, *, root=None):
+    normalized = normalize_experiment_id(experiment_id)
+    if not normalized:
+        raise ValueError(
+            "experiment_id must match exp-YYYYMMDD-NNN, got "
+            f"{experiment_id!r}"
+        )
+    sources = collect_experiment_id_sources(registry, root=root)
+    if normalized in sources:
+        joined = ", ".join(sources[normalized])
+        raise ValueError(f"experiment_id already exists: {normalized} ({joined})")
+    return normalized
+
+
 def parse_csv(value):
     if not value:
         return []
@@ -580,6 +595,7 @@ def get_experiment(registry, experiment_id):
 def create_ticket(
     registry,
     *,
+    experiment_id=None,
     lane,
     hypothesis,
     change_type,
@@ -605,12 +621,21 @@ def create_ticket(
 ):
     if lane not in VALID_LANES:
         raise ValueError(f"lane must be one of {sorted(VALID_LANES)}")
+    repo_root = _registry_repo_root(registry)
     baseline = baseline_result_file or latest_backtest_result()
-    experiment_id = next_experiment_id(registry, root=_registry_repo_root(registry))
+    if experiment_id is None:
+        experiment_id = next_experiment_id(registry, root=repo_root)
+    experiment_id = require_available_experiment_id(
+        experiment_id,
+        registry,
+        root=repo_root,
+    )
     changed_variable = changed_variable or single_causal_variable
     mechanism_family = mechanism_family or change_type
     trial_family = trial_family or mechanism_family
     trial_variant_id = trial_variant_id or experiment_id
+    created_at = utc_now_iso()
+    file_part = slugify_file_part(file_slug or single_causal_variable)
     write_scope = normalize_allowed_write_scope(
         allowed_write_scope,
         experiment_id=experiment_id,
@@ -623,6 +648,18 @@ def create_ticket(
     ticket = {
         "experiment_id": experiment_id,
         "experiment_uid": new_experiment_uid(),
+        "hub_identity": {
+            "scheme": "hf_hub_local_v1",
+            "namespace": "ginger/experiments",
+            "repo_id": f"ginger/experiments/{experiment_id}",
+            "slug": file_part,
+            "reserved_at": created_at,
+            "reservation_rule": (
+                "Create the ticket under registry lock before writing runners, "
+                "artifacts, data, or logs. Existing IDs are rejected across "
+                "registry, JSONL, tickets, logs, artifacts, data, and runners."
+            ),
+        },
         "status": "proposed",
         "lane": lane,
         "owner": owner,
@@ -646,13 +683,17 @@ def create_ticket(
         "evaluation_windows": evaluation_windows or [],
         "acceptance_rule": acceptance_rule or "Use AGENTS.md Gate 4.",
         "prediction": normalize_prediction(prediction),
-        "created_at": utc_now_iso(),
+        "created_at": created_at,
         "claimed_at": None,
         "completed_at": None,
         "result": None,
     }
     if "_tickets_dir" in registry:
-        save_ticket(ticket, _registry_tickets_dir(registry))
+        try:
+            save_ticket(ticket, _registry_tickets_dir(registry), overwrite=False)
+        except FileExistsError as exc:
+            path = ticket_path(experiment_id, _registry_tickets_dir(registry))
+            raise ValueError(f"experiment ticket already exists: {path}") from exc
         _sync_index_entry(registry, ticket)
     else:
         registry.setdefault("experiments", []).append(ticket)

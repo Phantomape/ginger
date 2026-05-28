@@ -11,11 +11,18 @@ from experiment_registry import (
 )
 
 
-def main():
+def main(description=__doc__):
     import argparse
 
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=description)
     add_common_registry_arg(parser)
+    parser.add_argument(
+        "--experiment-id",
+        help=(
+            "Optional explicit ID to reserve. If omitted, the next collision-safe "
+            "ID is allocated from all known identity sources."
+        ),
+    )
     parser.add_argument("--lane", required=True)
     parser.add_argument("--hypothesis", required=True)
     parser.add_argument("--change-type", required=True)
@@ -94,6 +101,7 @@ def main():
         args.registry,
         lambda registry: create_ticket(
             registry,
+            experiment_id=args.experiment_id,
             lane=args.lane,
             hypothesis=args.hypothesis,
             change_type=args.change_type,

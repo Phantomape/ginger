@@ -28,6 +28,36 @@ http://127.0.0.1:8765/index.html
 If port `8765` is already in use, change both the server command and browser URL
 to another local port, such as `8766`.
 
+## Reserve IDs Before Work
+
+Use a Hugging Face Hub-style reservation flow: create the experiment identity
+first, then write runners, artifacts, data, and logs under the reserved ID.
+Do not copy `Next exp-...` from the dashboard as an allocation lock; the
+dashboard is a static snapshot.
+
+Preferred command:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\reserve_experiment.py `
+  --lane measurement_repair `
+  --hypothesis "Make experiment identity collision-proof before artifacts are written." `
+  --change-type identity_reservation `
+  --single-causal-variable experiment_identity_reservation `
+  --file-slug identity_reservation
+```
+
+The command writes a proposed ticket under `experiments/tickets/` and updates
+`docs/experiment_registry.json` under the registry lock. The returned
+`experiment_id` is the only ID to use in runner filenames, data directories,
+artifact names, and log rows.
+
+To reserve a specific ID, pass `--experiment-id exp-YYYYMMDD-NNN`. The command
+fails if that ID already appears anywhere the allocator scans: registry,
+JSONL, tickets, per-experiment logs, data experiment directories, artifacts,
+or experiment runner filenames. This mirrors the useful part of
+Hugging Face Hub's `create_repo(..., exist_ok=False)` behavior: names are
+claimed centrally before content is pushed.
+
 ## Files
 
 The builder writes:
@@ -43,7 +73,9 @@ machine-readable index behind the UI.
 ## What To Check
 
 - `Next exp-...`: the next collision-safe experiment ID inferred from all known
-  identity sources, not only `docs/experiment_registry.json`.
+  identity sources, not only `docs/experiment_registry.json`. This is a
+  diagnostic preview, not a reservation. Use `scripts\reserve_experiment.py`
+  before starting a new runner or artifact.
 - `Anomaly Rows`: actionable identity problems, such as filename/payload ID
   mismatches, divergent mirrored tickets, active/proposed work missing registry
   coverage, or registry rows missing tickets.
@@ -71,7 +103,13 @@ The dashboard supports text search, status filtering, source filtering, and an
 
 ## Dashboard Views
 
-The UI borrows four Hugging Face Hub patterns and keeps them local/read-only:
+The UI uses a Hugging Face Hub-style layout with an Atom One Dark-inspired
+palette, and keeps everything local/read-only:
+
+- `Experiments`: the default card-first browser. The left rail contains
+  discovery filters, the center column lists experiment cards, and the right
+  detail panel shows the selected experiment's card, metrics, anomalies, notes,
+  and indexed files.
 
 - `Cards`: compact experiment cards with identity, status, family, changed
   variable, metrics, sources, anomalies, and related files.
@@ -82,6 +120,14 @@ The UI borrows four Hugging Face Hub patterns and keeps them local/read-only:
   metadata.
 - `Collections`: curated slices such as accepted stack, default-off sleeves,
   measurement repair, active/proposed queue, and identity repair queue.
+- `Prod Compare`: a read-only production/backtest activation view. It parses the
+  current activation map, live open-position file, paper sleeve states, and pilot
+  decision ledger to show which surfaces are executing, which are accumulating
+  forward evidence, and how many closed forward outcomes remain before review.
+  Its default view is a low-density HF-style evidence curve built from paper
+  sleeve snapshots; the detailed activation map and ledger are collapsed below
+  the chart. The x-axis is snapshot date from each sleeve's `snapshots.jsonl`;
+  the y-axis is evidence maturity toward the sleeve's forward gate.
 
 These views are generated from the same index and are not trading signals.
 

@@ -25,6 +25,7 @@ from experiment_registry import (  # noqa: E402
     load_registry,
     next_experiment_id,
     normalize_prediction,
+    require_available_experiment_id,
     save_experiment_log_entry,
     save_registry,
     update_result,
@@ -65,6 +66,10 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
     assert second["experiment_id"].endswith("-002")
     assert first["experiment_uid"].startswith("expuid-")
     assert first["experiment_uid"] != second["experiment_uid"]
+    assert first["hub_identity"]["scheme"] == "hf_hub_local_v1"
+    assert first["hub_identity"]["repo_id"] == (
+        f"ginger/experiments/{first['experiment_id']}"
+    )
     assert first["status"] == "proposed"
     assert first["baseline_result_file"] == "data/backtests/backtest_results_20260425.json"
 
@@ -146,6 +151,68 @@ def test_next_experiment_id_scans_all_identity_sources(tmp_path):
     assert "exp-20990101-011" in sources
     assert "exp-20990101-013" in sources
     assert next_experiment_id(registry, today="20990101", root=root) == "exp-20990101-014"
+
+
+def test_create_ticket_rejects_explicit_id_already_seen_on_filesystem(tmp_path):
+    root = tmp_path
+    (root / "data" / "experiments" / "exp-20990101-004").mkdir(parents=True)
+    registry = {
+        "schema_version": 1,
+        "updated_at": None,
+        "experiments": [],
+        "_repo_root": str(root),
+        "_tickets_dir": str(root / "experiments" / "tickets"),
+    }
+
+    try:
+        create_ticket(
+            registry,
+            experiment_id="exp-20990101-004",
+            lane="measurement_repair",
+            hypothesis="Reserve an explicit ID only if the namespace is free.",
+            change_type="identity_reservation",
+            single_causal_variable="explicit reservation collision",
+        )
+    except ValueError as exc:
+        assert "experiment_id already exists: exp-20990101-004" in str(exc)
+        assert "data_experiment:path" in str(exc)
+    else:
+        raise AssertionError("filesystem-owned experiment_id was accepted")
+
+    assert not (root / "experiments" / "tickets" / "exp-20990101-004.json").exists()
+
+
+def test_create_ticket_reserves_explicit_unused_id_and_normalizes_format(tmp_path):
+    root = tmp_path
+    registry = {
+        "schema_version": 1,
+        "updated_at": None,
+        "experiments": [],
+        "_repo_root": str(root),
+        "_tickets_dir": str(root / "experiments" / "tickets"),
+    }
+
+    ticket = create_ticket(
+        registry,
+        experiment_id="exp_20990101_004",
+        lane="measurement_repair",
+        hypothesis="Reserve an explicit unused ID.",
+        change_type="identity_reservation",
+        single_causal_variable="explicit reservation",
+    )
+
+    assert ticket["experiment_id"] == "exp-20990101-004"
+    assert ticket["hub_identity"]["repo_id"] == "ginger/experiments/exp-20990101-004"
+    assert (root / "experiments" / "tickets" / "exp-20990101-004.json").exists()
+
+
+def test_require_available_experiment_id_reports_invalid_format():
+    try:
+        require_available_experiment_id("not-a-hub-id", {"experiments": []})
+    except ValueError as exc:
+        assert "exp-YYYYMMDD-NNN" in str(exc)
+    else:
+        raise AssertionError("invalid experiment_id was accepted")
 
 
 def test_create_ticket_file_slug_overrides_auto_generated_file_stem():

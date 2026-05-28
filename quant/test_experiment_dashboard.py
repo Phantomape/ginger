@@ -8,7 +8,11 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from build_experiment_dashboard import build_experiment_index, write_dashboard  # noqa: E402
+from build_experiment_dashboard import (  # noqa: E402
+    build_experiment_index,
+    build_production_compare,
+    write_dashboard,
+)
 
 
 def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path):
@@ -18,6 +22,7 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     (root / "docs" / "experiments" / "tickets").mkdir(parents=True)
     (root / "experiments" / "logs").mkdir(parents=True)
     (root / "data" / "experiments" / "exp-20990102-002").mkdir(parents=True)
+    (root / "data" / "paper_sleeves" / "state_surface").mkdir(parents=True)
 
     registry_path = root / "docs" / "experiment_registry.json"
     registry_path.write_text(
@@ -83,6 +88,29 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
         }) + "\n",
         encoding="utf-8",
     )
+    (root / "docs" / "current_state.md").write_text(
+        "\n".join([
+            "# State",
+            "",
+            "## Return Constraint / Activation Map",
+            "",
+            "| Surface | Default execution status | Current evidence | Limits | Activation lever | Risk |",
+            "|---|---|---|---|---|---|",
+            "| `STATE_SURFACE_SATELLITE` | Default-off paper only; live/default orders disabled | Accepted paper refinements | Needs closed forward replacement-value rows | Trade-enabled satellite sleeve | Concentration |",
+        ]),
+        encoding="utf-8",
+    )
+    (root / "data" / "paper_sleeves" / "state_surface" / "state.json").write_text(
+        json.dumps({
+            "sleeve": "STATE_SURFACE_SATELLITE_PAPER",
+            "updated_at": "2099-01-02T00:00:00+00:00",
+            "open_positions": [{"ticker": "AAA", "unrealized_pnl": 12.5}],
+            "pending_entries": [{"ticker": "BBB"}],
+            "closed_positions": [{"ticker": "CCC"}, {"ticker": "DDD"}, {"ticker": "EEE"}],
+            "skipped_entries": [],
+        }),
+        encoding="utf-8",
+    )
 
     index = build_experiment_index(root, registry_path, today="20990102")
     by_id = {row["experiment_id"]: row for row in index["experiments"]}
@@ -114,6 +142,77 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
         collection["slug"] == "archive_identity_notes" and collection["count"] >= 1
         for collection in index["collections"]
     )
+    compare = index["production_compare"]
+    assert compare["summary"]["forward_accumulating_count"] == 1
+    assert compare["summary"]["paper_closed_count"] == 3
+    assert compare["surfaces"][0]["evidence_gap"] == 17
+
+
+def test_production_compare_reads_activation_map_and_live_positions(tmp_path):
+    root = tmp_path
+    (root / "docs").mkdir()
+    (root / "operator_inputs").mkdir()
+    (root / "data" / "paper_sleeves" / "broad_market").mkdir(parents=True)
+    (root / "docs" / "current_state.md").write_text(
+        "\n".join([
+            "## Return Constraint / Activation Map",
+            "| Surface | Default execution status | Current evidence | Limits | Activation lever | Risk |",
+            "|---|---|---|---|---|---|",
+            "| Core live stack | Trade-enabled default path | Accepted core stack | Conservative caps | Gate 1-4 | Drawdown |",
+            "| `BROAD_MARKET_LEADERSHIP_PAPER` | Default-off paper only; live/default orders disabled | Paper adapter | Needs closed forward replacement-value outcomes | Small sleeve | Hidden beta |",
+        ]),
+        encoding="utf-8",
+    )
+    (root / "operator_inputs" / "open_positions.json").write_text(
+        json.dumps({
+            "as_of": "2099-01-02",
+            "positions": [{"ticker": "AAA", "opened_by_strategy": "breakout_long"}],
+            "observations": [{"ticker": "BBB", "opened_by_strategy": "legacy"}],
+        }),
+        encoding="utf-8",
+    )
+    (root / "data" / "paper_sleeves" / "broad_market" / "state.json").write_text(
+        json.dumps({
+            "sleeve": "BROAD_MARKET_LEADERSHIP_PAPER",
+            "open_positions": [{"ticker": "RKLB"}],
+            "pending_entries": [{"ticker": "PL"}],
+            "closed_positions": [{"ticker": "IRDM"}],
+        }),
+        encoding="utf-8",
+    )
+    (root / "data" / "paper_sleeves" / "broad_market" / "snapshots.jsonl").write_text(
+        "\n".join([
+            json.dumps({
+                "asof_date": "2099-01-01",
+                "open_position_count": 1,
+                "pending_count": 1,
+                "closed_position_count": 0,
+                "parameters": {"forward_gate_min_closed_trades": 4},
+                "sleeve": "BROAD_MARKET_LEADERSHIP_PAPER",
+            }),
+            json.dumps({
+                "asof_date": "2099-01-02",
+                "open_position_count": 1,
+                "pending_count": 0,
+                "closed_position_count": 1,
+                "parameters": {"forward_gate_min_closed_trades": 4},
+                "sleeve": "BROAD_MARKET_LEADERSHIP_PAPER",
+            }),
+        ]) + "\n",
+        encoding="utf-8",
+    )
+
+    compare = build_production_compare(root)
+
+    assert compare["summary"]["executing_count"] == 1
+    assert compare["summary"]["forward_accumulating_count"] == 1
+    assert compare["summary"]["paper_open_count"] == 1
+    assert compare["live_positions"]["count"] == 2
+    assert compare["evidence_curves"][0]["target_count"] == 4
+    assert compare["evidence_curves"][0]["points"][-1]["pipeline_pct"] > 0
+    broad = [row for row in compare["surfaces"] if "BROAD_MARKET" in row["surface"]][0]
+    assert broad["paper_pending_count"] == 1
+    assert broad["evidence_gap"] == 19
 
 
 def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
@@ -138,6 +237,14 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
         },
         "dataset_view": {"columns": []},
         "collections": [],
+        "production_compare": {
+            "summary": {},
+            "surfaces": [],
+            "paper_sleeves": [],
+            "evidence_curves": [],
+            "live_positions": {},
+            "generated_from": [],
+        },
         "experiments": [
             {
                 "experiment_id": "exp-20990102-001",
@@ -155,9 +262,21 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
     assert json_path.exists()
     html = html_path.read_text(encoding="utf-8")
     assert "Ginger Experiment Dashboard" in html
+    assert "Hub-style local browser" in html
+    assert "Experiment Hub" in html
+    assert "detail-panel" in html
+    assert "repo-card" in html
+    assert "color-scheme: dark" in html
+    assert "--panel: #282c34" in html
+    assert "overflow-wrap: anywhere" in html
+    assert "-webkit-line-clamp: 3" in html
     assert "Leaderboards" in html
     assert "Dataset View" in html
     assert "Collections" in html
+    assert "Prod Compare" in html
+    assert "Production vs Backtest" in html
+    assert "Forward Evidence Curves" in html
+    assert "snapshot date from paper sleeve snapshots.jsonl" in html
     json_text = json_path.read_text(encoding="utf-8")
     assert "Infinity" not in html
     assert "Infinity" not in json_text
