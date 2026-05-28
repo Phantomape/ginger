@@ -198,6 +198,11 @@ SPACE_CATALYST_DEFENSE_BUDGET_DELAYED_BENCHMARK_TREND_RISK_SCALAR = 1.025
 SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_CASH_PNL = 0.0
 SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_MIN_10D_SAME_THEME_VALUE = 0.0
 SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR = 1.05
+SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID = "exp-20260528-026"
+SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION = (
+    "space_trend_high_close_fixed_notional_paper_sleeve_v1"
+)
+SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION = 0.84
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -712,6 +717,19 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "space_defense_budget_same_theme_winner_trend_risk_scalar": (
         SPACE_CATALYST_DEFENSE_BUDGET_SAME_THEME_WINNER_TREND_RISK_SCALAR
     ),
+    "space_trend_high_close_experiment_id": (
+        SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID
+    ),
+    "space_trend_high_close_rule_version": (
+        SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
+    ),
+    "space_trend_high_close_definition": (
+        "trend_long with daily_close_location >= 0.84 on the signal day"
+    ),
+    "space_trend_high_close_min_close_location": (
+        SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+    ),
+    "space_trend_high_close_trade_enabled": False,
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -2522,6 +2540,16 @@ def build_space_catalyst_observation_slot(
             "space_near_perfect_tqs_trend_risk_scalar": (
                 SPACE_CATALYST_NEAR_PERFECT_TQS_TREND_RISK_SCALAR
             ),
+            "space_trend_high_close_experiment_id": (
+                SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID
+            ),
+            "space_trend_high_close_rule_version": (
+                SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
+            ),
+            "space_trend_high_close_min_close_location": (
+                SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+            ),
+            "space_trend_high_close_trade_enabled": False,
             "space_peer_nonleader_breakout_risk_scalar": (
                 SPACE_CATALYST_PEER_NONLEADER_BREAKOUT_RISK_SCALAR
             ),
@@ -3454,6 +3482,15 @@ def _observation_slot_row(
         if near_perfect_tqs_trend_bucket
         else 1.0
     )
+    signal_day_close_location = _as_float(features.get("daily_close_location"))
+    trend_high_close_bucket = (
+        strategy.lower() == "trend_long"
+        and signal_day_close_location is not None
+        and (
+            signal_day_close_location
+            >= SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+        )
+    )
     peer_nonleader_breakout_bucket = (
         strategy.lower() == "breakout_long"
         and peer_momentum_state.get("state") == "nonleader"
@@ -3907,6 +3944,19 @@ def _observation_slot_row(
             near_perfect_tqs_trend_risk_scalar,
             6,
         ),
+        "space_signal_day_close_location": _round(
+            signal_day_close_location,
+            6,
+        ),
+        "space_trend_high_close_bucket": trend_high_close_bucket,
+        "space_trend_high_close_rule_version": (
+            SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
+        ),
+        "space_trend_high_close_min_close_location": (
+            SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+        ),
+        "space_trend_high_close_trade_enabled": False,
+        "space_trend_high_close_alters_orders": False,
         "space_peer_momentum_state": peer_momentum_state.get("state"),
         "space_peer_momentum_20d_pct": _round(
             peer_momentum_state.get("own_momentum_20d_pct"),

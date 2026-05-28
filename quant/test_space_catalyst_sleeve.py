@@ -8,6 +8,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 from space_catalyst_sleeve import (  # noqa: E402
     SPACE_CATALYST_FORWARD_HYPOTHESIS,
     SPACE_CATALYST_LLM_EVENT_FIELDS,
+    SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID,
+    SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION,
+    SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION,
     build_space_catalyst_event_ledger_snapshot,
     build_space_catalyst_observation_slot,
     build_space_catalyst_shadow_snapshot,
@@ -205,6 +208,19 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         snapshot["forward_hypothesis"]["space_near_perfect_tqs_score_ceiling"]
         == 1.0
     )
+    assert (
+        snapshot["forward_hypothesis"]["space_trend_high_close_experiment_id"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_trend_high_close_rule_version"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
+    )
+    assert (
+        snapshot["forward_hypothesis"]["space_trend_high_close_min_close_location"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+    )
+    assert snapshot["forward_hypothesis"]["space_trend_high_close_trade_enabled"] is False
     assert (
         snapshot["forward_hypothesis"][
             "space_peer_nonleader_breakout_experiment_id"
@@ -2041,6 +2057,70 @@ def test_space_catalyst_observation_slot_marks_iwm_peer_leader_trend():
     assert plan["space_iwm_peer_leader_trend_risk_scalar"] == 1.15
     assert plan["effective_risk_scalar"] == 1.043625
     assert plan["paper_sizing"]["scaled_position_value_usd"] == 1043.62
+
+
+def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "ASTS",
+                "strategy": "trend_long",
+                "entry_price": 20.0,
+                "stop_price": 18.0,
+                "target_price": 27.0,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 50,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ASTS": {
+                "atr": 2.0,
+                "daily_close_location": 0.89,
+                "momentum_20d_pct": 0.2,
+            },
+            "BKSY": {"momentum_20d_pct": 0.0},
+            "LUNR": {"momentum_20d_pct": 0.0},
+            "PL": {"momentum_20d_pct": 0.0},
+            "RDW": {"momentum_20d_pct": 0.0},
+            "RKLB": {"momentum_20d_pct": 0.0},
+            "IWM": {"momentum_20d_pct": 0.0},
+            "SPY": {"momentum_20d_pct": 0.0},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {"satellite_connectivity": ["ASTS"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
+        space_source_diversity_profiles={},
+        space_forward_replacement_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert plan["space_signal_day_close_location"] == 0.89
+    assert plan["space_trend_high_close_bucket"] is True
+    assert (
+        plan["space_trend_high_close_rule_version"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
+    )
+    assert (
+        plan["space_trend_high_close_min_close_location"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+    )
+    assert plan["space_trend_high_close_trade_enabled"] is False
+    assert plan["space_trend_high_close_alters_orders"] is False
+    assert plan["production_impact"]["alters_orders"] is False
 
 
 def test_space_catalyst_observation_slot_marks_source_diversity_peer_leader():

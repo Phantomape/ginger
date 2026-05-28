@@ -4,7 +4,8 @@ Feature Layer: Convert raw data into trading features.
 Trend features:
   close, price_vs_200ma_pct, above_200ma, breakout_20d, breakdown_20d,
   momentum_10d_pct, momentum_20d_pct, momentum_60d_pct, atr, atr_expansion,
-  volume_spike, volume_spike_ratio, daily_range_vs_atr, high_20d, low_20d
+  volume_spike, volume_spike_ratio, daily_range_vs_atr, daily_close_location,
+  high_20d, low_20d
 
 Earnings features:
   days_to_earnings, next_earnings_date, eps_estimate,
@@ -74,6 +75,7 @@ def compute_trend_features(data):
         open_  = _scalar(data['Open'].iloc[-1])
         close  = _scalar(data['Close'].iloc[-1])
         high   = _scalar(data['High'].iloc[-1])
+        low    = _scalar(data['Low'].iloc[-1])
         volume = _scalar(data['Volume'].iloc[-1])
 
         signal_day_open_close_return_pct = (
@@ -123,7 +125,11 @@ def compute_trend_features(data):
             pct_from_52w_high = round((close - high_52w) / high_52w, 4)
 
         # ATR expansion: today's range vs 14-day avg range (excl today)
-        today_range    = _scalar(data['High'].iloc[-1]) - _scalar(data['Low'].iloc[-1])
+        today_range    = high - low
+        daily_close_location = (
+            round(max(0.0, min(1.0, (close - low) / today_range)), 6)
+            if today_range > 0 else None
+        )
         prev14_ranges  = (data['High'] - data['Low']).iloc[-15:-1]
         avg_range_14d  = _scalar(prev14_ranges.mean()) if len(prev14_ranges) >= 14 else None
         atr_expansion  = (round(today_range / avg_range_14d, 4)
@@ -157,6 +163,7 @@ def compute_trend_features(data):
             "close":               round(close, 2),
             "signal_day_ticker_open_close_return_pct": signal_day_open_close_return_pct,
             "daily_high":          round(high, 2),
+            "daily_close_location": daily_close_location,
             "price_vs_200ma_pct":  price_vs_200ma_pct,
             "above_200ma":         above_200ma,
             "breakout_20d":        breakout_20d,

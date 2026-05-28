@@ -1057,7 +1057,22 @@ VSAT/satcom fallback membership or risk scalars on these frozen windows without
 new closed forward rows or a production-visible field that prevents peer-basket
 contamination.
 
-Latest accepted default-off Space alpha result: `exp-20260519-027` keeps live
+Latest accepted default-off Space candidate-pool alpha result:
+`exp-20260528-026` keeps live Space slots at zero and adds only the
+production-visible `daily_close_location` / `space_trend_high_close_bucket`
+metadata for governed full-history Space `trend_long` observation candidates.
+The fixed `$10k` paper route requires signal-day close-location `>= 0.84`.
+Across the three frozen Space observation windows, aggregate EV improved
+`+0.7505` and aggregate PnL improved `+$12,508.86`; `late_strong` and
+`mid_weak` improved, `old_thin` was unchanged, max drawdown drift was `0.0`,
+and target concentration passed across 6 paper trades. The helper lives in
+shared `feature_layer.py` / `space_catalyst_sleeve.py`, is surfaced only in
+the default-off observation slot, has focused parity tests, and does not alter
+watchlists, rankings, sizing, exits, or orders. Next step is forward
+replacement-value collection, not another high-close threshold retune on the
+same frozen sample.
+
+Previous accepted default-off Space alpha result: `exp-20260519-027` keeps live
 Space slots at zero and promotes the shared
 `space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar`
 helper from `1.0125` to `1.021875` on top of accepted `exp-20260516-029`. It

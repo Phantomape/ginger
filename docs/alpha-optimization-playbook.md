@@ -51,6 +51,11 @@ Recent repository evidence supports this priority:
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep.
+- Space remains observe-only, but `exp-20260528-026` showed that a new
+  production-visible OHLCV field (`daily_close_location >= 0.84` on
+  governed Space `trend_long` signal days) can separate better paper candidates
+  from old-window losers. Treat it as a forward evidence bucket, not permission
+  to retune high-close thresholds or enable live Space slots.
 - Kova/CANSLIM-style intraday, base, pocket-pivot, distribution-day, 13F, and
   RS fields are useful context sidecars, but recent tests repeatedly failed to
   justify new gates, exits, pyramids, or notional scalars on the frozen sample.

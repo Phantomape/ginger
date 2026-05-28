@@ -60,6 +60,19 @@ proxy, not evidence that production observed the classification point-in-time;
 do not use it for live ranking, sizing, entries, exits, or orders unless a
 separate Gate 1-4 experiment promotes that behavior.
 
+### `quant/space_catalyst_sleeve.py`
+
+Purpose: maintain the default-off Space catalyst observation surface, including
+observe-only event/source metadata and blocked one-slot trade plans.
+
+The accepted `exp-20260528-026` Space alpha adds a production-visible OHLCV
+context field, `space_trend_high_close_bucket`, for governed Space
+`trend_long` candidates whose signal-day `daily_close_location >= 0.84`.
+Production computes `daily_close_location` in `quant/feature_layer.py` from
+the same daily high/low/close values used in replay. This is metadata only:
+it must not alter entries, exits, ranking, sizing, orders, or live Space slots
+without a separate Gate 1-4 promotion experiment.
+
 ---
 
 ## Production context archive

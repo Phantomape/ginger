@@ -726,7 +726,22 @@ Financials raw multipliers, target-width variants, or cap values on these
 frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
-Latest accepted default-off Space replay result: `exp-20260519-027` promotes
+Latest accepted default-off Space candidate-pool replay result:
+`exp-20260528-026` keeps live Space slots at zero and adds only the
+production-visible `daily_close_location` / `space_trend_high_close_bucket`
+metadata for governed full-history Space `trend_long` observation candidates.
+The replay routes a fixed `$10k` paper sleeve only when the signal day closed
+in the top 16% of its intraday range (`daily_close_location >= 0.84`). Using
+the same three Space observation windows, aggregate EV improved `+0.7505` and
+aggregate PnL improved `+$12,508.86`; `late_strong` and `mid_weak` improved,
+`old_thin` was unchanged, no window regressed, max drawdown drift was `0.0`,
+and concentration passed (`max_single_positive_share=0.353561`,
+`positive_pnl_hhi=0.27265`) across 6 target paper trades. Treat this as a
+default-off observation-sleeve lead only. It may collect forward replacement
+rows, but live/default Space trading still requires a separate promotion
+experiment.
+
+Previous accepted default-off Space replay result: `exp-20260519-027` promotes
 the shared Space metadata/helper
 `space_source_diversity_dual_catalyst_benchmark_breadth_trend_risk_scalar` from
 `1.0125` to `1.021875` on top of accepted `exp-20260516-029`, for the same
