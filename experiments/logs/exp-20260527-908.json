@@ -1,0 +1,126 @@
+{
+  "after_metrics": {
+    "all_rows_last_earnings_date_present": 554,
+    "all_rows_last_earnings_date_ratio": 0.7914285714285715,
+    "lookup_source_counts": {"sec_filing_features": 554},
+    "pead_eligible_t2_t15_non_residual_closed_10d": 4,
+    "pead_eligible_t2_t15_non_residual_closed_5d": 8,
+    "pead_eligible_t2_t15_non_residual_count": 8,
+    "pead_eligible_t2_t15_residual_closed_10d": 7,
+    "pead_eligible_t2_t15_residual_closed_5d": 7,
+    "pead_eligible_t2_t15_residual_count": 7,
+    "primary_positive_last_earnings_date_present": 40,
+    "primary_positive_pead_status_counts": {
+      "inside_t2_t15_after_earnings": 15,
+      "missing_last_earnings_date": 7,
+      "outside_t2_t15_after_earnings": 25
+    },
+    "primary_positive_resolved_share": 0.851063829787234,
+    "primary_positive_rows": 47,
+    "rows_total": 700,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "pead_eligible_t2_t15_non_residual_count": 0,
+    "pead_eligible_t2_t15_residual_count": 0,
+    "primary_positive_last_earnings_date_present": 0,
+    "primary_positive_pead_status_counts": {"missing_last_earnings_date": 47},
+    "primary_positive_rows": 47,
+    "rows_total": 700,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Reads data/non_ohlcv/sec_filing_features_*.jsonl, filters to 10-Q/10-K/8-K-with-item-2.02, indexes by ticker, and joins the most recent filing_date <= as_of_date into each row of the exp-20260525-034 watchlist. Falls back to data/daily/snapshots/earnings/*.json next_earnings_date timelines for tickers absent from EDGAR. Writes enriched artifact to data/experiments/exp-20260527-908/; does not modify exp-20260525-034.",
+  "change_type": "read_only_pit_field_join",
+  "changed_variable": "last_earnings_date_pit_join_into_expectation_revision_watchlist_row",
+  "component": "quant/experiments/exp_20260527_908_last_earnings_date_pit_join_into_expectation_revision_watchlist_row.py",
+  "date_range": {
+    "earnings_snapshot_window": "2024-10-02 .. 2026-05-26 (437 files, secondary fallback)",
+    "sec_filing_features_window": "data/non_ohlcv/sec_filing_features_*.jsonl (428 files)",
+    "source_watchlist_as_of_dates": "2026-05-08 .. 2026-05-26"
+  },
+  "decision": "accepted_measurement_repair_last_earnings_date_field",
+  "decision_rule": "Gate 4: primary_positive_resolved_share >= 0.80 AND post-repair pead_status_counts must contain at least one inside/outside-T2-T15 bucket so downstream PEAD experiments can compare buckets.",
+  "delta_metrics": {
+    "pead_eligible_t2_t15_buckets_delta_non_residual": 8,
+    "pead_eligible_t2_t15_buckets_delta_residual": 7,
+    "primary_positive_resolved_share_delta": 0.851063829787234
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260527-908",
+  "gate1": {"criteria": "baseline_artifact_available", "passed": true, "rows_in_source": 700},
+  "gate2": {"criteria": "ticker + as_of_date present on every input row", "passed": true},
+  "gate3": {"criteria": "survival rate structurally unaffected (no filter/rerank)", "passed": true},
+  "gate4": {
+    "after_repair_has_inside_or_outside_bucket": true,
+    "criteria": "primary_positive_resolved_share >= 0.80 AND at least one inside_/outside-T2-T15 bucket present",
+    "passed": true,
+    "pead_readiness_reprobe_non_residual_10d_closed": 4,
+    "pead_readiness_reprobe_non_residual_5d_closed": 8,
+    "pead_readiness_reprobe_residual_10d_closed": 7,
+    "pead_readiness_reprobe_residual_5d_closed": 7,
+    "primary_positive_resolved_share": 0.851063829787234,
+    "primary_positive_still_missing": 7
+  },
+  "gate_questions": {
+    "prior_similar_experiments": "exp-20260527-005/006/007 closed observed_only_data_gap citing missing_last_earnings_date; exp-20260525-025 fixed duplicate earnings snapshot guard but did not introduce last_earnings_date.",
+    "reproducibility": "Single deterministic script over checked-in data; no live API calls; unit tests cover PIT safety + SEC item-code filtering + source preference.",
+    "single_independent_variable": "last_earnings_date PIT join into expectation revision watchlist row",
+    "success_failure_criteria": "Gate 4: >=80% of primary positive rows resolve, and at least one inside/outside-T+2..T+15 bucket has rows.",
+    "what_hypothesis": "Last earnings date can be reconstructed PIT-safely from SEC EDGAR 10-Q/10-K/8-K(2.02) filings, unblocking PEAD bucket comparison."
+  },
+  "hypothesis": "Last reported earnings date can be reconstructed PIT-safely by indexing SEC EDGAR 10-Q/10-K/8-K(2.02) filings and joining the most recent past filing_date into watchlist rows, unblocking the PEAD continuation alpha line (exp-20260527-005/006/007) whose primary positive rows were 100% missing_last_earnings_date.",
+  "lane": "measurement_repair",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260527-005",
+    "exp-20260527-006",
+    "exp-20260527-007",
+    "exp-20260525-034",
+    "exp-20260525-038"
+  ],
+  "new_evidence_type": "data_field_join_unblocks_prior_observed_only_data_gap",
+  "next_evidence_needed": "Re-run exp-20260527-005 against the enriched watchlist to obtain the first proper bucket comparison (residual vs non-residual PEAD eligible at 5d/10d). For exp-20260527-006 also persist 2d forward outcomes. For the 7 still-unresolved tickers (NVO, TSM, HOOD, RBLX, SOFI, GEV, MTSI, MRVL, SPOT, VRT, WDC), add a non-EDGAR earnings-date source (foreign filers 20-F + IPO calendar).",
+  "parameters": {
+    "earnings_eight_k_item_code": "2.02",
+    "earnings_form_types_full": ["10-K", "10-K/A", "10-Q", "10-Q/A"],
+    "gate4_primary_positive_resolved_share_floor": 0.80,
+    "pead_window_hi": 15,
+    "pead_window_lo": 2,
+    "rule_version": "sec_filing_features_pit_last_earnings_date_v2",
+    "sources": {
+      "fallback": "data/daily/snapshots/earnings/earnings_snapshot_*.json",
+      "primary": "data/non_ohlcv/sec_filing_features_*.jsonl"
+    }
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_field_join": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260527_908"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260527_908_last_earnings_date_pit_join_into_expectation_revision_watchlist_row.py",
+    "quant/test_exp_20260527_908_last_earnings_date_pit_join.py",
+    "data/experiments/exp-20260527-908/last_earnings_date_pit_join_into_expectation_revision_watchlist_row.json",
+    "experiments/artifacts/exp-20260527-908_last_earnings_date_pit_join_into_expectation_revision_watchlist_row.md",
+    "experiments/logs/exp-20260527-908.json",
+    "experiments/tickets/exp-20260527-908.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "sec_filing_features_pit_last_earnings_date_v2",
+  "single_causal_variable": "last_earnings_date PIT join into expectation revision watchlist row",
+  "status": "accepted",
+  "timestamp": "2026-05-27T18:00:00+00:00",
+  "trial_family": "measurement_repair_pead_field",
+  "trial_variant_id": "exp-20260527-908"
+}
