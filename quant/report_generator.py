@@ -2030,6 +2030,13 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"  Closed-ledger governor: scalar={governor.get('global_drawdown_scalar')} "
             f"drawdown=${governor_drawdown:,.2f}"
         )
+        low_volume = fundamental_growth_rs_paper_sleeve.get("low_volume_participation") or {}
+        filing_recency = fundamental_growth_rs_paper_sleeve.get("filing_recency") or {}
+        lines.append(
+            "  Paper supports: "
+            f"low-volume={low_volume.get('supported_candidate_count', 0)}  |  "
+            f"filing-recency={filing_recency.get('supported_candidate_count', 0)}"
+        )
         gate = fundamental_growth_rs_paper_sleeve.get("forward_paper_gate") or {}
         if gate:
             metrics = gate.get("metrics") or {}

@@ -287,6 +287,12 @@ def build_default_off_alpha_attribution_report(
                 "governor_rule_version": (
                     (fundamental_growth_rs_paper_sleeve or {}).get("governor_rule_version")
                 ),
+                "low_volume_supported": (
+                    ((fundamental_growth_rs_paper_sleeve or {}).get("low_volume_participation") or {}).get("supported_candidate_count")
+                ),
+                "filing_recency_supported": (
+                    ((fundamental_growth_rs_paper_sleeve or {}).get("filing_recency") or {}).get("supported_candidate_count")
+                ),
             },
         ),
     ]

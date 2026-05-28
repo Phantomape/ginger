@@ -29,10 +29,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "FUNDAMENTAL_GROWTH_RS_PAPER"
-RULE_VERSION = "fundamental_growth_rs_low_volume_participation_shared_adapter_v1"
+RULE_VERSION = "fundamental_growth_rs_filing_recency_shared_adapter_v1"
 SOURCE_RULE_VERSION = "fundamental_growth_rs_operating_profit_quality_v1"
 GOVERNOR_RULE_VERSION = "operating_profit_quality_closed_ledger_governor_v1"
 LOW_VOLUME_PARTICIPATION_RULE_VERSION = "fundamental_growth_rs_low_volume_participation_support_v1"
+FILING_RECENCY_RULE_VERSION = "fundamental_growth_rs_filing_recency_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "fundamental_growth_rs_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -87,6 +88,8 @@ DEFAULT_CONFIG = {
     "global_drawdown_scalar": 0.25,
     "low_volume_ratio_20_max": 0.90,
     "low_volume_notional_scalar": 1.10,
+    "filing_recency_max_days": 90,
+    "filing_recency_notional_scalar": 1.05,
     "forward_gate_min_closed_trades": 30,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
@@ -177,6 +180,13 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         "fundamental_data": {"status": reason, "row_count": 0},
         "low_volume_participation": {
             "rule_version": LOW_VOLUME_PARTICIPATION_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "supported_candidate_count": 0,
+        },
+        "filing_recency": {
+            "rule_version": FILING_RECENCY_RULE_VERSION,
             "read_only": True,
             "trade_enabled": False,
             "alters_orders": False,
@@ -351,6 +361,17 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
             "paper_notional_scalar": float(cfg["low_volume_notional_scalar"]),
             "supported_candidate_count": sum(
                 1 for row in candidates if row.get("low_volume_participation_pass_v1")
+            ),
+        },
+        "filing_recency": {
+            "rule_version": FILING_RECENCY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "operating_income_filing_age_days_max": int(cfg["filing_recency_max_days"]),
+            "paper_notional_scalar": float(cfg["filing_recency_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("filing_recency_pass_v1")
             ),
         },
         "candidates": deepcopy(candidates),
@@ -847,7 +868,23 @@ def _candidate_for_ticker(
     )
     low_volume_pass = volume_ratio is not None and volume_ratio <= float(config["low_volume_ratio_20_max"])
     low_volume_scalar = float(config["low_volume_notional_scalar"]) if low_volume_pass else 1.0
-    notional_scalar = ticker_profit_scalar * global_drawdown_scalar * low_volume_scalar
+    operating_income_filing_age_days = _days_between(
+        operating.get("operating_income_current_filed"),
+        as_of,
+    )
+    filing_recency_pass = (
+        operating_income_filing_age_days is not None
+        and operating_income_filing_age_days <= int(config["filing_recency_max_days"])
+    )
+    filing_recency_scalar = (
+        float(config["filing_recency_notional_scalar"]) if filing_recency_pass else 1.0
+    )
+    notional_scalar = (
+        ticker_profit_scalar
+        * global_drawdown_scalar
+        * low_volume_scalar
+        * filing_recency_scalar
+    )
     intended_notional = float(config["paper_notional_usd"]) * notional_scalar
     return {
         "date": as_of,
@@ -889,6 +926,15 @@ def _candidate_for_ticker(
         "low_volume_ratio_20_max": float(config["low_volume_ratio_20_max"]),
         "low_volume_participation_pass_v1": low_volume_pass,
         "low_volume_notional_scalar": low_volume_scalar,
+        "filing_recency_rule_version": FILING_RECENCY_RULE_VERSION,
+        "filing_recency_known_at": "SEC Companyfacts operating_income filed date <= signal_date",
+        "filing_recency_trade_enabled": False,
+        "filing_recency_alters_orders": False,
+        "operating_income_filing_age_days": operating_income_filing_age_days,
+        "operating_income_filing_age_bucket": _filing_age_bucket(operating_income_filing_age_days),
+        "filing_recency_max_days": int(config["filing_recency_max_days"]),
+        "filing_recency_pass_v1": filing_recency_pass,
+        "filing_recency_notional_scalar": filing_recency_scalar,
         "closed_ledger_notional_scalar": _round(notional_scalar, 6),
         "intended_notional": _round(intended_notional, 2),
         "same_ticker_core_overlap": False,
@@ -1475,3 +1521,30 @@ def _date10(value: Any) -> str:
     if value is None:
         return ""
     return str(value)[:10]
+
+
+def _days_between(start: Any, end: Any) -> int | None:
+    start_text = _date10(start)
+    end_text = _date10(end)
+    if not start_text or not end_text:
+        return None
+    try:
+        start_day = datetime.fromisoformat(start_text)
+        end_day = datetime.fromisoformat(end_text)
+    except ValueError:
+        return None
+    if start_day > end_day:
+        return None
+    return (end_day - start_day).days
+
+
+def _filing_age_bucket(days: int | None) -> str:
+    if days is None:
+        return "missing"
+    if days <= 45:
+        return "fresh_0_45d"
+    if days <= 90:
+        return "recent_46_90d"
+    if days <= 180:
+        return "stale_91_180d"
+    return "very_stale_gt180d"
