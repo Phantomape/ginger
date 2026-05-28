@@ -31,6 +31,7 @@ SLEEVE_NAME = "VOLUME_BREADTH_BREAKOUT_PAPER"
 RULE_VERSION = "volume_breadth_breakout_shared_top1_v1"
 BREADTH_RULE_VERSION = "volume_breadth_thrust_confirmed_breakout_v1"
 BREADTH_INTENSITY_RULE_VERSION = "vbb_breadth_intensity_support_v1"
+HIGH_CLOSE_SUPPORT_RULE_VERSION = "vbb_signal_day_high_close_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "volume_breadth_breakout_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -72,6 +73,8 @@ DEFAULT_CONFIG = {
     "min_above_50d_fraction": 0.45,
     "breadth_intensity_min_volume_breadth_fraction": 0.25,
     "breadth_intensity_notional_scalar": 1.10,
+    "high_close_support_min_close_location": 0.70,
+    "high_close_support_notional_scalar": 1.10,
     "min_breadth_eligible_tickers": 30,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
@@ -164,6 +167,12 @@ def empty_volume_breadth_breakout_paper_sleeve_snapshot(
         "volume_breadth_context": {"passed": False, "status": reason},
         "breadth_intensity_support": {
             "rule_version": BREADTH_INTENSITY_RULE_VERSION,
+            "supported_candidate_count": 0,
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
+        "high_close_support": {
+            "rule_version": HIGH_CLOSE_SUPPORT_RULE_VERSION,
             "supported_candidate_count": 0,
             "trade_enabled": False,
             "alters_orders": False,
@@ -317,6 +326,16 @@ def build_volume_breadth_breakout_paper_sleeve_snapshot(
             "trade_enabled": False,
             "alters_orders": False,
         },
+        "high_close_support": {
+            "rule_version": HIGH_CLOSE_SUPPORT_RULE_VERSION,
+            "min_close_location": float(cfg["high_close_support_min_close_location"]),
+            "paper_notional_scalar": float(cfg["high_close_support_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("high_close_support_pass_v1")
+            ),
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
         "candidate_universe": {
             "status": universe["status"],
             "ticker_count": len(universe["tickers"]),
@@ -414,6 +433,14 @@ def build_volume_breadth_breakout_candidates(
         support_scalar = (
             float(cfg["breadth_intensity_notional_scalar"]) if support_pass else 1.0
         )
+        close_location = _float_or_none(candidate.get("signal_day_close_location_value"))
+        high_close_pass = (
+            close_location is not None
+            and close_location >= float(cfg["high_close_support_min_close_location"])
+        )
+        high_close_scalar = (
+            float(cfg["high_close_support_notional_scalar"]) if high_close_pass else 1.0
+        )
         base_notional = float(cfg["paper_notional_usd"])
         candidate["volume_breadth_candidate_rank_on_signal_date"] = rank
         candidate["max_paper_trades_per_day"] = int(cfg["daily_entry_slots"])
@@ -428,7 +455,19 @@ def build_volume_breadth_breakout_candidates(
         candidate["breadth_intensity_fraction"] = _round(breadth_fraction, 6)
         candidate["breadth_intensity_support_pass_v1"] = support_pass
         candidate["breadth_intensity_notional_scalar"] = support_scalar
-        candidate["intended_notional"] = round(base_notional * support_scalar, 2)
+        candidate["high_close_support_rule_version"] = HIGH_CLOSE_SUPPORT_RULE_VERSION
+        candidate["high_close_support_known_at"] = "after_signal_date_close_before_next_open_paper_entry"
+        candidate["high_close_support_trade_enabled"] = False
+        candidate["high_close_support_alters_orders"] = False
+        candidate["high_close_support_min_close_location"] = float(
+            cfg["high_close_support_min_close_location"]
+        )
+        candidate["high_close_support_pass_v1"] = high_close_pass
+        candidate["high_close_support_notional_scalar"] = high_close_scalar
+        candidate["intended_notional"] = round(
+            base_notional * support_scalar * high_close_scalar,
+            2,
+        )
     return accepted, rejected, breadth
 
 
@@ -630,6 +669,8 @@ def _candidate_for_ticker(
     if idx is None or spy_idx is None or idx < ma_days or spy_idx < 1:
         return None
     close = _positive_float(rows[idx].get("close"))
+    high = _positive_float(rows[idx].get("high"))
+    low = _positive_float(rows[idx].get("low"))
     volume = _positive_float(rows[idx].get("volume"))
     if not close or not volume:
         return None
@@ -665,6 +706,12 @@ def _candidate_for_ticker(
         "sector": SECTOR_MAP.get(ticker, "Unknown"),
         "strategy": "volume_breadth_breakout",
         "close": _round(close, 4),
+        "signal_day_high": _round(high, 4),
+        "signal_day_low": _round(low, 4),
+        "signal_day_close_location_value": _round(
+            _close_location_value(close=close, high=high, low=low),
+            6,
+        ),
         "entry_price": _round(close, 4),
         "breakout_above_prior_20d_high_pct": _round((close / prior_high) - 1.0, 6),
         "pct_above_50d_ma": _round((close / ma50) - 1.0, 6),
@@ -996,6 +1043,17 @@ def _prior_high(rows: list[dict[str, Any]], idx: int, days: int) -> float | None
     if len(values) < days:
         return None
     return max(values)
+
+
+def _close_location_value(
+    *,
+    close: float | None,
+    high: float | None,
+    low: float | None,
+) -> float | None:
+    if close is None or high is None or low is None or high <= low:
+        return None
+    return max(0.0, min(1.0, (close - low) / (high - low)))
 
 
 def _prior_average(

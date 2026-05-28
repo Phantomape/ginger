@@ -1959,6 +1959,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"min-up-volume={intensity.get('min_volume_breadth_fraction')}  |  "
                 f"scalar={intensity.get('paper_notional_scalar')}"
             )
+        high_close = volume_breadth_breakout_paper_sleeve.get("high_close_support") or {}
+        if high_close:
+            lines.append(
+                "  High-close support: "
+                f"supported={high_close.get('supported_candidate_count', 0)}  |  "
+                f"min-close-location={high_close.get('min_close_location')}  |  "
+                f"scalar={high_close.get('paper_notional_scalar')}"
+            )
         lines.append(
             f"  Candidates: {volume_breadth_breakout_paper_sleeve.get('candidate_count', 0)}  |  "
             f"Rejected: {volume_breadth_breakout_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
@@ -1993,6 +2001,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"RS={candidate.get('candidate_day_rs_vs_spy')} "
                 f"vol={candidate.get('volume_ratio_20')} "
                 f"breadth-intensity={candidate.get('breadth_intensity_support_pass_v1')} "
+                f"high-close={candidate.get('high_close_support_pass_v1')} "
+                f"clv={candidate.get('signal_day_close_location_value')} "
                 f"notional={notional_text} (paper only)"
             )
 

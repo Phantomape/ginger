@@ -279,6 +279,9 @@ def build_default_off_alpha_attribution_report(
                 "breadth_intensity_supported": (
                     ((volume_breadth_breakout_paper_sleeve or {}).get("breadth_intensity_support") or {}).get("supported_candidate_count")
                 ),
+                "high_close_supported": (
+                    ((volume_breadth_breakout_paper_sleeve or {}).get("high_close_support") or {}).get("supported_candidate_count")
+                ),
             },
         ),
         _surface_summary(

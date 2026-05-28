@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from quant.volume_breadth_breakout_paper_sleeve import (
     BREADTH_INTENSITY_RULE_VERSION,
     BREADTH_RULE_VERSION,
+    HIGH_CLOSE_SUPPORT_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     RULE_VERSION,
     build_volume_breadth_breakout_paper_sleeve_snapshot,
@@ -144,6 +145,41 @@ def test_breadth_intensity_support_scales_paper_notional_without_orders():
     assert snapshot["production_impact"]["production_orders_changed"] is False
 
 
+def test_high_close_support_stacks_on_paper_notional_without_orders():
+    ohlcv = _breadth_universe()
+    as_of_idx = 60
+    as_of = ohlcv["SPY"][as_of_idx]["date"]
+    for idx in range(5, 13):
+        ohlcv[f"B{idx:02d}"][as_of_idx]["volume"] = 2_000_000.0
+
+    win_close = ohlcv["WIN"][as_of_idx]["close"]
+    ohlcv["WIN"][as_of_idx]["high"] = round(win_close * 1.001, 4)
+    ohlcv["WIN"][as_of_idx]["low"] = round(win_close * 0.98, 4)
+
+    snapshot = build_volume_breadth_breakout_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=list(ohlcv),
+        state=empty_volume_breadth_breakout_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert snapshot["volume_breadth_context"]["volume_breadth_fraction"] >= 0.25
+    assert snapshot["high_close_support"]["rule_version"] == HIGH_CLOSE_SUPPORT_RULE_VERSION
+    assert snapshot["high_close_support"]["supported_candidate_count"] >= 1
+    assert candidate["high_close_support_rule_version"] == HIGH_CLOSE_SUPPORT_RULE_VERSION
+    assert candidate["signal_day_close_location_value"] >= 0.70
+    assert candidate["breadth_intensity_support_pass_v1"] is True
+    assert candidate["high_close_support_pass_v1"] is True
+    assert candidate["high_close_support_notional_scalar"] == 1.1
+    assert candidate["intended_notional"] == 12_100.0
+    assert candidate["high_close_support_trade_enabled"] is False
+    assert candidate["high_close_support_alters_orders"] is False
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
 def test_snapshot_rejects_breakout_when_breadth_is_too_thin():
     ohlcv = {
         "SPY": _rows(base=100.0, step=0.05),
@@ -264,4 +300,5 @@ def test_default_off_alpha_report_surfaces_volume_breadth_sleeve():
     assert surfaces["volume_breadth_breakout"]["label"] == "VOLUME_BREADTH_BREAKOUT_PAPER"
     assert surfaces["volume_breadth_breakout"]["trade_enabled"] is False
     assert surfaces["volume_breadth_breakout"]["extra_metrics"]["breadth_intensity_supported"] is None
+    assert surfaces["volume_breadth_breakout"]["extra_metrics"]["high_close_supported"] is None
     assert "min_closed_trades" in surfaces["volume_breadth_breakout"]["blockers"]
