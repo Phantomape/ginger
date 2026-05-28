@@ -6,6 +6,7 @@ from quant.default_off_alpha_attribution import build_default_off_alpha_attribut
 from quant.fundamental_growth_rs_paper_sleeve import (
     FILING_RECENCY_RULE_VERSION,
     GOVERNOR_RULE_VERSION,
+    LOW_LIABILITY_RULE_VERSION,
     LOW_VOLUME_PARTICIPATION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     RULE_VERSION,
@@ -68,7 +69,20 @@ def _facts() -> list[dict]:
         _fact("AMD", "revenue", 2025, "Q1", "2025-04-25", 1000.0),
         _fact("AMD", "revenue", 2026, "Q1", "2026-04-25", 1260.0),
         _fact("AMD", "operating_income", 2026, "Q1", "2026-04-25", 220.0),
+        _fact("AMD", "assets", 2026, "Q1", "2026-04-25", 1000.0),
+        _fact("AMD", "liabilities", 2026, "Q1", "2026-04-25", 500.0),
     ]
+
+
+def _low_liability_facts() -> list[dict]:
+    facts = [row for row in _facts() if row["canonical"] not in {"assets", "liabilities"}]
+    facts.extend(
+        [
+            _fact("AMD", "assets", 2026, "Q1", "2026-04-25", 1000.0),
+            _fact("AMD", "liabilities", 2026, "Q1", "2026-04-25", 250.0),
+        ]
+    )
+    return facts
 
 
 def _ohlcv() -> dict[str, list[dict]]:
@@ -101,10 +115,12 @@ def test_snapshot_adds_top1_companyfacts_growth_rs_candidate_without_orders():
     assert snapshot["candidates"][0]["governor_rule_version"] == GOVERNOR_RULE_VERSION
     assert snapshot["candidates"][0]["low_volume_participation_rule_version"] == LOW_VOLUME_PARTICIPATION_RULE_VERSION
     assert snapshot["candidates"][0]["filing_recency_rule_version"] == FILING_RECENCY_RULE_VERSION
+    assert snapshot["candidates"][0]["low_liability_rule_version"] == LOW_LIABILITY_RULE_VERSION
     assert snapshot["candidates"][0]["fundamental_growth_points_v1"] == 2
     assert snapshot["candidates"][0]["operating_profit_quality_pass_v1"] is True
     assert snapshot["candidates"][0]["rs_proxy_score_v1"] >= 0.75
     assert snapshot["candidates"][0]["filing_recency_pass_v1"] is True
+    assert snapshot["candidates"][0]["low_liability_pass_v1"] is False
     assert snapshot["candidates"][0]["intended_notional"] == 10_500.0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
@@ -159,6 +175,34 @@ def test_filing_recency_support_scales_paper_notional_without_orders():
     assert candidate["closed_ledger_notional_scalar"] == 1.05
     assert candidate["intended_notional"] == 10_500.0
     assert snapshot["filing_recency"]["supported_candidate_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_low_liability_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][125]["date"]
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_low_liability_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["low_liability_rule_version"] == LOW_LIABILITY_RULE_VERSION
+    assert candidate["liabilities_assets_ratio"] == 0.25
+    assert candidate["liabilities_assets_bucket"] == "low_lte_0p35"
+    assert candidate["low_liability_assets_max"] == 0.35
+    assert candidate["low_liability_pass_v1"] is True
+    assert candidate["low_liability_notional_scalar"] == 1.05
+    assert candidate["filing_recency_pass_v1"] is True
+    assert candidate["closed_ledger_notional_scalar"] == 1.1025
+    assert candidate["intended_notional"] == 11_025.0
+    assert snapshot["low_liability"]["supported_candidate_count"] == 1
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
 
@@ -276,6 +320,7 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
         },
         "source_rule_version": SOURCE_RULE_VERSION,
         "governor_rule_version": GOVERNOR_RULE_VERSION,
+        "low_liability": {"supported_candidate_count": 1},
     }
 
     report = build_default_off_alpha_attribution_report(
@@ -287,4 +332,5 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
     assert "fundamental_growth_rs" in surfaces
     assert surfaces["fundamental_growth_rs"]["label"] == "FUNDAMENTAL_GROWTH_RS_PAPER"
     assert surfaces["fundamental_growth_rs"]["trade_enabled"] is False
+    assert surfaces["fundamental_growth_rs"]["extra_metrics"]["low_liability_supported"] == 1
     assert "min_closed_trades" in surfaces["fundamental_growth_rs"]["blockers"]

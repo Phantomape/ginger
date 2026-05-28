@@ -2032,10 +2032,12 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         )
         low_volume = fundamental_growth_rs_paper_sleeve.get("low_volume_participation") or {}
         filing_recency = fundamental_growth_rs_paper_sleeve.get("filing_recency") or {}
+        low_liability = fundamental_growth_rs_paper_sleeve.get("low_liability") or {}
         lines.append(
             "  Paper supports: "
             f"low-volume={low_volume.get('supported_candidate_count', 0)}  |  "
-            f"filing-recency={filing_recency.get('supported_candidate_count', 0)}"
+            f"filing-recency={filing_recency.get('supported_candidate_count', 0)}  |  "
+            f"low-liability={low_liability.get('supported_candidate_count', 0)}"
         )
         gate = fundamental_growth_rs_paper_sleeve.get("forward_paper_gate") or {}
         if gate:
@@ -2058,6 +2060,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"score={candidate.get('fundamental_growth_rs_score_v1')} "
                 f"points={candidate.get('fundamental_growth_points_v1')} "
                 f"RS={candidate.get('rs_proxy_score_v1')} "
+                f"liab/assets={candidate.get('liabilities_assets_ratio')} "
                 f"notional={notional_text} (paper only)"
             )
 

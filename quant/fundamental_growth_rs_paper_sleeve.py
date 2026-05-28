@@ -29,11 +29,12 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "FUNDAMENTAL_GROWTH_RS_PAPER"
-RULE_VERSION = "fundamental_growth_rs_filing_recency_shared_adapter_v1"
+RULE_VERSION = "fundamental_growth_rs_low_liability_shared_adapter_v1"
 SOURCE_RULE_VERSION = "fundamental_growth_rs_operating_profit_quality_v1"
 GOVERNOR_RULE_VERSION = "operating_profit_quality_closed_ledger_governor_v1"
 LOW_VOLUME_PARTICIPATION_RULE_VERSION = "fundamental_growth_rs_low_volume_participation_support_v1"
 FILING_RECENCY_RULE_VERSION = "fundamental_growth_rs_filing_recency_support_v1"
+LOW_LIABILITY_RULE_VERSION = "fundamental_growth_rs_low_liability_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "fundamental_growth_rs_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -90,6 +91,8 @@ DEFAULT_CONFIG = {
     "low_volume_notional_scalar": 1.10,
     "filing_recency_max_days": 90,
     "filing_recency_notional_scalar": 1.05,
+    "low_liability_assets_max": 0.35,
+    "low_liability_notional_scalar": 1.05,
     "forward_gate_min_closed_trades": 30,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
@@ -187,6 +190,13 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         },
         "filing_recency": {
             "rule_version": FILING_RECENCY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "supported_candidate_count": 0,
+        },
+        "low_liability": {
+            "rule_version": LOW_LIABILITY_RULE_VERSION,
             "read_only": True,
             "trade_enabled": False,
             "alters_orders": False,
@@ -372,6 +382,17 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
             "paper_notional_scalar": float(cfg["filing_recency_notional_scalar"]),
             "supported_candidate_count": sum(
                 1 for row in candidates if row.get("filing_recency_pass_v1")
+            ),
+        },
+        "low_liability": {
+            "rule_version": LOW_LIABILITY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "liabilities_assets_max": float(cfg["low_liability_assets_max"]),
+            "paper_notional_scalar": float(cfg["low_liability_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("low_liability_pass_v1")
             ),
         },
         "candidates": deepcopy(candidates),
@@ -570,11 +591,18 @@ class CompanyfactsFundamentalIndex:
             canonical = str(raw.get("canonical") or "")
             filed = str(raw.get("filed") or raw.get("asof_date") or "")[:10]
             value = _float_or_none(raw.get("value") if "value" in raw else raw.get("current_value"))
-            if canonical not in {"eps_diluted", "eps_basic", "revenue", "operating_income"}:
+            if canonical not in {
+                "eps_diluted",
+                "eps_basic",
+                "revenue",
+                "operating_income",
+                "assets",
+                "liabilities",
+            }:
                 continue
             if not ticker or not filed or value is None:
                 continue
-            if not _is_quarterly_fact(raw, config):
+            if canonical not in {"assets", "liabilities"} and not _is_quarterly_fact(raw, config):
                 continue
             row = {
                 **raw,
@@ -745,6 +773,58 @@ class CompanyfactsFundamentalIndex:
             "operating_profit_quality_pass_v1": quality_pass,
         }
 
+    def balance_sheet_quality(self, ticker: str, asof_date: str) -> dict[str, Any]:
+        ticker = ticker.upper()
+        assets_rows = [
+            row
+            for row in self.by_key.get((ticker, "assets"), [])
+            if str(row.get("filed") or "")[:10] <= asof_date
+        ]
+        liabilities_rows = [
+            row
+            for row in self.by_key.get((ticker, "liabilities"), [])
+            if str(row.get("filed") or "")[:10] <= asof_date
+        ]
+        if not assets_rows:
+            return {
+                "balance_sheet_status": "missing_assets",
+                "balance_sheet_known_at": "SEC Companyfacts filed date <= signal_date",
+                "liabilities_assets_ratio": None,
+            }
+        assets = assets_rows[-1]
+        if not liabilities_rows:
+            return {
+                "balance_sheet_status": "missing_liabilities",
+                "balance_sheet_known_at": "SEC Companyfacts filed date <= signal_date",
+                "assets_current_value": _round(assets.get("value"), 6),
+                "assets_current_filed": assets.get("filed"),
+                "assets_current_period_end": assets.get("end"),
+                "liabilities_assets_ratio": None,
+            }
+        same_end_liabilities = [
+            row for row in liabilities_rows if row.get("end") == assets.get("end")
+        ]
+        liabilities = same_end_liabilities[-1] if same_end_liabilities else liabilities_rows[-1]
+        assets_value = _float_or_none(assets.get("value"))
+        liabilities_value = _float_or_none(liabilities.get("value"))
+        if assets_value is None or assets_value <= 0.0 or liabilities_value is None:
+            ratio = None
+            status = "invalid_balance_sheet_value"
+        else:
+            ratio = liabilities_value / assets_value
+            status = "ok"
+        return {
+            "balance_sheet_status": status,
+            "balance_sheet_known_at": "SEC Companyfacts filed date <= signal_date",
+            "assets_current_value": _round(assets_value, 6),
+            "assets_current_filed": assets.get("filed"),
+            "assets_current_period_end": assets.get("end"),
+            "liabilities_current_value": _round(liabilities_value, 6),
+            "liabilities_current_filed": liabilities.get("filed"),
+            "liabilities_current_period_end": liabilities.get("end"),
+            "liabilities_assets_ratio": _round(ratio, 6),
+        }
+
 
 def load_companyfacts_rows(
     *,
@@ -814,6 +894,7 @@ def _candidate_for_ticker(
     operating = fundamentals.operating_quality(ticker, as_of)
     if operating.get("operating_profit_quality_pass_v1") is not True:
         return None
+    balance_sheet = fundamentals.balance_sheet_quality(ticker, as_of)
     rs = rs_by_ticker.get(ticker) or {}
     rs_score = _float_or_none(rs.get("rs_proxy_score_v1"))
     available_rs = int(rs.get("rs_proxy_available_window_count") or 0)
@@ -879,11 +960,20 @@ def _candidate_for_ticker(
     filing_recency_scalar = (
         float(config["filing_recency_notional_scalar"]) if filing_recency_pass else 1.0
     )
+    liabilities_assets_ratio = _float_or_none(balance_sheet.get("liabilities_assets_ratio"))
+    low_liability_pass = (
+        liabilities_assets_ratio is not None
+        and liabilities_assets_ratio <= float(config["low_liability_assets_max"])
+    )
+    low_liability_scalar = (
+        float(config["low_liability_notional_scalar"]) if low_liability_pass else 1.0
+    )
     notional_scalar = (
         ticker_profit_scalar
         * global_drawdown_scalar
         * low_volume_scalar
         * filing_recency_scalar
+        * low_liability_scalar
     )
     intended_notional = float(config["paper_notional_usd"]) * notional_scalar
     return {
@@ -903,6 +993,7 @@ def _candidate_for_ticker(
         **fundamental,
         **rs,
         **operating,
+        **balance_sheet,
         "source_rule_version": SOURCE_RULE_VERSION,
         "rule_version": RULE_VERSION,
         "governor_rule_version": GOVERNOR_RULE_VERSION,
@@ -935,6 +1026,14 @@ def _candidate_for_ticker(
         "filing_recency_max_days": int(config["filing_recency_max_days"]),
         "filing_recency_pass_v1": filing_recency_pass,
         "filing_recency_notional_scalar": filing_recency_scalar,
+        "low_liability_rule_version": LOW_LIABILITY_RULE_VERSION,
+        "low_liability_known_at": "SEC Companyfacts assets/liabilities filed date <= signal_date",
+        "low_liability_trade_enabled": False,
+        "low_liability_alters_orders": False,
+        "low_liability_assets_max": float(config["low_liability_assets_max"]),
+        "liabilities_assets_bucket": _liabilities_assets_bucket(liabilities_assets_ratio, config),
+        "low_liability_pass_v1": low_liability_pass,
+        "low_liability_notional_scalar": low_liability_scalar,
         "closed_ledger_notional_scalar": _round(notional_scalar, 6),
         "intended_notional": _round(intended_notional, 2),
         "same_ticker_core_overlap": False,
@@ -1548,3 +1647,16 @@ def _filing_age_bucket(days: int | None) -> str:
     if days <= 180:
         return "stale_91_180d"
     return "very_stale_gt180d"
+
+
+def _liabilities_assets_bucket(ratio: Any, config: dict[str, Any]) -> str:
+    value = _float_or_none(ratio)
+    if value is None:
+        return "missing"
+    if value <= float(config["low_liability_assets_max"]):
+        return "low_lte_0p35"
+    if value < 0.55:
+        return "medium_0p35_0p55"
+    if value < 0.75:
+        return "higher_0p55_0p75"
+    return "high_gte_0p75"
