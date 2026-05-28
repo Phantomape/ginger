@@ -1,0 +1,145 @@
+{
+  "after_metrics": {
+    "all_eligible_pead_5d_avg_return": -0.0011391,
+    "all_eligible_pead_5d_closed": 15,
+    "all_eligible_pead_5d_win_rate": 0.5333,
+    "all_eligible_pead_10d_avg_return": 0.022311,
+    "all_eligible_pead_10d_closed": 11,
+    "all_eligible_pead_10d_win_rate": 0.5455,
+    "non_residual_eligible_5d_avg_return": 0.015656,
+    "non_residual_eligible_5d_closed": 8,
+    "non_residual_eligible_5d_win_rate": 0.625,
+    "non_residual_eligible_10d_avg_return": 0.017991,
+    "non_residual_eligible_10d_closed": 4,
+    "non_residual_eligible_10d_win_rate": 0.5,
+    "not_primary_7d_positive_5d_avg_return": 0.001460,
+    "not_primary_7d_positive_5d_closed": 514,
+    "outside_pead_primary_positive_5d_avg_return": 0.005162,
+    "outside_pead_primary_positive_5d_closed": 14,
+    "residual_eligible_5d_avg_return": -0.020333,
+    "residual_eligible_5d_closed": 7,
+    "residual_eligible_5d_win_rate": 0.4286,
+    "residual_eligible_10d_avg_return": 0.024780,
+    "residual_eligible_10d_closed": 7,
+    "residual_eligible_10d_win_rate": 0.5714,
+    "row_count": 700,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "all_eligible_pead_closed_at_5d_horizon": 0,
+    "comment": "exp-20260527-005 had zero rows in any pead-eligible bucket; comparison was structurally impossible.",
+    "residual_eligible_row_count": 0,
+    "row_count": 700,
+    "strategy_behavior_changed": false
+  },
+  "bucket_counts": {
+    "blocked_missing_last_earnings_date": 7,
+    "non_residual_eligible": 8,
+    "not_primary_7d_positive": 653,
+    "outside_pead_primary_positive": 25,
+    "residual_eligible": 7
+  },
+  "change_summary": "Reads the enriched watchlist from exp-20260527-908 and computes three read-only bucket comparisons at 5d/10d horizons: (1) residual vs non-residual within PEAD window, (2) PEAD-window vs outside-window primary positive, (3) positive-revision PEAD vs non-primary baseline. Mirrors exp-20260527-005 gate_thresholds. Result: residual leadership inside the PEAD window has a -3.6 pp 5d return lift vs non-residual (residual avg -2.0% vs non-residual +1.6%), and a -19.6 pp win rate lift. The 10d horizon shows a small +0.7 pp flip but with sample sizes below the published min_bucket_closed_10d=5 floor. Hypothesis rejected at the 5d primary horizon.",
+  "change_type": "read_only_pead_attribution_rerun",
+  "changed_variable": "pead_window_residual_leadership_bucket_attribution_on_enriched_watchlist",
+  "comparisons": {
+    "pead_window_vs_outside_window_primary_positive_5d_lift": -0.006301,
+    "pead_window_vs_outside_window_primary_positive_10d_lift": 0.087768,
+    "positive_revision_pead_vs_non_primary_baseline_5d_lift": -0.002600,
+    "positive_revision_pead_vs_non_primary_baseline_10d_lift": 0.011207,
+    "residual_vs_non_residual_within_pead_5d_lift": -0.035988,
+    "residual_vs_non_residual_within_pead_5d_win_rate_lift": -0.196429,
+    "residual_vs_non_residual_within_pead_10d_lift": 0.006789,
+    "residual_vs_non_residual_within_pead_10d_win_rate_lift": 0.071429
+  },
+  "component": "quant/experiments/exp_20260528_027_pead_window_residual_leadership_bucket_attribution_on_enriched_watchlist.py",
+  "date_range": {
+    "source_watchlist_as_of_dates": "2026-05-08 .. 2026-05-26",
+    "source_enriched_artifact": "data/experiments/exp-20260527-908/last_earnings_date_pit_join_into_expectation_revision_watchlist_row.json"
+  },
+  "decision": "rejected_no_residual_pead_edge",
+  "decision_rule": "Gate 4: if residual_eligible avg_return @ 5d minus non_residual_eligible avg_return @ 5d is negative, reject. Else if bucket size floor + concentration limits pass AND lift >= 0.01, accept. Else, observed_only_thin_bucket_data_now_available.",
+  "delta_metrics": {
+    "residual_vs_non_residual_within_pead_5d_lift_pp": -3.60,
+    "residual_vs_non_residual_within_pead_5d_win_rate_lift_pp": -19.6
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260528-027",
+  "gate1": {"name": "baseline_buckets_populated", "passed": true, "residual_eligible_row_count": 7, "non_residual_eligible_row_count": 8},
+  "gate2": {"name": "required_input_fields_present", "passed": true, "bucketed_total_rows": 700},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "primary_residual_vs_non_residual_within_pead_window",
+    "passed": false,
+    "status": "rejected_no_residual_pead_edge",
+    "primary_horizon": "5d",
+    "primary_horizon_lift": -0.0359885,
+    "residual_lift_floor": 0.01,
+    "primary_horizon_bucket_size_passed": false,
+    "primary_horizon_concentration_passed": false
+  },
+  "gate_questions": {
+    "what_hypothesis": "Within the T+2..T+15 PEAD window, residual leaders among positive expectation revision rows should outperform non-residual peers at 5d/10d horizons.",
+    "prior_similar_experiments": "exp-20260527-005/008/009/010 all observed_only_data_gap due to missing last_earnings_date and sector/theme residual coverage; exp-20260527-908 unblocked the field.",
+    "single_independent_variable": "Residual leadership flag within the T+2..T+15 post-earnings window on positive expectation revision rows.",
+    "success_failure_criteria": "5d horizon lift >= +1.0 pp with closed_5d >= 8 per bucket and concentration limits passed.",
+    "reproducibility": "Single deterministic script reading exp-20260527-908 artifact; 10 unit tests cover bucket assignment, stats, comparison, gate accept/reject/observed_only logic."
+  },
+  "hypothesis": "With last_earnings_date now PIT-joined by exp-20260527-908, the PEAD continuation alpha line can finally be tested directly: (a) within the PEAD window, do residual leaders outperform non-residual primary positive rows at 5d and 10d horizons (b) does the PEAD window itself produce a return lift over primary positive rows outside the window (c) does positive expectation revision + PEAD window beat the non-primary-positive baseline.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260527-005",
+    "exp-20260527-007",
+    "exp-20260527-008",
+    "exp-20260527-009",
+    "exp-20260527-010",
+    "exp-20260527-908",
+    "exp-20260525-034"
+  ],
+  "new_evidence_type": "first_pead_window_bucket_comparison_with_resolved_last_earnings_date",
+  "next_evidence_needed": "Accumulate multiple earnings seasons before retrying residual-leadership as a PEAD discriminator. The non-residual eligible bucket showed a meaningful +1.57% 5d return on its own (win 62.5%); a weaker hypothesis -- 'positive expectation revision + PEAD window without requiring residual leadership' -- may still be worth measuring at scale. Add sector/theme residual control before the next retry, given exp-20260527-009/010 evidence that SPY/QQQ-only residual is a weak proxy.",
+  "parameters": {
+    "rule_version": "pead_window_residual_bucket_attribution_v1",
+    "primary_horizon": "5d",
+    "secondary_horizon": "10d",
+    "residual_lift_floor": 0.01,
+    "gate_thresholds_published_by_exp_20260527_005": {
+      "max_single_ticker_positive_share": 0.5,
+      "max_top5_positive_share": 0.6,
+      "min_bucket_closed_10d": 5,
+      "min_bucket_closed_5d": 8
+    }
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260528_027"
+  },
+  "rejection_reason": "5d residual eligible avg return -2.03% underperforms non-residual eligible +1.57% by 3.60 pp; win rate also lower by 19.6 pp; bucket size floor and concentration limits also fail.",
+  "related_files": [
+    "quant/experiments/exp_20260528_027_pead_window_residual_leadership_bucket_attribution_on_enriched_watchlist.py",
+    "quant/test_exp_20260528_027_pead_window_residual_bucket_attribution.py",
+    "data/experiments/exp-20260528-027/pead_window_residual_leadership_bucket_attribution_on_enriched_watchlist.json",
+    "experiments/artifacts/exp-20260528-027_pead_window_residual_leadership_bucket_attribution_on_enriched_watchlist.md",
+    "experiments/logs/exp-20260528-027.json",
+    "experiments/tickets/exp-20260528-027.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "pead_window_residual_bucket_attribution_v1",
+  "single_causal_variable": "pead_window_residual_leadership_bucket_attribution_on_enriched_watchlist",
+  "status": "rejected",
+  "timestamp": "2026-05-28T06:00:00+00:00",
+  "trial_family": "measurement_repair_pead_field",
+  "trial_variant_id": "exp-20260528-027"
+}
