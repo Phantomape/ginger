@@ -1,0 +1,277 @@
+{
+  "acceptance_reason": "Source alpha improved EV in all three canonical windows, aggregate EV delta +7.3309 and PnL delta +$111,268.93, while this run only adds a default-off production-visible observation boundary.",
+  "adapter_contract": {
+    "core_candidate_ranking_changed": false,
+    "core_exits_changed": false,
+    "core_signal_generation_changed": false,
+    "core_sizing_changed": false,
+    "governor_rule_version": "operating_profit_quality_closed_ledger_governor_v1",
+    "known_at": [
+      "SEC Companyfacts filed date <= signal_date",
+      "daily OHLCV rows with date <= signal_date",
+      "paper entry uses next available open",
+      "closed-ledger governor only uses closed paper rows before entry"
+    ],
+    "live_orders_changed": false,
+    "paper_enabled": true,
+    "source_rule_version": "fundamental_growth_rs_operating_profit_quality_v1",
+    "trade_enabled": false
+  },
+  "after_metrics": {
+    "late_strong": {
+      "expected_value_score": 7.3793,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0579,
+      "sharpe_daily": 5.28,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.3976,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 139758.7,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 5.5164,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.0915,
+      "sharpe_daily": 4.33,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 1.274,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 127402.51,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 2.3293,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.0953,
+      "sharpe_daily": 2.95,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.7896,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 78958.71,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "aggregate_delta_metrics": {
+    "expected_value_score_delta_sum": 7.3309,
+    "target_trade_count": 336,
+    "total_pnl_delta_sum": 111268.93,
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0
+  },
+  "anti_js": {
+    "javascript_used": false
+  },
+  "backtest_protocol": {
+    "current_run_backtest_delta": "Adapter only; source three-window before/after is reused exactly because no replay alpha rule or backtester behavior changed.",
+    "source": "docs/backtesting.md canonical three-window replay",
+    "source_artifact": "experiments/logs/exp-20260528-008.json",
+    "source_experiment": "exp-20260528-008",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "late_strong": {
+      "expected_value_score": 5.1628,
+      "max_consecutive_losses": 2,
+      "max_drawdown_pct": 0.0665,
+      "sharpe_daily": 4.41,
+      "signals_generated": 51,
+      "signals_survived": 41,
+      "strategy_total_return_pct": 1.1707,
+      "survival_rate": 0.8039,
+      "tail_loss_share": 0.5146,
+      "total_pnl": 117072.92,
+      "trade_count": 18,
+      "win_rate": 0.8333,
+      "worst_trade_pct": -0.0397
+    },
+    "mid_weak": {
+      "expected_value_score": 2.1402,
+      "max_consecutive_losses": 6,
+      "max_drawdown_pct": 0.1119,
+      "sharpe_daily": 2.74,
+      "signals_generated": 53,
+      "signals_survived": 42,
+      "strategy_total_return_pct": 0.7811,
+      "survival_rate": 0.7925,
+      "tail_loss_share": 0.5493,
+      "total_pnl": 78110.11,
+      "trade_count": 21,
+      "win_rate": 0.5238,
+      "worst_trade_pct": -0.0897
+    },
+    "old_thin": {
+      "expected_value_score": 0.5911,
+      "max_consecutive_losses": 4,
+      "max_drawdown_pct": 0.1001,
+      "sharpe_daily": 1.49,
+      "signals_generated": 60,
+      "signals_survived": 52,
+      "strategy_total_return_pct": 0.3967,
+      "survival_rate": 0.8667,
+      "tail_loss_share": 0.5193,
+      "total_pnl": 39667.96,
+      "trade_count": 22,
+      "win_rate": 0.4091,
+      "worst_trade_pct": -0.0635
+    }
+  },
+  "change_summary": "Add a shared default-off paper sleeve for the exp-20260528-008 operating-profit quality + RS alpha, including daily report and default-off attribution surfaces.",
+  "change_type": "alpha_search",
+  "changed_variable": "fundamental_growth_rs_shared_default_off_paper_adapter_v1",
+  "component": "quant/fundamental_growth_rs_paper_sleeve.py",
+  "date_range": {
+    "end": "2026-04-21",
+    "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted_candidate_shared_default_off_forward_adapter",
+  "delta_metrics": {
+    "late_strong": {
+      "expected_value_score": 2.2165,
+      "max_drawdown_pct": -0.0086,
+      "sharpe_daily": 0.87,
+      "strategy_total_return_pct": 0.2269,
+      "survival_rate": 0.0,
+      "total_pnl": 22685.78,
+      "trade_count": 0
+    },
+    "mid_weak": {
+      "expected_value_score": 3.3762,
+      "max_drawdown_pct": -0.0204,
+      "sharpe_daily": 1.59,
+      "strategy_total_return_pct": 0.4929,
+      "survival_rate": 0.0,
+      "total_pnl": 49292.4,
+      "trade_count": 0
+    },
+    "old_thin": {
+      "expected_value_score": 1.7382,
+      "max_drawdown_pct": -0.0048,
+      "sharpe_daily": 1.46,
+      "strategy_total_return_pct": 0.3929,
+      "survival_rate": 0.0,
+      "total_pnl": 39290.75,
+      "trade_count": 0
+    }
+  },
+  "experiment_id": "exp-20260528-011",
+  "gate4": {
+    "aggregate_ev_delta_positive": true,
+    "aggregate_pnl_delta_positive": true,
+    "failed_checks": [],
+    "max_drawdown_worse": -0.0048,
+    "max_drawdown_worse_guardrail": 0.005,
+    "passed": true,
+    "survival_guard_passed": true,
+    "target_concentration": {
+      "max_single_positive_pnl_share": 0.391352,
+      "max_single_positive_pnl_share_guardrail": 0.4,
+      "passed": true,
+      "positive_pnl_hhi": 0.249167,
+      "positive_pnl_hhi_guardrail": 0.3
+    },
+    "target_trade_count": 336,
+    "target_trade_count_min": 30,
+    "target_window_count_min": 3,
+    "target_windows": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_improved": 3,
+    "windows_ev_regressed": 0,
+    "windows_pnl_regressed": 0
+  },
+  "hypothesis": "The strongest current alpha direction is to production-visible the accepted Companyfacts operating-profit + RS candidate-pool edge so forward replacement-value data can accumulate without live-order impact.",
+  "mechanism_family": "companyfacts_growth_relative_strength_candidate_pool",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260528-004",
+    "exp-20260528-006",
+    "exp-20260528-008",
+    "exp-20260528-010"
+  ],
+  "new_evidence_type": "production_visible_forward_adapter_for_accepted_three_window_alpha",
+  "next_retry_requires": [
+    "30+ closed forward paper trades before any activation review",
+    "positive forward realized PnL",
+    "no concentration breach in forward replacement-value report",
+    "separate promotion experiment before any live-order path is enabled"
+  ],
+  "notes": "No JavaScript was used.",
+  "prior_trial_count": 4,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_attribution_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false
+  },
+  "related_files": [
+    "quant/fundamental_growth_rs_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/test_fundamental_growth_rs_paper_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/data_edge_context_layers.md",
+    "data/experiments/exp-20260528-011/fundamental_growth_rs_shared_adapter.json",
+    "experiments/logs/exp-20260528-011.json",
+    "experiments/artifacts/exp-20260528-011_fundamental_growth_rs_shared_adapter.md"
+  ],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "start": "2024-10-02"
+    }
+  ],
+  "single_causal_variable": "fundamental_growth_rs_shared_default_off_paper_adapter_v1",
+  "status": "accepted",
+  "timestamp": "2026-05-28T06:43:43.779819+00:00",
+  "trial_family": "fundamental_growth_rs_operating_profit_shared_adapter",
+  "trial_variant_id": "fundamental_growth_rs_shared_default_off_paper_adapter_v1"
+}

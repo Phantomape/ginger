@@ -224,6 +224,7 @@ def build_default_off_alpha_attribution_report(
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
+    fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a daily read-only activation/blocker dashboard."""
 
@@ -274,6 +275,19 @@ def build_default_off_alpha_attribution_report(
             name="volume_breadth_breakout",
             label="VOLUME_BREADTH_BREAKOUT_PAPER",
             snapshot=volume_breadth_breakout_paper_sleeve,
+        ),
+        _surface_summary(
+            name="fundamental_growth_rs",
+            label="FUNDAMENTAL_GROWTH_RS_PAPER",
+            snapshot=fundamental_growth_rs_paper_sleeve,
+            extra_metrics={
+                "source_rule_version": (
+                    (fundamental_growth_rs_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "governor_rule_version": (
+                    (fundamental_growth_rs_paper_sleeve or {}).get("governor_rule_version")
+                ),
+            },
         ),
     ]
 

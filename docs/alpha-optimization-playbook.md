@@ -13,8 +13,8 @@
 3. 未来 1-3 轮更值得投入的 alpha / 字段队列；
 4. 最新研究能转成哪些可回放、可归因、可生产可见字段。
 
-Last refreshed: 2026-05-27.
-Research refresh cut: 2026-05-27.
+Last refreshed: 2026-05-28.
+Research refresh cut: 2026-05-28.
 
 ## 使用方式
 
@@ -274,6 +274,33 @@ Kova / CANSLIM 类数据的长期结论：
   fixed notional，除非有 forward rows 或一个真正新的生产可见确认字段。
 - 动态 breadth recovery 只能用 forward rows 或正交 source-quality 字段继续；
   不要把 exp-021 的小样本正向结果改写成新阈值搜索。
+
+### 1.3 Companyfacts operating-profit + RS candidate-pool lead
+
+机制结论：
+
+- `exp-20260528-008` 证明 Companyfacts growth / operating-profit quality 与
+  daily RS proxy 组合，比继续在 VCP/Kova frozen sample 上寻找解释桶更有赚钱
+  含义。三窗口 aggregate EV delta 为 `+7.3309`，PnL delta 为
+  `+$111,268.93`，且三窗口 EV/PnL 全部改善。
+- 有效变量不是“再加一个 fundamentals filter”，而是候选池扩展：
+  EPS/revenue growth points、operating income positive、RS percentile proxy、
+  top-1/day、next-open paper entry、10-trading-day exit，再用 closed paper
+  ledger 的 ticker profit cap / global drawdown governor 管理赢家集中。
+- `exp-20260528-011` 后，正确边界是
+  `FUNDAMENTAL_GROWTH_RS_PAPER` shared default-off paper adapter。它用于收集
+  forward replacement-value / concentration / core-overlap 证据，不是 live
+  capital，也不是继续扫 Companyfacts 阈值的许可。
+
+保留规则：
+
+- 当前固定对象是 `fundamental_growth_rs_operating_profit_quality_v1` +
+  `operating_profit_quality_closed_ledger_governor_v1`。
+- 下一步只优先收集 closed forward outcomes、replacement value vs core/cash、
+  concentration、filed-date coverage 和 kill-gate 状态。
+- 禁止在同一冻结样本上继续 retune EPS/revenue growth threshold、RS percentile、
+  operating-profit gate、top-N、fixed notional、hold days 或 closed-ledger scalar；
+  除非有 forward rows 或一个真正新的生产可见字段。
 
 ### 2. State-surface：从调 profile 转向解 concentration
 
