@@ -29,9 +29,10 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "FUNDAMENTAL_GROWTH_RS_PAPER"
-RULE_VERSION = "fundamental_growth_rs_operating_profit_shared_adapter_v1"
+RULE_VERSION = "fundamental_growth_rs_low_volume_participation_shared_adapter_v1"
 SOURCE_RULE_VERSION = "fundamental_growth_rs_operating_profit_quality_v1"
 GOVERNOR_RULE_VERSION = "operating_profit_quality_closed_ledger_governor_v1"
+LOW_VOLUME_PARTICIPATION_RULE_VERSION = "fundamental_growth_rs_low_volume_participation_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "fundamental_growth_rs_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -84,6 +85,8 @@ DEFAULT_CONFIG = {
     "ticker_profit_cap_scalar": 0.05,
     "global_closed_drawdown_trigger_usd": 7_500.0,
     "global_drawdown_scalar": 0.25,
+    "low_volume_ratio_20_max": 0.90,
+    "low_volume_notional_scalar": 1.10,
     "forward_gate_min_closed_trades": 30,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
@@ -172,6 +175,13 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         "unrealized_pnl": 0.0,
         "candidate_universe": {"status": reason, "ticker_count": 0},
         "fundamental_data": {"status": reason, "row_count": 0},
+        "low_volume_participation": {
+            "rule_version": LOW_VOLUME_PARTICIPATION_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "supported_candidate_count": 0,
+        },
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "production_impact": _production_impact(),
         "error": reason,
@@ -332,6 +342,17 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
             "row_count": len(facts),
         },
         "closed_ledger_governor": governor_state,
+        "low_volume_participation": {
+            "rule_version": LOW_VOLUME_PARTICIPATION_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "volume_ratio_20_max": float(cfg["low_volume_ratio_20_max"]),
+            "paper_notional_scalar": float(cfg["low_volume_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("low_volume_participation_pass_v1")
+            ),
+        },
         "candidates": deepcopy(candidates),
         "rejected_candidates": deepcopy(rejected[:50]),
         "new_pending_entries": deepcopy(new_pending),
@@ -824,7 +845,9 @@ def _candidate_for_ticker(
         if global_drawdown >= float(config["global_closed_drawdown_trigger_usd"])
         else 1.0
     )
-    notional_scalar = ticker_profit_scalar * global_drawdown_scalar
+    low_volume_pass = volume_ratio is not None and volume_ratio <= float(config["low_volume_ratio_20_max"])
+    low_volume_scalar = float(config["low_volume_notional_scalar"]) if low_volume_pass else 1.0
+    notional_scalar = ticker_profit_scalar * global_drawdown_scalar * low_volume_scalar
     intended_notional = float(config["paper_notional_usd"]) * notional_scalar
     return {
         "date": as_of,
@@ -846,6 +869,7 @@ def _candidate_for_ticker(
         "source_rule_version": SOURCE_RULE_VERSION,
         "rule_version": RULE_VERSION,
         "governor_rule_version": GOVERNOR_RULE_VERSION,
+        "low_volume_participation_rule_version": LOW_VOLUME_PARTICIPATION_RULE_VERSION,
         "source_universe": "current_production_universe_with_sec_companyfacts_and_ohlcv",
         "known_at": "after_signal_date_close_before_next_open_paper_entry",
         "trade_enabled": False,
@@ -859,6 +883,12 @@ def _candidate_for_ticker(
         "global_closed_drawdown_before_entry": _round(global_drawdown, 2),
         "global_closed_drawdown_trigger_usd": float(config["global_closed_drawdown_trigger_usd"]),
         "global_drawdown_scalar": global_drawdown_scalar,
+        "low_volume_participation_known_at": "daily OHLCV volume ratio with date <= signal_date",
+        "low_volume_participation_trade_enabled": False,
+        "low_volume_participation_alters_orders": False,
+        "low_volume_ratio_20_max": float(config["low_volume_ratio_20_max"]),
+        "low_volume_participation_pass_v1": low_volume_pass,
+        "low_volume_notional_scalar": low_volume_scalar,
         "closed_ledger_notional_scalar": _round(notional_scalar, 6),
         "intended_notional": _round(intended_notional, 2),
         "same_ticker_core_overlap": False,

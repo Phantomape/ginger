@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.fundamental_growth_rs_paper_sleeve import (
     GOVERNOR_RULE_VERSION,
+    LOW_VOLUME_PARTICIPATION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     RULE_VERSION,
     SOURCE_RULE_VERSION,
@@ -97,10 +98,36 @@ def test_snapshot_adds_top1_companyfacts_growth_rs_candidate_without_orders():
     assert snapshot["candidates"][0]["rule_version"] == RULE_VERSION
     assert snapshot["candidates"][0]["source_rule_version"] == SOURCE_RULE_VERSION
     assert snapshot["candidates"][0]["governor_rule_version"] == GOVERNOR_RULE_VERSION
+    assert snapshot["candidates"][0]["low_volume_participation_rule_version"] == LOW_VOLUME_PARTICIPATION_RULE_VERSION
     assert snapshot["candidates"][0]["fundamental_growth_points_v1"] == 2
     assert snapshot["candidates"][0]["operating_profit_quality_pass_v1"] is True
     assert snapshot["candidates"][0]["rs_proxy_score_v1"] >= 0.75
     assert snapshot["candidates"][0]["intended_notional"] == 10_000.0
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_low_volume_participation_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][125]["date"]
+    ohlcv["AMD"][125]["volume"] = 500_000.0
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["low_volume_participation_pass_v1"] is True
+    assert candidate["low_volume_ratio_20_max"] == 0.9
+    assert candidate["low_volume_notional_scalar"] == 1.1
+    assert candidate["closed_ledger_notional_scalar"] == 1.1
+    assert candidate["intended_notional"] == 11_000.0
+    assert snapshot["low_volume_participation"]["supported_candidate_count"] == 1
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
 
