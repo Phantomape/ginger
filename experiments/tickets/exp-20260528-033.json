@@ -1,0 +1,90 @@
+{
+  "acceptance_rule": "Three-window before=accepted IWM-only paper adapter vs after=only close_location<=0.60 paper notional 1.10x; require positive aggregate EV/PnL, no EV/PnL regression windows, drawdown drift <=0.5pp, survival >=5%, concentration pass, and at least 4 supported trades across at least 2 windows.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "experiments/artifacts",
+    "experiments/logs",
+    "experiments/tickets",
+    "data/experiments",
+    "docs/experiment_log.jsonl"
+  ],
+  "artifact": "experiments/artifacts/exp-20260528-033_ai_optical_low_close_location_support.md",
+  "baseline_result_file": "data/experiments/exp-20260525-003/ai_optical_iwm_confirmed_fixed_notional_sleeve.json",
+  "card_file": "experiments/cards/exp-20260528-033.md",
+  "change_type": "default_off_paper_notional_support",
+  "changed_variable": "ai_optical_signal_day_low_close_location_notional_scalar_v1",
+  "claimed_at": "2026-05-28T19:12:07+00:00",
+  "completed_at": "2026-05-28T19:18:37+00:00",
+  "created_at": "2026-05-28T19:11:59+00:00",
+  "decision": "rejected_ai_optical_low_close_location_notional_support",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260528-033",
+  "experiment_uid": "expuid-25bbc9cd72e847d5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260528-033",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-05-28T19:11:59+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "ai_optical_low_close_location_support"
+  },
+  "hypothesis": "Accepted AI optical IWM-confirmed paper trades with low or mid signal-day close location may represent non-exhaustion demand and deserve a small fixed-notional paper support; high-close optical support is not promising on the frozen sample.",
+  "json": "data/experiments/exp-20260528-033/ai_optical_low_close_location_support.json",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "core universe; core entry/ranking/sizing/exits; accepted IWM market confirmation; target optical ticker cohort; live/default orders"
+  ],
+  "mechanism_family": "governed_ai_optical_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/ai_optical_paper_sleeve.py",
+    "quant/run_daily.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260525-003",
+    "exp-20260525-005",
+    "exp-20260525-018",
+    "exp-20260526-012"
+  ],
+  "new_evidence_type": "free_ohlcv_signal_day_close_location_field_on_governed_optical_pool",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Read-only audit showed positive low/mid close-location PnL but only three affected trades, so this is a disciplined scout rather than a promotion candidate.",
+    "expected_ev_delta": 0.03,
+    "expected_pnl_delta": 700.0,
+    "main_failure_modes": [
+      "supported_sample_too_small",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-05-28T19:11:39+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 4,
+  "result": {
+    "decision": "rejected_ai_optical_low_close_location_notional_support",
+    "expected_value_score_delta": 0.0359,
+    "rejection_reason": "supported_sample_too_small",
+    "total_pnl_delta": 591.0
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260528-033.json",
+  "single_causal_variable": "ai_optical_signal_day_low_close_location_notional_scalar_v1",
+  "status": "rejected_ai_optical_low_close_location_notional_support",
+  "summary": "The low close-location support improved aggregate EV/PnL but did not clear Gate 4 because the supported sample was too small; keep it rejected and do not promote production/shared policy.",
+  "ticket_file": "experiments/tickets/exp-20260528-033.json",
+  "trial_family": "ai_optical_signal_day_low_close_location_support",
+  "trial_variant_id": "close_location_lte_0p60_scalar_1p10_v1"
+}

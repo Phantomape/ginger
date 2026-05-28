@@ -89,7 +89,7 @@ def load_registry(path=DEFAULT_REGISTRY):
     path = Path(path)
     if not path.exists():
         return {"schema_version": 1, "updated_at": None, "experiments": []}
-    with path.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8-sig") as f:
         data = json.load(f)
     data.setdefault("schema_version", 1)
     data.setdefault("updated_at", None)
@@ -142,7 +142,7 @@ def load_ticket(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
     path = ticket_path(experiment_id, tickets_dir)
     if not path.exists():
         return None
-    with path.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -174,7 +174,7 @@ def materialize_experiment(entry):
     if ticket_file:
         path = REPO_ROOT / ticket_file
         if path.exists():
-            with path.open(encoding="utf-8") as f:
+            with path.open(encoding="utf-8-sig") as f:
                 return json.load(f)
     return entry
 
@@ -282,7 +282,7 @@ def _remember_id_source(sources, experiment_id, source):
 
 def _load_json_file(path):
     try:
-        with Path(path).open(encoding="utf-8") as f:
+        with Path(path).open(encoding="utf-8-sig") as f:
             return json.load(f)
     except (OSError, json.JSONDecodeError):
         return None
@@ -342,7 +342,7 @@ def collect_experiment_id_sources(registry=None, *, root=None):
     log_path = root / "docs" / "experiment_log.jsonl"
     if log_path.exists():
         try:
-            with log_path.open(encoding="utf-8") as f:
+            with log_path.open(encoding="utf-8-sig") as f:
                 for line_number, line in enumerate(f, start=1):
                     line = line.strip()
                     if not line:
@@ -827,9 +827,9 @@ def evaluate_gate(before_metrics, after_metrics):
 
 
 def judge_results(before_path, after_path):
-    with Path(before_path).open(encoding="utf-8") as f:
+    with Path(before_path).open(encoding="utf-8-sig") as f:
         before_raw = json.load(f)
-    with Path(after_path).open(encoding="utf-8") as f:
+    with Path(after_path).open(encoding="utf-8-sig") as f:
         after_raw = json.load(f)
     before = metric_snapshot(before_raw)
     after = metric_snapshot(after_raw)
@@ -1072,7 +1072,7 @@ def experiment_id_exists_in_log(log_path, experiment_id):
     path = Path(log_path)
     if not path.exists():
         return False
-    with path.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8-sig") as f:
         for line in f:
             line = line.strip()
             if not line:
