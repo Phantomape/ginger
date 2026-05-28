@@ -1,0 +1,141 @@
+{
+  "after_metrics": {
+    "primary_expectation_positive_pead_in_5d_avg_return": -0.001139,
+    "primary_expectation_positive_pead_in_5d_closed": 15,
+    "primary_expectation_positive_pead_out_5d_avg_return": 0.005162,
+    "primary_expectation_positive_pead_out_5d_closed": 14,
+    "primary_expectation_positive_baseline_5d_avg_return": 0.001460,
+    "wide_watchlist_positive_pead_in_5d_avg_return": -0.000241,
+    "wide_watchlist_positive_pead_in_5d_closed": 25,
+    "wide_watchlist_positive_pead_out_5d_avg_return": 0.003789,
+    "wide_watchlist_positive_pead_out_5d_closed": 15,
+    "wide_watchlist_positive_baseline_5d_avg_return": 0.001114,
+    "scout_prev_positive_pead_in_5d_avg_return": -0.000818,
+    "scout_prev_positive_pead_in_5d_closed": 13,
+    "scout_prev_positive_pead_out_5d_avg_return": 0.008618,
+    "scout_prev_positive_pead_out_5d_closed": 5,
+    "scout_prev_positive_baseline_5d_avg_return": 0.001100,
+    "primary_expectation_positive_pead_in_10d_avg_return": 0.022311,
+    "wide_watchlist_positive_pead_in_10d_avg_return": 0.014907,
+    "scout_prev_positive_pead_in_10d_avg_return": 0.006484,
+    "row_count": 700,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260528-027 measured residual-eligible vs non-residual-eligible inside PEAD only on the primary_expectation_positive tier; this experiment broadens to three positive revision tiers and drops the residual filter.",
+    "row_count": 700,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Tests the simpler PEAD hypothesis (without residual filter) across three independent positive expectation revision tiers on the exp-20260527-908 enriched watchlist: primary_expectation_positive (47 rows), wide_watchlist_positive (61 rows), scout_prev_positive (25 rows). Per tier, compares PEAD-window-in vs PEAD-window-out and vs baseline-not-in-tier at 5d (primary) and 10d (secondary) horizons. Mirrors exp-20260527-005 published gate_thresholds. Result: all three tiers show non-positive 5d PEAD-in vs PEAD-out lift; the cleanest comparison (wide_watchlist_positive, 25 closed 5d, size + concentration both pass) returns -0.40 pp 5d lift. The 10d horizon shows directional inconsistency across tiers and the pead_out comparison sample sizes are too small (1-3 closed observations) to be trusted.",
+  "change_type": "read_only_pead_attribution_no_residual_filter",
+  "changed_variable": "multi_tier_pead_window_lift_attribution_no_residual_filter",
+  "comparisons_summary": {
+    "pead_in_vs_pead_out_5d_lift_pp": {
+      "primary_expectation_positive": -0.63,
+      "wide_watchlist_positive": -0.40,
+      "scout_prev_positive": -0.94
+    },
+    "pead_in_vs_baseline_5d_lift_pp": {
+      "primary_expectation_positive": -0.26,
+      "wide_watchlist_positive": -0.14,
+      "scout_prev_positive": -0.19
+    },
+    "pead_in_vs_baseline_10d_lift_pp": {
+      "primary_expectation_positive": 1.12,
+      "wide_watchlist_positive": 0.35,
+      "scout_prev_positive": -0.48
+    }
+  },
+  "component": "quant/experiments/exp_20260528_028_multi_tier_pead_window_lift_attribution_no_residual_filter.py",
+  "date_range": {
+    "source_watchlist_as_of_dates": "2026-05-08 .. 2026-05-26",
+    "source_enriched_artifact": "data/experiments/exp-20260527-908/last_earnings_date_pit_join_into_expectation_revision_watchlist_row.json"
+  },
+  "decision": "rejected_no_pead_window_lift_across_tiers",
+  "decision_rule": "Gate 4: if at least one tier shows 5d pead_in vs pead_out avg_return lift >= 0.01 with bucket-size floor and concentration limits passed, accept. Else if every tier's lift is <= 0, reject. Otherwise observed_only.",
+  "delta_metrics": {
+    "cleanest_5d_lift_wide_watchlist_pp": -0.40,
+    "negative_5d_lift_in_all_three_tiers": true
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260528-028",
+  "gate1": {"name": "all_three_tiers_have_pead_in_rows", "passed": true, "row_counts": {"primary_expectation_positive": 15, "wide_watchlist_positive": 25, "scout_prev_positive": 13}},
+  "gate2": {"name": "required_input_fields_present", "passed": true},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "multi_tier_pead_window_lift",
+    "passed": false,
+    "status": "rejected_no_pead_window_lift_across_tiers",
+    "primary_horizon": "5d",
+    "lift_floor": 0.01,
+    "per_tier_5d_diagnostic": {
+      "primary_expectation_positive": {"lift": -0.006301, "accepted": false, "bucket_size_passed": true, "concentration_passed": false},
+      "wide_watchlist_positive": {"lift": -0.004030, "accepted": false, "bucket_size_passed": true, "concentration_passed": true},
+      "scout_prev_positive": {"lift": -0.009436, "accepted": false, "bucket_size_passed": false, "concentration_passed": false}
+    }
+  },
+  "gate_questions": {
+    "what_hypothesis": "Positive expectation revision rows inside the T+2..T+15 PEAD window outperform the same rows outside the window, even without requiring residual leadership.",
+    "prior_similar_experiments": "exp-20260528-027 rejected residual filter inside PEAD; this experiment tests the simpler hypothesis. exp-20260527-005/006/007 closed observed_only_data_gap before exp-20260527-908 unblocked last_earnings_date.",
+    "single_independent_variable": "PEAD window flag inside each positive revision tier (no residual filter).",
+    "success_failure_criteria": "5d pead_in vs pead_out avg-return lift >= 0.01 pp in at least one tier, with size + concentration limits passed.",
+    "reproducibility": "Single deterministic script reading the exp-20260527-908 enriched artifact; 8 unit tests cover tier partition, gate accept/reject/observed_only logic, and per-tier diagnostic structure."
+  },
+  "hypothesis": "Even without requiring residual leadership, positive expectation revision within the PEAD window may produce a forward return lift over (a) the same revision tier outside the PEAD window and (b) the non-primary baseline. Tests three independent revision tier definitions present on the enriched watchlist (primary_expectation_positive 47 rows, wide_watchlist_positive 61 rows, scout_prev_positive 25 rows) so the rejection or acceptance does not rest on a single tier specification.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260527-005",
+    "exp-20260527-006",
+    "exp-20260527-007",
+    "exp-20260527-908",
+    "exp-20260528-027",
+    "exp-20260525-034"
+  ],
+  "new_evidence_type": "multi_tier_pead_window_attribution_across_three_independent_positive_revision_definitions",
+  "next_evidence_needed": "Wait for the watchlist to span more than one earnings season before retrying; the 10d directional inconsistency across tiers (primary +1.12 pp, wide +0.35 pp, scout -0.48 pp) is the same single-window instability AGENTS.md Section 12 warns about. Independent of PEAD: eps_estimate_delta_30d remains 0 pct coverage; filling it unblocks the magnitude-of-revision alpha branch. The doc's Hypothesis 3 (sector/theme residual) remains untested because ret20_excess_sector and ret20_excess_theme are only partially covered; a sector/theme residual join into the watchlist is the next high-leverage measurement_repair.",
+  "parameters": {
+    "rule_version": "multi_tier_pead_window_lift_attribution_v1",
+    "primary_horizon": "5d",
+    "secondary_horizon": "10d",
+    "lift_floor": 0.01,
+    "tier_flags": ["primary_expectation_positive", "wide_watchlist_positive", "scout_prev_positive"],
+    "gate_thresholds_published_by_exp_20260527_005": {
+      "max_single_ticker_positive_share": 0.5,
+      "max_top5_positive_share": 0.6,
+      "min_bucket_closed_10d": 5,
+      "min_bucket_closed_5d": 8
+    }
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260528_028"
+  },
+  "rejection_reason": "All three tier definitions show non-positive 5d PEAD-in vs PEAD-out lift (-0.40 to -0.94 pp). The cleanest comparison (wide_watchlist_positive, 25 closed 5d, both bucket-size floor and concentration limits passed) returns -0.40 pp lift. PEAD window does not improve 5d returns in this measurement window across any tier specification.",
+  "related_files": [
+    "quant/experiments/exp_20260528_028_multi_tier_pead_window_lift_attribution_no_residual_filter.py",
+    "quant/test_exp_20260528_028_multi_tier_pead_window_lift_attribution.py",
+    "data/experiments/exp-20260528-028/multi_tier_pead_window_lift_attribution_no_residual_filter.json",
+    "experiments/artifacts/exp-20260528-028_multi_tier_pead_window_lift_attribution_no_residual_filter.md",
+    "experiments/logs/exp-20260528-028.json",
+    "experiments/tickets/exp-20260528-028.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "multi_tier_pead_window_lift_attribution_v1",
+  "single_causal_variable": "multi_tier_pead_window_lift_attribution_no_residual_filter",
+  "status": "rejected",
+  "timestamp": "2026-05-28T07:00:00+00:00",
+  "trial_family": "measurement_repair_pead_field",
+  "trial_variant_id": "exp-20260528-028"
+}
