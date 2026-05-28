@@ -30,6 +30,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "VOLUME_BREADTH_BREAKOUT_PAPER"
 RULE_VERSION = "volume_breadth_breakout_shared_top1_v1"
 BREADTH_RULE_VERSION = "volume_breadth_thrust_confirmed_breakout_v1"
+BREADTH_INTENSITY_RULE_VERSION = "vbb_breadth_intensity_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "volume_breadth_breakout_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -69,6 +70,8 @@ DEFAULT_CONFIG = {
     "min_volume_breadth_fraction": 0.12,
     "min_market_up_fraction": 0.52,
     "min_above_50d_fraction": 0.45,
+    "breadth_intensity_min_volume_breadth_fraction": 0.25,
+    "breadth_intensity_notional_scalar": 1.10,
     "min_breadth_eligible_tickers": 30,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
@@ -159,6 +162,12 @@ def empty_volume_breadth_breakout_paper_sleeve_snapshot(
         "realized_pnl_to_date": 0.0,
         "unrealized_pnl": 0.0,
         "volume_breadth_context": {"passed": False, "status": reason},
+        "breadth_intensity_support": {
+            "rule_version": BREADTH_INTENSITY_RULE_VERSION,
+            "supported_candidate_count": 0,
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
         "candidate_universe": {"status": reason, "ticker_count": 0},
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "production_impact": _production_impact(),
@@ -296,6 +305,18 @@ def build_volume_breadth_breakout_paper_sleeve_snapshot(
         "realized_pnl_to_date": round(sum(_money(row.get("pnl")) for row in closed), 2),
         "unrealized_pnl": round(sum(_money(row.get("unrealized_pnl")) for row in open_positions), 2),
         "volume_breadth_context": breadth,
+        "breadth_intensity_support": {
+            "rule_version": BREADTH_INTENSITY_RULE_VERSION,
+            "min_volume_breadth_fraction": float(
+                cfg["breadth_intensity_min_volume_breadth_fraction"]
+            ),
+            "paper_notional_scalar": float(cfg["breadth_intensity_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("breadth_intensity_support_pass_v1")
+            ),
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
         "candidate_universe": {
             "status": universe["status"],
             "ticker_count": len(universe["tickers"]),
@@ -383,10 +404,31 @@ def build_volume_breadth_breakout_candidates(
         )
     )
     for rank, candidate in enumerate(accepted, start=1):
+        breadth_fraction = _float_or_none(
+            (candidate.get("volume_breadth_context") or {}).get("volume_breadth_fraction")
+        )
+        support_pass = (
+            breadth_fraction is not None
+            and breadth_fraction >= float(cfg["breadth_intensity_min_volume_breadth_fraction"])
+        )
+        support_scalar = (
+            float(cfg["breadth_intensity_notional_scalar"]) if support_pass else 1.0
+        )
+        base_notional = float(cfg["paper_notional_usd"])
         candidate["volume_breadth_candidate_rank_on_signal_date"] = rank
         candidate["max_paper_trades_per_day"] = int(cfg["daily_entry_slots"])
-        candidate["base_paper_notional_usd"] = float(cfg["paper_notional_usd"])
-        candidate["intended_notional"] = round(float(cfg["paper_notional_usd"]), 2)
+        candidate["base_paper_notional_usd"] = base_notional
+        candidate["breadth_intensity_support_rule_version"] = BREADTH_INTENSITY_RULE_VERSION
+        candidate["breadth_intensity_known_at"] = "after_signal_date_close_before_next_open_paper_entry"
+        candidate["breadth_intensity_trade_enabled"] = False
+        candidate["breadth_intensity_alters_orders"] = False
+        candidate["breadth_intensity_min_volume_breadth_fraction"] = float(
+            cfg["breadth_intensity_min_volume_breadth_fraction"]
+        )
+        candidate["breadth_intensity_fraction"] = _round(breadth_fraction, 6)
+        candidate["breadth_intensity_support_pass_v1"] = support_pass
+        candidate["breadth_intensity_notional_scalar"] = support_scalar
+        candidate["intended_notional"] = round(base_notional * support_scalar, 2)
     return accepted, rejected, breadth
 
 
