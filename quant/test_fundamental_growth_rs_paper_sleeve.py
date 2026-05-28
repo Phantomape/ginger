@@ -41,6 +41,33 @@ def _rows(
     return rows
 
 
+def _trading_rows(
+    *,
+    base: float,
+    step: float,
+    days: int = 150,
+    volume: float = 2_000_000.0,
+) -> list[dict]:
+    current = date(2026, 1, 1)
+    rows = []
+    while len(rows) < days:
+        if current.weekday() < 5:
+            idx = len(rows)
+            close = base + step * idx
+            rows.append(
+                {
+                    "date": current.isoformat(),
+                    "open": round(close * 0.998, 4),
+                    "high": round(close * 1.01, 4),
+                    "low": round(close * 0.99, 4),
+                    "close": round(close, 4),
+                    "volume": volume,
+                }
+            )
+        current += timedelta(days=1)
+    return rows
+
+
 def _fact(
     ticker: str,
     canonical: str,
@@ -91,6 +118,22 @@ def _ohlcv() -> dict[str, list[dict]]:
         "AMD": _rows(base=80.0, step=0.34, volume=1_500_000.0),
         "AAPL": _rows(base=170.0, step=0.02, volume=1_000_000.0),
     }
+
+
+def _trading_ohlcv() -> dict[str, list[dict]]:
+    return {
+        "SPY": _trading_rows(base=100.0, step=0.04, volume=20_000_000.0),
+        "AMD": _trading_rows(base=80.0, step=0.34, volume=1_500_000.0),
+        "AAPL": _trading_rows(base=170.0, step=0.02, volume=1_000_000.0),
+    }
+
+
+def _late_friday(rows: list[dict]) -> tuple[int, str]:
+    for idx in range(125, len(rows)):
+        value = date.fromisoformat(rows[idx]["date"])
+        if value.weekday() == 4:
+            return idx, value.isoformat()
+    raise AssertionError("test fixture did not produce a late Friday")
 
 
 def test_snapshot_adds_top1_companyfacts_growth_rs_candidate_without_orders():
@@ -279,6 +322,72 @@ def test_snapshot_fills_next_session_and_closes_after_fixed_hold_without_orders(
     assert third["realized_pnl_to_date"] > 0
     assert third["replacement_value_report"]["rule_version"] == REPLACEMENT_VALUE_RULE_VERSION
     assert third["production_impact"]["alters_orders"] is False
+
+
+def test_non_trading_asof_does_not_fill_pending_with_stale_open():
+    ohlcv = _trading_ohlcv()
+    friday_idx, friday = _late_friday(ohlcv["SPY"])
+    saturday = (date.fromisoformat(friday) + timedelta(days=1)).isoformat()
+
+    first = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=friday,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+    state = empty_fundamental_growth_rs_paper_state()
+    state["pending_entries"] = first["pending_entries"]
+
+    weekend = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=saturday,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=state,
+        open_prices={"AMD": ohlcv["AMD"][friday_idx]["open"]},
+        current_prices={"AMD": ohlcv["AMD"][friday_idx]["close"]},
+        persist=False,
+    )
+
+    assert weekend["price_data"]["exact_close_ticker_count"] == 0
+    assert weekend["filled_count"] == 0
+    assert weekend["pending_count"] == 1
+    assert weekend["open_position_count"] == 0
+
+
+def test_non_trading_asof_does_not_advance_open_position_hold_days():
+    ohlcv = _trading_ohlcv()
+    friday_idx, friday = _late_friday(ohlcv["SPY"])
+    saturday = (date.fromisoformat(friday) + timedelta(days=1)).isoformat()
+    state = empty_fundamental_growth_rs_paper_state()
+    state["open_positions"] = [
+        {
+            "ticker": "AMD",
+            "entry_date": ohlcv["AMD"][friday_idx - 9]["date"],
+            "entry_price": ohlcv["AMD"][friday_idx - 9]["open"],
+            "notional": 10_000.0,
+            "observed_trading_days": 9,
+            "status": "open",
+            "trade_enabled": False,
+        }
+    ]
+
+    weekend = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=saturday,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=state,
+        current_prices={"AMD": ohlcv["AMD"][friday_idx]["close"]},
+        persist=False,
+    )
+
+    assert weekend["price_data"]["exact_close_ticker_count"] == 0
+    assert weekend["closed_count_today"] == 0
+    assert weekend["open_position_count"] == 1
+    assert weekend["open_positions"][0]["observed_trading_days"] == 9
 
 
 def test_replacement_value_report_tracks_concentration_and_read_only_boundary():
