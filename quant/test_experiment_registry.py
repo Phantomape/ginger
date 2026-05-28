@@ -24,6 +24,7 @@ from experiment_registry import (  # noqa: E402
     locked_registry_update,
     load_registry,
     next_experiment_id,
+    normalize_prediction,
     save_experiment_log_entry,
     save_registry,
     update_result,
@@ -196,6 +197,36 @@ def test_create_ticket_records_trial_accounting_fields():
     assert ticket["nearby_prior_experiments"] == ["exp-20990101-001"]
     assert ticket["multiple_testing_risk_bucket"] == "moderate"
     assert ticket["new_evidence_type"] == "new_forward_rows"
+
+
+def test_create_ticket_records_pre_run_prediction():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    ticket = create_ticket(
+        registry,
+        lane="alpha_discovery",
+        hypothesis="Test one calibrated alpha hypothesis.",
+        change_type="default_off_paper_allocation",
+        single_causal_variable="calibrated alpha prediction",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
+        prediction=normalize_prediction(
+            success_probability=0.35,
+            expected_ev_delta=0.12,
+            expected_pnl_delta=2500.0,
+            main_failure_modes=["sample_too_thin", "concentration_failed"],
+            confidence_reason="Prior paper evidence is strong but forward rows are thin.",
+        ),
+    )
+
+    prediction = ticket["prediction"]
+    assert prediction["success_probability"] == 0.35
+    assert prediction["expected_ev_delta"] == 0.12
+    assert prediction["expected_pnl_delta"] == 2500.0
+    assert prediction["main_failure_modes"] == [
+        "sample_too_thin",
+        "concentration_failed",
+    ]
+    assert prediction["recorded_at"]
 
 
 def test_default_file_stem_falls_back_when_slug_has_no_ascii():
@@ -430,6 +461,47 @@ def test_log_draft_can_be_marked_observed_only_and_appended(tmp_path):
     assert experiment_id_exists_in_log(log_path, ticket["experiment_id"])
 
 
+def test_log_draft_includes_prediction_calibration():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="alpha_discovery",
+        hypothesis="A confident alpha hypothesis fails.",
+        change_type="default_off_paper_allocation",
+        single_causal_variable="calibration failure",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
+        prediction={
+            "success_probability": 0.8,
+            "expected_ev_delta": 0.2,
+            "expected_pnl_delta": 4000.0,
+            "main_failure_modes": ["sample_too_thin"],
+            "confidence_reason": "Strong frozen-window paper evidence.",
+        },
+    )
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_metrics": {"expected_value_score": 1.0, "total_pnl": 1000.0},
+        "after_metrics": {"expected_value_score": 0.9, "total_pnl": 700.0},
+        "delta_metrics": {"expected_value_score": -0.1, "total_pnl": -300.0},
+    }
+
+    draft = build_log_draft(
+        ticket,
+        judgement,
+        "data/before.json",
+        "data/after.json",
+        realized_failure_mode="sample_too_thin",
+    )
+
+    assert draft["prediction"]["success_probability"] == 0.8
+    assert draft["calibration"]["actual_success"] == 0
+    assert draft["calibration"]["calibration_direction"] == "overconfident"
+    assert draft["calibration"]["brier_score"] == 0.64
+    assert draft["calibration"]["ev_prediction_error"] == -0.3
+    assert draft["calibration"]["predicted_failure_mode_hit"] is True
+
+
 def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):
     row = {"experiment_id": "exp-20990101-003", "decision": "observed_only"}
     logs_dir = tmp_path / "logs"
@@ -580,3 +652,34 @@ def test_update_result_honors_status_override():
 
     assert updated["status"] == "observed_only"
     assert updated["result"]["decision"] == "observed_only"
+
+
+def test_update_result_records_prediction_calibration():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+    ticket = create_ticket(
+        registry,
+        lane="alpha_discovery",
+        hypothesis="A low-confidence idea wins.",
+        change_type="risk_scalar_or_topup",
+        single_causal_variable="calibrated topup",
+        baseline_result_file="data/backtests/backtest_results_20260425.json",
+        prediction={"success_probability": 0.2, "expected_ev_delta": 0.01},
+    )
+    judgement = {
+        "decision": "accepted",
+        "acceptance_reasons": ["expected_value_score improved 12.00%"],
+        "delta_metrics": {"expected_value_score": 0.12},
+    }
+
+    updated = update_result(
+        registry,
+        ticket["experiment_id"],
+        judgement,
+        "data/before.json",
+        "data/after.json",
+    )
+
+    calibration = updated["result"]["calibration"]
+    assert calibration["actual_success"] == 1
+    assert calibration["calibration_direction"] == "underconfident"
+    assert calibration["brier_score"] == 0.64

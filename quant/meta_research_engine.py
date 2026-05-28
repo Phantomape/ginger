@@ -893,6 +893,161 @@ def build_trial_accounting(records):
     }
 
 
+def _prediction(record):
+    value = record.get("prediction")
+    return value if isinstance(value, dict) else {}
+
+
+def _calibration(record):
+    value = record.get("calibration")
+    return value if isinstance(value, dict) else {}
+
+
+def _prediction_probability(record):
+    prediction = _prediction(record)
+    calibration = _calibration(record)
+    value = prediction.get("success_probability")
+    if value is None:
+        value = calibration.get("predicted_success_probability")
+    return _float(value, None)
+
+
+def _actual_success(record):
+    decision = _decision(record)
+    if _is_accepted_decision(record):
+        return 1
+    if _is_rejected_decision(record):
+        return 0
+    if decision == "rolled_back":
+        return 0
+    return None
+
+
+def _calibration_direction(probability, actual_success):
+    if probability is None or actual_success is None:
+        return "not_scored"
+    predicted_success = probability >= 0.5
+    if predicted_success and not actual_success:
+        return "overconfident"
+    if not predicted_success and actual_success:
+        return "underconfident"
+    return "directionally_calibrated"
+
+
+def build_prediction_calibration(records):
+    """Summarize pre-run prediction quality.
+
+    This is a meta-learning audit surface only. It must never be used directly
+    as a trading signal, ranking feature, or sizing scalar.
+    """
+    final_records = _dedupe_records_by_experiment_id([
+        r for r in records if _actual_success(r) is not None
+    ])
+    scored = []
+    missing_prediction = []
+    for record in final_records:
+        probability = _prediction_probability(record)
+        actual_success = _actual_success(record)
+        if probability is None:
+            missing_prediction.append(_experiment_id(record))
+            continue
+        brier = (probability - actual_success) ** 2
+        prediction = _prediction(record)
+        calibration = _calibration(record)
+        scored.append({
+            "experiment_id": _experiment_id(record),
+            "family": _mechanism_family(record),
+            "trial_family": _trial_family(record),
+            "success_probability": round(probability, 4),
+            "actual_success": actual_success,
+            "decision": _decision(record),
+            "brier_score": round(brier, 6),
+            "calibration_direction": _calibration_direction(probability, actual_success),
+            "expected_ev_delta": (
+                prediction.get("expected_ev_delta")
+                if prediction.get("expected_ev_delta") is not None
+                else calibration.get("expected_ev_delta")
+            ),
+            "actual_ev_delta": _delta(record, "expected_value_score"),
+            "expected_pnl_delta": (
+                prediction.get("expected_pnl_delta")
+                if prediction.get("expected_pnl_delta") is not None
+                else calibration.get("expected_pnl_delta")
+            ),
+            "actual_pnl_delta": _delta(record, "total_pnl") or _delta(record, "pnl"),
+        })
+
+    by_family = defaultdict(list)
+    for row in scored:
+        by_family[row["family"]].append(row)
+
+    family_rows = []
+    for family, rows in by_family.items():
+        actual_successes = [row["actual_success"] for row in rows]
+        family_rows.append({
+            "family": family,
+            "experiments": len(rows),
+            "avg_predicted_success_probability": round(
+                sum(row["success_probability"] for row in rows) / len(rows),
+                4,
+            ),
+            "actual_accept_rate": round(sum(actual_successes) / len(rows), 4),
+            "avg_brier_score": round(
+                sum(row["brier_score"] for row in rows) / len(rows),
+                6,
+            ),
+            "overconfident": sum(
+                1 for row in rows if row["calibration_direction"] == "overconfident"
+            ),
+            "underconfident": sum(
+                1 for row in rows if row["calibration_direction"] == "underconfident"
+            ),
+            "recent_examples": [row["experiment_id"] for row in rows[-5:]],
+        })
+    family_rows = sorted(
+        family_rows,
+        key=lambda row: (row["avg_brier_score"], -row["experiments"], row["family"]),
+    )
+
+    avg_brier = (
+        sum(row["brier_score"] for row in scored) / len(scored)
+        if scored else None
+    )
+    return {
+        "read_only": True,
+        "records_counted": len(final_records),
+        "records_with_prediction": len(scored),
+        "records_missing_prediction": len(missing_prediction),
+        "prediction_coverage": round(len(scored) / len(final_records), 4)
+        if final_records else 0.0,
+        "avg_brier_score": round(avg_brier, 6) if avg_brier is not None else None,
+        "direction_counts": {
+            "overconfident": sum(
+                1 for row in scored if row["calibration_direction"] == "overconfident"
+            ),
+            "underconfident": sum(
+                1 for row in scored if row["calibration_direction"] == "underconfident"
+            ),
+            "directionally_calibrated": sum(
+                1 for row in scored
+                if row["calibration_direction"] == "directionally_calibrated"
+            ),
+        },
+        "by_family": family_rows,
+        "worst_brier_examples": sorted(
+            scored,
+            key=lambda row: row["brier_score"],
+            reverse=True,
+        )[:10],
+        "missing_prediction_examples": missing_prediction[:20],
+        "notes": [
+            "Brier score compares pre-run success_probability with accepted/rejected outcomes.",
+            "Observed-only rows are excluded because they intentionally make no strategy success claim.",
+            "Prediction calibration is for meta-learning and research process quality only.",
+        ],
+    }
+
+
 def build_recommendations(records):
     by_family = _aggregate(records, classify_research_family)
     priorities = build_research_priorities(records)
@@ -1046,9 +1201,10 @@ def build_meta_report(root=DEFAULT_ROOT):
     recommendations = build_recommendations(strategy_records)
     data_quality_warnings = build_data_quality_warnings(records)
     trial_accounting = build_trial_accounting(records)
+    prediction_calibration = build_prediction_calibration(records)
 
     return {
-        "schema_version": 4,
+        "schema_version": 5,
         "read_only": True,
         "records_loaded": len(records),
         "record_counts": {
@@ -1068,6 +1224,7 @@ def build_meta_report(root=DEFAULT_ROOT):
         ),
         "data_quality_warnings": data_quality_warnings,
         "trial_accounting": trial_accounting,
+        "prediction_calibration": prediction_calibration,
         "strategy_research_priorities": strategy_research_priorities,
         "measurement_repair_priorities": measurement_repair_priorities,
         "research_priorities": research_priorities,

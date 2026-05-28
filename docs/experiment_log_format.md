@@ -105,6 +105,38 @@
     "before_value": 0.55,
     "after_value": 0.59
   },
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.10,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "single_ticker_concentration"
+    ],
+    "confidence_reason": "Positive related evidence, but forward rows are thin.",
+    "recorded_at": "2026-04-17T12:20:00+00:00"
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_success": 0,
+    "predicted_success_probability": 0.35,
+    "brier_score": 0.1225,
+    "calibration_direction": "directionally_calibrated",
+    "surprise_level": "low",
+    "expected_ev_delta": 0.10,
+    "actual_ev_delta": -0.042,
+    "ev_prediction_error": -0.142,
+    "expected_pnl_delta": 2500.0,
+    "actual_pnl_delta": -300.0,
+    "pnl_prediction_error": -2800.0,
+    "predicted_failure_modes": [
+      "sample_too_thin",
+      "single_ticker_concentration"
+    ],
+    "realized_failure_mode": "single_ticker_concentration",
+    "predicted_failure_mode_hit": true,
+    "surprise_note": "The direction was right, but concentration was worse than expected."
+  },
   "production_impact": {
     "shared_policy_changed": true,
     "backtester_adapter_changed": true,
@@ -153,6 +185,8 @@
 | `after_metrics` | 是 | 改动后指标 |
 | `delta_metrics` | 是 | 指标变化值 |
 | `llm_metrics` | 推荐 | 若涉及 LLM，则记录单独归因指标 |
+| `prediction` | alpha 推荐 | Pre-run probability, expected EV/PnL delta, expected failure modes, and confidence reason recorded before seeing the result. |
+| `calibration` | alpha 推荐 | Post-run comparison of prediction versus actual decision, including Brier score, over/underconfidence, EV/PnL error, and failure-mode hit. |
 | `production_impact` | 策略改动必填 | 记录该实验是否改变共享 policy、回测 adapter、生产 adapter、是否 replay-only、是否加 parity 测试 |
 | `decision` | 是 | 最终结论 |
 | `rejection_reason` | 条件必填 | 被拒绝或回滚时必须写 |

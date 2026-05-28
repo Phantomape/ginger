@@ -76,6 +76,18 @@ large shared JSON document.
     }
   ],
   "acceptance_rule": "observed_only; must produce reproducible bad-trade taxonomy",
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.10,
+    "expected_pnl_delta": 2500.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "single_ticker_concentration",
+      "replacement_value_failed"
+    ],
+    "confidence_reason": "Prior related evidence is positive, but forward rows are thin.",
+    "recorded_at": "2026-04-25T00:00:00+00:00"
+  },
   "production_impact": {
     "shared_policy_changed": false,
     "backtester_adapter_changed": false,
@@ -112,6 +124,35 @@ omitted when no alpha family is being evaluated.
 `--mechanism-family`, `--trial-family`, `--trial-variant-id`,
 `--changed-variable`, `--prior-trial-count`, `--nearby-prior-experiments`,
 `--multiple-testing-risk-bucket`, and `--new-evidence-type`.
+
+## Pre-Run Prediction
+
+Every `alpha_discovery`, `universe_scout`, or strategy-facing
+`measurement_repair` ticket should include a pre-run `prediction` before the
+experiment starts. This is the system's "exam estimate": it records what the
+agent believed before seeing the result, so later meta-learning can distinguish
+good judgement from lucky outcomes.
+
+Recommended fields:
+
+| Field | Meaning |
+| --- | --- |
+| `success_probability` | Probability from `0` to `1` that Gate 4 or the ticket acceptance rule will pass. |
+| `expected_ev_delta` | Expected aggregate `expected_value_score` delta. |
+| `expected_pnl_delta` | Expected aggregate PnL delta in dollars. |
+| `main_failure_modes` | Short normalized failure modes expected before the run. |
+| `confidence_reason` | Short reason for the probability estimate. |
+| `recorded_at` | Filled by tooling when the prediction is created. |
+
+`scripts/create_experiment_ticket.py` exposes:
+`--success-probability`, `--expected-ev-delta`, `--expected-pnl-delta`,
+`--main-failure-modes`, and `--confidence-reason`.
+
+`scripts/judge_experiment.py` copies the prediction into the final log draft
+and adds a `calibration` block with the actual decision, Brier score,
+overconfident / underconfident label, EV/PnL prediction error, and optional
+failure-mode hit. Use `--realized-failure-mode` and `--surprise-note` when the
+result has a clear post-run lesson.
 
 ## Acceptance Rule
 

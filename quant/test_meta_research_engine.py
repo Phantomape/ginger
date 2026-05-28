@@ -34,7 +34,7 @@ def test_meta_report_handles_legacy_string_metric_buckets(tmp_path):
 
     report = build_meta_report(tmp_path)
 
-    assert report["schema_version"] == 4
+    assert report["schema_version"] == 5
     assert report["read_only"] is True
     assert report["records_loaded"] == 2
     assert report["data_quality_warnings"]["non_dict_metric_buckets"]["count"] == 2
@@ -185,3 +185,60 @@ def test_meta_report_trial_accounting_dedupes_log_copies(tmp_path):
     assert report["records_loaded"] == 2
     assert report["trial_accounting"]["records_counted"] == 1
     assert report["trial_accounting"]["groups"][0]["experiments"] == 1
+
+
+def test_meta_report_builds_prediction_calibration(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    log_path = docs_dir / "experiment_log.jsonl"
+    rows = [
+        {
+            "experiment_id": "exp-20990104-001",
+            "lane": "alpha_search",
+            "decision": "accepted",
+            "change_type": "risk_scalar_or_topup",
+            "mechanism_family": "core_allocation",
+            "prediction": {
+                "success_probability": 0.25,
+                "expected_ev_delta": 0.02,
+            },
+            "delta_metrics": {"expected_value_score": 0.2},
+            "after_metrics": {"trade_count": 10},
+        },
+        {
+            "experiment_id": "exp-20990104-002",
+            "lane": "alpha_search",
+            "decision": "rejected",
+            "change_type": "risk_scalar_or_topup",
+            "mechanism_family": "core_allocation",
+            "prediction": {
+                "success_probability": 0.8,
+                "expected_ev_delta": 0.2,
+            },
+            "delta_metrics": {"expected_value_score": -0.1},
+            "after_metrics": {"trade_count": 10},
+        },
+        {
+            "experiment_id": "exp-20990104-003",
+            "lane": "alpha_search",
+            "decision": "rejected",
+            "change_type": "filter_or_gate",
+            "delta_metrics": {"expected_value_score": -0.01},
+            "after_metrics": {"trade_count": 10},
+        },
+    ]
+    log_path.write_text(
+        "\n".join(json.dumps(row) for row in rows),
+        encoding="utf-8",
+    )
+
+    report = build_meta_report(tmp_path)
+
+    calibration = report["prediction_calibration"]
+    assert calibration["records_counted"] == 3
+    assert calibration["records_with_prediction"] == 2
+    assert calibration["records_missing_prediction"] == 1
+    assert calibration["direction_counts"]["overconfident"] == 1
+    assert calibration["direction_counts"]["underconfident"] == 1
+    assert calibration["by_family"][0]["family"] == "core_allocation"
+    assert calibration["by_family"][0]["actual_accept_rate"] == 0.5

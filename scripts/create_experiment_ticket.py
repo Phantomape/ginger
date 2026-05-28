@@ -4,6 +4,7 @@ from experiment_registry import (
     add_common_registry_arg,
     create_ticket,
     locked_registry_update,
+    normalize_prediction,
     parse_csv,
     parse_windows,
     print_json,
@@ -55,7 +56,39 @@ def main():
     )
     parser.add_argument("--acceptance-rule")
     parser.add_argument("--owner")
+    parser.add_argument(
+        "--success-probability",
+        type=float,
+        help="Pre-run probability that Gate 4 or the ticket acceptance rule will pass, from 0 to 1.",
+    )
+    parser.add_argument(
+        "--expected-ev-delta",
+        type=float,
+        help="Pre-run expected aggregate expected_value_score delta.",
+    )
+    parser.add_argument(
+        "--expected-pnl-delta",
+        type=float,
+        help="Pre-run expected aggregate PnL delta in dollars.",
+    )
+    parser.add_argument(
+        "--main-failure-modes",
+        default="",
+        help="Comma-separated pre-run failure modes to audit after the result.",
+    )
+    parser.add_argument(
+        "--confidence-reason",
+        help="Short reason for the pre-run confidence estimate.",
+    )
     args = parser.parse_args()
+
+    prediction = normalize_prediction(
+        success_probability=args.success_probability,
+        expected_ev_delta=args.expected_ev_delta,
+        expected_pnl_delta=args.expected_pnl_delta,
+        main_failure_modes=parse_csv(args.main_failure_modes),
+        confidence_reason=args.confidence_reason,
+    )
 
     ticket = locked_registry_update(
         args.registry,
@@ -82,6 +115,7 @@ def main():
             owner=args.owner,
             file_slug=args.file_slug,
             exclusive_scope_ok=args.exclusive_scope_ok,
+            prediction=prediction,
         ),
         timeout_seconds=args.lock_timeout_seconds,
     )

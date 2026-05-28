@@ -418,7 +418,69 @@ def next_experiment_id(registry, today=None, *, root=None):
 def parse_csv(value):
     if not value:
         return []
+    if isinstance(value, (list, tuple)):
+        return [str(item).strip() for item in value if str(item).strip()]
     return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _optional_float(value, field_name):
+    if value in (None, ""):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field_name} must be a number, got {value!r}") from exc
+
+
+def normalize_prediction(
+    prediction=None,
+    *,
+    success_probability=None,
+    expected_ev_delta=None,
+    expected_pnl_delta=None,
+    main_failure_modes=None,
+    confidence_reason=None,
+):
+    """Normalize an experiment pre-run prediction.
+
+    The prediction is research-process metadata only. It must never be consumed
+    by trading, ranking, sizing, or risk logic.
+    """
+    base = dict(prediction or {})
+    if success_probability is not None:
+        base["success_probability"] = success_probability
+    if expected_ev_delta is not None:
+        base["expected_ev_delta"] = expected_ev_delta
+    if expected_pnl_delta is not None:
+        base["expected_pnl_delta"] = expected_pnl_delta
+    if main_failure_modes is not None:
+        base["main_failure_modes"] = main_failure_modes
+    if confidence_reason is not None:
+        base["confidence_reason"] = confidence_reason
+
+    probability = _optional_float(base.get("success_probability"), "success_probability")
+    expected_ev = _optional_float(base.get("expected_ev_delta"), "expected_ev_delta")
+    expected_pnl = _optional_float(base.get("expected_pnl_delta"), "expected_pnl_delta")
+    failure_modes = parse_csv(base.get("main_failure_modes"))
+    reason = str(base.get("confidence_reason") or "").strip()
+
+    if probability is None and expected_ev is None and expected_pnl is None and not failure_modes and not reason:
+        return None
+    if probability is not None and not 0.0 <= probability <= 1.0:
+        raise ValueError("success_probability must be between 0 and 1")
+
+    normalized = {
+        "success_probability": probability,
+        "expected_ev_delta": expected_ev,
+        "expected_pnl_delta": expected_pnl,
+        "main_failure_modes": failure_modes,
+        "confidence_reason": reason or None,
+    }
+    if base.get("recorded_at"):
+        normalized["recorded_at"] = base["recorded_at"]
+    else:
+        normalized["recorded_at"] = utc_now_iso()
+    return normalized
 
 
 def parse_windows(values):
@@ -539,6 +601,7 @@ def create_ticket(
     owner=None,
     file_slug=None,
     exclusive_scope_ok=False,
+    prediction=None,
 ):
     if lane not in VALID_LANES:
         raise ValueError(f"lane must be one of {sorted(VALID_LANES)}")
@@ -582,6 +645,7 @@ def create_ticket(
         ),
         "evaluation_windows": evaluation_windows or [],
         "acceptance_rule": acceptance_rule or "Use AGENTS.md Gate 4.",
+        "prediction": normalize_prediction(prediction),
         "created_at": utc_now_iso(),
         "claimed_at": None,
         "completed_at": None,
@@ -750,6 +814,95 @@ def final_decision(judgement, status_override=None):
     return status_override
 
 
+def _actual_success_from_decision(decision):
+    if decision in {"accepted"} or str(decision).startswith("accepted"):
+        return 1
+    if decision in {"rejected", "rolled_back"} or str(decision).startswith("rejected"):
+        return 0
+    return None
+
+
+def _surprise_level(probability, actual_success):
+    if probability is None or actual_success is None:
+        return "not_scored"
+    surprise = abs(probability - actual_success)
+    if surprise >= 0.75:
+        return "high"
+    if surprise >= 0.50:
+        return "medium"
+    if surprise >= 0.25:
+        return "low"
+    return "very_low"
+
+
+def _calibration_direction(probability, actual_success):
+    if probability is None or actual_success is None:
+        return "not_scored"
+    predicted_success = probability >= 0.5
+    if predicted_success and not actual_success:
+        return "overconfident"
+    if not predicted_success and actual_success:
+        return "underconfident"
+    return "directionally_calibrated"
+
+
+def build_prediction_calibration(
+    prediction,
+    judgement,
+    decision,
+    *,
+    realized_failure_mode=None,
+    surprise_note=None,
+):
+    prediction = normalize_prediction(prediction)
+    if not prediction:
+        return None
+
+    actual_success = _actual_success_from_decision(decision)
+    probability = prediction.get("success_probability")
+    brier_score = None
+    if probability is not None and actual_success is not None:
+        brier_score = round((probability - actual_success) ** 2, 6)
+
+    deltas = judgement.get("delta_metrics") or {}
+    actual_ev_delta = deltas.get("expected_value_score")
+    actual_pnl_delta = deltas.get("total_pnl")
+    expected_ev_delta = prediction.get("expected_ev_delta")
+    expected_pnl_delta = prediction.get("expected_pnl_delta")
+
+    ev_prediction_error = None
+    if actual_ev_delta is not None and expected_ev_delta is not None:
+        ev_prediction_error = round(actual_ev_delta - expected_ev_delta, 6)
+    pnl_prediction_error = None
+    if actual_pnl_delta is not None and expected_pnl_delta is not None:
+        pnl_prediction_error = round(actual_pnl_delta - expected_pnl_delta, 2)
+
+    predicted_modes = prediction.get("main_failure_modes") or []
+    realized_mode = str(realized_failure_mode or "").strip() or None
+    failure_mode_hit = None
+    if realized_mode:
+        failure_mode_hit = realized_mode in predicted_modes
+
+    return {
+        "actual_decision": decision,
+        "actual_success": actual_success,
+        "predicted_success_probability": probability,
+        "brier_score": brier_score,
+        "calibration_direction": _calibration_direction(probability, actual_success),
+        "surprise_level": _surprise_level(probability, actual_success),
+        "expected_ev_delta": expected_ev_delta,
+        "actual_ev_delta": actual_ev_delta,
+        "ev_prediction_error": ev_prediction_error,
+        "expected_pnl_delta": expected_pnl_delta,
+        "actual_pnl_delta": actual_pnl_delta,
+        "pnl_prediction_error": pnl_prediction_error,
+        "predicted_failure_modes": predicted_modes,
+        "realized_failure_mode": realized_mode,
+        "predicted_failure_mode_hit": failure_mode_hit,
+        "surprise_note": surprise_note,
+    }
+
+
 def build_log_draft(
     experiment,
     judgement,
@@ -759,9 +912,11 @@ def build_log_draft(
     status_override=None,
     change_summary=None,
     notes=None,
+    realized_failure_mode=None,
+    surprise_note=None,
 ):
     decision = final_decision(judgement, status_override)
-    return {
+    row = {
         "experiment_id": experiment.get("experiment_id"),
         "timestamp": utc_now_iso(),
         "status": decision,
@@ -799,6 +954,17 @@ def build_log_draft(
         "related_files": [_repo_relative(before_path), _repo_relative(after_path)],
         "notes": notes if notes is not None else "; ".join(judgement.get("acceptance_reasons") or []),
     }
+    prediction = normalize_prediction(experiment.get("prediction"))
+    if prediction:
+        row["prediction"] = prediction
+        row["calibration"] = build_prediction_calibration(
+            prediction,
+            judgement,
+            decision,
+            realized_failure_mode=realized_failure_mode,
+            surprise_note=surprise_note,
+        )
+    return row
 
 
 def update_result(
@@ -809,6 +975,8 @@ def update_result(
     after_path,
     *,
     status_override=None,
+    realized_failure_mode=None,
+    surprise_note=None,
 ):
     exp = get_experiment(registry, experiment_id)
     if not exp:
@@ -823,6 +991,15 @@ def update_result(
         "after_result_file": _repo_relative(after_path),
         "delta_metrics": judgement.get("delta_metrics") or {},
     }
+    prediction = normalize_prediction(exp.get("prediction"))
+    if prediction:
+        exp["result"]["calibration"] = build_prediction_calibration(
+            prediction,
+            judgement,
+            decision,
+            realized_failure_mode=realized_failure_mode,
+            surprise_note=surprise_note,
+        )
     if "_tickets_dir" in registry:
         save_ticket(exp, _registry_tickets_dir(registry))
         _sync_index_entry(registry, exp)

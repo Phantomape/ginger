@@ -60,6 +60,14 @@ def main():
         action="store_true",
         help="Allow appending a duplicate experiment_id to the log.",
     )
+    parser.add_argument(
+        "--realized-failure-mode",
+        help="Optional normalized failure mode to compare with the pre-run prediction.",
+    )
+    parser.add_argument(
+        "--surprise-note",
+        help="Optional short note explaining what was surprising about the result.",
+    )
     args = parser.parse_args()
 
     registry_snapshot = load_registry(args.registry)
@@ -78,6 +86,8 @@ def main():
                 args.before,
                 args.after,
                 status_override=args.status_override,
+                realized_failure_mode=args.realized_failure_mode,
+                surprise_note=args.surprise_note,
             ),
             timeout_seconds=args.lock_timeout_seconds,
         )
@@ -91,6 +101,8 @@ def main():
             status_override=args.status_override,
             change_summary=args.change_summary,
             notes=args.notes,
+            realized_failure_mode=args.realized_failure_mode,
+            surprise_note=args.surprise_note,
         )
         if args.append_log:
             save_experiment_log_entry(
