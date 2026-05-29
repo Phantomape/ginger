@@ -324,7 +324,7 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         sum(financials_ret20) / len(financials_ret20)
         if financials_ret20 else None
     )
-    spy_ret20 = (features_dict.get("SPY") or {}).get("momentum_20d_pct")
+    spy_ret20 = ((features_dict or {}).get("SPY") or {}).get("momentum_20d_pct")
     sector_ret20_dispersion = _sector_ret20_dispersion(features_dict)
     mid_sector_dispersion = (
         sector_ret20_dispersion is not None
@@ -337,7 +337,7 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
 
     for sig in signals:
         ticker   = sig["ticker"]
-        features = features_dict.get(ticker) or {}
+        features = (features_dict or {}).get(ticker) or {}
         atr      = features.get("atr")
 
         if not atr or atr <= 0:
@@ -399,7 +399,7 @@ def enrich_signals(signals, features_dict, atr_target_mult=None):
         # Without this field the rule was enforced blindly from LLM training knowledge.
         enriched_sig["sector"] = SECTOR_MAP.get(ticker, "Unknown")
         own_open_close_return = features.get("signal_day_ticker_open_close_return_pct")
-        spy_open_close_return = (features_dict.get("SPY") or {}).get(
+        spy_open_close_return = ((features_dict or {}).get("SPY") or {}).get(
             "signal_day_ticker_open_close_return_pct"
         )
         enriched_sig["signal_day_ticker_open_close_return_pct"] = own_open_close_return
