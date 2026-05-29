@@ -9,6 +9,9 @@ from space_catalyst_sleeve import (  # noqa: E402
     SPACE_CATALYST_FORWARD_HYPOTHESIS,
     SPACE_CATALYST_LLM_EVENT_FIELDS,
     SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID,
+    SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_EXPERIMENT_ID,
+    SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN,
+    SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION,
     SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION,
     SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION,
     build_space_catalyst_event_ledger_snapshot,
@@ -221,6 +224,30 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
         == SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
     )
     assert snapshot["forward_hypothesis"]["space_trend_high_close_trade_enabled"] is False
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_trend_high_close_intraday_thrust_experiment_id"
+        ]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_EXPERIMENT_ID
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_trend_high_close_intraday_thrust_rule_version"
+        ]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_trend_high_close_intraday_thrust_min_open_close_return"
+        ]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_trend_high_close_intraday_thrust_trade_enabled"
+        ]
+        is False
+    )
     assert (
         snapshot["forward_hypothesis"][
             "space_peer_nonleader_breakout_experiment_id"
@@ -2084,6 +2111,7 @@ def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
             "ASTS": {
                 "atr": 2.0,
                 "daily_close_location": 0.89,
+                "signal_day_ticker_open_close_return_pct": 0.052,
                 "momentum_20d_pct": 0.2,
             },
             "BKSY": {"momentum_20d_pct": 0.0},
@@ -2109,6 +2137,7 @@ def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
 
     plan = snapshot["blocked_trade_plans"][0]
     assert plan["space_signal_day_close_location"] == 0.89
+    assert plan["space_signal_day_open_close_return_pct"] == 0.052
     assert plan["space_trend_high_close_bucket"] is True
     assert (
         plan["space_trend_high_close_rule_version"]
@@ -2120,6 +2149,17 @@ def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
     )
     assert plan["space_trend_high_close_trade_enabled"] is False
     assert plan["space_trend_high_close_alters_orders"] is False
+    assert plan["space_trend_high_close_intraday_thrust_bucket"] is True
+    assert (
+        plan["space_trend_high_close_intraday_thrust_rule_version"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION
+    )
+    assert (
+        plan["space_trend_high_close_intraday_thrust_min_open_close_return"]
+        == SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
+    )
+    assert plan["space_trend_high_close_intraday_thrust_trade_enabled"] is False
+    assert plan["space_trend_high_close_intraday_thrust_alters_orders"] is False
     assert plan["production_impact"]["alters_orders"] is False
 
 

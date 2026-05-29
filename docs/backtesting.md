@@ -727,6 +727,24 @@ frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
 Latest accepted default-off Space candidate-pool replay result:
+`exp-20260529-020` keeps live Space slots at zero and adds only the
+production-visible `signal_day_ticker_open_close_return_pct` /
+`space_trend_high_close_intraday_thrust_bucket` metadata on top of the
+accepted Space high-close route. The fixed `$10k` paper route requires an
+existing governed full-history Space `trend_long` observation candidate,
+signal-day `daily_close_location >= 0.84`, and signal-day open-to-close return
+`>= 0.04`. Using the same three Space observation windows, aggregate EV
+improved `+0.7787` and aggregate PnL improved `+$13,067.92` versus core, with
+no EV/PnL-regressed window. Versus accepted `exp-20260528-026`, aggregate EV
+improved `+0.0282` and PnL improved `+$559.06`; `mid_weak` improved while
+`late_strong` and `old_thin` were unchanged. Max drawdown drift was `0.0`, and
+concentration passed (`max_single_positive_share=0.353561`,
+`positive_pnl_hhi=0.27265`) across 5 target paper trades. Treat this as a
+default-off observation-sleeve refinement only. It may collect forward
+replacement rows, but live/default Space trading still requires a separate
+promotion experiment.
+
+Previous accepted default-off Space candidate-pool replay result:
 `exp-20260528-026` keeps live Space slots at zero and adds only the
 production-visible `daily_close_location` / `space_trend_high_close_bucket`
 metadata for governed full-history Space `trend_long` observation candidates.

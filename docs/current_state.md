@@ -1113,6 +1113,25 @@ new closed forward rows or a production-visible field that prevents peer-basket
 contamination.
 
 Latest accepted default-off Space candidate-pool alpha result:
+`exp-20260529-020` keeps live Space slots at zero and adds only the
+production-visible `signal_day_ticker_open_close_return_pct` /
+`space_trend_high_close_intraday_thrust_bucket` metadata on top of the
+accepted Space high-close route. The fixed `$10k` paper route requires a
+governed full-history Space `trend_long` observation candidate, signal-day
+close-location `>= 0.84`, and signal-day open-to-close return `>= 0.04`.
+Across the three frozen Space observation windows, aggregate EV improved
+`+0.7787` and aggregate PnL improved `+$13,067.92` versus core, with no
+regressed window. Versus accepted `exp-20260528-026`, aggregate EV improved
+`+0.0282` and PnL improved `+$559.06`; `mid_weak` improved and the other two
+windows were unchanged. Max drawdown drift was `0.0`, and target concentration
+passed across 5 paper trades. The helper lives in shared
+`feature_layer.py` / `space_catalyst_sleeve.py`, is surfaced only in the
+default-off observation slot, has focused parity tests, and does not alter
+watchlists, rankings, sizing, exits, or orders. Next step is forward
+replacement-value collection, not another Space price-action threshold retune
+on the same frozen sample.
+
+Previous accepted default-off Space candidate-pool alpha result:
 `exp-20260528-026` keeps live Space slots at zero and adds only the
 production-visible `daily_close_location` / `space_trend_high_close_bucket`
 metadata for governed full-history Space `trend_long` observation candidates.

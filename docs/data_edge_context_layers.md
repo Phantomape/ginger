@@ -68,10 +68,13 @@ observe-only event/source metadata and blocked one-slot trade plans.
 The accepted `exp-20260528-026` Space alpha adds a production-visible OHLCV
 context field, `space_trend_high_close_bucket`, for governed Space
 `trend_long` candidates whose signal-day `daily_close_location >= 0.84`.
-Production computes `daily_close_location` in `quant/feature_layer.py` from
-the same daily high/low/close values used in replay. This is metadata only:
-it must not alter entries, exits, ranking, sizing, orders, or live Space slots
-without a separate Gate 1-4 promotion experiment.
+The accepted `exp-20260529-020` refinement adds
+`space_trend_high_close_intraday_thrust_bucket` when that same high-close
+candidate also has `signal_day_ticker_open_close_return_pct >= 0.04`.
+Production computes both inputs in `quant/feature_layer.py` from the same
+daily OHLCV values used in replay. These are metadata only: they must not
+alter entries, exits, ranking, sizing, orders, or live Space slots without a
+separate Gate 1-4 promotion experiment.
 
 ---
 

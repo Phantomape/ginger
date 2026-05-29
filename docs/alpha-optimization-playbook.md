@@ -57,9 +57,13 @@ Recent repository evidence supports this priority:
   allocation, not as an after-the-fact PnL adjustment.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
-  governed Space `trend_long` signal days) can separate better paper candidates
-  from old-window losers. Treat it as a forward evidence bucket, not permission
-  to retune high-close thresholds or enable live Space slots.
+  governed Space `trend_long` signal days) can separate better paper
+  candidates from old-window losers. `exp-20260529-020` added one incremental
+  existing OHLCV field (`signal_day_ticker_open_close_return_pct >= 0.04`) on
+  that accepted route, improving aggregate EV by `+0.0282` versus the
+  high-close baseline by removing one weak-thrust stopout. Treat both as
+  forward evidence buckets, not permission to retune Space price-action
+  thresholds or enable live Space slots.
 - The 2026-05-28/29 candidate-pool scouts rejected VWAP reclaim, long-base
   breadth, industry-leadership high-close/no-core-overlap, sector/market
   breadth agreement, ticker accumulation-quality breakout, Form 4 role quality,

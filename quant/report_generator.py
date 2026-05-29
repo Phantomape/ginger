@@ -989,6 +989,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_near_perfect_tqs_trend_bucket")
                 else ""
             )
+            high_close_intraday_thrust_text = (
+                " high_close_intraday_thrust=True"
+                if plan.get("space_trend_high_close_intraday_thrust_bucket")
+                else ""
+            )
             peer_nonleader_breakout_text = (
                 " peer_nonleader_breakout=True"
                 if plan.get("space_peer_nonleader_breakout_bucket")
@@ -1028,7 +1033,8 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{benchmark_breadth_iwm_leader_trend_text}"
                 f"{defense_budget_same_theme_winner_trend_text}"
                 f"{perfect_tqs_text}"
-                f"{near_perfect_tqs_text}{peer_nonleader_breakout_text} "
+                f"{near_perfect_tqs_text}{high_close_intraday_thrust_text}"
+                f"{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )
     if space_catalyst_event_ledger and (

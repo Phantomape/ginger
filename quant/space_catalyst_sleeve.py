@@ -203,6 +203,11 @@ SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION = (
     "space_trend_high_close_fixed_notional_paper_sleeve_v1"
 )
 SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION = 0.84
+SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_EXPERIMENT_ID = "exp-20260529-020"
+SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION = (
+    "space_trend_high_close_intraday_thrust_paper_sleeve_v1"
+)
+SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN = 0.04
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -730,6 +735,19 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
         SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
     ),
     "space_trend_high_close_trade_enabled": False,
+    "space_trend_high_close_intraday_thrust_experiment_id": (
+        SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_EXPERIMENT_ID
+    ),
+    "space_trend_high_close_intraday_thrust_rule_version": (
+        SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION
+    ),
+    "space_trend_high_close_intraday_thrust_definition": (
+        "accepted Space trend high-close with signal-day open-to-close return >= 0.04"
+    ),
+    "space_trend_high_close_intraday_thrust_min_open_close_return": (
+        SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
+    ),
+    "space_trend_high_close_intraday_thrust_trade_enabled": False,
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -3483,6 +3501,9 @@ def _observation_slot_row(
         else 1.0
     )
     signal_day_close_location = _as_float(features.get("daily_close_location"))
+    signal_day_open_close_return = _as_float(
+        features.get("signal_day_ticker_open_close_return_pct")
+    )
     trend_high_close_bucket = (
         strategy.lower() == "trend_long"
         and signal_day_close_location is not None
@@ -3490,6 +3511,12 @@ def _observation_slot_row(
             signal_day_close_location
             >= SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
         )
+    )
+    trend_high_close_intraday_thrust_bucket = (
+        trend_high_close_bucket
+        and signal_day_open_close_return is not None
+        and signal_day_open_close_return
+        >= SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
     )
     peer_nonleader_breakout_bucket = (
         strategy.lower() == "breakout_long"
@@ -3948,6 +3975,10 @@ def _observation_slot_row(
             signal_day_close_location,
             6,
         ),
+        "space_signal_day_open_close_return_pct": _round(
+            signal_day_open_close_return,
+            6,
+        ),
         "space_trend_high_close_bucket": trend_high_close_bucket,
         "space_trend_high_close_rule_version": (
             SPACE_CATALYST_TREND_HIGH_CLOSE_RULE_VERSION
@@ -3957,6 +3988,17 @@ def _observation_slot_row(
         ),
         "space_trend_high_close_trade_enabled": False,
         "space_trend_high_close_alters_orders": False,
+        "space_trend_high_close_intraday_thrust_bucket": (
+            trend_high_close_intraday_thrust_bucket
+        ),
+        "space_trend_high_close_intraday_thrust_rule_version": (
+            SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION
+        ),
+        "space_trend_high_close_intraday_thrust_min_open_close_return": (
+            SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
+        ),
+        "space_trend_high_close_intraday_thrust_trade_enabled": False,
+        "space_trend_high_close_intraday_thrust_alters_orders": False,
         "space_peer_momentum_state": peer_momentum_state.get("state"),
         "space_peer_momentum_20d_pct": _round(
             peer_momentum_state.get("own_momentum_20d_pct"),
