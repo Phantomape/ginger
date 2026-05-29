@@ -21,8 +21,10 @@ from data_paths import data_artifact_path
 
 try:
     from constants import ROUND_TRIP_COST_PCT
+    from price_asof_guard import filter_prices_for_asof
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.constants import ROUND_TRIP_COST_PCT
+    from quant.price_asof_guard import filter_prices_for_asof
 
 try:
     from regime_engine import classify_market_regime
@@ -468,6 +470,8 @@ def build_state_surface_sleeve_snapshot(
     as_of: str,
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
+    open_price_dates: dict[str, Any] | None = None,
+    current_price_dates: dict[str, Any] | None = None,
     state: dict[str, Any] | None = None,
     config: dict[str, Any] | None = None,
     persist: bool = True,
@@ -483,8 +487,16 @@ def build_state_surface_sleeve_snapshot(
     _normalise_state(working_state)
 
     as_of_date = str(as_of)[:10]
-    opens = _normalise_prices(open_prices)
-    closes = _normalise_prices(current_prices)
+    opens = filter_prices_for_asof(
+        _normalise_prices(open_prices),
+        open_price_dates,
+        as_of=as_of_date,
+    )
+    closes = filter_prices_for_asof(
+        _normalise_prices(current_prices),
+        current_price_dates,
+        as_of=as_of_date,
+    )
     closed_today = _advance_open_positions(
         working_state,
         as_of=as_of_date,

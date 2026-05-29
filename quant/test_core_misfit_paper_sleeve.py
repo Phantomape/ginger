@@ -161,6 +161,55 @@ def test_core_misfit_sleeve_tracks_no_trade_and_inverse_paper_outcomes():
     )
 
 
+def test_core_misfit_sleeve_ignores_stale_price_dates():
+    state = empty_core_misfit_paper_state()
+    state["pending_entries"] = [
+        {
+            "decision_id": "pending-tsm",
+            "ticker": "TSM",
+            "strategy": "trend_long",
+            "source_kind": "selected_core_signal",
+            "source_rank": 1,
+            "created_asof": "2026-05-18",
+            "intended_notional": 10_000.0,
+            "candidate": _signal("TSM"),
+        }
+    ]
+    state["open_positions"] = [
+        {
+            "decision_id": "open-tsm",
+            "ticker": "TSM",
+            "entry_date": "2026-05-18",
+            "entry_price": 100.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 0,
+            "last_seen_date": "2026-05-18",
+            "closed_horizons": [],
+            "trade_enabled": False,
+        }
+    ]
+
+    snapshot = build_core_misfit_paper_sleeve_snapshot(
+        as_of="2026-05-19",
+        candidate_signals=[],
+        entry_execution_plan={},
+        open_prices={"TSM": 100.0},
+        current_prices={"TSM": 95.0},
+        open_price_dates={"TSM": "2026-05-18"},
+        current_price_dates={"TSM": "2026-05-18"},
+        state=state,
+        config={"horizons_trading_days": (1,), "primary_horizon_days": 1},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["closed_outcome_count"] == 0
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 0
+
+
 def test_core_misfit_no_trade_alpha_report_blocks_until_sample_matures():
     report = build_core_misfit_no_trade_alpha_report(
         primary_closed_outcomes=[

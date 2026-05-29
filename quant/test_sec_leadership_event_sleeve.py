@@ -73,3 +73,51 @@ def test_sec_leadership_event_sleeve_is_default_off_paper_only(tmp_path):
     assert second["pending_count"] == 0
     assert second["open_position_count"] == 1
     assert second["open_positions"][0]["trade_enabled"] is False
+
+
+def test_sec_leadership_event_sleeve_ignores_stale_price_dates():
+    queue = build_sec_leadership_change_queue(
+        [_row()],
+        as_of="2026-05-04",
+        ohlcv_by_ticker={"CEOX": _ohlcv(100.0, 96.0)},
+        spy_ohlcv=_ohlcv(100.0, 100.0),
+    )
+    state = empty_sec_leadership_event_sleeve_state()
+    first = build_sec_leadership_event_sleeve_snapshot(
+        sec_leadership_event_queue=queue,
+        as_of="2026-05-04",
+        state=state,
+        persist=False,
+    )
+    next_state = empty_sec_leadership_event_sleeve_state()
+    next_state["pending_entries"] = first["pending_entries"]
+    next_state["open_positions"] = [
+        {
+            "decision_id": "open-ceox",
+            "ticker": "CEOX",
+            "entry_date": "2026-05-04",
+            "entry_price": 100.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 0,
+            "last_seen_date": "2026-05-04",
+            "trade_enabled": False,
+        }
+    ]
+
+    snapshot = build_sec_leadership_event_sleeve_snapshot(
+        sec_leadership_event_queue={"candidates": [], "candidate_count": 0},
+        as_of="2026-05-05",
+        open_prices={"CEOX": 97.0},
+        current_prices={"CEOX": 110.0},
+        open_price_dates={"CEOX": "2026-05-04"},
+        current_price_dates={"CEOX": "2026-05-04"},
+        state=next_state,
+        config={"hold_days": 1, "max_positions": 2},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 0

@@ -148,6 +148,47 @@ def test_financial_report_sleeve_freezes_pending_then_paper_fills_and_closes():
     assert third["closed_positions_today"][0]["trade_enabled"] is False
 
 
+def test_financial_report_sleeve_ignores_stale_price_dates():
+    first = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(_candidate()),
+        as_of="2026-05-05",
+        state=empty_sec_financial_report_event_sleeve_state(),
+        config={"hold_days": 1},
+        persist=False,
+    )
+    state = _state_from_snapshot(first)
+    state["open_positions"] = [
+        {
+            "decision_id": "open-frpt",
+            "ticker": "FRPT",
+            "entry_date": "2026-05-05",
+            "entry_price": 100.0,
+            "notional": 15_000.0,
+            "observed_trading_days": 0,
+            "last_seen_date": "2026-05-05",
+            "trade_enabled": False,
+        }
+    ]
+
+    snapshot = build_sec_financial_report_event_sleeve_snapshot(
+        sec_financial_report_t1_queue=_queue(),
+        as_of="2026-05-06",
+        open_prices={"FRPT": 100.0},
+        current_prices={"FRPT": 110.0},
+        open_price_dates={"FRPT": "2026-05-05"},
+        current_price_dates={"FRPT": "2026-05-05"},
+        state=state,
+        config={"hold_days": 1, "max_positions": 2},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 0
+
+
 def test_financial_report_sleeve_exposes_fact_tone_gap_bucket_on_paper_candidates():
     first = build_sec_financial_report_event_sleeve_snapshot(
         sec_financial_report_t1_queue=_queue(

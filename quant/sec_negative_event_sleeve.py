@@ -17,9 +17,11 @@ from data_paths import data_artifact_path
 
 try:
     from constants import ROUND_TRIP_COST_PCT
+    from price_asof_guard import filter_prices_for_asof
     from sec_event_queue import PRIMARY_HORIZON_TRADING_DAYS, RULE_VERSION
 except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.constants import ROUND_TRIP_COST_PCT
+    from quant.price_asof_guard import filter_prices_for_asof
     from quant.sec_event_queue import PRIMARY_HORIZON_TRADING_DAYS, RULE_VERSION
 
 
@@ -101,6 +103,8 @@ def build_sec_negative_event_sleeve_snapshot(
     as_of: str,
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
+    open_price_dates: dict[str, Any] | None = None,
+    current_price_dates: dict[str, Any] | None = None,
     state: dict[str, Any] | None = None,
     config: dict[str, Any] | None = None,
     persist: bool = True,
@@ -116,9 +120,17 @@ def build_sec_negative_event_sleeve_snapshot(
     )
     _normalise_state(working_state)
 
-    opens = _normalise_prices(open_prices)
-    closes = _normalise_prices(current_prices)
     as_of_date = str(as_of)[:10]
+    opens = filter_prices_for_asof(
+        _normalise_prices(open_prices),
+        open_price_dates,
+        as_of=as_of_date,
+    )
+    closes = filter_prices_for_asof(
+        _normalise_prices(current_prices),
+        current_price_dates,
+        as_of=as_of_date,
+    )
 
     closed_today = _advance_open_positions(
         working_state,

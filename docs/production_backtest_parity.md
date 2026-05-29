@@ -42,6 +42,19 @@ candidates when the relevant OHLCV data contains an exact `as_of` row. Productio
 weekend, holiday, and data-lag runs may report metadata, but stale latest-prior
 prices must not mutate those paper ledgers.
 
+## Default-Off Direct Price-Map Sleeve Price-As-Of Guard
+
+`run.py` must pass ticker-level `open_price_dates` and `current_price_dates`
+derived from the loaded OHLCV rows into the direct price-map paper sleeves.
+`form4_event_sleeve.py`, `sec_negative_event_sleeve.py`,
+`sec_event_sleeve.py`, `sec_leadership_event_sleeve.py`,
+`sec_financial_report_event_sleeve.py`, `state_surface_sleeve.py`, and
+`core_misfit_paper_sleeve.py` must ignore a ticker's open/current price when
+the provided price date is not exactly the snapshot `as_of` date. Historical
+fixtures may omit price-date maps for backward compatibility; production must
+provide them so weekend, holiday, and data-lag runs cannot fill, advance, or
+close paper ledgers with stale latest-prior prices.
+
 ## Decision Matrix
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |

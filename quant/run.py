@@ -190,6 +190,7 @@ def main():
     from trend_signals      import compute_position_context, save_trend_signals
     from signal_engine      import generate_signals, rank_signals_for_allocation
     from risk_engine        import enrich_signals
+    from price_asof_guard   import latest_ohlcv_dates
     from portfolio_engine   import size_signals, compute_portfolio_heat
     from production_parity  import (
         build_followthrough_addon_actions,
@@ -951,6 +952,8 @@ def main():
             )
         except Exception:
             pass
+    current_price_dates = latest_ohlcv_dates(ohlcv_dict)
+    current_open_price_dates = dict(current_price_dates)
 
     portfolio_heat = None
     heat_blocked_signals = []
@@ -1342,6 +1345,8 @@ def main():
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
         )
         if (
             form4_event_sleeve.get("new_pending_count", 0) > 0
@@ -1389,6 +1394,8 @@ def main():
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
         )
         if (
             sec_negative_event_sleeve.get("new_pending_count", 0) > 0
@@ -1436,6 +1443,8 @@ def main():
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
         )
         if (
             sec_governance_event_sleeve.get("new_pending_count", 0) > 0
@@ -1483,6 +1492,8 @@ def main():
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
         )
         if (
             sec_leadership_event_sleeve.get("new_pending_count", 0) > 0
@@ -1534,6 +1545,8 @@ def main():
                 as_of=today_iso,
                 open_prices=current_open_prices,
                 current_prices=current_prices,
+                open_price_dates=current_open_price_dates,
+                current_price_dates=current_price_dates,
             )
         )
         if (
@@ -1607,6 +1620,8 @@ def main():
             as_of=today_iso,
             open_prices=current_open_prices,
             current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
         )
         if (
             state_surface_sleeve.get("candidate_count", 0) > 0
@@ -1636,6 +1651,8 @@ def main():
             entry_execution_plan=entry_execution_plan,
             open_prices=current_open_prices,
             current_prices=current_prices,
+            open_price_dates=current_open_price_dates,
+            current_price_dates=current_price_dates,
         )
         if (
             core_misfit_paper_sleeve.get("candidate_count", 0) > 0

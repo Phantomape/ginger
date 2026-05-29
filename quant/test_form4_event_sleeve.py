@@ -128,6 +128,57 @@ def test_form4_event_sleeve_closes_after_hold_days_with_cost():
     assert snapshot["closed_positions_today"][0]["trade_enabled"] is False
 
 
+def test_form4_event_sleeve_ignores_stale_price_dates():
+    state = {
+        "schema_version": 1,
+        "sleeve": SLEEVE_NAME,
+        "pending_entries": [
+            {
+                "decision_id": "paper-pending",
+                "sleeve": SLEEVE_NAME,
+                "ticker": "MSFT",
+                "created_asof": "2026-05-04",
+                "source_event_date": "2026-05-04",
+                "status": "pending_next_session_open",
+                "candidate": _candidate("MSFT"),
+                "trade_enabled": False,
+            }
+        ],
+        "open_positions": [
+            {
+                "decision_id": "paper-open",
+                "ticker": "INTC",
+                "entry_date": "2026-05-04",
+                "entry_price": 100.0,
+                "notional": 10_000.0,
+                "observed_trading_days": 0,
+                "last_seen_date": "2026-05-04",
+                "trade_enabled": False,
+            }
+        ],
+        "closed_positions": [],
+        "skipped_entries": [],
+    }
+
+    snapshot = build_form4_event_sleeve_snapshot(
+        form4_event_queue=_queue(),
+        as_of="2026-05-05",
+        open_prices={"MSFT": 300.0},
+        current_prices={"INTC": 110.0, "MSFT": 301.0},
+        open_price_dates={"MSFT": "2026-05-04"},
+        current_price_dates={"INTC": "2026-05-04", "MSFT": "2026-05-04"},
+        state=state,
+        config={"hold_days": 1, "max_positions": 2},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 0
+
+
 def test_form4_event_sleeve_skips_fill_when_capacity_is_full():
     state = {
         "schema_version": 1,

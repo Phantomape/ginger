@@ -111,6 +111,58 @@ def test_state_surface_concentration_context_is_read_only_and_pit_safe():
     assert context["alters_orders"] is False
 
 
+def test_state_surface_sleeve_ignores_stale_price_dates():
+    state = empty_state_surface_sleeve_state()
+    state["pending_entries"] = [
+        {
+            "decision_id": "pending-aaa",
+            "sleeve": SLEEVE_NAME,
+            "ticker": "AAA",
+            "surface": "rotation_breakout_leadership",
+            "rank": 1,
+            "queue_rank": 1,
+            "score": 0.9,
+            "created_asof": "2026-05-18",
+            "source_event_date": "2026-05-18",
+            "status": "pending_next_session_open",
+            "event_notional_usd": 10_000.0,
+            "candidate": {"ticker": "AAA"},
+            "trade_enabled": False,
+        }
+    ]
+    state["open_positions"] = [
+        {
+            "decision_id": "open-aaa",
+            "sleeve": SLEEVE_NAME,
+            "ticker": "AAA",
+            "entry_date": "2026-05-18",
+            "entry_price": 100.0,
+            "notional": 10_000.0,
+            "observed_trading_days": 0,
+            "last_seen_date": "2026-05-18",
+            "trade_enabled": False,
+        }
+    ]
+
+    snapshot = build_state_surface_sleeve_snapshot(
+        state_surface_queue={"candidate_count": 0, "candidates": []},
+        as_of="2026-05-19",
+        open_prices={"AAA": 100.0},
+        current_prices={"AAA": 110.0},
+        open_price_dates={"AAA": "2026-05-18"},
+        current_price_dates={"AAA": "2026-05-18"},
+        state=state,
+        config={"hold_days": 1, "max_positions": 2},
+        persist=False,
+    )
+
+    assert snapshot["filled_count"] == 0
+    assert snapshot["closed_count_today"] == 0
+    assert snapshot["pending_count"] == 1
+    assert snapshot["open_position_count"] == 1
+    assert snapshot["open_positions"][0]["observed_trading_days"] == 0
+
+
 def _ohlcv_broad_rotation_many():
     return {
         "SPY": _rows(100.0, 0.0002),
