@@ -432,6 +432,36 @@ def test_build_followthrough_addon_actions_skips_mismatched_latest_dates():
     assert audit[0]["spy_latest_date"] == "2026-01-07"
 
 
+def test_build_followthrough_addon_actions_ignores_stale_current_price_dates():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "original_shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 100.0, 101.0]),
+        "SPY": _ohlcv([100.0, 100.0, 100.5]),
+    }
+
+    actions, audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        portfolio_value=10_000,
+        current_prices={"NVDA": 104.0},
+        current_price_dates={"NVDA": "2026-01-05"},
+    )
+
+    assert actions == []
+    assert audit[0]["reason"] == "followthrough_threshold_not_met"
+    assert audit[0]["unrealized_pct"] == 0.01
+
+
 def test_build_early_relative_weakness_exit_actions_emits_day_three_exit():
     open_positions = {
         "positions": [
@@ -518,6 +548,35 @@ def test_build_early_relative_weakness_exit_actions_skips_mismatched_latest_date
     assert audit[0]["reason"] == "mismatched_latest_ohlcv_date"
     assert audit[0]["ticker_latest_date"] == "2026-01-06"
     assert audit[0]["spy_latest_date"] == "2026-01-07"
+
+
+def test_build_early_relative_weakness_exit_actions_ignores_stale_current_price_dates():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 99.0, 99.0]),
+        "SPY": _ohlcv([100.0, 100.5, 101.0]),
+    }
+
+    actions, audit = build_early_relative_weakness_exit_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        current_prices={"NVDA": 96.0},
+        current_price_dates={"NVDA": "2026-01-05"},
+        enabled=True,
+    )
+
+    assert actions == []
+    assert audit[0]["reason"] == "relative_weakness_threshold_not_met"
+    assert audit[0]["ticker_return_pct"] == -0.01
 
 
 def test_cap_followthrough_addon_shares_uses_effective_stop_heat_room():

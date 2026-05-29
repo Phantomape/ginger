@@ -1189,6 +1189,7 @@ def main():
         ohlcv_dict=addon_ohlcv_dict,
         portfolio_value=portfolio_value,
         current_prices=current_prices,
+        current_price_dates=current_price_dates,
         portfolio_heat=portfolio_heat,
     )
     if addon_actions:

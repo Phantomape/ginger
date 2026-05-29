@@ -39,9 +39,9 @@ from constants import (
 from position_intent import resolve_intended_shares
 
 try:
-    from price_asof_guard import date10
+    from price_asof_guard import date10, normalise_price_dates
 except ImportError:  # pragma: no cover - package-style imports in tests
-    from quant.price_asof_guard import date10
+    from quant.price_asof_guard import date10, normalise_price_dates
 
 TRAILING_PARTIAL_REDUCE_ENABLED = False
 
@@ -484,6 +484,35 @@ def _latest_ohlcv_date(df):
         return None
 
 
+def _positive_price(value):
+    try:
+        parsed = float(value.item() if hasattr(value, "item") else value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(parsed) or parsed <= 0:
+        return None
+    return parsed
+
+
+def _current_or_latest_close(
+    *,
+    df,
+    ticker,
+    current_prices,
+    current_price_dates,
+    required_date,
+):
+    ticker = str(ticker or "").upper()
+    mapped_date = None
+    if current_price_dates is not None:
+        mapped_date = current_price_dates.get(ticker)
+    if current_price_dates is None or mapped_date == required_date:
+        mapped = _positive_price((current_prices or {}).get(ticker))
+        if mapped is not None:
+            return mapped
+    return _latest_close(df)
+
+
 def _entry_index(df, entry_date):
     entry_ts = pd.Timestamp(entry_date)
     matching = df.index[df.index >= entry_ts]
@@ -546,6 +575,7 @@ def build_early_relative_weakness_exit_actions(
     open_positions,
     ohlcv_dict,
     current_prices=None,
+    current_price_dates=None,
     enabled=False,
     holding_rows=3,
     min_rs_vs_spy=-0.03,
@@ -573,6 +603,9 @@ def build_early_relative_weakness_exit_actions(
 
     target_days_since_entry = max(0, int(holding_rows) - 1)
     current_prices = current_prices or {}
+    current_price_dates = (
+        None if current_price_dates is None else normalise_price_dates(current_price_dates)
+    )
 
     for pos in _positive_positions(open_positions):
         ticker = str(pos.get("ticker", "")).upper()
@@ -632,7 +665,13 @@ def build_early_relative_weakness_exit_actions(
             or pos.get("entry_open_price")
             or _price_at(df, entry_idx, "Open")
         )
-        close = current_prices.get(ticker) or _latest_close(df)
+        close = _current_or_latest_close(
+            df=df,
+            ticker=ticker,
+            current_prices=current_prices,
+            current_price_dates=current_price_dates,
+            required_date=ticker_latest_date,
+        )
         spy_close = _latest_close(spy_df)
         spy_entry_open = _price_at(spy_df, spy_entry_idx, "Open")
         try:
@@ -712,6 +751,7 @@ def build_followthrough_addon_actions(
     ohlcv_dict,
     portfolio_value,
     current_prices,
+    current_price_dates=None,
     portfolio_heat=None,
     addon_enabled=ADDON_ENABLED,
 ):
@@ -732,6 +772,9 @@ def build_followthrough_addon_actions(
             "status": "skipped",
             "reason": "missing_spy_ohlcv_for_relative_strength",
         }]
+    current_price_dates = (
+        None if current_price_dates is None else normalise_price_dates(current_price_dates)
+    )
 
     for pos in _positive_positions(open_positions):
         ticker = str(pos.get("ticker", "")).upper()
@@ -812,7 +855,13 @@ def build_followthrough_addon_actions(
             })
             continue
 
-        close = current_prices.get(ticker) or _latest_close(df)
+        close = _current_or_latest_close(
+            df=df,
+            ticker=ticker,
+            current_prices=current_prices,
+            current_price_dates=current_price_dates,
+            required_date=ticker_latest_date,
+        )
         spy_close = _latest_close(spy_df)
         if not close or not spy_close:
             audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_close"})
