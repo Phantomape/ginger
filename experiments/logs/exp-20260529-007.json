@@ -1,0 +1,127 @@
+{
+  "after_metrics": {
+    "eps_estimate_delta_7d_decisive_5d": true,
+    "eps_estimate_delta_7d_high_5d_avg_return": -0.004827,
+    "eps_estimate_delta_7d_low_5d_avg_return": 0.006703,
+    "eps_estimate_delta_7d_5d_lift": -0.011530,
+    "eps_estimate_delta_7d_high_10d_avg_return": 0.013288,
+    "eps_estimate_delta_7d_low_10d_avg_return": -0.000695,
+    "eps_estimate_delta_7d_10d_lift": 0.013983,
+    "eps_estimate_delta_7d_high_n": 21,
+    "eps_estimate_delta_7d_low_n": 26,
+    "eps_estimate_delta_7d_median_split": 0.05,
+    "eps_estimate_delta_30d_decisive_5d": false,
+    "eps_estimate_delta_30d_high_5d_avg_return": -0.007077,
+    "eps_estimate_delta_30d_low_5d_avg_return": 0.001617,
+    "eps_estimate_delta_30d_5d_lift": -0.008694,
+    "eps_estimate_delta_30d_high_10d_avg_return": 0.016098,
+    "eps_estimate_delta_30d_low_10d_avg_return": 0.033035,
+    "eps_estimate_delta_30d_10d_lift": -0.016937,
+    "eps_estimate_delta_30d_high_n": 11,
+    "eps_estimate_delta_30d_low_n": 14,
+    "eps_estimate_delta_30d_median_split": 0.38,
+    "row_count": 700,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260527-002 could only see the 7d axis at 55pct coverage and had no 30d axis; closed observed_only_data_gap. exp-20260528-030 then filled the 30d field (80.85pct on primary positive).",
+    "row_count": 700,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Re-runs the exp-20260527-002 revision-magnitude hypothesis on the exp-20260528-030 enriched watchlist with both 7d and 30d magnitude axes. For each axis, splits primary-positive positive-revision rows at the median into high/low magnitude buckets and compares 5d/10d forward returns. Decisive axis (7d, both buckets clear min_bucket_closed_5d=8): high-magnitude 5d avg return -0.48pct vs low +0.67pct, lift -1.15pp. The 10d horizon flips to +1.40pp (low bucket only 6 closed). The 30d axis (newly unblocked) shows -0.87pp 5d lift but is not decisive (7 closed per bucket < 8 floor). Larger revisions do not beat smaller at the 5d primary horizon on the only decisive axis.",
+  "change_type": "read_only_revision_magnitude_attribution",
+  "changed_variable": "revision_magnitude_high_vs_low_bucket_attribution_7d_and_30d_axes",
+  "component": "quant/experiments/exp_20260529_007_revision_magnitude_high_vs_low_bucket_attribution_7d_and_30d_axes.py",
+  "date_range": {
+    "source_watchlist_as_of_dates": "2026-05-08 .. 2026-05-26",
+    "source_enriched_artifact": "data/experiments/exp-20260528-030/eps_estimate_delta_30d_pit_join_into_expectation_revision_watchlist_row.json"
+  },
+  "decision": "rejected_no_revision_magnitude_edge",
+  "decision_rule": "Gate 4: an axis is decisive only if both high and low buckets clear min_bucket_closed_5d=8. If a decisive axis shows high-low 5d lift >= 0.01 with concentration passed, accept. If every decisive axis shows lift <= 0, reject. If no axis is decisive, observed_only_thin_magnitude_buckets.",
+  "delta_metrics": {
+    "decisive_axis_7d_5d_lift_pp": -1.15,
+    "decisive_axis_7d_10d_lift_pp": 1.40,
+    "nondecisive_axis_30d_5d_lift_pp": -0.87
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260529-007",
+  "gate1": {"name": "axes_have_positive_revision_rows", "passed": true, "positive_row_counts": {"eps_estimate_delta_7d": 47, "eps_estimate_delta_30d": 25}},
+  "gate2": {"name": "required_input_fields_present", "passed": true, "rows_total": 700},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "revision_magnitude_high_vs_low_5d",
+    "passed": false,
+    "status": "rejected_no_revision_magnitude_edge",
+    "primary_horizon": "5d",
+    "lift_floor": 0.01,
+    "decisive_axes": ["eps_estimate_delta_7d"],
+    "per_axis_5d_diagnostic": {
+      "eps_estimate_delta_7d": {"lift": -0.011530, "decisive": true, "concentration_passed": false, "accepted": false},
+      "eps_estimate_delta_30d": {"lift": -0.008694, "decisive": false, "concentration_passed": false, "accepted": false}
+    }
+  },
+  "gate_questions": {
+    "what_hypothesis": "Larger positive EPS estimate revisions should produce higher forward returns than smaller positive revisions (revision magnitude as alpha).",
+    "prior_similar_experiments": "exp-20260527-002 observed_only_data_gap (30d 0pct, 7d 55pct); exp-20260528-030 unblocked the 30d field. exp-20260528-027/028 already rejected residual leadership and PEAD window at 5d.",
+    "single_independent_variable": "Revision magnitude (high vs low at median split) on each of the 7d and 30d axes.",
+    "success_failure_criteria": "5d high-low avg-return lift >= +1.0 pp on at least one decisive axis, with concentration limits passed.",
+    "reproducibility": "Single deterministic script reading the exp-20260528-030 enriched artifact; 10 unit tests cover median split, decisiveness floor, and gate accept/reject/observed_only logic."
+  },
+  "hypothesis": "Larger positive EPS estimate revisions should produce higher forward returns than smaller positive revisions if revision magnitude is an investable alpha clue. Tests two magnitude axes on the enriched watchlist now that exp-20260528-030 filled the 30d field: (a) 7d revision magnitude high vs low (median split), (b) 30d revision magnitude high vs low.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260527-002",
+    "exp-20260528-030",
+    "exp-20260528-027",
+    "exp-20260528-028",
+    "exp-20260525-034"
+  ],
+  "new_evidence_type": "revision_magnitude_attribution_with_30d_axis_now_populated",
+  "next_evidence_needed": "Wait for the watchlist to accumulate more than one earnings season. The recurring 5d-negative / 10d-positive sign flip across residual (027), PEAD window (028), and magnitude (this experiment) suggests any edge plays out slowly and needs a deeper 10d sample to confirm. The magnitude axes are now populated, so future retries need more rows not another measurement repair. A revision direction-agreement discriminator (both 7d and 30d revised up) is worth measuring once the 30d sample deepens.",
+  "parameters": {
+    "rule_version": "revision_magnitude_high_vs_low_attribution_v1",
+    "magnitude_axes": ["eps_estimate_delta_7d", "eps_estimate_delta_30d"],
+    "primary_horizon": "5d",
+    "secondary_horizon": "10d",
+    "lift_floor": 0.01,
+    "split": "median_of_positive_deltas",
+    "gate_thresholds_published_by_exp_20260527_002": {
+      "max_single_ticker_positive_share": 0.5,
+      "max_top5_positive_share": 0.6,
+      "min_bucket_closed_10d": 5,
+      "min_bucket_closed_5d": 8
+    }
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260529_007"
+  },
+  "rejection_reason": "On the only decisive axis (eps_estimate_delta_7d, both buckets clear min_bucket_closed_5d=8), high-magnitude 5d avg return -0.48pct underperforms low-magnitude +0.67pct by 1.15pp. The 30d axis points the same direction at 5d (-0.87pp) but is not decisive. The 10d positive flip (+1.40pp) is a single-window instability with a 6-row low bucket and is not taken as evidence.",
+  "related_files": [
+    "quant/experiments/exp_20260529_007_revision_magnitude_high_vs_low_bucket_attribution_7d_and_30d_axes.py",
+    "quant/test_exp_20260529_007_revision_magnitude_attribution.py",
+    "data/experiments/exp-20260529-007/revision_magnitude_high_vs_low_bucket_attribution_7d_and_30d_axes.json",
+    "experiments/artifacts/exp-20260529-007_revision_magnitude_high_vs_low_bucket_attribution_7d_and_30d_axes.md",
+    "experiments/logs/exp-20260529-007.json",
+    "experiments/tickets/exp-20260529-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "revision_magnitude_high_vs_low_attribution_v1",
+  "single_causal_variable": "revision_magnitude_high_vs_low_bucket_attribution_7d_and_30d_axes",
+  "status": "rejected",
+  "timestamp": "2026-05-29T08:00:00+00:00",
+  "trial_family": "measurement_repair_revision_magnitude_field",
+  "trial_variant_id": "exp-20260529-007"
+}
