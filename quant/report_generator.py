@@ -1967,6 +1967,15 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"min-close-location={high_close.get('min_close_location')}  |  "
                 f"scalar={high_close.get('paper_notional_scalar')}"
             )
+        cost_liquidity = volume_breadth_breakout_paper_sleeve.get("cost_liquidity_support") or {}
+        if cost_liquidity:
+            lines.append(
+                "  Cost/liquidity support: "
+                f"supported={cost_liquidity.get('supported_candidate_count', 0)}  |  "
+                f"min-dollar-volume={cost_liquidity.get('min_dollar_volume')}  |  "
+                f"max-range={cost_liquidity.get('max_range_pct')}  |  "
+                f"scalar={cost_liquidity.get('paper_notional_scalar')}"
+            )
         lines.append(
             f"  Candidates: {volume_breadth_breakout_paper_sleeve.get('candidate_count', 0)}  |  "
             f"Rejected: {volume_breadth_breakout_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
@@ -2002,6 +2011,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"vol={candidate.get('volume_ratio_20')} "
                 f"breadth-intensity={candidate.get('breadth_intensity_support_pass_v1')} "
                 f"high-close={candidate.get('high_close_support_pass_v1')} "
+                f"cost-liquidity={candidate.get('cost_liquidity_support_pass_v1')} "
                 f"clv={candidate.get('signal_day_close_location_value')} "
                 f"notional={notional_text} (paper only)"
             )

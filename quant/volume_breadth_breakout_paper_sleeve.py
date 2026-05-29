@@ -32,6 +32,7 @@ RULE_VERSION = "volume_breadth_breakout_shared_top1_v1"
 BREADTH_RULE_VERSION = "volume_breadth_thrust_confirmed_breakout_v1"
 BREADTH_INTENSITY_RULE_VERSION = "vbb_breadth_intensity_support_v1"
 HIGH_CLOSE_SUPPORT_RULE_VERSION = "vbb_signal_day_high_close_support_v1"
+COST_LIQUIDITY_SUPPORT_RULE_VERSION = "vbb_cost_liquidity_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "volume_breadth_breakout_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -75,6 +76,9 @@ DEFAULT_CONFIG = {
     "breadth_intensity_notional_scalar": 1.10,
     "high_close_support_min_close_location": 0.70,
     "high_close_support_notional_scalar": 1.10,
+    "cost_liquidity_min_dollar_volume": 200_000_000.0,
+    "cost_liquidity_max_range_pct": 0.10,
+    "cost_liquidity_notional_scalar": 1.05,
     "min_breadth_eligible_tickers": 30,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
@@ -173,6 +177,12 @@ def empty_volume_breadth_breakout_paper_sleeve_snapshot(
         },
         "high_close_support": {
             "rule_version": HIGH_CLOSE_SUPPORT_RULE_VERSION,
+            "supported_candidate_count": 0,
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
+        "cost_liquidity_support": {
+            "rule_version": COST_LIQUIDITY_SUPPORT_RULE_VERSION,
             "supported_candidate_count": 0,
             "trade_enabled": False,
             "alters_orders": False,
@@ -334,6 +344,17 @@ def build_volume_breadth_breakout_paper_sleeve_snapshot(
             "trade_enabled": False,
             "alters_orders": False,
         },
+        "cost_liquidity_support": {
+            "rule_version": COST_LIQUIDITY_SUPPORT_RULE_VERSION,
+            "min_dollar_volume": float(cfg["cost_liquidity_min_dollar_volume"]),
+            "max_range_pct": float(cfg["cost_liquidity_max_range_pct"]),
+            "paper_notional_scalar": float(cfg["cost_liquidity_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("cost_liquidity_support_pass_v1")
+            ),
+            "trade_enabled": False,
+            "alters_orders": False,
+        },
         "candidate_universe": {
             "status": universe["status"],
             "ticker_count": len(universe["tickers"]),
@@ -439,6 +460,16 @@ def build_volume_breadth_breakout_candidates(
         high_close_scalar = (
             float(cfg["high_close_support_notional_scalar"]) if high_close_pass else 1.0
         )
+        cost_liquidity = _candidate_cost_liquidity(candidate)
+        cost_liquidity_pass = (
+            cost_liquidity["dollar_volume"] is not None
+            and cost_liquidity["signal_day_range_pct"] is not None
+            and cost_liquidity["dollar_volume"] >= float(cfg["cost_liquidity_min_dollar_volume"])
+            and cost_liquidity["signal_day_range_pct"] <= float(cfg["cost_liquidity_max_range_pct"])
+        )
+        cost_liquidity_scalar = (
+            float(cfg["cost_liquidity_notional_scalar"]) if cost_liquidity_pass else 1.0
+        )
         base_notional = float(cfg["paper_notional_usd"])
         candidate["volume_breadth_candidate_rank_on_signal_date"] = rank
         candidate["max_paper_trades_per_day"] = int(cfg["daily_entry_slots"])
@@ -462,8 +493,28 @@ def build_volume_breadth_breakout_candidates(
         )
         candidate["high_close_support_pass_v1"] = high_close_pass
         candidate["high_close_support_notional_scalar"] = high_close_scalar
+        candidate["cost_liquidity_support_rule_version"] = COST_LIQUIDITY_SUPPORT_RULE_VERSION
+        candidate["cost_liquidity_known_at"] = "after_signal_date_close_before_next_open_paper_entry"
+        candidate["cost_liquidity_trade_enabled"] = False
+        candidate["cost_liquidity_alters_orders"] = False
+        candidate["cost_liquidity_min_dollar_volume"] = float(
+            cfg["cost_liquidity_min_dollar_volume"]
+        )
+        candidate["cost_liquidity_max_range_pct"] = float(
+            cfg["cost_liquidity_max_range_pct"]
+        )
+        candidate["cost_liquidity_dollar_volume"] = _round(
+            cost_liquidity["dollar_volume"],
+            2,
+        )
+        candidate["cost_liquidity_signal_day_range_pct"] = _round(
+            cost_liquidity["signal_day_range_pct"],
+            6,
+        )
+        candidate["cost_liquidity_support_pass_v1"] = cost_liquidity_pass
+        candidate["cost_liquidity_notional_scalar"] = cost_liquidity_scalar
         candidate["intended_notional"] = round(
-            base_notional * support_scalar * high_close_scalar,
+            base_notional * support_scalar * high_close_scalar * cost_liquidity_scalar,
             2,
         )
     return accepted, rejected, breadth
@@ -1094,6 +1145,20 @@ def _close_location_value(
     if close is None or high is None or low is None or high <= low:
         return None
     return max(0.0, min(1.0, (close - low) / (high - low)))
+
+
+def _candidate_cost_liquidity(candidate: dict[str, Any]) -> dict[str, float | None]:
+    close = _positive_float(candidate.get("close"))
+    high = _positive_float(candidate.get("signal_day_high"))
+    low = _positive_float(candidate.get("signal_day_low"))
+    dollar_volume = _positive_float(candidate.get("dollar_volume"))
+    range_pct = None
+    if close and high is not None and low is not None:
+        range_pct = max(0.0, (high - low) / close)
+    return {
+        "dollar_volume": dollar_volume,
+        "signal_day_range_pct": range_pct,
+    }
 
 
 def _prior_average(

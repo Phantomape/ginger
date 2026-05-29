@@ -282,6 +282,9 @@ def build_default_off_alpha_attribution_report(
                 "high_close_supported": (
                     ((volume_breadth_breakout_paper_sleeve or {}).get("high_close_support") or {}).get("supported_candidate_count")
                 ),
+                "cost_liquidity_supported": (
+                    ((volume_breadth_breakout_paper_sleeve or {}).get("cost_liquidity_support") or {}).get("supported_candidate_count")
+                ),
             },
         ),
         _surface_summary(
