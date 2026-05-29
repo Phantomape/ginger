@@ -90,8 +90,15 @@ def _save_text(text, filepath):
 def _load_open_positions():
     path = open_positions_path()
     if path.exists():
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            log.error(
+                f"open_positions.json at {repo_relative(path)} is unreadable/malformed: {e}. "
+                "Treating as no open positions; fix the file and re-run."
+            )
+            return None
     log.warning(f"open_positions.json not found at {repo_relative(path)}")
     return None
 
