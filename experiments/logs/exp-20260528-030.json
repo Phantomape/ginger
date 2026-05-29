@@ -1,0 +1,111 @@
+{
+  "after_metrics": {
+    "all_rows_delta_30d_present": 528,
+    "all_rows_delta_30d_ratio": 0.7542857142857143,
+    "lookup_status_counts": {
+      "no_prior_eps_estimate_within_30d_lookback": 172,
+      "ok": 528
+    },
+    "primary_positive_delta_30d_present": 38,
+    "primary_positive_delta_30d_ratio": 0.8085106382978723,
+    "primary_positive_delta_30d_sign_distribution": {
+      "flat": 4,
+      "negative": 9,
+      "positive": 25
+    },
+    "primary_positive_rows": 47,
+    "rows_total": 700,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "all_rows_delta_30d_present": 0,
+    "primary_positive_delta_30d_present": 0,
+    "primary_positive_rows": 47,
+    "rows_total": 700,
+    "comment": "exp-20260525-034 watchlist had eps_estimate_delta_30d null for all 700 rows; estimate_revision_ledger stored the 30d field null across the watchlist window.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Builds a PIT-safe per-ticker eps_estimate timeline from data/daily/snapshots/earnings/earnings_snapshot_*.json and derives eps_estimate_delta_30d (absolute) and eps_estimate_pct_delta_30d for each exp-20260525-034 watchlist row. Current leg = latest snapshot <= as_of_date; prior leg = latest snapshot <= as_of_date - 30 calendar days. Pct delta is None when abs(prior) < 0.05 to avoid near-zero-denominator noise. Writes enriched artifact to data/experiments/exp-20260528-030/; does not modify exp-20260525-034.",
+  "change_type": "read_only_pit_field_derivation",
+  "changed_variable": "eps_estimate_delta_30d_pit_join_into_expectation_revision_watchlist_row",
+  "component": "quant/experiments/exp_20260528_030_eps_estimate_delta_30d_pit_join_into_expectation_revision_watchlist_row.py",
+  "date_range": {
+    "source_watchlist_as_of_dates": "2026-05-08 .. 2026-05-26",
+    "earnings_snapshot_window": "2024-10-02 .. 2026-05-26 (437 files)"
+  },
+  "decision": "accepted_measurement_repair_eps_estimate_delta_30d_field",
+  "decision_rule": "Gate 4: at least 80 pct of primary positive rows must obtain a non-null eps_estimate_delta_30d (absolute) value.",
+  "delta_metrics": {
+    "primary_positive_delta_30d_ratio_delta": 0.8085106382978723,
+    "all_rows_delta_30d_ratio_delta": 0.7542857142857143
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260528-030",
+  "gate1": {"name": "baseline_artifact_available", "passed": true, "rows_in_source": 700},
+  "gate2": {"name": "required_input_fields_present", "passed": true},
+  "gate3": {"name": "survival_rate_not_affected_read_only_field_derivation", "passed": true},
+  "gate4": {
+    "name": "primary_positive_delta_30d_resolved",
+    "passed": true,
+    "primary_positive_rows": 47,
+    "primary_positive_resolved_share": 0.8085106382978723,
+    "floor": 0.80
+  },
+  "gate_questions": {
+    "what_hypothesis": "eps_estimate_delta_30d can be reconstructed PIT-safely from earnings_snapshot files, unblocking the revision-magnitude alpha branch.",
+    "prior_similar_experiments": "exp-20260527-002 closed observed_only_data_gap citing eps_estimate_delta_30d 0pct coverage and 7d 55pct coverage; exp-20260527-908 unblocked last_earnings_date from a parallel snapshot source.",
+    "single_independent_variable": "eps_estimate_delta_30d PIT join into expectation revision watchlist row.",
+    "success_failure_criteria": "Gate 4: >= 80 pct of primary positive rows resolve a non-null 30d delta.",
+    "reproducibility": "Single deterministic script over checked-in snapshot data; no live API calls; 11 unit tests cover PIT safety, latest-on-or-before semantics, pct floor, and gate logic."
+  },
+  "hypothesis": "eps_estimate_delta_30d can be reconstructed PIT-safely from the same earnings_snapshot_*.json files that already feed the estimate_revision_ledger by looking up eps_estimate at as_of_date and at the most recent snapshot dated <= as_of_date - 30 calendar days. This unblocks the expectation revision magnitude alpha line (exp-20260527-002).",
+  "lane": "measurement_repair",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260527-002",
+    "exp-20260527-908",
+    "exp-20260525-034",
+    "exp-20260528-027",
+    "exp-20260528-028"
+  ],
+  "new_evidence_type": "derived_pit_field_unblocks_prior_observed_only_data_gap",
+  "next_evidence_needed": "Re-run exp-20260527-002 against the enriched watchlist to test the revision-magnitude hypothesis with both 7d and 30d axes. The 9 unresolved primary positive rows (RBLX, COHR, SOFI, MTSI) are recent additions to the snapshot universe and will self-heal as snapshot history deepens. revenue_estimate and analyst_count velocity remain absent and are the next magnitude-axis measurement repair.",
+  "parameters": {
+    "rule_version": "earnings_snapshot_pit_eps_estimate_delta_30d_v1",
+    "lookback_calendar_days": 30,
+    "pct_delta_prior_floor": 0.05,
+    "gate4_coverage_floor": 0.80,
+    "source": "data/daily/snapshots/earnings/earnings_snapshot_*.json"
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_field_derivation": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260528_030"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260528_030_eps_estimate_delta_30d_pit_join_into_expectation_revision_watchlist_row.py",
+    "quant/test_exp_20260528_030_eps_estimate_delta_30d_pit_join.py",
+    "data/experiments/exp-20260528-030/eps_estimate_delta_30d_pit_join_into_expectation_revision_watchlist_row.json",
+    "experiments/artifacts/exp-20260528-030_eps_estimate_delta_30d_pit_join_into_expectation_revision_watchlist_row.md",
+    "experiments/logs/exp-20260528-030.json",
+    "experiments/tickets/exp-20260528-030.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "earnings_snapshot_pit_eps_estimate_delta_30d_v1",
+  "single_causal_variable": "eps_estimate_delta_30d PIT join into expectation revision watchlist row",
+  "status": "accepted",
+  "timestamp": "2026-05-28T08:00:00+00:00",
+  "trial_family": "measurement_repair_revision_magnitude_field",
+  "trial_variant_id": "exp-20260528-030"
+}
