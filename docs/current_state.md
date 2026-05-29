@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-28.
+Last updated: 2026-05-29.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -48,6 +48,52 @@ Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+## 2026-05-29 Experiment Consolidation
+
+Today's experiment set kept core/live trading logic unchanged. The only
+accepted shared paper-alpha increment was `exp-20260529-004`: the
+`VOLUME_BREADTH_BREAKOUT_PAPER` adapter now records a cost/liquidity support
+scalar for selected paper trades with `dollar_volume >= $200m` and signal-day
+`range/close <= 0.10`, applying `1.05x` paper notional. It improved aggregate
+paper EV by `+0.0285` and PnL by `+$456.30` versus the current accepted VBB
+baseline, with all three windows EV/PnL positive. This remains default-off
+paper only; no core ranking, sizing, exits, orders, LLM/news, or live slots
+consume it.
+
+The other durable accepted conclusion is directional, not executable:
+`exp-20260529-009` ranked the best next alpha work as forward maturation of
+accepted default-off candidate-pool sleeves. The priority is closed forward
+outcomes, replacement value, concentration, and activation blockers for
+`FUNDAMENTAL_GROWTH_RS_PAPER`, `VOLUME_BREADTH_BREAKOUT_PAPER`, VCP, and
+broad-market paper, not another frozen-sample scalar sweep.
+
+Rejected or observe-only conclusions that should guide the next run:
+
+- New free-data candidate-pool scouts did not clear promotion: VWAP reclaim
+  (`exp-20260529-001`), long-base market-breadth confirmation (`005`), peer
+  earnings reaction transfer (`010/011`), residual-leadership pullback (`013`),
+  SEC 10-K liquidity/RS (`014`), SEC FD/Other and Item 1.01 positive reaction
+  pools (`015/016`), SEC Item 5.02 positive reaction (`019`), and FINRA
+  short-pressure breakout (`017`) were rejected because gains were
+  mixed-window, too small, or outright negative. `019` cut aggregate EV by
+  `-0.2894` and PnL by `$-3,401.74`, with only `13` trades and concentration
+  guard failure. The follow-up FINRA monotonic validation (`018`) also rejected
+  the field as a ranking clue: aggregate top-bucket average PnL was `-$133.94`
+  versus bottom-bucket `+$359.22`, with the top bucket below bottom in
+  `mid_weak` and `old_thin`.
+- Adjacent `FUNDAMENTAL_GROWTH_RS_PAPER` mining should stop on the frozen
+  sample. Low capex intensity (`003`), recent VBB source agreement (`008`),
+  and the cash-conversion closed-ledger governor (`012`) failed to justify a
+  new retained increment despite some positive aggregate numbers, due to
+  incremental-quality, concentration, drawdown, or window-stability concerns.
+- Form 4 role-quality (`002`) was positive but not material, EPS revision
+  magnitude (`007`) showed no promotable high-vs-low magnitude edge, and the
+  Kova shakeout/reclaim lifecycle result (`006`) stays forward-monitoring only
+  because the positive reclaim bucket had just `7` trades.
+
+Regression status for this consolidation run: full unit tests passed
+(`990 passed in 53.32s`). No bug fix or strategy behavior change was required.
+
 ## 2026-05-28 Experiment Consolidation
 
 Today's experiment set kept core/live trading logic unchanged and mostly
@@ -74,14 +120,23 @@ Rejected or observe-only conclusions that should guide the next run:
   discipline, dual-growth, liquidity sweet spot, and operating-margin
   durability scouts (`exp-20260528-006/012/019/020/021/023`) did not add a
   promotable increment on top of the accepted operating-profit stack.
-- Expectation / PEAD work (`exp-20260528-005/007/009/013`) improved or
-  exercised attribution coverage, but did not yet show a promotable ranking or
-  PEAD edge. Keep accumulating PIT estimate-revision and closed forward
-  outcomes before proposing a paper sleeve or ranking change.
-- Kova / VCP work (`exp-20260528-002/010/014`) remains attribution only:
+- Expectation / PEAD work (`exp-20260528-005/007/009/013/027/028/029`)
+  improved or exercised attribution coverage, but did not yet show a
+  promotable ranking or PEAD edge. `027/028` rejected residual and no-residual
+  PEAD-window variants at 5d; `029` found the outside-PEAD 1d/2d strength
+  collapses after removing MU or ticker de-duplicating. Keep accumulating PIT
+  estimate-revision and closed forward outcomes before proposing a paper sleeve
+  or ranking change.
+- Kova / VCP work (`exp-20260528-002/010/014/031`, `exp-20260529-006`)
+  remains attribution only:
   high-volume weak-close exit replay was rejected, distribution-day pressure
-  did not justify a gate, and sell-side lifecycle taxonomy only nominated a
-  later ex-ante lifecycle replay.
+  did not justify a gate, sell-side lifecycle taxonomy only nominated a later
+  ex-ante lifecycle replay, and the simple day-3 low-MFE failed-breakout proxy
+  was rejected after cutting aggregate VCP paper PnL by `$7,010.02`.
+  The Kova shakeout/reclaim lifecycle bucket was directionally positive
+  (`7` trades, `+$4,039.29`, avg `+$577.04` versus shakeout/no-reclaim avg
+  `-$107.42`) but failed the pre-set sample gate (`7 < 10`), so it is a
+  forward monitoring clue only.
 - `exp-20260528-024` rejected the RS-line new-high closed-ledger governor
   because the aggregate gain came with a `late_strong` regression and max
   drawdown drift far above the Gate 4 guardrail. `exp-20260528-025` found

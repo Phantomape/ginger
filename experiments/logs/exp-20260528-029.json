@@ -1,0 +1,4121 @@
+{
+  "after_metrics": {
+    "outside_all_1d_avg_return": 0.014816799999999998,
+    "outside_all_1d_total_pnl_proxy": 3704.2,
+    "outside_all_2d_avg_return": 0.02398745,
+    "outside_all_2d_total_pnl_proxy": 4797.49,
+    "outside_ex_top_1d_total_pnl_proxy": -1404.4300000000003,
+    "outside_ex_top_2d_total_pnl_proxy": -1093.6299999999999,
+    "outside_ticker_first_dedup_1d_total_pnl_proxy": -578.0600000000001,
+    "outside_ticker_first_dedup_2d_total_pnl_proxy": 171.55000000000007,
+    "strategy_behavior_changed": false,
+    "top_positive_ticker": "MU",
+    "top_positive_ticker_combined_share": 0.8618190593266218
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Observed-only deconcentration audit of primary-positive expectation revision rows outside the T+2..T+15 PEAD window. Reuses the corrected weekday close outcome construction from exp-20260528-013 and compares all outside-PEAD rows, ex-top-ticker rows, first-row-per-ticker rows, and first-row-per-ticker ex-top rows.",
+  "change_type": "observed_only_outside_pead_deconcentration_attribution",
+  "changed_variable": "outside_pead_primary_positive_short_horizon_deconcentration_v1",
+  "component": "quant/experiments/exp_20260528_029_expectation_outside_pead_deconcentration_attribution.py",
+  "coverage": {
+    "as_of_date_range": "2026-05-08 .. 2026-05-26",
+    "bucket_counts": {
+      "eligible_t2_t15_non_overextended": 8,
+      "eligible_t2_t15_residual_leader": 7,
+      "not_primary_7d_positive": 653,
+      "primary_positive_missing_last_earnings_date": 7,
+      "primary_positive_outside_t2_t15": 25
+    },
+    "closed_short_forward_outcomes": {
+      "1d": 700,
+      "2d": 649,
+      "3d": 547
+    },
+    "outside_pead_rows": 25,
+    "outside_pead_ticker_count": 9,
+    "primary_positive_pead_status_counts": {
+      "inside_t2_t15_after_earnings": 15,
+      "missing_last_earnings_date": 7,
+      "outside_t2_t15_after_earnings": 25
+    },
+    "primary_positive_rows": 47,
+    "rows_total": 700,
+    "source_experiment_id": "exp-20260527-908"
+  },
+  "date_range": {
+    "source_watchlist_as_of_dates": "2026-05-08 .. 2026-05-26"
+  },
+  "decision": "observed_only_no_promotable_edge",
+  "delta_metrics": {
+    "expected_value_score_sum_delta": 0.0,
+    "strategy_behavior_delta": 0,
+    "total_pnl_sum_delta": 0.0
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260528-029",
+  "gate": {
+    "concentration_flags": [
+      {
+        "horizon": "1d",
+        "maximum": 0.6,
+        "metric": "single_ticker_positive_pnl_share",
+        "value": 0.8848349539450668
+      },
+      {
+        "horizon": "1d",
+        "maximum": 0.8,
+        "metric": "top5_positive_pnl_share",
+        "value": 0.8848349539450668
+      },
+      {
+        "horizon": "2d",
+        "maximum": 0.6,
+        "metric": "single_ticker_positive_pnl_share",
+        "value": 0.842808235346294
+      },
+      {
+        "horizon": "2d",
+        "maximum": 0.8,
+        "metric": "top5_positive_pnl_share",
+        "value": 0.8739060955353962
+      }
+    ],
+    "data_gaps": [],
+    "decision": "observed_only_no_promotable_edge",
+    "dedup_ex_top_positive": false,
+    "dedup_positive": false,
+    "ex_top_positive": false,
+    "passed": false,
+    "reason": "outside_pead_edge_collapses_after_top_ticker_or_ticker_dedup",
+    "row_level_positive": true
+  },
+  "gate1": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "baseline_source": "docs/backtesting.md accepted aggregate core stack",
+    "note": "Observed-only attribution; no before/after core strategy metrics change.",
+    "passed": true
+  },
+  "gate2": {
+    "passed": true,
+    "rule_dependencies": [
+      "ticker",
+      "watchlist_effective_trade_date",
+      "primary_expectation_positive",
+      "last_earnings_date",
+      "pead_status",
+      "days_since_last_earnings",
+      "local weekday close snapshots"
+    ]
+  },
+  "gate3": {
+    "adds_filter": false,
+    "candidate_pool_changed": false,
+    "passed": true,
+    "survival_rate_not_applicable": true
+  },
+  "gate4": {
+    "canonical_backtest_required": false,
+    "note": "Observed-only result can only unlock a later default-off Gate 1-4 strategy experiment.",
+    "passed": false,
+    "strategy_behavior_changed": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Outside-PEAD primary-positive expectation revision rows may be a short-horizon ranking candidate, but only if the 1d/2d edge survives deconcentration.",
+    "2_history_check": "exp-20260528-013 found outside-PEAD 1d/2d strength with high concentration; exp-20260528-027/028 rejected PEAD-window residual and no-residual 5d variants.",
+    "3_single_causal_variable": "outside_pead_primary_positive_short_horizon_deconcentration_v1",
+    "4_acceptance_standard": "Observed-only precheck passes only if all-row, ex-top-ticker, ticker-dedup, and ticker-dedup ex-top 1d/2d avg return and PnL remain positive, minimum closed counts are met, and positive-PnL concentration is below guardrails.",
+    "5_reproducibility": ".venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260528_029_expectation_outside_pead_deconcentration_attribution.py"
+  },
+  "hypothesis": "If the exp-20260528-013 outside-PEAD primary-positive 1d/2d strength is real alpha rather than concentrated repeat exposure, it should remain positive after removing the top positive ticker contributor and after first-row-per-ticker de-duplication.",
+  "lane": "alpha_search",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "mechanism_family": "expectation_revision_pead",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    {
+      "experiment_id": "exp-20260528-013",
+      "finding": "Outside-PEAD primary-positive rows beat inside-PEAD non-overextended rows at 1d/2d, but concentration was high."
+    },
+    {
+      "experiment_id": "exp-20260528-027",
+      "finding": "Residual leadership inside PEAD failed as a 5d discriminator."
+    },
+    {
+      "experiment_id": "exp-20260528-028",
+      "finding": "The PEAD window itself failed to show 5d lift across three positive-revision tiers."
+    }
+  ],
+  "new_evidence_type": "outside_pead_short_horizon_deconcentration_audit",
+  "next_evidence_needed": "Do not promote the outside-PEAD short-horizon bucket from this frozen sample. If revisited, require new non-MU forward rows, ticker-deduplicated replacement-value evidence, or a different stable phase/ranking interaction that survives concentration checks.",
+  "outside_phase_summary": {
+    "post_earnings_gt60": {
+      "days_since_last_earnings": {
+        "avg": 71.44444444444444,
+        "max": 82.0,
+        "min": 61.0
+      },
+      "max_rows_per_ticker": 5,
+      "phase_counts": {
+        "post_earnings_gt60": 9
+      },
+      "residual_leader_count": 8,
+      "residual_state_counts": {
+        "neutral": 1,
+        "residual_leader": 3,
+        "strong_residual_leader": 5
+      },
+      "row_count": 9,
+      "sector_counts": {
+        "Technology": 9
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": 0.050957777777777775,
+          "closed_count": 9,
+          "missing_count": 0,
+          "positive_pnl_total": 5238.27,
+          "single_ticker_positive_pnl_share": 0.9752513711587986,
+          "tail_loss": -0.044201,
+          "top5_positive_pnl_share": 0.9752513711587986,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.9752513711587986,
+          "total_pnl_proxy": 4586.2,
+          "win_rate": 0.6666666666666666
+        },
+        "2d": {
+          "avg_return": 0.06393349999999999,
+          "closed_count": 8,
+          "missing_count": 1,
+          "positive_pnl_total": 5942.849999999999,
+          "single_ticker_positive_pnl_share": 0.9912954222300748,
+          "tail_loss": -0.056927,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.9912954222300748,
+          "total_pnl_proxy": 5114.68,
+          "win_rate": 0.625
+        },
+        "3d": {
+          "avg_return": -0.001367166666666667,
+          "closed_count": 6,
+          "missing_count": 3,
+          "positive_pnl_total": 1007.6199999999999,
+          "single_ticker_positive_pnl_share": 1.0,
+          "tail_loss": -0.064181,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 1.0,
+          "total_pnl_proxy": -82.03000000000009,
+          "win_rate": 0.3333333333333333
+        }
+      },
+      "ticker_count": 2,
+      "ticker_row_counts": {
+        "MU": 5,
+        "NVDA": 4
+      }
+    },
+    "post_earnings_t16_t30": {
+      "days_since_last_earnings": {
+        "avg": 19.333333333333332,
+        "max": 22.0,
+        "min": 17.0
+      },
+      "max_rows_per_ticker": 3,
+      "phase_counts": {
+        "post_earnings_t16_t30": 15
+      },
+      "residual_leader_count": 3,
+      "residual_state_counts": {
+        "beta_lagging": 5,
+        "neutral": 7,
+        "residual_leader": 2,
+        "strong_residual_leader": 1
+      },
+      "row_count": 15,
+      "sector_counts": {
+        "Communication Services": 3,
+        "Energy": 3,
+        "Industrials": 3,
+        "Technology": 4,
+        "Unknown": 2
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": -0.004698666666666667,
+          "closed_count": 15,
+          "missing_count": 0,
+          "positive_pnl_total": 535.27,
+          "single_ticker_positive_pnl_share": 0.44519588245184677,
+          "tail_loss": -0.035104,
+          "top5_positive_pnl_share": 0.8775384385450333,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.44519588245184677,
+          "total_pnl_proxy": -704.8000000000002,
+          "win_rate": 0.5333333333333333
+        },
+        "2d": {
+          "avg_return": 0.0004278181818181823,
+          "closed_count": 11,
+          "missing_count": 4,
+          "positive_pnl_total": 1047.02,
+          "single_ticker_positive_pnl_share": 0.5413459150732555,
+          "tail_loss": -0.047171,
+          "top5_positive_pnl_share": 0.7601765009264387,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.5413459150732555,
+          "total_pnl_proxy": 47.06000000000003,
+          "win_rate": 0.7272727272727273
+        },
+        "3d": {
+          "avg_return": 0.015242857142857143,
+          "closed_count": 7,
+          "missing_count": 8,
+          "positive_pnl_total": 1123.54,
+          "single_ticker_positive_pnl_share": 0.7003666981148868,
+          "tail_loss": -0.005654,
+          "top5_positive_pnl_share": 0.9793954821368177,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.7003666981148868,
+          "total_pnl_proxy": 1067.0,
+          "win_rate": 0.8571428571428571
+        }
+      },
+      "ticker_count": 7,
+      "ticker_row_counts": {
+        "AAPL": 3,
+        "AMD": 1,
+        "CAT": 3,
+        "CVX": 3,
+        "DIS": 3,
+        "V": 1,
+        "XOM": 1
+      }
+    },
+    "pre_earnings_or_future_date": {
+      "days_since_last_earnings": {
+        "avg": -1.0,
+        "max": -1.0,
+        "min": -1.0
+      },
+      "max_rows_per_ticker": 1,
+      "phase_counts": {
+        "pre_earnings_or_future_date": 1
+      },
+      "residual_leader_count": 1,
+      "residual_state_counts": {
+        "residual_leader": 1
+      },
+      "row_count": 1,
+      "sector_counts": {
+        "Technology": 1
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": -0.01772,
+          "closed_count": 1,
+          "missing_count": 0,
+          "positive_pnl_total": 0,
+          "single_ticker_positive_pnl_share": null,
+          "tail_loss": -0.01772,
+          "top5_positive_pnl_share": null,
+          "top_positive_ticker": null,
+          "top_positive_ticker_share": null,
+          "total_pnl_proxy": -177.2,
+          "win_rate": 0.0
+        },
+        "2d": {
+          "avg_return": -0.036425,
+          "closed_count": 1,
+          "missing_count": 0,
+          "positive_pnl_total": 0,
+          "single_ticker_positive_pnl_share": null,
+          "tail_loss": -0.036425,
+          "top5_positive_pnl_share": null,
+          "top_positive_ticker": null,
+          "top_positive_ticker_share": null,
+          "total_pnl_proxy": -364.25,
+          "win_rate": 0.0
+        },
+        "3d": {
+          "avg_return": -0.036425,
+          "closed_count": 1,
+          "missing_count": 0,
+          "positive_pnl_total": 0,
+          "single_ticker_positive_pnl_share": null,
+          "tail_loss": -0.036425,
+          "top5_positive_pnl_share": null,
+          "top_positive_ticker": null,
+          "top_positive_ticker_share": null,
+          "total_pnl_proxy": -364.25,
+          "win_rate": 0.0
+        }
+      },
+      "ticker_count": 1,
+      "ticker_row_counts": {
+        "NVDA": 1
+      }
+    }
+  },
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "data_dir": "data",
+    "dedupe_rule": "earliest watchlist_effective_trade_date per ticker",
+    "gate_horizons": [
+      "1d",
+      "2d"
+    ],
+    "max_single_ticker_positive_pnl_share": 0.6,
+    "max_top5_positive_pnl_share": 0.8,
+    "min_closed_outcomes": {
+      "outside_all_rows:1d": 15,
+      "outside_all_rows:2d": 15,
+      "outside_ex_top_positive_ticker:1d": 10,
+      "outside_ex_top_positive_ticker:2d": 10,
+      "outside_ticker_first_dedup:1d": 6,
+      "outside_ticker_first_dedup:2d": 6
+    },
+    "outside_pead_bucket": "primary_positive_outside_t2_t15",
+    "paper_notional_usd": 10000.0,
+    "short_forward_horizons": [
+      "1d",
+      "2d",
+      "3d"
+    ],
+    "source_artifact": "data/experiments/exp-20260527-908/last_earnings_date_pit_join_into_expectation_revision_watchlist_row.json",
+    "top_ticker_selection": "largest combined positive pnl proxy across 1d and 2d"
+  },
+  "prior_trial_count": 8,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "observed_only_attribution": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "outside_pead_edge_collapses_after_top_ticker_or_ticker_dedup",
+  "related_files": [
+    "quant/experiments/exp_20260528_029_expectation_outside_pead_deconcentration_attribution.py",
+    "data/experiments/exp-20260527-908/last_earnings_date_pit_join_into_expectation_revision_watchlist_row.json",
+    "data/experiments/exp-20260528-029/expectation_outside_pead_deconcentration_attribution.json",
+    "experiments/artifacts/exp-20260528-029_expectation_outside_pead_deconcentration_attribution.md",
+    "experiments/logs/exp-20260528-029.json",
+    "experiments/tickets/exp-20260528-029.json",
+    "docs/experiments/tickets/exp-20260528-029.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "sample_rows": {
+    "inside_non_overextended_reference": [
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 13,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "beta_lagging",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 378.0,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 543.93,
+            "return": 0.054393,
+            "start_close": 358.5
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 377.57,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 531.94,
+            "return": 0.053194,
+            "start_close": 358.5
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 377.57,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": 531.94,
+            "return": 0.053194,
+            "start_close": 358.5
+          }
+        },
+        "ticker": "COHR",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 13,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.58,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -48.04,
+            "return": -0.004804,
+            "start_close": 104.08
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 103.0,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -103.77,
+            "return": -0.010377,
+            "start_close": 104.08
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 103.0,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -103.77,
+            "return": -0.010377,
+            "start_close": 104.08
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 12,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "beta_lagging",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 358.5,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 137.71,
+            "return": 0.013771,
+            "start_close": 353.63
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 378.0,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 689.14,
+            "return": 0.068914,
+            "start_close": 353.63
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 377.57,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 676.98,
+            "return": 0.067698,
+            "start_close": 353.63
+          }
+        },
+        "ticker": "COHR",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 11,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 353.63,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -253.56,
+            "return": -0.025356,
+            "start_close": 362.83
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 358.5,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": -119.34,
+            "return": -0.011934,
+            "start_close": 362.83
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 378.0,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 418.1,
+            "return": 0.04181,
+            "start_close": 362.83
+          }
+        },
+        "ticker": "COHR",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 14,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "neutral",
+        "sector": "Healthcare",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 988.09,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -167.48,
+            "return": -0.016748,
+            "start_close": 1004.92
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 1021.41,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 164.09,
+            "return": 0.016409,
+            "start_close": 1004.92
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 1018.87,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 138.82,
+            "return": 0.013882,
+            "start_close": 1004.92
+          }
+        },
+        "ticker": "LLY",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 8,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "neutral",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 492.38,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -172.06,
+            "return": -0.017206,
+            "start_close": 501.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 476.9,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -481.04,
+            "return": -0.048104,
+            "start_close": 501.0
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 482.28,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": -373.65,
+            "return": -0.037365,
+            "start_close": 501.0
+          }
+        },
+        "ticker": "APP",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 13,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "neutral",
+        "sector": "Healthcare",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 1004.92,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -17.68,
+            "return": -0.001768,
+            "start_close": 1006.7
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 988.09,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -184.86,
+            "return": -0.018486,
+            "start_close": 1006.7
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 1021.41,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 146.12,
+            "return": 0.014612,
+            "start_close": 1006.7
+          }
+        },
+        "ticker": "LLY",
+        "watchlist_effective_trade_date": "2026-05-14"
+      },
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 7,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 501.0,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": 326.49,
+            "return": 0.032649,
+            "start_close": 485.16
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 492.38,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": 148.82,
+            "return": 0.014882,
+            "start_close": 485.16
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 476.9,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -170.25,
+            "return": -0.017025,
+            "start_close": 485.16
+          }
+        },
+        "ticker": "APP",
+        "watchlist_effective_trade_date": "2026-05-14"
+      }
+    ],
+    "inside_residual_leader_reference": [
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 7,
+        "last_earnings_date": "2026-05-08",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 208.82,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": 40.39,
+            "return": 0.004039,
+            "start_close": 207.98
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 215.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 344.74,
+            "return": 0.034474,
+            "start_close": 207.98
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 212.24,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 204.83,
+            "return": 0.020483,
+            "start_close": 207.98
+          }
+        },
+        "ticker": "DDOG",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 9,
+        "last_earnings_date": "2026-05-06",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 420.99,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -73.33,
+            "return": -0.007333,
+            "start_close": 424.1
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 414.05,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -236.97,
+            "return": -0.023697,
+            "start_close": 424.1
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 447.58,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 553.64,
+            "return": 0.055364,
+            "start_close": 424.1
+          }
+        },
+        "ticker": "AMD",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 14,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "residual_leader",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 863.95,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -274.23,
+            "return": -0.027423,
+            "start_close": 888.31
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 860.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -317.01,
+            "return": -0.031701,
+            "start_close": 888.31
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": -177.3,
+            "return": -0.01773,
+            "start_close": 888.31
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 14,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 297.84,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -79.61,
+            "return": -0.007961,
+            "start_close": 300.23
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 298.97,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -41.97,
+            "return": -0.004197,
+            "start_close": 300.23
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 67.28,
+            "return": 0.006728,
+            "start_close": 300.23
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 8,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 362.83,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -513.01,
+            "return": -0.051301,
+            "start_close": 382.45
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 353.63,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -753.56,
+            "return": -0.075356,
+            "start_close": 382.45
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 358.5,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": -626.23,
+            "return": -0.062623,
+            "start_close": 382.45
+          }
+        },
+        "ticker": "COHR",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 8,
+        "last_earnings_date": "2026-05-06",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 424.1,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -569.27,
+            "return": -0.056927,
+            "start_close": 449.7
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 420.99,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -638.43,
+            "return": -0.063843,
+            "start_close": 449.7
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 414.05,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -792.75,
+            "return": -0.079275,
+            "start_close": 449.7
+          }
+        },
+        "ticker": "AMD",
+        "watchlist_effective_trade_date": "2026-05-14"
+      },
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 13,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "inside_t2_t15_after_earnings",
+        "phase_bucket": "other_outside",
+        "residual_state": "strong_residual_leader",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 888.31,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -346.76,
+            "return": -0.034676,
+            "start_close": 920.22
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 863.95,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -611.48,
+            "return": -0.061148,
+            "start_close": 920.22
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 860.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -652.78,
+            "return": -0.065278,
+            "start_close": 920.22
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-14"
+      }
+    ],
+    "outside_all_rows": [
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 68,
+        "last_earnings_date": "2026-03-19",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 928.41,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 363.11,
+            "return": 0.036311,
+            "start_close": 895.88
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "MU",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 20,
+        "last_earnings_date": "2026-05-06",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 495.54,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -165.71,
+            "return": -0.016571,
+            "start_close": 503.89
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "AMD",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 22,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 147.9,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -127.49,
+            "return": -0.012749,
+            "start_close": 149.81
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "XOM",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 19,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 87.14,
+            "return": 0.008714,
+            "start_close": 103.28
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 22,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -125.06,
+            "return": -0.012506,
+            "start_close": 184.71
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 67,
+        "last_earnings_date": "2026-03-19",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 895.88,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 1929.16,
+            "return": 0.192916,
+            "start_close": 751.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 928.41,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 2362.32,
+            "return": 0.236232,
+            "start_close": 751.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "MU",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 184.71,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": -351.04,
+            "return": -0.035104,
+            "start_close": 191.43
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -471.71,
+            "return": -0.047171,
+            "start_close": 191.43
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.28,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 27.18,
+            "return": 0.002718,
+            "start_close": 103.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 114.56,
+            "return": 0.011456,
+            "start_close": 103.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-24",
+        "days_since_last_earnings": 67,
+        "last_earnings_date": "2026-03-19",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 895.88,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 1929.16,
+            "return": 0.192916,
+            "start_close": 751.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 928.41,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 2362.32,
+            "return": 0.236232,
+            "start_close": 751.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "MU",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-24",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 184.71,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": -351.04,
+            "return": -0.035104,
+            "start_close": 191.43
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -471.71,
+            "return": -0.047171,
+            "start_close": 191.43
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-24",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.28,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 27.18,
+            "return": 0.002718,
+            "start_close": 103.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 114.56,
+            "return": 0.011456,
+            "start_close": 103.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 62,
+        "last_earnings_date": "2026-03-19",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 762.1,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 411.34,
+            "return": 0.041134,
+            "start_close": 731.99
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 751.0,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 259.7,
+            "return": 0.02597,
+            "start_close": 731.99
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 751.0,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": 259.7,
+            "return": 0.02597,
+            "start_close": 731.99
+          }
+        },
+        "ticker": "MU",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 19,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 90.65,
+            "return": 0.009065,
+            "start_close": 302.25
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 308.82,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 217.37,
+            "return": 0.021737,
+            "start_close": 302.25
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 308.82,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": 217.37,
+            "return": 0.021737,
+            "start_close": 302.25
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": -1,
+        "last_earnings_date": "2026-05-21",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "pre_earnings_or_future_date",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 219.51,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -177.2,
+            "return": -0.01772,
+            "start_close": 223.47
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 215.33,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -364.25,
+            "return": -0.036425,
+            "start_close": 223.47
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 215.33,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -364.25,
+            "return": -0.036425,
+            "start_close": 223.47
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 19,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -75.75,
+            "return": -0.007575,
+            "start_close": 872.56
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 879.89,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 84.01,
+            "return": 0.008401,
+            "start_close": 872.56
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 879.89,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": 84.01,
+            "return": 0.008401,
+            "start_close": 872.56
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-04-29",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 331.12,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 11.19,
+            "return": 0.001119,
+            "start_close": 330.75
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          }
+        },
+        "ticker": "V",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 61,
+        "last_earnings_date": "2026-03-19",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 731.99,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 475.86,
+            "return": 0.047586,
+            "start_close": 698.74
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 762.1,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 906.78,
+            "return": 0.090678,
+            "start_close": 698.74
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 751.0,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 747.92,
+            "return": 0.074792,
+            "start_close": 698.74
+          }
+        },
+        "ticker": "MU",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 109.71,
+            "return": 0.010971,
+            "start_close": 298.97
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 201.36,
+            "return": 0.020136,
+            "start_close": 298.97
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 308.82,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 329.46,
+            "return": 0.032946,
+            "start_close": 298.97
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 82,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 223.47,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 129.64,
+            "return": 0.012964,
+            "start_close": 220.61
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 219.51,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -49.86,
+            "return": -0.004986,
+            "start_close": 220.61
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 215.33,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -239.34,
+            "return": -0.023934,
+            "start_close": 220.61
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 144.28,
+            "return": 0.014428,
+            "start_close": 860.15
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 67.43,
+            "return": 0.006743,
+            "start_close": 860.15
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 879.89,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 229.49,
+            "return": 0.022949,
+            "start_close": 860.15
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 81,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -76.92,
+            "return": -0.007692,
+            "start_close": 222.32
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 223.47,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 51.73,
+            "return": 0.005173,
+            "start_close": 222.32
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 219.51,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -126.39,
+            "return": -0.012639,
+            "start_close": 222.32
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 298.97,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 37.94,
+            "return": 0.003794,
+            "start_close": 297.84
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 148.07,
+            "return": 0.014807,
+            "start_close": 297.84
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 240.06,
+            "return": 0.024006,
+            "start_close": 297.84
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 860.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -43.98,
+            "return": -0.004398,
+            "start_close": 863.95
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 99.66,
+            "return": 0.009966,
+            "start_close": 863.95
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 23.15,
+            "return": 0.002315,
+            "start_close": 863.95
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 78,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 222.32,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -133.14,
+            "return": -0.013314,
+            "start_close": 225.32
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -209.04,
+            "return": -0.020904,
+            "start_close": 225.32
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 223.47,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": -82.11,
+            "return": -0.008211,
+            "start_close": 225.32
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 77,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 225.32,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -442.01,
+            "return": -0.044201,
+            "start_close": 235.74
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 222.32,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -569.27,
+            "return": -0.056927,
+            "start_close": 235.74
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -641.81,
+            "return": -0.064181,
+            "start_close": 235.74
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-14"
+      }
+    ],
+    "outside_ex_top_positive_ticker": [
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 20,
+        "last_earnings_date": "2026-05-06",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 495.54,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -165.71,
+            "return": -0.016571,
+            "start_close": 503.89
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "AMD",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 22,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 147.9,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -127.49,
+            "return": -0.012749,
+            "start_close": 149.81
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "XOM",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 19,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 87.14,
+            "return": 0.008714,
+            "start_close": 103.28
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 22,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -125.06,
+            "return": -0.012506,
+            "start_close": 184.71
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 184.71,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": -351.04,
+            "return": -0.035104,
+            "start_close": 191.43
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -471.71,
+            "return": -0.047171,
+            "start_close": 191.43
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.28,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 27.18,
+            "return": 0.002718,
+            "start_close": 103.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 114.56,
+            "return": 0.011456,
+            "start_close": 103.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-24",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 184.71,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": -351.04,
+            "return": -0.035104,
+            "start_close": 191.43
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -471.71,
+            "return": -0.047171,
+            "start_close": 191.43
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-24",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.28,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 27.18,
+            "return": 0.002718,
+            "start_close": 103.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 114.56,
+            "return": 0.011456,
+            "start_close": 103.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 19,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 90.65,
+            "return": 0.009065,
+            "start_close": 302.25
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 308.82,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 217.37,
+            "return": 0.021737,
+            "start_close": 302.25
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 308.82,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": 217.37,
+            "return": 0.021737,
+            "start_close": 302.25
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": -1,
+        "last_earnings_date": "2026-05-21",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "pre_earnings_or_future_date",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 219.51,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -177.2,
+            "return": -0.01772,
+            "start_close": 223.47
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 215.33,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -364.25,
+            "return": -0.036425,
+            "start_close": 223.47
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 215.33,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -364.25,
+            "return": -0.036425,
+            "start_close": 223.47
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 19,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -75.75,
+            "return": -0.007575,
+            "start_close": 872.56
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 879.89,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 84.01,
+            "return": 0.008401,
+            "start_close": 872.56
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 879.89,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": 84.01,
+            "return": 0.008401,
+            "start_close": 872.56
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-04-29",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 331.12,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 11.19,
+            "return": 0.001119,
+            "start_close": 330.75
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          }
+        },
+        "ticker": "V",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 109.71,
+            "return": 0.010971,
+            "start_close": 298.97
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 201.36,
+            "return": 0.020136,
+            "start_close": 298.97
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 308.82,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 329.46,
+            "return": 0.032946,
+            "start_close": 298.97
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 82,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 223.47,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 129.64,
+            "return": 0.012964,
+            "start_close": 220.61
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 219.51,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -49.86,
+            "return": -0.004986,
+            "start_close": 220.61
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 215.33,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -239.34,
+            "return": -0.023934,
+            "start_close": 220.61
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 144.28,
+            "return": 0.014428,
+            "start_close": 860.15
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 67.43,
+            "return": 0.006743,
+            "start_close": 860.15
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 879.89,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 229.49,
+            "return": 0.022949,
+            "start_close": 860.15
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 81,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -76.92,
+            "return": -0.007692,
+            "start_close": 222.32
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 223.47,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 51.73,
+            "return": 0.005173,
+            "start_close": 222.32
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 219.51,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": -126.39,
+            "return": -0.012639,
+            "start_close": 222.32
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 298.97,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 37.94,
+            "return": 0.003794,
+            "start_close": 297.84
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 148.07,
+            "return": 0.014807,
+            "start_close": 297.84
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 240.06,
+            "return": 0.024006,
+            "start_close": 297.84
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 860.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -43.98,
+            "return": -0.004398,
+            "start_close": 863.95
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 99.66,
+            "return": 0.009966,
+            "start_close": 863.95
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 23.15,
+            "return": 0.002315,
+            "start_close": 863.95
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-15",
+        "days_since_last_earnings": 78,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 222.32,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -133.14,
+            "return": -0.013314,
+            "start_close": 225.32
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -209.04,
+            "return": -0.020904,
+            "start_close": 225.32
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 223.47,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": -82.11,
+            "return": -0.008211,
+            "start_close": 225.32
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-15"
+      },
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 77,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 225.32,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -442.01,
+            "return": -0.044201,
+            "start_close": 235.74
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 222.32,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -569.27,
+            "return": -0.056927,
+            "start_close": 235.74
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -641.81,
+            "return": -0.064181,
+            "start_close": 235.74
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-14"
+      }
+    ],
+    "outside_ticker_first_dedup": [
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 77,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 225.32,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -442.01,
+            "return": -0.044201,
+            "start_close": 235.74
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 222.32,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -569.27,
+            "return": -0.056927,
+            "start_close": 235.74
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -641.81,
+            "return": -0.064181,
+            "start_close": 235.74
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-14"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 298.97,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 37.94,
+            "return": 0.003794,
+            "start_close": 297.84
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 148.07,
+            "return": 0.014807,
+            "start_close": 297.84
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 240.06,
+            "return": 0.024006,
+            "start_close": 297.84
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 860.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -43.98,
+            "return": -0.004398,
+            "start_close": 863.95
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 99.66,
+            "return": 0.009966,
+            "start_close": 863.95
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 23.15,
+            "return": 0.002315,
+            "start_close": 863.95
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-19",
+        "days_since_last_earnings": 61,
+        "last_earnings_date": "2026-03-19",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 731.99,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 475.86,
+            "return": 0.047586,
+            "start_close": 698.74
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 762.1,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 906.78,
+            "return": 0.090678,
+            "start_close": 698.74
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 751.0,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": 747.92,
+            "return": 0.074792,
+            "start_close": 698.74
+          }
+        },
+        "ticker": "MU",
+        "watchlist_effective_trade_date": "2026-05-19"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-04-29",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 331.12,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 11.19,
+            "return": 0.001119,
+            "start_close": 330.75
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          }
+        },
+        "ticker": "V",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 184.71,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": -351.04,
+            "return": -0.035104,
+            "start_close": 191.43
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -471.71,
+            "return": -0.047171,
+            "start_close": 191.43
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.28,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 27.18,
+            "return": 0.002718,
+            "start_close": 103.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 114.56,
+            "return": 0.011456,
+            "start_close": 103.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 20,
+        "last_earnings_date": "2026-05-06",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 495.54,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -165.71,
+            "return": -0.016571,
+            "start_close": 503.89
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "AMD",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 22,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 147.9,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -127.49,
+            "return": -0.012749,
+            "start_close": 149.81
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "XOM",
+        "watchlist_effective_trade_date": "2026-05-26"
+      }
+    ],
+    "outside_ticker_first_dedup_ex_top": [
+      {
+        "as_of_date": "2026-05-14",
+        "days_since_last_earnings": 77,
+        "last_earnings_date": "2026-02-26",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_gt60",
+        "residual_state": "residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 225.32,
+            "future_date": "2026-05-15",
+            "gap_reason": null,
+            "pnl_proxy": -442.01,
+            "return": -0.044201,
+            "start_close": 235.74
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 222.32,
+            "future_date": "2026-05-18",
+            "gap_reason": null,
+            "pnl_proxy": -569.27,
+            "return": -0.056927,
+            "start_close": 235.74
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 220.61,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -641.81,
+            "return": -0.064181,
+            "start_close": 235.74
+          }
+        },
+        "ticker": "NVDA",
+        "watchlist_effective_trade_date": "2026-05-14"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 298.97,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": 37.94,
+            "return": 0.003794,
+            "start_close": 297.84
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 302.25,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 148.07,
+            "return": 0.014807,
+            "start_close": 297.84
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 304.99,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 240.06,
+            "return": 0.024006,
+            "start_close": 297.84
+          }
+        },
+        "ticker": "AAPL",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-18",
+        "days_since_last_earnings": 17,
+        "last_earnings_date": "2026-05-01",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Industrials",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 860.15,
+            "future_date": "2026-05-19",
+            "gap_reason": null,
+            "pnl_proxy": -43.98,
+            "return": -0.004398,
+            "start_close": 863.95
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 872.56,
+            "future_date": "2026-05-20",
+            "gap_reason": null,
+            "pnl_proxy": 99.66,
+            "return": 0.009966,
+            "start_close": 863.95
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 865.95,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 23.15,
+            "return": 0.002315,
+            "start_close": 863.95
+          }
+        },
+        "ticker": "CAT",
+        "watchlist_effective_trade_date": "2026-05-18"
+      },
+      {
+        "as_of_date": "2026-05-20",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-04-29",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 331.12,
+            "future_date": "2026-05-21",
+            "gap_reason": null,
+            "pnl_proxy": 11.19,
+            "return": 0.001119,
+            "start_close": 330.75
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-22",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          },
+          "3d": {
+            "closed": true,
+            "future_close": 328.88,
+            "future_date": "2026-05-25",
+            "gap_reason": null,
+            "pnl_proxy": -56.54,
+            "return": -0.005654,
+            "start_close": 330.75
+          }
+        },
+        "ticker": "V",
+        "watchlist_effective_trade_date": "2026-05-20"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 21,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "neutral",
+        "sector": "Energy",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 184.71,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": -351.04,
+            "return": -0.035104,
+            "start_close": 191.43
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 182.4,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -471.71,
+            "return": -0.047171,
+            "start_close": 191.43
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "CVX",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-25",
+        "days_since_last_earnings": 18,
+        "last_earnings_date": "2026-05-07",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Communication Services",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 103.28,
+            "future_date": "2026-05-26",
+            "gap_reason": null,
+            "pnl_proxy": 27.18,
+            "return": 0.002718,
+            "start_close": 103.0
+          },
+          "2d": {
+            "closed": true,
+            "future_close": 104.18,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": 114.56,
+            "return": 0.011456,
+            "start_close": 103.0
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "DIS",
+        "watchlist_effective_trade_date": "2026-05-25"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 20,
+        "last_earnings_date": "2026-05-06",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "strong_residual_leader",
+        "sector": "Technology",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 495.54,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -165.71,
+            "return": -0.016571,
+            "start_close": 503.89
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "AMD",
+        "watchlist_effective_trade_date": "2026-05-26"
+      },
+      {
+        "as_of_date": "2026-05-26",
+        "days_since_last_earnings": 22,
+        "last_earnings_date": "2026-05-04",
+        "pead_status": "outside_t2_t15_after_earnings",
+        "phase_bucket": "post_earnings_t16_t30",
+        "residual_state": "beta_lagging",
+        "sector": "Unknown",
+        "short_forward_outcomes": {
+          "1d": {
+            "closed": true,
+            "future_close": 147.9,
+            "future_date": "2026-05-27",
+            "gap_reason": null,
+            "pnl_proxy": -127.49,
+            "return": -0.012749,
+            "start_close": 149.81
+          },
+          "2d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_2d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          },
+          "3d": {
+            "closed": false,
+            "future_close": null,
+            "future_date": null,
+            "gap_reason": "missing_3d_forward_price",
+            "pnl_proxy": null,
+            "return": null,
+            "start_close": null
+          }
+        },
+        "ticker": "XOM",
+        "watchlist_effective_trade_date": "2026-05-26"
+      }
+    ]
+  },
+  "scenario_summary": {
+    "inside_non_overextended_reference": {
+      "days_since_last_earnings": {
+        "avg": 11.375,
+        "max": 14.0,
+        "min": 7.0
+      },
+      "max_rows_per_ticker": 3,
+      "phase_counts": {
+        "other_outside": 8
+      },
+      "residual_leader_count": 0,
+      "residual_state_counts": {
+        "beta_lagging": 4,
+        "neutral": 4
+      },
+      "row_count": 8,
+      "sector_counts": {
+        "Communication Services": 3,
+        "Healthcare": 2,
+        "Technology": 3
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": 0.004366375,
+          "closed_count": 8,
+          "missing_count": 0,
+          "positive_pnl_total": 1008.13,
+          "single_ticker_positive_pnl_share": 0.6761429577534643,
+          "tail_loss": -0.025356,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "COHR",
+          "top_positive_ticker_share": 0.6761429577534643,
+          "total_pnl_proxy": 349.30999999999995,
+          "win_rate": 0.375
+        },
+        "2d": {
+          "avg_return": 0.00806225,
+          "closed_count": 8,
+          "missing_count": 0,
+          "positive_pnl_total": 1533.9899999999998,
+          "single_ticker_positive_pnl_share": 0.7960156193977798,
+          "tail_loss": -0.048104,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "COHR",
+          "top_positive_ticker_share": 0.7960156193977798,
+          "total_pnl_proxy": 644.98,
+          "win_rate": 0.5
+        },
+        "3d": {
+          "avg_return": 0.015803624999999995,
+          "closed_count": 8,
+          "missing_count": 0,
+          "positive_pnl_total": 1911.96,
+          "single_ticker_positive_pnl_share": 0.8509696855582752,
+          "tail_loss": -0.037365,
+          "top5_positive_pnl_share": 0.9999999999999999,
+          "top_positive_ticker": "COHR",
+          "top_positive_ticker_share": 0.8509696855582752,
+          "total_pnl_proxy": 1264.29,
+          "win_rate": 0.625
+        }
+      },
+      "ticker_count": 4,
+      "ticker_row_counts": {
+        "APP": 2,
+        "COHR": 3,
+        "DIS": 1,
+        "LLY": 2
+      }
+    },
+    "inside_residual_leader_reference": {
+      "days_since_last_earnings": {
+        "avg": 10.428571428571429,
+        "max": 14.0,
+        "min": 7.0
+      },
+      "max_rows_per_ticker": 2,
+      "phase_counts": {
+        "other_outside": 7
+      },
+      "residual_leader_count": 7,
+      "residual_state_counts": {
+        "residual_leader": 3,
+        "strong_residual_leader": 4
+      },
+      "row_count": 7,
+      "sector_counts": {
+        "Industrials": 2,
+        "Technology": 5
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": -0.025940285714285718,
+          "closed_count": 7,
+          "missing_count": 0,
+          "positive_pnl_total": 40.39,
+          "single_ticker_positive_pnl_share": 1.0,
+          "tail_loss": -0.056927,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "DDOG",
+          "top_positive_ticker_share": 1.0,
+          "total_pnl_proxy": -1815.82,
+          "win_rate": 0.14285714285714285
+        },
+        "2d": {
+          "avg_return": -0.03220971428571429,
+          "closed_count": 7,
+          "missing_count": 0,
+          "positive_pnl_total": 344.74,
+          "single_ticker_positive_pnl_share": 1.0,
+          "tail_loss": -0.075356,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "DDOG",
+          "top_positive_ticker_share": 1.0,
+          "total_pnl_proxy": -2254.68,
+          "win_rate": 0.14285714285714285
+        },
+        "3d": {
+          "avg_return": -0.020332999999999997,
+          "closed_count": 7,
+          "missing_count": 0,
+          "positive_pnl_total": 825.75,
+          "single_ticker_positive_pnl_share": 0.6704692703602785,
+          "tail_loss": -0.079275,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "AMD",
+          "top_positive_ticker_share": 0.6704692703602785,
+          "total_pnl_proxy": -1423.31,
+          "win_rate": 0.42857142857142855
+        }
+      },
+      "ticker_count": 5,
+      "ticker_row_counts": {
+        "AAPL": 1,
+        "AMD": 2,
+        "CAT": 2,
+        "COHR": 1,
+        "DDOG": 1
+      }
+    },
+    "outside_all_rows": {
+      "days_since_last_earnings": {
+        "avg": 37.28,
+        "max": 82.0,
+        "min": -1.0
+      },
+      "max_rows_per_ticker": 5,
+      "phase_counts": {
+        "post_earnings_gt60": 9,
+        "post_earnings_t16_t30": 15,
+        "pre_earnings_or_future_date": 1
+      },
+      "residual_leader_count": 12,
+      "residual_state_counts": {
+        "beta_lagging": 5,
+        "neutral": 8,
+        "residual_leader": 6,
+        "strong_residual_leader": 6
+      },
+      "row_count": 25,
+      "sector_counts": {
+        "Communication Services": 3,
+        "Energy": 3,
+        "Industrials": 3,
+        "Technology": 14,
+        "Unknown": 2
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": 0.014816799999999998,
+          "closed_count": 25,
+          "missing_count": 0,
+          "positive_pnl_total": 5773.539999999999,
+          "single_ticker_positive_pnl_share": 0.8848349539450668,
+          "tail_loss": -0.044201,
+          "top5_positive_pnl_share": 0.8848349539450668,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.8848349539450666,
+          "total_pnl_proxy": 3704.2,
+          "win_rate": 0.56
+        },
+        "2d": {
+          "avg_return": 0.02398745,
+          "closed_count": 20,
+          "missing_count": 5,
+          "positive_pnl_total": 6989.87,
+          "single_ticker_positive_pnl_share": 0.842808235346294,
+          "tail_loss": -0.056927,
+          "top5_positive_pnl_share": 0.8739060955353962,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.842808235346294,
+          "total_pnl_proxy": 4797.49,
+          "win_rate": 0.65
+        },
+        "3d": {
+          "avg_return": 0.004433714285714288,
+          "closed_count": 14,
+          "missing_count": 11,
+          "positive_pnl_total": 2131.1600000000003,
+          "single_ticker_positive_pnl_share": 0.4728035436100526,
+          "tail_loss": -0.064181,
+          "top5_positive_pnl_share": 0.8477214287054935,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.4728035436100527,
+          "total_pnl_proxy": 620.7199999999998,
+          "win_rate": 0.5714285714285714
+        }
+      },
+      "ticker_count": 9,
+      "ticker_row_counts": {
+        "AAPL": 3,
+        "AMD": 1,
+        "CAT": 3,
+        "CVX": 3,
+        "DIS": 3,
+        "MU": 5,
+        "NVDA": 5,
+        "V": 1,
+        "XOM": 1
+      }
+    },
+    "outside_ex_top_positive_ticker": {
+      "days_since_last_earnings": {
+        "avg": 30.35,
+        "max": 82.0,
+        "min": -1.0
+      },
+      "max_rows_per_ticker": 5,
+      "phase_counts": {
+        "post_earnings_gt60": 4,
+        "post_earnings_t16_t30": 15,
+        "pre_earnings_or_future_date": 1
+      },
+      "residual_leader_count": 7,
+      "residual_state_counts": {
+        "beta_lagging": 5,
+        "neutral": 8,
+        "residual_leader": 6,
+        "strong_residual_leader": 1
+      },
+      "row_count": 20,
+      "sector_counts": {
+        "Communication Services": 3,
+        "Energy": 3,
+        "Industrials": 3,
+        "Technology": 9,
+        "Unknown": 2
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": -0.00702215,
+          "closed_count": 20,
+          "missing_count": 0,
+          "positive_pnl_total": 664.9100000000001,
+          "single_ticker_positive_pnl_share": 0.3583943691627438,
+          "tail_loss": -0.044201,
+          "top5_positive_pnl_share": 0.8443548750958775,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.35839436916274386,
+          "total_pnl_proxy": -1404.4300000000003,
+          "win_rate": 0.45
+        },
+        "2d": {
+          "avg_return": -0.0068351875,
+          "closed_count": 16,
+          "missing_count": 4,
+          "positive_pnl_total": 1098.75,
+          "single_ticker_positive_pnl_share": 0.5158589306029578,
+          "tail_loss": -0.056927,
+          "top5_positive_pnl_share": 0.7243868031854379,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.5158589306029578,
+          "total_pnl_proxy": -1093.6299999999999,
+          "win_rate": 0.5625
+        },
+        "3d": {
+          "avg_return": -0.003224166666666667,
+          "closed_count": 12,
+          "missing_count": 8,
+          "positive_pnl_total": 1123.54,
+          "single_ticker_positive_pnl_share": 0.7003666981148868,
+          "tail_loss": -0.064181,
+          "top5_positive_pnl_share": 0.9793954821368177,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.7003666981148868,
+          "total_pnl_proxy": -386.9,
+          "win_rate": 0.5
+        }
+      },
+      "ticker_count": 8,
+      "ticker_row_counts": {
+        "AAPL": 3,
+        "AMD": 1,
+        "CAT": 3,
+        "CVX": 3,
+        "DIS": 3,
+        "NVDA": 5,
+        "V": 1,
+        "XOM": 1
+      }
+    },
+    "outside_ticker_first_dedup": {
+      "days_since_last_earnings": {
+        "avg": 30.444444444444443,
+        "max": 77.0,
+        "min": 17.0
+      },
+      "max_rows_per_ticker": 1,
+      "phase_counts": {
+        "post_earnings_gt60": 2,
+        "post_earnings_t16_t30": 7
+      },
+      "residual_leader_count": 3,
+      "residual_state_counts": {
+        "beta_lagging": 2,
+        "neutral": 4,
+        "residual_leader": 1,
+        "strong_residual_leader": 2
+      },
+      "row_count": 9,
+      "sector_counts": {
+        "Communication Services": 1,
+        "Energy": 1,
+        "Industrials": 1,
+        "Technology": 4,
+        "Unknown": 2
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": -0.006422888888888889,
+          "closed_count": 9,
+          "missing_count": 0,
+          "positive_pnl_total": 552.17,
+          "single_ticker_positive_pnl_share": 0.8617998080301358,
+          "tail_loss": -0.044201,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.8617998080301358,
+          "total_pnl_proxy": -578.0600000000001,
+          "win_rate": 0.4444444444444444
+        },
+        "2d": {
+          "avg_return": 0.0024507142857142852,
+          "closed_count": 7,
+          "missing_count": 2,
+          "positive_pnl_total": 1269.07,
+          "single_ticker_positive_pnl_share": 0.7145232335489768,
+          "tail_loss": -0.056927,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.7145232335489768,
+          "total_pnl_proxy": 171.55000000000007,
+          "win_rate": 0.5714285714285714
+        },
+        "3d": {
+          "avg_return": 0.006255599999999998,
+          "closed_count": 5,
+          "missing_count": 4,
+          "positive_pnl_total": 1011.1299999999999,
+          "single_ticker_positive_pnl_share": 0.7396872805672862,
+          "tail_loss": -0.064181,
+          "top5_positive_pnl_share": 1.0000000000000002,
+          "top_positive_ticker": "MU",
+          "top_positive_ticker_share": 0.7396872805672862,
+          "total_pnl_proxy": 312.78,
+          "win_rate": 0.6
+        }
+      },
+      "ticker_count": 9,
+      "ticker_row_counts": {
+        "AAPL": 1,
+        "AMD": 1,
+        "CAT": 1,
+        "CVX": 1,
+        "DIS": 1,
+        "MU": 1,
+        "NVDA": 1,
+        "V": 1,
+        "XOM": 1
+      }
+    },
+    "outside_ticker_first_dedup_ex_top": {
+      "days_since_last_earnings": {
+        "avg": 26.625,
+        "max": 77.0,
+        "min": 17.0
+      },
+      "max_rows_per_ticker": 1,
+      "phase_counts": {
+        "post_earnings_gt60": 1,
+        "post_earnings_t16_t30": 7
+      },
+      "residual_leader_count": 2,
+      "residual_state_counts": {
+        "beta_lagging": 2,
+        "neutral": 4,
+        "residual_leader": 1,
+        "strong_residual_leader": 1
+      },
+      "row_count": 8,
+      "sector_counts": {
+        "Communication Services": 1,
+        "Energy": 1,
+        "Industrials": 1,
+        "Technology": 3,
+        "Unknown": 2
+      },
+      "short_forward_outcomes": {
+        "1d": {
+          "avg_return": -0.013174,
+          "closed_count": 8,
+          "missing_count": 0,
+          "positive_pnl_total": 76.31,
+          "single_ticker_positive_pnl_share": 0.4971825448827152,
+          "tail_loss": -0.044201,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.4971825448827152,
+          "total_pnl_proxy": -1053.92,
+          "win_rate": 0.375
+        },
+        "2d": {
+          "avg_return": -0.012253833333333334,
+          "closed_count": 6,
+          "missing_count": 2,
+          "positive_pnl_total": 362.28999999999996,
+          "single_ticker_positive_pnl_share": 0.40870573297634494,
+          "tail_loss": -0.056927,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.40870573297634494,
+          "total_pnl_proxy": -735.23,
+          "win_rate": 0.5
+        },
+        "3d": {
+          "avg_return": -0.010878500000000001,
+          "closed_count": 4,
+          "missing_count": 4,
+          "positive_pnl_total": 263.21,
+          "single_ticker_positive_pnl_share": 0.912047414611907,
+          "tail_loss": -0.064181,
+          "top5_positive_pnl_share": 1.0,
+          "top_positive_ticker": "AAPL",
+          "top_positive_ticker_share": 0.912047414611907,
+          "total_pnl_proxy": -435.14,
+          "win_rate": 0.5
+        }
+      },
+      "ticker_count": 8,
+      "ticker_row_counts": {
+        "AAPL": 1,
+        "AMD": 1,
+        "CAT": 1,
+        "CVX": 1,
+        "DIS": 1,
+        "NVDA": 1,
+        "V": 1,
+        "XOM": 1
+      }
+    }
+  },
+  "single_causal_variable": "outside_pead_primary_positive_short_horizon_deconcentration_v1",
+  "status": "observed_only",
+  "ticker_positive_pnl_contribution_by_horizon": {
+    "1d": {
+      "by_ticker": [
+        {
+          "positive_pnl_proxy": 5108.63,
+          "share": 0.8848349539450666,
+          "ticker": "MU"
+        },
+        {
+          "positive_pnl_proxy": 238.3,
+          "share": 0.04127450403045619,
+          "ticker": "AAPL"
+        },
+        {
+          "positive_pnl_proxy": 144.28,
+          "share": 0.02498986756825102,
+          "ticker": "CAT"
+        },
+        {
+          "positive_pnl_proxy": 141.5,
+          "share": 0.024508360555222618,
+          "ticker": "DIS"
+        },
+        {
+          "positive_pnl_proxy": 129.64,
+          "share": 0.02245416157158346,
+          "ticker": "NVDA"
+        },
+        {
+          "positive_pnl_proxy": 11.19,
+          "share": 0.0019381523294200785,
+          "ticker": "V"
+        }
+      ],
+      "positive_pnl_total": 5773.54,
+      "top_ticker": "MU",
+      "top_ticker_positive_pnl_proxy": 5108.63,
+      "top_ticker_positive_share": 0.8848349539450666
+    },
+    "2d": {
+      "by_ticker": [
+        {
+          "positive_pnl_proxy": 5891.12,
+          "share": 0.842808235346294,
+          "ticker": "MU"
+        },
+        {
+          "positive_pnl_proxy": 566.8,
+          "share": 0.08108877561385261,
+          "ticker": "AAPL"
+        },
+        {
+          "positive_pnl_proxy": 251.1,
+          "share": 0.03592341488468312,
+          "ticker": "CAT"
+        },
+        {
+          "positive_pnl_proxy": 229.12,
+          "share": 0.032778864270723206,
+          "ticker": "DIS"
+        },
+        {
+          "positive_pnl_proxy": 51.73,
+          "share": 0.0074007098844470634,
+          "ticker": "NVDA"
+        }
+      ],
+      "positive_pnl_total": 6989.87,
+      "top_ticker": "MU",
+      "top_ticker_positive_pnl_proxy": 5891.12,
+      "top_ticker_positive_share": 0.842808235346294
+    },
+    "3d": {
+      "by_ticker": [
+        {
+          "positive_pnl_proxy": 1007.6199999999999,
+          "share": 0.4728035436100527,
+          "ticker": "MU"
+        },
+        {
+          "positive_pnl_proxy": 786.8899999999999,
+          "share": 0.36923084141969625,
+          "ticker": "AAPL"
+        },
+        {
+          "positive_pnl_proxy": 336.65,
+          "share": 0.15796561497025094,
+          "ticker": "CAT"
+        }
+      ],
+      "positive_pnl_total": 2131.16,
+      "top_ticker": "MU",
+      "top_ticker_positive_pnl_proxy": 1007.6199999999999,
+      "top_ticker_positive_share": 0.4728035436100527
+    }
+  },
+  "timestamp": "2026-05-28T17:44:33Z",
+  "top_positive_contributor": {
+    "by_ticker": [
+      {
+        "positive_pnl_proxy": 10999.750000000002,
+        "share": 0.8618190593266218,
+        "ticker": "MU"
+      },
+      {
+        "positive_pnl_proxy": 805.0999999999999,
+        "share": 0.06307875403203374,
+        "ticker": "AAPL"
+      },
+      {
+        "positive_pnl_proxy": 395.38,
+        "share": 0.03097761491638989,
+        "ticker": "CAT"
+      },
+      {
+        "positive_pnl_proxy": 370.62,
+        "share": 0.029037694471931868,
+        "ticker": "DIS"
+      },
+      {
+        "positive_pnl_proxy": 181.36999999999998,
+        "share": 0.014210152302558636,
+        "ticker": "NVDA"
+      },
+      {
+        "positive_pnl_proxy": 11.19,
+        "share": 0.0008767249504638648,
+        "ticker": "V"
+      }
+    ],
+    "horizons": [
+      "1d",
+      "2d"
+    ],
+    "positive_pnl_total": 12763.410000000003,
+    "top_ticker": "MU",
+    "top_ticker_positive_pnl_proxy": 10999.750000000002,
+    "top_ticker_positive_share": 0.8618190593266218
+  },
+  "trial_family": "expectation_outside_pead_deconcentration_attribution",
+  "trial_variant_id": "outside_pead_primary_positive_short_horizon_deconcentration_v1"
+}

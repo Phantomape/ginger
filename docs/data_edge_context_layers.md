@@ -459,6 +459,49 @@ not become an exit, stop, gate, scalar, live order input, or prompt instruction
 without an ex-ante trigger and separate Gate 1-4 production/backtest parity
 experiment.
 
+### `quant/experiments/exp_20260528_031_kova_day3_low_mfe_failed_breakout_exit_shadow_replay.py`
+
+Purpose: read-only shadow replay for the Kova sell-side lifecycle direction
+nominated by `exp-20260528-014`. It tests whether an ex-ante day-3 low-MFE
+failed-breakout trigger can improve the accepted VCP top-2 paper trade exits
+without using final 10-day outcomes to decide the exit.
+
+Output:
+
+```text
+data/experiments/exp-20260528-031/kova_day3_low_mfe_failed_breakout_exit_shadow_replay.json
+experiments/artifacts/exp-20260528-031_kova_day3_low_mfe_failed_breakout_exit_shadow_replay.md
+experiments/logs/exp-20260528-031.json
+```
+
+Agent rule: this experiment may only report shadow replay evidence. It must
+not change live exits, VCP entries, candidate ranking, sizing, paper notional,
+LLM prompts, paper sleeves, or orders. Any promotion requires a separate shared
+lifecycle policy with production/backtest parity.
+
+### `quant/experiments/exp_20260529_006_kova_shakeout_reclaim_lifecycle_attribution.py`
+
+Purpose: read-only attribution for the Kova shakeout/reclaim re-entry
+direction. It buckets accepted VCP top-2 paper trades by whether the first
+five trading days after entry include a `-4%` intraday shakeout followed by a
+close back above the entry/pivot reclaim level with close location at least
+`0.55`.
+
+Output:
+
+```text
+data/experiments/exp-20260529-006/kova_shakeout_reclaim_lifecycle_attribution.json
+experiments/artifacts/exp-20260529-006_kova_shakeout_reclaim_lifecycle_attribution.md
+experiments/logs/exp-20260529-006.json
+```
+
+Agent rule: this is a clue, not a policy. `exp-20260529-006` found the
+shakeout/reclaim bucket was positive but too thin (`7` trades versus a
+pre-set `10`-trade minimum). It must not change exits, re-entry, ranking,
+sizing, live orders, or VCP paper-sleeve allocation unless a later forward or
+full lifecycle replay clears slot, heat, replacement-value, concentration, and
+production/backtest parity gates.
+
 ### `quant/kova_data_sidecar.py`
 
 Purpose: collect default-off Kova support data without changing entries,
@@ -870,6 +913,27 @@ Agent rule: this experiment may only decide whether the repaired PEAD bucket
 has near-term attribution value before longer 5d/10d outcomes mature. It must
 not change entries, exits, candidate ranking, sizing, LLM prompts, paper
 sleeves, or orders.
+
+### `quant/experiments/exp_20260528_029_expectation_outside_pead_deconcentration_attribution.py`
+
+Purpose: read-only follow-up to `exp-20260528-013` for the outside-PEAD
+short-horizon question. It reuses the corrected weekday close outcome builder,
+then tests whether the primary-positive outside-T+2..T+15 bucket remains
+positive after removing the largest positive ticker contributor and after
+first-row-per-ticker de-duplication.
+
+Output:
+
+```text
+data/experiments/exp-20260528-029/expectation_outside_pead_deconcentration_attribution.json
+experiments/artifacts/exp-20260528-029_expectation_outside_pead_deconcentration_attribution.md
+experiments/logs/exp-20260528-029.json
+```
+
+Agent rule: this experiment may only audit concentration and replacement-value
+readiness for the outside-PEAD short-horizon bucket. It must not change
+entries, exits, candidate ranking, sizing, LLM prompts, paper sleeves, or
+orders.
 
 ---
 

@@ -50,12 +50,22 @@ Recent repository evidence supports this priority:
   replacement-value rows first.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
-  is forward maturation, not another breadth/QQQ/top-N sweep.
+  is forward maturation, not another breadth/QQQ/top-N sweep. The latest
+  accepted VBB increment is cost/liquidity support
+  (`dollar_volume >= $200m` and signal-day range/close `<= 0.10`, `1.05x`);
+  this reinforces that cheap execution state belongs in the field layer before
+  allocation, not as an after-the-fact PnL adjustment.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper candidates
   from old-window losers. Treat it as a forward evidence bucket, not permission
   to retune high-close thresholds or enable live Space slots.
+- The 2026-05-28/29 candidate-pool scouts rejected VWAP reclaim, long-base
+  breadth, industry-leadership high-close/no-core-overlap, sector/market
+  breadth agreement, ticker accumulation-quality breakout, Form 4 role quality,
+  and AI optical low-close support. The durable lesson is that "reasonable"
+  OHLCV pattern names are not enough; new pools need either a clearly new
+  production-visible information source or immediate replacement-value evidence.
 - Kova/CANSLIM-style intraday, base, pocket-pivot, distribution-day, 13F, and
   RS fields are useful context sidecars, but recent tests repeatedly failed to
   justify new gates, exits, pyramids, or notional scalars on the frozen sample.
@@ -215,6 +225,16 @@ Next valid fields:
   restatement/disclosure-quality context;
 - cost-adjusted liquidity state.
 
+Frozen without new evidence:
+
+- low-capex intensity, dual growth, gross-margin expansion, operating-margin
+  durability, working-capital discipline, liquidity sweet spot, and recent VBB
+  source-agreement notional support on the current frozen Companyfacts sample;
+- any new Companyfacts scalar whose best case still depends on the already
+  accepted operating-profit + RS stack rather than a new candidate source;
+- score-tercile/rank monotonicity changes until forward rows show stable
+  replacement value, not just partial in-sample ordering.
+
 ### 3. Volume-Breadth And VCP Sleeves
 
 Mechanism: market participation confirmation is more valuable than retuning
@@ -224,8 +244,10 @@ stay as default-off paper adapters until closed forward rows mature.
 Keep fixed:
 
 - volume-breadth top-1/day, fixed `$10k` base notional, accepted
-  breadth-intensity support (`volume_breadth_fraction >= 0.25`, `1.10x`), and
-  10-day paper hold;
+  breadth-intensity support (`volume_breadth_fraction >= 0.25`, `1.10x`),
+  signal-day high-close support (`signal_day_close_location_value >= 0.70`,
+  `1.10x`), cost/liquidity support (`dollar_volume >= $200m` and
+  signal-day range/close `<= 0.10`, `1.05x`), and 10-day paper hold;
 - VCP QQQ-confirmed top-2 route and `[1.0, 1.25]` rank-notional profile.
 
 Next valid work:
@@ -239,6 +261,8 @@ Frozen without new evidence:
 
 - volume-breadth breadth-intensity threshold/scalar retunes on the frozen
   sample;
+- volume-breadth high-close and cost/liquidity threshold/scalar retunes on the
+  frozen sample;
 - QQQ/SPY threshold sweeps;
 - pocket-pivot allocation gates;
 - base-geometry / higher-low gates;
@@ -297,6 +321,32 @@ Do not:
   the top ticker or de-duplicating by ticker;
 - add PEAD live ranking until production-visible fields and forward outcomes
   exist.
+
+### 4b. Pattern-Name Candidate Pools
+
+Mechanism: the last batch of OHLCV pattern-name pools did not survive Gate 4.
+VWAP reclaim, long-base breadth confirmation, industry leadership, sector
+breadth agreement, and ticker accumulation-quality breakout are plausible
+descriptions, but the frozen evidence says they are not sufficient candidate
+sources by themselves.
+
+Valid retry requires one of:
+
+- a new PIT data source, such as peer earnings transfer, option-implied event
+  state, broker/estimate dispersion, or audited intraday liquidity state;
+- a replacement-value test against the exact same-day core/paper candidate that
+  would be displaced;
+- a pre-registered forward cohort with concentration and cost-adjusted outcome
+  gates.
+
+Do not:
+
+- rename another OHLCV breakout/pullback shape and test it as a new pool on the
+  same windows;
+- use high-close or VWAP reclaim as a broad candidate-pool source without a
+  separate information-transfer or liquidity mechanism;
+- promote Form 4 role quality or AI optical low-close support from the current
+  thin samples.
 
 ### 5. State-Surface
 
@@ -362,6 +412,12 @@ non-vector retrieval, reranking, and executable arithmetic as the practical
 path for SEC/earnings fields. For Ginger, the priority is not larger context
 windows; it is traceable retrieval.
 
+The newest benchmark papers strengthen the same rule: LLMs degrade sharply
+when tasks require cross-document, cross-entity, or longitudinal SEC reasoning,
+and long financial reports create both retrieval-location and arithmetic-error
+failure modes. Therefore financial RAG should produce audited fields and
+failure buckets, not direct trade instructions.
+
 Useful fields:
 
 - `retrieval_strategy_bucket`
@@ -372,6 +428,10 @@ Useful fields:
 - `retrieval_failure_bucket`
 - `cross_period_consistency_bucket`
 - `numeric_evidence_json`
+- `cross_entity_comparison_failure_bucket`
+- `longitudinal_tracking_failure_bucket`
+- `calculation_verification_status`
+- `evidence_table_span_ids`
 
 Engineering rule: no retrieval trace means no Gate 4 trading field.
 
@@ -380,6 +440,39 @@ Sources:
 - FinAgent-RAG, 2026-05-06: <https://arxiv.org/abs/2605.05409>
 - Rethinking Retrieval in financial LLM systems, 2025: <https://arxiv.org/abs/2511.18177>
 - Financial-report RAG with reranking, 2026: <https://arxiv.org/abs/2603.16877>
+- Document-level numerical reasoning across financial-report tables, 2026:
+  <https://arxiv.org/abs/2604.03664>
+- Fin-RATE SEC filing benchmark, 2026:
+  <https://arxiv.org/abs/2602.07294>
+
+### Agentic Trading Evaluation
+
+Recent agentic-trading surveys are useful mainly as a warning. The live
+research frontier is moving toward LLM agents that retrieve, reason, emit
+actions, and adapt, but reproducibility is still weak: transaction costs,
+survivorship, split timing, universe handling, and execution semantics are
+often missing or incomparable. Ginger should borrow the audit checklist, not
+delegate trading authority to agents.
+
+Useful fields:
+
+- `agent_decision_stage`
+- `agent_evidence_ledger_id`
+- `agent_action_schema_version`
+- `agent_replay_split_id`
+- `agent_transaction_cost_model_id`
+- `agent_universe_pit_policy_id`
+- `agent_execution_semantics_bucket`
+- `agent_reproducibility_tier`
+
+Engineering rule: an LLM agent can propose hypotheses or classify evidence,
+but a trade-impacting action must still become a shared, replayable policy and
+pass Gate 1-4.
+
+Source:
+
+- Agentic Trading: When LLM Agents Meet Financial Markets, 2026:
+  <https://arxiv.org/abs/2605.19337>
 
 ### Event Graphs And Multi-Modal Market Context
 
@@ -387,6 +480,11 @@ New financial forecasting research increasingly treats news, fundamentals,
 prices, and relational spillovers as graphs or multi-modal state. For Ginger,
 this supports event-interaction and theme-propagation fields, not free-form LLM
 trade calls.
+
+Recent peer-information and graph-learning work points to two practical
+directions: characteristic-similarity peer groups and early-peer earnings
+transfer. These are more actionable than another price-pattern pool because
+they create a testable "who should react to whom" relation before the trade.
 
 Useful fields:
 
@@ -396,6 +494,11 @@ Useful fields:
 - `ticker_to_theme_propagation_bucket`
 - `first_reaction_vs_followon_event_bucket`
 - `media_spillover_relation_bucket`
+- `characteristic_similarity_peer_bucket`
+- `early_peer_earnings_reaction_bucket`
+- `peer_event_age_trading_days`
+- `peer_transfer_strength_score`
+- `peer_relation_source_bucket`
 
 Sources:
 
@@ -403,11 +506,18 @@ Sources:
   <https://www.sciencedirect.com/science/article/pii/S0957417426010559>
 - NEXUS financial news interactions, 2026:
   <https://www.sciencedirect.com/science/article/pii/S0957417426013242>
+- Graph learning on financial networks from firm-characteristic similarity,
+  2026: <https://link.springer.com/article/10.1007/s41109-025-00755-2>
+- Algorithmic trading and intra-industry information transfer, 2026:
+  <https://link.springer.com/article/10.1007/s11142-026-09954-3>
 
 ### Transaction-Cost-Aware Allocation
 
 Transaction costs should be visible before allocation, not only subtracted after
 the backtest. This is especially important for high-turnover paper sleeves.
+The accepted VBB cost/liquidity support is the local proof point: a simple
+production-visible liquidity/range state can be a cleaner allocation field than
+another alpha-shape threshold.
 
 Useful fields:
 
@@ -417,6 +527,9 @@ Useful fields:
 - `cost_adjusted_replacement_value_pnl`
 - `cost_adjusted_rank_delta`
 - `fill_delay_risk_bucket`
+- `no_trade_zone_bucket`
+- `liquidity_range_efficiency_bucket`
+- `paper_to_live_cost_decay_bucket`
 
 Sources:
 
@@ -424,6 +537,9 @@ Sources:
   <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3043216>
 - Portfolio optimization with linear/fixed transaction costs, Boyd:
   <https://web.stanford.edu/~boyd/papers/portfolio.html>
+- Behaviorally informed DRL for portfolio optimization with regime-aware
+  allocation thresholds, 2026:
+  <https://www.nature.com/articles/s41598-026-35902-x>
 
 ### Changepoints And Regime Validation
 
@@ -453,6 +569,11 @@ production-visible field:
 - nearby risk scalar / top-up sweeps;
 - state-surface rank/profile/notional retunes below the hard EV threshold;
 - QQQ/VCP/Kova threshold retunes;
+- VWAP-reclaim, long-base, industry-leadership, sector-breadth-agreement, or
+  accumulation-quality candidate-pool retries on the same OHLCV-only frozen
+  sample;
+- Companyfacts support-scalar mining around the accepted operating-profit + RS
+  stack;
 - simple target, stop, or fixed max-loss exit changes;
 - ticker-specific exceptions from one or two trades;
 - missing-archive or missing-text availability as an alpha field;

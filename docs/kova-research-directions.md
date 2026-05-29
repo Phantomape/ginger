@@ -53,6 +53,8 @@ Do not re-propose these as fresh Kova ideas on the same frozen VCP sample:
 | High-volume weak-close support-break exit | `exp-20260528-002` | Rejected: only 3/117 triggers, aggregate PnL `-$970.54`, EV proxy `-0.005483`, late_strong regressed. |
 | Distribution-day / confirmed-uptrend context | `exp-20260528-010` | Observed-only attribution: coverage was `117/117`; high distribution pressure underperformed the rest on average but still had positive PnL (`+$5,363.45`), so it is context, not a VCP gate. |
 | Sell-side lifecycle taxonomy | `exp-20260528-014` | Observed-only taxonomy: coverage was `117/117`; `failed_breakout_low_mfe` was the only populated negative bucket (`14` trades, `-$3,935.60`) and can only nominate a later shared lifecycle replay, not a direct exit rule. |
+| Day-3 low-MFE failed-breakout exit | `exp-20260528-031` | Rejected: the ex-ante day-3 proxy triggered 11 trades but cut aggregate PnL by `-$7,010.02`, regressed late_strong and mid_weak, and mostly missed the taxonomy target (`27.27%` failed-low-MFE label share). |
+| Shakeout/reclaim lifecycle bucket | `exp-20260529-006` | Observed-only, not promotable: early shakeout/reclaim was positive (`7` trades, `+$4,039.29`, avg `+$577.04`) and beat shakeout/no-reclaim (`20` trades, `-$2,148.34`, avg `-$107.42`), but failed the pre-set sample gate (`7 < 10`). Treat as a forward monitoring clue, not an exit or re-entry rule. |
 
 ## Still Valid, But Gated
 
@@ -65,8 +67,8 @@ These remain legitimate Kova directions only if their blockers are addressed.
 | Institutional sponsorship / 13F accumulation | Kova emphasizes fund accumulation. | PIT ticker-mapped 13F ownership coverage; `exp-20260527-906` found current rows insufficient. |
 | Full CAN SLIM fundamentals | The PDF uses EPS acceleration, annual growth, sales growth, and supply. | Audited PIT fields beyond partial Companyfacts + RS proxy; no threshold retune on incomplete fields. |
 | Forward distribution-day / confirmed-uptrend monitoring | This is Kova's market regime layer, distinct from QQQ > SPY, but frozen-sample attribution did not justify a gate. | Only forward replacement-value rows by bucket; do not turn distribution-day counts into a VCP gate, scalar, or exit without a separate Gate 1-4 experiment. |
-| Full sell-side lifecycle replay | Kova's exits are a system, not one stop threshold. `exp-20260528-014` found a populated negative `failed_breakout_low_mfe` taxonomy bucket. | A separate shared lifecycle replay for the low-MFE failed-breakout family, with replacement value, drawdown, survival, and production/backtest parity. Do not promote from taxonomy alone. |
-| Shakeout and re-entry after reclaiming pivot | Kova allows re-entry after false breakouts. | Full lifecycle/re-entry replay with slot, heat, and replacement-value accounting. |
+| Full sell-side lifecycle replay | Kova's exits are a system, not one stop threshold. `exp-20260528-014` found a populated negative `failed_breakout_low_mfe` taxonomy bucket, but `exp-20260528-031` rejected the simple day-3 low-MFE proxy. | Only revisit with a materially richer ex-ante lifecycle state that distinguishes delayed winners from real failed breakouts, plus replacement value, drawdown, survival, and production/backtest parity. Do not promote from taxonomy alone. |
+| Shakeout and re-entry after reclaiming pivot | Kova allows re-entry after false breakouts; `exp-20260529-006` found a positive but thin reclaim bucket. | Full lifecycle/re-entry replay with slot, heat, and replacement-value accounting plus forward rows. Do not promote from the `7`-trade historical bucket. |
 | Streak-based de-risking | Kova halves exposure after repeated stops and pauses after more. | Closed-trade ledger and portfolio-state replay; not a per-trade filter. |
 | Trading journal fields | Kova requires setup, market, stop, add plan, and post-review notes. | Measurement repair only; useful if it improves attribution and prevents repeated failed experiments. |
 
@@ -76,9 +78,10 @@ Prefer one of these before any more frozen-sample Kova threshold scans:
 
 1. Build a VCP forward replacement-value report for the accepted top-2 paper
    sleeve.
-2. Convert the `failed_breakout_low_mfe` taxonomy candidate from
-   `exp-20260528-014` into a separate shared lifecycle replay only if it can
-   define an ex-ante production-visible trigger without future MFE leakage.
+2. Revisit sell-side lifecycle only with a materially richer ex-ante state:
+   the simple day-3 low-MFE proxy from `exp-20260528-031` is rejected, and
+   the shakeout/reclaim clue from `exp-20260529-006` is positive but too thin
+   to promote.
 3. Improve PIT coverage for intraday or 13F, then rerun readiness before any
    alpha test.
 4. Extend distribution-day / confirmed-uptrend context only through forward
