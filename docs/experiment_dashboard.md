@@ -47,14 +47,15 @@ Preferred command:
 ```
 
 The command writes a proposed ticket under `experiments/tickets/` and updates
-`docs/experiment_registry.json` under the registry lock. The returned
-`experiment_id` is the only ID to use in runner filenames, data directories,
-artifact names, and log rows.
+`docs/experiment_registry.json` under the registry lock. It also writes an
+Experiment Card under `experiments/cards/` and a Revision Manifest under
+`experiments/manifests/`. The returned `experiment_id` is the only ID to use in
+runner filenames, data directories, artifact names, and log rows.
 
 To reserve a specific ID, pass `--experiment-id exp-YYYYMMDD-NNN`. The command
 fails if that ID already appears anywhere the allocator scans: registry,
-JSONL, tickets, per-experiment logs, data experiment directories, artifacts,
-or experiment runner filenames. This mirrors the useful part of
+JSONL, tickets, per-experiment logs, cards, manifests, data experiment
+directories, artifacts, or experiment runner filenames. This mirrors the useful part of
 Hugging Face Hub's `create_repo(..., exist_ok=False)` behavior: names are
 claimed centrally before content is pushed.
 

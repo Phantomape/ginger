@@ -21,6 +21,8 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     (root / "experiments" / "tickets").mkdir(parents=True)
     (root / "docs" / "experiments" / "tickets").mkdir(parents=True)
     (root / "experiments" / "logs").mkdir(parents=True)
+    (root / "experiments" / "cards").mkdir(parents=True)
+    (root / "experiments" / "manifests").mkdir(parents=True)
     (root / "data" / "experiments" / "exp-20990102-002").mkdir(parents=True)
     (root / "data" / "paper_sleeves" / "state_surface").mkdir(parents=True)
 
@@ -75,6 +77,17 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
         }),
         encoding="utf-8",
     )
+    (root / "experiments" / "cards" / "exp-20990102-001.md").write_text(
+        "---\nexperiment_id: exp-20990102-001\n---\n# Experiment Card\n",
+        encoding="utf-8",
+    )
+    (root / "experiments" / "manifests" / "exp-20990102-001.json").write_text(
+        json.dumps({
+            "experiment_id": "exp-20990102-001",
+            "manifest_type": "ginger_experiment_revision_manifest",
+        }),
+        encoding="utf-8",
+    )
     (root / "docs" / "experiment_log.jsonl").write_text(
         json.dumps({
             "experiment_id": "exp-20990102-002",
@@ -118,7 +131,14 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     assert index["next_experiment_id"] == "exp-20990102-004"
     assert "split_brain_ticket_paths" not in by_id["exp-20990102-001"]["anomalies"]
     assert "docs_ticket" not in by_id["exp-20990102-001"]["sources"]
+    assert "card" in by_id["exp-20990102-001"]["sources"]
+    assert "manifest" in by_id["exp-20990102-001"]["sources"]
     assert "experiments/tickets/exp-20990102-001.json" in by_id["exp-20990102-001"]["files"]
+    assert "experiments/cards/exp-20990102-001.md" in by_id["exp-20990102-001"]["files"]
+    assert (
+        "experiments/manifests/exp-20990102-001.json"
+        in by_id["exp-20990102-001"]["files"]
+    )
     assert "docs/experiments/tickets/exp-20990102-001.json" not in by_id[
         "exp-20990102-001"
     ]["files"]

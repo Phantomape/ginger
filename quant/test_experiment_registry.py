@@ -70,8 +70,24 @@ def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
     assert first["hub_identity"]["repo_id"] == (
         f"ginger/experiments/{first['experiment_id']}"
     )
+    assert first["card_file"].endswith(f"cards/{first['experiment_id']}.md")
+    assert first["revision_manifest_file"].endswith(
+        f"manifests/{first['experiment_id']}.json"
+    )
     assert first["status"] == "proposed"
     assert first["baseline_result_file"] == "data/backtests/backtest_results_20260425.json"
+    card_path = tmp_path / "cards" / f"{first['experiment_id']}.md"
+    manifest_path = tmp_path / "manifests" / f"{first['experiment_id']}.json"
+    assert card_path.exists()
+    assert manifest_path.exists()
+    assert f"# Experiment Card: {first['experiment_id']}" in card_path.read_text(
+        encoding="utf-8"
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["manifest_type"] == "ginger_experiment_revision_manifest"
+    assert manifest["experiment_id"] == first["experiment_id"]
+    assert manifest["files"]["ticket"]["sha256"]
+    assert manifest["files"]["card"]["sha256"]
 
     path = tmp_path / "registry.json"
     save_registry(registry, path)
@@ -133,6 +149,16 @@ def test_next_experiment_id_scans_all_identity_sources(tmp_path):
         json.dumps({"experiment_id": "exp-20990101-012"}),
         encoding="utf-8",
     )
+    (root / "experiments" / "cards").mkdir(parents=True)
+    (root / "experiments" / "cards" / "exp-20990101-014.md").write_text(
+        "---\nexperiment_id: exp-20990101-014\n---\n",
+        encoding="utf-8",
+    )
+    (root / "experiments" / "manifests").mkdir(parents=True)
+    (root / "experiments" / "manifests" / "exp-20990101-015.json").write_text(
+        json.dumps({"experiment_id": "exp-20990101-015"}),
+        encoding="utf-8",
+    )
     (root / "quant" / "experiments" / "exp_20990101_013_runner.py").write_text(
         "EXPERIMENT_ID = 'exp-20990101-013'\n",
         encoding="utf-8",
@@ -150,7 +176,9 @@ def test_next_experiment_id_scans_all_identity_sources(tmp_path):
     assert "exp-20990101-009" in sources
     assert "exp-20990101-011" in sources
     assert "exp-20990101-013" in sources
-    assert next_experiment_id(registry, today="20990101", root=root) == "exp-20990101-014"
+    assert "exp-20990101-014" in sources
+    assert "exp-20990101-015" in sources
+    assert next_experiment_id(registry, today="20990101", root=root) == "exp-20990101-016"
 
 
 def test_create_ticket_rejects_explicit_id_already_seen_on_filesystem(tmp_path):
@@ -204,6 +232,8 @@ def test_create_ticket_reserves_explicit_unused_id_and_normalizes_format(tmp_pat
     assert ticket["experiment_id"] == "exp-20990101-004"
     assert ticket["hub_identity"]["repo_id"] == "ginger/experiments/exp-20990101-004"
     assert (root / "experiments" / "tickets" / "exp-20990101-004.json").exists()
+    assert (root / "experiments" / "cards" / "exp-20990101-004.md").exists()
+    assert (root / "experiments" / "manifests" / "exp-20990101-004.json").exists()
 
 
 def test_require_available_experiment_id_reports_invalid_format():

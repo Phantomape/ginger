@@ -4,6 +4,10 @@ This file defines the minimum contract for multi-agent experiments. The goal is
 to let agents explore in parallel while preserving one baseline, one judge, and
 one causal variable per experiment.
 
+Operational sequence:
+
+- `docs/agent_experiment_protocol.md`
+
 Primary index:
 
 - `docs/experiment_registry.json`
@@ -57,6 +61,8 @@ large shared JSON document.
   "allowed_write_scope": [
     "quant/experiments/exp_20260425_001_breakout_follow_through_taxonomy.py",
     "data/experiments/exp-20260425-001/exp_20260425_001_breakout_follow_through_taxonomy.json",
+    "experiments/cards/exp-20260425-001.md",
+    "experiments/manifests/exp-20260425-001.json",
     "experiments/tickets/exp-20260425-001.json",
     "experiments/logs/exp-20260425-001.json",
     "docs/experiment_log.jsonl",
@@ -98,9 +104,16 @@ large shared JSON document.
   "created_at": "2026-04-25T00:00:00-07:00",
   "claimed_at": null,
   "completed_at": null,
+  "card_file": "experiments/cards/exp-20260425-001.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260425-001.json",
   "result": null
 }
 ```
+
+Reservation tooling writes `card_file` and `revision_manifest_file`
+automatically. The experiment card is the human-readable summary; the revision
+manifest records git revision, dirty status, and file hashes available at
+reservation time.
 
 Trial accounting fields are required for `alpha_discovery`, `universe_scout`,
 and `alpha_search` style tickets. They let `quant/meta_research_engine.py`

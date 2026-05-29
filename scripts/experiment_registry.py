@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import json
 import re
+import subprocess
 import sys
 import time
 import uuid
@@ -31,6 +33,8 @@ DEFAULT_LOG = REPO_ROOT / "docs" / "experiment_log.jsonl"
 DEFAULT_EXPERIMENTS_DIR = REPO_ROOT / "experiments"
 DEFAULT_TICKETS_DIR = DEFAULT_EXPERIMENTS_DIR / "tickets"
 DEFAULT_EXPERIMENT_LOGS_DIR = DEFAULT_EXPERIMENTS_DIR / "logs"
+DEFAULT_CARDS_DIR = DEFAULT_EXPERIMENTS_DIR / "cards"
+DEFAULT_MANIFESTS_DIR = DEFAULT_EXPERIMENTS_DIR / "manifests"
 DEFAULT_LOCK_TIMEOUT_SECONDS = 30
 STALE_LOCK_SECONDS = 300
 EXPERIMENT_ID_RE = re.compile(
@@ -115,6 +119,14 @@ def experiment_log_path(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
     return Path(logs_dir) / f"{experiment_id}.json"
 
 
+def experiment_card_path(experiment_id, cards_dir=DEFAULT_CARDS_DIR):
+    return Path(cards_dir) / f"{experiment_id}.md"
+
+
+def revision_manifest_path(experiment_id, manifests_dir=DEFAULT_MANIFESTS_DIR):
+    return Path(manifests_dir) / f"{experiment_id}.json"
+
+
 def save_ticket(ticket, tickets_dir=DEFAULT_TICKETS_DIR, *, overwrite=True):
     path = ticket_path(ticket["experiment_id"], tickets_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -131,6 +143,22 @@ def _registry_tickets_dir(registry):
 
 def _registry_logs_dir(registry):
     return Path(registry.get("_logs_dir", DEFAULT_EXPERIMENT_LOGS_DIR))
+
+
+def _registry_cards_dir(registry):
+    if registry.get("_cards_dir"):
+        return Path(registry["_cards_dir"])
+    if registry.get("_tickets_dir"):
+        return Path(registry["_tickets_dir"]).parent / "cards"
+    return DEFAULT_CARDS_DIR
+
+
+def _registry_manifests_dir(registry):
+    if registry.get("_manifests_dir"):
+        return Path(registry["_manifests_dir"])
+    if registry.get("_tickets_dir"):
+        return Path(registry["_tickets_dir"]).parent / "manifests"
+    return DEFAULT_MANIFESTS_DIR
 
 
 def _registry_repo_root(registry):
@@ -154,6 +182,8 @@ def _ticket_index_entry(ticket, tickets_dir=DEFAULT_TICKETS_DIR):
         "owner": ticket.get("owner"),
         "hypothesis": ticket.get("hypothesis"),
         "ticket_file": _repo_relative(ticket_path(ticket["experiment_id"], tickets_dir)),
+        "card_file": ticket.get("card_file"),
+        "revision_manifest_file": ticket.get("revision_manifest_file"),
         "updated_at": utc_now_iso(),
     }
 
@@ -261,6 +291,8 @@ def locked_registry_update(path, mutator, *, timeout_seconds=DEFAULT_LOCK_TIMEOU
         registry["_repo_root"] = str(workspace_root)
         registry["_tickets_dir"] = str(workspace_root / "experiments" / "tickets")
         registry["_logs_dir"] = str(workspace_root / "experiments" / "logs")
+        registry["_cards_dir"] = str(workspace_root / "experiments" / "cards")
+        registry["_manifests_dir"] = str(workspace_root / "experiments" / "manifests")
         result = mutator(registry)
         save_registry(registry, path)
         return result
@@ -298,7 +330,14 @@ def _scan_json_id_file(path, sources, source_prefix, *, root):
             data.get("experiment_id"),
             f"{source_prefix}:json:{_repo_relative(path)}",
         )
-        for key in ("artifact", "json", "ticket_file", "log_file"):
+        for key in (
+            "artifact",
+            "json",
+            "ticket_file",
+            "log_file",
+            "card_file",
+            "revision_manifest_file",
+        ):
             value = data.get(key)
             if value:
                 _remember_id_source(
@@ -327,7 +366,7 @@ def collect_experiment_id_sources(registry=None, *, root=None):
 
     for exp in registry.get("experiments", []):
         _remember_id_source(sources, exp.get("experiment_id"), "registry")
-        for key in ("ticket_file", "log_file"):
+        for key in ("ticket_file", "log_file", "card_file", "revision_manifest_file"):
             if exp.get(key):
                 _remember_id_source(sources, exp[key], f"registry:{key}")
         result = exp.get("result")
@@ -372,6 +411,7 @@ def collect_experiment_id_sources(registry=None, *, root=None):
         (root / "docs" / "experiments" / "tickets", "docs_ticket"),
         (root / "experiments" / "logs", "log"),
         (root / "docs" / "experiments" / "logs", "docs_log"),
+        (root / "experiments" / "manifests", "manifest"),
     ]
     for directory, source_prefix in json_dirs:
         if not directory.exists():
@@ -391,7 +431,26 @@ def collect_experiment_id_sources(registry=None, *, root=None):
                 sources,
                 path.name,
                 f"{source_prefix}:path:{_repo_relative(path)}",
+                )
+
+    cards_dir = root / "experiments" / "cards"
+    if cards_dir.exists():
+        for path in cards_dir.glob("*.md"):
+            _remember_id_source(
+                sources,
+                path.name,
+                f"card:filename:{_repo_relative(path)}",
             )
+            try:
+                text = path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for match in EXPERIMENT_ID_RE.finditer(text):
+                _remember_id_source(
+                    sources,
+                    match.group(0),
+                    f"card:text:{_repo_relative(path)}",
+                )
 
     quant_experiments = root / "quant" / "experiments"
     if quant_experiments.exists():
@@ -531,6 +590,241 @@ def default_file_stem(experiment_id, single_causal_variable, file_slug=None):
     return f"{experiment_file_prefix(experiment_id)}_{slugify_file_part(slug_source)}"
 
 
+def _yaml_scalar(value):
+    if value is None:
+        return "null"
+    if isinstance(value, (bool, int, float)):
+        return json.dumps(value)
+    return json.dumps(str(value), ensure_ascii=False)
+
+
+def _metadata_tags(ticket):
+    raw = [
+        ticket.get("lane"),
+        ticket.get("status"),
+        ticket.get("change_type"),
+        ticket.get("mechanism_family"),
+        ticket.get("trial_family"),
+        ticket.get("new_evidence_type"),
+    ]
+    tags = []
+    for value in raw:
+        slug = slugify_file_part(value, fallback="")
+        if slug and slug not in tags:
+            tags.append(slug)
+    return tags
+
+
+def build_experiment_card_markdown(ticket):
+    metadata = {
+        "experiment_id": ticket.get("experiment_id"),
+        "experiment_uid": ticket.get("experiment_uid"),
+        "status": ticket.get("status"),
+        "lane": ticket.get("lane"),
+        "change_type": ticket.get("change_type"),
+        "mechanism_family": ticket.get("mechanism_family"),
+        "trial_family": ticket.get("trial_family"),
+        "trial_variant_id": ticket.get("trial_variant_id"),
+        "changed_variable": ticket.get("changed_variable"),
+        "new_evidence_type": ticket.get("new_evidence_type"),
+        "created_at": ticket.get("created_at"),
+        "baseline_result_file": ticket.get("baseline_result_file"),
+    }
+    hub_identity = ticket.get("hub_identity") or {}
+    if hub_identity.get("repo_id"):
+        metadata["hub_repo_id"] = hub_identity["repo_id"]
+
+    lines = ["---"]
+    for key, value in metadata.items():
+        lines.append(f"{key}: {_yaml_scalar(value)}")
+    lines.append("tags:")
+    for tag in _metadata_tags(ticket):
+        lines.append(f"  - {_yaml_scalar(tag)}")
+    lines.extend([
+        "---",
+        "",
+        f"# Experiment Card: {ticket.get('experiment_id')}",
+        "",
+        "## Summary",
+        "",
+        ticket.get("hypothesis") or "TODO: fill experiment hypothesis.",
+        "",
+        "## Identity",
+        "",
+        f"- Status: `{ticket.get('status')}`",
+        f"- Lane: `{ticket.get('lane')}`",
+        f"- Change type: `{ticket.get('change_type')}`",
+        f"- Owner: `{ticket.get('owner') or 'unclaimed'}`",
+        f"- UID: `{ticket.get('experiment_uid')}`",
+        "",
+        "## Causal Variable",
+        "",
+        f"- Single causal variable: `{ticket.get('single_causal_variable')}`",
+        f"- Changed variable: `{ticket.get('changed_variable')}`",
+        f"- Locked variables: `{', '.join(ticket.get('locked_variables') or [])}`",
+        "",
+        "## Trial Accounting",
+        "",
+        f"- Mechanism family: `{ticket.get('mechanism_family')}`",
+        f"- Trial family: `{ticket.get('trial_family')}`",
+        f"- Trial variant: `{ticket.get('trial_variant_id')}`",
+        f"- Prior trial count: `{ticket.get('prior_trial_count')}`",
+        f"- Nearby prior experiments: `{', '.join(ticket.get('nearby_prior_experiments') or []) or 'none'}`",
+        f"- New evidence type: `{ticket.get('new_evidence_type')}`",
+        f"- Multiple-testing risk: `{ticket.get('multiple_testing_risk_bucket')}`",
+        "",
+        "## Evaluation Plan",
+        "",
+        f"- Baseline result file: `{ticket.get('baseline_result_file') or 'not set'}`",
+        f"- Acceptance rule: {ticket.get('acceptance_rule')}",
+        "",
+        "## Reserved Files",
+        "",
+    ])
+    for scope in ticket.get("allowed_write_scope") or []:
+        lines.append(f"- `{scope}`")
+    lines.extend([
+        "",
+        "## Pre-Run Prediction",
+        "",
+        "```json",
+        json.dumps(ticket.get("prediction") or {}, indent=2, ensure_ascii=False, sort_keys=True),
+        "```",
+        "",
+        "## Closeout Notes",
+        "",
+        "- Decision: TODO",
+        "- Before artifact: TODO",
+        "- After artifact: TODO",
+        "- Main blocker or acceptance basis: TODO",
+        "- Next retry requires: TODO",
+        "",
+    ])
+    return "\n".join(lines)
+
+
+def save_experiment_card(ticket, cards_dir=DEFAULT_CARDS_DIR, *, overwrite=True):
+    path = experiment_card_path(ticket["experiment_id"], cards_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    mode = "w" if overwrite else "x"
+    with path.open(mode, encoding="utf-8") as f:
+        f.write(build_experiment_card_markdown(ticket))
+    return path
+
+
+def _sha256_file(path):
+    path = Path(path)
+    if not path.exists() or not path.is_file():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _git_capture(root, *args):
+    try:
+        completed = subprocess.run(
+            ["git", *args],
+            cwd=str(root),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip()
+
+
+def _git_revision_snapshot(root):
+    root = Path(root or REPO_ROOT)
+    status = _git_capture(root, "status", "--short")
+    return {
+        "commit": _git_capture(root, "rev-parse", "HEAD"),
+        "branch": _git_capture(root, "rev-parse", "--abbrev-ref", "HEAD"),
+        "dirty": bool(status),
+        "status_short": status.splitlines() if status else [],
+    }
+
+
+def _resolve_workspace_path(value, root):
+    if not value:
+        return None
+    path = Path(value)
+    if path.is_absolute() or root is None:
+        return path
+    return Path(root) / path
+
+
+def _file_manifest_entry(value, *, root=None):
+    path = _resolve_workspace_path(value, root)
+    if path is None:
+        return None
+    return {
+        "path": _repo_relative(path),
+        "exists": path.exists(),
+        "sha256": _sha256_file(path),
+    }
+
+
+def build_revision_manifest(ticket, *, repo_root=None, ticket_file=None, card_file=None):
+    repo_root = Path(repo_root or REPO_ROOT)
+    files = {
+        "ticket": _file_manifest_entry(ticket_file or ticket.get("ticket_file"), root=repo_root),
+        "card": _file_manifest_entry(card_file or ticket.get("card_file"), root=repo_root),
+        "baseline_result": _file_manifest_entry(ticket.get("baseline_result_file"), root=repo_root),
+    }
+    return {
+        "schema_version": 1,
+        "manifest_type": "ginger_experiment_revision_manifest",
+        "experiment_id": ticket.get("experiment_id"),
+        "experiment_uid": ticket.get("experiment_uid"),
+        "generated_at": utc_now_iso(),
+        "created_at": ticket.get("created_at"),
+        "hub_identity": ticket.get("hub_identity") or {},
+        "git": _git_revision_snapshot(repo_root),
+        "files": {key: value for key, value in files.items() if value is not None},
+        "artifact_roots": {
+            "runner": f"quant/experiments/{experiment_file_prefix(ticket['experiment_id'])}_<slug>.py",
+            "data": f"data/experiments/{ticket['experiment_id']}/",
+            "artifact": f"experiments/artifacts/{ticket['experiment_id']}_<slug>.md",
+            "log": f"experiments/logs/{ticket['experiment_id']}.json",
+        },
+        "reservation_note": (
+            "Generated when the experiment ID was reserved. Update or regenerate "
+            "after final artifacts exist if exact after-run hashes are required."
+        ),
+    }
+
+
+def save_revision_manifest(
+    ticket,
+    manifests_dir=DEFAULT_MANIFESTS_DIR,
+    *,
+    repo_root=None,
+    ticket_file=None,
+    card_file=None,
+    overwrite=True,
+):
+    path = revision_manifest_path(ticket["experiment_id"], manifests_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    mode = "w" if overwrite else "x"
+    manifest = build_revision_manifest(
+        ticket,
+        repo_root=repo_root,
+        ticket_file=ticket_file,
+        card_file=card_file,
+    )
+    with path.open(mode, encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False, sort_keys=True)
+        f.write("\n")
+    return path
+
+
 def default_allowed_write_scope(
     experiment_id,
     lane,
@@ -541,6 +835,8 @@ def default_allowed_write_scope(
     return [
         f"quant/experiments/{stem}.py",
         f"data/experiments/{experiment_id}/{stem}.json",
+        f"experiments/cards/{experiment_id}.md",
+        f"experiments/manifests/{experiment_id}.json",
         f"experiments/tickets/{experiment_id}.json",
         f"experiments/logs/{experiment_id}.json",
         "docs/experiment_log.jsonl",
@@ -689,11 +985,36 @@ def create_ticket(
         "result": None,
     }
     if "_tickets_dir" in registry:
+        workspace_root = _registry_repo_root(registry)
+        ticket_file = ticket_path(experiment_id, _registry_tickets_dir(registry))
+        card_file = experiment_card_path(experiment_id, _registry_cards_dir(registry))
+        manifest_file = revision_manifest_path(
+            experiment_id,
+            _registry_manifests_dir(registry),
+        )
+        ticket["ticket_file"] = _repo_relative(ticket_file)
+        ticket["card_file"] = _repo_relative(card_file)
+        ticket["revision_manifest_file"] = _repo_relative(manifest_file)
+        for label, path in (
+            ("experiment ticket", ticket_file),
+            ("experiment card", card_file),
+            ("revision manifest", manifest_file),
+        ):
+            if path.exists():
+                raise ValueError(f"{label} already exists: {path}")
         try:
             save_ticket(ticket, _registry_tickets_dir(registry), overwrite=False)
+            save_experiment_card(ticket, _registry_cards_dir(registry), overwrite=False)
+            save_revision_manifest(
+                ticket,
+                _registry_manifests_dir(registry),
+                repo_root=workspace_root,
+                ticket_file=ticket_file,
+                card_file=card_file,
+                overwrite=False,
+            )
         except FileExistsError as exc:
-            path = ticket_path(experiment_id, _registry_tickets_dir(registry))
-            raise ValueError(f"experiment ticket already exists: {path}") from exc
+            raise ValueError(f"experiment identity artifact already exists: {exc}") from exc
         _sync_index_entry(registry, ticket)
     else:
         registry.setdefault("experiments", []).append(ticket)

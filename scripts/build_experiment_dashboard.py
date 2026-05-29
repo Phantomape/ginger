@@ -51,6 +51,10 @@ FIELD_KEYS = (
     "claimed_at",
     "completed_at",
     "updated_at",
+    "ticket_file",
+    "log_file",
+    "card_file",
+    "revision_manifest_file",
 )
 
 DATASET_FIELDS = (
@@ -1072,6 +1076,12 @@ def merge_record(records: dict, experiment_id: str, payload: dict, source: str, 
                 value = result.get(key)
                 if value and value not in record["files"]:
                     record["files"].append(value)
+        for key in ("ticket_file", "log_file", "card_file", "revision_manifest_file"):
+            value = payload.get(key)
+            if value:
+                value = canonical_identity_path(value)
+                if value not in record["files"]:
+                    record["files"].append(value)
 
 
 def iter_json_records(root: Path, directory: Path, source: str):
@@ -1160,6 +1170,19 @@ def build_experiment_index(root=REPO_ROOT, registry_path=DEFAULT_REGISTRY, today
             merge_record(records, experiment_id, payload, item_source, path)
             if file_id and payload_id and normalize_experiment_id(payload_id) != file_id:
                 records[experiment_id]["anomalies"].append("log_filename_id_mismatch")
+
+    for item in iter_json_records(root, root / "experiments" / "manifests", "manifest") or []:
+        experiment_id, payload, item_source, path, file_id, payload_id = item
+        merge_record(records, experiment_id, payload, item_source, path)
+        if file_id and payload_id and normalize_experiment_id(payload_id) != file_id:
+            records[experiment_id]["anomalies"].append("manifest_filename_id_mismatch")
+
+    cards_dir = root / "experiments" / "cards"
+    if cards_dir.exists():
+        for path in sorted(cards_dir.glob("*.md")):
+            experiment_id = normalize_experiment_id(path.name)
+            if experiment_id:
+                merge_record(records, experiment_id, {}, "card", repo_relative(path, root))
 
     for experiment_id, payload, source, path in iter_jsonl_records(
         root, root / "docs" / "experiment_log.jsonl"
