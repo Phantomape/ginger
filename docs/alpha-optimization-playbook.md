@@ -75,7 +75,10 @@ Recent repository evidence supports this priority:
   justify new gates, exits, pyramids, or notional scalars on the frozen sample.
   The one constructive lifecycle clue, early shakeout then reclaim in
   `exp-20260529-006`, was positive but only `7` trades, so it is forward
-  monitoring context rather than a rule.
+  monitoring context rather than a rule. `exp-20260529-025` also rejected the
+  narrow Kova loss-streak notional scalar: two prior closed VCP paper losses
+  triggered 11 half-size trades and improved EV proxy by `+0.003721`, but
+  reduced aggregate PnL by `-$856.33` after cutting 6 winners.
 - Expectation/PEAD/residual-leadership work is still mostly attribution and
   measurement repair. The latest useful result is better PIT joins and ranking
   replacement attribution, not a promoted live rule.
@@ -304,9 +307,15 @@ Do next:
 
 - continue PIT estimate revision accumulation across more than one earnings
   season so the 10d buckets clear the floors;
-- add `revenue_estimate` / `analyst_count` velocity fields and full PIT
-  `ret20_excess_sector` / `ret20_excess_theme` coverage — these widen the
-  eventual 10d test rather than re-running a disproven 5d one;
+- add full PIT `ret20_excess_sector` / `ret20_excess_theme` coverage —
+  this widens the eventual 10d test rather than re-running a disproven 5d
+  one;
+- do NOT attempt `revenue_estimate` / `analyst_count` estimate-velocity
+  fields: a 2026-05-29 Gate 2 audit found no vendor source
+  (`estimate_revision_ledger.revenue_estimate` null 291/291, no
+  `analyst_count` field anywhere, `sec_filing_features.revenue_surprise`
+  missing_no_vendor_consensus). The only realized-fundamental surface is
+  kova `companyfacts_growth` (realized YoY, not estimate velocity);
 - a retry must be a pre-registered 10d hypothesis on a multi-season sample,
   not another 5d attribution.
 
@@ -400,6 +409,7 @@ Not allowed without new PIT surfaces and Gate 1-4:
 - simple day-3 low-MFE failed-breakout exits on the frozen VCP sample;
 - shakeout/reclaim re-entry or hold rules from the frozen VCP sample unless
   forward rows and full slot/heat/replacement-value replay clear the gate;
+- closed-ledger loss-streak notional scalars on the frozen VCP sample;
 - confirmation pyramid rules;
 - pocket-pivot notional support;
 - 13F/RS/fundamental live ranking changes.
