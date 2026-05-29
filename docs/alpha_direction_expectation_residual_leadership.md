@@ -627,3 +627,63 @@ preferred/comparison buckets, missing PIT `last_earnings_date`, and zero
 primary-positive candidate conversions within 10 trading days. Do not promote
 this direction to ranking, sizing, or a PEAD paper sleeve until those fields
 and closed outcomes mature.
+
+---
+
+## 2026-05-29 freeze note: 5d direction is disproven on the current single-season sample
+
+The three measurement blockers above were fixed, and the three core
+sub-hypotheses were then each tested directly with closed forward
+outcomes. **All three were rejected at the 5d primary horizon.**
+
+Measurement repairs that unblocked the tests (all read-only, all
+committed as per-experiment artifacts):
+
+- `exp-20260527-908` reconstructed PIT `last_earnings_date` from SEC EDGAR
+  10-Q / 10-K / 8-K(2.02) filings — 40/47 (85.1%) primary positive rows
+  resolved, populating the PEAD-eligible buckets that were previously empty.
+- `exp-20260528-030` derived PIT `eps_estimate_delta_30d` from the
+  `earnings_snapshot` history — 38/47 (80.85%) primary positive rows
+  resolved, giving the revision-magnitude branch its 30d axis.
+
+Direct attribution results (read-only, exp-20260527-005 published
+gate thresholds: `min_bucket_closed_5d=8`, `min_bucket_closed_10d=5`,
+concentration `top5<=0.6`, `single<=0.5`):
+
+| Sub-hypothesis | Experiment | 5d lift (preferred − comparison) | 10d lift | Decision |
+|---|---|---|---|---|
+| Residual leadership inside PEAD window | `exp-20260528-027` | **−3.60 pp** (residual eligible −2.0% vs non-residual +1.6%) | +0.68 pp | `rejected_no_residual_pead_edge` |
+| PEAD window itself (3 revision tiers, no residual filter) | `exp-20260528-028` | **−0.40 pp** on the cleanest tier (`wide_watchlist_positive`, 25 closed 5d, size+conc pass) | +0.35 to +1.12 pp | `rejected_no_pead_window_lift_across_tiers` |
+| Revision magnitude high vs low (7d + 30d axes) | `exp-20260529-007` | **−1.15 pp** on the decisive 7d axis | +1.40 pp | `rejected_no_revision_magnitude_edge` |
+
+**Recurring signature: 5d-negative / 10d-positive across all three.**
+Every sub-hypothesis underperforms its comparison at the 5d primary
+horizon yet flips positive at 10d. This is consistent with the doc's
+own thesis that institutional re-pricing plays out slowly (T+2..T+15),
+*but* every 10d bucket on the current sample is too thin to be decisive
+(comparison buckets of 2–6 closed observations, below the 5/10d floors),
+and AGENTS.md Section 12 treats a single-window sign flip as a rejection
+signal rather than a discovery. The 10d signal is therefore recorded as
+an open question, not evidence.
+
+### Freeze decision
+
+This direction is **frozen at the 5d horizon** as of 2026-05-29. Do not
+re-test residual leadership, the PEAD window, or revision magnitude as a
+5d alpha clue on the current watchlist — the measurement is no longer the
+blocker (the fields are populated), the sample is.
+
+A retry requires **new evidence**, specifically:
+
+1. More than one earnings season of watchlist rows, so the 10d buckets
+   clear the published floors and the 5d-negative / 10d-positive flip can
+   actually be tested instead of guessed; and
+2. A pre-registered 10d hypothesis (not a 5d one), since 5d is now
+   disproven three independent ways.
+
+Measurement work that is still allowed without new forward rows:
+`revenue_estimate` / `analyst_count` velocity fields (still absent), and
+full PIT `ret20_excess_sector` / `ret20_excess_theme` coverage (currently
+partial), because those widen the eventual 10d test rather than re-running
+a disproven 5d one. No new 5d attribution on this direction should take
+the top priority slot until condition (1) is met.

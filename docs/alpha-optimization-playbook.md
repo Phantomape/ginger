@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-05-28.
+Last refreshed: 2026-05-29.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -59,6 +59,9 @@ Recent repository evidence supports this priority:
 - Kova/CANSLIM-style intraday, base, pocket-pivot, distribution-day, 13F, and
   RS fields are useful context sidecars, but recent tests repeatedly failed to
   justify new gates, exits, pyramids, or notional scalars on the frozen sample.
+  The one constructive lifecycle clue, early shakeout then reclaim in
+  `exp-20260529-006`, was positive but only `7` trades, so it is forward
+  monitoring context rather than a rule.
 - Expectation/PEAD/residual-leadership work is still mostly attribution and
   measurement repair. The latest useful result is better PIT joins and ranking
   replacement attribution, not a promoted live rule.
@@ -249,18 +252,49 @@ Mechanism: expectation data is promising but still coverage- and attribution-
 gated. Repaired PIT joins and old-score replacement attribution are useful
 measurement progress, but not a promoted trading rule.
 
+**5d horizon FROZEN as of 2026-05-29.** The measurement blockers were fixed
+(`exp-20260527-908` PIT `last_earnings_date` 85.1% on primary positive;
+`exp-20260528-030` PIT `eps_estimate_delta_30d` 80.85%) and all three core
+sub-hypotheses were then tested directly with closed forward outcomes and
+each rejected at the 5d primary horizon:
+
+- residual leadership inside the PEAD window: `exp-20260528-027`, 5d lift
+  **−3.60 pp** -> `rejected_no_residual_pead_edge`;
+- PEAD window itself across 3 revision tiers (no residual filter):
+  `exp-20260528-028`, cleanest-tier 5d lift **−0.40 pp** ->
+  `rejected_no_pead_window_lift_across_tiers`;
+- revision magnitude high vs low (7d + 30d axes): `exp-20260529-007`,
+  decisive 7d-axis 5d lift **−1.15 pp** -> `rejected_no_revision_magnitude_edge`.
+
+All three show the same 5d-negative / 10d-positive signature, but every 10d
+bucket on the current single-earnings-season sample is below the published
+closed-outcome floors, so the 10d flip is an open question, not evidence.
+See `docs/alpha_direction_expectation_residual_leadership.md` 2026-05-29
+freeze note for the full table.
+
 Do next:
 
-- continue PIT estimate revision accumulation;
-- separate inside-PEAD T+2..T+15 rows from outside-PEAD rows;
-- compare old alpha score versus old score plus expectation component on full
-  daily ranking surfaces;
-- require closed 5/10/20-day outcomes before a paper sleeve.
+- continue PIT estimate revision accumulation across more than one earnings
+  season so the 10d buckets clear the floors;
+- add `revenue_estimate` / `analyst_count` velocity fields and full PIT
+  `ret20_excess_sector` / `ret20_excess_theme` coverage — these widen the
+  eventual 10d test rather than re-running a disproven 5d one;
+- a retry must be a pre-registered 10d hypothesis on a multi-season sample,
+  not another 5d attribution.
 
 Do not:
 
 - treat missing estimate revisions as neutral-positive;
-- promote residual leadership alone as confirmation;
+- promote residual leadership alone as confirmation (disproven 5d:
+  `exp-20260528-027`);
+- re-test the PEAD window or revision magnitude as a 5d alpha clue on the
+  current watchlist — the fields are populated, the sample is the blocker
+  (`exp-20260528-028`, `exp-20260529-007`); a new 5d attribution on this
+  direction must not take the top priority slot until a second earnings
+  season exists;
+- promote outside-PEAD short-horizon rows from the current frozen sample:
+  `exp-20260528-029` found the apparent 1d/2d edge collapses after removing
+  the top ticker or de-duplicating by ticker;
 - add PEAD live ranking until production-visible fields and forward outcomes
   exist.
 
@@ -309,6 +343,9 @@ Not allowed without new PIT surfaces and Gate 1-4:
 
 - VCP gates based on Kova context;
 - stop-under-base or fixed max-loss exits;
+- simple day-3 low-MFE failed-breakout exits on the frozen VCP sample;
+- shakeout/reclaim re-entry or hold rules from the frozen VCP sample unless
+  forward rows and full slot/heat/replacement-value replay clear the gate;
 - confirmation pyramid rules;
 - pocket-pivot notional support;
 - 13F/RS/fundamental live ranking changes.
