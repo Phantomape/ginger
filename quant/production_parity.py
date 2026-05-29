@@ -38,6 +38,11 @@ from constants import (
 )
 from position_intent import resolve_intended_shares
 
+try:
+    from price_asof_guard import date10
+except ImportError:  # pragma: no cover - package-style imports in tests
+    from quant.price_asof_guard import date10
+
 TRAILING_PARTIAL_REDUCE_ENABLED = False
 
 
@@ -468,6 +473,17 @@ def _latest_close(df):
     return float(value.item() if hasattr(value, "item") else value)
 
 
+def _latest_ohlcv_date(df):
+    if df is None or len(df) == 0:
+        return None
+    try:
+        if "Date" in df:
+            return date10(df["Date"].iloc[-1])
+        return date10(df.index[-1])
+    except Exception:
+        return None
+
+
 def _entry_index(df, entry_date):
     entry_ts = pd.Timestamp(entry_date)
     matching = df.index[df.index >= entry_ts]
@@ -563,6 +579,27 @@ def build_early_relative_weakness_exit_actions(
         df = (ohlcv_dict or {}).get(ticker)
         if df is None or len(df) == 0:
             audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_ohlcv"})
+            continue
+
+        ticker_latest_date = _latest_ohlcv_date(df)
+        spy_latest_date = _latest_ohlcv_date(spy_df)
+        if not ticker_latest_date or not spy_latest_date:
+            audit.append({
+                "ticker": ticker,
+                "status": "skipped",
+                "reason": "missing_latest_ohlcv_date",
+                "ticker_latest_date": ticker_latest_date,
+                "spy_latest_date": spy_latest_date,
+            })
+            continue
+        if ticker_latest_date != spy_latest_date:
+            audit.append({
+                "ticker": ticker,
+                "status": "skipped",
+                "reason": "mismatched_latest_ohlcv_date",
+                "ticker_latest_date": ticker_latest_date,
+                "spy_latest_date": spy_latest_date,
+            })
             continue
 
         entry_date = pos.get("entry_date")
@@ -701,6 +738,27 @@ def build_followthrough_addon_actions(
         df = (ohlcv_dict or {}).get(ticker)
         if df is None or len(df) == 0:
             audit.append({"ticker": ticker, "status": "skipped", "reason": "missing_ohlcv"})
+            continue
+
+        ticker_latest_date = _latest_ohlcv_date(df)
+        spy_latest_date = _latest_ohlcv_date(spy_df)
+        if not ticker_latest_date or not spy_latest_date:
+            audit.append({
+                "ticker": ticker,
+                "status": "skipped",
+                "reason": "missing_latest_ohlcv_date",
+                "ticker_latest_date": ticker_latest_date,
+                "spy_latest_date": spy_latest_date,
+            })
+            continue
+        if ticker_latest_date != spy_latest_date:
+            audit.append({
+                "ticker": ticker,
+                "status": "skipped",
+                "reason": "mismatched_latest_ohlcv_date",
+                "ticker_latest_date": ticker_latest_date,
+                "spy_latest_date": spy_latest_date,
+            })
             continue
 
         entry_date = pos.get("entry_date")

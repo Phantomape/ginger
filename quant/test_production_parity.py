@@ -402,6 +402,36 @@ def test_build_followthrough_addon_actions_uses_spy_leader_addon_cap():
     assert actions[0]["shares_to_buy"] == 12
 
 
+def test_build_followthrough_addon_actions_skips_mismatched_latest_dates():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "original_shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 101.0, 104.0]),
+        "SPY": _ohlcv([100.0, 100.0, 101.0, 102.0]),
+    }
+
+    actions, audit = build_followthrough_addon_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        portfolio_value=10_000,
+        current_prices={"NVDA": 104.0},
+    )
+
+    assert actions == []
+    assert audit[0]["reason"] == "mismatched_latest_ohlcv_date"
+    assert audit[0]["ticker_latest_date"] == "2026-01-06"
+    assert audit[0]["spy_latest_date"] == "2026-01-07"
+
+
 def test_build_early_relative_weakness_exit_actions_emits_day_three_exit():
     open_positions = {
         "positions": [
@@ -459,6 +489,35 @@ def test_build_early_relative_weakness_exit_actions_waits_for_check_day():
 
     assert actions == []
     assert audit[0]["reason"] == "not_early_weakness_check_day"
+
+
+def test_build_early_relative_weakness_exit_actions_skips_mismatched_latest_dates():
+    open_positions = {
+        "positions": [
+            {
+                "ticker": "NVDA",
+                "shares": 10,
+                "avg_cost": 100.0,
+                "entry_date": "2026-01-02",
+            }
+        ]
+    }
+    ohlcv = {
+        "NVDA": _ohlcv([100.0, 99.0, 96.0]),
+        "SPY": _ohlcv([100.0, 100.5, 101.0, 102.0]),
+    }
+
+    actions, audit = build_early_relative_weakness_exit_actions(
+        open_positions=open_positions,
+        ohlcv_dict=ohlcv,
+        current_prices={"NVDA": 96.0},
+        enabled=True,
+    )
+
+    assert actions == []
+    assert audit[0]["reason"] == "mismatched_latest_ohlcv_date"
+    assert audit[0]["ticker_latest_date"] == "2026-01-06"
+    assert audit[0]["spy_latest_date"] == "2026-01-07"
 
 
 def test_cap_followthrough_addon_shares_uses_effective_stop_heat_room():
