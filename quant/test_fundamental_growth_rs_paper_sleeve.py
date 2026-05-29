@@ -303,6 +303,12 @@ def test_snapshot_fills_next_session_and_closes_after_fixed_hold_without_orders(
     assert second["filled_count"] == 1
     assert second["open_position_count"] == 1
     assert second["trade_enabled"] is False
+    # Freshly filled position starts at 0 observed days so the realized hold spans
+    # the full hold_days horizon (advance runs before fill, so the entry day is
+    # never advanced). Must match the codebase-wide convention used by every other
+    # sleeve; starting at 1 would exit one trading day early (9-day hold for a
+    # hold_days=10 sleeve) and misalign forward_outcome_horizon_days.
+    assert second["open_positions"][0]["observed_trading_days"] == 0
 
     close_state = empty_fundamental_growth_rs_paper_state()
     close_state["open_positions"] = second["open_positions"]
