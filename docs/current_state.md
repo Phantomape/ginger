@@ -111,6 +111,12 @@ a materially richer catalyst-quality field, such as SEC/news semantic direction
 with source credibility, peer/source propagation, or forward replacement-value
 rows.
 
+Regression status for this consolidation run: after merging the remote
+repo-bug-audit fixes, full unit tests passed (`1011 passed in 62.03s`). No bug
+fix, strategy behavior change, live-order change, ranking change, sizing change,
+exit change, LLM/news boundary change, or backtest-path change was required by
+this regression pass.
+
 ## 2026-05-29 Experiment Consolidation
 
 Today's experiment set kept core/live trading logic unchanged. The only
