@@ -1,0 +1,73 @@
+---
+experiment_id: "exp-20260530-024"
+status: "rejected"
+lane: "alpha_search"
+change_type: "default_off_paper_allocation"
+trial_family: "broad_market_sector_risk_allocation"
+changed_variable: "broad_market_negative_sector_notional_haircut_v1"
+---
+
+# Experiment Card: exp-20260530-024
+
+## Summary
+
+Broad-market default-off paper candidates in historically weak sector-risk buckets may have lower replacement value; a sector-risk paper notional haircut can improve EV without adding tickers or changing live orders.
+
+## Result
+
+- Decision: `rejected_broad_market_sector_risk_haircut`
+- Aggregate EV delta vs current broad-market stack: `+0.0359`
+- Aggregate PnL delta vs current broad-market stack: `$+437.11`
+- Adjusted trades: `22` across `3` windows
+- Failed reasons: `window_stability_failed`
+
+## Three-Window Evidence
+
+| Window | Before EV | After EV | dEV | Before PnL | After PnL | dPnL |
+|---|---:|---:|---:|---:|---:|---:|
+| late_strong | 7.6515 | 7.6448 | -0.0067 | $164,195.69 | $164,405.02 | $+209.33 |
+| mid_weak | 7.6402 | 7.6821 | +0.0419 | $163,953.13 | $164,147.97 | $+194.84 |
+| old_thin | 1.8189 | 1.8196 | +0.0007 | $87,445.59 | $87,478.53 | $+32.94 |
+
+## Production Impact
+
+Replay-only default-off paper scout. No shared policy, run adapter, live orders, core ranking, sizing, exits, or LLM/news path changed.
+
+No JavaScript was used.
+
+```json
+{
+  "adjusted_trade_count": 22,
+  "adjusted_trade_count_min": 8,
+  "adjusted_window_count_min": 2,
+  "adjusted_windows": [
+    "late_strong",
+    "mid_weak",
+    "old_thin"
+  ],
+  "aggregate_ev_delta": 0.0359,
+  "aggregate_pnl_delta": 437.11,
+  "concentration": {
+    "positive_pnl_hhi": 0.055578,
+    "positive_pnl_hhi_guardrail": 0.3,
+    "single_ticker_positive_share": 0.122563,
+    "single_ticker_positive_share_guardrail": 0.5,
+    "top5_positive_share": 0.437115,
+    "top5_positive_share_guardrail": 0.7
+  },
+  "concentration_guard_passed": true,
+  "drawdown_guard_passed": true,
+  "failed_reasons": [
+    "window_stability_failed"
+  ],
+  "max_drawdown_worse_guardrail": 0.005,
+  "max_drawdown_worse_max": 0.0013,
+  "passed": false,
+  "production_promotion_required_for_acceptance": true,
+  "sample_guard_passed": true,
+  "windows_ev_improved": 2,
+  "windows_ev_regressed": 1,
+  "windows_pnl_improved": 3,
+  "windows_pnl_regressed": 0
+}
+```

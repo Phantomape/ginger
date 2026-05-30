@@ -1,0 +1,83 @@
+{
+  "experiment_id": "exp-20260530-024",
+  "experiment_uid": "expuid-07195adced514cd3",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260530-024",
+    "slug": "broad_market_sector_risk_haircut",
+    "reserved_at": "2026-05-30T23:07:12+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "rejected",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "hypothesis": "Broad-market default-off paper candidates in historically weak sector-risk buckets may have lower replacement value; a sector-risk paper notional haircut can improve EV without adding tickers or changing live orders.",
+  "change_type": "default_off_paper_allocation",
+  "mechanism_family": "default_off_paper_allocation",
+  "trial_family": "broad_market_sector_risk_allocation",
+  "trial_variant_id": "exp-20260530-024",
+  "single_causal_variable": "broad_market_negative_sector_notional_haircut_v1",
+  "changed_variable": "broad_market_negative_sector_notional_haircut_v1",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [
+    "exp-20260525-038",
+    "exp-20260524-027",
+    "exp-20260528-036",
+    "exp-20260519-036"
+  ],
+  "multiple_testing_risk_bucket": "minimal",
+  "new_evidence_type": "new_production_visible_sector_context",
+  "baseline_result_file": "data/backtests/backtest_results_20260529.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260530_024_broad_market_sector_risk_haircut.py",
+    "data/experiments/exp-20260530-024/exp_20260530_024_broad_market_sector_risk_haircut.json",
+    "experiments/cards/exp-20260530-024.md",
+    "experiments/manifests/exp-20260530-024.json",
+    "experiments/tickets/exp-20260530-024.json",
+    "experiments/logs/exp-20260530-024.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [],
+  "locked_variables": [
+    "broad_market_negative_sector_notional_haircut_v1"
+  ],
+  "evaluation_windows": [],
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "prediction": {
+    "success_probability": 0.27,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "late_strong_regression",
+      "sector_overfit",
+      "insufficient_all_window_improvement",
+      "concentration_failed"
+    ],
+    "confidence_reason": "Sector cache is production-visible and current_state explicitly unblocked sector-aware broad-market alpha hooks, but prior broad-market breadth gates and sector/market agreement regressed one window.",
+    "recorded_at": "2026-05-30T23:06:48+00:00"
+  },
+  "created_at": "2026-05-30T23:07:12+00:00",
+  "claimed_at": "2026-05-30T23:07:23+00:00",
+  "completed_at": "2026-05-30T23:15:53Z",
+  "result": {
+    "decision": "rejected_broad_market_sector_risk_haircut",
+    "status": "rejected",
+    "result_file": "data/experiments/exp-20260530-024/exp_20260530_024_broad_market_sector_risk_haircut.json",
+    "log_file": "experiments/logs/exp-20260530-024.json",
+    "artifact_file": "experiments/artifacts/exp-20260530-024_broad_market_sector_risk_haircut.md",
+    "aggregate_ev_delta": 0.0359,
+    "aggregate_pnl_delta": 437.11,
+    "gate4_passed": false,
+    "realized_failure_mode": "window_stability_failed",
+    "windows_ev_improved": 2,
+    "windows_ev_regressed": 1,
+    "windows_pnl_improved": 3,
+    "windows_pnl_regressed": 0,
+    "production_impact": "replay_only_no_shared_policy_or_live_order_change"
+  },
+  "ticket_file": "experiments/tickets/exp-20260530-024.json",
+  "card_file": "experiments/cards/exp-20260530-024.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260530-024.json"
+}
