@@ -33,6 +33,8 @@ large shared JSON document.
 
 ## Lanes
 
+- `alpha_search`: preferred lane for new entry, exit, ranking, allocation, or
+  strategy hypotheses.
 - `alpha_discovery`: new entry, exit, ranking, allocation, or strategy hypothesis.
 - `loss_attribution`: bad-trade source analysis and failure taxonomy.
 - `universe_scout`: new ticker universe, candidate source, or external alpha source.
@@ -140,20 +142,24 @@ omitted when no alpha family is being evaluated.
 
 ## Pre-Run Prediction
 
-Every `alpha_discovery`, `universe_scout`, or strategy-facing
-`measurement_repair` ticket should include a pre-run `prediction` before the
-experiment starts. This is the system's "exam estimate": it records what the
-agent believed before seeing the result, so later meta-learning can distinguish
-good judgement from lucky outcomes.
+Every `alpha_search`, `alpha_discovery`, and `universe_scout` ticket must
+include a pre-run `prediction` before the experiment starts. The ticket
+creation code rejects these lanes unless `success_probability` and
+`main_failure_modes` are present. This is the system's "exam estimate": it
+records what the agent believed before seeing the result, so later
+meta-learning can distinguish good judgement from lucky outcomes.
 
-Recommended fields:
+Strategy-facing `measurement_repair` tickets should include a prediction when
+the repair has a clear acceptance rule, but pure process repairs may omit it.
+
+Fields:
 
 | Field | Meaning |
 | --- | --- |
-| `success_probability` | Probability from `0` to `1` that Gate 4 or the ticket acceptance rule will pass. |
+| `success_probability` | Required for alpha/scout tickets. Probability from `0` to `1` that Gate 4 or the ticket acceptance rule will pass. |
 | `expected_ev_delta` | Expected aggregate `expected_value_score` delta. |
 | `expected_pnl_delta` | Expected aggregate PnL delta in dollars. |
-| `main_failure_modes` | Short normalized failure modes expected before the run. |
+| `main_failure_modes` | Required for alpha/scout tickets. Short normalized failure modes expected before the run. |
 | `confidence_reason` | Short reason for the probability estimate. |
 | `recorded_at` | Filled by tooling when the prediction is created. |
 
@@ -166,6 +172,10 @@ and adds a `calibration` block with the actual decision, Brier score,
 overconfident / underconfident label, EV/PnL prediction error, and optional
 failure-mode hit. Use `--realized-failure-mode` and `--surprise-note` when the
 result has a clear post-run lesson.
+
+`scripts/experiment.py audit` separates historical gaps into
+`legacy_pre_enforcement_*` and `post_enforcement_*`. Use `--strict` to fail on
+post-enforcement gaps only; do not backfill legacy predictions from hindsight.
 
 ## Acceptance Rule
 

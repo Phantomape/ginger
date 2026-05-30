@@ -33,6 +33,11 @@ Read `prediction_calibration` in the generated report. The key fields are:
 Rules:
 
 - Treat missing predictions as a process gap, not as neutral evidence.
+- Do not backfill predictions for already-closed legacy experiments unless the
+  repository contains a source that proves the estimate was recorded before the
+  result was known.
+- Use `scripts/experiment.py audit` to separate
+  `legacy_pre_enforcement_*` gaps from `post_enforcement_*` gaps.
 - Treat overconfidence clusters as a reason to require stronger new evidence.
 - Treat underconfidence clusters as candidate mechanisms for playbook updates.
 - Never use calibration scores for live ranking, sizing, filtering, or orders.

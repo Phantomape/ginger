@@ -185,8 +185,8 @@
 | `after_metrics` | 是 | 改动后指标 |
 | `delta_metrics` | 是 | 指标变化值 |
 | `llm_metrics` | 推荐 | 若涉及 LLM，则记录单独归因指标 |
-| `prediction` | alpha 推荐 | Pre-run probability, expected EV/PnL delta, expected failure modes, and confidence reason recorded before seeing the result. |
-| `calibration` | alpha 推荐 | Post-run comparison of prediction versus actual decision, including Brier score, over/underconfidence, EV/PnL error, and failure-mode hit. |
+| `prediction` | alpha/scout 必填 | Pre-run probability, expected EV/PnL delta, expected failure modes, and confidence reason recorded before seeing the result. |
+| `calibration` | closed alpha/scout 必填 | Post-run comparison of prediction versus actual decision, including Brier score, over/underconfidence, EV/PnL error, and failure-mode hit. |
 | `production_impact` | 策略改动必填 | 记录该实验是否改变共享 policy、回测 adapter、生产 adapter、是否 replay-only、是否加 parity 测试 |
 | `decision` | 是 | 最终结论 |
 | `rejection_reason` | 条件必填 | 被拒绝或回滚时必须写 |

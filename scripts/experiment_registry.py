@@ -54,11 +54,18 @@ DISALLOWED_BROAD_SCOPES = {
     "scripts",
 }
 VALID_LANES = {
+    "alpha_search",
     "alpha_discovery",
     "loss_attribution",
     "universe_scout",
     "measurement_repair",
 }
+PREDICTION_REQUIRED_LANES = {
+    "alpha_search",
+    "alpha_discovery",
+    "universe_scout",
+}
+PREDICTION_ENFORCEMENT_STARTED_AT = "2026-05-29T21:33:00+00:00"
 
 
 def utc_now_iso():
@@ -557,6 +564,37 @@ def normalize_prediction(
     return normalized
 
 
+def prediction_required_for_lane(lane):
+    return lane in PREDICTION_REQUIRED_LANES
+
+
+def prediction_missing_reasons(ticket):
+    if not prediction_required_for_lane(ticket.get("lane")):
+        return []
+    prediction = normalize_prediction(ticket.get("prediction"))
+    if not prediction:
+        return ["missing_prediction"]
+    reasons = []
+    if prediction.get("success_probability") is None:
+        reasons.append("missing_success_probability")
+    if not prediction.get("main_failure_modes"):
+        reasons.append("missing_main_failure_modes")
+    return reasons
+
+
+def require_pre_run_prediction(ticket, *, allow_missing_prediction=False):
+    reasons = prediction_missing_reasons(ticket)
+    if not reasons or allow_missing_prediction:
+        return
+    experiment_id = ticket.get("experiment_id") or "new experiment"
+    lane = ticket.get("lane")
+    joined = ", ".join(reasons)
+    raise ValueError(
+        f"{lane} ticket {experiment_id} requires a pre-run prediction "
+        f"before work can continue; missing: {joined}"
+    )
+
+
 def parse_windows(values):
     windows = []
     for raw in values or []:
@@ -941,6 +979,14 @@ def create_ticket(
         file_slug=file_slug,
         exclusive_scope_ok=exclusive_scope_ok,
     )
+    normalized_prediction = normalize_prediction(prediction)
+    require_pre_run_prediction(
+        {
+            "experiment_id": experiment_id,
+            "lane": lane,
+            "prediction": normalized_prediction,
+        }
+    )
     ticket = {
         "experiment_id": experiment_id,
         "experiment_uid": new_experiment_uid(),
@@ -978,7 +1024,7 @@ def create_ticket(
         ),
         "evaluation_windows": evaluation_windows or [],
         "acceptance_rule": acceptance_rule or "Use AGENTS.md Gate 4.",
-        "prediction": normalize_prediction(prediction),
+        "prediction": normalized_prediction,
         "created_at": created_at,
         "claimed_at": None,
         "completed_at": None,
@@ -1276,8 +1322,13 @@ def build_log_draft(
     notes=None,
     realized_failure_mode=None,
     surprise_note=None,
+    allow_missing_prediction=False,
 ):
     decision = final_decision(judgement, status_override)
+    require_pre_run_prediction(
+        experiment,
+        allow_missing_prediction=allow_missing_prediction,
+    )
     row = {
         "experiment_id": experiment.get("experiment_id"),
         "timestamp": utc_now_iso(),
@@ -1339,11 +1390,16 @@ def update_result(
     status_override=None,
     realized_failure_mode=None,
     surprise_note=None,
+    allow_missing_prediction=False,
 ):
     exp = get_experiment(registry, experiment_id)
     if not exp:
         raise ValueError(f"unknown experiment_id: {experiment_id}")
     decision = final_decision(judgement, status_override)
+    require_pre_run_prediction(
+        exp,
+        allow_missing_prediction=allow_missing_prediction,
+    )
     exp["status"] = decision
     exp["completed_at"] = utc_now_iso()
     exp["result"] = {
@@ -1366,6 +1422,299 @@ def update_result(
         save_ticket(exp, _registry_tickets_dir(registry))
         _sync_index_entry(registry, exp)
     return exp
+
+
+def _load_json_file(path):
+    try:
+        with Path(path).open(encoding="utf-8-sig") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _closed_status(value):
+    status = str(value or "")
+    return status in FINAL_STATUSES or status.startswith(
+        ("accepted", "rejected", "observed_only")
+    )
+
+
+def _parse_iso_datetime(value):
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _experiment_id_date(experiment_id):
+    normalized = normalize_experiment_id(experiment_id)
+    if not normalized:
+        return None
+    try:
+        return datetime.strptime(normalized[4:12], "%Y%m%d").date()
+    except ValueError:
+        return None
+
+
+def _prediction_enforcement_datetime():
+    parsed = _parse_iso_datetime(PREDICTION_ENFORCEMENT_STARTED_AT)
+    if parsed is None:
+        raise ValueError("invalid PREDICTION_ENFORCEMENT_STARTED_AT")
+    return parsed
+
+
+def prediction_enforcement_bucket(ticket):
+    """Classify prediction gaps as legacy or post-enforcement.
+
+    Missing timestamps are treated as legacy because we cannot prove the agent
+    saw the new code-enforced rule. A future-dated experiment ID still counts
+    as post-enforcement even when a hand-written stub omits timestamps.
+    """
+    cutoff = _prediction_enforcement_datetime()
+    for field in ("created_at", "reserved_at", "updated_at", "claimed_at", "completed_at"):
+        parsed = _parse_iso_datetime(ticket.get(field))
+        if parsed is not None:
+            return (
+                "post_enforcement"
+                if parsed >= cutoff
+                else "legacy_pre_enforcement"
+            )
+
+    hub_identity = ticket.get("hub_identity") or {}
+    parsed = _parse_iso_datetime(hub_identity.get("reserved_at"))
+    if parsed is not None:
+        return "post_enforcement" if parsed >= cutoff else "legacy_pre_enforcement"
+
+    experiment_date = _experiment_id_date(ticket.get("experiment_id"))
+    if experiment_date and experiment_date > cutoff.date():
+        return "post_enforcement"
+    return "legacy_pre_enforcement"
+
+
+def _ticket_records_for_audit(registry, tickets_dir=DEFAULT_TICKETS_DIR):
+    records = {}
+    for exp in iter_experiments(registry):
+        experiment_id = exp.get("experiment_id")
+        if experiment_id:
+            records[experiment_id] = exp
+    tickets_path = Path(tickets_dir)
+    if tickets_path.exists():
+        for path in sorted(tickets_path.glob("exp-*.json")):
+            row = _load_json_file(path)
+            if not isinstance(row, dict):
+                continue
+            experiment_id = row.get("experiment_id") or normalize_experiment_id(path.stem)
+            if experiment_id:
+                row.setdefault("experiment_id", experiment_id)
+                records[experiment_id] = {**records.get(experiment_id, {}), **row}
+    return records
+
+
+def _log_records_for_audit(logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
+    records = {}
+    logs_path = Path(logs_dir)
+    if logs_path.exists():
+        for path in sorted(logs_path.glob("exp-*.json")):
+            row = _load_json_file(path)
+            if not isinstance(row, dict):
+                continue
+            experiment_id = row.get("experiment_id") or normalize_experiment_id(path.stem)
+            if experiment_id:
+                records[experiment_id] = row
+    return records
+
+
+def audit_experiment_process(
+    registry,
+    *,
+    tickets_dir=DEFAULT_TICKETS_DIR,
+    logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
+):
+    """Audit whether experiment objects obey the code-enforced process contract."""
+    tickets = _ticket_records_for_audit(registry, tickets_dir=tickets_dir)
+    logs = _log_records_for_audit(logs_dir=logs_dir)
+    alpha_ticket_count = 0
+    legacy_alpha_ticket_count = 0
+    post_alpha_ticket_count = 0
+    closed_alpha_count = 0
+    closed_legacy_alpha_count = 0
+    closed_post_alpha_count = 0
+    missing_prediction = []
+    legacy_missing_prediction = []
+    post_missing_prediction = []
+    closed_missing_prediction = []
+    closed_legacy_missing_prediction = []
+    closed_post_missing_prediction = []
+    closed_missing_calibration = []
+    closed_legacy_missing_calibration = []
+    closed_post_missing_calibration = []
+
+    for experiment_id, ticket in sorted(tickets.items()):
+        if not prediction_required_for_lane(ticket.get("lane")):
+            continue
+        alpha_ticket_count += 1
+        bucket = prediction_enforcement_bucket(ticket)
+        if bucket == "post_enforcement":
+            post_alpha_ticket_count += 1
+        else:
+            legacy_alpha_ticket_count += 1
+        reasons = prediction_missing_reasons(ticket)
+        status = ticket.get("status")
+        is_closed = _closed_status(status)
+        if is_closed:
+            closed_alpha_count += 1
+            if bucket == "post_enforcement":
+                closed_post_alpha_count += 1
+            else:
+                closed_legacy_alpha_count += 1
+        if reasons:
+            item = {
+                "experiment_id": experiment_id,
+                "lane": ticket.get("lane"),
+                "status": status,
+                "missing": reasons,
+                "enforcement_bucket": bucket,
+            }
+            missing_prediction.append(item)
+            if bucket == "post_enforcement":
+                post_missing_prediction.append(item)
+            else:
+                legacy_missing_prediction.append(item)
+            if is_closed:
+                closed_missing_prediction.append(item)
+                if bucket == "post_enforcement":
+                    closed_post_missing_prediction.append(item)
+                else:
+                    closed_legacy_missing_prediction.append(item)
+
+        log_row = logs.get(experiment_id) or {}
+        result = ticket.get("result") or {}
+        if not isinstance(result, dict):
+            result = {}
+        has_calibration = bool(log_row.get("calibration") or result.get("calibration"))
+        if is_closed and not has_calibration:
+            item = {
+                "experiment_id": experiment_id,
+                "lane": ticket.get("lane"),
+                "status": status,
+                "enforcement_bucket": bucket,
+            }
+            closed_missing_calibration.append(item)
+            if bucket == "post_enforcement":
+                closed_post_missing_calibration.append(item)
+            else:
+                closed_legacy_missing_calibration.append(item)
+
+    passed = not post_missing_prediction and not closed_post_missing_calibration
+    return {
+        "schema_version": 2,
+        "checked_at": utc_now_iso(),
+        "prediction_enforcement_started_at": PREDICTION_ENFORCEMENT_STARTED_AT,
+        "tickets_checked": len(tickets),
+        "logs_checked": len(logs),
+        "alpha_ticket_count": alpha_ticket_count,
+        "legacy_pre_enforcement_alpha_ticket_count": legacy_alpha_ticket_count,
+        "post_enforcement_alpha_ticket_count": post_alpha_ticket_count,
+        "closed_alpha_count": closed_alpha_count,
+        "closed_legacy_pre_enforcement_alpha_count": closed_legacy_alpha_count,
+        "closed_post_enforcement_alpha_count": closed_post_alpha_count,
+        "alpha_missing_prediction_count": len(missing_prediction),
+        "legacy_pre_enforcement_missing_prediction_count": len(legacy_missing_prediction),
+        "post_enforcement_missing_prediction_count": len(post_missing_prediction),
+        "closed_alpha_missing_prediction_count": len(closed_missing_prediction),
+        "closed_legacy_pre_enforcement_missing_prediction_count": len(
+            closed_legacy_missing_prediction
+        ),
+        "closed_post_enforcement_missing_prediction_count": len(
+            closed_post_missing_prediction
+        ),
+        "closed_alpha_missing_calibration_count": len(closed_missing_calibration),
+        "closed_legacy_pre_enforcement_missing_calibration_count": len(
+            closed_legacy_missing_calibration
+        ),
+        "closed_post_enforcement_missing_calibration_count": len(
+            closed_post_missing_calibration
+        ),
+        "prediction_coverage": (
+            round((alpha_ticket_count - len(missing_prediction)) / alpha_ticket_count, 4)
+            if alpha_ticket_count
+            else None
+        ),
+        "legacy_pre_enforcement_prediction_coverage": (
+            round(
+                (legacy_alpha_ticket_count - len(legacy_missing_prediction))
+                / legacy_alpha_ticket_count,
+                4,
+            )
+            if legacy_alpha_ticket_count
+            else None
+        ),
+        "post_enforcement_prediction_coverage": (
+            round(
+                (post_alpha_ticket_count - len(post_missing_prediction))
+                / post_alpha_ticket_count,
+                4,
+            )
+            if post_alpha_ticket_count
+            else None
+        ),
+        "closed_calibration_coverage": (
+            round(
+                (closed_alpha_count - len(closed_missing_calibration))
+                / closed_alpha_count,
+                4,
+            )
+            if closed_alpha_count
+            else None
+        ),
+        "legacy_pre_enforcement_closed_calibration_coverage": (
+            round(
+                (
+                    closed_legacy_alpha_count
+                    - len(closed_legacy_missing_calibration)
+                )
+                / closed_legacy_alpha_count,
+                4,
+            )
+            if closed_legacy_alpha_count
+            else None
+        ),
+        "post_enforcement_closed_calibration_coverage": (
+            round(
+                (closed_post_alpha_count - len(closed_post_missing_calibration))
+                / closed_post_alpha_count,
+                4,
+            )
+            if closed_post_alpha_count
+            else None
+        ),
+        "missing_prediction_examples": missing_prediction[:25],
+        "legacy_pre_enforcement_missing_prediction_examples": (
+            legacy_missing_prediction[:25]
+        ),
+        "post_enforcement_missing_prediction_examples": post_missing_prediction[:25],
+        "closed_missing_prediction_examples": closed_missing_prediction[:25],
+        "closed_legacy_pre_enforcement_missing_prediction_examples": (
+            closed_legacy_missing_prediction[:25]
+        ),
+        "closed_post_enforcement_missing_prediction_examples": (
+            closed_post_missing_prediction[:25]
+        ),
+        "closed_missing_calibration_examples": closed_missing_calibration[:25],
+        "closed_legacy_pre_enforcement_missing_calibration_examples": (
+            closed_legacy_missing_calibration[:25]
+        ),
+        "closed_post_enforcement_missing_calibration_examples": (
+            closed_post_missing_calibration[:25]
+        ),
+        "passed": passed,
+        "strict_blocks_only_post_enforcement_gaps": True,
+    }
 
 
 def experiment_log_exists(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):

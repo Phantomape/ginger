@@ -84,8 +84,8 @@ name centrally before pushing content.
 Preferred command:
 
 ```powershell
-.\.venv\Scripts\python.exe -B scripts\reserve_experiment.py `
-  --lane alpha_discovery `
+.\.venv\Scripts\python.exe -B scripts\experiment.py new `
+  --lane alpha_search `
   --hypothesis "One sentence hypothesis." `
   --change-type default_off_paper_allocation `
   --single-causal-variable "one changed variable" `
@@ -93,13 +93,16 @@ Preferred command:
   --trial-family stable_trial_family `
   --changed-variable stable_changed_variable `
   --nearby-prior-experiments exp-YYYYMMDD-NNN `
-  --new-evidence-type new_forward_rows
+  --new-evidence-type new_forward_rows `
+  --success-probability 0.35 `
+  --main-failure-modes "thin_sample,concentration_failed" `
+  --confidence-reason "Why this prior is reasonable before seeing the result."
 ```
 
 For measurement repair:
 
 ```powershell
-.\.venv\Scripts\python.exe -B scripts\reserve_experiment.py `
+.\.venv\Scripts\python.exe -B scripts\experiment.py new `
   --lane measurement_repair `
   --hypothesis "Repair the blocker that makes alpha evaluation unreliable." `
   --change-type identity_or_measurement_repair `
@@ -112,6 +115,9 @@ Rules:
 - Use the returned `experiment_id` everywhere.
 - Reservation automatically writes the ticket, an experiment card, and a
   revision manifest.
+- `alpha_search`, `alpha_discovery`, and `universe_scout` tickets are rejected
+  by code unless they include pre-run `success_probability` and
+  `main_failure_modes`.
 - Do not use the dashboard `Next exp-...` value as a lock.
 - To reserve a specific ID, pass `--experiment-id exp-YYYYMMDD-NNN`.
 - Explicit IDs fail if the ID already appears in registry, JSONL, tickets,
@@ -123,7 +129,7 @@ Rules:
 If other agents may be active, claim the ticket:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\claim_experiment.py exp-YYYYMMDD-NNN `
+.\.venv\Scripts\python.exe scripts\experiment.py claim exp-YYYYMMDD-NNN `
   --owner your-agent-name
 ```
 
@@ -231,7 +237,7 @@ ticket explicitly allows it and the change is necessary.
 For before/after JSON files, use:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\judge_experiment.py `
+.\.venv\Scripts\python.exe scripts\experiment.py close `
   --experiment-id exp-YYYYMMDD-NNN `
   --before path\to\before.json `
   --after path\to\after.json `
@@ -262,6 +268,16 @@ Final records must include:
 - related files
 
 Rejected and rolled-back experiments must still be recorded.
+
+Run the process audit when reconciling legacy tickets or dashboard gaps:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\experiment.py audit
+```
+
+Use `--strict` in automation to fail only on post-enforcement alpha/scout
+prediction or calibration gaps. Pre-enforcement history is reported as legacy
+process debt and should not be backfilled with hindsight probabilities.
 
 ## Handoff Checklist
 

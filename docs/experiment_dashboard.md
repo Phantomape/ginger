@@ -38,7 +38,7 @@ dashboard is a static snapshot.
 Preferred command:
 
 ```powershell
-.\.venv\Scripts\python.exe -B scripts\reserve_experiment.py `
+.\.venv\Scripts\python.exe -B scripts\experiment.py new `
   --lane measurement_repair `
   --hypothesis "Make experiment identity collision-proof before artifacts are written." `
   --change-type identity_reservation `
@@ -75,7 +75,7 @@ machine-readable index behind the UI.
 
 - `Next exp-...`: the next collision-safe experiment ID inferred from all known
   identity sources, not only `docs/experiment_registry.json`. This is a
-  diagnostic preview, not a reservation. Use `scripts\reserve_experiment.py`
+  diagnostic preview, not a reservation. Use `scripts\experiment.py new`
   before starting a new runner or artifact.
 - `Anomaly Rows`: actionable identity problems, such as filename/payload ID
   mismatches, divergent mirrored tickets, active/proposed work missing registry

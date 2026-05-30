@@ -68,6 +68,14 @@ def main():
         "--surprise-note",
         help="Optional short note explaining what was surprising about the result.",
     )
+    parser.add_argument(
+        "--allow-missing-prediction",
+        action="store_true",
+        help=(
+            "Legacy escape hatch: allow closing an alpha/scout ticket without "
+            "pre-run prediction metadata. New alpha tickets should not need this."
+        ),
+    )
     args = parser.parse_args()
 
     registry_snapshot = load_registry(args.registry)
@@ -88,6 +96,7 @@ def main():
                 status_override=args.status_override,
                 realized_failure_mode=args.realized_failure_mode,
                 surprise_note=args.surprise_note,
+                allow_missing_prediction=args.allow_missing_prediction,
             ),
             timeout_seconds=args.lock_timeout_seconds,
         )
@@ -103,6 +112,7 @@ def main():
             notes=args.notes,
             realized_failure_mode=args.realized_failure_mode,
             surprise_note=args.surprise_note,
+            allow_missing_prediction=args.allow_missing_prediction,
         )
         if args.append_log:
             save_experiment_log_entry(

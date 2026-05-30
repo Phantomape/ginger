@@ -11,6 +11,7 @@ if str(SCRIPTS) not in sys.path:
 
 from experiment_registry import (  # noqa: E402
     append_log_entry,
+    audit_experiment_process,
     build_log_draft,
     claim_ticket,
     collect_experiment_id_sources,
@@ -30,6 +31,14 @@ from experiment_registry import (  # noqa: E402
     save_registry,
     update_result,
 )
+
+
+def alpha_prediction():
+    return {
+        "success_probability": 0.4,
+        "main_failure_modes": ["thin_sample"],
+        "confidence_reason": "Test prediction for strategy-facing ticket.",
+    }
 
 
 def test_create_ticket_assigns_incrementing_id_and_baseline(tmp_path):
@@ -284,6 +293,7 @@ def test_create_ticket_records_trial_accounting_fields():
         multiple_testing_risk_bucket="moderate",
         new_evidence_type="new_forward_rows",
         baseline_result_file="data/backtests/backtest_results_20260425.json",
+        prediction=alpha_prediction(),
     )
 
     assert ticket["mechanism_family"] == "broad_market_leadership"
@@ -326,6 +336,54 @@ def test_create_ticket_records_pre_run_prediction():
     assert prediction["recorded_at"]
 
 
+def test_alpha_search_ticket_requires_prediction():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    try:
+        create_ticket(
+            registry,
+            lane="alpha_search",
+            hypothesis="Test one alpha hypothesis.",
+            change_type="ranking_rule",
+            single_causal_variable="new ranking field",
+        )
+    except ValueError as exc:
+        assert "requires a pre-run prediction" in str(exc)
+        assert "missing_prediction" in str(exc)
+    else:
+        raise AssertionError("alpha_search ticket without prediction was accepted")
+
+    ticket = create_ticket(
+        registry,
+        lane="alpha_search",
+        hypothesis="Test one alpha hypothesis.",
+        change_type="ranking_rule",
+        single_causal_variable="new ranking field",
+        prediction=alpha_prediction(),
+    )
+
+    assert ticket["lane"] == "alpha_search"
+    assert ticket["prediction"]["success_probability"] == 0.4
+
+
+def test_alpha_ticket_prediction_requires_failure_modes():
+    registry = {"schema_version": 1, "updated_at": None, "experiments": []}
+
+    try:
+        create_ticket(
+            registry,
+            lane="alpha_discovery",
+            hypothesis="Test one alpha hypothesis.",
+            change_type="risk_scalar_or_topup",
+            single_causal_variable="new risk scalar",
+            prediction={"success_probability": 0.5},
+        )
+    except ValueError as exc:
+        assert "missing_main_failure_modes" in str(exc)
+    else:
+        raise AssertionError("alpha ticket without failure modes was accepted")
+
+
 def test_default_file_stem_falls_back_when_slug_has_no_ascii():
     assert default_file_stem("exp-20990101-001", "坏交易") == (
         "exp_20990101_001_experiment"
@@ -362,6 +420,7 @@ def test_create_ticket_expands_scope_templates():
         change_type="new_strategy_shadow",
         single_causal_variable="shadow source",
         baseline_result_file="data/backtests/backtest_results_20260425.json",
+        prediction=alpha_prediction(),
         allowed_write_scope=[
             "quant/experiments/{experiment_id}_{lane}.py",
             "data/experiments/{experiment_id}/{change_type}.json",
@@ -383,6 +442,7 @@ def test_claim_detects_scope_and_variable_conflicts():
         change_type="ranking_rule",
         single_causal_variable="breakout ranking key",
         allowed_write_scope=["quant/signal_engine.py"],
+        prediction=alpha_prediction(),
     )
     second = create_ticket(
         registry,
@@ -392,6 +452,7 @@ def test_claim_detects_scope_and_variable_conflicts():
         single_causal_variable="breakout ranking key",
         allowed_write_scope=["quant/"],
         exclusive_scope_ok=True,
+        prediction=alpha_prediction(),
     )
 
     claimed, conflicts = claim_ticket(registry, first["experiment_id"], "agent-a")
@@ -427,6 +488,7 @@ def test_claim_ignores_shared_coordination_file_scopes():
             "D:/Github/ginger/docs/experiment_log.jsonl",
             "D:/Github/ginger/docs/experiment_registry.json",
         ],
+        prediction=alpha_prediction(),
     )
 
     _, conflicts = claim_ticket(registry, first["experiment_id"], "agent-loss")
@@ -599,6 +661,112 @@ def test_log_draft_includes_prediction_calibration():
     assert draft["calibration"]["predicted_failure_mode_hit"] is True
 
 
+def test_log_draft_rejects_legacy_alpha_without_prediction():
+    ticket = {
+        "experiment_id": "exp-20990101-020",
+        "lane": "alpha_search",
+        "hypothesis": "Legacy hand-written alpha ticket.",
+        "change_type": "ranking_rule",
+        "single_causal_variable": "legacy missing prediction",
+    }
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 0.9},
+        "delta_metrics": {"expected_value_score": -0.1},
+    }
+
+    try:
+        build_log_draft(ticket, judgement, "before.json", "after.json")
+    except ValueError as exc:
+        assert "requires a pre-run prediction" in str(exc)
+    else:
+        raise AssertionError("legacy alpha closeout without prediction was accepted")
+
+    draft = build_log_draft(
+        ticket,
+        judgement,
+        "before.json",
+        "after.json",
+        allow_missing_prediction=True,
+    )
+    assert draft["experiment_id"] == "exp-20990101-020"
+    assert "prediction" not in draft
+
+
+def test_audit_experiment_process_reports_legacy_without_failing(tmp_path):
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    logs_dir = tmp_path / "experiments" / "logs"
+    tickets_dir.mkdir(parents=True)
+    logs_dir.mkdir(parents=True)
+
+    (tickets_dir / "exp-20260528-008.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20260528-008",
+                "lane": "alpha_search",
+                "status": "accepted_legacy_stub",
+                "updated_at": "2026-05-28T05:36:40+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (logs_dir / "exp-20260528-008.json").write_text(
+        json.dumps({"experiment_id": "exp-20260528-008", "decision": "accepted"}),
+        encoding="utf-8",
+    )
+
+    audit = audit_experiment_process(
+        {"schema_version": 1, "updated_at": None, "experiments": []},
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+    )
+
+    assert audit["passed"] is True
+    assert audit["closed_legacy_pre_enforcement_missing_prediction_count"] == 1
+    assert audit["closed_post_enforcement_missing_prediction_count"] == 0
+    assert audit["closed_legacy_pre_enforcement_missing_calibration_count"] == 1
+    assert audit["closed_post_enforcement_missing_calibration_count"] == 0
+
+
+def test_audit_experiment_process_fails_post_enforcement_gaps(tmp_path):
+    tickets_dir = tmp_path / "experiments" / "tickets"
+    logs_dir = tmp_path / "experiments" / "logs"
+    tickets_dir.mkdir(parents=True)
+    logs_dir.mkdir(parents=True)
+
+    (tickets_dir / "exp-20990101-030.json").write_text(
+        json.dumps(
+            {
+                "experiment_id": "exp-20990101-030",
+                "lane": "alpha_search",
+                "status": "accepted_post_enforcement_stub",
+                "created_at": "2099-01-01T00:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (logs_dir / "exp-20990101-030.json").write_text(
+        json.dumps({"experiment_id": "exp-20990101-030", "decision": "accepted"}),
+        encoding="utf-8",
+    )
+
+    audit = audit_experiment_process(
+        {"schema_version": 1, "updated_at": None, "experiments": []},
+        tickets_dir=tickets_dir,
+        logs_dir=logs_dir,
+    )
+
+    assert audit["passed"] is False
+    assert audit["post_enforcement_missing_prediction_count"] == 1
+    assert audit["closed_post_enforcement_missing_prediction_count"] == 1
+    assert audit["closed_post_enforcement_missing_calibration_count"] == 1
+    assert audit["post_enforcement_missing_prediction_examples"][0][
+        "experiment_id"
+    ] == "exp-20990101-030"
+
+
 def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):
     row = {"experiment_id": "exp-20990101-003", "decision": "observed_only"}
     logs_dir = tmp_path / "logs"
@@ -760,7 +928,11 @@ def test_update_result_records_prediction_calibration():
         change_type="risk_scalar_or_topup",
         single_causal_variable="calibrated topup",
         baseline_result_file="data/backtests/backtest_results_20260425.json",
-        prediction={"success_probability": 0.2, "expected_ev_delta": 0.01},
+        prediction={
+            "success_probability": 0.2,
+            "expected_ev_delta": 0.01,
+            "main_failure_modes": ["drawdown_failed"],
+        },
     )
     judgement = {
         "decision": "accepted",
