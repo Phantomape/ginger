@@ -27,7 +27,7 @@ from constants import (
     REGIME_AWARE_EXIT,
 )
 from earnings_snapshot import persist_earnings_snapshot
-from data_paths import daily_artifact_path
+from data_paths import daily_artifact_path, atomic_write_json
 from operator_input_paths import open_positions_path, repo_relative
 from regime_exit import compute_regime_exit_profile
 
@@ -62,9 +62,8 @@ def _load_open_positions():
 
 
 def _save_json(obj, filepath):
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(obj, f, indent=2, ensure_ascii=False, default=str)
+    # Atomic write (temp + os.replace); see bug audit #9.
+    atomic_write_json(obj, filepath, default=str)
 
 
 # ── Pipeline ─────────────────────────────────────────────────────────────────

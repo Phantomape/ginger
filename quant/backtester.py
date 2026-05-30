@@ -167,6 +167,11 @@ DEFAULT_CONFIG = {
     "BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH": BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
     "BREAKOUT_RANK_BY_52W_HIGH": BREAKOUT_RANK_BY_52W_HIGH,
     "LOOKBACK_CALENDAR_DAYS": 400,   # enough for 200-day MA + features
+    # Liquidity-aware slippage: when True, entry/stop/target fills scale slippage
+    # by the name's 20d avg dollar volume + order participation (fill_model
+    # square-root impact). Default False to keep prior backtests byte-identical;
+    # flip after a before/after multi-window measurement_repair validation.
+    "LIQUIDITY_AWARE_SLIPPAGE": False,
     "ATR_TARGET_MULT":     ATR_TARGET_MULT,  # target = entry + N × ATR
     "REGIME_AWARE_EXIT":   REGIME_AWARE_EXIT,  # smooth target width by entry-day regime strength
     # Trailing stop config (set TRAIL_TRIGGER_ATR_MULT=0 to disable, use fixed target)
@@ -969,6 +974,24 @@ def _open_positions_cash_populated():
         return False
 
 
+def _adv20_dollar(df, asof_date):
+    """20-day average dollar volume from bars strictly before ``asof_date``.
+
+    PIT-safe liquidity measure for the slippage model. Returns None if there is
+    insufficient history or no frame.
+    """
+    if df is None or getattr(df, "empty", True):
+        return None
+    prior = df.loc[df.index < pd.Timestamp(asof_date)]
+    if len(prior) < 20:
+        return None
+    tail = prior.iloc[-20:]
+    try:
+        return float((tail["Close"] * tail["Volume"]).mean())
+    except Exception:
+        return None
+
+
 class Position:
     """Track a single open backtested position."""
 
@@ -983,7 +1006,7 @@ class Position:
                  "post_addon_weakness_reduce_done",
                  "exit_advisory_rules_seen",
                  "exit_advisory_first_seen", "sleeve", "pilot_decision_id",
-                 "pilot_snapshot", "pilot_signal_date")
+                 "pilot_snapshot", "pilot_signal_date", "adv_dollar")
 
     def __init__(self, ticker, entry_price, stop_price, target_price,
                  shares, entry_date, strategy, sector="Unknown",
@@ -991,8 +1014,9 @@ class Position:
                  regime_exit_bucket=None, regime_exit_score=None,
                  sizing_multipliers=None, base_risk_pct=None,
                  actual_risk_pct=None, sleeve="core", pilot_decision_id=None,
-                 pilot_snapshot=None, pilot_signal_date=None):
+                 pilot_snapshot=None, pilot_signal_date=None, adv_dollar=None):
         self.ticker           = ticker
+        self.adv_dollar       = adv_dollar   # 20d avg $-volume at entry (liquidity-aware slippage)
         self.entry_price      = entry_price               # post-slippage fill
         self.entry_open_price = entry_open_price or entry_price
         self.stop_price       = stop_price
@@ -2142,7 +2166,9 @@ class BacktestEngine:
                 })
 
         def _record_partial_reduce_trade(pos, shares_to_sell, raw_open, today, action):
-            exit_price = apply_slippage(raw_open, SLIPPAGE_BPS_STOP, "sell")
+            exit_price = apply_slippage(
+                raw_open, SLIPPAGE_BPS_STOP, "sell",
+                adv_dollar=pos.adv_dollar, notional=raw_open * shares_to_sell)
             cost = exit_price * ROUND_TRIP_COST_PCT * shares_to_sell
             pnl = (exit_price - pos.entry_price) * shares_to_sell - cost
             entry_slip = (pos.entry_price - pos.entry_open_price) * shares_to_sell
@@ -2752,12 +2778,16 @@ class BacktestEngine:
                 # Stop hit (gap-fill or intraday) — sell slippage on top.
                 if pos.stop_price and low <= pos.stop_price:
                     exit_raw_price = opn if opn < pos.stop_price else pos.stop_price
-                    exit_price     = apply_stop_fill(opn, pos.stop_price)
+                    exit_price     = apply_stop_fill(
+                        opn, pos.stop_price,
+                        adv_dollar=pos.adv_dollar, notional=exit_raw_price * pos.shares)
                     exit_reason    = "trailing_stop" if pos.trailing_active else "stop"
                 # Target hit — gap-up uses Open (bonus), intraday uses target; slippage on top.
                 elif pos.target_price and high >= pos.target_price:
                     exit_raw_price = opn if opn >= pos.target_price else pos.target_price
-                    exit_price     = apply_target_fill(opn, pos.target_price)
+                    exit_price     = apply_target_fill(
+                        opn, pos.target_price,
+                        adv_dollar=pos.adv_dollar, notional=exit_raw_price * pos.shares)
                     exit_reason    = "target"
 
                 if exit_price is not None:
@@ -3296,7 +3326,13 @@ class BacktestEngine:
                     )
                     continue
 
-                entry_fill = apply_entry_fill(fill_price)   # buy-side slippage
+                adv_dollar = (
+                    _adv20_dollar(ohlcv_all.get(ticker), fill_date)
+                    if self.config.get("LIQUIDITY_AWARE_SLIPPAGE") else None
+                )
+                entry_fill = apply_entry_fill(
+                    fill_price, adv_dollar=adv_dollar, notional=fill_price * shares
+                )   # buy-side slippage (liquidity-aware when enabled)
                 sizing = sig.get("sizing") or {}
                 positions.append(Position(
                     ticker=ticker,
@@ -3306,6 +3342,7 @@ class BacktestEngine:
                     target_price=target,
                     shares=shares,
                     entry_date=fill_date,
+                    adv_dollar=adv_dollar,
                     strategy=sig.get("strategy", "unknown"),
                     sector=sig.get("sector", "Unknown"),
                     target_mult_used=sig.get("target_mult_used"),
@@ -3480,7 +3517,9 @@ class BacktestEngine:
                 # Use target-side slippage budget (5 bps) — this is a mark-to-market
                 # unwind, not an adverse stop, so the stop-impact model would be
                 # too pessimistic.
-                exit_price = apply_slippage(raw_close, SLIPPAGE_BPS_TARGET, "sell")
+                exit_price = apply_slippage(
+                    raw_close, SLIPPAGE_BPS_TARGET, "sell",
+                    adv_dollar=pos.adv_dollar, notional=raw_close * pos.shares)
                 exit_raw_price = raw_close
             else:
                 exit_price = pos.entry_price     # flat — no price data
