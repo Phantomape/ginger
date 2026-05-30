@@ -1,0 +1,36 @@
+{
+  "decision": "rejected_pre_entry_catalyst_core_risk_topup",
+  "experiment_id": "exp-20260530-017",
+  "gate4": {
+    "aggregate_ev_delta": 0.0057,
+    "aggregate_pnl_delta": 2334.25,
+    "concentration": {
+      "max_single_positive_pnl_share": 0.910158,
+      "passed": false,
+      "positive_incremental_pnl": 1795.37,
+      "positive_pnl_hhi": 0.836459,
+      "top_positive_ticker": "COIN"
+    },
+    "failed_reasons": [
+      "max_drawdown_drift_above_guardrail",
+      "target_trade_count_below_10",
+      "target_concentration_failed"
+    ],
+    "max_drawdown_worse": 0.0102,
+    "passed": false,
+    "rule": "Pass if aggregate EV/PnL improve, no canonical window regresses on EV or PnL, min survival stays >=5%, max drawdown drift <=0.5pp, >=10 adjusted trades across >=2 windows, and positive incremental PnL concentration stays below 40% single ticker / 0.30 HHI.",
+    "target_trade_count": 2,
+    "target_windows": [
+      "mid_weak",
+      "old_thin"
+    ],
+    "windows_ev_regressed": [],
+    "windows_pnl_regressed": []
+  },
+  "hypothesis": "Existing core trend/breakout trades with a PIT high-confidence pre-entry catalyst may deserve a small shared risk-budget top-up because exp-20260530-014 showed positive three-window outcome separation.",
+  "lane": "alpha_search",
+  "owner": "codex-alpha-search",
+  "single_causal_variable": "Sweep only the risk scalar applied to already-selected core trend/breakout signals with a high-confidence pre-entry catalyst.",
+  "status": "rejected",
+  "updated_at": "2026-05-30T21:11:20Z"
+}
