@@ -63,6 +63,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
                            fundamental_growth_rs_paper_sleeve=None,
+                           finra_iwm_paper_sleeve=None,
                            space_catalyst_shadow=None,
                            space_catalyst_observation_slot=None,
                            space_catalyst_event_ledger=None,
@@ -105,6 +106,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
         fundamental_growth_rs_paper_sleeve (dict): Default-off Companyfacts growth + RS paper sleeve
+        finra_iwm_paper_sleeve (dict): Default-off FINRA short-pressure IWM-confirmed paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
         space_catalyst_observation_slot (dict): Observe-only blocked Space trade plan
         space_catalyst_event_ledger (dict): Observe-only Space event-state ledger
@@ -2096,6 +2098,66 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"points={candidate.get('fundamental_growth_points_v1')} "
                 f"RS={candidate.get('rs_proxy_score_v1')} "
                 f"liab/assets={candidate.get('liabilities_assets_ratio')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if finra_iwm_paper_sleeve and (
+        finra_iwm_paper_sleeve.get("candidate_count", 0) > 0
+        or finra_iwm_paper_sleeve.get("pending_count", 0) > 0
+        or finra_iwm_paper_sleeve.get("open_position_count", 0) > 0
+        or finra_iwm_paper_sleeve.get("closed_count_today", 0) > 0
+        or finra_iwm_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("FINRA IWM PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {finra_iwm_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {finra_iwm_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if finra_iwm_paper_sleeve.get("error"):
+            lines.append(f"  Source status: {finra_iwm_paper_sleeve.get('error')}")
+        source = finra_iwm_paper_sleeve.get("data_source") or {}
+        market = finra_iwm_paper_sleeve.get("market_confirmation") or {}
+        cooldown = finra_iwm_paper_sleeve.get("same_ticker_cooldown") or {}
+        lines.append(
+            "  FINRA rows: "
+            f"{source.get('row_count', 0)}  |  "
+            f"covered tickers={source.get('covered_ticker_count', 0)}  |  "
+            f"source={source.get('status')}"
+        )
+        lines.append(
+            "  Market gate: "
+            f"{market.get('reason')}  |  "
+            f"IWM-SPY 20d={market.get('iwm_minus_spy_ret20')}  |  "
+            f"cooldown rejects={cooldown.get('rejected_count', 0)}"
+        )
+        lines.append(
+            f"  Candidates: {finra_iwm_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Pending: {finra_iwm_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {finra_iwm_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {finra_iwm_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        gate = finra_iwm_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={', '.join(reasons) if reasons else 'none'}"
+            )
+        for candidate in (finra_iwm_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"score={candidate.get('finra_short_pressure_score')} "
+                f"dtc={candidate.get('finra_days_to_cover')} "
+                f"rs20={candidate.get('rs20_vs_spy')} "
                 f"notional={notional_text} (paper only)"
             )
 

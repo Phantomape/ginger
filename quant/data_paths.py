@@ -89,6 +89,22 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/fundamental_growth_rs/state.json",
         "fundamental_growth_rs_paper_state.json",
     ),
+    "finra_short_interest_rows": (
+        "non_ohlcv/finra_short_interest/rows.json",
+        "finra_short_interest_rows.json",
+    ),
+    "finra_short_interest_files": (
+        "non_ohlcv/finra_short_interest/source_files.json",
+        "finra_short_interest_files.json",
+    ),
+    "finra_iwm_paper_snapshots": (
+        "paper_sleeves/finra_iwm/snapshots.jsonl",
+        "finra_iwm_paper_snapshots.jsonl",
+    ),
+    "finra_iwm_paper_state": (
+        "paper_sleeves/finra_iwm/state.json",
+        "finra_iwm_paper_state.json",
+    ),
     "broad_market_paper_universe": (
         "state/broad_market_paper/universe.json",
         "broad_market_paper_universe.json",

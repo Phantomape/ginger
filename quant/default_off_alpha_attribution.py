@@ -225,6 +225,7 @@ def build_default_off_alpha_attribution_report(
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
     fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
+    finra_iwm_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a daily read-only activation/blocker dashboard."""
 
@@ -306,6 +307,25 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "low_liability_supported": (
                     ((fundamental_growth_rs_paper_sleeve or {}).get("low_liability") or {}).get("supported_candidate_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="finra_iwm_confirmed",
+            label="FINRA_IWM_CONFIRMED_PAPER",
+            snapshot=finra_iwm_paper_sleeve,
+            extra_metrics={
+                "source_rule_version": (
+                    (finra_iwm_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "market_confirmation_rule_version": (
+                    (finra_iwm_paper_sleeve or {}).get("market_confirmation_rule_version")
+                ),
+                "cooldown_rejected": (
+                    ((finra_iwm_paper_sleeve or {}).get("same_ticker_cooldown") or {}).get("rejected_count")
+                ),
+                "finra_rows": (
+                    ((finra_iwm_paper_sleeve or {}).get("data_source") or {}).get("row_count")
                 ),
             },
         ),

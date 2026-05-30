@@ -617,6 +617,33 @@ Companyfacts growth, operating-profit, RS, top-N, hold-day, fixed-notional,
 low-volume, filing-recency, low-liability, or closed-ledger-scalar parameters
 on the frozen sample without forward rows or a new production-visible field.
 
+### `quant/finra_iwm_paper_sleeve.py`
+
+Purpose: maintain the default-off `FINRA_IWM_CONFIRMED_PAPER` forward
+observation ledger for the accepted FINRA short-pressure + IWM confirmation +
+same-ticker cooldown candidate-pool lead from `exp-20260530-007`.
+
+Candidate route:
+
+- Uses official FINRA biweekly short-interest rows only when
+  `publication_date <= signal_date`.
+- Requires the fixed OHLCV breakout/liquidity/relative-strength gates from
+  `exp-20260529-017`.
+- Requires the accepted IWM risk-appetite confirmation from `exp-20260530-005`:
+  `IWM 20d return - SPY 20d return >= 0.003`.
+- Applies the accepted seven-calendar-day same-ticker admitted-candidate
+  cooldown from `exp-20260530-007`.
+- Tracks fixed `$10k` paper notional, next-open paper entry,
+  10-trading-day paper hold, closed outcomes, and concentration blockers only.
+
+Agent rule: this sleeve may collect forward replacement-value evidence for the
+accepted alpha. It must not enable orders, expand the core universe, alter live
+ranking, sizing, exits, LLM/news, or consume live capital without a separate
+Gate 1-4 activation experiment and parity update. Do not retune the FINRA
+score, IWM/SPY threshold, cooldown length, top-N, hold-day, or notional on the
+frozen sample without forward rows or a stronger borrow-cost/availability
+field.
+
 ### `quant/default_off_alpha_attribution.py`
 
 Purpose: roll up promotion readiness and blocker reasons across default-off

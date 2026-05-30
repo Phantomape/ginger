@@ -293,6 +293,10 @@ def main():
         build_fundamental_growth_rs_paper_sleeve_snapshot,
         empty_fundamental_growth_rs_paper_sleeve_snapshot,
     )
+    from finra_iwm_paper_sleeve import (
+        build_finra_iwm_paper_sleeve_snapshot,
+        empty_finra_iwm_paper_sleeve_snapshot,
+    )
     from space_catalyst_sleeve import (
         build_space_catalyst_event_ledger_snapshot,
         build_space_catalyst_observation_slot,
@@ -1960,6 +1964,47 @@ def main():
         )
 
     try:
+        finra_iwm_ohlcv = dict(ohlcv_dict)
+        finra_iwm_ohlcv["SPY"] = spy_ohlcv
+        if "IWM" not in finra_iwm_ohlcv or finra_iwm_ohlcv.get("IWM") is None:
+            finra_iwm_ohlcv["IWM"] = _cached_ohlcv("IWM")
+        finra_iwm_candidate_universe = {
+            "status": "daily_data_universe",
+            "tickers": sorted(
+                ticker
+                for ticker, frame in finra_iwm_ohlcv.items()
+                if frame is not None and str(ticker).upper() not in {"SPY", "IWM"}
+            ),
+        }
+        finra_iwm_paper_sleeve = build_finra_iwm_paper_sleeve_snapshot(
+            as_of=today_iso,
+            ohlcv_by_ticker=finra_iwm_ohlcv,
+            candidate_universe=finra_iwm_candidate_universe,
+            open_prices=current_open_prices,
+            current_prices=current_prices,
+        )
+        if (
+            finra_iwm_paper_sleeve.get("candidate_count", 0) > 0
+            or finra_iwm_paper_sleeve.get("pending_count", 0) > 0
+            or finra_iwm_paper_sleeve.get("open_position_count", 0) > 0
+            or finra_iwm_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "FINRA IWM paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                finra_iwm_paper_sleeve.get("candidate_count", 0),
+                finra_iwm_paper_sleeve.get("pending_count", 0),
+                finra_iwm_paper_sleeve.get("open_position_count", 0),
+                finra_iwm_paper_sleeve.get("closed_count_today", 0),
+                finra_iwm_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"FINRA IWM paper sleeve unavailable: {e}")
+        finra_iwm_paper_sleeve = empty_finra_iwm_paper_sleeve_snapshot(
+            today_iso,
+            "finra_iwm_paper_sleeve_build_failed",
+        )
+
+    try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -2067,6 +2112,7 @@ def main():
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
         fundamental_growth_rs_paper_sleeve=fundamental_growth_rs_paper_sleeve,
+        finra_iwm_paper_sleeve=finra_iwm_paper_sleeve,
     )
 
     # Attach enriched quant signals to trend_signals_dict so llm_advisor can show
@@ -2103,6 +2149,7 @@ def main():
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
     trend_signals_dict["fundamental_growth_rs_paper_sleeve"] = fundamental_growth_rs_paper_sleeve
+    trend_signals_dict["finra_iwm_paper_sleeve"] = finra_iwm_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
     trend_signals_dict["space_catalyst_observation_slot"] = space_catalyst_observation_slot
     trend_signals_dict["space_catalyst_event_ledger"] = space_catalyst_event_ledger
@@ -2146,6 +2193,7 @@ def main():
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
         fundamental_growth_rs_paper_sleeve = fundamental_growth_rs_paper_sleeve,
+        finra_iwm_paper_sleeve = finra_iwm_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
         space_catalyst_observation_slot = space_catalyst_observation_slot,
         space_catalyst_event_ledger = space_catalyst_event_ledger,
@@ -2195,6 +2243,7 @@ def main():
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
+        "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,
         "space_catalyst_observation_slot": space_catalyst_observation_slot,
         "space_catalyst_event_ledger": space_catalyst_event_ledger,
