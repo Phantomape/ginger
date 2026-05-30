@@ -1,0 +1,80 @@
+{
+  "experiment_id": "exp-20260530-002",
+  "experiment_uid": "expuid-3d8487a3115d4928",
+  "hub_identity": {
+    "scheme": "hf_hub_local_v1",
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260530-002",
+    "slug": "primary_8_k_item_family_5_02_leadership_8_01_other_at_pit_usable_trade_date",
+    "reserved_at": "2026-05-30T08:01:49+00:00",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners."
+  },
+  "status": "observed_only",
+  "lane": "alpha_discovery",
+  "owner": "phantomape",
+  "hypothesis": "SEC 8-K event-family forward drift: Item 5.02 (leadership change) precedes positive SPY-excess 5-10d drift and Item 8.01 (other events) precedes negative drift. Harden the exp-detected signal with temporal sub-period replication and ticker-concentration/dedup checks (the departure/appointment text split is blocked offline: only 6/158 filings carry usable Item-5.02 body text).",
+  "change_type": "sec_event_family_market_state_attribution_probe",
+  "mechanism_family": "event_graph_structured_event_state",
+  "trial_family": "event_graph_structured_event_state",
+  "trial_variant_id": "exp-20260530-002",
+  "single_causal_variable": "primary 8-K item family (5.02 leadership / 8.01 other) at PIT usable_trade_date",
+  "changed_variable": "primary 8-K item family (5.02 leadership / 8.01 other) at PIT usable_trade_date",
+  "prior_trial_count": 0,
+  "nearby_prior_experiments": [],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "new_pit_information_source",
+  "baseline_result_file": "data/backtests/backtest_results_20260522.json",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260530_002_primary_8_k_item_family_5_02_leadership_8_01_other_at_pit_usable_trade_date.py",
+    "data/experiments/exp-20260530-002/exp_20260530_002_primary_8_k_item_family_5_02_leadership_8_01_other_at_pit_usable_trade_date.json",
+    "experiments/cards/exp-20260530-002.md",
+    "experiments/manifests/exp-20260530-002.json",
+    "experiments/tickets/exp-20260530-002.json",
+    "experiments/logs/exp-20260530-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "must_not_touch": [
+    "entries",
+    "exits",
+    "ranking",
+    "sizing",
+    "orders",
+    "paper_sleeves",
+    "llm"
+  ],
+  "locked_variables": [
+    "primary 8-K item family (5.02 leadership / 8.01 other) at PIT usable_trade_date"
+  ],
+  "evaluation_windows": [
+    {
+      "start": "2024-10-02",
+      "end": "2026-04-21"
+    }
+  ],
+  "acceptance_rule": "read_only: promising only if the 5.02 positive / 8.01 negative SPY-excess drift survives non-overlap Welch t, holds sign in >=2 of 3 temporal sub-periods, AND survives dropping the top-contributing ticker + first-event-per-ticker dedup; else weak. No ranking/sizing change regardless.",
+  "prediction": null,
+  "created_at": "2026-05-30T08:01:49+00:00",
+  "claimed_at": null,
+  "completed_at": "2026-05-30T08:04:04+00:00",
+  "result": {
+    "decision": "observed_only",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_20260520.json",
+    "after_result_file": "data/backtests/backtest_results_20260520.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "win_rate": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    }
+  },
+  "ticket_file": "experiments/tickets/exp-20260530-002.json",
+  "card_file": "experiments/cards/exp-20260530-002.md",
+  "revision_manifest_file": "experiments/manifests/exp-20260530-002.json"
+}

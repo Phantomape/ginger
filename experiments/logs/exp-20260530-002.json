@@ -1,0 +1,26 @@
+{
+  "experiment_id": "exp-20260530-002",
+  "lane": "alpha_discovery",
+  "change_type": "sec_event_family_market_state_attribution_probe",
+  "decision": "promising_one_robust_family_needs_decomposition_and_broad_universe",
+  "read_only": true,
+  "verdict_by_family": {
+    "5.02": "fragile",
+    "8.01": "robust"
+  },
+  "key_findings": {
+    "5.02_leadership": "FRAGILE: pooled t=2.12 (5d) but first-event-per-ticker dedup collapses to t=0.43 -- carried by a few repeat-filing tickers, not the family",
+    "8.01_other": "ROBUST: -0.72% 10d (t=-2.12), all 3 sub-periods negative, survives drop-top-ticker and strengthens under dedup (t=-2.38)"
+  },
+  "single_causal_variable": "primary 8-K item family at PIT usable_trade_date",
+  "next_step": "8.01 'Other Events' is a heterogeneous catch-all; decompose it by filing content (EDGAR body text / keywords) to find which sub-types drive the negative drift, then re-test on a broad multi-sector universe with transaction costs. The 5.02 leadership story did NOT survive concentration -- drop it. No ranking/sizing change until decomposed + replicated.",
+  "must_not_touch": [
+    "entries",
+    "exits",
+    "ranking",
+    "sizing",
+    "orders",
+    "paper_sleeves",
+    "llm"
+  ]
+}
