@@ -1,10 +1,52 @@
 from __future__ import annotations
 
+import json
+import os
+import tempfile
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = REPO_ROOT / "data"
+
+
+def atomic_write_text(text: str, filepath: str | Path) -> None:
+    """Write text via a same-directory temp file + atomic os.replace.
+
+    Prevents the partial / interleaved / non-truncating write corruption class
+    (e.g. a shorter write leaving an older file's trailing bytes) -- never
+    leaves a half-written or stale-tailed file at ``filepath``.
+    """
+    path = Path(filepath)
+    directory = path.parent
+    directory.mkdir(parents=True, exist_ok=True)
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=directory,
+            prefix=f".{path.name}.", suffix=".tmp", delete=False,
+        ) as handle:
+            tmp_path = handle.name
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_path, path)
+        tmp_path = None
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
+
+def atomic_write_json(obj, filepath: str | Path, *, indent=2,
+                      ensure_ascii=False, default=None) -> None:
+    """Serialize ``obj`` to JSON and write it atomically (see atomic_write_text)."""
+    atomic_write_text(
+        json.dumps(obj, indent=indent, ensure_ascii=ensure_ascii, default=default),
+        filepath,
+    )
 
 
 DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
