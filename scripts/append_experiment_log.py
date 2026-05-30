@@ -1,4 +1,7 @@
 import io, json, os
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 rows = []
 
@@ -187,12 +190,27 @@ rows.append({
     "notes": "Off-mode numerics identical to baseline (code path is pure passthrough when replay_llm=False). On-mode attribution is statistically immaterial at n=5 covered days — value is the mechanism, not the current delta.",
 })
 
-out_path = "D:/Github/ginger/docs/experiment_log.jsonl"
+out_path = str(REPO_ROOT / "docs" / "experiment_log.jsonl")
+
+# Skip rows whose experiment_id is already in the log to avoid double-writes on re-run.
+existing_ids = set()
+if os.path.exists(out_path):
+    with io.open(out_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                existing_ids.add(json.loads(line).get("experiment_id"))
+            except json.JSONDecodeError:
+                continue
+
+new_rows = [r for r in rows if r.get("experiment_id") not in existing_ids]
 with io.open(out_path, "a", encoding="utf-8") as f:
-    for r in rows:
+    for r in new_rows:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-print(f"Wrote {len(rows)} rows.")
+print(f"Wrote {len(new_rows)} rows ({len(rows) - len(new_rows)} skipped as duplicates).")
 with io.open(out_path, encoding="utf-8") as f:
     for i, line in enumerate(f, 1):
         line = line.rstrip("\n")

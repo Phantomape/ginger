@@ -65,20 +65,22 @@ docs/agent_experiment_protocol.md
 docs/iteration_analysis.md
 docs/experiment_log.jsonl
 docs/experiment_log_format.md
+docs/experiment_ticket_schema.md
 docs/production_backtest_parity.md
 docs/alpha-optimization-playbook.md
 docs/data_edge_context_layers.md
-data/backtest_results_*.json
 data/backtests/backtest_results_*.json
 ```
 
 - `docs/backtesting.md` 是回测命令、标准窗口、基线口径、指标字段和多窗口验证的单一真相源。`AGENTS.md` 不重复维护这些细节，避免两个文件标准分歧。
-- `docs/agent_experiment_protocol.md` 是 agent 做实验的操作入口和流程索引：先 reserve / claim 实验 ID，再按 Gate 1-4、parity、artifact、closeout 执行；它不替代本文件和各单一真相源。
+- `docs/agent_experiment_protocol.md` 是 agent 做实验的操作入口和流程索引：先用 `scripts/experiment.py new` 预留 ID，再按 Gate 1-4、parity、artifact、closeout 执行；它不替代本文件和各单一真相源。`docs/experiment_ticket_schema.md` 是 ticket 字段、status、lane 和冲突规则的单一真相源。
 - `docs/alpha-optimization-playbook.md` 是默认高价值优化方向、近期机制级启发、已证伪思路和优先级变化的单一真相源。`AGENTS.md` 不维护具体优化方向清单，只要求每轮策略实验先参考该 playbook。
 - `docs/data_edge_context_layers.md` 是 passive intelligence、context accumulation、continuous ranking、tail diagnostics、meta research 与 attribution 工具的单一真相源。新增 context layer、ranking surface、diagnostics 或 attribution sidecar 时，必须同步更新该文档，而不是把工具说明散落在实验脚本里。
-- `scripts/list_experiments.py`：看 registry 里的 proposed/claimed/running 实验
-- `scripts/claim_experiment.py`：多代理并行时 claim ticket
+- `scripts/experiment.py new ...`：**预留实验 ID**（必须在一切工作开始前完成）；生成 ticket、experiment card 和 revision manifest
+- `scripts/experiment.py claim exp-YYYYMMDD-NNN`：多代理并行时 claim ticket，防止 `allowed_write_scope` 冲突
+- `scripts/list_experiments.py`：查看 registry 里的 proposed / claimed / running 实验
 - `scripts/judge_experiment.py`：before/after artifact 判定和生成日志草稿
+- `scripts/build_experiment_dashboard.py`：构建本地实验 dashboard
 - `quant/meta_research_engine.py`：研究历史/冻结方向/优先队列
 
 每次开始前必须回答五个问题：
@@ -90,6 +92,26 @@ data/backtests/backtest_results_*.json
 5. 如果失败，下一位代理能否仅靠仓库记录复现实验？
 
 若无法回答第 2、3、4、5 点，禁止开始策略逻辑改动。
+
+### 3.2 实验 ID 预留（必须先于一切工作）
+
+**在写任何 runner、数据目录、artifact 或日志之前**，先通过 `scripts/experiment.py new` 预留实验 ID。预留命令会自动写 ticket、experiment card 和 revision manifest；之后所有文件和日志必须使用返回的 `experiment_id`。
+
+alpha_search / alpha_discovery / universe_scout 类型的 ticket，必须包含 `--success-probability` 和 `--main-failure-modes`，否则代码会拒绝。
+
+示例（完整参数见 `docs/agent_experiment_protocol.md`）：
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts\experiment.py new `
+  --lane alpha_search `
+  --hypothesis "One sentence hypothesis." `
+  --change-type default_off_paper_allocation `
+  --single-causal-variable "one changed variable" `
+  --file-slug short_slug `
+  --trial-family stable_trial_family `
+  --success-probability 0.35 `
+  --main-failure-modes "thin_sample,concentration_failed"
+```
 
 ### 3.1 推荐启动工具
 
@@ -160,11 +182,35 @@ LLM 规则同样适用：如果想让 LLM 判断某个维度，必须先确认�
 
 **state-surface 加严规则**：`state_surface_sleeve` 已经叠加了多层 paper notional scalar / rank profile / support / haircut 规则，继续做同类阈值、profile、notional scalar 或 capital allocation 调参时，`expected_value_score` 提升 > 10% 必须作为 Gate 4 的硬性最低门槛，而不是强接受信号。计算口径以 `docs/backtesting.md` 的标准多窗口 before/after aggregate `expected_value_score` 为准。若 aggregate EV 未提升超过 10%，默认必须回滚策略改动并记录为失败实验；不得用“小幅但稳定”“三窗口都改善”“PnL 改善”“paper-only”“不影响生产订单”等理由保留。例外只允许 `measurement_repair`，且必须说明它修复了哪一个会扭曲 alpha 评估或生产 / 回测一致性的阻断项。
 
+**集中度护栏（Gate 4 硬性检查）**：任何 alpha_search 的 Gate 4 必须同时通过：
+
+- 单 ticker 正向 PnL 贡献 ≤ 50%；
+- 前五 ticker 正向 PnL 贡献 ≤ 60%；
+- HHI 不得因改动显著恶化。
+
+若集中度未通过，无论 EV 是否提升，不得保留。
+
+**scout 最低物质性门槛**：候选信号 scout 实验（paper 新规则、排名字段、sizing scalar）若平均每笔交易 PnL 提升 < $500 且平均 return 提升 < 5pp，即使三窗口均改善，也默认视为无物质意义并拒绝。
+
+**max drawdown 护栏**：单窗口 max drawdown 恶化不得超过 0.50pp（`state_surface_sleeve` 类参数调整适用更严格的 0.35pp 参考阈值）。
+
 默认保留规则：
 
-1. **强保留**：`expected_value_score` 明显提升，且 drawdown、尾部风险、trade count、survival rate 没有不可接受恶化。
-2. **可保留**：`expected_value_score` 小幅提升或接近持平，但多数标准窗口表现改善，并且至少满足一项：复杂度下降、风险下降、生产 / 回测一致性提升、LLM / 数据归因质量提升。
+1. **强保留**：`expected_value_score` 明显提升，且 drawdown、尾部风险、trade count、survival rate 没有不可接受恶化，集中度护栏通过。
+2. **可保留**：`expected_value_score` 小幅提升或接近持平，但多数标准窗口表现改善，并且至少满足一项：复杂度下降、风险下降、生产 / 回测一致性提升、LLM / 数据归因质量提升；集中度护栏须通过。
 3. **可条件保留**：改动主要修复测量偏差、数据缺口或生产执行问题，即使短期 EV 未明显提升，也可以保留，但必须标记为 `measurement_repair`，并说明它释放了哪个后续 alpha 实验。
-4. **默认拒绝**：主目标下降、风险明显恶化、只在单一窗口变好、多数窗口退化、复杂度上升但收益证据不足，或无法归因到单一因果变量。
+4. **默认拒绝**：主目标下降、风险明显恶化、只在单一窗口变好、多数窗口退化、复杂度上升但收益证据不足、无法归因到单一因果变量，或集中度护栏未通过。
 
 若未通过 Gate 4，必须回滚策略改动，并把失败实验写入 `docs/experiment_log.jsonl`。`pytest` 通过不能替代 Gate 4。
+
+### Gate 5：paper sleeve 激活前置门
+
+任何 default-off paper sleeve（`STATE_SURFACE_SATELLITE`、`BROAD_MARKET_LEADERSHIP_PAPER`、`FUNDAMENTAL_GROWTH_RS_PAPER`、`VOLUME_BREADTH_BREAKOUT_PAPER`、VCP paper 等）在 forward 激活为真钱前，必须满足所有以下条件，才能开始独立的激活 Gate 1-4 实验：
+
+- 至少 30 笔已关闭的 forward 10-day paper 交易；
+- forward paper PnL 为正；
+- replacement value vs. core 或 cash 通过；
+- 集中度检查通过（单 ticker ≤ 50%，前五 ≤ 60%）；
+- kill switch 和 sleeve-level drawdown stop 已设计并通过 parity 测试。
+
+在满足上述条件之前，禁止在冻结样本上继续调参，也禁止以"paper 改善"为由直接启用真钱交易。

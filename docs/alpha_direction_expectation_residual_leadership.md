@@ -682,30 +682,8 @@ A retry requires **new evidence**, specifically:
    disproven three independent ways.
 
 Measurement work that is still allowed without new forward rows:
+`revenue_estimate` / `analyst_count` velocity fields (still absent), and
 full PIT `ret20_excess_sector` / `ret20_excess_theme` coverage (currently
-partial), because that widens the eventual 10d test rather than re-running
+partial), because those widen the eventual 10d test rather than re-running
 a disproven 5d one. No new 5d attribution on this direction should take
 the top priority slot until condition (1) is met.
-
-### 2026-05-29 field-availability audit: analyst-estimate velocity is dead-on-arrival
-
-An earlier draft of this note listed "`revenue_estimate` / `analyst_count`
-velocity fields" as allowed measurement work. A Gate 2 field-availability
-audit on 2026-05-29 shows that is **not achievable with current data**:
-
-- `estimate_revision_ledger.revenue_estimate` is null in 291/291 recent
-  rows (the schema field exists but no vendor populates it);
-- `earnings_snapshot_*.json` has no revenue or analyst field at all (only
-  `eps_estimate`, `eps_actual_last`, `historical_surprise_pct`);
-- `sec_filing_features.revenue_surprise` is `missing_no_vendor_consensus`
-  (0% present in the last 10 files);
-- no `analyst_count` field exists anywhere in the repo.
-
-There is **no vendor source** for forward analyst estimate velocity, so do
-not attempt a "revenue/analyst estimate velocity" measurement repair until
-such a feed is added. The only populated realized-fundamental surface is
-`data/kova/fundamentals/companyfacts_growth_*.jsonl` (SEC Companyfacts
-realized YoY growth — revenue / net_income / eps_basic / eps_diluted,
-PIT-safe via `asof_date <= signal_date`, ~40 tickers). That is *realized*
-growth, not *estimate* velocity, and it is maintained by the kova sidecar
-line — coordinate there rather than re-deriving it here.

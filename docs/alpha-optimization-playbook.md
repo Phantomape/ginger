@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-05-29.
+Last refreshed: 2026-05-30.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -55,6 +55,15 @@ Recent repository evidence supports this priority:
   (`dollar_volume >= $200m` and signal-day range/close `<= 0.10`, `1.05x`);
   this reinforces that cheap execution state belongs in the field layer before
   allocation, not as an after-the-fact PnL adjustment.
+- `FINRA_IWM_CONFIRMED_PAPER` is the newest accepted free-data candidate-pool
+  adapter. The raw short-pressure breakout plus IWM confirmation (`exp-20260530-005`)
+  had useful three-window evidence but failed concentration by a narrow margin;
+  adding a seven-calendar-day same-ticker admitted-candidate cooldown
+  (`exp-20260530-007`) reduced concentration and passed the paper gate, then
+  `exp-20260530-010` promoted the route into a shared default-off forward
+  adapter. Treat it like Fundamental Growth RS and VBB: forward replacement
+  rows first, no FINRA score / IWM threshold / cooldown / top-N retunes on the
+  same frozen windows.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper
@@ -75,13 +84,16 @@ Recent repository evidence supports this priority:
   justify new gates, exits, pyramids, or notional scalars on the frozen sample.
   The one constructive lifecycle clue, early shakeout then reclaim in
   `exp-20260529-006`, was positive but only `7` trades, so it is forward
-  monitoring context rather than a rule. `exp-20260529-025` also rejected the
-  narrow Kova loss-streak notional scalar: two prior closed VCP paper losses
-  triggered 11 half-size trades and improved EV proxy by `+0.003721`, but
-  reduced aggregate PnL by `-$856.33` after cutting 6 winners.
+  monitoring context rather than a rule.
 - Expectation/PEAD/residual-leadership work is still mostly attribution and
   measurement repair. The latest useful result is better PIT joins and ranking
   replacement attribution, not a promoted live rule.
+- Form 4 remains watchlist material, not a clean candidate-pool lead. The
+  latest multi-filer / owner-count replay (`exp-20260530-011`) was positive
+  versus core but failed replacement value versus the raw Form 4 queue,
+  materiality, sample, window coverage, and concentration guards. Do not
+  promote owner-count alone or retry adjacent Form 4 role/owner-count fields
+  without forward replacement rows or a new ownership-intensity mechanism.
 - State-surface has too many accepted paper scalars. More nearby
   queue/profile/notional mining now requires a hard >10% aggregate EV lift or
   should be rolled back.
@@ -193,7 +205,8 @@ tuning; it is forward maturity.
 Do next:
 
 - roll up closed forward outcomes for `FUNDAMENTAL_GROWTH_RS_PAPER`,
-  `VOLUME_BREADTH_BREAKOUT_PAPER`, QQQ-confirmed VCP, and broad-market paper;
+  `VOLUME_BREADTH_BREAKOUT_PAPER`, `FINRA_IWM_CONFIRMED_PAPER`,
+  QQQ-confirmed VCP, and broad-market paper;
 - add cost-adjusted replacement value where spread/liquidity data is available;
 - compare selected rows against same-day core candidates and adjacent paper
   ranks;
@@ -205,6 +218,9 @@ Do not do next:
   on the same windows;
 - retune VCP QQQ/SPY, ATR compression, pocket-pivot, base geometry, or
   distribution-day gates without new forward evidence;
+- retune FINRA score, IWM/SPY confirmation threshold, same-ticker cooldown,
+  top-N, hold day, or paper notional without forward rows or a stronger
+  borrow-cost / availability field;
 - promote paper sleeves into live capital only because historical paper PnL is
   large.
 
@@ -260,6 +276,9 @@ Keep fixed:
 Next valid work:
 
 - forward replacement value by breadth/regime/cost bucket;
+- VCP forward accumulation or candidate-feed readiness only after noting
+  `exp-20260530-004`: the VCP report is wired, but production snapshots through
+  `2026-05-28` had `0` candidates and `0` closed forward outcomes;
 - hidden Nasdaq beta attribution;
 - concentration and decay monitoring;
 - candidate-rank breadth diagnostics.
@@ -307,15 +326,9 @@ Do next:
 
 - continue PIT estimate revision accumulation across more than one earnings
   season so the 10d buckets clear the floors;
-- add full PIT `ret20_excess_sector` / `ret20_excess_theme` coverage —
-  this widens the eventual 10d test rather than re-running a disproven 5d
-  one;
-- do NOT attempt `revenue_estimate` / `analyst_count` estimate-velocity
-  fields: a 2026-05-29 Gate 2 audit found no vendor source
-  (`estimate_revision_ledger.revenue_estimate` null 291/291, no
-  `analyst_count` field anywhere, `sec_filing_features.revenue_surprise`
-  missing_no_vendor_consensus). The only realized-fundamental surface is
-  kova `companyfacts_growth` (realized YoY, not estimate velocity);
+- add `revenue_estimate` / `analyst_count` velocity fields and full PIT
+  `ret20_excess_sector` / `ret20_excess_theme` coverage — these widen the
+  eventual 10d test rather than re-running a disproven 5d one;
 - a retry must be a pre-registered 10d hypothesis on a multi-season sample,
   not another 5d attribution.
 
@@ -358,8 +371,44 @@ Do not:
   same windows;
 - use high-close or VWAP reclaim as a broad candidate-pool source without a
   separate information-transfer or liquidity mechanism;
-- promote Form 4 role quality or AI optical low-close support from the current
-  thin samples.
+- promote Form 4 role quality, multi-filer owner count, or AI optical low-close
+  support from the current thin or replacement-negative samples.
+
+### 4c. FINRA Short Pressure + Risk Appetite
+
+Mechanism: short-pressure breakout rows need an independent risk-appetite
+confirmation and de-clustering. The useful accepted version is not "high short
+interest alone"; it is official FINRA publication-date-safe short-pressure
+context, OHLCV breakout/liquidity/RS gates, IWM-vs-SPY confirmation, and a
+seven-calendar-day same-ticker admitted-candidate cooldown.
+
+Keep fixed:
+
+- official FINRA publication-date boundary;
+- accepted OHLCV breakout/liquidity/relative-strength gates from
+  `exp-20260529-017`;
+- IWM 20d return minus SPY 20d return `>= 0.003`;
+- seven-calendar-day same-ticker admitted-candidate cooldown;
+- fixed `$10k` paper notional, next-open entry, and 10-trading-day paper exit;
+- default-off shared adapter only.
+
+Next valid work:
+
+- forward replacement value versus same-day core candidates, cash, and adjacent
+  paper ranks;
+- concentration decay after the cooldown in real forward rows;
+- borrow-cost, borrow-availability, utilization, or options-implied squeeze
+  context if a clean PIT source is added;
+- cost-adjusted liquidity and fill-delay diagnostics.
+
+Frozen without new evidence:
+
+- FINRA score threshold, IWM/SPY threshold, cooldown length, top-N, hold-day,
+  and fixed-notional retunes on the current frozen sample;
+- raw FINRA monotonic ranking or high-short-pressure breakout without IWM
+  confirmation;
+- promotion to live capital before closed forward replacement-value rows pass a
+  separate activation gate.
 
 ### 5. State-Surface
 
@@ -391,6 +440,22 @@ state:
 The next useful unit is a schema-bound field or event graph that can be
 replayed and attributed, not a prompt asking the model to buy or sell.
 
+Local update: `exp-20260530-018` tested a simple pre-entry catalyst timing
+field, `high_confidence_pre_entry_catalyst_freshness_bucket_v1`, on the
+`exp-20260530-014` core trade rows. Fresh high-confidence catalyst rows
+(`<=3` calendar days before entry) had enough sample (`10`) and improved
+`2/3` windows, but the average lift versus stale or absent high-confidence
+catalyst context was only `$68.95` PnL and `+2.808 pp` return, below the
+pre-registered materiality gates. Treat catalyst recency alone as rejected.
+`exp-20260530-019` then tested the obvious source/category-diversity refinement,
+`high_confidence_pre_entry_catalyst_source_category_diversity_bucket_v1`, and
+found zero diverse high-confidence rows: all `13` high-confidence rows were
+single-category `sec_financial_report`. Treat simple catalyst source/category
+diversity as rejected on these rows too. The next catalyst/event direction must
+add a materially richer quality field, such as source credibility plus semantic
+direction from SEC/news text, peer/source propagation, or forward replacement
+value; do not rerun the same freshness or diversity cuts on the same rows.
+
 ### 7. Kova / CANSLIM Context
 
 Kova data is a sidecar until proven otherwise.
@@ -409,7 +474,6 @@ Not allowed without new PIT surfaces and Gate 1-4:
 - simple day-3 low-MFE failed-breakout exits on the frozen VCP sample;
 - shakeout/reclaim re-entry or hold rules from the frozen VCP sample unless
   forward rows and full slot/heat/replacement-value replay clear the gate;
-- closed-ledger loss-streak notional scalars on the frozen VCP sample;
 - confirmation pyramid rules;
 - pocket-pivot notional support;
 - 13F/RS/fundamental live ranking changes.
@@ -514,6 +578,25 @@ Useful fields:
 - `peer_transfer_strength_score`
 - `peer_relation_source_bucket`
 
+Local update: `exp-20260530-006` tested the simplest raw SEC filing interaction
+field, `sec_same_event_family_burst_count_v1`, and rejected it. The sample was
+large enough (`245` high-burst rows), but high-burst filings beat singleton
+filings by only `+$12.41` average 10d PnL and `+0.124%` average return, far
+below the materiality gate. Do not promote or retry raw same-family filing
+burst count alone. `exp-20260530-008` then tested first-reaction/follow-on
+sequencing with a 30-calendar-day same-ticker/same-event-family prior filing
+lookback. That field was also rejected: `79` follow-on rows had `-$129.95`
+average 10d PnL lift and `-1.2995%` average return lift versus first/isolated
+filings, and only `1/3` windows improved. `exp-20260530-009` tested the adjacent
+but distinct same-ticker cross-family event-transition field,
+`sec_cross_family_event_transition_bucket_v1`. It had enough data (`457`
+cross-family rows) and no single-ticker concentration issue (`8.39%` top
+positive share), but average 10d PnL lift versus no-recent-prior filings was
+`-$108.48`, average return lift was `-1.0848%`, and only `1/3` windows improved.
+Future event-graph work needs a relation structure beyond same-ticker filing
+recurrence or family transitions themselves, such as sector/theme propagation,
+source overlap, or characteristic-similarity peer links.
+
 Sources:
 
 - Multi-graph heterogeneous market information forecasting, 2026:
@@ -524,6 +607,56 @@ Sources:
   2026: <https://link.springer.com/article/10.1007/s41109-025-00755-2>
 - Algorithmic trading and intra-industry information transfer, 2026:
   <https://link.springer.com/article/10.1007/s11142-026-09954-3>
+
+### Regime-Aware Predictability And Friction-Aware Control
+
+Recent portfolio research aligns with Ginger's local evidence: alpha is
+state-dependent, and the controller that decides whether and how to act is as
+important as the raw signal. The practical lesson is not to add an opaque
+optimizer. It is to persist the state variables that explain when a signal
+should be trusted, whether turnover is worth paying for, and whether a sleeve
+is replacing something better.
+
+Two current papers are especially actionable. A 2026 regime-aware agentic
+portfolio framework reports walk-forward improvements when LLM-derived text
+signals are embedded in a transparent, friction-aware state-action-controller
+with dynamic caps, turnover budgets, and cost gates instead of direct LLM
+orders. NBER's 2026 "Mosaics of Predictability" argues that predictability is
+asset-specific and state-dependent, concentrating in large earnings surprises,
+high earnings-price stocks, low-volume stocks, and countercyclical / low
+liquidity regimes. Both reinforce the same local rule: promote fields that
+describe where predictability should exist, not generic filters that assume it
+exists everywhere.
+
+Useful fields:
+
+- `predictability_mosaic_bucket`
+- `earnings_surprise_predictability_bucket`
+- `earnings_price_value_bucket`
+- `low_volume_predictability_bucket`
+- `market_liquidity_regime_bucket`
+- `countercyclical_predictability_bucket`
+- `state_action_controller_version`
+- `dynamic_position_cap_reason`
+- `turnover_budget_remaining`
+- `expected_sharpe_improvement_after_cost`
+- `friction_gate_passed`
+- `constraint_elasticity_bucket`
+- `llm_signal_role`
+
+Engineering rule: regime-aware allocation belongs first in read-only
+attribution and default-off sleeves. A live sizing or cap change must be a
+shared deterministic controller input, not an LLM-generated action and not a
+black-box policy.
+
+Sources:
+
+- Regime-aware portfolio optimization with LLM signals, 2026:
+  <https://link.springer.com/article/10.1007/s41060-026-01066-0>
+- Mosaics of Predictability, NBER 2026:
+  <https://www.nber.org/papers/w35158>
+- Machine learning portfolio optimization comparative study, 2026:
+  <https://link.springer.com/article/10.1186/s40854-026-00927-8>
 
 ### Transaction-Cost-Aware Allocation
 
@@ -583,9 +716,21 @@ production-visible field:
 - nearby risk scalar / top-up sweeps;
 - state-surface rank/profile/notional retunes below the hard EV threshold;
 - QQQ/VCP/Kova threshold retunes;
+- VCP activation reviews or Kova/VCP retunes before nonzero production forward
+  candidates and closed replacement-value rows exist;
+- FINRA/IWM/cooldown/top-N retunes before the accepted default-off FINRA sleeve
+  has closed forward replacement-value rows or a new PIT borrow-cost /
+  availability field;
 - VWAP-reclaim, long-base, industry-leadership, sector-breadth-agreement, or
   accumulation-quality candidate-pool retries on the same OHLCV-only frozen
   sample;
+- raw SEC same-family burst, first/follow-on, same-ticker cross-family
+  transition, or Form 4 owner-count retries without a richer relation or
+  ownership-intensity mechanism;
+- simple pre-entry high-confidence catalyst freshness or source/category
+  diversity retries on the `exp-20260530-014` core trade rows without a
+  materially richer catalyst-quality field or forward replacement-value
+  evidence;
 - Companyfacts support-scalar mining around the accepted operating-profit + RS
   stack;
 - simple target, stop, or fixed max-loss exit changes;

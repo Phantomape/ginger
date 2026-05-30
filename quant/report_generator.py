@@ -142,9 +142,9 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             above  = info.get("above_ma")
             if price and ma200:
                 sign = ">" if above else "<"
+                pct_str = f" ({pct*100:+.1f}%)" if isinstance(pct, (int, float)) else ""
                 lines.append(
-                    f"  {idx}: {price:.1f} {sign} 200MA {ma200:.1f} "
-                    f"({pct*100:+.1f}%)"
+                    f"  {idx}: {price:.1f} {sign} 200MA {ma200:.1f}{pct_str}"
                 )
 
     # ── Portfolio heat ──────────────────────────────────────────────────────

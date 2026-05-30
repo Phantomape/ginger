@@ -46,8 +46,15 @@ def _load_open_positions():
     """Load open_positions.json from operator inputs."""
     path = open_positions_path()
     if path.exists():
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            logging.getLogger(__name__).error(
+                f"open_positions.json at {repo_relative(path)} is unreadable/malformed: {e}. "
+                "Treating as no open positions; fix the file and re-run."
+            )
+            return None
     logging.getLogger(__name__).warning(
         f"open_positions.json not found at {repo_relative(path)}"
     )

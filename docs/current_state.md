@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-29.
+Last updated: 2026-05-30.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -48,6 +48,69 @@ Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
+## 2026-05-30 Experiment Consolidation
+
+`exp-20260530-004` audited the accepted VCP top-2 paper sleeve's production
+forward replacement-value surface. No strategy, backtester, ranking, sizing,
+exit, LLM/news, or order path changed. The surface is wired, but it is not
+activation-ready: snapshots from `2026-05-25` through `2026-05-28` had
+`candidate_count=0`, `closed_forward_outcomes=0`, and the latest gate still
+failed `min_closed_trades`, `positive_net_pnl`, `min_win_rate`, concentration
+checks, `needs_closed_forward_outcomes`, and
+`needs_replacement_value_vs_core_or_cash`. Treat VCP as observe-only until
+real forward rows exist; the next useful work is forward accumulation or
+candidate-feed readiness if production keeps emitting zero candidates, not a
+new frozen-sample Kova/VCP threshold retune.
+
+`exp-20260530-006` tested an untried event-graph field:
+`sec_same_event_family_burst_count_v1`. It attributed `810` PIT SEC filing
+events across the three canonical windows by same-day same-event-family burst
+count, using fixed `$10k` next-open to 10-trading-day-close outcomes. The raw
+burst field was rejected: high-burst rows had adequate sample (`245`) but only
+`+$12.41` average PnL lift and `+0.124%` average return lift versus singleton
+filings, far below the pre-set materiality thresholds. `exp-20260530-008`
+then tested the next richer relation, `sec_first_reaction_followon_event_bucket_v1`,
+using a 30-calendar-day same-ticker/same-event-family prior filing lookback.
+It also rejected the field: follow-on rows were not thin (`79`) and concentration
+passed, but average PnL lift was `-$129.95`, average return lift was `-1.2995%`,
+and only `1/3` windows had follow-on average PnL above first/isolated filings.
+`exp-20260530-009` then tested a distinct cross-family event-transition field,
+`sec_cross_family_event_transition_bucket_v1`, using any prior same-ticker SEC
+event from a different event-family bucket inside a 30-calendar-day lookback.
+This also failed despite a large sample (`457` cross-family rows) and acceptable
+positive-PnL concentration (`8.39%` top ticker share): average PnL lift versus
+no-recent-prior filings was `-$108.48`, average return lift was `-1.0848%`,
+and only `1/3` windows improved.
+Future event-graph work needs relations beyond raw filing recurrence, such as
+sector/theme propagation, source overlap, or characteristic-similarity peer
+links; do not promote or rerun raw SEC filing burst count, first/follow-on
+sequence, or same-ticker SEC cross-family transition alone.
+
+`exp-20260530-018` tested the next catalyst-timing variant from the
+`exp-20260530-014` pre-entry catalyst attribution rows:
+`high_confidence_pre_entry_catalyst_freshness_bucket_v1`. It compared core
+trades with a high-confidence catalyst inside three calendar days before entry
+against stale or absent high-confidence catalyst context. The field was
+rejected: the fresh sample was large enough for the preset scout floor (`10`
+trades), improved `2/3` windows, and passed concentration (`37.80%` top
+positive ticker share), but average PnL lift was only `$68.95` and average
+return lift was only `+2.808 pp`, below the `$500` / `5 pp` materiality gates.
+Do not promote simple pre-entry catalyst freshness into timing gates, ranking,
+sizing, LLM prompts, or orders. Future catalyst work needs larger forward
+samples, source-diversity or catalyst-quality evidence beyond recency, and
+replacement-value proof before any timing or allocation rule.
+
+`exp-20260530-019` tested the next obvious catalyst-quality refinement:
+`high_confidence_pre_entry_catalyst_source_category_diversity_bucket_v1`.
+The result was rejected because the canonical core-trade sample had `0`
+source/category-diverse high-confidence rows; all `13` high-confidence rows
+were single-category `sec_financial_report`. Do not promote another broad
+catalyst early-entry rule, catalyst risk scalar, freshness cut, or simple
+source/category-diversity cut on these frozen rows. A valid continuation needs
+a materially richer catalyst-quality field, such as SEC/news semantic direction
+with source credibility, peer/source propagation, or forward replacement-value
+rows.
+
 ## 2026-05-29 Experiment Consolidation
 
 Today's experiment set kept core/live trading logic unchanged. The only
@@ -89,7 +152,10 @@ Rejected or observe-only conclusions that should guide the next run:
 - Form 4 role-quality (`002`) was positive but not material, EPS revision
   magnitude (`007`) showed no promotable high-vs-low magnitude edge, and the
   Kova shakeout/reclaim lifecycle result (`006`) stays forward-monitoring only
-  because the positive reclaim bucket had just `7` trades.
+  because the positive reclaim bucket had just `7` trades. Kova closed-ledger
+  loss-streak de-risking (`025`) was also rejected: the halve-after-two-losses
+  scalar triggered 11 VCP paper trades and improved EV proxy by `+0.003721`,
+  but cut aggregate PnL by `-$856.33` after scaling 6 winners and 5 losers.
 
 Regression status for this consolidation run: full unit tests passed
 (`990 passed in 53.32s`). No bug fix or strategy behavior change was required.
@@ -127,7 +193,7 @@ Rejected or observe-only conclusions that should guide the next run:
   collapses after removing MU or ticker de-duplicating. Keep accumulating PIT
   estimate-revision and closed forward outcomes before proposing a paper sleeve
   or ranking change.
-- Kova / VCP work (`exp-20260528-002/010/014/031`, `exp-20260529-006`)
+- Kova / VCP work (`exp-20260528-002/010/014/031`, `exp-20260529-006/025`)
   remains attribution only:
   high-volume weak-close exit replay was rejected, distribution-day pressure
   did not justify a gate, sell-side lifecycle taxonomy only nominated a later
@@ -136,7 +202,9 @@ Rejected or observe-only conclusions that should guide the next run:
   The Kova shakeout/reclaim lifecycle bucket was directionally positive
   (`7` trades, `+$4,039.29`, avg `+$577.04` versus shakeout/no-reclaim avg
   `-$107.42`) but failed the pre-set sample gate (`7 < 10`), so it is a
-  forward monitoring clue only.
+  forward monitoring clue only. The Kova loss-streak notional scalar likewise
+  should not be promoted from frozen-sample evidence because its small EV proxy
+  gain came with lower aggregate PnL.
 - `exp-20260528-024` rejected the RS-line new-high closed-ledger governor
   because the aggregate gain came with a `late_strong` regression and max
   drawdown drift far above the Gate 4 guardrail. `exp-20260528-025` found

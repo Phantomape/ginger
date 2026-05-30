@@ -1292,27 +1292,31 @@ HTML_TEMPLATE = """<!doctype html>
     :root {
       color-scheme: dark;
       --ink: #abb2bf;
-      --bright: #d7dae0;
-      --muted: #8b93a2;
-      --subtle: #6f7785;
-      --line: #3a404b;
-      --soft-line: #323842;
-      --page: #21252b;
+      --bright: #e6edf3;
+      --muted: #9aa4b5;
+      --subtle: #747d8d;
+      --line: #434957;
+      --soft-line: #333944;
+      --page: #1b1f27;
+      --page-deep: #171a21;
       --panel: #282c34;
-      --panel-soft: #2c313a;
-      --panel-deep: #1e2229;
+      --panel-raised: #303642;
+      --panel-soft: #2b313c;
+      --panel-deep: #20242c;
       --blue: #61afef;
-      --blue-soft: rgba(97, 175, 239, 0.14);
+      --blue-soft: rgba(97, 175, 239, 0.13);
       --green: #98c379;
-      --green-soft: rgba(152, 195, 121, 0.14);
+      --green-soft: rgba(152, 195, 121, 0.13);
       --red: #e06c75;
-      --red-soft: rgba(224, 108, 117, 0.14);
+      --red-soft: rgba(224, 108, 117, 0.13);
       --amber: #e5c07b;
-      --amber-soft: rgba(229, 192, 123, 0.14);
+      --amber-soft: rgba(229, 192, 123, 0.13);
       --violet: #c678dd;
-      --violet-soft: rgba(198, 120, 221, 0.14);
+      --violet-soft: rgba(198, 120, 221, 0.13);
       --cyan: #56b6c2;
-      --shadow: 0 16px 38px rgba(0, 0, 0, 0.32);
+      --cyan-soft: rgba(86, 182, 194, 0.13);
+      --orange: #d19a66;
+      --shadow: 0 16px 38px rgba(0, 0, 0, 0.34);
     }
     *,
     *::before,
@@ -1323,7 +1327,7 @@ HTML_TEMPLATE = """<!doctype html>
     body {
       margin: 0;
       color: var(--ink);
-      background: var(--page);
+      background: linear-gradient(180deg, var(--page) 0%, #21252b 46%, var(--page-deep) 100%);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       overflow-x: hidden;
       text-rendering: optimizeLegibility;
@@ -1332,9 +1336,10 @@ HTML_TEMPLATE = """<!doctype html>
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(33, 37, 43, 0.96);
+      background: rgba(27, 31, 39, 0.97);
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
     }
     .topbar-inner {
       max-width: 1680px;
@@ -1378,7 +1383,7 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 3px 8px;
-      background: var(--panel-soft);
+      background: rgba(48, 54, 66, 0.82);
       color: var(--ink);
       font-size: 12px;
       line-height: 1.25;
@@ -1413,8 +1418,8 @@ HTML_TEMPLATE = """<!doctype html>
     }
     .tab:hover { background: var(--panel-soft); }
     .tab.active-tab {
-      border-color: #4b5263;
-      background: var(--panel);
+      border-color: rgba(97, 175, 239, 0.48);
+      background: linear-gradient(180deg, rgba(97, 175, 239, 0.12), rgba(97, 175, 239, 0.05));
       color: var(--amber);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
@@ -1430,13 +1435,30 @@ HTML_TEMPLATE = """<!doctype html>
       margin-bottom: 16px;
     }
     .metric {
+      --metric-accent: var(--blue);
+      --metric-bg: var(--blue-soft);
+      position: relative;
+      overflow: hidden;
       min-height: 76px;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 12px;
-      background: linear-gradient(180deg, #2b3039 0%, #252a32 100%);
+      background: linear-gradient(180deg, var(--metric-bg), rgba(40, 44, 52, 0.98));
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
     }
+    .metric::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: var(--metric-accent);
+    }
+    .metric.tone-blue { --metric-accent: var(--blue); --metric-bg: var(--blue-soft); }
+    .metric.tone-violet { --metric-accent: var(--violet); --metric-bg: var(--violet-soft); }
+    .metric.tone-amber { --metric-accent: var(--amber); --metric-bg: var(--amber-soft); }
+    .metric.tone-green { --metric-accent: var(--green); --metric-bg: var(--green-soft); }
+    .metric.tone-red { --metric-accent: var(--red); --metric-bg: var(--red-soft); }
+    .metric.tone-cyan { --metric-accent: var(--cyan); --metric-bg: var(--cyan-soft); }
     .metric .label {
       color: var(--muted);
       font-size: 11px;
@@ -1448,7 +1470,7 @@ HTML_TEMPLATE = """<!doctype html>
       font-size: 24px;
       line-height: 1.1;
       font-weight: 750;
-      color: var(--bright);
+      color: var(--metric-accent);
     }
     .hub-shell {
       display: grid;
@@ -1461,7 +1483,7 @@ HTML_TEMPLATE = """<!doctype html>
     .surface {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--panel);
+      background: rgba(40, 44, 52, 0.96);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
     }
     .filter-panel,
@@ -1495,7 +1517,7 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--line);
       border-radius: 6px;
       padding: 7px 9px;
-      background: var(--panel-deep);
+      background: var(--page-deep);
       color: var(--ink);
       font: inherit;
       font-size: 13px;
@@ -1522,6 +1544,52 @@ HTML_TEMPLATE = """<!doctype html>
     .toggle-label input {
       width: 16px;
       min-height: 16px;
+    }
+    .tool-row {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--page-deep);
+    }
+    .seg-btn,
+    .secondary-action,
+    .mini-action {
+      min-height: 30px;
+      border: 1px solid var(--soft-line);
+      border-radius: 6px;
+      background: var(--panel-deep);
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      line-height: 1.2;
+      transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+    }
+    .seg-btn:hover,
+    .secondary-action:hover,
+    .mini-action:hover,
+    .filter-chip:hover {
+      border-color: rgba(97, 175, 239, 0.62);
+      color: var(--bright);
+    }
+    .seg-btn.active-density {
+      border-color: rgba(97, 175, 239, 0.48);
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 750;
+    }
+    .secondary-action {
+      width: 100%;
+      padding: 7px 9px;
+      text-align: center;
     }
     .filter-foot {
       margin-top: 14px;
@@ -1579,14 +1647,14 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 14px;
-      background: var(--panel);
+      background: linear-gradient(180deg, rgba(48, 54, 66, 0.82), rgba(40, 44, 52, 0.98));
       text-align: left;
       color: inherit;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
     }
     .repo-card {
       display: grid;
-      gap: 9px;
+      gap: 8px;
       cursor: pointer;
       transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
     }
@@ -1597,8 +1665,19 @@ HTML_TEMPLATE = """<!doctype html>
     }
     .repo-card.selected {
       border-color: var(--blue);
-      background: #2b313b;
+      background: linear-gradient(180deg, rgba(97, 175, 239, 0.13), rgba(40, 44, 52, 0.98));
       box-shadow: inset 3px 0 0 var(--blue), 0 0 0 2px rgba(97, 175, 239, 0.18);
+    }
+    body[data-density="compact"] .repo-list,
+    body[data-density="compact"] .card-grid {
+      gap: 7px;
+    }
+    body[data-density="compact"] .repo-card {
+      padding: 10px;
+      gap: 6px;
+    }
+    body[data-density="compact"] .repo-card .summary-text {
+      -webkit-line-clamp: 1;
     }
     .repo-top,
     .card-head,
@@ -1623,6 +1702,20 @@ HTML_TEMPLATE = """<!doctype html>
       overflow-wrap: anywhere;
       word-break: break-word;
     }
+    .repo-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .repo-meta span {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .id {
       color: var(--subtle);
       font-family: Consolas, "Courier New", monospace;
@@ -1642,7 +1735,13 @@ HTML_TEMPLATE = """<!doctype html>
       display: -webkit-box;
       overflow: hidden;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
+    }
+    .detail-panel .summary-text {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 5;
     }
     .status {
       display: inline-flex;
@@ -1694,6 +1793,21 @@ HTML_TEMPLATE = """<!doctype html>
       flex-wrap: wrap;
       gap: 6px;
     }
+    .chips.tight {
+      gap: 5px;
+    }
+    .chips.tight .chip {
+      min-height: 22px;
+      padding: 2px 7px;
+      font-size: 11px;
+    }
+    button.chip {
+      font: inherit;
+      cursor: pointer;
+    }
+    .filter-chip {
+      transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+    }
     .chip.source {
       border-color: #4b5263;
       background: #2f3540;
@@ -1735,6 +1849,59 @@ HTML_TEMPLATE = """<!doctype html>
       font-weight: 700;
       text-transform: uppercase;
     }
+    .score-row,
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      min-height: 24px;
+    }
+    .score-pill {
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      align-items: baseline;
+      gap: 6px;
+      max-width: 100%;
+      min-height: 24px;
+      border: 1px solid var(--soft-line);
+      border-radius: 6px;
+      padding: 3px 7px;
+      background: var(--panel-deep);
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    .score-pill span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+    .score-pill strong {
+      color: var(--bright);
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+    .score-pill.positive {
+      border-color: rgba(152, 195, 121, 0.45);
+      background: var(--green-soft);
+    }
+    .score-pill.positive strong { color: var(--green); }
+    .score-pill.negative {
+      border-color: rgba(224, 108, 117, 0.48);
+      background: var(--red-soft);
+    }
+    .score-pill.negative strong { color: var(--red); }
+    .mini-action {
+      min-height: 24px;
+      padding: 3px 7px;
+    }
+    .mini-action.pinned {
+      border-color: rgba(229, 192, 123, 0.48);
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
     .detail-panel h2 {
       margin: 0;
       font-size: 16px;
@@ -1748,6 +1915,16 @@ HTML_TEMPLATE = """<!doctype html>
       margin: 16px 0 8px;
       font-size: 13px;
       letter-spacing: 0;
+    }
+    details.detail-section {
+      border-top: 1px solid var(--soft-line);
+    }
+    details.detail-section summary {
+      cursor: pointer;
+      color: var(--bright);
+      font-size: 13px;
+      font-weight: 750;
+      list-style-position: inside;
     }
     .detail-section {
       margin-top: 14px;
@@ -1767,6 +1944,38 @@ HTML_TEMPLATE = """<!doctype html>
     .file-list div {
       overflow-wrap: anywhere;
       word-break: break-word;
+    }
+    .pin-tray {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: var(--page-deep);
+    }
+    .pin-list {
+      display: grid;
+      gap: 6px;
+    }
+    .pin-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .pin-row button:first-child {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--bright);
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .surface {
       padding: 14px;
@@ -1788,7 +1997,7 @@ HTML_TEMPLATE = """<!doctype html>
       border-radius: 8px;
       overflow: auto;
       max-height: 420px;
-      background: var(--panel);
+      background: var(--panel-deep);
     }
     table {
       width: 100%;
@@ -1828,10 +2037,19 @@ HTML_TEMPLATE = """<!doctype html>
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    button.bar-label {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+    }
     .bar {
       height: 9px;
       border-radius: 999px;
-      background: #3a404b;
+      background: var(--soft-line);
       overflow: hidden;
     }
     .bar span {
@@ -1868,7 +2086,7 @@ HTML_TEMPLATE = """<!doctype html>
       min-width: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--panel-deep);
+      background: var(--page-deep);
       padding: 10px;
     }
     .compare-column h2 {
@@ -1893,7 +2111,7 @@ HTML_TEMPLATE = """<!doctype html>
       border-left: 3px solid #4b5263;
       border-radius: 8px;
       padding: 11px;
-      background: var(--panel);
+      background: var(--panel-deep);
       overflow: hidden;
     }
     .compare-card.stage-executing { border-left-color: var(--green); }
@@ -1918,7 +2136,7 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--soft-line);
       border-radius: 6px;
       padding: 6px;
-      background: #252a32;
+      background: var(--page-deep);
       color: var(--muted);
       font-size: 11px;
       line-height: 1.25;
@@ -1934,7 +2152,7 @@ HTML_TEMPLATE = """<!doctype html>
     .progress-track {
       height: 8px;
       border-radius: 999px;
-      background: #3a404b;
+      background: var(--soft-line);
       overflow: hidden;
     }
     .progress-fill {
@@ -1959,7 +2177,7 @@ HTML_TEMPLATE = """<!doctype html>
       min-height: 330px;
       border: 1px solid var(--soft-line);
       border-radius: 8px;
-      background: #252a32;
+      background: var(--page-deep);
       padding: 12px;
       overflow: hidden;
     }
@@ -2002,7 +2220,7 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--soft-line);
       border-radius: 8px;
       padding: 9px;
-      background: var(--panel-deep);
+      background: var(--page-deep);
       font-size: 12px;
       line-height: 1.35;
       overflow: hidden;
@@ -2032,7 +2250,7 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--soft-line);
       border-radius: 8px;
       padding: 10px;
-      background: var(--panel-deep);
+      background: var(--page-deep);
       display: grid;
       gap: 8px;
     }
@@ -2058,7 +2276,7 @@ HTML_TEMPLATE = """<!doctype html>
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 28px;
-      background: var(--panel);
+      background: var(--panel-deep);
       color: var(--muted);
       text-align: center;
     }
@@ -2149,6 +2367,7 @@ HTML_TEMPLATE = """<!doctype html>
       }
       .filter-panel .panel-title,
       .filter-panel label:first-of-type,
+      .tool-row,
       .filter-foot {
         grid-column: 1 / -1;
       }
@@ -2167,7 +2386,7 @@ HTML_TEMPLATE = """<!doctype html>
       <div class="title-row">
         <div>
           <h1>Ginger Experiment Dashboard</h1>
-          <p class="subtitle">Hub-style local browser for experiment identity, evidence, results, and coordination hygiene.</p>
+          <p class="subtitle">Hub-style local browser for experiment identity, evidence, and production readiness.</p>
         </div>
         <div class="meta-pills" aria-label="Dashboard metadata">
           <span class="pill">Generated <strong id="generated"></strong></span>
@@ -2193,7 +2412,15 @@ HTML_TEMPLATE = """<!doctype html>
         <label>Search<input id="search" type="search" autocomplete="off" placeholder="ID, family, variable, note"></label>
         <label>Status<select id="status"></select></label>
         <label>Source<select id="source"></select></label>
+        <label>Sort<select id="sort"></select></label>
         <label class="toggle-label"><input id="anomalies" type="checkbox"> Anomalies only</label>
+        <div class="tool-row">
+          <div class="segmented" aria-label="Card density">
+            <button class="seg-btn active-density" type="button" data-density="comfortable">Roomy</button>
+            <button class="seg-btn" type="button" data-density="compact">Compact</button>
+          </div>
+          <button class="secondary-action" id="reset-filters" type="button">Reset filters</button>
+        </div>
         <div class="filter-foot" id="filter-foot"></div>
       </aside>
       <section class="content-stack" id="results" aria-live="polite"></section>
@@ -2207,12 +2434,24 @@ HTML_TEMPLATE = """<!doctype html>
     const searchInput = document.getElementById("search");
     const statusSelect = document.getElementById("status");
     const sourceSelect = document.getElementById("source");
+    const sortSelect = document.getElementById("sort");
     const anomaliesOnly = document.getElementById("anomalies");
+    const resetFiltersButton = document.getElementById("reset-filters");
     const resultsEl = document.getElementById("results");
     const detailEl = document.getElementById("detail");
     const filterFoot = document.getElementById("filter-foot");
     let activeView = "experiments";
     let selectedId = rows[0]?.experiment_id || null;
+    let density = "comfortable";
+    const pinnedIds = new Set();
+    const sortOptions = [
+      ["recent", "Recent ID"],
+      ["ev_desc", "EV Delta"],
+      ["pnl_desc", "PnL Delta"],
+      ["anomalies_desc", "Anomalies"],
+      ["status", "Status"]
+    ];
+    const missingMetricSortValue = -1e100;
 
     function text(value) {
       return value == null ? "" : String(value);
@@ -2228,8 +2467,37 @@ HTML_TEMPLATE = """<!doctype html>
     function fillSelect(select, values) {
       select.innerHTML = optionList(values).map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
     }
+    function fillSortSelect() {
+      sortSelect.innerHTML = sortOptions.map(([value, label]) => (
+        `<option value="${esc(value)}">${esc(label)}</option>`
+      )).join("");
+    }
     function statusLabel(row) {
       return row?.status_group || "unknown";
+    }
+    function metricValue(row, key) {
+      const n = Number((row?.metrics || row?.card?.metrics || {})[key]);
+      return Number.isFinite(n) ? n : null;
+    }
+    function sortedRows(items) {
+      const sorted = items.slice();
+      const mode = sortSelect.value || "recent";
+      sorted.sort((a, b) => {
+        if (mode === "ev_desc") {
+          return (metricValue(b, "expected_value_score_delta") ?? missingMetricSortValue) - (metricValue(a, "expected_value_score_delta") ?? missingMetricSortValue);
+        }
+        if (mode === "pnl_desc") {
+          return (metricValue(b, "total_pnl_delta") ?? missingMetricSortValue) - (metricValue(a, "total_pnl_delta") ?? missingMetricSortValue);
+        }
+        if (mode === "anomalies_desc") {
+          return ((b.anomalies || []).length - (a.anomalies || []).length) || text(b.experiment_id).localeCompare(text(a.experiment_id));
+        }
+        if (mode === "status") {
+          return statusLabel(a).localeCompare(statusLabel(b)) || text(b.experiment_id).localeCompare(text(a.experiment_id));
+        }
+        return text(b.experiment_id).localeCompare(text(a.experiment_id));
+      });
+      return sorted;
     }
     function rowBlob(row) {
       return [
@@ -2244,19 +2512,22 @@ HTML_TEMPLATE = """<!doctype html>
       const q = searchInput.value.trim().toLowerCase();
       const status = statusSelect.value;
       const source = sourceSelect.value;
-      return rows.filter(row => {
+      return sortedRows(rows.filter(row => {
         if (q && !rowBlob(row).includes(q)) return false;
         if (status !== "all" && statusLabel(row) !== status) return false;
         if (source !== "all" && !(row.sources || []).includes(source)) return false;
         if (anomaliesOnly.checked && !(row.anomalies || []).length) return false;
         return true;
-      });
+      }));
     }
     function fmtNumber(value) {
       const n = Number(value);
       if (value == null || !Number.isFinite(n)) return "";
       if (Math.abs(n) >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
       return n.toLocaleString(undefined, { maximumFractionDigits: 4 });
+    }
+    function hasDisplayValue(value) {
+      return value !== null && value !== undefined && text(value).trim() !== "";
     }
     function metrics(row) {
       return row?.metrics || row?.card?.metrics || {};
@@ -2273,21 +2544,49 @@ HTML_TEMPLATE = """<!doctype html>
       const cls = mode ? ` ${mode}` : "";
       return `<div class="chips">${(values || []).map(v => `<span class="chip${cls}">${esc(v)}</span>`).join("")}</div>`;
     }
+    function filterChip(label, key, value, mode="") {
+      if (!hasDisplayValue(value)) return "";
+      const cls = mode ? ` ${mode}` : "";
+      return `<button class="chip filter-chip${cls}" type="button" data-filter-key="${esc(key)}" data-filter-value="${esc(value)}">${esc(label || value)}</button>`;
+    }
+    function sourceChips(values) {
+      return `<div class="chips">${(values || []).map(value => filterChip(value, "source", value, "source")).join("")}</div>`;
+    }
+    function compactFacts(row) {
+      const facts = [
+        ["lane", row?.lane],
+        ["query", row?.trial_family || row?.mechanism_family],
+        ["query", row?.changed_variable || row?.single_causal_variable]
+      ].filter(([, value]) => hasDisplayValue(value));
+      return facts.slice(0, 3);
+    }
+    function metricTone(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n === 0) return "";
+      return n > 0 ? "positive" : "negative";
+    }
+    function scorePill(label, value) {
+      const formatted = fmtNumber(value);
+      if (!formatted) return "";
+      const tone = metricTone(value);
+      return `<span class="score-pill ${tone}"><span>${esc(label)}</span><strong>${esc(formatted)}</strong></span>`;
+    }
     function metricBlock(label, value) {
-      return `<div class="kv"><span>${esc(label)}</span>${esc(value || "")}</div>`;
+      if (!hasDisplayValue(value)) return "";
+      return `<div class="kv"><span>${esc(label)}</span>${esc(value)}</div>`;
     }
     function renderSummary() {
       const s = index.summary || {};
       const metricsList = [
-        ["Experiments", s.experiment_count],
-        ["Registry Rows", s.registry_count],
-        ["Anomaly Rows", s.anomaly_experiment_count || 0],
-        ["Identity Notes", s.identity_note_experiment_count || 0],
-        ["Accepted", (s.status_counts || {}).accepted || 0],
-        ["Rejected", (s.status_counts || {}).rejected || 0]
+        ["Experiments", s.experiment_count, "tone-blue"],
+        ["Registry Rows", s.registry_count, "tone-violet"],
+        ["Anomalies", s.anomaly_experiment_count || 0, "tone-amber"],
+        ["Identity Notes", s.identity_note_experiment_count || 0, "tone-cyan"],
+        ["Accepted", (s.status_counts || {}).accepted || 0, "tone-green"],
+        ["Rejected", (s.status_counts || {}).rejected || 0, "tone-red"]
       ];
-      document.getElementById("summary").innerHTML = metricsList.map(([label, value]) => (
-        `<div class="metric"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
+      document.getElementById("summary").innerHTML = metricsList.map(([label, value, tone]) => (
+        `<div class="metric ${esc(tone || "")}"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
       )).join("");
       document.getElementById("generated").textContent = index.generated_at || "";
       document.getElementById("next-id").textContent = index.next_experiment_id || "";
@@ -2299,6 +2598,25 @@ HTML_TEMPLATE = """<!doctype html>
       selectedId = matches[0]?.experiment_id || null;
       return matches[0] || null;
     }
+    function renderPinnedTray() {
+      const pinned = Array.from(pinnedIds)
+        .map(id => rows.find(row => row.experiment_id === id))
+        .filter(Boolean);
+      if (!pinned.length) return "";
+      const items = pinned.slice(0, 8).map(row => `
+        <div class="pin-row">
+          <button type="button" data-select-id="${esc(row.experiment_id)}" title="${esc(primaryTitle(row))}">${esc(row.experiment_id)} / ${esc(primaryTitle(row))}</button>
+          <button class="mini-action" type="button" data-action="pin-id" data-exp-id="${esc(row.experiment_id)}">Remove</button>
+        </div>`).join("");
+      return `
+        <div class="pin-tray">
+          <div class="repo-top">
+            <h3>Pinned Compare</h3>
+            <span class="chip source">${esc(pinned.length)} pinned</span>
+          </div>
+          <div class="pin-list">${items}</div>
+        </div>`;
+    }
     function renderDetail(row) {
       if (!row) {
         detailEl.innerHTML = `<h2>No experiment selected</h2><p class="muted">Change filters to reveal experiments.</p>`;
@@ -2306,6 +2624,18 @@ HTML_TEMPLATE = """<!doctype html>
       }
       const m = metrics(row);
       const meta = row.card?.metadata || {};
+      const pinned = pinnedIds.has(row.experiment_id);
+      const anomalySection = (row.anomalies || []).length ? `
+        <div class="detail-section">
+          <h3>Anomalies</h3>
+          ${chips(row.anomalies, "warn")}
+        </div>` : "";
+      const noteSection = (row.identity_notes || []).length ? `
+        <div class="detail-section">
+          <h3>Identity Notes</h3>
+          ${chips(row.identity_notes, "note")}
+        </div>` : "";
+      const files = row.files || [];
       detailEl.innerHTML = `
         <div class="detail-head">
           <div>
@@ -2313,6 +2643,11 @@ HTML_TEMPLATE = """<!doctype html>
             <h2>${esc(primaryTitle(row))}</h2>
           </div>
           <span class="status ${esc(statusLabel(row))}">${esc(statusLabel(row))}</span>
+        </div>
+        <div class="action-row">
+          <button class="mini-action ${pinned ? "pinned" : ""}" type="button" data-action="pin-id" data-exp-id="${esc(row.experiment_id)}">${pinned ? "Pinned" : "Pin"}</button>
+          <button class="mini-action" type="button" data-action="copy-id" data-exp-id="${esc(row.experiment_id)}">Copy ID</button>
+          ${filterChip(statusLabel(row), "status", statusLabel(row), "source")}
         </div>
         <p class="summary-text">${esc(primarySummary(row))}</p>
         <div class="kv-grid">
@@ -2325,24 +2660,31 @@ HTML_TEMPLATE = """<!doctype html>
         </div>
         <div class="detail-section">
           <h3>Sources</h3>
-          ${chips(row.sources || [], "source")}
+          ${sourceChips(row.sources || [])}
         </div>
-        <div class="detail-section">
-          <h3>Anomalies</h3>
-          ${(row.anomalies || []).length ? chips(row.anomalies, "warn") : `<span class="chip good">none</span>`}
-        </div>
-        <div class="detail-section">
-          <h3>Identity Notes</h3>
-          ${(row.identity_notes || []).length ? chips(row.identity_notes, "note") : `<span class="chip good">none</span>`}
-        </div>
-        <div class="detail-section">
-          <h3>Files</h3>
-          <div class="file-list">${(row.files || []).slice(0, 12).map(file => `<div>${esc(file)}</div>`).join("") || `<div class="muted">No files indexed</div>`}</div>
-        </div>`;
+        ${anomalySection}
+        ${noteSection}
+        <details class="detail-section">
+          <summary>Files (${esc(files.length)})</summary>
+          <div class="file-list">${files.slice(0, 8).map(file => `<div>${esc(file)}</div>`).join("") || `<div class="muted">No files indexed</div>`}</div>
+        </details>
+        ${renderPinnedTray()}`;
+      bindRendered(detailEl);
     }
     function repoCard(row) {
       const m = metrics(row);
       const selected = row.experiment_id === selectedId ? " selected" : "";
+      const pinned = pinnedIds.has(row.experiment_id);
+      const facts = compactFacts(row);
+      const summary = primarySummary(row);
+      const metricPills = [
+        scorePill("EV", m.expected_value_score_delta),
+        scorePill("PnL", m.total_pnl_delta)
+      ].filter(Boolean).join("");
+      const issuePills = [
+        (row.anomalies || []).length ? `<span class="chip warn">${esc((row.anomalies || []).length)} anomalies</span>` : "",
+        (row.identity_notes || []).length ? `<span class="chip note">${esc((row.identity_notes || []).length)} notes</span>` : ""
+      ].filter(Boolean).join("");
       return `
         <article class="repo-card${selected}" data-select-id="${esc(row.experiment_id)}" tabindex="0">
           <div class="repo-top">
@@ -2352,22 +2694,42 @@ HTML_TEMPLATE = """<!doctype html>
             </div>
             <span class="status ${esc(statusLabel(row))}">${esc(statusLabel(row))}</span>
           </div>
-          <div class="summary-text">${esc(primarySummary(row))}</div>
-          <div class="chips">
-            ${row.lane ? `<span class="chip">${esc(row.lane)}</span>` : ""}
-            ${(row.trial_family || row.mechanism_family) ? `<span class="chip">${esc(row.trial_family || row.mechanism_family)}</span>` : ""}
-            ${(row.changed_variable || row.single_causal_variable) ? `<span class="chip">${esc(row.changed_variable || row.single_causal_variable)}</span>` : ""}
-            ${(row.anomalies || []).length ? `<span class="chip warn">${esc((row.anomalies || []).length)} anomalies</span>` : ""}
-            ${(row.identity_notes || []).length ? `<span class="chip note">${esc((row.identity_notes || []).length)} notes</span>` : ""}
-          </div>
-          <div class="kv-grid">
-            ${metricBlock("EV Delta", fmtNumber(m.expected_value_score_delta))}
-            ${metricBlock("PnL Delta", fmtNumber(m.total_pnl_delta))}
+          ${facts.length ? `<div class="repo-meta">${facts.map(([key, value]) => filterChip(value, key, value)).join("")}</div>` : ""}
+          ${summary ? `<div class="summary-text">${esc(summary)}</div>` : ""}
+          <div class="score-row">
+            ${metricPills}
+            ${issuePills ? `<div class="chips tight">${issuePills}</div>` : ""}
+            <button class="mini-action ${pinned ? "pinned" : ""}" type="button" data-action="pin-id" data-exp-id="${esc(row.experiment_id)}">${pinned ? "Pinned" : "Pin"}</button>
+            <button class="mini-action" type="button" data-action="copy-id" data-exp-id="${esc(row.experiment_id)}">Copy</button>
           </div>
         </article>`;
     }
-    function bindSelectableCards() {
-      resultsEl.querySelectorAll("[data-select-id]").forEach(card => {
+    function applyFilter(key, value) {
+      if (key === "status" && Array.from(statusSelect.options).some(option => option.value === value)) {
+        statusSelect.value = value;
+      } else if (key === "source" && Array.from(sourceSelect.options).some(option => option.value === value)) {
+        sourceSelect.value = value;
+      } else {
+        searchInput.value = value;
+      }
+      renderActive();
+    }
+    function copyExperimentId(id) {
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(id).catch(() => {});
+      }
+      filterFoot.textContent = `Copied ${id}`;
+    }
+    function togglePin(id) {
+      if (pinnedIds.has(id)) {
+        pinnedIds.delete(id);
+      } else {
+        pinnedIds.add(id);
+      }
+      renderActive();
+    }
+    function bindSelectableCards(root=resultsEl) {
+      root.querySelectorAll("[data-select-id]").forEach(card => {
         const select = () => {
           selectedId = card.dataset.selectId;
           renderActive();
@@ -2378,6 +2740,25 @@ HTML_TEMPLATE = """<!doctype html>
             event.preventDefault();
             select();
           }
+        });
+      });
+    }
+    function bindRendered(root=resultsEl) {
+      bindSelectableCards(root);
+      root.querySelectorAll("[data-filter-key]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          applyFilter(button.dataset.filterKey, button.dataset.filterValue);
+        });
+      });
+      root.querySelectorAll("[data-action]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const id = button.dataset.expId;
+          if (button.dataset.action === "copy-id") copyExperimentId(id);
+          if (button.dataset.action === "pin-id") togglePin(id);
         });
       });
     }
@@ -2396,13 +2777,13 @@ HTML_TEMPLATE = """<!doctype html>
           <div class="section-head">
             <div>
               <h2>Experiment Hub</h2>
-              <p>Card-first browsing with status, tags, metrics, and identity hygiene visible before opening details.</p>
+              <p>Click tags to filter, pin rows to compare, and sort without leaving the page.</p>
             </div>
             <span class="pill">Showing <strong>${esc(Math.min(matches.length, limit))}</strong></span>
           </div>
           <div class="repo-list">${matches.slice(0, limit).map(repoCard).join("")}</div>
         </section>`;
-      bindSelectableCards();
+      bindRendered();
     }
     function renderCards() {
       const matches = filteredRows();
@@ -2414,12 +2795,12 @@ HTML_TEMPLATE = """<!doctype html>
           <div class="section-head">
             <div>
               <h2>Experiment Cards</h2>
-              <p>Compact card grid for comparing identities, variables, and before/after signals.</p>
+              <p>Compact comparison of identity, variable, and outcome signal.</p>
             </div>
           </div>
           <div class="card-grid">${matches.slice(0, 96).map(repoCard).join("") || `<div class="empty">No cards match the filters</div>`}</div>
         </section>`;
-      bindSelectableCards();
+      bindRendered();
     }
     function leaderboardTable(title, rows, metric) {
       const body = (rows || []).map(row => `
@@ -2458,7 +2839,7 @@ HTML_TEMPLATE = """<!doctype html>
             </table></div>
           </section>
         </div>`;
-      bindSelectableCards();
+      bindRendered();
     }
     function renderDatasetView() {
       const row = selectedRow(filteredRows());
@@ -2467,18 +2848,19 @@ HTML_TEMPLATE = """<!doctype html>
       const columns = (index.dataset_view || {}).columns || [];
       const cards = columns.map(col => {
         const total = Math.max(1, Number(col.present || 0) + Number(col.missing || 0));
-        const top = (col.top_values || []).slice(0, 8);
+        const top = (col.top_values || []).slice(0, 5);
         return `
           <section class="surface">
             <h2>${esc(col.field)}</h2>
             <p class="muted">${esc(col.present)} present, ${esc(col.missing)} missing, ${esc(col.unique)} unique</p>
             ${top.map(item => {
               const pct = Math.round((Number(item.count || 0) / total) * 100);
-              return `<div class="bar-row"><div class="bar-label">${esc(item.value)}</div><div class="bar"><span style="width:${pct}%"></span></div><div>${esc(item.count)}</div></div>`;
+              return `<div class="bar-row"><button class="bar-label" type="button" data-filter-key="query" data-filter-value="${esc(item.value)}">${esc(item.value)}</button><div class="bar"><span style="width:${pct}%"></span></div><div>${esc(item.count)}</div></div>`;
             }).join("")}
           </section>`;
       }).join("");
       resultsEl.innerHTML = `<div class="panel-grid">${cards}</div>`;
+      bindRendered();
     }
     function renderCollections() {
       const row = selectedRow(filteredRows());
@@ -2496,7 +2878,7 @@ HTML_TEMPLATE = """<!doctype html>
           <div class="shelf-items">${(collection.experiment_ids || []).slice(0, 36).map(id => `<span class="chip source" data-select-id="${esc(id)}">${esc(id)}</span>`).join("") || `<span class="muted">No experiments in this collection</span>`}</div>
         </section>`).join("");
       resultsEl.innerHTML = `<div class="shelf-grid">${collectionRows}</div>`;
-      bindSelectableCards();
+      bindRendered();
     }
     function renderProductionCompare() {
       const compare = index.production_compare || {};
@@ -2816,6 +3198,8 @@ HTML_TEMPLATE = """<!doctype html>
 
     fillSelect(statusSelect, rows.map(statusLabel));
     fillSelect(sourceSelect, rows.flatMap(row => row.sources || []));
+    fillSortSelect();
+    document.body.dataset.density = density;
     renderSummary();
     renderActive();
     document.querySelectorAll(".tab").forEach(tab => {
@@ -2826,7 +3210,22 @@ HTML_TEMPLATE = """<!doctype html>
         renderActive();
       });
     });
-    [searchInput, statusSelect, sourceSelect, anomaliesOnly].forEach(el => {
+    document.querySelectorAll("[data-density]").forEach(button => {
+      button.addEventListener("click", () => {
+        density = button.dataset.density;
+        document.body.dataset.density = density;
+        document.querySelectorAll("[data-density]").forEach(other => other.classList.toggle("active-density", other === button));
+      });
+    });
+    resetFiltersButton.addEventListener("click", () => {
+      searchInput.value = "";
+      statusSelect.value = "all";
+      sourceSelect.value = "all";
+      sortSelect.value = "recent";
+      anomaliesOnly.checked = false;
+      renderActive();
+    });
+    [searchInput, statusSelect, sourceSelect, sortSelect, anomaliesOnly].forEach(el => {
       el.addEventListener("input", renderActive);
       el.addEventListener("change", renderActive);
     });

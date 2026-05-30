@@ -1,0 +1,147 @@
+{
+  "acceptance_rule": "Observed-only candidate if fresh high-confidence rows have at least 8 closed core trades, beat stale-or-no-high-confidence rows by at least 500 USD average PnL and 5 percentage points average return, improve in at least two of three windows, and positive PnL is not dominated by one ticker; otherwise do not promote.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260530_018_pre_entry_catalyst_freshness_attribution.py",
+    "data/experiments/exp-20260530-018",
+    "experiments/logs/exp-20260530-018.json",
+    "experiments/tickets/exp-20260530-018.json",
+    "docs/experiments/tickets/exp-20260530-018.json",
+    "experiments/cards/exp-20260530-018.md",
+    "experiments/manifests/exp-20260530-018.json",
+    "experiments/artifacts/exp-20260530-018_pre_entry_catalyst_freshness_attribution.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/alpha-optimization-playbook.md",
+    "docs/current_state.md",
+    "docs/data_edge_context_layers.md"
+  ],
+  "artifact_file": "data/experiments/exp-20260530-018/pre_entry_catalyst_freshness_attribution.json",
+  "artifacts": {
+    "card": "experiments/cards/exp-20260530-018.md",
+    "docs_ticket": "docs/experiments/tickets/exp-20260530-018.json",
+    "json": "data/experiments/exp-20260530-018/pre_entry_catalyst_freshness_attribution.json",
+    "log": "experiments/logs/exp-20260530-018.json",
+    "manifest": "experiments/manifests/exp-20260530-018.json",
+    "markdown": "experiments/artifacts/exp-20260530-018_pre_entry_catalyst_freshness_attribution.md",
+    "rows": "data/experiments/exp-20260530-018/pre_entry_catalyst_freshness_attribution_rows.json",
+    "ticket": "experiments/tickets/exp-20260530-018.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260530-014/pre_entry_catalyst_attribution_trade_rows.json",
+  "calibration": {
+    "actual_decision": "rejected_pre_entry_catalyst_freshness_field",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.0576,
+    "calibration_direction": "directionally_calibrated",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "thin_fresh_sample",
+      "no_freshness_separation",
+      "single_ticker_concentration",
+      "window_instability"
+    ],
+    "predicted_success_probability": 0.24,
+    "realized_failure_mode": "no_freshness_separation",
+    "surprise_level": "low"
+  },
+  "card_file": "experiments/cards/exp-20260530-018.md",
+  "change_type": "read_only_pre_entry_catalyst_timing_attribution",
+  "changed_variable": "high_confidence_pre_entry_catalyst_freshness_bucket_v1",
+  "claimed_at": "2026-05-30T21:30:50+00:00",
+  "completed_at": "2026-05-30T21:34:14+00:00",
+  "created_at": "2026-05-30T21:30:42+00:00",
+  "decision": "rejected_pre_entry_catalyst_freshness_field",
+  "evaluation_windows": [
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "experiment_id": "exp-20260530-018",
+  "experiment_uid": "expuid-61f3c10b021b4904",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260530-018",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-05-30T21:30:42+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "pre_entry_catalyst_freshness_attribution"
+  },
+  "hypothesis": "High-confidence pre-entry catalysts that occur within three calendar days before a core trade may identify more actionable entry timing than stale high-confidence catalyst context; audit before any catalyst timing gate or risk allocation.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "high_confidence_pre_entry_catalyst_freshness_bucket_v1"
+  ],
+  "mechanism_family": "event_or_llm",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260530-014",
+    "exp-20260530-016",
+    "exp-20260530-017"
+  ],
+  "new_evidence_type": "derived_pit_pre_entry_catalyst_timing_field",
+  "owner": "codex",
+  "prediction": {
+    "confidence_reason": "exp-20260530-014 found useful high-confidence catalyst context, but exp-20260530-016 and exp-20260530-017 show promotion attempts are fragile and the high-confidence sample is small.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "thin_fresh_sample",
+      "no_freshness_separation",
+      "single_ticker_concentration",
+      "window_instability"
+    ],
+    "recorded_at": "2026-05-30T21:30:31+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 1,
+  "report_file": "experiments/artifacts/exp-20260530-018_pre_entry_catalyst_freshness_attribution.md",
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260530_018_pre_entry_catalyst_freshness_attribution.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260530-018_pre_entry_catalyst_freshness_attribution.md",
+    "calibration": {
+      "actual_decision": "rejected_pre_entry_catalyst_freshness_field",
+      "actual_ev_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "actual_success": 0,
+      "brier_score": 0.0576,
+      "calibration_direction": "directionally_calibrated",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "predicted_failure_mode_hit": true,
+      "predicted_failure_modes": [
+        "thin_fresh_sample",
+        "no_freshness_separation",
+        "single_ticker_concentration",
+        "window_instability"
+      ],
+      "predicted_success_probability": 0.24,
+      "realized_failure_mode": "no_freshness_separation",
+      "surprise_level": "low"
+    },
+    "decision": "rejected_pre_entry_catalyst_freshness_field",
+    "json": "data/experiments/exp-20260530-018/pre_entry_catalyst_freshness_attribution.json",
+    "summary": "Rejected: fresh high-confidence catalyst timing did not clear avg_pnl_lift, avg_return_lift."
+  },
+  "result_file": "experiments/logs/exp-20260530-018.json",
+  "revision_manifest_file": "experiments/manifests/exp-20260530-018.json",
+  "single_causal_variable": "high_confidence_pre_entry_catalyst_freshness_bucket_v1",
+  "status": "rejected",
+  "summary": "Rejected: fresh high-confidence catalyst timing did not clear avg_pnl_lift, avg_return_lift.",
+  "ticket_file": "experiments/tickets/exp-20260530-018.json",
+  "trial_family": "pre_entry_catalyst_freshness_attribution",
+  "trial_variant_id": "high_confidence_pre_entry_catalyst_freshness_bucket_v1",
+  "updated_at": "2026-05-30T21:34:14+00:00"
+}

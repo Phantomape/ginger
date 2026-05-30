@@ -99,26 +99,32 @@ machine-readable index behind the UI.
   `experiments/logs/<experiment_id>.json` file. Historical JSONL-only rows are
   identity notes unless they are still open coordination records.
 
-The dashboard supports text search, status filtering, source filtering, and an
-`anomalies only` toggle.
+The dashboard supports text search, status filtering, source filtering,
+sorting, density switching, clickable metadata filters, local pinning, copy-ID
+actions, and an `anomalies only` toggle. These browser interactions are local
+UI state; they do not write experiment state.
 
 ## Dashboard Views
 
 The UI uses a Hugging Face Hub-style layout with an Atom One Dark-inspired
-palette, and keeps everything local/read-only:
+palette, compact cards, and collapsed secondary detail so the first scan favors
+identity, state, changed variable, and outcome signal over raw metadata volume.
+It keeps everything local/read-only:
 
 - `Experiments`: the default card-first browser. The left rail contains
-  discovery filters, the center column lists experiment cards, and the right
-  detail panel shows the selected experiment's card, metrics, anomalies, notes,
-  and indexed files.
+  discovery filters, sort, density, and reset controls. The center column lists
+  compact experiment cards with clickable tags, Pin, and Copy actions. The
+  right detail panel shows selected metrics, anomalies, notes, pinned compare
+  rows, and a collapsed indexed-file list.
 
 - `Cards`: compact experiment cards with identity, status, family, changed
-  variable, metrics, sources, anomalies, and related files.
+  variable, metric deltas, and anomaly/note counts. Sources and files stay in
+  the right-side detail panel.
 - `Leaderboards`: EV/PnL delta leaderboards plus rejected-family counts, similar
   to benchmark result aggregation.
 - `Dataset View`: column coverage and top-value distributions for the experiment
   table, similar to a dataset viewer for `docs/experiment_log.jsonl` and ticket
-  metadata.
+  metadata. Top-value labels are clickable and apply a search filter.
 - `Collections`: curated slices such as accepted stack, default-off sleeves,
   measurement repair, active/proposed queue, and identity repair queue.
 - `Prod Compare`: a read-only production/backtest activation view. It parses the

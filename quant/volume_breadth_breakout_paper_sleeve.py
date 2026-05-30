@@ -882,7 +882,7 @@ def _fill_pending_entries(
             "decision_close_price": candidate.get("close"),
             "notional": notional,
             "shares": round(notional / entry_price, 6) if entry_price else None,
-            "observed_trading_days": 1,
+            "observed_trading_days": 0,
             "hold_days": int(config["hold_days"]),
             "last_price": current_prices.get(ticker),
             "status": "open",

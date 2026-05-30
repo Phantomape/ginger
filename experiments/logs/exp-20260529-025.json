@@ -1,0 +1,596 @@
+{
+  "after_metrics": {
+    "avg_pnl": 314.4119,
+    "expected_value_proxy": 0.151886,
+    "return_on_notional": 0.03003,
+    "total_notional": 1225000.0,
+    "total_pnl": 36786.19,
+    "trade_count": 117,
+    "trade_sharpe_proxy": 5.057883,
+    "win_rate": 0.623932
+  },
+  "alpha_hypothesis": "Kova VCP paper trades may benefit from a closed-ledger loss-streak de-risking rule: after two already-closed losing VCP paper trades, halve subsequent VCP paper notional until the closed streak resets.",
+  "anti_js": "No JavaScript was used.",
+  "artifacts": {
+    "card": "experiments/cards/exp-20260529-025.md",
+    "docs_ticket": "docs/experiments/tickets/exp-20260529-025.json",
+    "json": "data/experiments/exp-20260529-025/kova_vcp_loss_streak_derisk_replay.json",
+    "log": "experiments/logs/exp-20260529-025.json",
+    "manifest": "experiments/manifests/exp-20260529-025.json",
+    "markdown": "experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md",
+    "ticket": "experiments/tickets/exp-20260529-025.json"
+  },
+  "backtest_protocol": {
+    "changed_core_logic": false,
+    "closed_ledger_ex_ante_boundary": "exit_date < entry_date",
+    "paper_entry": "next available open from exp-20260526-007 source sleeve",
+    "paper_exit": "10 trading days after signal from exp-20260526-007 source sleeve",
+    "rank_notional_profile": [
+      1.0,
+      1.25
+    ],
+    "shadow_replay_only": true,
+    "source": "docs/backtesting.md canonical three-window replay",
+    "source_population": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+    "source_variant": "rank2_125",
+    "strategy_replacement_tested": false,
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "before_metrics": {
+    "avg_pnl": 321.7309,
+    "expected_value_proxy": 0.148165,
+    "return_on_notional": 0.029294,
+    "total_notional": 1285000.0,
+    "total_pnl": 37642.52,
+    "trade_count": 117,
+    "trade_sharpe_proxy": 5.057883,
+    "win_rate": 0.623932
+  },
+  "calibration": {
+    "actual_decision": "rejected_kova_vcp_loss_streak_derisk_replay",
+    "actual_ev_delta": 0.003721,
+    "actual_pnl_delta": -856.33,
+    "actual_success": 0,
+    "brier_score": 0.04,
+    "ev_prediction_error": 0.003721,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": -856.33,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "cuts_recovering_winners",
+      "sample_too_thin",
+      "no_window_stability",
+      "prior_loss_streak_failure_repeats"
+    ],
+    "predicted_success_probability": 0.2,
+    "realized_failure_mode": "failed checks: aggregate_pnl_improved"
+  },
+  "change_summary": "Closed-ledger shadow replay over exp-20260526-007 VCP top-2 rank-notional paper trades; no production policy changed.",
+  "change_type": "closed_ledger_capital_allocation_shadow_replay",
+  "changed_variable": "kova_vcp_closed_loss_streak_notional_scalar_v1",
+  "component": "quant/experiments/exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py",
+  "created_at": "2026-05-29T21:36:45+00:00",
+  "date_range": {
+    "source": "docs/backtesting.md canonical three-window replay",
+    "windows": {
+      "late_strong": {
+        "end": "2026-04-21",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+        "start": "2025-10-23"
+      },
+      "mid_weak": {
+        "end": "2025-10-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+        "start": "2025-04-23"
+      },
+      "old_thin": {
+        "end": "2025-04-22",
+        "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+        "start": "2024-10-02"
+      }
+    }
+  },
+  "decision": "rejected_kova_vcp_loss_streak_derisk_replay",
+  "delta_metrics": {
+    "expected_value_proxy": 0.003721,
+    "max_drawdown_pnl": -254.185,
+    "return_on_notional": 0.000736,
+    "total_pnl": -856.33,
+    "total_pnl_delta_pct": -0.022749
+  },
+  "drawdown_after": {
+    "ending_cumulative_pnl": 36786.19,
+    "max_drawdown_on_total_notional": 0.002155,
+    "max_drawdown_pnl": 2639.475,
+    "peak_date": "2025-07-31",
+    "trough_date": "2025-12-24"
+  },
+  "drawdown_before": {
+    "ending_cumulative_pnl": 37642.52,
+    "max_drawdown_on_total_notional": 0.002252,
+    "max_drawdown_pnl": 2893.66,
+    "peak_date": "2025-07-31",
+    "trough_date": "2025-12-24"
+  },
+  "expected_value_score_delta": 0.003721,
+  "experiment_id": "exp-20260529-025",
+  "gate1": {
+    "accepted_core_expected_value_score_sum": 7.8941,
+    "accepted_core_total_pnl_sum": 234850.99,
+    "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+    "baseline_source": "docs/backtesting.md accepted aggregate core stack",
+    "core_logic_changed": false,
+    "passed": true,
+    "source_exp007_summary": {
+      "expected_value_score_delta_vs_core": 2.2913,
+      "target_trade_count": 117,
+      "target_trade_summary": {
+        "by_ticker_count": {
+          "AAPL": 2,
+          "AMD": 3,
+          "AMZN": 2,
+          "APP": 9,
+          "AVGO": 4,
+          "BKNG": 5,
+          "CAT": 2,
+          "COIN": 1,
+          "CRDO": 3,
+          "CVX": 2,
+          "DDOG": 2,
+          "DIS": 5,
+          "GE": 4,
+          "GOOG": 2,
+          "GS": 8,
+          "ISRG": 1,
+          "JPM": 3,
+          "LLY": 1,
+          "MA": 1,
+          "MCD": 1,
+          "META": 7,
+          "MSFT": 7,
+          "MU": 3,
+          "NFLX": 6,
+          "NOW": 2,
+          "NVDA": 12,
+          "NVO": 1,
+          "PLTR": 5,
+          "RTX": 4,
+          "SNOW": 1,
+          "SPOT": 2,
+          "TSLA": 2,
+          "UNH": 2,
+          "V": 2
+        },
+        "by_ticker_pnl": {
+          "AAPL": 308.87,
+          "AMD": 3568.31,
+          "AMZN": -1116.45,
+          "APP": 6391.21,
+          "AVGO": -393.38,
+          "BKNG": -111.35,
+          "CAT": 226.46,
+          "COIN": -471.08,
+          "CRDO": 7118.5,
+          "CVX": 133.97,
+          "DDOG": 2055.58,
+          "DIS": -755.87,
+          "GE": 2738.45,
+          "GOOG": 530.27,
+          "GS": 3519.77,
+          "ISRG": 107.25,
+          "JPM": 1352.97,
+          "LLY": -323.84,
+          "MA": -32.45,
+          "MCD": -665.01,
+          "META": -426.58,
+          "MSFT": 1095.42,
+          "MU": 2428.61,
+          "NFLX": 2730.78,
+          "NOW": -198.36,
+          "NVDA": 6251.56,
+          "NVO": -615.85,
+          "PLTR": 1930.34,
+          "RTX": 396.3,
+          "SNOW": 575.78,
+          "SPOT": -728.89,
+          "TSLA": 494.64,
+          "UNH": -508.37,
+          "V": 34.96
+        },
+        "by_window_pnl": {
+          "late_strong": 1466.65,
+          "mid_weak": 27846.68,
+          "old_thin": 8329.19
+        },
+        "max_single_positive_pnl_share": 0.161821,
+        "positive_by_ticker_pnl": {
+          "AAPL": 308.87,
+          "AMD": 3568.31,
+          "APP": 6391.21,
+          "CAT": 226.46,
+          "CRDO": 7118.5,
+          "CVX": 133.97,
+          "DDOG": 2055.58,
+          "GE": 2738.45,
+          "GOOG": 530.27,
+          "GS": 3519.77,
+          "ISRG": 107.25,
+          "JPM": 1352.97,
+          "MSFT": 1095.42,
+          "MU": 2428.61,
+          "NFLX": 2730.78,
+          "NVDA": 6251.56,
+          "PLTR": 1930.34,
+          "RTX": 396.3,
+          "SNOW": 575.78,
+          "TSLA": 494.64,
+          "V": 34.96
+        },
+        "positive_pnl_hhi": 0.09754,
+        "total_pnl": 37642.52,
+        "total_trade_count": 117,
+        "windows_with_target_trades": [
+          "late_strong",
+          "mid_weak",
+          "old_thin"
+        ]
+      },
+      "total_pnl_delta_vs_core": 37642.52
+    }
+  },
+  "gate2": {
+    "no_llm_prompt_dependency": true,
+    "open_positions": {
+      "missing_entry_date_tickers": [],
+      "missing_target_price_tickers": [],
+      "passed": true,
+      "path": "operator_inputs/open_positions.json",
+      "position_count": 13
+    },
+    "passed": true,
+    "required_runtime_fields": [
+      "entry_date",
+      "target_price"
+    ],
+    "source_trade_fields": {
+      "missing_fields": {},
+      "passed": true,
+      "required_trade_fields": [
+        "ticker",
+        "signal_date",
+        "entry_date",
+        "exit_date",
+        "paper_notional_usd",
+        "pnl"
+      ],
+      "source_trade_count": 117
+    }
+  },
+  "gate3": {
+    "candidate_pool_changed": false,
+    "core_survival_changed": false,
+    "new_core_filter_added": false,
+    "note": "No filter is added and no trade is dropped; this only rescales paper notional in a closed-ledger shadow replay.",
+    "passed": true,
+    "scaled_count": 11,
+    "source_trade_count": 117
+  },
+  "gate4": {
+    "decision_evidence": {
+      "aggregate_drawdown_delta_pnl": -254.185,
+      "aggregate_ev_improved": true,
+      "aggregate_pnl_improved": false,
+      "beneficial_scaled_count": 5,
+      "concentration_ok": true,
+      "drawdown_ok": true,
+      "harmful_scaled_count": 6,
+      "max_single_positive_delta_share_limit": 0.5,
+      "scaled_count": 11,
+      "scaled_count_min": 10,
+      "scaled_count_ok": true,
+      "shadow_gate_passed": false,
+      "top_ticker_positive_delta_share": 0.300233,
+      "window_regression_ok": true,
+      "window_regressions": [
+        "mid_weak"
+      ],
+      "window_regressions_max": 1
+    },
+    "passed": false,
+    "promotion_grade": false,
+    "reason": "Closed-trade shadow replay only; no production strategy rule changed.",
+    "strategy_replacement_tested": false
+  },
+  "gate_questions": {
+    "1_alpha_hypothesis": "Risk allocation: a Kova-style pause/halve-after-repeated-stops operator rule may improve the VCP paper sleeve by reducing exposure during realized local loss streaks.",
+    "1_playbook_alignment": "Drawn directly from docs/kova-research-directions.md streak-based de-risking. It uses closed-trade ledger state rather than a new per-trade entry filter.",
+    "2_history_check": "exp-20260514-043 rejected a broader core portfolio realized loss streak risk scalar. This run is narrower: accepted VCP top-2 paper sleeve only, closed-ledger only, no production sizing.",
+    "3_single_causal_variable": "kova_vcp_closed_loss_streak_notional_scalar_v1",
+    "4_acceptance_standard": "Aggregate PnL and EV proxy improve; scaled_count >= 10; no more than one canonical window regresses on PnL/EV proxy; drawdown proxy does not worsen; top positive delta ticker share <= 50%.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py"
+  },
+  "hypothesis": "After two already-closed losing VCP paper trades, reducing the next VCP paper notional by 50% may lower drawdowns and improve expected value without discarding the accepted VCP source sleeve.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {
+    "llm_change_scope": "none",
+    "used_llm": false
+  },
+  "loss_streak_metrics": {
+    "avg_scaled_delta_pnl": -77.8482,
+    "beneficial_scaled_count": 5,
+    "harmful_scaled_count": 6,
+    "max_loss_streak_seen": 3,
+    "positive_delta_concentration": {
+      "by_ticker": [
+        {
+          "positive_delta_pnl": 254.185,
+          "share": 0.300233,
+          "ticker": "UNH"
+        },
+        {
+          "positive_delta_pnl": 252.575,
+          "share": 0.298332,
+          "ticker": "META"
+        },
+        {
+          "positive_delta_pnl": 205.315,
+          "share": 0.24251,
+          "ticker": "DIS"
+        },
+        {
+          "positive_delta_pnl": 134.55,
+          "share": 0.158925,
+          "ticker": "SPOT"
+        }
+      ],
+      "positive_delta_total": 846.625,
+      "top_ticker": "UNH",
+      "top_ticker_positive_delta_share": 0.300233
+    },
+    "scaled_count": 11,
+    "scaled_loser_count": 5,
+    "scaled_rate": 0.094017,
+    "scaled_winner_count": 6,
+    "status_counts": {
+      "scaled": 11,
+      "unscaled": 106
+    },
+    "total_scaled_delta_pnl": -856.33
+  },
+  "mechanism_family": "kova_vcp_operator_risk_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260514-043",
+    "exp-20260527-909",
+    "exp-20260528-002",
+    "exp-20260528-031",
+    "exp-20260529-006"
+  ],
+  "new_evidence_type": "closed_paper_ledger_state_replay",
+  "next_retry_requires": [
+    "full_slot_heat_replacement_value_replay_before_any_sizing_change",
+    "evidence_that_loss_streak_scaling_does_not_cut_convex_vcp_recoveries",
+    "forward_closed_vcp_paper_rows_with_non_concentrated_positive_delta"
+  ],
+  "parameters": {
+    "anti_js": "No JavaScript was used.",
+    "known_closed_boundary": "exit_date < entry_date",
+    "loss_streak_trigger_count": 2,
+    "max_single_positive_delta_share": 0.5,
+    "max_window_regressions": 1,
+    "min_scaled_trades": 10,
+    "reset_condition": "next known closed VCP paper trade has pnl >= 0",
+    "risk_scalar_after_loss_streak": 0.5,
+    "source_artifact": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+    "source_variant": "rank2_125"
+  },
+  "prediction": {
+    "confidence_reason": "Kova process supports reducing risk after repeated stops, but the broader core portfolio loss-streak allocator failed and VCP winners can be convex.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "cuts_recovering_winners",
+      "sample_too_thin",
+      "no_window_stability",
+      "prior_loss_streak_failure_repeats"
+    ],
+    "recorded_at": "2026-05-29T21:28:25+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "live_capital_changed": false,
+    "orders_changed": false,
+    "run_adapter_changed": false,
+    "shadow_replay_only": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "registry_lane": "alpha_discovery",
+  "rejection_reason": "failed checks: aggregate_pnl_improved",
+  "related_files": [
+    "quant/experiments/exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py",
+    "data/experiments/exp-20260529-025/kova_vcp_loss_streak_derisk_replay.json",
+    "experiments/logs/exp-20260529-025.json",
+    "experiments/tickets/exp-20260529-025.json",
+    "docs/experiments/tickets/exp-20260529-025.json",
+    "experiments/cards/exp-20260529-025.md",
+    "experiments/manifests/exp-20260529-025.json",
+    "experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md",
+    "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json"
+  ],
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py",
+  "rule_version": "kova_vcp_closed_loss_streak_notional_scalar_v1",
+  "single_causal_variable": "kova_vcp_closed_loss_streak_notional_scalar_v1",
+  "status": "rejected",
+  "summary": "The Kova VCP closed-ledger loss-streak de-risking replay failed Gate 4 (failed checks: aggregate_pnl_improved). Do not promote this notional scalar from the closed paper ledger.",
+  "timestamp": "2026-05-29T21:36:45+00:00",
+  "total_pnl_delta": -856.33,
+  "trial_family": "kova_vcp_loss_streak_derisk_replay",
+  "trial_variant_id": "kova_vcp_loss2_050x_until_reset_v1",
+  "why_not_other_changes": "Did not alter VCP entries, rank-notional profile, ranking, source candidate selection, exits, universe, LLM/news, backtester, run.py, or live/default orders.",
+  "window_metrics": {
+    "late_strong": {
+      "after": {
+        "avg_pnl": 366.6625,
+        "expected_value_proxy": 0.036843,
+        "return_on_notional": 0.034509,
+        "total_notional": 42500.0,
+        "total_pnl": 1466.65,
+        "trade_count": 4,
+        "trade_sharpe_proxy": 1.067621,
+        "win_rate": 0.5
+      },
+      "before": {
+        "avg_pnl": 366.6625,
+        "expected_value_proxy": 0.036843,
+        "return_on_notional": 0.034509,
+        "total_notional": 42500.0,
+        "total_pnl": 1466.65,
+        "trade_count": 4,
+        "trade_sharpe_proxy": 1.067621,
+        "win_rate": 0.5
+      },
+      "delta": {
+        "expected_value_proxy": 0.0,
+        "max_drawdown_pnl": 0.0,
+        "return_on_notional": 0.0,
+        "total_pnl": 0.0
+      },
+      "drawdown_after": {
+        "ending_cumulative_pnl": 1466.65,
+        "max_drawdown_on_total_notional": 0.011336,
+        "max_drawdown_pnl": 481.78,
+        "peak_date": null,
+        "trough_date": "2025-12-24"
+      },
+      "drawdown_before": {
+        "ending_cumulative_pnl": 1466.65,
+        "max_drawdown_on_total_notional": 0.011336,
+        "max_drawdown_pnl": 481.78,
+        "peak_date": null,
+        "trough_date": "2025-12-24"
+      },
+      "regressed": false,
+      "scaled_count": 0,
+      "scaled_loser_count": 0,
+      "scaled_winner_count": 0
+    },
+    "mid_weak": {
+      "after": {
+        "avg_pnl": 306.7085,
+        "expected_value_proxy": 0.120324,
+        "return_on_notional": 0.029578,
+        "total_notional": 912500.0,
+        "total_pnl": 26990.35,
+        "trade_count": 88,
+        "trade_sharpe_proxy": 4.067947,
+        "win_rate": 0.625
+      },
+      "before": {
+        "avg_pnl": 316.4395,
+        "expected_value_proxy": 0.116482,
+        "return_on_notional": 0.028634,
+        "total_notional": 972500.0,
+        "total_pnl": 27846.68,
+        "trade_count": 88,
+        "trade_sharpe_proxy": 4.067947,
+        "win_rate": 0.625
+      },
+      "delta": {
+        "expected_value_proxy": 0.003842,
+        "max_drawdown_pnl": -254.185,
+        "return_on_notional": 0.000944,
+        "total_pnl": -856.33
+      },
+      "drawdown_after": {
+        "ending_cumulative_pnl": 26990.35,
+        "max_drawdown_on_total_notional": 0.002365,
+        "max_drawdown_pnl": 2157.695,
+        "peak_date": "2025-07-31",
+        "trough_date": "2025-10-22"
+      },
+      "drawdown_before": {
+        "ending_cumulative_pnl": 27846.68,
+        "max_drawdown_on_total_notional": 0.00248,
+        "max_drawdown_pnl": 2411.88,
+        "peak_date": "2025-07-31",
+        "trough_date": "2025-10-22"
+      },
+      "regressed": true,
+      "scaled_count": 11,
+      "scaled_loser_count": 5,
+      "scaled_winner_count": 6
+    },
+    "old_thin": {
+      "after": {
+        "avg_pnl": 333.1676,
+        "expected_value_proxy": 0.095283,
+        "return_on_notional": 0.030849,
+        "total_notional": 270000.0,
+        "total_pnl": 8329.19,
+        "trade_count": 25,
+        "trade_sharpe_proxy": 3.08872,
+        "win_rate": 0.64
+      },
+      "before": {
+        "avg_pnl": 333.1676,
+        "expected_value_proxy": 0.095283,
+        "return_on_notional": 0.030849,
+        "total_notional": 270000.0,
+        "total_pnl": 8329.19,
+        "trade_count": 25,
+        "trade_sharpe_proxy": 3.08872,
+        "win_rate": 0.64
+      },
+      "delta": {
+        "expected_value_proxy": 0.0,
+        "max_drawdown_pnl": 0.0,
+        "return_on_notional": 0.0,
+        "total_pnl": 0.0
+      },
+      "drawdown_after": {
+        "ending_cumulative_pnl": 8329.19,
+        "max_drawdown_on_total_notional": 0.00324,
+        "max_drawdown_pnl": 874.84,
+        "peak_date": "2024-10-25",
+        "trough_date": "2024-11-04"
+      },
+      "drawdown_before": {
+        "ending_cumulative_pnl": 8329.19,
+        "max_drawdown_on_total_notional": 0.00324,
+        "max_drawdown_pnl": 874.84,
+        "peak_date": "2024-10-25",
+        "trough_date": "2024-11-04"
+      },
+      "regressed": false,
+      "scaled_count": 0,
+      "scaled_loser_count": 0,
+      "scaled_winner_count": 0
+    }
+  }
+}

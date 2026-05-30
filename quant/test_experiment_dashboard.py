@@ -289,7 +289,13 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
     assert "color-scheme: dark" in html
     assert "--panel: #282c34" in html
     assert "overflow-wrap: anywhere" in html
-    assert "-webkit-line-clamp: 3" in html
+    assert "-webkit-line-clamp: 2" in html
+    assert "Reset filters" in html
+    assert "data-density=\"compact\"" in html
+    assert "filter-chip" in html
+    assert "Pinned Compare" in html
+    assert "data-action=\"copy-id\"" in html
+    assert "score-pill" in html
     assert "Leaderboards" in html
     assert "Dataset View" in html
     assert "Collections" in html

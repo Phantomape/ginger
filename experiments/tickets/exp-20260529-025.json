@@ -1,0 +1,109 @@
+{
+  "acceptance_rule": "Candidate only if aggregate EV proxy and PnL improve versus the accepted VCP source, at least 10 trades are scaled, no more than one canonical window regresses on EV proxy/PnL, drawdown proxy does not worsen, and positive delta is not concentrated above 50 percent in one ticker.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py",
+    "data/experiments/exp-20260529-025",
+    "experiments/logs/exp-20260529-025.json",
+    "experiments/tickets/exp-20260529-025.json",
+    "experiments/cards/exp-20260529-025.md",
+    "experiments/manifests/exp-20260529-025.json",
+    "experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md",
+    "docs/experiments/tickets/exp-20260529-025.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/kova-research-directions.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/current_state.md",
+    "docs/data_edge_context_layers.md"
+  ],
+  "artifact_file": "data/experiments/exp-20260529-025/kova_vcp_loss_streak_derisk_replay.json",
+  "artifacts": {
+    "card": "experiments/cards/exp-20260529-025.md",
+    "docs_ticket": "docs/experiments/tickets/exp-20260529-025.json",
+    "json": "data/experiments/exp-20260529-025/kova_vcp_loss_streak_derisk_replay.json",
+    "log": "experiments/logs/exp-20260529-025.json",
+    "manifest": "experiments/manifests/exp-20260529-025.json",
+    "markdown": "experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md",
+    "ticket": "experiments/tickets/exp-20260529-025.json"
+  },
+  "baseline_result_file": "data/experiments/exp-20260526-007/vcp_rank_notional_profile.json",
+  "card_file": "experiments/cards/exp-20260529-025.md",
+  "change_type": "closed_ledger_capital_allocation_shadow_replay",
+  "changed_variable": "kova_vcp_closed_loss_streak_notional_scalar_v1",
+  "claimed_at": "2026-05-29T21:28:44+00:00",
+  "completed_at": "2026-05-29T21:36:45+00:00",
+  "created_at": "2026-05-29T21:28:37+00:00",
+  "decision": "rejected_kova_vcp_loss_streak_derisk_replay",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260529-025",
+  "experiment_uid": "expuid-ff9053a6fe52441f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260529-025",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-05-29T21:28:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "kova_vcp_loss_streak_derisk_replay"
+  },
+  "hypothesis": "Kova VCP paper trades may benefit from a closed-ledger loss-streak de-risking rule: after two already-closed losing VCP paper trades, halve subsequent VCP paper notional until the closed streak resets.",
+  "lane": "alpha_discovery",
+  "locked_variables": [
+    "kova_vcp_closed_loss_streak_notional_scalar_v1"
+  ],
+  "mechanism_family": "kova_vcp_operator_risk_allocation",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260514-043",
+    "exp-20260527-909",
+    "exp-20260528-002",
+    "exp-20260528-031",
+    "exp-20260529-006"
+  ],
+  "new_evidence_type": "closed_paper_ledger_state_replay",
+  "owner": "codex",
+  "prediction": {
+    "confidence_reason": "Kova process supports reducing risk after repeated stops, but the broader core portfolio loss-streak allocator failed and VCP winners can be convex.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "cuts_recovering_winners",
+      "sample_too_thin",
+      "no_window_stability",
+      "prior_loss_streak_failure_repeats"
+    ],
+    "recorded_at": "2026-05-29T21:28:25+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 2,
+  "report_file": "experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md",
+  "repro_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py",
+  "result": {
+    "artifact": "experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md",
+    "decision": "rejected_kova_vcp_loss_streak_derisk_replay",
+    "json": "data/experiments/exp-20260529-025/kova_vcp_loss_streak_derisk_replay.json",
+    "summary": "The Kova VCP closed-ledger loss-streak de-risking replay failed Gate 4 (failed checks: aggregate_pnl_improved). Do not promote this notional scalar from the closed paper ledger."
+  },
+  "result_file": "experiments/logs/exp-20260529-025.json",
+  "revision_manifest_file": "experiments/manifests/exp-20260529-025.json",
+  "single_causal_variable": "kova_vcp_closed_loss_streak_notional_scalar_v1",
+  "status": "rejected",
+  "summary": "The Kova VCP closed-ledger loss-streak de-risking replay failed Gate 4 (failed checks: aggregate_pnl_improved). Do not promote this notional scalar from the closed paper ledger.",
+  "ticket_file": "experiments/tickets/exp-20260529-025.json",
+  "trial_family": "kova_vcp_loss_streak_derisk_replay",
+  "trial_variant_id": "kova_vcp_loss2_050x_until_reset_v1",
+  "updated_at": "2026-05-29T21:36:45+00:00"
+}

@@ -193,6 +193,135 @@ may support `fact_tone_gap_attribution`, but must not change paper/live
 allocation until a separate Gate 1-4 experiment proves bucket-level predictive
 value and updates production/backtest parity.
 
+### `quant/experiments/exp_20260530_006_sec_event_family_burst_attribution.py`
+
+Purpose: read-only event-graph attribution for a first untried SEC interaction
+field, `sec_same_event_family_burst_count_v1`. It groups PIT SEC filing events
+by `usable_trade_date` and event-family bucket, then compares singleton filings
+with same-day same-family burst filings using fixed `$10k` next-open to
+10-trading-day-close forward outcomes across the canonical windows.
+
+Output:
+
+```text
+data/experiments/exp-20260530-006/sec_event_family_burst_attribution.json
+data/experiments/exp-20260530-006/sec_event_family_burst_attribution_rows.json
+experiments/artifacts/exp-20260530-006_sec_event_family_burst_attribution.md
+experiments/logs/exp-20260530-006.json
+```
+
+Agent rule: this experiment rejected raw same-family SEC filing burst count as
+a standalone field. High-burst rows had enough sample but only tiny average
+10d separation versus singleton filings. Do not promote this count into
+ranking, sizing, sleeves, LLM prompts, or orders. A future event-graph retry
+needs richer relations, such as sector/theme propagation, source overlap,
+first-reaction/follow-on sequencing, or characteristic-similarity peer links.
+
+### `quant/experiments/exp_20260530_008_sec_first_reaction_followon_attribution.py`
+
+Purpose: read-only event-graph attribution for `sec_first_reaction_followon_event_bucket_v1`.
+It groups PIT SEC filing events by ticker and event-family bucket, uses only
+prior same-ticker/same-family filing dates inside a 30-calendar-day lookback,
+and compares first/isolated filings with follow-on filings using fixed `$10k`
+next-open to 10-trading-day-close forward outcomes across the canonical
+windows.
+
+Output:
+
+```text
+data/experiments/exp-20260530-008/sec_first_reaction_followon_attribution.json
+data/experiments/exp-20260530-008/sec_first_reaction_followon_attribution_rows.json
+experiments/artifacts/exp-20260530-008_sec_first_reaction_followon_attribution.md
+experiments/logs/exp-20260530-008.json
+```
+
+Agent rule: this experiment rejected first/follow-on SEC filing recurrence as a
+standalone field. Follow-on sample size was adequate (`79`) and positive PnL
+was not dominated by one ticker, but follow-on rows had worse average 10d PnL
+and return than first/isolated rows and improved only one window. Do not promote
+this bucket into ranking, sizing, sleeves, LLM prompts, or orders. Future
+event-graph retries need a different relation source, such as sector/theme
+propagation, source overlap, or characteristic-similarity peer links.
+
+### `quant/experiments/exp_20260530_009_sec_cross_family_event_transition_attribution.py`
+
+Purpose: read-only event-graph attribution for `sec_cross_family_event_transition_bucket_v1`.
+It groups PIT SEC filing events by ticker, uses only prior same-ticker filing
+dates inside a 30-calendar-day lookback, flags rows with any prior event from a
+different `event_family_bucket`, and compares cross-family transitions with
+filings that had no recent prior SEC event using fixed `$10k` next-open to
+10-trading-day-close forward outcomes across the canonical windows.
+
+Output:
+
+```text
+data/experiments/exp-20260530-009/sec_cross_family_event_transition_attribution.json
+data/experiments/exp-20260530-009/sec_cross_family_event_transition_attribution_rows.json
+experiments/artifacts/exp-20260530-009_sec_cross_family_event_transition_attribution.md
+experiments/logs/exp-20260530-009.json
+```
+
+Agent rule: this experiment rejected same-ticker SEC cross-family event
+transitions as a standalone field. Cross-family rows were not thin (`457`) and
+positive PnL was not dominated by one ticker (`8.39%` top positive share), but
+they underperformed no-recent-prior filings by `-$108.48` average 10d PnL and
+`-1.0848%` average return, with only one of three windows improving. Do not
+promote this bucket into ranking, sizing, sleeves, LLM prompts, or orders.
+Future event-graph retries need a different relation source, such as
+sector/theme propagation, source overlap, or characteristic-similarity peer
+links.
+
+### `quant/experiments/exp_20260530_018_pre_entry_catalyst_freshness_attribution.py`
+
+Purpose: read-only catalyst timing attribution for
+`high_confidence_pre_entry_catalyst_freshness_bucket_v1`. It reuses the
+`exp-20260530-014` core trade rows and compares trades with a high-confidence
+catalyst inside three calendar days before entry against trades with stale or
+absent high-confidence catalyst context.
+
+Output:
+
+```text
+data/experiments/exp-20260530-018/pre_entry_catalyst_freshness_attribution.json
+data/experiments/exp-20260530-018/pre_entry_catalyst_freshness_attribution_rows.json
+experiments/artifacts/exp-20260530-018_pre_entry_catalyst_freshness_attribution.md
+experiments/logs/exp-20260530-018.json
+```
+
+Agent rule: this experiment rejected simple high-confidence catalyst
+freshness. The fresh bucket had enough rows (`10`), `2/3` windows improved, and
+concentration passed, but PnL and return lifts were below the materiality
+gates. Do not promote this bucket into ranking, sizing, sleeves, LLM prompts,
+or orders. Future catalyst timing work needs source-diversity,
+catalyst-quality, peer/source propagation, or forward replacement-value
+evidence beyond recency.
+
+### `quant/experiments/exp_20260530_019_pre_entry_catalyst_diversity_attribution.py`
+
+Purpose: read-only catalyst-quality attribution for
+`high_confidence_pre_entry_catalyst_source_category_diversity_bucket_v1`. It
+reuses the same `exp-20260530-014` core trade rows and asks whether a
+high-confidence catalyst becomes more actionable when the pre-entry context has
+multiple high-confidence sources or multiple high-confidence categories.
+
+Output:
+
+```text
+data/experiments/exp-20260530-019/exp_20260530_019_pre_entry_catalyst_diversity_attribution.json
+data/experiments/exp-20260530-019/pre_entry_catalyst_diversity_attribution_rows.json
+experiments/artifacts/exp-20260530-019_pre_entry_catalyst_diversity_attribution.md
+experiments/logs/exp-20260530-019.json
+```
+
+Agent rule: this experiment rejected simple source/category diversity because
+there were zero diverse high-confidence rows on the canonical `exp-20260530-014`
+core-trade sample. All `13` high-confidence rows were single-category
+`sec_financial_report`. Do not promote or retry broad catalyst early-entry,
+catalyst risk top-up, freshness, or source/category diversity on these frozen
+rows. A valid continuation needs a materially richer catalyst-quality field,
+such as source credibility plus semantic direction from SEC/news text, peer or
+source propagation, or forward replacement-value rows.
+
 ---
 
 ## Sentiment and regime attribution surfaces
@@ -504,6 +633,53 @@ pre-set `10`-trade minimum). It must not change exits, re-entry, ranking,
 sizing, live orders, or VCP paper-sleeve allocation unless a later forward or
 full lifecycle replay clears slot, heat, replacement-value, concentration, and
 production/backtest parity gates.
+
+### `quant/experiments/exp_20260529_025_kova_vcp_loss_streak_derisk_replay.py`
+
+Purpose: closed-ledger shadow replay for the Kova operator-process direction
+of reducing exposure after repeated stops. It tests a single paper notional
+variable on the accepted VCP top-2 source: after two already-closed losing VCP
+paper trades, halve subsequent VCP paper notional until a known closed winner
+resets the streak.
+
+Output:
+
+```text
+data/experiments/exp-20260529-025/kova_vcp_loss_streak_derisk_replay.json
+experiments/artifacts/exp-20260529-025_kova_vcp_loss_streak_derisk_replay.md
+experiments/logs/exp-20260529-025.json
+```
+
+Agent rule: this experiment rejected the narrow frozen-sample loss-streak
+scalar. It triggered 11 trades and improved EV proxy by `+0.003721`, but
+reduced aggregate PnL by `-$856.33` after scaling 6 winners and 5 losers. Do
+not promote or retest this same closed-ledger VCP notional scalar without new
+forward portfolio-state and replacement-value evidence.
+
+### `quant/experiments/exp_20260530_004_vcp_forward_replacement_value_readiness_audit.py`
+
+Purpose: read-only activation-readiness audit for the accepted
+`VOLATILITY_CONTRACTION_QQQ_CONFIRMED_PAPER` top-2 paper sleeve. It reads the
+production forward state, snapshots, and default-off attribution surface to
+decide whether the sleeve has enough replacement-value evidence for a separate
+activation review.
+
+Output:
+
+```text
+data/experiments/exp-20260530-004/vcp_forward_replacement_value_readiness_audit.json
+experiments/artifacts/exp-20260530-004_vcp_forward_replacement_value_readiness_audit.md
+experiments/logs/exp-20260530-004.json
+```
+
+Agent rule: this audit found the surface is wired but immature. Snapshots
+through `2026-05-28` had `candidate_count=0` and
+`closed_forward_outcomes=0`, so activation remains blocked by missing forward
+rows and replacement-value evidence. Do not promote VCP, retune QQQ/VCP/Kova
+thresholds, or add a new VCP scalar from frozen-sample evidence until the
+production ledger has nonzero candidates and enough closed forward outcomes.
+If candidate count stays zero after more production days, inspect the paper
+candidate feed as measurement repair before proposing another alpha rule.
 
 ### `quant/kova_data_sidecar.py`
 
