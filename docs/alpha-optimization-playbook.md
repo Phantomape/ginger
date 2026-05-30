@@ -455,6 +455,15 @@ diversity as rejected on these rows too. The next catalyst/event direction must
 add a materially richer quality field, such as source credibility plus semantic
 direction from SEC/news text, peer/source propagation, or forward replacement
 value; do not rerun the same freshness or diversity cuts on the same rows.
+`exp-20260530-020` then audited the production forward readiness of the
+default-off SEC financial-report T+1 paper sleeve. Historical replay evidence
+can stay in the archive, but the current production forward surface is not
+activation-ready: `19` unique snapshot days through `2026-05-29` loaded `459`
+SEC event rows and evaluated `31` T+1 rows while producing `0` candidates, `0`
+candidate days, `0` pending/open/closed paper positions, and `$0.00` realized
+paper PnL. Treat SEC financial-report activation or semantic allocation as
+blocked until the candidate feed emits nonzero forward rows with closed
+replacement-value outcomes.
 
 ### 7. Kova / CANSLIM Context
 
@@ -731,6 +740,9 @@ production-visible field:
   diversity retries on the `exp-20260530-014` core trade rows without a
   materially richer catalyst-quality field or forward replacement-value
   evidence;
+- SEC financial-report activation reviews or semantic allocation scalars while
+  the production forward sleeve has zero candidates and zero closed
+  replacement-value rows;
 - Companyfacts support-scalar mining around the accepted operating-profit + RS
   stack;
 - simple target, stop, or fixed max-loss exit changes;

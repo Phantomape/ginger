@@ -111,8 +111,22 @@ a materially richer catalyst-quality field, such as SEC/news semantic direction
 with source credibility, peer/source propagation, or forward replacement-value
 rows.
 
+`exp-20260530-020` switched to forward maturation instead of another SEC
+semantic scalar. It audited the default-off
+`SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER` production snapshots from
+`2026-05-10` through `2026-05-29`. Gate 2 passed, including
+`operator_inputs/open_positions.json` `entry_date` and `target_price` coverage
+on `13` rows, but Gate 4 failed: `19` unique snapshot days loaded `459` SEC
+event rows and evaluated `31` T+1 rows while producing `0` forward candidates,
+`0` candidate days, `0` pending/open/closed paper positions, and `$0.00`
+realized paper PnL. Keep the SEC financial-report sleeve observe-only. The
+next useful work is candidate-feed readiness or forward-row accumulation with
+replacement-value fields, not another activation review or semantic allocation
+rule on an empty forward sample.
+
 Regression status for this consolidation run: after merging the remote
-repo-bug-audit fixes, full unit tests passed (`1011 passed in 62.03s`). No bug
+repo-bug-audit fixes and later remote experiment records, full unit tests passed
+(`1017 passed in 41.24s`). No bug
 fix, strategy behavior change, live-order change, ranking change, sizing change,
 exit change, LLM/news boundary change, or backtest-path change was required by
 this regression pass.

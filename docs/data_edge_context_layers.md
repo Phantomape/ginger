@@ -322,6 +322,32 @@ rows. A valid continuation needs a materially richer catalyst-quality field,
 such as source credibility plus semantic direction from SEC/news text, peer or
 source propagation, or forward replacement-value rows.
 
+### `quant/experiments/exp_20260530_020_sec_financial_report_forward_readiness_audit.py`
+
+Purpose: read-only production forward-readiness audit for the default-off
+`SEC_FINANCIAL_REPORT_T1_DRIFT_EVENT_SLEEVE_PAPER` sleeve. It rolls up
+`data/paper_sleeves/sec_financial_report/snapshots.jsonl` and `state.json`,
+checks the AGENTS Gate 2 `operator_inputs/open_positions.json` fields, and
+decides whether the sleeve has enough forward candidates and closed outcomes
+for a later activation or semantic allocation experiment.
+
+Output:
+
+```text
+data/experiments/exp-20260530-020/exp_20260530_020_sec_financial_report_forward_readiness_audit.json
+experiments/artifacts/exp-20260530-020_sec_financial_report_forward_readiness_audit.md
+experiments/logs/exp-20260530-020.json
+```
+
+Agent rule: this experiment rejected SEC financial-report forward activation
+readiness. The production snapshots from `2026-05-10` through `2026-05-29`
+had `19` unique as-of dates, `459` loaded SEC event rows, and `31` T+1
+evaluated rows, but `0` forward candidates, `0` candidate days, `0` closed
+paper outcomes, and `$0.00` realized paper PnL. Do not promote activation,
+semantic allocation, ranking, sizing, LLM prompts, or orders from this sleeve
+until nonzero forward rows, closed outcomes, and replacement-value fields
+exist.
+
 ---
 
 ## Sentiment and regime attribution surfaces
