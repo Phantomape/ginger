@@ -1,0 +1,107 @@
+{
+  "after_metrics": {
+    "overall_pit_coverage": 1.0,
+    "total_trades": 61,
+    "rank_top_decile_trades": 56,
+    "rank_top_quartile_trades": 5,
+    "rank_below_top_quartile_trades": 0,
+    "rank_top_decile_avg_pnl": 3474.46,
+    "rank_top_decile_avg_r": 1.2967,
+    "rank_top_quartile_avg_pnl": 8056.2,
+    "rank_top_quartile_avg_r": 2.315,
+    "constant_components_zero_info": ["expectation_revision", "post_earnings_drift", "trend"],
+    "relative_strength_high_minus_mid_avg_r_margin": -0.7944,
+    "breadth_alignment_high_minus_mid_avg_r_margin": -0.6574,
+    "theme_participation_mid_minus_low_avg_r_margin": -0.0798,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260528-007 tested only whether ADDING the expectation increment improved ranking (observed_only_no_promotable_edge). The composite alpha_score itself had never been validated for monotonic predictive power.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Runs the never-completed Ranking Score Replacement Test (alpha-direction memo section 9) for the composite cross-sectional alpha_score. Regenerates the canonical 3-window backtests (late_strong/mid_weak/old_thin, EV 5.1628/2.1402/0.5911, aggregate 7.8941, 61 trades), runs quant/entry_day_ranking_attribution.py per window to rebuild the PIT alpha_score rank of each filled entry, then aggregates rank-bucket and component-bucket attribution. PIT coverage is 1.0. Finding: filled core trades are degenerate on composite rank (56 top_decile / 5 top_quartile / 0 below), so monotonicity cannot be tested; 3 of 6 components (trend, expectation_revision, post_earnings_drift) are perfectly constant across fills (zero discriminating info); of the 3 dispersed components, relative_strength (-0.79 avg_r margin) and breadth_alignment (-0.66) invert with adequate sample, theme is flat.",
+  "change_type": "read_only_cross_sectional_ranking_predictive_power_attribution",
+  "changed_variable": "entry_day_pit_composite_alpha_score_rank_bucket",
+  "component": "quant/experiments/exp_20260530_022_cross_sectional_ranking_predictive_power_attribution.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_rank_degenerate_requires_full_universe",
+  "decision_rule": "Filled core trades are a selected sample. If rank buckets cannot populate a below-top_quartile comparison group AND no dispersed component shows a clean monotonic avg_r edge (>= 0.10 margin, both buckets >= 8 trades), the composite ranking surface cannot be validated on filled trades.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "composite_rank_bottom_group_trades": 0,
+    "constant_component_count": 3,
+    "inverted_dispersed_component_count": 2
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260530-022",
+  "gate1": {"name": "canonical_three_window_trades_available", "passed": true, "total_trades": 61},
+  "gate2": {"name": "pit_alpha_score_coverage", "passed": true, "overall_pit_coverage": 1.0, "floor": 0.95},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "composite_alpha_score_rank_monotonicity",
+    "passed": false,
+    "status": "observed_only_rank_degenerate_requires_full_universe",
+    "rank_degenerate_no_bottom_group": true,
+    "constant_components_zero_info": ["expectation_revision", "post_earnings_drift", "trend"],
+    "dispersed_components": ["breadth_alignment", "relative_strength", "theme_participation"]
+  },
+  "gate_questions": {
+    "what_hypothesis": "The composite cross-sectional alpha_score rank, rebuilt PIT before each filled entry, has monotonic predictive power over realized outcomes across the canonical 3 windows.",
+    "prior_similar_experiments": "exp-20260528-007 tested only the expectation increment to ranking (observed_only_no_promotable_edge). The composite score itself was untested.",
+    "single_independent_variable": "Entry-day PIT composite alpha_score rank bucket.",
+    "success_failure_criteria": "Top rank bucket out-returns a populated bottom rank bucket (monotonic, not jackpot), PIT coverage >= 0.95.",
+    "reproducibility": "Deterministic: regenerate 3 canonical backtests, run entry_day_ranking_attribution.py per window, run the aggregation script. 6 unit tests cover the judge branches."
+  },
+  "hypothesis": "The continuous cross-sectional composite alpha_score (trend 0.30 / relative_strength 0.25 / expectation_revision 0.20 / post_earnings_drift 0.10 / theme_participation 0.10 / breadth_alignment 0.05) rebuilt point-in-time as of the day before each filled core entry has monotonic predictive power over realized trade outcomes across the canonical 3 windows.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": ["exp-20260528-007", "exp-20260529-007", "exp-20260528-027", "exp-20260517-009"],
+  "new_evidence_type": "pit_composite_alpha_score_rank_bucket_monotonicity_on_canonical_trades",
+  "next_evidence_needed": "Persist the daily cross_sectional_ranking_surface alpha_score for the ENTIRE candidate universe each day (filled + unfilled) with forward 5/10/20-day outcomes, then bucket all ranked candidates by decile and compare top-vs-bottom forward returns. Only that design has a bottom comparison group; filled-trade attribution is structurally blind to names the core never bought. Do not reintroduce expectation_revision / post_earnings_drift as ranking weights (zero dispersion among core fills) without that full-universe test.",
+  "parameters": {
+    "rule_version": "cross_sectional_ranking_predictive_power_attribution_v1",
+    "windows": ["late_strong", "mid_weak", "old_thin"],
+    "pit_coverage_floor": 0.95,
+    "monotonic_avg_r_margin": 0.10,
+    "min_bucket_trades": 8,
+    "composite_weights": {"trend": 0.30, "relative_strength": 0.25, "expectation_revision": 0.20, "post_earnings_drift": 0.10, "theme_participation": 0.10, "breadth_alignment": 0.05}
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260530_022"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260530_022_cross_sectional_ranking_predictive_power_attribution.py",
+    "quant/test_exp_20260530_022_cross_sectional_ranking_attribution.py",
+    "data/experiments/exp-20260530-022/cross_sectional_ranking_predictive_power_attribution.json",
+    "data/experiments/exp-20260530-022/ranking_attr_late_strong.json",
+    "data/experiments/exp-20260530-022/ranking_attr_mid_weak.json",
+    "data/experiments/exp-20260530-022/ranking_attr_old_thin.json",
+    "experiments/artifacts/exp-20260530-022_cross_sectional_ranking_predictive_power_attribution.md",
+    "experiments/logs/exp-20260530-022.json",
+    "experiments/tickets/exp-20260530-022.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "cross_sectional_ranking_predictive_power_attribution_v1",
+  "single_causal_variable": "entry_day_pit_composite_alpha_score_rank_bucket",
+  "status": "observed_only",
+  "timestamp": "2026-05-30T06:00:00+00:00",
+  "trial_family": "cross_sectional_ranking_attribution",
+  "trial_variant_id": "exp-20260530-022"
+}

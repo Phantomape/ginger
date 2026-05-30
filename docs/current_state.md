@@ -117,6 +117,12 @@ fix, strategy behavior change, live-order change, ranking change, sizing change,
 exit change, LLM/news boundary change, or backtest-path change was required by
 this regression pass.
 
+Merge note: while integrating the later remote bug-audit branch, two unpublished
+local experiment IDs collided with remote-published IDs. The remote
+`exp-20260530-001/002` records remain at those IDs; the local cross-sectional
+ranking attribution and SEC Item 2.02 exact-industry peer-transfer records were
+renumbered to `exp-20260530-022/023` to keep one experiment per ID.
+
 ## 2026-05-29 Experiment Consolidation
 
 Today's experiment set kept core/live trading logic unchanged. The only

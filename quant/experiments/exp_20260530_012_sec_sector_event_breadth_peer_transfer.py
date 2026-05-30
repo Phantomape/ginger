@@ -453,7 +453,7 @@ def _postprocess_payload(payload: dict[str, Any]) -> dict[str, Any]:
             "nearby_prior_experiments": [
                 "exp-20260529-010",
                 "exp-20260529-011",
-                "exp-20260530-002",
+                "exp-20260530-023",
                 "exp-20260530-006",
                 "exp-20260530-008",
                 "exp-20260530-009",
@@ -572,7 +572,7 @@ def _postprocess_payload(payload: dict[str, Any]) -> dict[str, Any]:
                         "Single-issuer same-sector return-comovement peer transfer "
                         "failed late_strong and robustness."
                     ),
-                    "exp-20260530-002": (
+                    "exp-20260530-023": (
                         "Exact-industry Item 2.02 transfer was too weak/thin. This "
                         "run uses sector-level multi-issuer event breadth across "
                         "SEC event families, not a single-issuer relation."

@@ -34,7 +34,7 @@ from constants import (
     BREAKOUT_RANK_BY_52W_HIGH,
     REGIME_AWARE_EXIT,
 )
-from data_paths import daily_artifact_path
+from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
 from earnings_snapshot import persist_earnings_snapshot
 from estimate_revision_ledger import persist_estimate_revision_ledger
 from operator_input_paths import open_positions_path, repo_relative
@@ -74,16 +74,14 @@ log = logging.getLogger(__name__)
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _save_json(obj, filepath):
-    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(obj, f, indent=2, ensure_ascii=False, default=str)
+    # Atomic write (temp + os.replace) so an interrupted/overlapping write can
+    # never leave a half-written or stale-tailed artifact (see bug audit #9).
+    atomic_write_json(obj, filepath, default=str)
     log.info(f"Saved → {filepath}")
 
 
 def _save_text(text, filepath):
-    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(text)
+    atomic_write_text(text, filepath)
     log.info(f"Saved → {filepath}")
 
 

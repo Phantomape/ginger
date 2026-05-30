@@ -9,6 +9,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 import time
 import uuid
 from contextlib import contextmanager
@@ -108,14 +109,41 @@ def load_registry(path=DEFAULT_REGISTRY):
     return data
 
 
-def save_registry(registry, path=DEFAULT_REGISTRY):
+def _atomic_write_text(text, path):
+    """Write text via same-directory temp file + atomic os.replace.
+
+    Closes the corruption window where an unlocked reader sees a truncated or
+    stale-tailed file, and where a shorter rewrite leaves an older file's
+    trailing bytes (bug audit #9).
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=path.parent,
+            prefix=f".{path.name}.", suffix=".tmp", delete=False,
+        ) as f:
+            tmp = f.name
+            f.write(text)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+        tmp = None
+    finally:
+        if tmp and os.path.exists(tmp):
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+
+
+def save_registry(registry, path=DEFAULT_REGISTRY):
+    path = Path(path)
     registry["updated_at"] = utc_now_iso()
     persisted = {k: v for k, v in registry.items() if not k.startswith("_")}
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(persisted, f, indent=2, ensure_ascii=False)
-        f.write("\n")
+    _atomic_write_text(
+        json.dumps(persisted, indent=2, ensure_ascii=False) + "\n", path)
 
 
 def ticket_path(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
@@ -136,11 +164,10 @@ def revision_manifest_path(experiment_id, manifests_dir=DEFAULT_MANIFESTS_DIR):
 
 def save_ticket(ticket, tickets_dir=DEFAULT_TICKETS_DIR, *, overwrite=True):
     path = ticket_path(ticket["experiment_id"], tickets_dir)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    mode = "w" if overwrite else "x"
-    with path.open(mode, encoding="utf-8") as f:
-        json.dump(ticket, f, indent=2, ensure_ascii=False)
-        f.write("\n")
+    if not overwrite and path.exists():
+        raise FileExistsError(path)
+    _atomic_write_text(
+        json.dumps(ticket, indent=2, ensure_ascii=False) + "\n", path)
     return path
 
 
@@ -849,17 +876,17 @@ def save_revision_manifest(
     overwrite=True,
 ):
     path = revision_manifest_path(ticket["experiment_id"], manifests_dir)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    mode = "w" if overwrite else "x"
+    if not overwrite and path.exists():
+        raise FileExistsError(path)
     manifest = build_revision_manifest(
         ticket,
         repo_root=repo_root,
         ticket_file=ticket_file,
         card_file=card_file,
     )
-    with path.open(mode, encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2, ensure_ascii=False, sort_keys=True)
-        f.write("\n")
+    _atomic_write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+        path)
     return path
 
 
@@ -1732,9 +1759,9 @@ def save_experiment_log_entry(row, *, allow_duplicate=False,
     with file_lock(path, timeout_seconds=timeout_seconds):
         if path.exists() and not allow_duplicate:
             raise ValueError(f"experiment log already exists: {path}")
-        with path.open("w", encoding="utf-8") as f:
-            json.dump(row, f, indent=2, ensure_ascii=False, sort_keys=True)
-            f.write("\n")
+        _atomic_write_text(
+            json.dumps(row, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+            path)
     return path
 
 

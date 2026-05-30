@@ -1,4 +1,6 @@
 {
+  "schema_version": 1,
+  "updated_at": "2026-05-30T22:10:28Z",
   "experiments": [
     {
       "experiment_id": "exp-20260426-014",
@@ -4143,7 +4145,7 @@
     },
     {
       "experiment_id": "exp-20260509-021",
-      "hypothesis": "\u8fd1\u671f\u574f\u4ea4\u6613\u96c6\u4e2d\u5728\u4e00\u79cd\u53ef\u590d\u73b0\u7684 hold-quality \u6216 follow-through \u5931\u8d25\u65cf\u7fa4\u4e2d\u3002",
+      "hypothesis": "近期坏交易集中在一种可复现的 hold-quality 或 follow-through 失败族群中。",
       "lane": "loss_attribution",
       "owner": "codex-all-in-one-loss",
       "status": "observed_only",
@@ -4152,7 +4154,7 @@
     },
     {
       "experiment_id": "exp-20260509-022",
-      "hypothesis": "\u5728 LLM/event ranking alpha \u53ef\u88ab\u8bc4\u4f30\u524d\uff0c\u5fc5\u987b\u7a33\u5b9a\u6301\u4e45\u5316 replay coverage \u548c attribution\u3002",
+      "hypothesis": "在 LLM/event ranking alpha 可被评估前，必须稳定持久化 replay coverage 和 attribution。",
       "lane": "measurement_repair",
       "owner": "codex-all-in-one-measurement",
       "status": "observed_only",
@@ -4161,7 +4163,7 @@
     },
     {
       "experiment_id": "exp-20260509-023",
-      "hypothesis": "\u4e00\u4e2a\u6d41\u52a8\u6027\u8fc7\u6ee4\u540e\u7684\u4e8b\u4ef6\u654f\u611f universe \u53ef\u4ee5\u5728\u5f53\u524d trend/breakout \u8986\u76d6\u4e4b\u5916\u4ea7\u751f\u975e\u91cd\u53e0\u9ad8\u8d28\u91cf\u5019\u9009\u3002",
+      "hypothesis": "一个流动性过滤后的事件敏感 universe 可以在当前 trend/breakout 覆盖之外产生非重叠高质量候选。",
       "lane": "universe_scout",
       "owner": "codex-all-in-one-universe",
       "status": "observed_only",
@@ -6081,11 +6083,15 @@
     },
     {
       "card_file": "experiments/cards/exp-20260529-019.md",
-      "completed_at": "2026-05-29T16:11:39+00:00",
       "experiment_id": "exp-20260529-019",
       "hypothesis": "SEC 8-K Item 5.02 leadership-change filings with positive same-day issuer reaction, liquidity, trend, and relative-strength confirmation may provide a free-data default-off candidate pool distinct from the older negative-reaction leadership sleeve.",
       "lane": "alpha_discovery",
       "owner": "codex-alpha-search",
+      "revision_manifest_file": "experiments/manifests/exp-20260529-019.json",
+      "status": "rejected",
+      "ticket_file": "experiments/tickets/exp-20260529-019.json",
+      "updated_at": "2026-05-29T16:06:33+00:00",
+      "completed_at": "2026-05-29T16:11:39+00:00",
       "result": {
         "card": "experiments/cards/exp-20260529-019.md",
         "decision": "rejected_sec_item502_positive_reaction",
@@ -6100,11 +6106,29 @@
         "json": "data/experiments/exp-20260529-019/exp_20260529_019_sec_item502_positive_reaction_candidate_pool.json",
         "log": "experiments/logs/exp-20260529-019.json",
         "passed": false
-      },
-      "revision_manifest_file": "experiments/manifests/exp-20260529-019.json",
-      "status": "rejected",
-      "ticket_file": "experiments/tickets/exp-20260529-019.json",
-      "updated_at": "2026-05-29T16:06:33+00:00"
+      }
+    },
+    {
+      "experiment_id": "exp-20260530-001",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "phantomape",
+      "hypothesis": "Intra-sector peer news/earnings shocks (gap>=5% + vol>=1.8x) in the prior 5 trading days predict same-direction SPY-excess forward 5/10-day returns for the non-shocked sector peers (intra-industry information transfer); evaluable read-only as a PIT ranking field without a matured paper sleeve.",
+      "ticket_file": "experiments/tickets/exp-20260530-001.json",
+      "card_file": "experiments/cards/exp-20260530-001.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260530-001.json",
+      "updated_at": "2026-05-30T02:48:47+00:00"
+    },
+    {
+      "experiment_id": "exp-20260530-002",
+      "status": "observed_only",
+      "lane": "alpha_discovery",
+      "owner": "phantomape",
+      "hypothesis": "SEC 8-K event-family forward drift: Item 5.02 (leadership change) precedes positive SPY-excess 5-10d drift and Item 8.01 (other events) precedes negative drift. Harden the exp-detected signal with temporal sub-period replication and ticker-concentration/dedup checks (the departure/appointment text split is blocked offline: only 6/158 filings carry usable Item-5.02 body text).",
+      "ticket_file": "experiments/tickets/exp-20260530-002.json",
+      "card_file": "experiments/cards/exp-20260530-002.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260530-002.json",
+      "updated_at": "2026-05-30T08:04:04+00:00"
     },
     {
       "card_file": "experiments/cards/exp-20260529-020.md",
@@ -6118,14 +6142,14 @@
       "updated_at": "2026-05-29T16:51:48+00:00"
     },
     {
-      "card_file": "experiments/cards/exp-20260530-001.md",
-      "experiment_id": "exp-20260530-001",
+      "card_file": "experiments/cards/exp-20260530-022.md",
+      "experiment_id": "exp-20260530-022",
       "hypothesis": "The continuous cross-sectional composite alpha_score (trend 0.30 / relative_strength 0.25 / expectation_revision 0.20 / post_earnings_drift 0.10 / theme_participation 0.10 / breadth_alignment 0.05) rebuilt point-in-time as of the day before each filled core entry has monotonic predictive power over realized trade outcomes across the canonical 3 windows: top alpha_score-rank buckets should out-return bottom buckets, not via a single jackpot trade. This is the never-completed Ranking Score Replacement Test (alpha direction memo section 9), testing the composite score itself rather than only the expectation increment that exp-20260528-007 already found non-promotable.",
       "lane": "alpha_discovery",
       "owner": "claude-ranking-attr",
-      "revision_manifest_file": "experiments/manifests/exp-20260530-001.json",
+      "revision_manifest_file": "experiments/manifests/exp-20260530-022.json",
       "status": "claimed",
-      "ticket_file": "experiments/tickets/exp-20260530-001.json",
+      "ticket_file": "experiments/tickets/exp-20260530-022.json",
       "updated_at": "2026-05-30T00:38:32+00:00"
     },
     {
@@ -6141,13 +6165,13 @@
     },
     {
       "card_file": null,
-      "experiment_id": "exp-20260530-002",
+      "experiment_id": "exp-20260530-023",
       "hypothesis": null,
       "lane": null,
       "owner": null,
       "revision_manifest_file": null,
       "status": "rejected",
-      "ticket_file": "experiments/tickets/exp-20260530-002.json",
+      "ticket_file": "experiments/tickets/exp-20260530-023.json",
       "updated_at": "2026-05-30T00:49:37+00:00"
     },
     {
@@ -6403,7 +6427,5 @@
       "ticket_file": "experiments/tickets/exp-20260530-019.json",
       "updated_at": "2026-05-30T21:40:52Z"
     }
-  ],
-  "schema_version": 1,
-  "updated_at": "2026-05-30T21:40:52Z"
+  ]
 }
