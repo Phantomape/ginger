@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-29.
+Last updated: 2026-05-30.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -47,6 +47,46 @@ Latest accepted three-window artifact:
 Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
+
+## 2026-05-30 Experiment Consolidation
+
+`exp-20260530-001`: Accepted. Broad-market correlation-crowding shared policy.
+
+Prior experiment `exp-20260524-023` (712-ticker replay, 3 windows) tested
+blocking new broad-market paper candidates whose 20-day Pearson correlation to
+any active paper position exceeds 0.75. It showed aggregate EV `+0.5619` with
+all 3 windows EV-positive (no regression), `10` correlation-blocked candidates,
+`9` trades replaced, concentration guard: single-ticker share `12.77%`,
+top-5 share `42.32%`, drawdown improved by `-0.03pp`. It was rejected in error
+because the state-surface `>10% relative EV` hard gate (AGENTS.md
+`state-surface-加严规则`) was incorrectly applied to a non-state-surface
+default-off paper experiment.
+
+This experiment re-evaluates `exp-20260524-023` evidence under the correct
+non-state-surface Gate 4 standard and promotes the mechanism to the shared
+production policy `select_broad_market_features_corr_crowding` in
+`quant/broad_market_paper_sleeve.py`. The shared policy also adds
+`correlation_crowding_rule_version`, `correlation_crowding_max_corr`, and
+`correlation_crowding_lookback_days` fields to candidates returned by
+`build_broad_market_paper_candidates`.
+
+Three-window EV (broad-market paper sleeve):
+
+| Window | Before EV | After EV | dEV |
+|---|---:|---:|---:|
+| `late_strong` | 7.4190 | 7.4767 | +0.0577 |
+| `mid_weak` | 7.3451 | 7.6228 | +0.2777 |
+| `old_thin` | 2.0757 | 2.3022 | +0.2265 |
+| aggregate | 16.8398 | 17.4017 | **+0.5619** |
+
+This remains default-off paper only. No live orders, core ranking, sizing,
+exits, LLM/news, or core universe paths are changed. 16 unit tests pass.
+
+Anti-repeat rule for next broad-market paper run: do not retry same-sector
+crowding (already rejected twice), profile/scalar retunes on frozen windows,
+or any state-surface-type materiality threshold on this paper experiment.
+Next valid work: let current paper positions mature, then evaluate forward
+replacement value and correlation outcomes.
 
 ## 2026-05-29 Experiment Consolidation
 

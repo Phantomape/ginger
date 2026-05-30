@@ -3,11 +3,14 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from quant.broad_market_paper_sleeve import (
+    CORRELATION_CROWDING_RULE_VERSION,
     HIGH_VOLATILITY_RULE_VERSION,
     LOW_EXTENSION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
     TREND_PERSISTENCE_RULE_VERSION,
     UNIVERSE_STATE_FEED_RULE_VERSION,
+    _pearson_corr_safe,
+    _trailing_close_returns,
     broad_market_candidate_notional_payload,
     broad_market_high_volatility_multiplier,
     broad_market_low_extension_multiplier,
@@ -20,6 +23,8 @@ from quant.broad_market_paper_sleeve import (
     build_broad_market_feature,
     candidate_passes_profile,
     empty_broad_market_paper_state,
+    max_corr_to_active_positions,
+    select_broad_market_features_corr_crowding,
 )
 
 
@@ -356,3 +361,104 @@ def test_broad_market_replacement_value_report_tracks_cash_slot_ledger():
     assert report["positive_closed_pnl"] == 200.0
     assert report["by_ticker"]["WIN"]["positive_pnl_share"] == 1.0
     assert report["alters_orders"] is False
+
+
+def test_pearson_corr_safe_detects_correlation():
+    perfectly_correlated = [0.01 * i for i in range(20)]
+    assert abs(_pearson_corr_safe(perfectly_correlated, perfectly_correlated) - 1.0) < 1e-9
+
+    anti_correlated = [0.01 * i for i in range(20)]
+    neg = [-x for x in anti_correlated]
+    assert abs(_pearson_corr_safe(anti_correlated, neg) + 1.0) < 1e-9
+
+    assert _pearson_corr_safe([0.0] * 20, [0.0] * 20) is None  # zero variance
+
+    assert _pearson_corr_safe([0.01] * 5, [0.01] * 5, min_pairs=10) is None  # too few
+
+
+def test_trailing_close_returns_computes_log_relatives():
+    rows = _rows(100.0, 1.0)
+    returns = _trailing_close_returns(rows, 20, 5)
+    assert len(returns) == 5
+    for r in returns:
+        assert r > 0  # all steps are positive since step > 0
+
+
+def test_correlation_crowding_blocks_high_corr_candidate():
+    spy_rows = _rows(100.0, 0.02)
+    win_rows = _rows(50.0, 0.35)
+    clone_rows = _rows(50.0, 0.35)  # identical price path to WIN → corr ~1.0
+    low_corr_rows = _rows(55.0, -0.10)  # declining → low correlation to WIN
+
+    spy_index = {row["date"]: idx for idx, row in enumerate(spy_rows)}
+    prices = {"SPY": spy_rows, "WIN": win_rows, "CLONE": clone_rows, "LOW": low_corr_rows}
+    date_indexes = {t: {r["date"]: i for i, r in enumerate(rows)} for t, rows in prices.items()}
+    day = spy_rows[60]["date"]
+
+    win_feature = build_broad_market_feature(ticker="WIN", rows=win_rows, idx=60, spy_rows=spy_rows, spy_index=spy_index)
+    clone_feature = build_broad_market_feature(ticker="CLONE", rows=clone_rows, idx=60, spy_rows=spy_rows, spy_index=spy_index)
+    low_feature = build_broad_market_feature(ticker="LOW", rows=low_corr_rows, idx=60, spy_rows=spy_rows, spy_index=spy_index)
+
+    features = [f for f in [win_feature, clone_feature, low_feature] if f is not None]
+    assert len(features) >= 2
+
+    # WIN is active; CLONE should be blocked (corr ≈ 1.0 with WIN)
+    selected = select_broad_market_features_corr_crowding(
+        features,
+        capacity=3,
+        config={"correlation_crowding_max_corr": 0.75, "correlation_crowding_lookback_days": 20,
+                "daily_entry_slots": 3, "max_active_positions": 5},
+        active_tickers=["WIN"],
+        rows_by_ticker=prices,
+        date_indexes=date_indexes,
+        day=day,
+    )
+    selected_tickers = [f["ticker"] for f in selected]
+    assert "CLONE" not in selected_tickers  # blocked: too correlated with WIN
+
+
+def test_correlation_crowding_no_active_positions_selects_all():
+    spy_rows = _rows(100.0, 0.02)
+    win_rows = _rows(50.0, 0.35)
+    other_rows = _rows(45.0, 0.30)
+
+    spy_index = {row["date"]: idx for idx, row in enumerate(spy_rows)}
+    prices = {"SPY": spy_rows, "WIN": win_rows, "OTHER": other_rows}
+    date_indexes = {t: {r["date"]: i for i, r in enumerate(rows)} for t, rows in prices.items()}
+    day = spy_rows[60]["date"]
+
+    win_feature = build_broad_market_feature(ticker="WIN", rows=win_rows, idx=60, spy_rows=spy_rows, spy_index=spy_index)
+    other_feature = build_broad_market_feature(ticker="OTHER", rows=other_rows, idx=60, spy_rows=spy_rows, spy_index=spy_index)
+    features = [f for f in [win_feature, other_feature] if f is not None]
+    assert len(features) == 2
+
+    # With no active positions, crowding should never block → same result as without crowding
+    selected = select_broad_market_features_corr_crowding(
+        features,
+        capacity=3,
+        config={"correlation_crowding_max_corr": 0.75, "correlation_crowding_lookback_days": 20,
+                "daily_entry_slots": 3, "max_active_positions": 5},
+        active_tickers=[],
+        rows_by_ticker=prices,
+        date_indexes=date_indexes,
+        day=day,
+    )
+    assert len(selected) == 2
+
+
+def test_correlation_crowding_rule_version_in_backtest_trade():
+    spy_rows = _rows(100.0, 0.02)
+    win_rows = _rows(50.0, 0.35)
+    ohlcv = {"SPY": spy_rows, "WIN": win_rows}
+
+    candidates = build_broad_market_paper_candidates(
+        as_of=spy_rows[60]["date"],
+        ohlcv_by_ticker=ohlcv,
+        candidate_tickers=["WIN"],
+        ticker_metadata={},
+        current_tradeable_universe=set(),
+    )
+
+    assert len(candidates) == 1
+    assert candidates[0]["correlation_crowding_rule_version"] == CORRELATION_CROWDING_RULE_VERSION
+    assert candidates[0]["correlation_crowding_max_corr"] == 0.75

@@ -54,6 +54,7 @@ LOW_EXTENSION_RULE_VERSION = "broad_market_low_extension_notional_v1"
 HIGH_VOLATILITY_RULE_VERSION = "broad_market_high_volatility_notional_v1"
 TREND_PERSISTENCE_RULE_VERSION = "broad_market_trend_persistence_notional_v1"
 UNIVERSE_STATE_FEED_RULE_VERSION = "broad_market_universe_state_observation_feed_v1"
+CORRELATION_CROWDING_RULE_VERSION = "broad_market_correlation_crowding_v1"
 STATE_SCHEMA_VERSION = 1
 
 DEFAULT_STATE_PATH = data_artifact_path("broad_market_paper_state")
@@ -104,6 +105,8 @@ DEFAULT_CONFIG = {
     "forward_gate_min_win_rate": 0.52,
     "forward_gate_max_single_ticker_positive_share": 0.50,
     "forward_gate_max_top5_positive_share": 0.70,
+    "correlation_crowding_max_corr": 0.75,
+    "correlation_crowding_lookback_days": 20,
 }
 
 
@@ -471,7 +474,17 @@ def build_broad_market_paper_candidates(
         )
         if feature and candidate_passes_profile(feature, cfg):
             features.append(feature)
-    features = select_broad_market_features(features, config=cfg)
+    date_indexes = {
+        ticker: _date_index(r) for ticker, r in rows_by_ticker.items()
+    }
+    features = select_broad_market_features_corr_crowding(
+        features,
+        config=cfg,
+        active_tickers=list(active),
+        rows_by_ticker=rows_by_ticker,
+        date_indexes=date_indexes,
+        day=as_of,
+    )
     return [
         _candidate_from_feature(feature, source_rank=rank, config=cfg)
         for rank, feature in enumerate(features, start=1)
@@ -639,6 +652,140 @@ def select_broad_market_features(
     return ranked[: max(0, limit)]
 
 
+def _trailing_close_returns(
+    rows: list[dict[str, Any]],
+    idx: int,
+    lookback: int,
+) -> list[float]:
+    start = max(1, idx - lookback + 1)
+    values: list[float] = []
+    for pos in range(start, idx + 1):
+        prev_close = _positive_float(rows[pos - 1].get("close"))
+        close = _positive_float(rows[pos].get("close"))
+        if prev_close is None or close is None:
+            continue
+        values.append(close / prev_close - 1.0)
+    return values
+
+
+def _pearson_corr_safe(
+    returns_a: list[float],
+    returns_b: list[float],
+    min_pairs: int = 10,
+) -> float | None:
+    size = min(len(returns_a), len(returns_b))
+    if size < min_pairs:
+        return None
+    a = returns_a[-size:]
+    b = returns_b[-size:]
+    mean_a = sum(a) / size
+    mean_b = sum(b) / size
+    num = sum((x - mean_a) * (y - mean_b) for x, y in zip(a, b))
+    den_a = sum((x - mean_a) ** 2 for x in a) ** 0.5
+    den_b = sum((y - mean_b) ** 2 for y in b) ** 0.5
+    den = den_a * den_b
+    if den <= 0 or not math.isfinite(den):
+        return None
+    corr = num / den
+    if not math.isfinite(corr):
+        return None
+    return max(-1.0, min(1.0, corr))
+
+
+def max_corr_to_active_positions(
+    candidate_ticker: str,
+    active_tickers: list[str],
+    rows_by_ticker: dict[str, list[dict[str, Any]]],
+    date_indexes: dict[str, dict[str, int]],
+    day: str,
+    lookback: int,
+) -> float | None:
+    """Return the maximum 20-day Pearson correlation between the candidate and any active ticker.
+
+    Returns None when no correlation can be computed (missing price data or too few pairs).
+    """
+    candidate_rows = rows_by_ticker.get(candidate_ticker) or []
+    candidate_idx = (date_indexes.get(candidate_ticker) or {}).get(day)
+    if candidate_idx is None:
+        return None
+    candidate_returns = _trailing_close_returns(candidate_rows, candidate_idx, lookback)
+    best: float | None = None
+    for active_ticker in active_tickers:
+        if active_ticker == candidate_ticker:
+            continue
+        active_rows = rows_by_ticker.get(active_ticker) or []
+        active_idx = (date_indexes.get(active_ticker) or {}).get(day)
+        if active_idx is None:
+            continue
+        active_returns = _trailing_close_returns(active_rows, active_idx, lookback)
+        corr = _pearson_corr_safe(candidate_returns, active_returns)
+        if corr is not None and corr > 0:
+            best = corr if best is None else max(best, corr)
+    return best
+
+
+def select_broad_market_features_corr_crowding(
+    features: list[dict[str, Any]],
+    *,
+    capacity: int | None = None,
+    config: dict[str, Any] | None = None,
+    active_tickers: list[str] | None = None,
+    rows_by_ticker: dict[str, list[dict[str, Any]]] | None = None,
+    date_indexes: dict[str, dict[str, int]] | None = None,
+    day: str | None = None,
+) -> list[dict[str, Any]]:
+    """Select broad-market features with optional correlation-crowding gate.
+
+    When ``active_tickers`` and price data are provided and
+    ``correlation_crowding_max_corr < 1.0``, candidates whose 20-day Pearson
+    correlation with any active paper position exceeds the cap are skipped in
+    favour of the next-ranked qualifying candidate.  If price data is absent or
+    the config cap is 1.0+, falls back to ``select_broad_market_features``.
+    """
+    cfg = _config(config)
+    max_corr = _float_or_none(cfg.get("correlation_crowding_max_corr"))
+    lookback = int(cfg.get("correlation_crowding_lookback_days") or 20)
+    limit = min(
+        int(cfg["daily_entry_slots"]),
+        int(cfg["max_active_positions"]) if capacity is None else int(capacity),
+    )
+    ranked = sorted(
+        features,
+        key=lambda row: (
+            float(row["score"]),
+            float(row["ret20_excess_spy"]),
+            float(row["volume_ratio_20"]),
+            str(row["ticker"]),
+        ),
+        reverse=True,
+    )
+    if (
+        max_corr is None
+        or max_corr >= 1.0
+        or not active_tickers
+        or not rows_by_ticker
+        or not date_indexes
+        or not day
+    ):
+        return ranked[:max(0, limit)]
+    selected: list[dict[str, Any]] = []
+    for feature in ranked:
+        if len(selected) >= limit:
+            break
+        corr = max_corr_to_active_positions(
+            candidate_ticker=str(feature["ticker"]).upper(),
+            active_tickers=active_tickers,
+            rows_by_ticker=rows_by_ticker,
+            date_indexes=date_indexes,
+            day=day,
+            lookback=lookback,
+        )
+        if corr is not None and corr >= max_corr:
+            continue
+        selected.append(feature)
+    return selected
+
+
 def backtest_trade_from_feature(
     *,
     feature: dict[str, Any],
@@ -710,6 +857,8 @@ def backtest_trade_from_feature(
         "decision_close_price_min": cfg["decision_close_price_min"],
         "score": feature["score"],
         "sector_map_rule_version": SECTOR_MAP_RULE_VERSION,
+        "correlation_crowding_rule_version": CORRELATION_CROWDING_RULE_VERSION,
+        "correlation_crowding_max_corr": cfg.get("correlation_crowding_max_corr"),
         **_sector_fields(ticker),
     }
 
@@ -755,6 +904,9 @@ def _candidate_from_feature(
         "trend_persistence_notional_scalar": config["trend_persistence_notional_scalar"],
         "trend_persistence_notional_multiplier": notional_payload["trend_persistence_multiplier"],
         "trend_persistence_support_applied": notional_payload["trend_persistence_support_applied"],
+        "correlation_crowding_rule_version": CORRELATION_CROWDING_RULE_VERSION,
+        "correlation_crowding_max_corr": config.get("correlation_crowding_max_corr"),
+        "correlation_crowding_lookback_days": config.get("correlation_crowding_lookback_days"),
         "replacement_value_context": {
             "rule_version": REPLACEMENT_VALUE_RULE_VERSION,
             "read_only": True,

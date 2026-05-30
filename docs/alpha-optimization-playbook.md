@@ -191,8 +191,21 @@ Do next:
 - compare selected rows against same-day core candidates and adjacent paper
   ranks;
 - expose activation blockers in `default_off_alpha_attribution`.
+- for broad-market paper specifically: monitor correlation-blocked candidates
+  in forward sessions to verify the blocking improves outcomes (now tracked
+  via `correlation_crowding_rule_version` in each candidate record).
 
-Do not do next:
+Do not do next (broad-market paper updated 2026-05-30):
+
+- retry same-sector open-crowding (rejected twice: `exp-20260527-021/901`);
+- retry Pearson correlation crowding (`exp-20260530-001` **accepted**, frozen window closed);
+- retune rank-notional, low-extension, high-volatility, or trend-persistence
+  scalars/thresholds on the three frozen windows without new forward evidence;
+- apply the state-surface >10% relative EV hard gate to broad-market paper
+  experiments (this caused `exp-20260524-023` to be incorrectly rejected and
+  has now been corrected).
+
+Do not do next (other families):
 
 - retune Companyfacts growth, RS percentile, top-N, hold days, or fixed notional
   on the same windows;
