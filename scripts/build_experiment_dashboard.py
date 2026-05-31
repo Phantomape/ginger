@@ -382,6 +382,40 @@ def build_experiment_card(row: dict) -> dict:
     }
 
 
+def is_rejected_high_upside(row: dict) -> bool:
+    metrics = derive_metrics(row)
+    ev_delta = metrics.get("expected_value_score_delta")
+    pnl_delta = metrics.get("total_pnl_delta")
+    return row.get("status_group") == "rejected" and (
+        (ev_delta is not None and ev_delta > 0)
+        or (pnl_delta is not None and pnl_delta > 0)
+    )
+
+
+def rejected_upside_sort_key(row: dict):
+    ev_delta = row.get("expected_value_score_delta")
+    pnl_delta = row.get("total_pnl_delta")
+    return (
+        ev_delta is not None,
+        ev_delta if ev_delta is not None else float("-inf"),
+        pnl_delta is not None,
+        pnl_delta if pnl_delta is not None else float("-inf"),
+        row.get("experiment_id") or "",
+    )
+
+
+def high_after_ev_sort_key(row: dict):
+    after_ev = row.get("after_expected_value_score")
+    ev_delta = row.get("expected_value_score_delta")
+    return (
+        after_ev is not None,
+        after_ev if after_ev is not None else float("-inf"),
+        ev_delta is not None,
+        ev_delta if ev_delta is not None else float("-inf"),
+        row.get("experiment_id") or "",
+    )
+
+
 def build_leaderboards(rows):
     scored = []
     for row in rows:
@@ -411,6 +445,24 @@ def build_leaderboards(rows):
         key=lambda row: row["expected_value_score_delta"],
     )[:25]
     top_pnl = sorted(scored, key=sort_key("total_pnl_delta"), reverse=True)[:25]
+    high_after_ev = sorted(
+        [
+            row for row in scored
+            if row.get("after_expected_value_score") is not None
+            and row["after_expected_value_score"] > 10
+        ],
+        key=high_after_ev_sort_key,
+        reverse=True,
+    )[:50]
+    rejected_high_upside = sorted(
+        [row for row in scored if is_rejected_high_upside(row)],
+        key=rejected_upside_sort_key,
+        reverse=True,
+    )[:50]
+    rejected_high_after_ev = [
+        row for row in high_after_ev
+        if row.get("status_group") == "rejected"
+    ][:50]
     family_counter = Counter(
         (row.get("trial_family") or row.get("mechanism_family") or "unknown")
         for row in rows
@@ -424,6 +476,9 @@ def build_leaderboards(rows):
         "top_ev_delta": top_ev,
         "bottom_ev_delta": bottom_ev,
         "top_pnl_delta": top_pnl,
+        "high_after_ev": high_after_ev,
+        "rejected_high_after_ev": rejected_high_after_ev,
+        "rejected_high_upside": rejected_high_upside,
         "rejected_families": rejected_families,
     }
 
@@ -458,6 +513,21 @@ def build_collections(rows):
             "count": len(members),
             "experiment_ids": members[:200],
         })
+    rejected_high_upside = sorted(
+        [row for row in rows if is_rejected_high_upside(row)],
+        key=lambda row: rejected_upside_sort_key({
+            "experiment_id": row.get("experiment_id"),
+            **derive_metrics(row),
+        }),
+        reverse=True,
+    )
+    collections.append({
+        "slug": "rejected_high_upside",
+        "title": "Rejected High-Upside",
+        "description": "Rejected experiments with positive EV or PnL deltas. These failed Gate 4 or other constraints, but preserve alpha clues worth revisiting with new evidence.",
+        "count": len(rejected_high_upside),
+        "experiment_ids": [row.get("experiment_id") for row in rejected_high_upside[:200]],
+    })
     return collections
 
 
@@ -2397,6 +2467,7 @@ HTML_TEMPLATE = """<!doctype html>
       <nav class="tabs" aria-label="Dashboard views">
         <button class="tab active-tab" data-view="experiments">Experiments</button>
         <button class="tab" data-view="cards">Cards</button>
+        <button class="tab" data-view="rejected-upside">Rejected Upside</button>
         <button class="tab" data-view="leaderboards">Leaderboards</button>
         <button class="tab" data-view="dataset">Dataset View</button>
         <button class="tab" data-view="collections">Collections</button>
@@ -2678,7 +2749,8 @@ HTML_TEMPLATE = """<!doctype html>
       const facts = compactFacts(row);
       const summary = primarySummary(row);
       const metricPills = [
-        scorePill("EV", m.expected_value_score_delta),
+        scorePill("EV Δ", m.expected_value_score_delta),
+        scorePill("After EV", m.after_expected_value_score),
         scorePill("PnL", m.total_pnl_delta)
       ].filter(Boolean).join("");
       const issuePills = [
@@ -2802,6 +2874,39 @@ HTML_TEMPLATE = """<!doctype html>
         </section>`;
       bindRendered();
     }
+    function fullRowsForLeaderboard(items) {
+      return (items || []).map(item => rows.find(row => row.experiment_id === item.experiment_id) || item);
+    }
+    function renderRejectedUpside() {
+      const boards = index.leaderboards || {};
+      const upsideRows = fullRowsForLeaderboard(boards.rejected_high_upside || []);
+      const afterRows = fullRowsForLeaderboard(boards.rejected_high_after_ev || []);
+      const row = selectedRow(afterRows.length ? afterRows : upsideRows.length ? upsideRows : filteredRows());
+      renderDetail(row);
+      filterFoot.textContent = `${afterRows.length} rejected experiments have after EV above 10; ${upsideRows.length} rejected experiments have positive EV or PnL deltas.`;
+      resultsEl.innerHTML = `
+        <section class="surface">
+          <div class="section-head">
+            <div>
+              <h2>Rejected After EV &gt; 10</h2>
+              <p>These are the high absolute-EV failures. They may still be rejected because drawdown, concentration, evidence, parity, or Gate 4 constraints failed.</p>
+            </div>
+            <span class="pill">Above 10 <strong>${esc(afterRows.length)}</strong></span>
+          </div>
+          <div class="card-grid">${afterRows.slice(0, 80).map(repoCard).join("") || `<div class="empty">No rejected experiments with after EV above 10 indexed</div>`}</div>
+        </section>
+        <section class="surface">
+          <div class="section-head">
+            <div>
+              <h2>Rejected High-Upside</h2>
+              <p>Failed experiments with positive EV or PnL deltas. Use these to find blockers, concentration issues, or ideas that need fresh forward evidence.</p>
+            </div>
+            <span class="pill">Candidates <strong>${esc(upsideRows.length)}</strong></span>
+          </div>
+          <div class="card-grid">${upsideRows.slice(0, 80).map(repoCard).join("") || `<div class="empty">No rejected high-upside experiments indexed</div>`}</div>
+        </section>`;
+      bindRendered();
+    }
     function leaderboardTable(title, rows, metric) {
       const body = (rows || []).map(row => `
         <tr data-select-id="${esc(row.experiment_id)}">
@@ -2828,6 +2933,9 @@ HTML_TEMPLATE = """<!doctype html>
         <tr><td>${esc(item.family)}</td><td>${esc(item.count)}</td></tr>`).join("");
       resultsEl.innerHTML = `
         <div class="panel-grid">
+          ${leaderboardTable("High After EV", boards.high_after_ev, "after_expected_value_score")}
+          ${leaderboardTable("Rejected After EV > 10", boards.rejected_high_after_ev, "after_expected_value_score")}
+          ${leaderboardTable("Rejected High-Upside", boards.rejected_high_upside, "expected_value_score_delta")}
           ${leaderboardTable("Top EV Delta", boards.top_ev_delta, "expected_value_score_delta")}
           ${leaderboardTable("Worst EV Delta", boards.bottom_ev_delta, "expected_value_score_delta")}
           ${leaderboardTable("Top PnL Delta", boards.top_pnl_delta, "total_pnl_delta")}
@@ -3189,6 +3297,7 @@ HTML_TEMPLATE = """<!doctype html>
     }
     function renderActive() {
       if (activeView === "cards") return renderCards();
+      if (activeView === "rejected-upside") return renderRejectedUpside();
       if (activeView === "leaderboards") return renderLeaderboards();
       if (activeView === "dataset") return renderDatasetView();
       if (activeView === "collections") return renderCollections();

@@ -89,16 +89,28 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
         encoding="utf-8",
     )
     (root / "docs" / "experiment_log.jsonl").write_text(
-        json.dumps({
-            "experiment_id": "exp-20990102-002",
-            "status": "rejected",
-            "hypothesis": "Log-only row should be indexed.",
-            "trial_family": "log_only_family",
-            "delta_metrics": {
-                "expected_value_score_delta": -0.25,
-                "total_pnl_delta": -1200.0,
-            },
-        }) + "\n",
+        "\n".join([
+            json.dumps({
+                "experiment_id": "exp-20990102-002",
+                "status": "rejected",
+                "hypothesis": "Log-only row should be indexed.",
+                "trial_family": "log_only_family",
+                "delta_metrics": {
+                    "expected_value_score_delta": -0.25,
+                    "total_pnl_delta": -1200.0,
+                },
+            }),
+            json.dumps({
+                "experiment_id": "exp-20990102-004",
+                "status": "rejected",
+                "hypothesis": "Rejected but high-upside row should be easy to find.",
+                "trial_family": "high_upside_reject_family",
+                "delta_metrics": {
+                    "expected_value_score_delta": 1.25,
+                    "total_pnl_delta": 42000.0,
+                },
+            }),
+        ]) + "\n",
         encoding="utf-8",
     )
     (root / "docs" / "current_state.md").write_text(
@@ -128,7 +140,7 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     index = build_experiment_index(root, registry_path, today="20990102")
     by_id = {row["experiment_id"]: row for row in index["experiments"]}
 
-    assert index["next_experiment_id"] == "exp-20990102-004"
+    assert index["next_experiment_id"] == "exp-20990102-005"
     assert "split_brain_ticket_paths" not in by_id["exp-20990102-001"]["anomalies"]
     assert "docs_ticket" not in by_id["exp-20990102-001"]["sources"]
     assert "card" in by_id["exp-20990102-001"]["sources"]
@@ -152,6 +164,12 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     assert by_id["exp-20990102-002"]["card"]["metadata"]["trial_family"] == "log_only_family"
     assert by_id["exp-20990102-002"]["metrics"]["expected_value_score_delta"] == -0.25
     assert index["leaderboards"]["bottom_ev_delta"][0]["experiment_id"] == "exp-20990102-002"
+    assert (
+        index["leaderboards"]["rejected_high_upside"][0]["experiment_id"]
+        == "exp-20990102-004"
+    )
+    assert index["leaderboards"]["high_after_ev"] == []
+    assert index["leaderboards"]["rejected_high_after_ev"] == []
     assert index["summary"]["anomaly_experiment_count"] == 0
     assert index["summary"]["identity_note_experiment_count"] >= 1
     assert any(
@@ -160,6 +178,10 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     )
     assert any(
         collection["slug"] == "archive_identity_notes" and collection["count"] >= 1
+        for collection in index["collections"]
+    )
+    assert any(
+        collection["slug"] == "rejected_high_upside" and collection["count"] == 1
         for collection in index["collections"]
     )
     compare = index["production_compare"]
@@ -253,6 +275,9 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
             "top_ev_delta": [],
             "bottom_ev_delta": [],
             "top_pnl_delta": [],
+            "high_after_ev": [],
+            "rejected_high_after_ev": [],
+            "rejected_high_upside": [],
             "rejected_families": [],
         },
         "dataset_view": {"columns": []},
@@ -297,6 +322,11 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
     assert "data-action=\"copy-id\"" in html
     assert "score-pill" in html
     assert "Leaderboards" in html
+    assert "Rejected Upside" in html
+    assert "Rejected High-Upside" in html
+    assert "High After EV" in html
+    assert "Rejected After EV &gt; 10" in html
+    assert "After EV" in html
     assert "Dataset View" in html
     assert "Collections" in html
     assert "Prod Compare" in html
