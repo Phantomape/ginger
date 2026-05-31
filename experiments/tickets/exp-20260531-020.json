@@ -1,0 +1,56 @@
+{
+  "acceptance_rule": "Accept if: (1) data/exit_lifecycle/YYYYMMDD.jsonl files are generated each production run, (2) records contain ticker, as_of_date, advisory_events, has_advisory_event, (3) alters_orders=False on all records, (4) no change to any core strategy metric.",
+  "allowed_write_scope": [
+    "quant/exit_lifecycle_shadow_log.py",
+    "quant/run.py",
+    "data/exit_lifecycle",
+    "experiments/tickets/exp-20260531-020.json",
+    "experiments/logs/exp-20260531-020.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "change_type": "read_only_attribution_sidecar",
+  "changed_variable": "exit_lifecycle_advisory_event_shadow_log_v1",
+  "created_at": "2026-05-31T16:40:00+00:00",
+  "experiment_id": "exp-20260531-020",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260531-020",
+    "reserved_at": "2026-05-31T16:40:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "exit_lifecycle_advisory_shadow_log"
+  },
+  "hypothesis": "Production computes profit ladders, time stops, trailing stops, and target-price advisory exits but does not log when they trigger. Adding a daily JSONL shadow log of advisory exit events enables future closed-position attribution comparing advisory trigger vs actual outcome.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "portfolio heat",
+    "LLM/news",
+    "live/default orders"
+  ],
+  "must_not_touch": [
+    "trend_signals.py compute_position_context output",
+    "signal_engine.py",
+    "risk_engine.py",
+    "portfolio_engine.py"
+  ],
+  "nearby_prior_experiments": [],
+  "owner": "cowork-session",
+  "prediction": {
+    "confidence_reason": "Pure shadow log; no strategy change. Generates data/exit_lifecycle/ files.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": ["import_error", "path_permission"],
+    "recorded_at": "2026-05-31T16:40:00+00:00",
+    "success_probability": 0.95
+  },
+  "single_causal_variable": "exit_lifecycle_advisory_event_shadow_log_v1",
+  "status": "proposed",
+  "summary": "Add exit_lifecycle_shadow_log.py. Persist daily JSONL of advisory exit events for closed-position PnL attribution. Unblocks exit lifecycle alpha search.",
+  "ticket_file": "experiments/tickets/exp-20260531-020.json",
+  "trial_family": "exit_lifecycle_attribution_shadow",
+  "updated_at": "2026-05-31T16:40:00+00:00"
+}

@@ -67,7 +67,10 @@ earnings event; it also failed (`EV -0.2235`) with window regressions and
 drawdown drift. Do not retry nearby imminent-earnings thresholds, top-N,
 revision add-ons, or pre-event hold/exit variants on these frozen windows
 without multi-season forward rows, replacement value, and a richer
-expectation-quality field.
+expectation-quality field. `exp-20260531-018` pre-registered the only valid
+PEAD 10d retry path: wait for at least two independent earnings seasons of PIT
+`eps_estimate_delta_30d` coverage with at least `20` usable candidates per
+season. It is a proposed future test, not current alpha evidence.
 
 Full-universe `alpha_score` remains a read-only ranking surface, not a
 candidate-pool promotion. `exp-20260531-005` showed raw top-1 routing can look
@@ -87,6 +90,12 @@ concentration, but still failed because max drawdown drift reached `+1.06 pp`
 against the `+0.50 pp` guardrail. The next valid work is drawdown-aware
 replacement value, regime-conditioned risk controls, and same-day displacement
 analysis, not another raw top-N or score-weight tune.
+`exp-20260531-017` then decomposed the same full-universe sample by existing
+`alpha_score` component quintiles. No component produced a clean monotonic
+5d ladder: breadth alignment and relative strength had top-bottom edge without
+monotonicity, theme participation inverted, and expectation/post-earnings
+components were effectively constant. This weakens raw component-gate or
+score-weight tuning on the frozen windows.
 
 Event and peer-transfer scouts also failed to produce a promotable relation.
 `exp-20260531-002` found Form 4 purchase pressure was positive versus core but

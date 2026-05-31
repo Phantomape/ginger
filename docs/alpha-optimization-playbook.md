@@ -356,6 +356,11 @@ Do next:
 - a retry must be a pre-registered 10d hypothesis on a multi-season sample,
   not another 5d attribution.
 
+`exp-20260531-018` is the pre-registration for that future 10d test. It is
+blocked until at least two independent earnings seasons have PIT
+`eps_estimate_delta_30d` coverage and at least `20` usable candidates per
+season; do not run it on the current single-season sample.
+
 Do not:
 
 - treat missing estimate revisions as neutral-positive;

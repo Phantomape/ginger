@@ -1,0 +1,58 @@
+{
+  "acceptance_rule": "Field is read-only attribution only (alters_orders=False, trade_enabled=False). Accept if: (1) runs without error in production, (2) field appears in quant_signals output for each signal, (3) no change to core EV, ranking, sizing, exit, or LLM/news behavior.",
+  "allowed_write_scope": [
+    "quant/peer_earnings_reaction.py",
+    "quant/run.py",
+    "experiments/tickets/exp-20260531-019.json",
+    "experiments/cards/exp-20260531-019.md",
+    "experiments/manifests/exp-20260531-019.json",
+    "experiments/logs/exp-20260531-019.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "change_type": "read_only_attribution_sidecar",
+  "changed_variable": "early_peer_earnings_reaction_bucket_v1_sidecar",
+  "created_at": "2026-05-31T16:35:00+00:00",
+  "experiment_id": "exp-20260531-019",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260531-019",
+    "reserved_at": "2026-05-31T16:35:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "peer_earnings_reaction_attribution_sidecar"
+  },
+  "hypothesis": "Adding early_peer_earnings_reaction_bucket_v1 as a read-only attribution field to each core signal enables forward attribution of whether same-sector peer positive earnings gaps correlate with signal quality. This is a prerequisite for any future peer-transfer alpha_search.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "portfolio heat",
+    "LLM/news",
+    "live/default orders"
+  ],
+  "mechanism_family": "peer_earnings_information_transfer",
+  "must_not_touch": [
+    "signal_engine.py",
+    "risk_engine.py",
+    "portfolio_engine.py",
+    "production_parity.py"
+  ],
+  "nearby_prior_experiments": [],
+  "owner": "cowork-session",
+  "prediction": {
+    "confidence_reason": "Pure read-only attribution add; no strategy change. Success probability is high because the field does not change any trade logic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": ["import_error", "ohlcv_format_issue"],
+    "recorded_at": "2026-05-31T16:35:00+00:00",
+    "success_probability": 0.95
+  },
+  "single_causal_variable": "early_peer_earnings_reaction_bucket_v1_sidecar",
+  "status": "proposed",
+  "summary": "Add early_peer_earnings_reaction_bucket_v1 read-only attribution sidecar to core signals. Uses OHLCV gap + volume proxy to detect positive sector-peer earnings reactions in past 10 trading days.",
+  "ticket_file": "experiments/tickets/exp-20260531-019.json",
+  "trial_family": "peer_earnings_information_transfer_attribution",
+  "updated_at": "2026-05-31T16:35:00+00:00"
+}
