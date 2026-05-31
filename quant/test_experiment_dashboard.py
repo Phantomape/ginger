@@ -170,6 +170,8 @@ def test_dashboard_index_splits_actionable_anomalies_from_archive_notes(tmp_path
     )
     assert index["leaderboards"]["high_after_ev"] == []
     assert index["leaderboards"]["rejected_high_after_ev"] == []
+    assert index["leaderboards"]["unresolved_rejected_high_after_ev"] == []
+    assert index["leaderboards"]["resolved_rejected_high_after_ev"] == []
     assert index["summary"]["anomaly_experiment_count"] == 0
     assert index["summary"]["identity_note_experiment_count"] >= 1
     assert any(
@@ -277,6 +279,8 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
             "top_pnl_delta": [],
             "high_after_ev": [],
             "rejected_high_after_ev": [],
+            "unresolved_rejected_high_after_ev": [],
+            "resolved_rejected_high_after_ev": [],
             "rejected_high_upside": [],
             "rejected_families": [],
         },
@@ -326,6 +330,9 @@ def test_dashboard_writer_outputs_static_html_and_json(tmp_path):
     assert "Rejected High-Upside" in html
     assert "High After EV" in html
     assert "Rejected After EV &gt; 10" in html
+    assert "Still Open High EV Rejects" in html
+    assert "Resolved High EV Rejects" in html
+    assert "Accepted Follow-Ups" in html
     assert "After EV" in html
     assert "Dataset View" in html
     assert "Collections" in html

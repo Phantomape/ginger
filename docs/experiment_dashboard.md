@@ -121,11 +121,13 @@ It keeps everything local/read-only:
   variable, metric deltas, and anomaly/note counts. Sources and files stay in
   the right-side detail panel.
 - `Rejected Upside`: rejected experiments with `after_expected_value_score > 10`
-  and rejected experiments with positive EV or PnL deltas. This is the primary
-  place to review high-return failures that may contain reusable alpha clues but
-  failed Gate 4, concentration, drawdown, evidence, or parity requirements.
-- `Leaderboards`: after-EV, EV/PnL delta, rejected high-upside, and
-  rejected-family tables, similar to benchmark result aggregation.
+  and rejected experiments with positive EV or PnL deltas. The first shelf is
+  `Still Open`, meaning no later accepted experiment was matched by explicit
+  reference, same trial family, or same mechanism family. Cards with accepted
+  follow-up badges can usually be deprioritized.
+- `Leaderboards`: after-EV, still-open high-EV rejects, resolved high-EV
+  rejects, EV/PnL delta, rejected high-upside, and rejected-family tables,
+  similar to benchmark result aggregation.
 - `Dataset View`: column coverage and top-value distributions for the experiment
   table, similar to a dataset viewer for `docs/experiment_log.jsonl` and ticket
   metadata. Top-value labels are clickable and apply a search filter.

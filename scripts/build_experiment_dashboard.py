@@ -201,6 +201,21 @@ def _row_text(row: dict) -> str:
     return " ".join(values).lower()
 
 
+def experiment_order(experiment_id: str):
+    match = re.match(r"exp-(\d{8})-(\d{3})$", str(experiment_id or ""))
+    if not match:
+        return None
+    return int(match.group(1)), int(match.group(2))
+
+
+def is_later_experiment(candidate_id: str, source_id: str) -> bool:
+    candidate_order = experiment_order(candidate_id)
+    source_order = experiment_order(source_id)
+    if candidate_order is None or source_order is None:
+        return str(candidate_id or "") > str(source_id or "")
+    return candidate_order > source_order
+
+
 def default_record(experiment_id: str) -> dict:
     return {
         "experiment_id": experiment_id,
@@ -416,6 +431,69 @@ def high_after_ev_sort_key(row: dict):
     )
 
 
+def followup_match_evidence(source: dict, candidate: dict) -> list[str]:
+    source_id = source.get("experiment_id")
+    evidence = []
+    if source_id and source_id.lower() in _row_text(candidate):
+        evidence.append("explicit_ref")
+    for key, label in (
+        ("trial_family", "same_trial_family"),
+        ("mechanism_family", "same_mechanism_family"),
+    ):
+        source_value = source.get(key)
+        if source_value and source_value == candidate.get(key):
+            evidence.append(label)
+    return evidence
+
+
+def build_accepted_followup_index(rows: list[dict], source_rows: list[dict]) -> dict[str, list[dict]]:
+    accepted_rows = [
+        row for row in rows
+        if row.get("status_group") == "accepted"
+    ]
+    followups_by_source = {}
+    for source in source_rows:
+        source_id = source.get("experiment_id")
+        if not source_id:
+            continue
+        followups = []
+        for candidate in accepted_rows:
+            candidate_id = candidate.get("experiment_id")
+            if not candidate_id or not is_later_experiment(candidate_id, source_id):
+                continue
+            evidence = followup_match_evidence(source, candidate)
+            if not evidence:
+                continue
+            metrics = derive_metrics(candidate)
+            followups.append({
+                "experiment_id": candidate_id,
+                "status_group": candidate.get("status_group"),
+                "trial_family": candidate.get("trial_family"),
+                "mechanism_family": candidate.get("mechanism_family"),
+                "changed_variable": candidate.get("changed_variable")
+                or candidate.get("single_causal_variable"),
+                "evidence": evidence,
+                **metrics,
+            })
+        followups.sort(key=high_after_ev_sort_key, reverse=True)
+        followups_by_source[source_id] = followups[:8]
+    return followups_by_source
+
+
+def attach_followups(source_rows: list[dict], followups_by_source: dict[str, list[dict]]) -> list[dict]:
+    enriched = []
+    for row in source_rows:
+        copied = dict(row)
+        followups = followups_by_source.get(row.get("experiment_id"), [])
+        copied["accepted_followups"] = followups
+        copied["accepted_followup_ids"] = [
+            followup["experiment_id"] for followup in followups
+        ]
+        copied["has_accepted_followup"] = bool(followups)
+        enriched.append(copied)
+    return enriched
+
+
 def build_leaderboards(rows):
     scored = []
     for row in rows:
@@ -463,6 +541,31 @@ def build_leaderboards(rows):
         row for row in high_after_ev
         if row.get("status_group") == "rejected"
     ][:50]
+    rejected_lineage_sources = {
+        row["experiment_id"]: row
+        for row in rejected_high_upside + rejected_high_after_ev
+        if row.get("experiment_id")
+    }
+    followups_by_source = build_accepted_followup_index(
+        rows,
+        list(rejected_lineage_sources.values()),
+    )
+    rejected_high_upside = attach_followups(
+        rejected_high_upside,
+        followups_by_source,
+    )
+    rejected_high_after_ev = attach_followups(
+        rejected_high_after_ev,
+        followups_by_source,
+    )
+    unresolved_rejected_high_after_ev = [
+        row for row in rejected_high_after_ev
+        if not row.get("has_accepted_followup")
+    ]
+    resolved_rejected_high_after_ev = [
+        row for row in rejected_high_after_ev
+        if row.get("has_accepted_followup")
+    ]
     family_counter = Counter(
         (row.get("trial_family") or row.get("mechanism_family") or "unknown")
         for row in rows
@@ -478,6 +581,8 @@ def build_leaderboards(rows):
         "top_pnl_delta": top_pnl,
         "high_after_ev": high_after_ev,
         "rejected_high_after_ev": rejected_high_after_ev,
+        "unresolved_rejected_high_after_ev": unresolved_rejected_high_after_ev,
+        "resolved_rejected_high_after_ev": resolved_rejected_high_after_ev,
         "rejected_high_upside": rejected_high_upside,
         "rejected_families": rejected_families,
     }
@@ -2706,6 +2811,11 @@ HTML_TEMPLATE = """<!doctype html>
           <h3>Identity Notes</h3>
           ${chips(row.identity_notes, "note")}
         </div>` : "";
+      const followupSection = (row.accepted_followups || []).length ? `
+        <div class="detail-section">
+          <h3>Accepted Follow-Ups</h3>
+          <div class="file-list">${row.accepted_followups.map(followup => `<div>${esc(followup.experiment_id)} / ${esc((followup.evidence || []).join(", "))}</div>`).join("")}</div>
+        </div>` : "";
       const files = row.files || [];
       detailEl.innerHTML = `
         <div class="detail-head">
@@ -2735,6 +2845,7 @@ HTML_TEMPLATE = """<!doctype html>
         </div>
         ${anomalySection}
         ${noteSection}
+        ${followupSection}
         <details class="detail-section">
           <summary>Files (${esc(files.length)})</summary>
           <div class="file-list">${files.slice(0, 8).map(file => `<div>${esc(file)}</div>`).join("") || `<div class="muted">No files indexed</div>`}</div>
@@ -2755,7 +2866,8 @@ HTML_TEMPLATE = """<!doctype html>
       ].filter(Boolean).join("");
       const issuePills = [
         (row.anomalies || []).length ? `<span class="chip warn">${esc((row.anomalies || []).length)} anomalies</span>` : "",
-        (row.identity_notes || []).length ? `<span class="chip note">${esc((row.identity_notes || []).length)} notes</span>` : ""
+        (row.identity_notes || []).length ? `<span class="chip note">${esc((row.identity_notes || []).length)} notes</span>` : "",
+        (row.accepted_followup_ids || []).length ? `<span class="chip good">${esc((row.accepted_followup_ids || []).length)} accepted follow-up</span>` : ""
       ].filter(Boolean).join("");
       return `
         <article class="repo-card${selected}" data-select-id="${esc(row.experiment_id)}" tabindex="0">
@@ -2875,25 +2987,56 @@ HTML_TEMPLATE = """<!doctype html>
       bindRendered();
     }
     function fullRowsForLeaderboard(items) {
-      return (items || []).map(item => rows.find(row => row.experiment_id === item.experiment_id) || item);
+      return (items || []).map(item => {
+        const full = rows.find(row => row.experiment_id === item.experiment_id);
+        if (!full) return item;
+        return {
+          ...full,
+          accepted_followups: item.accepted_followups || [],
+          accepted_followup_ids: item.accepted_followup_ids || [],
+          has_accepted_followup: Boolean(item.has_accepted_followup),
+        };
+      });
     }
     function renderRejectedUpside() {
       const boards = index.leaderboards || {};
       const upsideRows = fullRowsForLeaderboard(boards.rejected_high_upside || []);
       const afterRows = fullRowsForLeaderboard(boards.rejected_high_after_ev || []);
-      const row = selectedRow(afterRows.length ? afterRows : upsideRows.length ? upsideRows : filteredRows());
+      const unresolvedAfterRows = fullRowsForLeaderboard(boards.unresolved_rejected_high_after_ev || []);
+      const resolvedAfterRows = fullRowsForLeaderboard(boards.resolved_rejected_high_after_ev || []);
+      const row = selectedRow(unresolvedAfterRows.length ? unresolvedAfterRows : afterRows.length ? afterRows : upsideRows.length ? upsideRows : filteredRows());
       renderDetail(row);
-      filterFoot.textContent = `${afterRows.length} rejected experiments have after EV above 10; ${upsideRows.length} rejected experiments have positive EV or PnL deltas.`;
+      filterFoot.textContent = `${unresolvedAfterRows.length} high-after-EV rejected experiments have no accepted follow-up by conservative lineage; ${resolvedAfterRows.length} have accepted follow-ups.`;
       resultsEl.innerHTML = `
         <section class="surface">
           <div class="section-head">
             <div>
+              <h2>Still Open: Rejected After EV &gt; 10</h2>
+              <p>No later accepted experiment matched by explicit reference, same trial family, or same mechanism family.</p>
+            </div>
+            <span class="pill">Open <strong>${esc(unresolvedAfterRows.length)}</strong></span>
+          </div>
+          <div class="card-grid">${unresolvedAfterRows.slice(0, 80).map(repoCard).join("") || `<div class="empty">No open high-after-EV rejected experiments by the current lineage rule</div>`}</div>
+        </section>
+        <section class="surface">
+          <div class="section-head">
+            <div>
               <h2>Rejected After EV &gt; 10</h2>
-              <p>These are the high absolute-EV failures. They may still be rejected because drawdown, concentration, evidence, parity, or Gate 4 constraints failed.</p>
+              <p>All high absolute-EV failures. Cards marked with accepted follow-up can usually be deprioritized.</p>
             </div>
             <span class="pill">Above 10 <strong>${esc(afterRows.length)}</strong></span>
           </div>
           <div class="card-grid">${afterRows.slice(0, 80).map(repoCard).join("") || `<div class="empty">No rejected experiments with after EV above 10 indexed</div>`}</div>
+        </section>
+        <section class="surface">
+          <div class="section-head">
+            <div>
+              <h2>Has Accepted Follow-Up</h2>
+              <p>Rejected high-EV experiments with a later accepted experiment matched by conservative lineage.</p>
+            </div>
+            <span class="pill">Resolved <strong>${esc(resolvedAfterRows.length)}</strong></span>
+          </div>
+          <div class="card-grid">${resolvedAfterRows.slice(0, 80).map(repoCard).join("") || `<div class="empty">No accepted follow-ups matched yet</div>`}</div>
         </section>
         <section class="surface">
           <div class="section-head">
@@ -2935,6 +3078,8 @@ HTML_TEMPLATE = """<!doctype html>
         <div class="panel-grid">
           ${leaderboardTable("High After EV", boards.high_after_ev, "after_expected_value_score")}
           ${leaderboardTable("Rejected After EV > 10", boards.rejected_high_after_ev, "after_expected_value_score")}
+          ${leaderboardTable("Still Open High EV Rejects", boards.unresolved_rejected_high_after_ev, "after_expected_value_score")}
+          ${leaderboardTable("Resolved High EV Rejects", boards.resolved_rejected_high_after_ev, "after_expected_value_score")}
           ${leaderboardTable("Rejected High-Upside", boards.rejected_high_upside, "expected_value_score_delta")}
           ${leaderboardTable("Top EV Delta", boards.top_ev_delta, "expected_value_score_delta")}
           ${leaderboardTable("Worst EV Delta", boards.bottom_ev_delta, "expected_value_score_delta")}
