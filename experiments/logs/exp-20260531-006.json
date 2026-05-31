@@ -1,0 +1,117 @@
+{
+  "after_metrics": {
+    "total_observations": 3551,
+    "observations_by_window": {"late_strong": 1159, "mid_weak": 1144, "old_thin": 1248},
+    "pooled_quintile_5d_top_minus_bottom": 0.005557,
+    "pooled_quintile_10d_top_minus_bottom": 0.015064,
+    "pooled_quintile_20d_top_minus_bottom": 0.03977,
+    "pooled_quintile_monotonic_ladder_5d": false,
+    "pooled_quintile_monotonic_ladder_10d": false,
+    "pooled_quintile_monotonic_ladder_20d": false,
+    "q5_5d_avg_return": 0.0119,
+    "q5_20d_avg_return": 0.0438,
+    "q1_5d_avg_return": 0.0063,
+    "q5_top5_positive_share": 0.0875,
+    "per_window_5d_top_minus_bottom": {"late_strong": 0.013194, "mid_weak": -0.00456, "old_thin": 0.003919},
+    "positive_windows": 2,
+    "measured_windows": 3,
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260530-022 found the composite alpha_score degenerate/inverted on FILLED core trades (56/61 top_decile, 0 below top_quartile; relative_strength and breadth_alignment invert). The full-universe view was the declared next step with a real bottom comparison group.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Scores the FULL daily candidate universe (filled + unfilled) on every 5th trading day across the canonical 3 windows using entry_day_ranking_attribution._context_for_asof, computes 5/10/20-day close-to-close forward returns per ranked ticker, and buckets all 3551 (day,ticker) observations by alpha_score quintile/decile. Result: a real but top-quantile-concentrated, NON-monotonic edge. Pooled Q5-Q1 spread +0.56pp(5d)/+1.51pp(10d)/+3.98pp(20d), growing with horizon and NOT jackpot-driven (Q5 top5 positive share 0.088). But the quintile ladder is non-monotonic at every horizon (Q1 beats Q2/Q3 at 5d) and mid_weak window is negative (-0.46pp 5d), so only 2/3 windows positive. Honest downgrade from clean accept to observed_only.",
+  "change_type": "read_only_full_universe_ranking_forward_return_attribution",
+  "changed_variable": "full_universe_pit_alpha_score_quantile_forward_return",
+  "component": "quant/experiments/exp_20260531_006_full_universe_alpha_score_quantile_forward_return.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_top_bottom_edge_without_clean_ladder",
+  "decision_rule": "Accept only if pooled top-quintile minus bottom-quintile 5d forward return >= 0.005 AND a majority of windows show positive spread AND the pooled quintile avg-return ladder is monotonic increasing AND every pooled quintile has >= 30 obs. A top-vs-bottom edge without a clean ladder is observed_only. Reject if pooled 5d spread <= -0.005.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "pooled_quintile_5d_spread": 0.005557,
+    "horizon_growth_5d_to_20d": 0.034213
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260531-006",
+  "gate1": {"name": "full_universe_observations_collected", "passed": true, "total_observations": 3551},
+  "gate2": {"name": "quantile_buckets_meet_obs_floor", "passed": true, "min_pooled_quintile_obs": 710, "floor": 30},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "full_universe_quantile_forward_return_edge",
+    "passed": false,
+    "status": "observed_only_top_bottom_edge_without_clean_ladder",
+    "pooled_quintile_top_minus_bottom_5d": 0.005557,
+    "pooled_quintile_monotonic_ladder_5d": false,
+    "per_window_5d_spread": {"late_strong": 0.013194, "mid_weak": -0.00456, "old_thin": 0.003919},
+    "positive_windows": 2,
+    "measured_windows": 3
+  },
+  "gate_questions": {
+    "what_hypothesis": "The composite alpha_score has monotonic forward-return predictive power on the full daily candidate universe (filled + unfilled).",
+    "prior_similar_experiments": "exp-20260530-022 (filled-trade degenerate/inverted); exp-20260528-007 (expectation increment to ranking, no edge).",
+    "single_independent_variable": "Full-universe PIT alpha_score quantile bucket vs forward return.",
+    "success_failure_criteria": "Monotonic quintile ladder + majority-positive windows + >= 0.5pp 5d top-bottom spread.",
+    "reproducibility": "Deterministic: load 3 ohlcv snapshots, sample every 5th day, score full universe PIT, bucket. 9 unit tests cover forward returns, bucketing, ladder monotonicity, and gate branches."
+  },
+  "hypothesis": "The composite cross-sectional alpha_score has monotonic forward-return predictive power on the FULL daily candidate universe (filled and unfilled), which exp-20260530-022 could not test because filled core trades concentrate into the top rank bucket. Scoring every ticker on sampled trading days across the canonical 3 windows and bucketing all (day,ticker) observations by alpha_score quintile/decile against 5/10/20-day forward returns reveals whether the ranking surface carries real cross-sectional alpha.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": ["exp-20260530-022", "exp-20260528-007", "exp-20260529-007", "exp-20260517-009"],
+  "new_evidence_type": "full_universe_alpha_score_quantile_forward_return_spread",
+  "next_evidence_needed": "Use alpha_score as a top-decile/top-quintile SELECTION signal (e.g. a default-off paper sleeve observing top-decile names daily), not a full-universe monotonic sizing weight, since the middle/bottom ranks carry no ordering information. Confirm robustness on a 4th+ non-overlapping window (mid_weak is negative). Decompose the Q5 edge by component to check whether it is just the trend/relative_strength weight the core already trades on (then it is not new alpha) or something incremental.",
+  "parameters": {
+    "rule_version": "full_universe_alpha_score_quantile_forward_return_v1",
+    "sample_step_trading_days": 5,
+    "forward_horizons": [5, 10, 20],
+    "primary_horizon": 5,
+    "quintile": 5,
+    "decile": 10,
+    "min_bucket_obs": 30,
+    "edge_floor": 0.005,
+    "windows": ["late_strong", "mid_weak", "old_thin"],
+    "composite_weights": {"trend": 0.30, "relative_strength": 0.25, "expectation_revision": 0.20, "post_earnings_drift": 0.10, "theme_participation": 0.10, "breadth_alignment": 0.05}
+  },
+  "prediction": {
+    "success_probability": 0.30,
+    "expected_ev_delta": 0.0,
+    "main_failure_modes": "flat_no_quantile_spread, inverted_high_score_lower_forward_return, edge_concentrated_in_top_quantile_without_monotonic_ladder, one_window_negative, snapshot_universe_survivorship",
+    "outcome_vs_prediction": "matched: edge concentrated in top quantile without monotonic ladder, one window (mid_weak) negative."
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260531_006"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260531_006_full_universe_alpha_score_quantile_forward_return.py",
+    "quant/test_exp_20260531_006_full_universe_quantile_forward_return.py",
+    "data/experiments/exp-20260531-006/full_universe_alpha_score_quantile_forward_return.json",
+    "experiments/artifacts/exp-20260531-006_full_universe_alpha_score_quantile_forward_return.md",
+    "experiments/logs/exp-20260531-006.json",
+    "experiments/tickets/exp-20260531-006.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "full_universe_alpha_score_quantile_forward_return_v1",
+  "single_causal_variable": "full_universe_pit_alpha_score_quantile_forward_return",
+  "status": "observed_only",
+  "timestamp": "2026-05-31T06:00:00+00:00",
+  "trial_family": "cross_sectional_ranking_attribution",
+  "trial_variant_id": "exp-20260531-006"
+}
