@@ -1,9 +1,9 @@
 {
   "schema_version": 5,
   "read_only": true,
-  "records_loaded": 2619,
+  "records_loaded": 2621,
   "record_counts": {
-    "strategy_iteration_records": 1788,
+    "strategy_iteration_records": 1790,
     "measurement_repair_records": 826
   },
   "priority_formula": {
@@ -57,16 +57,16 @@
         "summary": "试运行/子策略袖珍组合：研究优先级 0.6328。历史实验 266 个，接受率 27.82%，累计 EV 变化 +98.0859。这个分数只用于决定下一轮先研究什么，不是交易信号。"
       },
       {
-        "family": "event_or_llm",
-        "family_zh": "事件/LLM 判断",
-        "priority": 0.6164,
-        "summary": "事件/LLM 判断：研究优先级 0.6164。历史实验 204 个，接受率 21.57%，累计 EV 变化 +72.8322。这个分数只用于决定下一轮先研究什么，不是交易信号。"
-      },
-      {
         "family": "default_off_paper_allocation",
         "family_zh": "default off paper allocation",
         "priority": 0.6002,
         "summary": "default off paper allocation：研究优先级 0.6002。历史实验 14 个，接受率 42.86%，累计 EV 变化 +0.0570。这个分数只用于决定下一轮先研究什么，不是交易信号。"
+      },
+      {
+        "family": "event_or_llm",
+        "family_zh": "事件/LLM 判断",
+        "priority": 0.5961,
+        "summary": "事件/LLM 判断：研究优先级 0.5961。历史实验 205 个，接受率 21.46%，累计 EV 变化 +72.8322。这个分数只用于决定下一轮先研究什么，不是交易信号。"
       }
     ],
     "当前测量修复方向": [
@@ -132,8 +132,8 @@
   },
   "trial_accounting": {
     "read_only": true,
-    "records_counted": 948,
-    "group_count": 865,
+    "records_counted": 949,
+    "group_count": 866,
     "grouping": "trial_family + changed_variable",
     "missing_metadata_counts": {
       "mechanism_family": 678,
@@ -1692,6 +1692,35 @@
           "experiment_id": "exp-20260521-015",
           "decision": "rejected_event_sec_negative_source_quality",
           "rejection_reason": "Best variant `sec_negative_source_125` changed aggregate EV by 1.3292 and PnL by 26034.17, but Gate 4 failed: EV improved/regressed windows 2/1, sample_guard_passed=False, risk_guard_passed=True."
+        },
+        "retry_guidance": "allow_only_materially_different_discriminator"
+      },
+      {
+        "trial_family": "form4_purchase_pressure_event_satellite",
+        "changed_variable": "form4_purchase_value_to_prior_adv_floor_v1",
+        "mechanism_families": [
+          "form4_purchase_pressure_event_satellite"
+        ],
+        "experiments": 1,
+        "effective_trial_count": 9,
+        "accepted": 0,
+        "rejected": 1,
+        "accept_rate": 0.0,
+        "sum_ev_delta": 0.0,
+        "sum_pnl_delta": 0.0,
+        "multiple_testing_risk_bucket": "moderate",
+        "new_evidence_types": [
+          "free_sec_form4_purchase_value_normalized_by_prior_ohlcv_liquidity"
+        ],
+        "declared_prior_trial_count_max": 8,
+        "nearby_prior_experiment_count": 6,
+        "recent_experiments": [
+          "exp-20260531-002"
+        ],
+        "most_recent_failure": {
+          "experiment_id": "exp-20260531-002",
+          "decision": "rejected_positive_not_promotable",
+          "rejection_reason": ""
         },
         "retry_guidance": "allow_only_materially_different_discriminator"
       },
@@ -24698,15 +24727,15 @@
   },
   "prediction_calibration": {
     "read_only": true,
-    "records_counted": 1085,
-    "records_with_prediction": 33,
+    "records_counted": 1086,
+    "records_with_prediction": 34,
     "records_missing_prediction": 1052,
-    "prediction_coverage": 0.0304,
-    "avg_brier_score": 0.090567,
+    "prediction_coverage": 0.0313,
+    "avg_brier_score": 0.088856,
     "direction_counts": {
       "overconfident": 0,
       "underconfident": 2,
-      "directionally_calibrated": 31
+      "directionally_calibrated": 32
     },
     "by_family": [
       {
@@ -24731,6 +24760,18 @@
         "underconfident": 0,
         "recent_examples": [
           "exp-20260531-001"
+        ]
+      },
+      {
+        "family": "form4_purchase_pressure_event_satellite",
+        "experiments": 1,
+        "avg_predicted_success_probability": 0.18,
+        "actual_accept_rate": 0.0,
+        "avg_brier_score": 0.0324,
+        "overconfident": 0,
+        "underconfident": 0,
+        "recent_examples": [
+          "exp-20260531-002"
         ]
       },
       {
@@ -25158,52 +25199,6 @@
       }
     },
     {
-      "family": "event_or_llm",
-      "priority": 0.6164,
-      "summary_zh": "事件/LLM 判断：研究优先级 0.6164。历史实验 204 个，接受率 21.57%，累计 EV 变化 +72.8322。这个分数只用于决定下一轮先研究什么，不是交易信号。",
-      "component_scores": {
-        "evidence_score": 0.5848,
-        "reproducibility_score": 0.6272,
-        "production_feasibility": 0.6498,
-        "novelty_score": 0.55,
-        "risk_control_score": 0.7
-      },
-      "weights": {
-        "evidence_score": 0.35,
-        "reproducibility_score": 0.25,
-        "production_feasibility": 0.2,
-        "novelty_score": 0.1,
-        "risk_control_score": 0.1
-      },
-      "why": [
-        "201/204 records show multi-window evidence",
-        "average drawdown delta is non-worsening",
-        "mixed production feasibility evidence",
-        "positive average meta score",
-        "positive cumulative EV delta in logs"
-      ],
-      "penalties": [
-        "heavily explored family; diminishing-return risk"
-      ],
-      "evidence_summary": {
-        "name": "event_or_llm",
-        "experiments": 204,
-        "accepted": 44,
-        "rejected": 122,
-        "accept_rate": 0.2157,
-        "avg_meta_score": 4.043,
-        "sum_ev_delta": 72.8322,
-        "sum_pnl_delta": 1324479.37,
-        "recent_examples": [
-          "exp-20260529-002",
-          "exp-20260529-011",
-          "exp-20260530-002",
-          "exp-20260530-003",
-          "exp-20260530-011"
-        ]
-      }
-    },
-    {
       "family": "default_off_paper_allocation",
       "priority": 0.6002,
       "summary_zh": "default off paper allocation：研究优先级 0.6002。历史实验 14 个，接受率 42.86%，累计 EV 变化 +0.0570。这个分数只用于决定下一轮先研究什么，不是交易信号。",
@@ -25247,6 +25242,53 @@
           "exp-20260523-006",
           "exp-20260528-003",
           "exp-20260529-004"
+        ]
+      }
+    },
+    {
+      "family": "event_or_llm",
+      "priority": 0.5961,
+      "summary_zh": "事件/LLM 判断：研究优先级 0.5961。历史实验 205 个，接受率 21.46%，累计 EV 变化 +72.8322。这个分数只用于决定下一轮先研究什么，不是交易信号。",
+      "component_scores": {
+        "evidence_score": 0.5843,
+        "reproducibility_score": 0.6271,
+        "production_feasibility": 0.6493,
+        "novelty_score": 0.35,
+        "risk_control_score": 0.7
+      },
+      "weights": {
+        "evidence_score": 0.35,
+        "reproducibility_score": 0.25,
+        "production_feasibility": 0.2,
+        "novelty_score": 0.1,
+        "risk_control_score": 0.1
+      },
+      "why": [
+        "202/205 records show multi-window evidence",
+        "average drawdown delta is non-worsening",
+        "mixed production feasibility evidence",
+        "positive average meta score",
+        "positive cumulative EV delta in logs"
+      ],
+      "penalties": [
+        "heavily explored family; diminishing-return risk",
+        "many prior rejections in this family"
+      ],
+      "evidence_summary": {
+        "name": "event_or_llm",
+        "experiments": 205,
+        "accepted": 44,
+        "rejected": 123,
+        "accept_rate": 0.2146,
+        "avg_meta_score": 4.0184,
+        "sum_ev_delta": 72.8322,
+        "sum_pnl_delta": 1324479.37,
+        "recent_examples": [
+          "exp-20260529-011",
+          "exp-20260530-002",
+          "exp-20260530-003",
+          "exp-20260530-011",
+          "exp-20260531-002"
         ]
       }
     },
@@ -25622,12 +25664,12 @@
     },
     {
       "family": "filter_or_gate",
-      "priority": 0.469,
-      "summary_zh": "过滤器/准入门槛：研究优先级 0.4690。历史实验 144 个，接受率 12.50%，累计 EV 变化 +59.0922。这个分数只用于决定下一轮先研究什么，不是交易信号。",
+      "priority": 0.4689,
+      "summary_zh": "过滤器/准入门槛：研究优先级 0.4689。历史实验 145 个，接受率 12.41%，累计 EV 变化 +59.0922。这个分数只用于决定下一轮先研究什么，不是交易信号。",
       "component_scores": {
         "evidence_score": 0.35,
-        "reproducibility_score": 0.608,
-        "production_feasibility": 0.5976,
+        "reproducibility_score": 0.6079,
+        "production_feasibility": 0.5972,
         "novelty_score": 0.25,
         "risk_control_score": 0.5
       },
@@ -25639,8 +25681,8 @@
         "risk_control_score": 0.1
       },
       "why": [
-        "136/144 records show multi-window evidence",
-        "5/144 records have sample >= 10",
+        "137/145 records show multi-window evidence",
+        "5/145 records have sample >= 10",
         "average drawdown delta is non-worsening",
         "mixed production feasibility evidence",
         "positive average meta score",
@@ -25654,11 +25696,11 @@
       ],
       "evidence_summary": {
         "name": "filter_or_gate",
-        "experiments": 144,
+        "experiments": 145,
         "accepted": 18,
-        "rejected": 119,
-        "accept_rate": 0.125,
-        "avg_meta_score": 4.2852,
+        "rejected": 120,
+        "accept_rate": 0.1241,
+        "avg_meta_score": 4.2487,
         "sum_ev_delta": 59.0922,
         "sum_pnl_delta": 1124119.38,
         "recent_examples": [
@@ -29904,12 +29946,12 @@
     },
     {
       "family": "event_or_llm",
-      "priority": 0.4955,
-      "summary_zh": "事件/LLM 判断：研究优先级 0.4955。历史实验 367 个，接受率 16.89%，累计 EV 变化 +75.5271。这个分数只用于决定下一轮先研究什么，不是交易信号。",
+      "priority": 0.4954,
+      "summary_zh": "事件/LLM 判断：研究优先级 0.4954。历史实验 368 个，接受率 16.85%，累计 EV 变化 +75.5271。这个分数只用于决定下一轮先研究什么，不是交易信号。",
       "component_scores": {
         "evidence_score": 0.35,
         "reproducibility_score": 0.5965,
-        "production_feasibility": 0.6444,
+        "production_feasibility": 0.6442,
         "novelty_score": 0.25,
         "risk_control_score": 0.7
       },
@@ -29921,8 +29963,8 @@
         "risk_control_score": 0.1
       },
       "why": [
-        "15/367 records have sample >= 10",
-        "326/367 records show multi-window evidence",
+        "15/368 records have sample >= 10",
+        "327/368 records show multi-window evidence",
         "average drawdown delta is non-worsening",
         "mixed production feasibility evidence",
         "positive average meta score",
@@ -29934,19 +29976,19 @@
       ],
       "evidence_summary": {
         "name": "event_or_llm",
-        "experiments": 367,
+        "experiments": 368,
         "accepted": 62,
-        "rejected": 130,
-        "accept_rate": 0.1689,
-        "avg_meta_score": 2.4064,
+        "rejected": 131,
+        "accept_rate": 0.1685,
+        "avg_meta_score": 2.3971,
         "sum_ev_delta": 75.5271,
         "sum_pnl_delta": 1381123.9,
         "recent_examples": [
-          "exp-20260529-002",
           "exp-20260529-011",
           "exp-20260530-002",
           "exp-20260530-003",
-          "exp-20260530-011"
+          "exp-20260530-011",
+          "exp-20260531-002"
         ]
       }
     },
@@ -30436,12 +30478,12 @@
     },
     {
       "family": "filter_or_gate",
-      "priority": 0.4696,
-      "summary_zh": "过滤器/准入门槛：研究优先级 0.4696。历史实验 242 个，接受率 13.22%，累计 EV 变化 +61.9941。这个分数只用于决定下一轮先研究什么，不是交易信号。",
+      "priority": 0.4695,
+      "summary_zh": "过滤器/准入门槛：研究优先级 0.4695。历史实验 243 个，接受率 13.17%，累计 EV 变化 +61.9941。这个分数只用于决定下一轮先研究什么，不是交易信号。",
       "component_scores": {
         "evidence_score": 0.35,
-        "reproducibility_score": 0.6122,
-        "production_feasibility": 0.5952,
+        "reproducibility_score": 0.6121,
+        "production_feasibility": 0.5951,
         "novelty_score": 0.25,
         "risk_control_score": 0.5
       },
@@ -30453,8 +30495,8 @@
         "risk_control_score": 0.1
       },
       "why": [
-        "216/242 records show multi-window evidence",
-        "29/242 records have sample >= 10",
+        "217/243 records show multi-window evidence",
+        "29/243 records have sample >= 10",
         "average drawdown delta is non-worsening",
         "mixed production feasibility evidence",
         "positive average meta score",
@@ -30467,11 +30509,11 @@
       ],
       "evidence_summary": {
         "name": "filter_or_gate",
-        "experiments": 242,
+        "experiments": 243,
         "accepted": 32,
-        "rejected": 124,
-        "accept_rate": 0.1322,
-        "avg_meta_score": 2.7861,
+        "rejected": 125,
+        "accept_rate": 0.1317,
+        "avg_meta_score": 2.7705,
         "sum_ev_delta": 61.9941,
         "sum_pnl_delta": 1185684.06,
         "recent_examples": [
@@ -32929,11 +32971,11 @@
     },
     {
       "name": "filter_or_gate",
-      "experiments": 242,
+      "experiments": 243,
       "accepted": 32,
-      "rejected": 124,
-      "accept_rate": 0.1322,
-      "avg_meta_score": 2.7861,
+      "rejected": 125,
+      "accept_rate": 0.1317,
+      "avg_meta_score": 2.7705,
       "sum_ev_delta": 61.9941,
       "sum_pnl_delta": 1185684.06,
       "recent_examples": [
@@ -32963,19 +33005,19 @@
     },
     {
       "name": "event_or_llm",
-      "experiments": 367,
+      "experiments": 368,
       "accepted": 62,
-      "rejected": 130,
-      "accept_rate": 0.1689,
-      "avg_meta_score": 2.4064,
+      "rejected": 131,
+      "accept_rate": 0.1685,
+      "avg_meta_score": 2.3971,
       "sum_ev_delta": 75.5271,
       "sum_pnl_delta": 1381123.9,
       "recent_examples": [
-        "exp-20260529-002",
         "exp-20260529-011",
         "exp-20260530-002",
         "exp-20260530-003",
-        "exp-20260530-011"
+        "exp-20260530-011",
+        "exp-20260531-002"
       ]
     },
     {
@@ -37555,11 +37597,11 @@
     },
     {
       "name": "unknown",
-      "experiments": 50,
+      "experiments": 51,
       "accepted": 2,
-      "rejected": 4,
-      "accept_rate": 0.04,
-      "avg_meta_score": 0.0374,
+      "rejected": 5,
+      "accept_rate": 0.0392,
+      "avg_meta_score": 0.0171,
       "sum_ev_delta": 0.1646,
       "sum_pnl_delta": 2238.78,
       "recent_examples": [
@@ -41417,19 +41459,19 @@
     },
     {
       "name": "event_qualification_replay",
-      "experiments": 12,
+      "experiments": 13,
       "accepted": 0,
-      "rejected": 12,
+      "rejected": 13,
       "accept_rate": 0.0,
       "avg_meta_score": -1.0,
       "sum_ev_delta": 0.0,
       "sum_pnl_delta": 0.0,
       "recent_examples": [
-        "exp-20260512-017",
         "exp-20260512-901",
         "exp-20260529-002",
         "exp-20260530-003",
-        "exp-20260530-011"
+        "exp-20260530-011",
+        "exp-20260531-002"
       ]
     },
     {
@@ -43221,19 +43263,19 @@
     },
     {
       "name": "unknown",
-      "experiments": 1819,
+      "experiments": 1821,
       "accepted": 296,
-      "rejected": 1150,
-      "accept_rate": 0.1627,
-      "avg_meta_score": 2.4077,
+      "rejected": 1152,
+      "accept_rate": 0.1625,
+      "avg_meta_score": 2.4039,
       "sum_ev_delta": 424.994,
       "sum_pnl_delta": 6969202.11,
       "recent_examples": [
-        "exp-20260530-019",
         "exp-20260530-020",
         "exp-20260530-023",
         "exp-20260530-024",
-        "exp-20260531-001"
+        "exp-20260531-001",
+        "exp-20260531-002"
       ]
     },
     {
@@ -48598,8 +48640,8 @@
       "scope": "family",
       "name": "filter_or_gate",
       "reason": "low_accept_rate",
-      "accept_rate": 0.1322,
-      "experiments": 242
+      "accept_rate": 0.1317,
+      "experiments": 243
     },
     {
       "scope": "family",
@@ -48612,8 +48654,8 @@
       "scope": "family",
       "name": "event_or_llm",
       "reason": "low_accept_rate",
-      "accept_rate": 0.1689,
-      "experiments": 367
+      "accept_rate": 0.1685,
+      "experiments": 368
     },
     {
       "scope": "family",
