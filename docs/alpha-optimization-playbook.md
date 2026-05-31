@@ -348,6 +348,21 @@ Do not:
 - add PEAD live ranking until production-visible fields and forward outcomes
   exist.
 
+Local update: `exp-20260531-003` tested a free earnings-snapshot
+`earnings_imminent_surprise_rs_candidate_source_v1` using the 1-7 day
+pre-earnings window, durable positive historical surprise behavior, liquid
+trend/RS confirmation, top-1/day, and a fixed 10-trading-day paper exit. It
+was strongly positive in aggregate (`+3.3705` EV / `+$67,089.07`) but failed
+Gate 4 because `late_strong` regressed (`-1.2475` EV / `-$16,159.23`) and max
+drawdown drift was too high. `exp-20260531-004` then held that candidate
+source fixed and changed only the lifecycle to exit before the earnings event.
+That also failed: aggregate EV fell `-0.2235`, `late_strong` still regressed
+(`-0.6113` EV / `-$4,136.93`), and max drawdown drift stayed too high
+(`+1.90 pp`). Do not retry nearby imminent-earnings snapshot thresholds,
+top-N, or pre-event hold/exit variants on the same frozen windows without
+closed forward replacement-value rows or a materially richer
+expectation-quality field.
+
 ### 4b. Pattern-Name Candidate Pools
 
 Mechanism: the last batch of OHLCV pattern-name pools did not survive Gate 4.
