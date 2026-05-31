@@ -123,6 +123,14 @@ DATA_ARTIFACTS: dict[str, tuple[str, str]] = {
         "paper_sleeves/volume_breadth_breakout/state.json",
         "volume_breadth_breakout_paper_state.json",
     ),
+    "alpha_score_market_regime_paper_snapshots": (
+        "paper_sleeves/alpha_score_market_regime/snapshots.jsonl",
+        "alpha_score_market_regime_paper_snapshots.jsonl",
+    ),
+    "alpha_score_market_regime_paper_state": (
+        "paper_sleeves/alpha_score_market_regime/state.json",
+        "alpha_score_market_regime_paper_state.json",
+    ),
     "fundamental_growth_rs_paper_snapshots": (
         "paper_sleeves/fundamental_growth_rs/snapshots.jsonl",
         "fundamental_growth_rs_paper_snapshots.jsonl",

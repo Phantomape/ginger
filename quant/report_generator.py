@@ -62,6 +62,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            ai_optical_paper_sleeve=None,
                            volatility_contraction_paper_sleeve=None,
                            volume_breadth_breakout_paper_sleeve=None,
+                           alpha_score_market_regime_paper_sleeve=None,
                            fundamental_growth_rs_paper_sleeve=None,
                            finra_iwm_paper_sleeve=None,
                            space_catalyst_shadow=None,
@@ -105,6 +106,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         ai_optical_paper_sleeve (dict): Default-off AI optical IWM-confirmed paper sleeve
         volatility_contraction_paper_sleeve (dict): Default-off QQQ-confirmed volatility-contraction paper sleeve
         volume_breadth_breakout_paper_sleeve (dict): Default-off volume-breadth breakout paper sleeve
+        alpha_score_market_regime_paper_sleeve (dict): Default-off alpha-score market-regime paper sleeve
         fundamental_growth_rs_paper_sleeve (dict): Default-off Companyfacts growth + RS paper sleeve
         finra_iwm_paper_sleeve (dict): Default-off FINRA short-pressure IWM-confirmed paper sleeve
         space_catalyst_shadow (dict):   Observe-only space catalyst candidate pool
@@ -2033,6 +2035,76 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"high-close={candidate.get('high_close_support_pass_v1')} "
                 f"cost-liquidity={candidate.get('cost_liquidity_support_pass_v1')} "
                 f"clv={candidate.get('signal_day_close_location_value')} "
+                f"notional={notional_text} (paper only)"
+            )
+
+    if alpha_score_market_regime_paper_sleeve and (
+        alpha_score_market_regime_paper_sleeve.get("candidate_count", 0) > 0
+        or alpha_score_market_regime_paper_sleeve.get("pending_count", 0) > 0
+        or alpha_score_market_regime_paper_sleeve.get("open_position_count", 0) > 0
+        or alpha_score_market_regime_paper_sleeve.get("closed_count_today", 0) > 0
+        or alpha_score_market_regime_paper_sleeve.get("error")
+    ):
+        lines.append("\n" + "-" * 60)
+        lines.append("ALPHA-SCORE MARKET-REGIME PAPER SLEEVE")
+        lines.append("-" * 60)
+        lines.append(
+            f"  Paper: {alpha_score_market_regime_paper_sleeve.get('paper_enabled', False)}  |  "
+            f"Trade enabled: {alpha_score_market_regime_paper_sleeve.get('trade_enabled', False)}"
+        )
+        if alpha_score_market_regime_paper_sleeve.get("error"):
+            lines.append(
+                f"  Source status: {alpha_score_market_regime_paper_sleeve.get('error')}"
+            )
+        source = alpha_score_market_regime_paper_sleeve.get("candidate_universe") or {}
+        market = alpha_score_market_regime_paper_sleeve.get("market_regime_context") or {}
+        ranking = alpha_score_market_regime_paper_sleeve.get("ranking_surface") or {}
+        lines.append(
+            f"  Source: {source.get('status', 'unknown')}  |  "
+            f"Tickers: {source.get('ticker_count', 0)}  |  "
+            f"Ranked: {ranking.get('ranked_count', 0)}  |  "
+            f"Top decile: {ranking.get('top_decile_count', 0)}"
+        )
+        lines.append(
+            "  Market gate: "
+            f"{market.get('reason', 'unknown')}  |  "
+            f"SPY>50d={market.get('spy_above_50d_ma')}  |  "
+            f"IWM-SPY 20d={market.get('iwm_minus_spy_ret20')}"
+        )
+        lines.append(
+            f"  Candidates: {alpha_score_market_regime_paper_sleeve.get('candidate_count', 0)}  |  "
+            f"Rejected: {alpha_score_market_regime_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
+            f"Pending: {alpha_score_market_regime_paper_sleeve.get('pending_count', 0)}  |  "
+            f"Open: {alpha_score_market_regime_paper_sleeve.get('open_position_count', 0)}  |  "
+            f"Closed today: {alpha_score_market_regime_paper_sleeve.get('closed_count_today', 0)}"
+        )
+        lines.append(
+            "  Realized paper P&L: "
+            f"${alpha_score_market_regime_paper_sleeve.get('realized_pnl_to_date', 0.0):,.2f}  |  "
+            f"Unrealized: ${alpha_score_market_regime_paper_sleeve.get('unrealized_pnl', 0.0):,.2f}"
+        )
+        gate = alpha_score_market_regime_paper_sleeve.get("forward_paper_gate") or {}
+        if gate:
+            metrics = gate.get("metrics") or {}
+            reasons = gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                f"  Forward gate: {gate.get('status', 'unknown')}  |  "
+                f"closed={metrics.get('closed_trades', 0)} "
+                f"pnl=${metrics.get('realized_pnl', 0.0):,.2f}  |  "
+                f"blocked_by={reason_text}"
+            )
+        for candidate in (alpha_score_market_regime_paper_sleeve.get("candidates") or [])[:5]:
+            notional = candidate.get("intended_notional")
+            notional_text = (
+                f"${notional:,.0f}" if isinstance(notional, (int, float)) else "n/a"
+            )
+            lines.append(
+                f"  {candidate.get('ticker', '?')}: "
+                f"alpha={candidate.get('alpha_score')} "
+                f"rank_pct={candidate.get('alpha_score_rank_pct')} "
+                f"bucket={candidate.get('alpha_score_bucket')} "
+                f"avg$vol={candidate.get('avg_dollar_volume_20d')} "
                 f"notional={notional_text} (paper only)"
             )
 

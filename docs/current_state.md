@@ -50,10 +50,12 @@ command; canonical acceptance evidence is the three-window artifact above.
 
 ## 2026-05-31 Experiment Consolidation
 
-Today's experiment set produced no accepted strategy, live-order, ranking,
-sizing, exit, LLM/news, or backtest-path change. The durable conclusion is that
-several apparently large historical paper gains are still not activation-ready
-because the evidence is concentrated, window-unstable, or not monotonic enough.
+Today's experiment set produced one accepted default-off paper adapter, but no
+live-order, core ranking, core sizing, exit, LLM/news, or backtest-path change.
+The durable conclusion is that raw historical paper gains still are not
+activation-ready by themselves; the one accepted route is narrow,
+production-visible, default-off, and requires forward replacement-value rows
+before any live/core review.
 
 Pre-earnings / imminent-earnings surprise and RS work is frozen on the current
 sample. `exp-20260531-001` rejected the 22-45 day pre-earnings
@@ -72,24 +74,32 @@ PEAD 10d retry path: wait for at least two independent earnings seasons of PIT
 `eps_estimate_delta_30d` coverage with at least `20` usable candidates per
 season. It is a proposed future test, not current alpha evidence.
 
-Full-universe `alpha_score` remains a read-only ranking surface, not a
-candidate-pool promotion. `exp-20260531-005` showed raw top-1 routing can look
-very profitable in aggregate (`EV +6.6893`, PnL `+$125,182.69`), but failed on
-drawdown and concentration. `exp-20260531-006` then scored the full daily
-universe and found a small pooled top-vs-bottom 5d edge across `3,551`
-observations (`+0.556 pp`, `2/3` positive windows), but no clean monotonic
-quintile ladder. Follow-up attempts to make the surface promotable via
-same-ticker cooldown (`exp-20260531-007`), cost/liquidity state (`008`),
-drawdown/volatility resilient ranking (`009`), breadth alignment (`011`), and
-low-volume mosaic state (`014`) were all rejected for some combination of
-window regression, excessive drawdown drift, and concentration. The latest
-risk-appetite regime gate (`exp-20260531-016`) was the cleanest variant:
-SPY above its 50-day average plus IWM 20d return at least SPY 20d return
-improved all three windows (`EV +4.1938`, PnL `+$81,926.30`) and passed
-concentration, but still failed because max drawdown drift reached `+1.06 pp`
-against the `+0.50 pp` guardrail. The next valid work is drawdown-aware
-replacement value, regime-conditioned risk controls, and same-day displacement
-analysis, not another raw top-N or score-weight tune.
+Full-universe `alpha_score` remains read-only for core/live ranking, but now
+has one accepted default-off paper adapter. `exp-20260531-005` showed raw top-1
+routing can look very profitable in aggregate (`EV +6.6893`, PnL
+`+$125,182.69`), but failed on drawdown and concentration.
+`exp-20260531-006` then scored the full daily universe and found a small pooled
+top-vs-bottom 5d edge across `3,551` observations (`+0.556 pp`, `2/3`
+positive windows), but no clean monotonic quintile ladder. Follow-up attempts
+to make the surface promotable via same-ticker cooldown (`exp-20260531-007`),
+cost/liquidity state (`008`), drawdown/volatility resilient ranking (`009`),
+breadth alignment (`011`), and low-volume mosaic state (`014`) were all
+rejected for some combination of window regression, excessive drawdown drift,
+and concentration. The risk-appetite regime gate (`exp-20260531-016`) was the
+cleanest variant: SPY above its 50-day average plus IWM 20d return at least
+SPY 20d return improved all three windows (`EV +4.1938`, PnL `+$81,926.30`)
+and passed concentration, but failed because max drawdown drift reached
+`+1.06 pp` against the `+0.50 pp` guardrail. `exp-20260531-021` kept that
+source fixed and changed only default-off paper notional from `$10,000` to
+`$4,000`; it passed Gate 4 (`EV +1.6439`, PnL `+$32,770.52`, 151 target
+trades, no drawdown worsening, concentration passed). `exp-20260531-023`
+promoted the same fixed source into `ALPHA_SCORE_MARKET_REGIME_PAPER`, a
+shared production-visible default-off adapter. It adds daily paper ledger,
+reporting, and attribution only; `trade_enabled=false`, live/default orders
+remain disabled, and core ranking/sizing/exits are unchanged. The next valid
+work is forward replacement value and same-day displacement analysis for this
+adapter, not another raw top-N, score-weight, threshold, market-gate, hold, or
+notional tune.
 `exp-20260531-017` then decomposed the same full-universe sample by existing
 `alpha_score` component quintiles. No component produced a clean monotonic
 5d ladder: breadth alignment and relative strength had top-bottom edge without

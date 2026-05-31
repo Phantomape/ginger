@@ -64,7 +64,10 @@ Recent repository evidence supports this priority:
   adapter. Treat it like Fundamental Growth RS and VBB: forward replacement
   rows first, no FINRA score / IWM threshold / cooldown / top-N retunes on the
   same frozen windows.
-- Full-universe ranking is promising as attribution, not yet a trade queue.
+- Full-universe ranking is promising as attribution, and now has one
+  default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
+  ranking, but the market-regime-gated safe-notional route passed Gate 4 and
+  was promoted into a shared observation adapter.
   `exp-20260531-005` showed a top-1 `alpha_score` candidate pool can produce
   large aggregate historical paper gains, but it failed promotion because the
   ladder was not robust enough for a live-facing source. The follow-up
@@ -72,8 +75,10 @@ Recent repository evidence supports this priority:
   top-vs-bottom 5d edge (`+0.556 pp`) across `3,551` observations and `2/3`
   positive windows, but no clean monotonic quintile ladder. Treat
   `alpha_score` as a ranking surface that needs component decomposition,
-  cost-adjusted replacement value, and regime buckets before any top-N paper
-  adapter or live ranking change.
+  cost-adjusted replacement value, and regime buckets before any live ranking
+  change. The accepted route is narrow: top-decile/top-1 with SPY above 50d,
+  IWM 20d return at least SPY 20d return, 20-day hold, and `$4,000`
+  default-off paper notional only.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper
@@ -418,21 +423,33 @@ Current evidence:
   monotonicity, theme participation inverted, and expectation/post-earnings
   components were effectively constant. This weakens raw component-gate and
   score-weight tuning as the next step.
+- `exp-20260531-021` kept the `exp-20260531-016` source fixed but reduced
+  default-off paper notional from `$10,000` to `$4,000`. It passed the
+  standard three-window Gate 4 (`EV +1.6439`, PnL `+$32,770.52`, 151 target
+  trades, no drawdown worsening, concentration passed).
+- `exp-20260531-023` promoted that fixed source into
+  `ALPHA_SCORE_MARKET_REGIME_PAPER`, a shared default-off production-visible
+  adapter. It did not change score weights, thresholds, top-N, hold period, or
+  live/default orders.
 
 Do next:
 
-- only continue full-universe ranking work if it adds replacement value,
-  regime/sector/liquidity conditioning, or a new production-visible information
-  source beyond the current raw components;
+- collect forward replacement value for `ALPHA_SCORE_MARKET_REGIME_PAPER`
+  against cash, same-day core candidates, and adjacent default-off paper ranks;
+- only continue full-universe ranking work if it adds out-of-sample
+  replacement value, regime/sector/liquidity conditioning, or a new
+  production-visible information source beyond the current raw components;
 - test whether top-score rows have positive replacement value versus the exact
   same-day core or default-off paper candidate they would displace;
 - add cost-adjusted rank deltas before any top-N paper adapter;
-- use `alpha_score` as a read-only triage field until the ladder is monotonic
-  or a narrower production-visible component explains the spread.
+- keep raw `alpha_score` as a read-only triage field outside the accepted
+  market-regime safe-notional paper adapter.
 
 Do not:
 
 - promote a raw top-1 `alpha_score` sleeve from aggregate PnL alone;
+- retune the accepted `ALPHA_SCORE_MARKET_REGIME_PAPER` thresholds, top-N,
+  market gate, hold period, or `$4,000` notional on the same frozen windows;
 - promote or retune raw `alpha_score_components` as gates/weights on these
   frozen windows without new evidence;
 - tune score weights on the same frozen windows without a pre-registered

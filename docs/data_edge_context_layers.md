@@ -430,6 +430,43 @@ Default weights:
 
 Agent rule: this is a read-only ranking surface. It must not replace `signal_engine.py` or live ranking until a separate accepted experiment proves incremental value.
 
+### `quant/alpha_score_market_regime_paper_sleeve.py`
+
+Purpose: maintain the default-off `ALPHA_SCORE_MARKET_REGIME_PAPER` forward
+observation ledger for the accepted full-universe `alpha_score` market-regime
+safe-notional route.
+
+Evidence boundary:
+
+- `exp-20260531-021` passed the standard three-window Gate 4 with the fixed
+  source at `$4,000` paper notional (`EV +1.6439`, PnL `+$32,770.52`, 151
+  target trades, no drawdown worsening, concentration passed).
+- `exp-20260531-023` promoted the route into a shared default-off adapter with
+  focused parity tests. It did not change score weights, thresholds, top-N,
+  hold period, live watchlists, or order paths.
+
+Inputs:
+
+- current daily `features_dict` and `cross_sectional_ranking_surface`;
+- already-loaded daily OHLCV for candidate tickers plus `SPY` and `IWM`;
+- exact `as_of` open/close rows only for fills, hold-day advancement, and
+  closes.
+
+Adapter semantics:
+
+- fixed full-universe PIT `alpha_score` top-decile/top-1 source;
+- stock-only ETF exclusions and `avg_dollar_volume_20d >= $40m`;
+- SPY close above its 50-day average and `IWM 20d return - SPY 20d return >= 0`;
+- fixed `$4,000` paper notional, next-open paper entry, and 20-trading-day
+  paper exit;
+- default-off `pending/open/closed` paper ledger, replacement-value report,
+  forward gate, default-off attribution surface, and human-report block.
+
+Agent rule: this sleeve is observe-only. Do not retune its thresholds,
+market gate, top-N, hold, notional, or score weights on the same frozen
+windows. Promotion to live/core behavior requires closed forward replacement
+value and a separate Gate 1-4 activation experiment.
+
 ### `quant/ranking_attribution.py`
 
 Purpose: evaluate whether `alpha_score` contains predictive information in historical / replay artifacts.

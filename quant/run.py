@@ -298,6 +298,10 @@ def main():
         build_volume_breadth_breakout_paper_sleeve_snapshot,
         empty_volume_breadth_breakout_paper_sleeve_snapshot,
     )
+    from alpha_score_market_regime_paper_sleeve import (
+        build_alpha_score_market_regime_paper_sleeve_snapshot,
+        empty_alpha_score_market_regime_paper_sleeve_snapshot,
+    )
     from fundamental_growth_rs_paper_sleeve import (
         build_fundamental_growth_rs_paper_sleeve_snapshot,
         empty_fundamental_growth_rs_paper_sleeve_snapshot,
@@ -1973,6 +1977,55 @@ def main():
         )
 
     try:
+        alpha_score_market_regime_ohlcv = dict(ohlcv_dict)
+        alpha_score_market_regime_ohlcv["SPY"] = spy_ohlcv
+        if (
+            "IWM" not in alpha_score_market_regime_ohlcv
+            or alpha_score_market_regime_ohlcv.get("IWM") is None
+        ):
+            alpha_score_market_regime_ohlcv["IWM"] = _cached_ohlcv("IWM")
+        alpha_score_market_regime_candidate_universe = {
+            "status": "daily_data_universe",
+            "tickers": sorted(
+                ticker
+                for ticker, frame in alpha_score_market_regime_ohlcv.items()
+                if frame is not None and str(ticker).upper() not in {"SPY", "IWM"}
+            ),
+        }
+        alpha_score_market_regime_paper_sleeve = (
+            build_alpha_score_market_regime_paper_sleeve_snapshot(
+                as_of=today_iso,
+                features_by_ticker=features_dict,
+                ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
+                candidate_universe=alpha_score_market_regime_candidate_universe,
+                open_prices=current_open_prices,
+                current_prices=current_prices,
+            )
+        )
+        if (
+            alpha_score_market_regime_paper_sleeve.get("candidate_count", 0) > 0
+            or alpha_score_market_regime_paper_sleeve.get("pending_count", 0) > 0
+            or alpha_score_market_regime_paper_sleeve.get("open_position_count", 0) > 0
+            or alpha_score_market_regime_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Alpha-score market-regime paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                alpha_score_market_regime_paper_sleeve.get("candidate_count", 0),
+                alpha_score_market_regime_paper_sleeve.get("pending_count", 0),
+                alpha_score_market_regime_paper_sleeve.get("open_position_count", 0),
+                alpha_score_market_regime_paper_sleeve.get("closed_count_today", 0),
+                alpha_score_market_regime_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Alpha-score market-regime paper sleeve unavailable: {e}")
+        alpha_score_market_regime_paper_sleeve = (
+            empty_alpha_score_market_regime_paper_sleeve_snapshot(
+                today_iso,
+                "alpha_score_market_regime_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         fundamental_growth_ohlcv = dict(ohlcv_dict)
         fundamental_growth_ohlcv["SPY"] = spy_ohlcv
         fundamental_growth_candidate_universe = {
@@ -2164,6 +2217,7 @@ def main():
         ai_optical_paper_sleeve=ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
+        alpha_score_market_regime_paper_sleeve=alpha_score_market_regime_paper_sleeve,
         fundamental_growth_rs_paper_sleeve=fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve=finra_iwm_paper_sleeve,
     )
@@ -2201,6 +2255,7 @@ def main():
     trend_signals_dict["ai_optical_paper_sleeve"] = ai_optical_paper_sleeve
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
+    trend_signals_dict["alpha_score_market_regime_paper_sleeve"] = alpha_score_market_regime_paper_sleeve
     trend_signals_dict["fundamental_growth_rs_paper_sleeve"] = fundamental_growth_rs_paper_sleeve
     trend_signals_dict["finra_iwm_paper_sleeve"] = finra_iwm_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
@@ -2245,6 +2300,7 @@ def main():
         ai_optical_paper_sleeve = ai_optical_paper_sleeve,
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
+        alpha_score_market_regime_paper_sleeve = alpha_score_market_regime_paper_sleeve,
         fundamental_growth_rs_paper_sleeve = fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve = finra_iwm_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
@@ -2295,6 +2351,7 @@ def main():
         "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
+        "alpha_score_market_regime_paper_sleeve": alpha_score_market_regime_paper_sleeve,
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
         "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,

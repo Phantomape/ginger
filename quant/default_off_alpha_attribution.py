@@ -224,6 +224,7 @@ def build_default_off_alpha_attribution_report(
     ai_optical_paper_sleeve: dict[str, Any] | None = None,
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
+    alpha_score_market_regime_paper_sleeve: dict[str, Any] | None = None,
     fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
     finra_iwm_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -285,6 +286,29 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "cost_liquidity_supported": (
                     ((volume_breadth_breakout_paper_sleeve or {}).get("cost_liquidity_support") or {}).get("supported_candidate_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="alpha_score_market_regime",
+            label="ALPHA_SCORE_MARKET_REGIME_PAPER",
+            snapshot=alpha_score_market_regime_paper_sleeve,
+            extra_metrics={
+                "source_rule_version": (
+                    (alpha_score_market_regime_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "market_regime_rule_version": (
+                    (alpha_score_market_regime_paper_sleeve or {}).get("market_regime_rule_version")
+                ),
+                "safe_notional_usd": (
+                    (alpha_score_market_regime_paper_sleeve or {}).get("safe_paper_notional_usd")
+                    or ((alpha_score_market_regime_paper_sleeve or {}).get("candidates") or [{}])[0].get("safe_paper_notional_usd")
+                ),
+                "ranked_count": (
+                    ((alpha_score_market_regime_paper_sleeve or {}).get("ranking_surface") or {}).get("ranked_count")
+                ),
+                "top_decile_count": (
+                    ((alpha_score_market_regime_paper_sleeve or {}).get("ranking_surface") or {}).get("top_decile_count")
                 ),
             },
         ),
