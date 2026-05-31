@@ -83,6 +83,13 @@ Recent repository evidence supports this priority:
   the same ticker/signal date also appears in accepted FINRA/IWM or VBB paper
   sources. Treat this as a forward-evidence bucket, not permission to retune
   alpha_score thresholds, weights, top-N, hold, market gate, or notional.
+  `exp-20260531-029` added a separate observe-only
+  `ACCEPTED_SOURCE_CONSENSUS_PAPER` adapter for the fixed exp026 pool: accepted
+  alpha-score market-regime rows are admitted only when accepted FINRA/IWM or
+  VBB also selects the same ticker on the same signal date, with fixed `$4,000`
+  paper notional and no extra source-consensus scalar. The next evidence is
+  forward replacement value for that adapter, not another same-source overlap
+  retune.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper

@@ -302,6 +302,10 @@ def main():
         build_alpha_score_market_regime_paper_sleeve_snapshot,
         empty_alpha_score_market_regime_paper_sleeve_snapshot,
     )
+    from accepted_source_consensus_paper_sleeve import (
+        build_accepted_source_consensus_paper_sleeve_snapshot,
+        empty_accepted_source_consensus_paper_sleeve_snapshot,
+    )
     from fundamental_growth_rs_paper_sleeve import (
         build_fundamental_growth_rs_paper_sleeve_snapshot,
         empty_fundamental_growth_rs_paper_sleeve_snapshot,
@@ -2115,6 +2119,44 @@ def main():
         )
 
     try:
+        accepted_source_consensus_paper_sleeve = (
+            build_accepted_source_consensus_paper_sleeve_snapshot(
+                as_of=today_iso,
+                features_by_ticker=features_dict,
+                ohlcv_by_ticker=alpha_score_market_regime_ohlcv,
+                candidate_universe=alpha_score_market_regime_candidate_universe,
+                source_consensus_snapshots=[
+                    volume_breadth_breakout_paper_sleeve,
+                    finra_iwm_paper_sleeve,
+                ],
+                open_prices=current_open_prices,
+                current_prices=current_prices,
+            )
+        )
+        if (
+            accepted_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
+            or accepted_source_consensus_paper_sleeve.get("pending_count", 0) > 0
+            or accepted_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
+            or accepted_source_consensus_paper_sleeve.get("closed_count_today", 0) > 0
+        ):
+            log.info(
+                "Accepted-source consensus paper sleeve: candidates=%d pending=%d open=%d closed_today=%d pnl=$%s",
+                accepted_source_consensus_paper_sleeve.get("candidate_count", 0),
+                accepted_source_consensus_paper_sleeve.get("pending_count", 0),
+                accepted_source_consensus_paper_sleeve.get("open_position_count", 0),
+                accepted_source_consensus_paper_sleeve.get("closed_count_today", 0),
+                accepted_source_consensus_paper_sleeve.get("realized_pnl_to_date", 0.0),
+            )
+    except Exception as e:
+        log.warning(f"Accepted-source consensus paper sleeve unavailable: {e}")
+        accepted_source_consensus_paper_sleeve = (
+            empty_accepted_source_consensus_paper_sleeve_snapshot(
+                today_iso,
+                "accepted_source_consensus_paper_sleeve_build_failed",
+            )
+        )
+
+    try:
         broad_market_candidate_universe = load_broad_market_candidate_universe()
         if (
             broad_market_candidate_universe.get("status") == "missing"
@@ -2222,6 +2264,7 @@ def main():
         volatility_contraction_paper_sleeve=volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve=volume_breadth_breakout_paper_sleeve,
         alpha_score_market_regime_paper_sleeve=alpha_score_market_regime_paper_sleeve,
+        accepted_source_consensus_paper_sleeve=accepted_source_consensus_paper_sleeve,
         fundamental_growth_rs_paper_sleeve=fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve=finra_iwm_paper_sleeve,
     )
@@ -2260,6 +2303,7 @@ def main():
     trend_signals_dict["volatility_contraction_paper_sleeve"] = volatility_contraction_paper_sleeve
     trend_signals_dict["volume_breadth_breakout_paper_sleeve"] = volume_breadth_breakout_paper_sleeve
     trend_signals_dict["alpha_score_market_regime_paper_sleeve"] = alpha_score_market_regime_paper_sleeve
+    trend_signals_dict["accepted_source_consensus_paper_sleeve"] = accepted_source_consensus_paper_sleeve
     trend_signals_dict["fundamental_growth_rs_paper_sleeve"] = fundamental_growth_rs_paper_sleeve
     trend_signals_dict["finra_iwm_paper_sleeve"] = finra_iwm_paper_sleeve
     trend_signals_dict["space_catalyst_shadow"] = space_catalyst_shadow
@@ -2305,6 +2349,7 @@ def main():
         volatility_contraction_paper_sleeve = volatility_contraction_paper_sleeve,
         volume_breadth_breakout_paper_sleeve = volume_breadth_breakout_paper_sleeve,
         alpha_score_market_regime_paper_sleeve = alpha_score_market_regime_paper_sleeve,
+        accepted_source_consensus_paper_sleeve = accepted_source_consensus_paper_sleeve,
         fundamental_growth_rs_paper_sleeve = fundamental_growth_rs_paper_sleeve,
         finra_iwm_paper_sleeve = finra_iwm_paper_sleeve,
         space_catalyst_shadow = space_catalyst_shadow,
@@ -2356,6 +2401,7 @@ def main():
         "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
         "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
         "alpha_score_market_regime_paper_sleeve": alpha_score_market_regime_paper_sleeve,
+        "accepted_source_consensus_paper_sleeve": accepted_source_consensus_paper_sleeve,
         "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
         "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
         "space_catalyst_shadow": space_catalyst_shadow,

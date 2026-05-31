@@ -107,6 +107,19 @@ monotonicity, theme participation inverted, and expectation/post-earnings
 components were effectively constant. This weakens raw component-gate or
 score-weight tuning on the frozen windows.
 
+`exp-20260531-029` promoted the positive `exp-20260531-026`
+accepted-source consensus lead into a separate shared default-off adapter,
+`ACCEPTED_SOURCE_CONSENSUS_PAPER`. It keeps the accepted alpha-score
+market-regime source fixed and admits only rows whose same signal-date ticker
+also appears in accepted FINRA/IWM or VBB paper snapshots. The adapter uses
+fixed `$4,000` paper notional with no extra source-consensus scalar,
+`trade_enabled=false`, and no live/default order, core ranking, core sizing,
+exit, LLM/news, or watchlist change. The replay evidence was aggregate EV
+`+0.5572` and PnL `+$10,518.30` across all three canonical windows, with
+target sample `37`, no drawdown worsening, and concentration passing. The next
+valid work is forward replacement-value rows for this adapter, not retuning the
+source set, alpha-score thresholds, market gate, hold, or notional.
+
 Event and peer-transfer scouts also failed to produce a promotable relation.
 `exp-20260531-002` found Form 4 purchase pressure was positive versus core but
 not promotable because it did not improve the raw Form 4 queue, had only `7`

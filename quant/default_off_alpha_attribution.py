@@ -225,6 +225,7 @@ def build_default_off_alpha_attribution_report(
     volatility_contraction_paper_sleeve: dict[str, Any] | None = None,
     volume_breadth_breakout_paper_sleeve: dict[str, Any] | None = None,
     alpha_score_market_regime_paper_sleeve: dict[str, Any] | None = None,
+    accepted_source_consensus_paper_sleeve: dict[str, Any] | None = None,
     fundamental_growth_rs_paper_sleeve: dict[str, Any] | None = None,
     finra_iwm_paper_sleeve: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -312,6 +313,31 @@ def build_default_off_alpha_attribution_report(
                 ),
                 "source_consensus_supported": (
                     ((alpha_score_market_regime_paper_sleeve or {}).get("source_consensus_support") or {}).get("supported_candidate_count")
+                ),
+            },
+        ),
+        _surface_summary(
+            name="accepted_source_consensus",
+            label="ACCEPTED_SOURCE_CONSENSUS_PAPER",
+            snapshot=accepted_source_consensus_paper_sleeve,
+            extra_metrics={
+                "source_rule_version": (
+                    (accepted_source_consensus_paper_sleeve or {}).get("source_rule_version")
+                ),
+                "market_regime_rule_version": (
+                    (accepted_source_consensus_paper_sleeve or {}).get("market_regime_rule_version")
+                ),
+                "paper_notional_usd": (
+                    ((accepted_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("paper_notional_usd")
+                ),
+                "raw_alpha_score_candidate_count": (
+                    (accepted_source_consensus_paper_sleeve or {}).get("raw_alpha_score_candidate_count")
+                ),
+                "source_consensus_supported": (
+                    ((accepted_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("supported_candidate_count")
+                ),
+                "source_counts": (
+                    ((accepted_source_consensus_paper_sleeve or {}).get("source_consensus") or {}).get("source_counts")
                 ),
             },
         ),

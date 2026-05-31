@@ -473,6 +473,36 @@ market gate, top-N, hold, notional, or score weights on the same frozen
 windows. Promotion to live/core behavior requires closed forward replacement
 value and a separate Gate 1-4 activation experiment.
 
+### `quant/accepted_source_consensus_paper_sleeve.py`
+
+Purpose: maintain the default-off `ACCEPTED_SOURCE_CONSENSUS_PAPER` forward
+observation ledger for the accepted-source consensus candidate-pool lead.
+
+Evidence boundary:
+
+- `exp-20260531-026` showed the standalone accepted-source consensus pool was a
+  positive replay lead across all three canonical windows, but it was not
+  production-equivalent until a shared adapter existed.
+- `exp-20260531-029` promoted the same fixed source into a shared default-off
+  adapter. It does not change score weights, thresholds, top-N, hold period,
+  live watchlists, or order paths.
+
+Adapter semantics:
+
+- rebuilds the accepted alpha-score market-regime candidate source using the
+  same production-visible OHLCV/features surface;
+- admits only candidates whose same signal-date ticker also appears in accepted
+  `VOLUME_BREADTH_BREAKOUT_PAPER` or `FINRA_IWM_CONFIRMED_PAPER` snapshots;
+- uses fixed `$4,000` paper notional, no source-consensus notional scalar,
+  next-open paper entry, and 20-trading-day paper exit;
+- emits default-off `pending/open/closed` paper ledger, replacement-value
+  report, forward gate, default-off attribution surface, and human-report block.
+
+Agent rule: this sleeve is observe-only. Do not retune the source set, alpha
+score thresholds, market gate, top-N, hold, or notional on the same frozen
+windows. Promotion to live/core behavior requires closed forward replacement
+value and a separate Gate 1-4 activation experiment.
+
 ### `quant/ranking_attribution.py`
 
 Purpose: evaluate whether `alpha_score` contains predictive information in historical / replay artifacts.
