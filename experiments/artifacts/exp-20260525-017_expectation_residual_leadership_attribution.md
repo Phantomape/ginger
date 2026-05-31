@@ -8,40 +8,40 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 
 ```json
 {
-  "candidate_objects_total": 24,
+  "candidate_objects_total": 26,
   "candidate_source_breakdown": {
-    "entry_execution_plan.deferred_breakout_signals": 5,
-    "entry_execution_plan.slot_sliced_signals": 3,
+    "entry_execution_plan.deferred_breakout_signals": 6,
+    "entry_execution_plan.slot_sliced_signals": 4,
     "pilot_signals": 4,
     "signals": 12
   },
-  "candidates_with_eps_estimate_delta_7d": 2,
+  "candidates_with_eps_estimate_delta_7d": 3,
   "closed_forward_outcomes": {
-    "10d": 20,
-    "20d": 17,
+    "10d": 21,
+    "20d": 19,
     "5d": 21
   },
   "expectation_join_status_counts": {
     "ledger_row_not_usable": 12,
     "missing_ledger_row": 2,
-    "usable_ledger_missing_7d_delta": 8,
-    "usable_ledger_with_7d_delta": 2
+    "usable_ledger_missing_7d_delta": 9,
+    "usable_ledger_with_7d_delta": 3
   },
-  "ledger_joined_candidates": 22,
-  "ledger_usable_candidates": 10,
+  "ledger_joined_candidates": 24,
+  "ledger_usable_candidates": 12,
   "positive_expectation_candidates": 0,
   "record_type_breakdown": {
-    "deferred_breakout_signal": 5,
+    "deferred_breakout_signal": 6,
     "selected_pilot_signal": 4,
     "selected_signal": 12,
-    "slot_sliced_signal": 3
+    "slot_sliced_signal": 4
   },
-  "residual_context_ok_candidates": 11,
+  "residual_context_ok_candidates": 13,
   "residual_context_status_counts": {
     "insufficient_residual_inputs": 13,
-    "ok": 11
+    "ok": 13
   },
-  "residual_leader_candidates": 9
+  "residual_leader_candidates": 10
 }
 ```
 
@@ -51,8 +51,8 @@ Observed-only alpha search. No entries, exits, ranking, sizing, LLM/news, or ord
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 0 | 0 |  | 0 |  |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 9 | 7 | -2.0788% | 7 | -6.7270% |
-| D_neither | 15 | 14 | 1.2881% | 13 | -0.2747% |
+| C_residual_leader_only | 10 | 7 | -2.0788% | 7 | -6.7270% |
+| D_neither | 16 | 14 | 1.2881% | 14 | 0.0609% |
 
 ## Reconstructed Scout
 
@@ -73,7 +73,7 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
   "source_quality_counts": {
     "missing": 2,
     "non_pit_reconstructed": 12,
-    "pit_usable": 10
+    "pit_usable": 12
   },
   "total_usable_candidates": 21
 }
@@ -83,8 +83,8 @@ Non-PIT reconstructed rows are shown only for research triage. They cannot pass 
 |---|---:|---:|---:|---:|---:|
 | A_positive_expectation_and_residual_leader | 0 | 0 |  | 0 |  |
 | B_positive_expectation_only | 0 | 0 |  | 0 |  |
-| C_residual_leader_only | 9 | 7 | -2.0788% | 7 | -6.7270% |
-| D_neither | 15 | 14 | 1.2881% | 13 | -0.2747% |
+| C_residual_leader_only | 10 | 7 | -2.0788% | 7 | -6.7270% |
+| D_neither | 16 | 14 | 1.2881% | 14 | 0.0609% |
 
 ## Gate
 
