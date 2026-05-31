@@ -727,6 +727,25 @@ frozen windows without forward evidence or a materially different
 production-visible discriminator.
 
 Latest accepted default-off Space candidate-pool replay result:
+`exp-20260531-022` keeps accepted `exp-20260529-020` fixed and adds only the
+production-visible `space_arkx_ufo_breakout_complement_bucket` metadata for
+governed Space `breakout_long` observation candidates that also pass the same
+signal-day high-close/intraday-thrust checks while ARKX 20d momentum leads UFO
+20d momentum. Live Space slots remain zero. Using the same three Space
+observation windows, aggregate EV improved `+0.8540` and aggregate PnL
+improved `+$16,121.20` versus core, with no EV/PnL-regressed window. Versus
+accepted `exp-20260529-020`, aggregate EV improved `+0.0753` and PnL improved
+`+$3,053.28`; `old_thin` improved while `late_strong` and `mid_weak` were
+unchanged. Max drawdown did not worsen, minimum survival stayed `0.75`, and
+concentration passed (`max_single_positive_share=0.286598`,
+`positive_pnl_hhi=0.215023`) across 6 target paper trades. The only
+incremental branch trade was RKLB `breakout_long` entered `2024-10-17` and
+exited at target on `2024-11-11`. Treat this as a default-off observation
+sleeve increment only. Do not retune nearby ARKX/UFO thresholds or broad Space
+ETF gates on these frozen windows without forward replacement rows or a
+materially different production-visible discriminator.
+
+Previous accepted default-off Space candidate-pool replay result:
 `exp-20260529-020` keeps live Space slots at zero and adds only the
 production-visible `signal_day_ticker_open_close_return_pct` /
 `space_trend_high_close_intraday_thrust_bucket` metadata on top of the

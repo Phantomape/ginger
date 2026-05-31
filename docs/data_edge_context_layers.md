@@ -71,10 +71,15 @@ context field, `space_trend_high_close_bucket`, for governed Space
 The accepted `exp-20260529-020` refinement adds
 `space_trend_high_close_intraday_thrust_bucket` when that same high-close
 candidate also has `signal_day_ticker_open_close_return_pct >= 0.04`.
-Production computes both inputs in `quant/feature_layer.py` from the same
-daily OHLCV values used in replay. These are metadata only: they must not
-alter entries, exits, ranking, sizing, orders, or live Space slots without a
-separate Gate 1-4 promotion experiment.
+The accepted `exp-20260531-022` refinement adds
+`space_arkx_ufo_breakout_complement_bucket` for governed Space `breakout_long`
+candidates that pass the same high-close/intraday-thrust checks while ARKX 20d
+momentum is greater than UFO 20d momentum. Production computes the price-action
+inputs in `quant/feature_layer.py` and the ARKX/UFO relative state in
+`quant/space_catalyst_sleeve.py` from the same daily OHLCV-derived
+`momentum_20d_pct` feature surface used by the observation slot. These are
+metadata only: they must not alter entries, exits, ranking, sizing, orders, or
+live Space slots without a separate Gate 1-4 promotion experiment.
 
 ---
 

@@ -1282,6 +1282,25 @@ new closed forward rows or a production-visible field that prevents peer-basket
 contamination.
 
 Latest accepted default-off Space candidate-pool alpha result:
+`exp-20260531-022` keeps live Space slots at zero, keeps accepted
+`exp-20260529-020` fixed, and adds only the production-visible
+`space_arkx_ufo_breakout_complement_bucket` metadata for governed Space
+`breakout_long` observation candidates that pass signal-day
+`daily_close_location >= 0.84`, signal-day open-to-close return `>= 0.04`, and
+ARKX 20d momentum greater than UFO 20d momentum. Across the three frozen Space
+observation windows, aggregate EV improved `+0.8540` and aggregate PnL
+improved `+$16,121.20` versus core, with no regressed window. Versus accepted
+`exp-20260529-020`, aggregate EV improved `+0.0753` and PnL improved
+`+$3,053.28`; `old_thin` improved and the other two windows were unchanged.
+Max drawdown did not worsen, minimum survival stayed `0.75`, and target
+concentration passed across 6 paper trades. The helper lives in shared
+`space_catalyst_sleeve.py`, is surfaced only in the default-off observation
+slot/report metadata, has focused parity tests, and does not alter watchlists,
+rankings, sizing, exits, live slots, or orders. Next step is forward
+replacement-value collection for ARKX>UFO breakout rows, not another ETF
+threshold retune on the same frozen sample.
+
+Previous accepted default-off Space candidate-pool alpha result:
 `exp-20260529-020` keeps live Space slots at zero and adds only the
 production-visible `signal_day_ticker_open_close_return_pct` /
 `space_trend_high_close_intraday_thrust_bucket` metadata on top of the

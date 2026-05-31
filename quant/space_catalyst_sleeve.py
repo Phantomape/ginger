@@ -208,6 +208,13 @@ SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_RULE_VERSION = (
     "space_trend_high_close_intraday_thrust_paper_sleeve_v1"
 )
 SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN = 0.04
+SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_EXPERIMENT_ID = "exp-20260531-022"
+SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION = (
+    "space_high_close_thrust_arkx_ufo_breakout_complement_v1"
+)
+SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF = "ARKX"
+SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF = "UFO"
+SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD = "momentum_20d_pct"
 
 SPACE_CATALYST_FORWARD_HYPOTHESIS = {
     "experiment_id": "exp-20260513-113",
@@ -748,6 +755,26 @@ SPACE_CATALYST_FORWARD_HYPOTHESIS = {
         SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
     ),
     "space_trend_high_close_intraday_thrust_trade_enabled": False,
+    "space_arkx_ufo_breakout_complement_experiment_id": (
+        SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_EXPERIMENT_ID
+    ),
+    "space_arkx_ufo_breakout_complement_rule_version": (
+        SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION
+    ),
+    "space_arkx_ufo_breakout_complement_definition": (
+        "breakout_long high-close intraday-thrust candidate when ARKX 20d "
+        "momentum leads UFO 20d momentum"
+    ),
+    "space_arkx_ufo_breakout_complement_quality_etf": (
+        SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF
+    ),
+    "space_arkx_ufo_breakout_complement_attention_etf": (
+        SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF
+    ),
+    "space_arkx_ufo_breakout_complement_field": (
+        SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD
+    ),
+    "space_arkx_ufo_breakout_complement_trade_enabled": False,
     "live_slots": 0,
     "included_tickers": ["RKLB", "ASTS", "LUNR", "PL", "RDW", "BKSY"],
     "excluded_buckets": [
@@ -860,6 +887,45 @@ def space_catalyst_iwm_relative_momentum_state(
         "iwm_momentum_20d_pct": _round(ticker_value, 6),
         "spy_momentum_20d_pct": _round(reference_value, 6),
         "iwm_excess_vs_spy_20d_pct": _round(excess, 6),
+    }
+
+
+def space_catalyst_arkx_ufo_relative_momentum_state(
+    features_by_ticker: dict[str, dict[str, Any]] | None,
+    *,
+    quality_etf: str = SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF,
+    attention_etf: str = SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF,
+    field: str = SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD,
+) -> dict[str, Any]:
+    """Compare institutional-style Space ETF momentum with attention ETF momentum."""
+    features_by_ticker = features_by_ticker or {}
+    quality_upper = str(quality_etf or "").upper()
+    attention_upper = str(attention_etf or "").upper()
+    quality_value = _as_float(
+        (features_by_ticker.get(quality_upper) or {}).get(field)
+    )
+    attention_value = _as_float(
+        (features_by_ticker.get(attention_upper) or {}).get(field)
+    )
+    if quality_value is None or attention_value is None:
+        return {
+            "field": field,
+            "quality_etf": quality_upper,
+            "attention_etf": attention_upper,
+            "state": "missing",
+            "quality_etf_momentum_20d_pct": _round(quality_value, 6),
+            "attention_etf_momentum_20d_pct": _round(attention_value, 6),
+            "quality_minus_attention_20d_pct": None,
+        }
+    excess = quality_value - attention_value
+    return {
+        "field": field,
+        "quality_etf": quality_upper,
+        "attention_etf": attention_upper,
+        "state": "quality_etf_leader" if excess > 0 else "quality_etf_laggard",
+        "quality_etf_momentum_20d_pct": _round(quality_value, 6),
+        "attention_etf_momentum_20d_pct": _round(attention_value, 6),
+        "quality_minus_attention_20d_pct": _round(excess, 6),
     }
 
 
@@ -2232,6 +2298,8 @@ def space_catalyst_observation_feature_tickers(
     tickers = set(space_catalyst_observation_tickers(space_catalyst_shadow))
     tickers.add(SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_TICKER)
     tickers.add(SPACE_CATALYST_IWM_RELATIVE_MOMENTUM_REFERENCE)
+    tickers.add(SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF)
+    tickers.add(SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF)
     return sorted(ticker for ticker in tickers if ticker)
 
 
@@ -2424,6 +2492,9 @@ def build_space_catalyst_observation_slot(
     iwm_relative_momentum = space_catalyst_iwm_relative_momentum_state(
         features_by_ticker
     )
+    arkx_ufo_relative_momentum = space_catalyst_arkx_ufo_relative_momentum_state(
+        features_by_ticker
+    )
     source_profiles = (
         space_event_source_profiles
         if space_event_source_profiles is not None
@@ -2485,6 +2556,7 @@ def build_space_catalyst_observation_slot(
                 features=features_by_ticker.get(ticker) or {},
                 basket_momentum_state=basket_momentum,
                 iwm_relative_momentum_state=iwm_relative_momentum,
+                arkx_ufo_relative_momentum_state=arkx_ufo_relative_momentum,
                 space_catalyst_shadow=shadow,
                 space_event_source_profiles=source_profiles,
                 space_government_contract_profiles=government_contract_profiles,
@@ -2526,6 +2598,7 @@ def build_space_catalyst_observation_slot(
         "same_day_core_alternatives": core_alternatives[:10],
         "space_basket_momentum": basket_momentum,
         "space_iwm_relative_momentum": iwm_relative_momentum,
+        "space_arkx_ufo_relative_momentum": arkx_ufo_relative_momentum,
         "entry_plan_context": _entry_plan_context(entry_execution_plan),
         "portfolio_heat_context": _portfolio_heat_context(portfolio_heat or {}),
         "entry_filter_audit": _entry_filter_audit_summary(entry_filter_audit or {}),
@@ -3401,6 +3474,7 @@ def _observation_slot_row(
     features: dict[str, Any],
     basket_momentum_state: dict[str, Any],
     iwm_relative_momentum_state: dict[str, Any],
+    arkx_ufo_relative_momentum_state: dict[str, Any],
     space_catalyst_shadow: dict[str, Any],
     space_event_source_profiles: dict[str, dict[str, Any]],
     space_government_contract_profiles: dict[str, dict[str, Any]],
@@ -3517,6 +3591,19 @@ def _observation_slot_row(
         and signal_day_open_close_return is not None
         and signal_day_open_close_return
         >= SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
+    )
+    arkx_ufo_breakout_complement_bucket = (
+        strategy.lower() == "breakout_long"
+        and signal_day_close_location is not None
+        and (
+            signal_day_close_location
+            >= SPACE_CATALYST_TREND_HIGH_CLOSE_MIN_CLOSE_LOCATION
+        )
+        and signal_day_open_close_return is not None
+        and signal_day_open_close_return
+        >= SPACE_CATALYST_TREND_HIGH_CLOSE_INTRADAY_THRUST_MIN_OPEN_CLOSE_RETURN
+        and (arkx_ufo_relative_momentum_state or {}).get("state")
+        == "quality_etf_leader"
     )
     peer_nonleader_breakout_bucket = (
         strategy.lower() == "breakout_long"
@@ -3999,6 +4086,44 @@ def _observation_slot_row(
         ),
         "space_trend_high_close_intraday_thrust_trade_enabled": False,
         "space_trend_high_close_intraday_thrust_alters_orders": False,
+        "space_arkx_ufo_relative_state": (
+            arkx_ufo_relative_momentum_state or {}
+        ).get("state"),
+        "space_arkx_momentum_20d_pct": _round(
+            (arkx_ufo_relative_momentum_state or {}).get(
+                "quality_etf_momentum_20d_pct"
+            ),
+            6,
+        ),
+        "space_ufo_momentum_20d_pct": _round(
+            (arkx_ufo_relative_momentum_state or {}).get(
+                "attention_etf_momentum_20d_pct"
+            ),
+            6,
+        ),
+        "space_arkx_excess_vs_ufo_20d_pct": _round(
+            (arkx_ufo_relative_momentum_state or {}).get(
+                "quality_minus_attention_20d_pct"
+            ),
+            6,
+        ),
+        "space_arkx_ufo_breakout_complement_bucket": (
+            arkx_ufo_breakout_complement_bucket
+        ),
+        "space_arkx_ufo_breakout_complement_rule_version": (
+            SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION
+        ),
+        "space_arkx_ufo_breakout_complement_quality_etf": (
+            SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF
+        ),
+        "space_arkx_ufo_breakout_complement_attention_etf": (
+            SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF
+        ),
+        "space_arkx_ufo_breakout_complement_field": (
+            SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD
+        ),
+        "space_arkx_ufo_breakout_complement_trade_enabled": False,
+        "space_arkx_ufo_breakout_complement_alters_orders": False,
         "space_peer_momentum_state": peer_momentum_state.get("state"),
         "space_peer_momentum_20d_pct": _round(
             peer_momentum_state.get("own_momentum_20d_pct"),

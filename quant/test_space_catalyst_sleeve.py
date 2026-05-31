@@ -6,6 +6,11 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from space_catalyst_sleeve import (  # noqa: E402
+    SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF,
+    SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_EXPERIMENT_ID,
+    SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD,
+    SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF,
+    SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION,
     SPACE_CATALYST_FORWARD_HYPOTHESIS,
     SPACE_CATALYST_LLM_EVENT_FIELDS,
     SPACE_CATALYST_TREND_HIGH_CLOSE_EXPERIMENT_ID,
@@ -27,6 +32,7 @@ from space_catalyst_sleeve import (  # noqa: E402
     space_catalyst_forward_target_atr_mult,
     space_catalyst_forward_risk_scalar,
     space_catalyst_government_contract_profiles,
+    space_catalyst_arkx_ufo_relative_momentum_state,
     space_catalyst_iwm_relative_momentum_state,
     space_catalyst_multi_event_depth_profiles,
     space_catalyst_official_customer_source_profiles,
@@ -245,6 +251,42 @@ def test_space_catalyst_shadow_snapshot_is_observe_only(tmp_path):
     assert (
         snapshot["forward_hypothesis"][
             "space_trend_high_close_intraday_thrust_trade_enabled"
+        ]
+        is False
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_arkx_ufo_breakout_complement_experiment_id"
+        ]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_EXPERIMENT_ID
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_arkx_ufo_breakout_complement_rule_version"
+        ]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_arkx_ufo_breakout_complement_quality_etf"
+        ]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_arkx_ufo_breakout_complement_attention_etf"
+        ]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_arkx_ufo_breakout_complement_field"
+        ]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD
+    )
+    assert (
+        snapshot["forward_hypothesis"][
+            "space_arkx_ufo_breakout_complement_trade_enabled"
         ]
         is False
     )
@@ -1759,6 +1801,31 @@ def test_space_catalyst_iwm_relative_momentum_state_compares_iwm_to_spy():
     assert missing["state"] == "missing"
 
 
+def test_space_catalyst_arkx_ufo_relative_momentum_state_compares_quality_to_attention():
+    state = space_catalyst_arkx_ufo_relative_momentum_state(
+        {
+            "ARKX": {"momentum_20d_pct": 0.10},
+            "UFO": {"momentum_20d_pct": 0.04},
+        }
+    )
+    laggard = space_catalyst_arkx_ufo_relative_momentum_state(
+        {
+            "ARKX": {"momentum_20d_pct": 0.02},
+            "UFO": {"momentum_20d_pct": 0.05},
+        }
+    )
+    missing = space_catalyst_arkx_ufo_relative_momentum_state(
+        {"ARKX": {"momentum_20d_pct": 0.10}}
+    )
+
+    assert state["state"] == "quality_etf_leader"
+    assert state["quality_etf_momentum_20d_pct"] == 0.10
+    assert state["attention_etf_momentum_20d_pct"] == 0.04
+    assert state["quality_minus_attention_20d_pct"] == 0.06
+    assert laggard["state"] == "quality_etf_laggard"
+    assert missing["state"] == "missing"
+
+
 def test_space_catalyst_forward_target_atr_mult_official_trends_only():
     assert space_catalyst_forward_target_atr_mult("RKLB", "trend_long", 4.5) == 7.0
     assert space_catalyst_forward_target_atr_mult("ASTS", "trend_long", 4.5) == 7.0
@@ -1777,6 +1844,7 @@ def test_space_catalyst_observation_tickers_use_official_forward_pool():
         "RKLB",
     ]
     assert space_catalyst_observation_feature_tickers({}) == [
+        "ARKX",
         "ASTS",
         "BKSY",
         "IWM",
@@ -1785,6 +1853,7 @@ def test_space_catalyst_observation_tickers_use_official_forward_pool():
         "RDW",
         "RKLB",
         "SPY",
+        "UFO",
     ]
 
 
@@ -2160,6 +2229,90 @@ def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
     )
     assert plan["space_trend_high_close_intraday_thrust_trade_enabled"] is False
     assert plan["space_trend_high_close_intraday_thrust_alters_orders"] is False
+    assert plan["production_impact"]["alters_orders"] is False
+
+
+def test_space_catalyst_observation_slot_marks_arkx_ufo_breakout_complement():
+    snapshot = build_space_catalyst_observation_slot(
+        as_of="2026-05-11",
+        candidate_signals=[
+            {
+                "ticker": "RKLB",
+                "strategy": "breakout_long",
+                "entry_price": 10.0,
+                "stop_price": 8.0,
+                "target_price": 17.0,
+                "target_mult_used": 3.5,
+                "confidence_score": 0.88,
+                "trade_quality_score": 0.8,
+                "sizing": {
+                    "shares_to_buy": 100,
+                    "position_value_usd": 1000.0,
+                    "base_risk_pct": 0.01,
+                    "risk_pct": 0.01,
+                },
+            }
+        ],
+        features_by_ticker={
+            "ARKX": {"momentum_20d_pct": 0.10},
+            "ASTS": {"momentum_20d_pct": 0.0},
+            "BKSY": {"momentum_20d_pct": 0.0},
+            "LUNR": {"momentum_20d_pct": 0.0},
+            "PL": {"momentum_20d_pct": 0.0},
+            "RDW": {"momentum_20d_pct": 0.0},
+            "RKLB": {
+                "atr": 2.0,
+                "daily_close_location": 0.91,
+                "signal_day_ticker_open_close_return_pct": 0.06,
+                "momentum_20d_pct": 0.0,
+            },
+            "IWM": {"momentum_20d_pct": 0.0},
+            "SPY": {"momentum_20d_pct": 0.0},
+            "UFO": {"momentum_20d_pct": 0.04},
+        },
+        space_catalyst_shadow={
+            "tickers_by_segment": {"launch_lunar": ["RKLB"]},
+            "forward_hypothesis": SPACE_CATALYST_FORWARD_HYPOTHESIS,
+        },
+        space_event_source_profiles={},
+        space_government_contract_profiles={},
+        space_multi_event_depth_profiles={},
+        space_single_event_defense_profiles={},
+        space_attention_overlay_profiles={},
+        space_source_diversity_profiles={},
+        space_forward_replacement_profiles={},
+    )
+
+    plan = snapshot["blocked_trade_plans"][0]
+    assert snapshot["space_arkx_ufo_relative_momentum"]["state"] == (
+        "quality_etf_leader"
+    )
+    assert plan["space_signal_day_close_location"] == 0.91
+    assert plan["space_signal_day_open_close_return_pct"] == 0.06
+    assert plan["space_arkx_ufo_relative_state"] == "quality_etf_leader"
+    assert plan["space_arkx_momentum_20d_pct"] == 0.10
+    assert plan["space_ufo_momentum_20d_pct"] == 0.04
+    assert plan["space_arkx_excess_vs_ufo_20d_pct"] == 0.06
+    assert plan["space_arkx_ufo_breakout_complement_bucket"] is True
+    assert (
+        plan["space_arkx_ufo_breakout_complement_rule_version"]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_RULE_VERSION
+    )
+    assert (
+        plan["space_arkx_ufo_breakout_complement_quality_etf"]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_QUALITY_ETF
+    )
+    assert (
+        plan["space_arkx_ufo_breakout_complement_attention_etf"]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_ATTENTION_ETF
+    )
+    assert (
+        plan["space_arkx_ufo_breakout_complement_field"]
+        == SPACE_CATALYST_ARKX_UFO_BREAKOUT_COMPLEMENT_FIELD
+    )
+    assert plan["space_arkx_ufo_breakout_complement_trade_enabled"] is False
+    assert plan["space_arkx_ufo_breakout_complement_alters_orders"] is False
+    assert plan["trade_enabled"] is False
     assert plan["production_impact"]["alters_orders"] is False
 
 
@@ -3199,6 +3352,9 @@ def test_report_generator_renders_space_catalyst_without_orders():
                 "space_perfect_tqs_risk_scalar": 1.5,
                 "space_near_perfect_tqs_trend_risk_scalar": 1.1,
                 "space_peer_nonleader_breakout_risk_scalar": 0.0,
+                "space_arkx_ufo_breakout_complement_rule_version": (
+                    "space_high_close_thrust_arkx_ufo_breakout_complement_v1"
+                ),
                 "space_iwm_relative_leader_risk_scalar": 1.1,
                 "space_iwm_peer_leader_trend_risk_scalar": 1.15,
                 "space_launch_lunar_theme_risk_scalar": 1.1,
@@ -3295,6 +3451,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
                     "space_defense_budget_same_theme_winner_trend_bucket": True,
                     "space_perfect_tqs_bucket": False,
                     "space_near_perfect_tqs_trend_bucket": False,
+                    "space_arkx_ufo_breakout_complement_bucket": True,
                     "blocked_reason": "live_slots_zero_forward_gate_pending",
                 }
             ],
@@ -3336,6 +3493,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "perfect Space TQS @ 1.5x; "
         "near-perfect Space trend TQS @ 1.1x; "
         "peer-nonleader Space breakout @ 0.0x; "
+        "ARKX>UFO Space breakout complement observe-only; "
         "IWM>SPY Space risk @ 1.1x; "
         "IWM+peer-leader Space trend @ 1.15x; "
         "launch/lunar theme risk @ 1.1x; "
@@ -3405,6 +3563,7 @@ def test_report_generator_renders_space_catalyst_without_orders():
         "benchmark_breadth_trend=True"
         " benchmark_breadth_iwm_leader_trend=True"
         " defense_budget_same_theme_winner_trend=True"
+        " arkx_ufo_breakout=True"
     ) in report
     assert "Closed 10d: 0" in report
     assert "LUNR: fundamental_contract_regulatory" in report

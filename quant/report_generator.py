@@ -431,6 +431,13 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     "peer-nonleader Space breakout @ "
                     f"{peer_nonleader_breakout_scalar}x"
                 )
+            arkx_ufo_breakout_rule = forward.get(
+                "space_arkx_ufo_breakout_complement_rule_version"
+            )
+            if arkx_ufo_breakout_rule:
+                extra_policies.append(
+                    "ARKX>UFO Space breakout complement observe-only"
+                )
             iwm_relative_leader_scalar = forward.get(
                 "space_iwm_relative_leader_risk_scalar"
             )
@@ -996,6 +1003,11 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 if plan.get("space_trend_high_close_intraday_thrust_bucket")
                 else ""
             )
+            arkx_ufo_breakout_text = (
+                " arkx_ufo_breakout=True"
+                if plan.get("space_arkx_ufo_breakout_complement_bucket")
+                else ""
+            )
             peer_nonleader_breakout_text = (
                 " peer_nonleader_breakout=True"
                 if plan.get("space_peer_nonleader_breakout_bucket")
@@ -1036,7 +1048,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{defense_budget_same_theme_winner_trend_text}"
                 f"{perfect_tqs_text}"
                 f"{near_perfect_tqs_text}{high_close_intraday_thrust_text}"
-                f"{peer_nonleader_breakout_text} "
+                f"{arkx_ufo_breakout_text}{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )
     if space_catalyst_event_ledger and (

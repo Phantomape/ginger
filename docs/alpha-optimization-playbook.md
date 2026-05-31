@@ -80,9 +80,12 @@ Recent repository evidence supports this priority:
   candidates from old-window losers. `exp-20260529-020` added one incremental
   existing OHLCV field (`signal_day_ticker_open_close_return_pct >= 0.04`) on
   that accepted route, improving aggregate EV by `+0.0282` versus the
-  high-close baseline by removing one weak-thrust stopout. Treat both as
-  forward evidence buckets, not permission to retune Space price-action
-  thresholds or enable live Space slots.
+  high-close baseline by removing one weak-thrust stopout. `exp-20260531-022`
+  added an ARKX>UFO relative-momentum metadata bucket for governed
+  `breakout_long` high-close/thrust candidates, improving aggregate EV by
+  `+0.0753` versus `exp-20260529-020` with one RKLB incremental trade. Treat
+  these as forward evidence buckets, not permission to retune Space
+  price-action or ETF thresholds or enable live Space slots.
 - The 2026-05-28/29 candidate-pool scouts rejected VWAP reclaim, long-base
   breadth, industry-leadership high-close/no-core-overlap, sector/market
   breadth agreement, ticker accumulation-quality breakout, Form 4 role quality,
