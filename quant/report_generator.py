@@ -2071,6 +2071,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"SPY>50d={market.get('spy_above_50d_ma')}  |  "
             f"IWM-SPY 20d={market.get('iwm_minus_spy_ret20')}"
         )
+        consensus = alpha_score_market_regime_paper_sleeve.get("source_consensus_support") or {}
+        if consensus:
+            lines.append(
+                "  Source consensus: "
+                f"supported={consensus.get('supported_candidate_count', 0)}  |  "
+                f"sources={consensus.get('source_counts', {})}  |  "
+                f"notional=${consensus.get('supported_paper_notional_usd', 0.0):,.0f}"
+            )
         lines.append(
             f"  Candidates: {alpha_score_market_regime_paper_sleeve.get('candidate_count', 0)}  |  "
             f"Rejected: {alpha_score_market_regime_paper_sleeve.get('rejected_candidate_count', 0)}  |  "
@@ -2104,6 +2112,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"alpha={candidate.get('alpha_score')} "
                 f"rank_pct={candidate.get('alpha_score_rank_pct')} "
                 f"bucket={candidate.get('alpha_score_bucket')} "
+                f"consensus={candidate.get('source_consensus_support_applied', False)} "
                 f"avg$vol={candidate.get('avg_dollar_volume_20d')} "
                 f"notional={notional_text} (paper only)"
             )

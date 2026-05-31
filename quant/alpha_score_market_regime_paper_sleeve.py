@@ -2,9 +2,11 @@
 
 This adapter promotes the accepted exp-20260531-021 replay lead into a shared
 production-visible observation boundary. It keeps the alpha-score source,
-market gate, hold, and $4,000 paper notional fixed. It emits only paper
-candidates and ledger state; it never emits live orders or changes core signal
-generation, ranking, sizing, exits, heat, LLM, or news behavior.
+market gate, hold, and $4,000 base paper notional fixed. The accepted
+exp-20260531-024 source-consensus support is metadata plus paper-notional
+only. It emits only paper candidates and ledger state; it never emits live
+orders or changes core signal generation, ranking, sizing, exits, heat, LLM,
+or news behavior.
 """
 
 from __future__ import annotations
@@ -70,6 +72,7 @@ RULE_VERSION = "alpha_score_market_regime_safe_notional_shared_v1"
 SOURCE_RULE_VERSION = "full_universe_alpha_score_top1_20d_v1"
 MARKET_REGIME_RULE_VERSION = "alpha_score_market_regime_risk_appetite_v1"
 SAFE_NOTIONAL_RULE_VERSION = "full_universe_alpha_score_market_regime_safe_notional_0p40_v1"
+SOURCE_CONSENSUS_RULE_VERSION = "alpha_score_market_regime_source_consensus_support_1p25_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "alpha_score_market_regime_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -113,6 +116,12 @@ DEFAULT_CONFIG = {
     "spy_ma_days": 50,
     "market_ret_days": 20,
     "min_iwm_minus_spy_ret20": 0.0,
+    "source_consensus_enabled": True,
+    "source_consensus_notional_scalar": 1.25,
+    "source_consensus_sources": [
+        "FINRA_IWM_CONFIRMED_PAPER",
+        "VOLUME_BREADTH_BREAKOUT_PAPER",
+    ],
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "forward_gate_min_closed_trades": 20,
     "forward_gate_positive_net_pnl": True,
@@ -186,6 +195,7 @@ def empty_alpha_score_market_regime_paper_sleeve_snapshot(
         "source_rule_version": SOURCE_RULE_VERSION,
         "market_regime_rule_version": MARKET_REGIME_RULE_VERSION,
         "safe_notional_rule_version": SAFE_NOTIONAL_RULE_VERSION,
+        "source_consensus_rule_version": SOURCE_CONSENSUS_RULE_VERSION,
         "asof_date": _date10(as_of),
         "generated_at": utc_now_iso(),
         "enabled": False,
@@ -204,6 +214,12 @@ def empty_alpha_score_market_regime_paper_sleeve_snapshot(
         "market_regime_context": {"passed": False, "status": reason},
         "candidate_universe": {"status": reason, "ticker_count": 0},
         "ranking_surface": {"status": reason, "ranked_count": 0},
+        "source_consensus_support": {
+            "rule_version": SOURCE_CONSENSUS_RULE_VERSION,
+            "enabled": False,
+            "supported_candidate_count": 0,
+            "source_counts": {},
+        },
         "forward_paper_gate": {"passed": False, "status": "blocked", "reasons": [reason]},
         "production_impact": _production_impact(),
         "error": reason,
@@ -216,6 +232,7 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
     features_by_ticker: dict[str, Any] | None = None,
     ohlcv_by_ticker: dict[str, Any] | None = None,
     candidate_universe: dict[str, Any] | list[str] | None = None,
+    source_consensus_snapshots: list[dict[str, Any]] | None = None,
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
     state: dict[str, Any] | None = None,
@@ -289,6 +306,10 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         if isinstance(row, dict)
     }
     universe = _normalise_candidate_universe(candidate_universe, rows_by_ticker)
+    source_consensus = build_alpha_score_source_consensus_map(
+        source_consensus_snapshots,
+        as_of=as_of_date,
+    )
     candidates, rejected, ranking = build_alpha_score_market_regime_candidates(
         as_of=as_of_date,
         features_by_ticker=features_by_ticker,
@@ -297,6 +318,7 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         market_regime_context=market,
         open_position_tickers=active_tickers,
         pending_tickers=pending_tickers,
+        source_consensus_by_key=source_consensus,
         config=cfg,
     )
 
@@ -331,6 +353,7 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         "source_rule_version": SOURCE_RULE_VERSION,
         "market_regime_rule_version": MARKET_REGIME_RULE_VERSION,
         "safe_notional_rule_version": SAFE_NOTIONAL_RULE_VERSION,
+        "source_consensus_rule_version": SOURCE_CONSENSUS_RULE_VERSION,
         "replacement_value_rule_version": REPLACEMENT_VALUE_RULE_VERSION,
         "asof_date": as_of_date,
         "generated_at": utc_now_iso(),
@@ -358,6 +381,11 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
             "ticker_count": len(universe["tickers"]),
         },
         "ranking_surface": ranking,
+        "source_consensus_support": _source_consensus_support_summary(
+            candidates,
+            source_consensus,
+            cfg,
+        ),
         "candidates": deepcopy(candidates),
         "rejected_candidates": deepcopy(rejected[:50]),
         "new_pending_entries": deepcopy(new_pending),
@@ -388,6 +416,7 @@ def build_alpha_score_market_regime_candidates(
     market_regime_context: dict[str, Any] | None = None,
     open_position_tickers: set[str] | None = None,
     pending_tickers: set[str] | None = None,
+    source_consensus_by_key: dict[tuple[str, str], set[str]] | None = None,
     config: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     cfg = _config(config)
@@ -450,6 +479,11 @@ def build_alpha_score_market_regime_candidates(
                 }
             )
             continue
+        _apply_source_consensus_support(
+            candidate,
+            source_consensus_by_key or {},
+            cfg,
+        )
         reasons = []
         if market.get("passed") is not True:
             reasons.append("market_regime_gate_failed")
@@ -482,6 +516,108 @@ def build_alpha_score_market_regime_candidates(
         top_decile_count=top_decile_count,
     )
     return accepted, rejected, ranking
+
+
+def build_alpha_score_source_consensus_map(
+    snapshots: list[dict[str, Any]] | None,
+    *,
+    as_of: str,
+) -> dict[tuple[str, str], set[str]]:
+    as_of_date = _date10(as_of)
+    keys: dict[tuple[str, str], set[str]] = {}
+    for snapshot in snapshots or []:
+        if not isinstance(snapshot, dict):
+            continue
+        source_name = str(snapshot.get("sleeve") or snapshot.get("name") or "").upper()
+        if source_name not in set(DEFAULT_CONFIG["source_consensus_sources"]):
+            continue
+        for row in _source_consensus_candidate_rows(snapshot):
+            key = _source_consensus_key(row)
+            if key is None or key[0] != as_of_date:
+                continue
+            keys.setdefault(key, set()).add(source_name)
+    return keys
+
+
+def _source_consensus_candidate_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for row in snapshot.get("candidates") or []:
+        if isinstance(row, dict):
+            rows.append(row)
+    for entry_key in ("new_pending_entries", "filled_entries"):
+        for row in snapshot.get(entry_key) or []:
+            if not isinstance(row, dict):
+                continue
+            candidate = row.get("candidate")
+            rows.append(candidate if isinstance(candidate, dict) else row)
+    return rows
+
+
+def _source_consensus_key(row: dict[str, Any]) -> tuple[str, str] | None:
+    ticker = str(row.get("ticker") or "").upper()
+    raw_date = row.get("signal_date") or row.get("date") or row.get("created_asof")
+    if not ticker or not raw_date:
+        return None
+    return _date10(str(raw_date)), ticker
+
+
+def _apply_source_consensus_support(
+    candidate: dict[str, Any],
+    source_consensus_by_key: dict[tuple[str, str], set[str]],
+    config: dict[str, Any],
+) -> None:
+    key = _source_consensus_key(candidate)
+    sources = sorted(source_consensus_by_key.get(key, set())) if key else []
+    enabled = bool(config.get("source_consensus_enabled", True))
+    support_applied = enabled and bool(sources)
+    base_notional = float(config["paper_notional_usd"])
+    scalar = float(config["source_consensus_notional_scalar"]) if support_applied else 1.0
+    supported_notional = round(base_notional * scalar, 2)
+    candidate.update(
+        {
+            "source_consensus_rule_version": SOURCE_CONSENSUS_RULE_VERSION,
+            "source_consensus_support_applied": support_applied,
+            "source_consensus_sources": sources,
+            "source_consensus_notional_scalar": _round(scalar, 6),
+            "source_consensus_paper_notional_usd": supported_notional,
+            "source_consensus_known_at": (
+                "after_signal_date_close_before_next_open_paper_entry"
+            ),
+        }
+    )
+    if support_applied:
+        candidate["paper_notional_usd"] = supported_notional
+        candidate["intended_notional"] = supported_notional
+
+
+def _source_consensus_support_summary(
+    candidates: list[dict[str, Any]],
+    source_consensus_by_key: dict[tuple[str, str], set[str]],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    supported = [
+        row for row in candidates if row.get("source_consensus_support_applied")
+    ]
+    source_counts: dict[str, int] = {}
+    for row in supported:
+        for source_name in row.get("source_consensus_sources") or []:
+            source_counts[source_name] = source_counts.get(source_name, 0) + 1
+    base_notional = float(config["paper_notional_usd"])
+    scalar = float(config["source_consensus_notional_scalar"])
+    return {
+        "rule_version": SOURCE_CONSENSUS_RULE_VERSION,
+        "enabled": bool(config.get("source_consensus_enabled", True)),
+        "source_names": list(config.get("source_consensus_sources") or []),
+        "source_key_count": len(source_consensus_by_key),
+        "candidate_count": len(candidates),
+        "supported_candidate_count": len(supported),
+        "source_counts": dict(sorted(source_counts.items())),
+        "base_paper_notional_usd": base_notional,
+        "notional_scalar": scalar,
+        "supported_paper_notional_usd": round(base_notional * scalar, 2),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
 
 def build_alpha_score_market_regime_context(

@@ -99,8 +99,44 @@ def test_alpha_score_market_regime_snapshot_admits_top_candidate_without_orders(
     assert candidate["alpha_score_bucket"] == "top_decile"
     assert candidate["intended_notional"] == 4_000.0
     assert candidate["safe_notional_scalar"] == 0.4
+    assert candidate["source_consensus_support_applied"] is False
+    assert candidate["source_consensus_paper_notional_usd"] == 4_000.0
     assert candidate["trade_enabled"] is False
     assert candidate["alters_orders"] is False
+
+
+def test_source_consensus_support_scales_default_off_paper_notional_only():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][60]["date"]
+
+    snapshot = build_alpha_score_market_regime_paper_sleeve_snapshot(
+        as_of=as_of,
+        features_by_ticker=_features(),
+        ohlcv_by_ticker=ohlcv,
+        candidate_universe=list(_features()),
+        source_consensus_snapshots=[
+            {
+                "sleeve": "VOLUME_BREADTH_BREAKOUT_PAPER",
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            }
+        ],
+        state=empty_alpha_score_market_regime_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    support = snapshot["source_consensus_support"]
+    assert candidate["ticker"] == "WIN"
+    assert candidate["source_consensus_support_applied"] is True
+    assert candidate["source_consensus_sources"] == ["VOLUME_BREADTH_BREAKOUT_PAPER"]
+    assert candidate["source_consensus_notional_scalar"] == 1.25
+    assert candidate["safe_paper_notional_usd"] == 4_000.0
+    assert candidate["intended_notional"] == 5_000.0
+    assert snapshot["new_pending_entries"][0]["notional"] == 5_000.0
+    assert support["supported_candidate_count"] == 1
+    assert support["source_counts"] == {"VOLUME_BREADTH_BREAKOUT_PAPER": 1}
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
 
 
 def test_market_regime_gate_blocks_when_iwm_lags_spy():
@@ -169,6 +205,10 @@ def test_default_off_alpha_attribution_includes_alpha_score_market_regime_surfac
             "candidate_count": 1,
             "pending_count": 1,
             "ranking_surface": {"ranked_count": 13, "top_decile_count": 1},
+            "source_consensus_support": {
+                "supported_candidate_count": 1,
+                "source_counts": {"FINRA_IWM_CONFIRMED_PAPER": 1},
+            },
             "candidates": [{"safe_paper_notional_usd": 4_000.0}],
             "forward_paper_gate": {
                 "passed": False,
@@ -186,3 +226,4 @@ def test_default_off_alpha_attribution_includes_alpha_score_market_regime_surfac
     assert extra["source_rule_version"] == SOURCE_RULE_VERSION
     assert extra["safe_notional_usd"] == 4_000.0
     assert extra["top_decile_count"] == 1
+    assert extra["source_consensus_supported"] == 1

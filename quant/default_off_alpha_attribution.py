@@ -310,6 +310,9 @@ def build_default_off_alpha_attribution_report(
                 "top_decile_count": (
                     ((alpha_score_market_regime_paper_sleeve or {}).get("ranking_surface") or {}).get("top_decile_count")
                 ),
+                "source_consensus_supported": (
+                    ((alpha_score_market_regime_paper_sleeve or {}).get("source_consensus_support") or {}).get("supported_candidate_count")
+                ),
             },
         ),
         _surface_summary(

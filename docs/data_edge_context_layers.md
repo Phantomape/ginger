@@ -444,6 +444,11 @@ Evidence boundary:
 - `exp-20260531-023` promoted the route into a shared default-off adapter with
   focused parity tests. It did not change score weights, thresholds, top-N,
   hold period, live watchlists, or order paths.
+- `exp-20260531-025` added the accepted source-consensus support from
+  `exp-20260531-024` to the same shared adapter: when the selected alpha-score
+  candidate also appears in accepted FINRA/IWM or VBB paper sources on the same
+  signal date, only the default-off paper notional is scaled `1.25x`
+  (`$4,000` -> `$5,000`). This remains metadata and paper ledger state only.
 
 Inputs:
 
@@ -457,8 +462,9 @@ Adapter semantics:
 - fixed full-universe PIT `alpha_score` top-decile/top-1 source;
 - stock-only ETF exclusions and `avg_dollar_volume_20d >= $40m`;
 - SPY close above its 50-day average and `IWM 20d return - SPY 20d return >= 0`;
-- fixed `$4,000` paper notional, next-open paper entry, and 20-trading-day
-  paper exit;
+- fixed `$4,000` base paper notional, accepted source-consensus `1.25x` paper
+  support from same-day VBB/FINRA snapshots when present, next-open paper entry,
+  and 20-trading-day paper exit;
 - default-off `pending/open/closed` paper ledger, replacement-value report,
   forward gate, default-off attribution surface, and human-report block.
 

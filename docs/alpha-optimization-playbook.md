@@ -78,7 +78,11 @@ Recent repository evidence supports this priority:
   cost-adjusted replacement value, and regime buckets before any live ranking
   change. The accepted route is narrow: top-decile/top-1 with SPY above 50d,
   IWM 20d return at least SPY 20d return, 20-day hold, and `$4,000`
-  default-off paper notional only.
+  default-off base paper notional only. `exp-20260531-025` added the only
+  retained increment so far: `1.25x` default-off paper-notional support when
+  the same ticker/signal date also appears in accepted FINRA/IWM or VBB paper
+  sources. Treat this as a forward-evidence bucket, not permission to retune
+  alpha_score thresholds, weights, top-N, hold, market gate, or notional.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper
@@ -431,6 +435,11 @@ Current evidence:
   `ALPHA_SCORE_MARKET_REGIME_PAPER`, a shared default-off production-visible
   adapter. It did not change score weights, thresholds, top-N, hold period, or
   live/default orders.
+- `exp-20260531-025` promoted the positive `exp-20260531-024` source-consensus
+  replay into that shared adapter. The only added behavior is default-off
+  paper-notional support (`$4,000` -> `$5,000`) when the selected alpha-score
+  candidate also appears in accepted FINRA/IWM or VBB paper sources on the same
+  signal date. It remains observe-only.
 
 Do next:
 
@@ -449,7 +458,8 @@ Do not:
 
 - promote a raw top-1 `alpha_score` sleeve from aggregate PnL alone;
 - retune the accepted `ALPHA_SCORE_MARKET_REGIME_PAPER` thresholds, top-N,
-  market gate, hold period, or `$4,000` notional on the same frozen windows;
+  market gate, hold period, source-consensus scalar, or `$4,000` base notional
+  on the same frozen windows;
 - promote or retune raw `alpha_score_components` as gates/weights on these
   frozen windows without new evidence;
 - tune score weights on the same frozen windows without a pre-registered
