@@ -404,11 +404,18 @@ Current evidence:
   the same top-1/day route. It improved all three windows and passed
   concentration, but failed the drawdown guardrail, so regime gating is a
   useful clue rather than an accepted sleeve.
+- `exp-20260531-017` decomposed the same full-universe PIT sample by existing
+  `alpha_score_components`. No component produced a clean monotonic 5d ladder:
+  breadth alignment and relative strength had top-bottom edge without
+  monotonicity, theme participation inverted, and expectation/post-earnings
+  components were effectively constant. This weakens raw component-gate and
+  score-weight tuning as the next step.
 
 Do next:
 
-- decompose the full-universe score into component attribution by regime,
-  sector, liquidity, and horizon;
+- only continue full-universe ranking work if it adds replacement value,
+  regime/sector/liquidity conditioning, or a new production-visible information
+  source beyond the current raw components;
 - test whether top-score rows have positive replacement value versus the exact
   same-day core or default-off paper candidate they would displace;
 - add cost-adjusted rank deltas before any top-N paper adapter;
@@ -418,6 +425,8 @@ Do next:
 Do not:
 
 - promote a raw top-1 `alpha_score` sleeve from aggregate PnL alone;
+- promote or retune raw `alpha_score_components` as gates/weights on these
+  frozen windows without new evidence;
 - tune score weights on the same frozen windows without a pre-registered
   component hypothesis;
 - use filled-trade-only rank attribution to claim the surface works.
