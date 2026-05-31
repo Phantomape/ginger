@@ -400,6 +400,10 @@ Current evidence:
 - `exp-20260531-006` scored the full daily universe and found a small pooled
   5d top-bottom quintile spread with adequate observations, but no monotonic
   ladder and only `2/3` positive windows.
+- `exp-20260531-016` added a production-visible broad risk-appetite gate to
+  the same top-1/day route. It improved all three windows and passed
+  concentration, but failed the drawdown guardrail, so regime gating is a
+  useful clue rather than an accepted sleeve.
 
 Do next:
 

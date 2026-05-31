@@ -79,10 +79,14 @@ quintile ladder. Follow-up attempts to make the surface promotable via
 same-ticker cooldown (`exp-20260531-007`), cost/liquidity state (`008`),
 drawdown/volatility resilient ranking (`009`), breadth alignment (`011`), and
 low-volume mosaic state (`014`) were all rejected for some combination of
-window regression, excessive drawdown drift, and concentration. The next valid
-work is component decomposition, regime buckets, cost-adjusted replacement
-value, and same-day displacement analysis, not another raw top-N or weight
-tune.
+window regression, excessive drawdown drift, and concentration. The latest
+risk-appetite regime gate (`exp-20260531-016`) was the cleanest variant:
+SPY above its 50-day average plus IWM 20d return at least SPY 20d return
+improved all three windows (`EV +4.1938`, PnL `+$81,926.30`) and passed
+concentration, but still failed because max drawdown drift reached `+1.06 pp`
+against the `+0.50 pp` guardrail. The next valid work is drawdown-aware
+replacement value, regime-conditioned risk controls, and same-day displacement
+analysis, not another raw top-N or score-weight tune.
 
 Event and peer-transfer scouts also failed to produce a promotable relation.
 `exp-20260531-002` found Form 4 purchase pressure was positive versus core but
