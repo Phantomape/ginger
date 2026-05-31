@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-05-30.
+Last refreshed: 2026-05-31.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -64,6 +64,16 @@ Recent repository evidence supports this priority:
   adapter. Treat it like Fundamental Growth RS and VBB: forward replacement
   rows first, no FINRA score / IWM threshold / cooldown / top-N retunes on the
   same frozen windows.
+- Full-universe ranking is promising as attribution, not yet a trade queue.
+  `exp-20260531-005` showed a top-1 `alpha_score` candidate pool can produce
+  large aggregate historical paper gains, but it failed promotion because the
+  ladder was not robust enough for a live-facing source. The follow-up
+  full-universe quantile attribution (`exp-20260531-006`) found a small pooled
+  top-vs-bottom 5d edge (`+0.556 pp`) across `3,551` observations and `2/3`
+  positive windows, but no clean monotonic quintile ladder. Treat
+  `alpha_score` as a ranking surface that needs component decomposition,
+  cost-adjusted replacement value, and regime buckets before any top-N paper
+  adapter or live ranking change.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper
@@ -87,13 +97,27 @@ Recent repository evidence supports this priority:
   monitoring context rather than a rule.
 - Expectation/PEAD/residual-leadership work is still mostly attribution and
   measurement repair. The latest useful result is better PIT joins and ranking
-  replacement attribution, not a promoted live rule.
+  replacement attribution, not a promoted live rule. The 2026-05-31
+  pre-earnings surprise/RS experiments were either outright negative or
+  high-variance positive with a `late_strong` regression and drawdown breach;
+  pre-earnings run-up needs richer expectation-quality fields or forward
+  replacement rows, not another imminent-earnings threshold or hold-period
+  sweep.
 - Form 4 remains watchlist material, not a clean candidate-pool lead. The
   latest multi-filer / owner-count replay (`exp-20260530-011`) was positive
   versus core but failed replacement value versus the raw Form 4 queue,
   materiality, sample, window coverage, and concentration guards. Do not
   promote owner-count alone or retry adjacent Form 4 role/owner-count fields
   without forward replacement rows or a new ownership-intensity mechanism.
+  The 2026-05-31 purchase-value-versus-liquidity scout did not change that
+  prior.
+- Same-ticker SEC event recurrence is now frozen as a standalone event-graph
+  idea. Same-family bursts, first/follow-on recurrence, same-ticker
+  cross-family transitions, small two-ticker bursts, sector-event breadth
+  transfer, and exact-industry Item 2.02 peer transfer all failed to produce a
+  promotable relation. Future event work must use a stronger relation source:
+  characteristic-similarity peers, source overlap, theme propagation, or
+  semantic fact/tone direction with audited retrieval traces.
 - State-surface has too many accepted paper scalars. More nearby
   queue/profile/notional mining now requires a hard >10% aggregate EV lift or
   should be rolled back.
@@ -348,20 +372,51 @@ Do not:
 - add PEAD live ranking until production-visible fields and forward outcomes
   exist.
 
-Local update: `exp-20260531-003` tested a free earnings-snapshot
-`earnings_imminent_surprise_rs_candidate_source_v1` using the 1-7 day
-pre-earnings window, durable positive historical surprise behavior, liquid
-trend/RS confirmation, top-1/day, and a fixed 10-trading-day paper exit. It
-was strongly positive in aggregate (`+3.3705` EV / `+$67,089.07`) but failed
-Gate 4 because `late_strong` regressed (`-1.2475` EV / `-$16,159.23`) and max
-drawdown drift was too high. `exp-20260531-004` then held that candidate
-source fixed and changed only the lifecycle to exit before the earnings event.
-That also failed: aggregate EV fell `-0.2235`, `late_strong` still regressed
-(`-0.6113` EV / `-$4,136.93`), and max drawdown drift stayed too high
-(`+1.90 pp`). Do not retry nearby imminent-earnings snapshot thresholds,
-top-N, or pre-event hold/exit variants on the same frozen windows without
-closed forward replacement-value rows or a materially richer
-expectation-quality field.
+2026-05-31 update: the pre-earnings direction produced useful negative
+evidence. `exp-20260531-001` rejected a pre-earnings surprise + 30d EPS
+revision + RS source outright. `exp-20260531-003` found large aggregate
+historical paper gains for an imminent 1-7 day surprise/RS source, but failed
+Gate 4 because `late_strong` regressed and drawdown drift was too high.
+`exp-20260531-004` then changed only the lifecycle to exit before the earnings
+event; it also failed. Do not retry nearby imminent-earnings snapshot
+thresholds, top-N, revision add-ons, or pre-event hold/exit variants on the
+same frozen windows. A valid retry needs multi-season forward rows,
+replacement value, and a materially richer expectation-quality field such as
+revision breadth, analyst-count velocity, guidance text direction, or
+surprise durability by regime.
+
+### 4a. Continuous Ranking Surface
+
+Mechanism: a broad cross-sectional `alpha_score` may contain useful ordering
+information, but filled-trade attribution is biased because current core
+selection already concentrates entries in the top buckets.
+
+Current evidence:
+
+- `exp-20260530-022` showed filled core trades are rank-degenerate, so entry
+  attribution cannot test whether low-score names underperform.
+- `exp-20260531-005` tested top-1/day full-universe `alpha_score` routing and
+  was historically positive but rejected as a candidate-pool promotion.
+- `exp-20260531-006` scored the full daily universe and found a small pooled
+  5d top-bottom quintile spread with adequate observations, but no monotonic
+  ladder and only `2/3` positive windows.
+
+Do next:
+
+- decompose the full-universe score into component attribution by regime,
+  sector, liquidity, and horizon;
+- test whether top-score rows have positive replacement value versus the exact
+  same-day core or default-off paper candidate they would displace;
+- add cost-adjusted rank deltas before any top-N paper adapter;
+- use `alpha_score` as a read-only triage field until the ladder is monotonic
+  or a narrower production-visible component explains the spread.
+
+Do not:
+
+- promote a raw top-1 `alpha_score` sleeve from aggregate PnL alone;
+- tune score weights on the same frozen windows without a pre-registered
+  component hypothesis;
+- use filled-trade-only rank attribution to claim the surface works.
 
 ### 4b. Pattern-Name Candidate Pools
 
@@ -520,6 +575,12 @@ and long financial reports create both retrieval-location and arithmetic-error
 failure modes. Therefore financial RAG should produce audited fields and
 failure buckets, not direct trade instructions.
 
+Time-series augmented generation extends the same lesson to numeric market
+work: the LLM should choose tools, assemble evidence, and verify calculations,
+while deterministic code owns the time-series computation. For Ginger, this
+means SEC, earnings, and price-derived fields should persist both the evidence
+trace and the tool/execution trace before they can be considered for Gate 4.
+
 Useful fields:
 
 - `retrieval_strategy_bucket`
@@ -534,12 +595,19 @@ Useful fields:
 - `longitudinal_tracking_failure_bucket`
 - `calculation_verification_status`
 - `evidence_table_span_ids`
+- `time_series_tool_call_id`
+- `tool_selection_accuracy_bucket`
+- `tool_result_validation_status`
+- `price_series_asof_policy_id`
+- `numeric_hallucination_bucket`
 
 Engineering rule: no retrieval trace means no Gate 4 trading field.
 
 Sources:
 
 - FinAgent-RAG, 2026-05-06: <https://arxiv.org/abs/2605.05409>
+- Time Series Augmented Generation for Financial Applications, 2026-04-21:
+  <https://arxiv.org/abs/2604.19633>
 - Rethinking Retrieval in financial LLM systems, 2025: <https://arxiv.org/abs/2511.18177>
 - Financial-report RAG with reranking, 2026: <https://arxiv.org/abs/2603.16877>
 - Document-level numerical reasoning across financial-report tables, 2026:
@@ -556,6 +624,13 @@ survivorship, split timing, universe handling, and execution semantics are
 often missing or incomparable. Ginger should borrow the audit checklist, not
 delegate trading authority to agents.
 
+Agent workflows are useful as research operators: they can propose hypotheses,
+retrieve source packets, run attribution scripts, and write a replayable
+evidence ledger. They are not strategy controllers. Any agent-produced
+recommendation must land as one of three artifacts before it matters:
+schema-bound context field, default-off paper candidate, or deterministic
+shared policy.
+
 Useful fields:
 
 - `agent_decision_stage`
@@ -566,6 +641,10 @@ Useful fields:
 - `agent_universe_pit_policy_id`
 - `agent_execution_semantics_bucket`
 - `agent_reproducibility_tier`
+- `agent_tool_trace_id`
+- `agent_hypothesis_ticket_id`
+- `agent_evidence_packet_hash`
+- `agent_replay_command_hash`
 
 Engineering rule: an LLM agent can propose hypotheses or classify evidence,
 but a trade-impacting action must still become a shared, replayable policy and
@@ -587,6 +666,10 @@ Recent peer-information and graph-learning work points to two practical
 directions: characteristic-similarity peer groups and early-peer earnings
 transfer. These are more actionable than another price-pattern pool because
 they create a testable "who should react to whom" relation before the trade.
+Characteristic-similarity graphs are especially relevant after the local SEC
+event-graph failures: same-ticker recurrence was too weak, while edges built
+from fundamentals, liquidity, momentum, sector/theme, analyst coverage, or
+customer/supplier relations may encode a real propagation channel.
 
 Useful fields:
 
@@ -601,6 +684,11 @@ Useful fields:
 - `peer_event_age_trading_days`
 - `peer_transfer_strength_score`
 - `peer_relation_source_bucket`
+- `peer_similarity_method_id`
+- `peer_similarity_window_id`
+- `peer_edge_weight`
+- `peer_edge_sparsification_bucket`
+- `peer_relation_pit_valid_flag`
 
 Local update: `exp-20260530-006` tested the simplest raw SEC filing interaction
 field, `sec_same_event_family_burst_count_v1`, and rejected it. The sample was
@@ -620,6 +708,10 @@ positive share), but average 10d PnL lift versus no-recent-prior filings was
 Future event-graph work needs a relation structure beyond same-ticker filing
 recurrence or family transitions themselves, such as sector/theme propagation,
 source overlap, or characteristic-similarity peer links.
+
+Additional 2026-05-30 evidence extended the freeze: exact-industry Item 2.02
+peer transfer, sector-event breadth transfer, and small same-family SEC bursts
+also failed. That makes relation quality the bottleneck, not event count.
 
 Sources:
 
@@ -652,6 +744,11 @@ liquidity regimes. Both reinforce the same local rule: promote fields that
 describe where predictability should exist, not generic filters that assume it
 exists everywhere.
 
+Local evidence now matches this: pre-earnings surprise/RS and full-universe
+`alpha_score` can look strong in aggregate while failing by window, drawdown,
+or monotonicity. The practical next step is not more top-N selection; it is
+state-conditioned attribution that says when the score is allowed to matter.
+
 Useful fields:
 
 - `predictability_mosaic_bucket`
@@ -667,6 +764,9 @@ Useful fields:
 - `friction_gate_passed`
 - `constraint_elasticity_bucket`
 - `llm_signal_role`
+- `rank_score_validity_regime_bucket`
+- `full_universe_rank_ladder_status`
+- `replacement_candidate_score_gap`
 
 Engineering rule: regime-aware allocation belongs first in read-only
 attribution and default-off sleeves. A live sizing or cap change must be a
@@ -689,6 +789,11 @@ the backtest. This is especially important for high-turnover paper sleeves.
 The accepted VBB cost/liquidity support is the local proof point: a simple
 production-visible liquidity/range state can be a cleaner allocation field than
 another alpha-shape threshold.
+
+For ranking and candidate-pool sleeves, the cost field should be computed
+against the displaced alternative. A candidate that is positive versus cash but
+negative after spread/slippage versus the same-day core candidate is not an
+activation candidate.
 
 Useful fields:
 
@@ -745,12 +850,18 @@ production-visible field:
 - FINRA/IWM/cooldown/top-N retunes before the accepted default-off FINRA sleeve
   has closed forward replacement-value rows or a new PIT borrow-cost /
   availability field;
+- raw full-universe `alpha_score` top-N promotion or score-weight tuning before
+  component-level attribution shows a monotonic ladder, regime stability, and
+  cost-adjusted replacement value;
+- imminent pre-earnings surprise/RS threshold, revision, top-N, hold-period, or
+  pre-event-exit retries on the same frozen windows;
 - VWAP-reclaim, long-base, industry-leadership, sector-breadth-agreement, or
   accumulation-quality candidate-pool retries on the same OHLCV-only frozen
   sample;
 - raw SEC same-family burst, first/follow-on, same-ticker cross-family
-  transition, or Form 4 owner-count retries without a richer relation or
-  ownership-intensity mechanism;
+  transition, sector-event breadth transfer, exact-industry Item 2.02 peer
+  transfer, small same-family burst, or Form 4 owner-count retries without a
+  richer relation or ownership-intensity mechanism;
 - simple pre-entry high-confidence catalyst freshness or source/category
   diversity retries on the `exp-20260530-014` core trade rows without a
   materially richer catalyst-quality field or forward replacement-value

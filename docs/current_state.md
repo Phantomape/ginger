@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-30.
+Last updated: 2026-05-31.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -47,6 +47,60 @@ Latest accepted three-window artifact:
 Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
+
+## 2026-05-31 Experiment Consolidation
+
+Today's experiment set produced no accepted strategy, live-order, ranking,
+sizing, exit, LLM/news, or backtest-path change. The durable conclusion is that
+several apparently large historical paper gains are still not activation-ready
+because the evidence is concentrated, window-unstable, or not monotonic enough.
+
+Pre-earnings / imminent-earnings surprise and RS work is frozen on the current
+sample. `exp-20260531-001` rejected the 22-45 day pre-earnings
+surprise/revision/RS pool outright (`EV -0.1496`, PnL `-$4,694.18`) due
+negative aggregate results, window regressions, drawdown drift, and
+concentration. `exp-20260531-003` found a large aggregate gain for imminent
+1-7 day earnings surprise/RS candidates (`EV +3.3705`, PnL `+$67,089.07`) but
+still rejected it because `late_strong` regressed and drawdown drift was too
+high. `exp-20260531-004` changed only the lifecycle to exit before the
+earnings event; it also failed (`EV -0.2235`) with window regressions and
+drawdown drift. Do not retry nearby imminent-earnings thresholds, top-N,
+revision add-ons, or pre-event hold/exit variants on these frozen windows
+without multi-season forward rows, replacement value, and a richer
+expectation-quality field.
+
+Full-universe `alpha_score` remains a read-only ranking surface, not a
+candidate-pool promotion. `exp-20260531-005` showed raw top-1 routing can look
+very profitable in aggregate (`EV +6.6893`, PnL `+$125,182.69`), but failed on
+drawdown and concentration. `exp-20260531-006` then scored the full daily
+universe and found a small pooled top-vs-bottom 5d edge across `3,551`
+observations (`+0.556 pp`, `2/3` positive windows), but no clean monotonic
+quintile ladder. Follow-up attempts to make the surface promotable via
+same-ticker cooldown (`exp-20260531-007`), cost/liquidity state (`008`),
+drawdown/volatility resilient ranking (`009`), breadth alignment (`011`), and
+low-volume mosaic state (`014`) were all rejected for some combination of
+window regression, excessive drawdown drift, and concentration. The next valid
+work is component decomposition, regime buckets, cost-adjusted replacement
+value, and same-day displacement analysis, not another raw top-N or weight
+tune.
+
+Event and peer-transfer scouts also failed to produce a promotable relation.
+`exp-20260531-002` found Form 4 purchase pressure was positive versus core but
+not promotable because it did not improve the raw Form 4 queue, had only `7`
+selected event trades, and failed positive-PnL HHI concentration. SEC Item
+2.02 characteristic-similarity peer transfer (`exp-20260531-010`), same-sector
+peer shocks (`012`), same-industry peer shocks (`013`), and SEC Item 8.01
+inverse paper (`015`) were all rejected due sample, concentration, drawdown, or
+window-stability failures. Future event/peer work needs a stronger relation
+source with forward replacement-value evidence; do not promote same-sector,
+same-industry, characteristic-similarity Item 2.02, or Item 8.01 inverse
+candidate pools from today's frozen-window evidence.
+
+Regression status for this consolidation run: cache/temp directories were
+cleaned before the run, and full unit tests passed (`1026 passed in 44.00s`).
+No bug fix, strategy behavior change, live-order change, ranking change,
+sizing change, exit change, LLM/news boundary change, or backtest-path change
+was required by this regression pass.
 
 ## 2026-05-30 Experiment Consolidation
 
