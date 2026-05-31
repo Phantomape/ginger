@@ -208,6 +208,10 @@ def main():
     from default_off_alpha_attribution import (
         build_default_off_alpha_attribution_report,
     )
+    from peer_earnings_reaction import (
+        attach_peer_earnings_reaction_to_signals,
+        build_peer_earnings_reaction_sidecar,
+    )
     from market_state_analysis import build_market_state_snapshot
     from daily_non_ohlcv_snapshot import persist_daily_non_ohlcv_snapshots
     from kova_data_sidecar import persist_kova_data_snapshot
@@ -792,6 +796,28 @@ def main():
     trend_output = str(daily_artifact_path("trend_signals", today))
     save_trend_signals(trend_signals_dict, trend_output)
 
+    # ── Exit lifecycle shadow log (read-only attribution, exp-20260531-020) ────
+    try:
+        from exit_lifecycle_shadow_log import (
+            build_exit_lifecycle_snapshot,
+            persist_exit_lifecycle_snapshot,
+        )
+        _exit_snapshot = build_exit_lifecycle_snapshot(
+            as_of=today_iso,
+            trend_signals_signals=trend_signals_signals,
+            open_positions=open_positions,
+        )
+        _exit_log_path = persist_exit_lifecycle_snapshot(_exit_snapshot)
+        if _exit_snapshot.get("advisory_event_count", 0) > 0:
+            log.info(
+                "Exit lifecycle shadow log: %d positions, %d advisory events → %s",
+                _exit_snapshot.get("position_count", 0),
+                _exit_snapshot.get("advisory_event_count", 0),
+                _exit_log_path,
+            )
+    except Exception as _exit_exc:
+        log.warning("Exit lifecycle shadow log unavailable: %s", _exit_exc)
+
     # ── Step 6: Quant signals ─────────────────────────────────────────────────
     _print_section("STEP 6 — Quant signals")
 
@@ -1236,6 +1262,28 @@ def main():
             today_iso,
             "low_deployment_etf_overlay_build_failed",
         )
+
+    # ── Peer-earnings-reaction attribution sidecar (read-only, exp-20260531-019) ─
+    try:
+        from risk_engine import SECTOR_MAP as _sector_map
+        _peer_sidecar = build_peer_earnings_reaction_sidecar(
+            signals=signals,
+            ohlcv_dict=ohlcv_dict,
+            sector_map=_sector_map,
+        )
+        attach_peer_earnings_reaction_to_signals(signals, _peer_sidecar)
+        _peer_seen = sum(
+            1 for v in _peer_sidecar.values()
+            if v.get("peer_earnings_reaction_seen")
+        )
+        if _peer_seen:
+            log.info(
+                "Peer-earnings-reaction sidecar: %d/%d signals with peer reaction",
+                _peer_seen,
+                len(signals),
+            )
+    except Exception as _peer_exc:
+        log.warning("Peer-earnings-reaction sidecar unavailable: %s", _peer_exc)
 
     metrics = compute_metrics()
     pilot_attribution = summarize_pilot_competition()
