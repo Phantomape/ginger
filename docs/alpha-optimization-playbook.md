@@ -89,7 +89,13 @@ Recent repository evidence supports this priority:
   VBB also selects the same ticker on the same signal date, with fixed `$4,000`
   paper notional and no extra source-consensus scalar. The next evidence is
   forward replacement value for that adapter, not another same-source overlap
-  retune.
+  retune. `exp-20260531-030` found a broader source-agnostic variant: any two
+  accepted free-data paper sleeves agreeing on the same ticker/date plus a
+  seven-calendar-day same-ticker cooldown improved all three canonical windows
+  (`EV +0.5103`, PnL `+$9,359.12`, `47` target trades) and passed concentration.
+  Treat it as a positive replay lead, not an accepted production surface, until
+  it is rebuilt as a shared live/backtest adapter; do not retune source-count,
+  cooldown, hold, or notional on the frozen windows first.
 - Space remains observe-only, but `exp-20260528-026` showed that a new
   production-visible OHLCV field (`daily_close_location >= 0.84` on
   governed Space `trend_long` signal days) can separate better paper

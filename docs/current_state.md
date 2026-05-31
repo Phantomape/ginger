@@ -120,6 +120,18 @@ target sample `37`, no drawdown worsening, and concentration passing. The next
 valid work is forward replacement-value rows for this adapter, not retuning the
 source set, alpha-score thresholds, market gate, hold, or notional.
 
+`exp-20260531-030` tested a broader accepted-free-data consensus scout without
+requiring alpha-score to be the primary source: same ticker/date agreement
+across any two accepted sleeves among Fundamental Growth RS, VBB, FINRA/IWM,
+and Alpha Score Market Regime, with fixed `$4,000` notional and a
+seven-calendar-day same-ticker cooldown. It improved all three canonical
+windows (`EV +0.5103`, PnL `+$9,359.12`, target trades `47`) and passed the
+drawdown, survival, sample, and concentration guards. It is not promoted into
+production because the replay was built from frozen paper artifacts rather than
+a shared live/backtest adapter; the next valid work is adapter/parity or
+forward evidence, not source-count/cooldown/notional retuning on the same
+frozen windows.
+
 Event and peer-transfer scouts also failed to produce a promotable relation.
 `exp-20260531-002` found Form 4 purchase pressure was positive versus core but
 not promotable because it did not improve the raw Form 4 queue, had only `7`
