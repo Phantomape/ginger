@@ -109,11 +109,19 @@ source with forward replacement-value evidence; do not promote same-sector,
 same-industry, characteristic-similarity Item 2.02, or Item 8.01 inverse
 candidate pools from today's frozen-window evidence.
 
+Two measurement-repair sidecars were reserved for forward attribution only.
+`exp-20260531-019` adds the read-only
+`early_peer_earnings_reaction_bucket_v1` field to production quant signals so
+future peer-transfer work can be audited before any rule change. `exp-20260531-020`
+adds a read-only daily exit-lifecycle shadow log for advisory events. Both are
+explicitly `alters_orders=False` / `trade_enabled=False`; neither is current
+alpha evidence.
+
 Regression status for this consolidation run: cache/temp directories were
-cleaned before the run, and full unit tests passed (`1026 passed in 44.00s`).
+cleaned before the run, and full unit tests passed (`1030 passed in 42.04s`).
 No bug fix, strategy behavior change, live-order change, ranking change,
-sizing change, exit change, LLM/news boundary change, or backtest-path change
-was required by this regression pass.
+sizing change, executable exit-policy change, LLM/news boundary change, or
+backtest-path change was required by this regression pass.
 
 ## 2026-05-30 Experiment Consolidation
 

@@ -1,5 +1,5 @@
 """
-Exit lifecycle shadow log — read-only production attribution sidecar.
+Exit lifecycle shadow log - read-only production attribution sidecar.
 
 Records advisory exit events (stop breach, trailing stop trigger, time stop,
 target-price reach, high-urgency advisory) as they occur in the production run.

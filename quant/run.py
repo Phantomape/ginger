@@ -796,7 +796,7 @@ def main():
     trend_output = str(daily_artifact_path("trend_signals", today))
     save_trend_signals(trend_signals_dict, trend_output)
 
-    # ── Exit lifecycle shadow log (read-only attribution, exp-20260531-020) ────
+    # Exit lifecycle shadow log (read-only attribution, exp-20260531-020)
     try:
         from exit_lifecycle_shadow_log import (
             build_exit_lifecycle_snapshot,
@@ -810,7 +810,7 @@ def main():
         _exit_log_path = persist_exit_lifecycle_snapshot(_exit_snapshot)
         if _exit_snapshot.get("advisory_event_count", 0) > 0:
             log.info(
-                "Exit lifecycle shadow log: %d positions, %d advisory events → %s",
+                "Exit lifecycle shadow log: %d positions, %d advisory events -> %s",
                 _exit_snapshot.get("position_count", 0),
                 _exit_snapshot.get("advisory_event_count", 0),
                 _exit_log_path,
@@ -1263,7 +1263,7 @@ def main():
             "low_deployment_etf_overlay_build_failed",
         )
 
-    # ── Peer-earnings-reaction attribution sidecar (read-only, exp-20260531-019) ─
+    # Peer-earnings-reaction attribution sidecar (read-only, exp-20260531-019)
     try:
         from risk_engine import SECTOR_MAP as _sector_map
         _peer_sidecar = build_peer_earnings_reaction_sidecar(
