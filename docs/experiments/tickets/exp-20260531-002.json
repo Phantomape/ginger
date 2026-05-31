@@ -1,0 +1,124 @@
+{
+  "acceptance_rule": "docs/backtesting.md three fixed windows; must improve aggregate EV/PnL versus core and raw Form4 without window regression, DD drift, sample, or concentration failure",
+  "allowed_write_scope": [
+    "docs/experiment_log.jsonl"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260531-002/form4_purchase_pressure_before_aggregate.json",
+  "card_file": "experiments/cards/exp-20260531-002.md",
+  "change_type": "event_qualification_replay",
+  "changed_variable": "form4_purchase_value_to_prior_adv_floor_v1",
+  "claimed_at": "2026-05-31T01:10:16+00:00",
+  "completed_at": "2026-05-31T01:18:43+00:00",
+  "created_at": "2026-05-31T01:10:08+00:00",
+  "decision": "rejected_positive_not_promotable",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260531-002",
+  "experiment_uid": "expuid-d78a87fc251d474c",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260531-002",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-05-31T01:10:08+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_purchase_pressure_forward_queue"
+  },
+  "hypothesis": "PIT-safe SEC Form 4 meaningful purchases with unusually high purchase value versus prior 20-day dollar volume may identify cleaner candidate-pool entries than the raw Form4 queue.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "core entries",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "raw Form4 purchase threshold",
+    "event notional",
+    "hold days",
+    "LLM/news replay"
+  ],
+  "mechanism_family": "form4_purchase_pressure_event_satellite",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260504-034",
+    "exp-20260508-028",
+    "exp-20260529-002",
+    "exp-20260529-024",
+    "exp-20260530-003",
+    "exp-20260530-011"
+  ],
+  "new_evidence_type": "free_sec_form4_purchase_value_normalized_by_prior_ohlcv_liquidity",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Prior Form4 slices were often positive vs core but not raw; liquidity-normalized purchase pressure is a new ownership-intensity field but sample risk remains high.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 1500.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "does_not_improve_raw_form4_queue",
+      "window_regression",
+      "concentration"
+    ],
+    "recorded_at": "2026-05-31T01:09:56+00:00",
+    "success_probability": 0.18
+  },
+  "prior_trial_count": 8,
+  "result": {
+    "after_aggregate": "data/experiments/exp-20260531-002/form4_purchase_pressure_after_aggregate.json",
+    "aggregate_delta_vs_core": {
+      "after_ev_sum": 8.0447,
+      "after_pnl_sum": 237970.98,
+      "aggregate_ev_delta": 0.1506,
+      "aggregate_ev_delta_pct": 0.019078,
+      "aggregate_pnl_delta": 3119.99,
+      "aggregate_pnl_delta_pct": 0.013285,
+      "before_ev_sum": 7.8941,
+      "before_pnl_sum": 234850.99,
+      "max_drawdown_drift": 0.0001,
+      "windows_ev_improved": 2,
+      "windows_ev_regressed": 0,
+      "windows_pnl_improved": 3,
+      "windows_pnl_regressed": 0
+    },
+    "aggregate_delta_vs_raw_form4": {
+      "after_ev_sum": 8.0447,
+      "after_pnl_sum": 237970.98,
+      "aggregate_ev_delta": -0.11,
+      "aggregate_ev_delta_pct": -0.013489,
+      "aggregate_pnl_delta": -1666.23,
+      "aggregate_pnl_delta_pct": -0.006953,
+      "before_ev_sum": 8.1547,
+      "before_pnl_sum": 239637.21,
+      "max_drawdown_drift": 0.0016,
+      "windows_ev_improved": 0,
+      "windows_ev_regressed": 1,
+      "windows_pnl_improved": 0,
+      "windows_pnl_regressed": 1
+    },
+    "artifact": "data/experiments/exp-20260531-002/exp_20260531_002_form4_purchase_pressure_forward_queue.json",
+    "before_aggregate": "data/experiments/exp-20260531-002/form4_purchase_pressure_before_aggregate.json",
+    "decision": "rejected_positive_not_promotable",
+    "log": "experiments/logs/exp-20260531-002.json",
+    "raw_form4_aggregate": "data/experiments/exp-20260531-002/form4_purchase_pressure_raw_form4_aggregate.json",
+    "report": "experiments/artifacts/exp-20260531-002_form4_purchase_pressure_forward_queue.md"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260531-002.json",
+  "single_causal_variable": "form4_purchase_value_to_prior_20d_dollar_volume",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260531-002.json",
+  "trial_family": "form4_purchase_pressure_event_satellite",
+  "trial_variant_id": "exp-20260531-002"
+}
