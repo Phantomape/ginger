@@ -1,10 +1,10 @@
 {
   "schema_version": 5,
   "read_only": true,
-  "records_loaded": 2702,
+  "records_loaded": 2704,
   "record_counts": {
     "strategy_iteration_records": 1854,
-    "measurement_repair_records": 843
+    "measurement_repair_records": 845
   },
   "priority_formula": {
     "formula": "0.35*evidence + 0.25*reproducibility + 0.20*production_feasibility + 0.10*novelty + 0.10*risk_control",
@@ -71,6 +71,12 @@
     ],
     "当前测量修复方向": [
       {
+        "family": "baseline_attribution_repair",
+        "family_zh": "baseline attribution repair",
+        "priority": 0.7131,
+        "summary": "baseline attribution repair：研究优先级 0.7131。历史实验 2 个，接受率 100.00%，累计 EV 变化 +0.0000。这个分数只用于决定下一轮先研究什么，不是交易信号。"
+      },
+      {
         "family": "measurement_repair",
         "family_zh": "测量修复",
         "priority": 0.6986,
@@ -81,12 +87,6 @@
         "family_zh": "已知偏差披露修复",
         "priority": 0.6694,
         "summary": "已知偏差披露修复：研究优先级 0.6694。历史实验 2 个，接受率 100.00%，累计 EV 变化 +0.0000。这个分数只用于决定下一轮先研究什么，不是交易信号。"
-      },
-      {
-        "family": "forward_watch_adapter",
-        "family_zh": "前向观察适配器",
-        "priority": 0.6694,
-        "summary": "前向观察适配器：研究优先级 0.6694。历史实验 3 个，接受率 100.00%，累计 EV 变化 +0.0000。这个分数只用于决定下一轮先研究什么，不是交易信号。"
       }
     ],
     "当前建议": [
@@ -25665,10 +25665,10 @@
   },
   "prediction_calibration": {
     "read_only": true,
-    "records_counted": 1116,
+    "records_counted": 1117,
     "records_with_prediction": 53,
-    "records_missing_prediction": 1063,
-    "prediction_coverage": 0.0475,
+    "records_missing_prediction": 1064,
+    "prediction_coverage": 0.0474,
     "avg_brier_score": 0.096615,
     "direction_counts": {
       "overconfident": 0,
@@ -27202,6 +27202,48 @@
     }
   ],
   "measurement_repair_priorities": [
+    {
+      "family": "baseline_attribution_repair",
+      "priority": 0.7131,
+      "summary_zh": "baseline attribution repair：研究优先级 0.7131。历史实验 2 个，接受率 100.00%，累计 EV 变化 +0.0000。这个分数只用于决定下一轮先研究什么，不是交易信号。",
+      "component_scores": {
+        "evidence_score": 0.8125,
+        "reproducibility_score": 0.575,
+        "production_feasibility": 0.7,
+        "novelty_score": 0.75,
+        "risk_control_score": 0.7
+      },
+      "weights": {
+        "evidence_score": 0.35,
+        "reproducibility_score": 0.25,
+        "production_feasibility": 0.2,
+        "novelty_score": 0.1,
+        "risk_control_score": 0.1
+      },
+      "why": [
+        "1/2 records show multi-window evidence",
+        "average drawdown delta is non-worsening",
+        "historically non-trivial accept rate",
+        "mixed production feasibility evidence",
+        "positive average meta score",
+        "still has room for materially new fields"
+      ],
+      "penalties": [],
+      "evidence_summary": {
+        "name": "baseline_attribution_repair",
+        "experiments": 2,
+        "accepted": 2,
+        "rejected": 0,
+        "accept_rate": 1.0,
+        "avg_meta_score": 2.0,
+        "sum_ev_delta": 0.0,
+        "sum_pnl_delta": 0.0,
+        "recent_examples": [
+          "exp-20260601-023",
+          "exp-20260601-023"
+        ]
+      }
+    },
     {
       "family": "measurement_repair",
       "priority": 0.6986,
@@ -29777,6 +29819,48 @@
         "sum_pnl_delta": 0.0,
         "recent_examples": [
           "exp-20260426-011"
+        ]
+      }
+    },
+    {
+      "family": "baseline_attribution_repair",
+      "priority": 0.7131,
+      "summary_zh": "baseline attribution repair：研究优先级 0.7131。历史实验 2 个，接受率 100.00%，累计 EV 变化 +0.0000。这个分数只用于决定下一轮先研究什么，不是交易信号。",
+      "component_scores": {
+        "evidence_score": 0.8125,
+        "reproducibility_score": 0.575,
+        "production_feasibility": 0.7,
+        "novelty_score": 0.75,
+        "risk_control_score": 0.7
+      },
+      "weights": {
+        "evidence_score": 0.35,
+        "reproducibility_score": 0.25,
+        "production_feasibility": 0.2,
+        "novelty_score": 0.1,
+        "risk_control_score": 0.1
+      },
+      "why": [
+        "1/2 records show multi-window evidence",
+        "average drawdown delta is non-worsening",
+        "historically non-trivial accept rate",
+        "mixed production feasibility evidence",
+        "positive average meta score",
+        "still has room for materially new fields"
+      ],
+      "penalties": [],
+      "evidence_summary": {
+        "name": "baseline_attribution_repair",
+        "experiments": 2,
+        "accepted": 2,
+        "rejected": 0,
+        "accept_rate": 1.0,
+        "avg_meta_score": 2.0,
+        "sum_ev_delta": 0.0,
+        "sum_pnl_delta": 0.0,
+        "recent_examples": [
+          "exp-20260601-023",
+          "exp-20260601-023"
         ]
       }
     },
@@ -34367,6 +34451,20 @@
       ]
     },
     {
+      "name": "baseline_attribution_repair",
+      "experiments": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "accept_rate": 1.0,
+      "avg_meta_score": 2.0,
+      "sum_ev_delta": 0.0,
+      "sum_pnl_delta": 0.0,
+      "recent_examples": [
+        "exp-20260601-023",
+        "exp-20260601-023"
+      ]
+    },
+    {
       "name": "default_off_alpha_attribution_report_surface",
       "experiments": 1,
       "accepted": 1,
@@ -38092,6 +38190,20 @@
       "recent_examples": [
         "exp-20260601-014",
         "exp-20260601-014"
+      ]
+    },
+    {
+      "name": "baseline_attribution_repair",
+      "experiments": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "accept_rate": 1.0,
+      "avg_meta_score": 2.0,
+      "sum_ev_delta": 0.0,
+      "sum_pnl_delta": 0.0,
+      "recent_examples": [
+        "exp-20260601-023",
+        "exp-20260601-023"
       ]
     },
     {
@@ -44730,19 +44842,19 @@
     },
     {
       "name": "unknown",
-      "experiments": 1887,
-      "accepted": 309,
+      "experiments": 1889,
+      "accepted": 311,
       "rejected": 1194,
-      "accept_rate": 0.1638,
-      "avg_meta_score": 2.9726,
+      "accept_rate": 0.1646,
+      "avg_meta_score": 2.9716,
       "sum_ev_delta": 528.832,
       "sum_pnl_delta": 9092484.73,
       "recent_examples": [
-        "exp-20260601-018",
         "exp-20260601-019",
         "exp-20260601-020",
         "exp-20260601-021",
-        "exp-20260601-022"
+        "exp-20260601-022",
+        "exp-20260601-023"
       ]
     },
     {
