@@ -298,15 +298,21 @@ Do not do next:
 ### 2. Fundamental Growth + RS
 
 Mechanism: filed-date-safe Companyfacts growth plus positive operating-profit
-quality plus OHLCV relative strength is a real candidate-pool lead. The useful
-change was not "another fundamental filter"; it was a new default-off candidate
-source with a closed-ledger governor for concentration/drawdown.
+and gross-margin quality plus OHLCV relative strength is a real candidate-pool
+lead. The useful change was not "another fundamental filter"; it was a new
+default-off candidate source with a closed-ledger governor for
+concentration/drawdown. `exp-20260601-026` accepted the gross-margin quality
+candidate source after the PIT-DTE baseline repair: EV `6.3596 -> 12.6985` and
+PnL `$192,538.61 -> $300,134.87`, with all three windows improved.
 
 Keep fixed:
 
 - PIT Companyfacts filed-date boundary;
 - EPS/revenue growth points;
 - positive operating income quality gate;
+- gross-margin quality source: `gross_margin >= 0.40` using filed-date revenue
+  plus gross profit, with cost-of-revenue fallback and 60-400 day duration
+  guard;
 - RS proxy and top-1/day paper route;
 - next-open entry and 10-trading-day paper exit;
 - closed-ledger profit cap / drawdown governor.
@@ -314,7 +320,8 @@ Keep fixed:
 Next valid fields:
 
 - cash-conversion quality only if it improves forward replacement value;
-- gross-margin / operating-margin durability;
+- operating-margin durability only with new forward evidence or an orthogonal
+  data field;
 - filing-timeliness, low-liability balance-sheet quality, and
   restatement/disclosure-quality context;
 - cost-adjusted liquidity state.
@@ -328,6 +335,8 @@ Frozen without new evidence:
   current frozen Companyfacts + RS sample. `exp-20260601-004` found strong
   three-window paper PnL but rejected the field because positive PnL HHI stayed
   above the concentration guard, with APP/MU dominating the lift;
+- gross-margin threshold, duration, source-precedence, or notional-scalar
+  retunes around the accepted `exp-20260601-026` candidate source;
 - any new Companyfacts scalar whose best case still depends on the already
   accepted operating-profit + RS stack rather than a new candidate source;
 - score-tercile/rank monotonicity changes until forward rows show stable

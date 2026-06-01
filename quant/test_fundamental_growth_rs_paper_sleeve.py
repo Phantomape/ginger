@@ -6,6 +6,7 @@ from quant.default_off_alpha_attribution import build_default_off_alpha_attribut
 from quant.fundamental_growth_rs_paper_sleeve import (
     FILING_RECENCY_RULE_VERSION,
     GOVERNOR_RULE_VERSION,
+    GROSS_MARGIN_QUALITY_RULE_VERSION,
     LOW_LIABILITY_RULE_VERSION,
     LOW_VOLUME_PARTICIPATION_RULE_VERSION,
     REPLACEMENT_VALUE_RULE_VERSION,
@@ -95,6 +96,7 @@ def _facts() -> list[dict]:
         _fact("AMD", "eps_diluted", 2026, "Q1", "2026-04-25", 1.45),
         _fact("AMD", "revenue", 2025, "Q1", "2025-04-25", 1000.0),
         _fact("AMD", "revenue", 2026, "Q1", "2026-04-25", 1260.0),
+        _fact("AMD", "gross_profit", 2026, "Q1", "2026-04-25", 700.0),
         _fact("AMD", "operating_income", 2026, "Q1", "2026-04-25", 220.0),
         _fact("AMD", "assets", 2026, "Q1", "2026-04-25", 1000.0),
         _fact("AMD", "liabilities", 2026, "Q1", "2026-04-25", 500.0),
@@ -156,6 +158,9 @@ def test_snapshot_adds_top1_companyfacts_growth_rs_candidate_without_orders():
     assert snapshot["candidates"][0]["rule_version"] == RULE_VERSION
     assert snapshot["candidates"][0]["source_rule_version"] == SOURCE_RULE_VERSION
     assert snapshot["candidates"][0]["governor_rule_version"] == GOVERNOR_RULE_VERSION
+    assert snapshot["candidates"][0]["gross_margin_rule_version"] == GROSS_MARGIN_QUALITY_RULE_VERSION
+    assert snapshot["candidates"][0]["gross_margin_pass_v1"] is True
+    assert snapshot["candidates"][0]["gross_margin"] > 0.4
     assert snapshot["candidates"][0]["low_volume_participation_rule_version"] == LOW_VOLUME_PARTICIPATION_RULE_VERSION
     assert snapshot["candidates"][0]["filing_recency_rule_version"] == FILING_RECENCY_RULE_VERSION
     assert snapshot["candidates"][0]["low_liability_rule_version"] == LOW_LIABILITY_RULE_VERSION
@@ -167,6 +172,58 @@ def test_snapshot_adds_top1_companyfacts_growth_rs_candidate_without_orders():
     assert snapshot["candidates"][0]["intended_notional"] == 10_500.0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_gross_margin_quality_rejects_below_floor_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][125]["date"]
+    facts = [
+        row
+        for row in _facts()
+        if row["canonical"] != "gross_profit"
+    ]
+    facts.append(_fact("AMD", "gross_profit", 2026, "Q1", "2026-04-25", 300.0))
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=facts,
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["gross_margin_quality"]["rule_version"] == GROSS_MARGIN_QUALITY_RULE_VERSION
+    assert snapshot["gross_margin_quality"]["min_gross_margin"] == 0.4
+    assert snapshot["trade_enabled"] is False
+
+
+def test_gross_margin_quality_uses_cost_of_revenue_fallback_without_orders():
+    ohlcv = _ohlcv()
+    as_of = ohlcv["SPY"][125]["date"]
+    facts = [
+        row
+        for row in _facts()
+        if row["canonical"] != "gross_profit"
+    ]
+    facts.append(_fact("AMD", "cost_of_revenue", 2026, "Q1", "2026-04-25", 500.0))
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=facts,
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["gross_margin_pass_v1"] is True
+    assert candidate["gross_margin_source"] == "revenue_minus_cost_of_revenue"
+    assert candidate["cost_of_revenue_filed"] == "2026-04-25"
+    assert snapshot["trade_enabled"] is False
 
 
 def test_low_volume_participation_support_scales_paper_notional_without_orders():
@@ -435,6 +492,7 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
         },
         "source_rule_version": SOURCE_RULE_VERSION,
         "governor_rule_version": GOVERNOR_RULE_VERSION,
+        "gross_margin_quality": {"candidate_count": 1},
         "low_liability": {"supported_candidate_count": 1},
     }
 
@@ -447,5 +505,6 @@ def test_default_off_alpha_report_surfaces_fundamental_growth_rs_sleeve():
     assert "fundamental_growth_rs" in surfaces
     assert surfaces["fundamental_growth_rs"]["label"] == "FUNDAMENTAL_GROWTH_RS_PAPER"
     assert surfaces["fundamental_growth_rs"]["trade_enabled"] is False
+    assert surfaces["fundamental_growth_rs"]["extra_metrics"]["gross_margin_quality_candidates"] == 1
     assert surfaces["fundamental_growth_rs"]["extra_metrics"]["low_liability_supported"] == 1
     assert "min_closed_trades" in surfaces["fundamental_growth_rs"]["blockers"]

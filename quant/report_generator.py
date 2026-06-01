@@ -2355,6 +2355,12 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"  Closed-ledger governor: scalar={governor.get('global_drawdown_scalar')} "
             f"drawdown=${governor_drawdown:,.2f}"
         )
+        gross_margin = fundamental_growth_rs_paper_sleeve.get("gross_margin_quality") or {}
+        lines.append(
+            "  Candidate source: "
+            f"gross-margin>={gross_margin.get('min_gross_margin', 0.4)} "
+            f"candidates={gross_margin.get('candidate_count', 0)}"
+        )
         low_volume = fundamental_growth_rs_paper_sleeve.get("low_volume_participation") or {}
         filing_recency = fundamental_growth_rs_paper_sleeve.get("filing_recency") or {}
         low_liability = fundamental_growth_rs_paper_sleeve.get("low_liability") or {}
@@ -2385,6 +2391,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"score={candidate.get('fundamental_growth_rs_score_v1')} "
                 f"points={candidate.get('fundamental_growth_points_v1')} "
                 f"RS={candidate.get('rs_proxy_score_v1')} "
+                f"gross_margin={candidate.get('gross_margin')} "
                 f"liab/assets={candidate.get('liabilities_assets_ratio')} "
                 f"notional={notional_text} (paper only)"
             )

@@ -905,31 +905,35 @@ the frozen sample; use forward rows or an orthogonal production-visible field.
 ### `quant/fundamental_growth_rs_paper_sleeve.py`
 
 Purpose: maintain the default-off `FUNDAMENTAL_GROWTH_RS_PAPER` forward
-observation ledger for the accepted Companyfacts operating-profit quality + RS
-candidate-pool alpha from `exp-20260528-008`.
+observation ledger for the accepted Companyfacts operating-profit quality +
+gross-margin quality + RS candidate-pool alpha from `exp-20260528-008` and
+`exp-20260601-026`.
 
 Candidate route:
 
 - Uses the daily loaded OHLCV universe plus `SPY`, and local SEC Companyfacts
   rows whose `filed` date is <= the signal date.
 - Requires EPS and/or revenue year-over-year growth points, positive current
-  operating income, a liquid above-50d trend state, nonnegative 20d excess
-  return versus SPY, and high RS percentile across the available 20/60/120d
-  windows.
+  operating income, `gross_margin >= 0.40` from filed-date revenue plus gross
+  profit or cost-of-revenue fallback, a liquid above-50d trend state,
+  nonnegative 20d excess return versus SPY, and high RS percentile across the
+  available 20/60/120d windows.
 - Emits ranked candidates but opens at most one paper entry per day, with
   fixed `$10k` base paper notional, next-open paper entry, 10-trading-day close
   exit, closed outcomes, replacement-value summary, the accepted closed-ledger
   ticker profit-cap / global drawdown governor, accepted low-volume and
   filing-recency paper-notional support, and accepted PIT liabilities/assets
-  low-liability paper-notional support.
+  low-liability paper-notional support. Candidate metadata includes
+  gross-margin status, value, source, and filed-date provenance.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha. It must not enable orders, expand the core universe, alter live
 ranking, sizing, exits, LLM/news, or consume live capital without a separate
 Gate 1-4 activation experiment and parity update. Do not retune the
-Companyfacts growth, operating-profit, RS, top-N, hold-day, fixed-notional,
-low-volume, filing-recency, low-liability, or closed-ledger-scalar parameters
-on the frozen sample without forward rows or a new production-visible field.
+Companyfacts growth, operating-profit, gross-margin, RS, top-N, hold-day,
+fixed-notional, low-volume, filing-recency, low-liability, or
+closed-ledger-scalar parameters on the frozen sample without forward rows or a
+new production-visible field.
 
 ### `quant/finra_iwm_paper_sleeve.py`
 

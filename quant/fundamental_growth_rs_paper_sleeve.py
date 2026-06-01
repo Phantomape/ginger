@@ -29,9 +29,10 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 
 
 SLEEVE_NAME = "FUNDAMENTAL_GROWTH_RS_PAPER"
-RULE_VERSION = "fundamental_growth_rs_low_liability_shared_adapter_v1"
+RULE_VERSION = "fundamental_growth_rs_gross_margin_shared_adapter_v1"
 SOURCE_RULE_VERSION = "fundamental_growth_rs_operating_profit_quality_v1"
 GOVERNOR_RULE_VERSION = "operating_profit_quality_closed_ledger_governor_v1"
+GROSS_MARGIN_QUALITY_RULE_VERSION = "gross_margin_quality_candidate_source_v1"
 LOW_VOLUME_PARTICIPATION_RULE_VERSION = "fundamental_growth_rs_low_volume_participation_support_v1"
 FILING_RECENCY_RULE_VERSION = "fundamental_growth_rs_filing_recency_support_v1"
 LOW_LIABILITY_RULE_VERSION = "fundamental_growth_rs_low_liability_support_v1"
@@ -83,6 +84,9 @@ DEFAULT_CONFIG = {
     "min_signal_day_rs_vs_spy": -0.015,
     "quarterly_duration_min": 60,
     "quarterly_duration_max": 130,
+    "gross_margin_duration_min": 60,
+    "gross_margin_duration_max": 400,
+    "min_gross_margin": 0.40,
     "ticker_closed_profit_cap_usd": 9_000.0,
     "ticker_profit_cap_scalar": 0.05,
     "global_closed_drawdown_trigger_usd": 7_500.0,
@@ -181,6 +185,14 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         "unrealized_pnl": 0.0,
         "candidate_universe": {"status": reason, "ticker_count": 0},
         "fundamental_data": {"status": reason, "row_count": 0},
+        "gross_margin_quality": {
+            "rule_version": GROSS_MARGIN_QUALITY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "min_gross_margin": DEFAULT_CONFIG["min_gross_margin"],
+            "candidate_count": 0,
+        },
         "low_volume_participation": {
             "rule_version": LOW_VOLUME_PARTICIPATION_RULE_VERSION,
             "read_only": True,
@@ -381,6 +393,14 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
             "row_count": len(facts),
         },
         "closed_ledger_governor": governor_state,
+        "gross_margin_quality": {
+            "rule_version": GROSS_MARGIN_QUALITY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "min_gross_margin": float(cfg["min_gross_margin"]),
+            "candidate_count": len(candidates),
+        },
         "low_volume_participation": {
             "rule_version": LOW_VOLUME_PARTICIPATION_RULE_VERSION,
             "read_only": True,
@@ -605,11 +625,33 @@ class CompanyfactsFundamentalIndex:
     def __init__(self, rows: list[dict[str, Any]], *, config: dict[str, Any]) -> None:
         self.config = config
         by_key: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+        gross_margin_by_key: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
         for raw in rows:
             ticker = str(raw.get("ticker") or "").upper()
             canonical = str(raw.get("canonical") or "")
             filed = str(raw.get("filed") or raw.get("asof_date") or "")[:10]
             value = _float_or_none(raw.get("value") if "value" in raw else raw.get("current_value"))
+            duration_days = _int_or_none(raw.get("duration_days"))
+            if (
+                canonical in {"revenue", "gross_profit", "cost_of_revenue"}
+                and ticker
+                and filed
+                and value is not None
+                and duration_days is not None
+                and int(config["gross_margin_duration_min"]) <= duration_days <= int(config["gross_margin_duration_max"])
+            ):
+                gross_margin_by_key[(ticker, canonical)].append(
+                    {
+                        **raw,
+                        "ticker": ticker,
+                        "canonical": canonical,
+                        "filed": filed,
+                        "value": value,
+                        "duration_days": duration_days,
+                        "end": raw.get("end") if raw.get("end") else raw.get("current_period_end"),
+                        "form": raw.get("form") if raw.get("form") else raw.get("current_form"),
+                    }
+                )
             if canonical not in {
                 "eps_diluted",
                 "eps_basic",
@@ -637,7 +679,10 @@ class CompanyfactsFundamentalIndex:
             by_key[(ticker, canonical)].append(row)
         for bucket in by_key.values():
             bucket.sort(key=_fact_sort_key)
+        for bucket in gross_margin_by_key.values():
+            bucket.sort(key=_fact_sort_key)
         self.by_key = by_key
+        self.gross_margin_by_key = gross_margin_by_key
 
     def current_fact(self, ticker: str, canonical: str, asof_date: str) -> dict[str, Any]:
         rows = [
@@ -792,6 +837,97 @@ class CompanyfactsFundamentalIndex:
             "operating_profit_quality_pass_v1": quality_pass,
         }
 
+    def gross_margin_quality(self, ticker: str, asof_date: str) -> dict[str, Any]:
+        ticker = ticker.upper()
+        revenue_row = self._latest_gross_margin_fact(ticker, "revenue", asof_date)
+        gross_row = self._latest_gross_margin_fact(ticker, "gross_profit", asof_date)
+        cost_row = self._latest_gross_margin_fact(ticker, "cost_of_revenue", asof_date)
+        base = {
+            "gross_margin_rule_version": GROSS_MARGIN_QUALITY_RULE_VERSION,
+            "gross_margin_known_at": "SEC Companyfacts filed date <= signal_date",
+            "gross_margin_trade_enabled": False,
+            "gross_margin_alters_orders": False,
+            "gross_margin_threshold_min": float(self.config["min_gross_margin"]),
+        }
+        if revenue_row is None:
+            return {
+                **base,
+                "gross_margin_status": "missing_revenue",
+                "gross_margin_available": False,
+                "gross_margin_pass_v1": False,
+            }
+
+        revenue = _float_or_none(revenue_row.get("value"))
+        if revenue is None or revenue <= 0.0:
+            return {
+                **base,
+                "gross_margin_status": "invalid_revenue",
+                "gross_margin_available": False,
+                "gross_margin_pass_v1": False,
+                "revenue": _round(revenue, 2),
+                "revenue_filed": revenue_row.get("filed"),
+                "revenue_period_end": revenue_row.get("end"),
+                "revenue_duration_days": revenue_row.get("duration_days"),
+                "revenue_form": revenue_row.get("form"),
+            }
+
+        gross_profit = _float_or_none(gross_row.get("value")) if gross_row else None
+        source = "gross_profit"
+        if gross_profit is None and cost_row is not None:
+            cost_of_revenue = _float_or_none(cost_row.get("value"))
+            if cost_of_revenue is not None:
+                gross_profit = revenue - abs(cost_of_revenue)
+                source = "revenue_minus_cost_of_revenue"
+        if gross_profit is None:
+            return {
+                **base,
+                "gross_margin_status": "missing_gross_profit_and_cost_of_revenue",
+                "gross_margin_available": False,
+                "gross_margin_pass_v1": False,
+                "revenue": _round(revenue, 2),
+                "revenue_filed": revenue_row.get("filed"),
+                "revenue_period_end": revenue_row.get("end"),
+                "revenue_duration_days": revenue_row.get("duration_days"),
+                "revenue_form": revenue_row.get("form"),
+            }
+
+        gross_margin = gross_profit / revenue
+        return {
+            **base,
+            "gross_margin_status": "ok" if gross_margin >= 0.0 else "negative_gross_margin",
+            "gross_margin_available": True,
+            "gross_margin_pass_v1": gross_margin >= float(self.config["min_gross_margin"]),
+            "gross_margin": _round(gross_margin, 6),
+            "gross_profit": _round(gross_profit, 2),
+            "gross_margin_source": source,
+            "revenue": _round(revenue, 2),
+            "revenue_filed": revenue_row.get("filed"),
+            "revenue_period_end": revenue_row.get("end"),
+            "revenue_duration_days": revenue_row.get("duration_days"),
+            "revenue_form": revenue_row.get("form"),
+            "gross_profit_filed": gross_row.get("filed") if gross_row else None,
+            "gross_profit_period_end": gross_row.get("end") if gross_row else None,
+            "gross_profit_duration_days": gross_row.get("duration_days") if gross_row else None,
+            "gross_profit_form": gross_row.get("form") if gross_row else None,
+            "cost_of_revenue_filed": cost_row.get("filed") if cost_row else None,
+            "cost_of_revenue_period_end": cost_row.get("end") if cost_row else None,
+            "cost_of_revenue_duration_days": cost_row.get("duration_days") if cost_row else None,
+            "cost_of_revenue_form": cost_row.get("form") if cost_row else None,
+        }
+
+    def _latest_gross_margin_fact(
+        self,
+        ticker: str,
+        canonical: str,
+        asof_date: str,
+    ) -> dict[str, Any] | None:
+        rows = [
+            row
+            for row in self.gross_margin_by_key.get((ticker.upper(), canonical), [])
+            if str(row.get("filed") or "")[:10] <= asof_date
+        ]
+        return rows[-1] if rows else None
+
     def balance_sheet_quality(self, ticker: str, asof_date: str) -> dict[str, Any]:
         ticker = ticker.upper()
         assets_rows = [
@@ -913,6 +1049,9 @@ def _candidate_for_ticker(
     operating = fundamentals.operating_quality(ticker, as_of)
     if operating.get("operating_profit_quality_pass_v1") is not True:
         return None
+    gross_margin = fundamentals.gross_margin_quality(ticker, as_of)
+    if gross_margin.get("gross_margin_pass_v1") is not True:
+        return None
     balance_sheet = fundamentals.balance_sheet_quality(ticker, as_of)
     rs = rs_by_ticker.get(ticker) or {}
     rs_score = _float_or_none(rs.get("rs_proxy_score_v1"))
@@ -1012,6 +1151,7 @@ def _candidate_for_ticker(
         **fundamental,
         **rs,
         **operating,
+        **gross_margin,
         **balance_sheet,
         "source_rule_version": SOURCE_RULE_VERSION,
         "rule_version": RULE_VERSION,
