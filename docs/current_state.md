@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-31.
+Last updated: 2026-06-01.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -47,6 +47,51 @@ Latest accepted three-window artifact:
 Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
+
+## 2026-06-01 Experiment Consolidation
+
+Today's session produced two accepted measurement_repair improvements and one
+proposed alpha_discovery (pre-registered, blocked pending data conditions):
+
+**Accepted measurement_repair:**
+- `exp-20260531-019` (accepted): `early_peer_earnings_reaction_bucket_v1` read-only
+  attribution sidecar wired in `quant/run.py` lines 1266-1286. Field attaches
+  per-signal to track whether same-sector peers had positive earnings gaps in a
+  lookback window. Prerequisite for any future peer-transfer alpha_search.
+  `alters_orders=False`.
+- `exp-20260531-020` (accepted): Exit lifecycle advisory event shadow log wired in
+  `quant/run.py` lines 799-819. Writes `data/exit_lifecycle/exit_lifecycle_YYYYMMDD.jsonl`
+  daily recording advisory exit trigger events per held position. Enables future
+  closed-position attribution comparing advisory trigger vs actual outcome.
+  `alters_orders=False`.
+
+**Proposed alpha_discovery (blocked):**
+- `exp-20260601-001` (proposed): SEC 8-K Item 1.01 (Material Definitive Agreements)
+  as a candidate pool. 48 non-crypto in-universe events in the 18-month backfill
+  (15-17 per window), tickers include APP, BKNG, MU, AMD, DDOG, COHR. Blocked by:
+  thin sample per window, mixed item codes (1.01 + 2.03 + 3.02 often co-filed),
+  universe too narrow to confirm concentration safety.
+  Retry requires: universe expansion OR stricter Item 1.01-only filter AND ≥30
+  candidates per window with diverse non-correlated tickers.
+
+**Alpha direction sweep findings (documented for next agent):**
+- FUNDAMENTAL_GROWTH_RS: cash-conversion (rejected 20260529-012) and margin
+  durability (rejected 20260528-023) have both been tried and rejected. The
+  "filing-timeliness" quality field remains proposed but overlaps with filing
+  recency (already accepted in exp-20260528-016). No viable FGR frozen-sample
+  direction remains.
+- Form 4 ownership intensity: rejected 20260531-002 (purchase value / ADV ratio).
+  Multi-owner count: rejected 20260530-011. Both Form 4 directions exhausted.
+- Broad market cost/liquidity: rejected 20260527-024.
+- Free short pressure (SEC FTD + Nasdaq threshold): shadow_only (100% overlap
+  with existing signals, 0 standalone entries).
+- SEC Item 1.01 capital_contract_8k: pre-registered but blocked (thin sample,
+  crypto concentration).
+- Forward paper sleeves: ALL at 0 closed trades. Gate 5 threshold (30 closed)
+  is not yet met for any sleeve as of 2026-06-01.
+
+Core EV remains 7.8941; aggregate PnL $234,850.99 (unchanged from 2026-05-31).
+No core strategy change this session.
 
 ## 2026-05-31 Experiment Consolidation
 
