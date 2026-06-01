@@ -1,0 +1,49 @@
+{
+  "experiment_id": "exp-20260601-014",
+  "artifact_type": "measurement_repair_after",
+  "scenario": "2026-05-31 production entry capacity accounting",
+  "source_artifacts": [
+    "data/daily/signals/quant/quant_signals_20260531.json",
+    "operator_inputs/open_positions.json"
+  ],
+  "after_policy": {
+    "capacity_scope": "core_strategy_slot_accounting",
+    "active_positions": 1,
+    "max_positions": 5,
+    "available_slots": 4,
+    "signals_before_entry_plan": 2,
+    "signals_after_deferral": 2,
+    "signals_after_entry_plan": 2,
+    "selected_tickers": [
+      "SNOW",
+      "MSFT"
+    ],
+    "total_account_shadow": {
+      "capacity_scope": "total_account_positive_positions_shadow",
+      "active_positions": 11,
+      "available_slots": 0,
+      "SNOW_shadow_reason": "slot_sliced",
+      "MSFT_shadow_reason": "scarce_slot_breakout_deferred"
+    }
+  },
+  "acceptance_checks": {
+    "legacy_fomo_pilot_do_not_silently_consume_core_slots": true,
+    "all_real_positions_still_visible_for_total_account_shadow": true,
+    "all_real_positions_still_count_in_portfolio_heat": true,
+    "report_discloses_core_slots_and_total_account_shadow_slots": true,
+    "backtest_core_slot_parity_preserved": true,
+    "focused_tests": "50 passed in quant/test_production_parity.py",
+    "full_quant_tests": "1074 passed in 43.56s"
+  },
+  "production_impact": {
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": true,
+    "shared_policy_changed": true,
+    "run_adapter_changed": true,
+    "backtester_adapter_changed": false,
+    "replay_only": false
+  }
+}

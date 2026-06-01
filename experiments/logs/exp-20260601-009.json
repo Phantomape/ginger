@@ -1,0 +1,111 @@
+{
+  "after_metrics": {
+    "universe_size": 1446,
+    "overnight_mean_daily": 0.000436,
+    "intraday_mean_daily": 0.00036,
+    "close_to_close_mean_daily": 0.000782,
+    "overnight_share_of_close_to_close": 0.5575,
+    "overnight_tstat": 1.1456,
+    "intraday_tstat": 0.6727,
+    "overnight_minus_intraday_tstat": 0.1083,
+    "overnight_positive_windows": "2/3",
+    "per_window_overnight": {"late_strong": 0.000193, "mid_weak": 0.001316, "old_thin": -0.000156},
+    "per_window_intraday": {"late_strong": 0.000533, "mid_weak": 0.000582, "old_thin": 2e-06},
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "Mechanism switch after cross-sectional OHLCV probes all reduced to momentum (003/006/007/008). Tests time-of-day return structure (overnight anomaly), orthogonal to cross-sectional selection.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Decomposes each (ticker,day) close-to-close return on the broad 1446-ticker all-windows-full-liquid universe into overnight (prev_close->open) and intraday (open->close) components, equal-weight daily cross-sectional means, aggregated across the canonical 3 windows, with a 50pct per-component clip (split/bad-print guard) and a 50-name/day floor. Result: the textbook overnight-return anomaly does NOT robustly appear. Overnight daily mean +0.044pct (t=1.15, insignificant), intraday +0.036pct (t=0.67), overnight-minus-intraday t=0.11 (statistically indistinguishable). Overnight share of close-to-close is only 55.7pct (vs ~100pct+ in the literature). 2/3 windows positive (old_thin overnight negative). Returns split roughly evenly between sessions; no robust overnight-timing structure on this liquid large/mid-cap survivorship universe over this 18-month sample.",
+  "change_type": "read_only_overnight_intraday_return_decomposition",
+  "changed_variable": "overnight_vs_intraday_return_component_means",
+  "component": "quant/experiments/exp_20260601_009_overnight_intraday_decomposition.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_no_robust_overnight_structure",
+  "decision_rule": "Accept the overnight-premium structure if mean overnight daily return has t>=2, majority-positive windows, AND overnight-minus-intraday has t>=2. Tradeable-edge claims would require an open/close execution and cost study not performed here. None of the significance conditions held.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "overnight_minus_intraday_mean": 0.000076,
+    "overnight_minus_intraday_tstat": 0.1083
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260601-009",
+  "gate1": {"name": "daily_cross_section_collected", "passed": true},
+  "gate2": {"name": "component_clip_applied_microstructure_guard", "passed": true, "component_clip": 0.50, "min_names_per_day": 50},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "robust_overnight_premium_vs_intraday",
+    "passed": false,
+    "status": "observed_only_no_robust_overnight_structure",
+    "tstat_floor": 2.0,
+    "overnight_mean_daily": 0.000436,
+    "intraday_mean_daily": 0.00036,
+    "overnight_share_of_close_to_close": 0.5575,
+    "overnight_tstat": 1.1456,
+    "overnight_minus_intraday_tstat": 0.1083,
+    "overnight_positive_windows": "2/3"
+  },
+  "gate_questions": {
+    "what_hypothesis": "Does the close-to-close premium accrue mostly overnight (overnight anomaly) on the broad universe?",
+    "prior_similar_experiments": "None in repo on overnight/intraday structure. Prior session probes (003/006/007/008) were all cross-sectional momentum.",
+    "single_independent_variable": "Overnight vs intraday return component means (time-of-day decomposition).",
+    "success_failure_criteria": "Overnight mean t>=2, majority windows, AND overnight-minus-intraday t>=2.",
+    "reproducibility": "Deterministic: warehouse all_windows_full_liquid, prev_close/open/close decomposition, daily cross-sectional means, t-stats. 5 unit tests."
+  },
+  "hypothesis": "Overnight vs intraday return decomposition on the broad 1446-ticker universe: the equity premium accrues mostly OVERNIGHT (prev_close->open) while the intraday session (open->close) is flat or negative. Mean overnight return should be significantly positive (t>=2, majority windows) and materially larger than mean intraday. Orthogonal to cross-sectional momentum; relevant to core next-day-open entry timing.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "time_of_day_return_structure",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": ["exp-20260601-008", "exp-20260601-007", "exp-20260601-006"],
+  "new_evidence_type": "broad_universe_overnight_vs_intraday_component_tstat",
+  "next_evidence_needed": "No overnight-timing edge on this universe: the core's next-day-open entry is not leaving an obvious overnight premium on the table. Revisiting would need a small/micro-cap universe (where the anomaly concentrates) or a longer multi-regime sample, AND a daily open/close turnover cost study, since capturing the premium requires heavy turnover the literature debates as hard to monetize. Closes time-of-day structure as a near-term lever on this universe.",
+  "parameters": {
+    "rule_version": "overnight_intraday_decomposition_v1",
+    "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+    "universe_size": 1446,
+    "min_names_per_day": 50,
+    "component_clip": 0.50,
+    "tstat_floor": 2.0
+  },
+  "prediction": {
+    "success_probability": 0.45,
+    "expected_ev_delta": 0.0,
+    "main_failure_modes": "overnight_premium_present_but_not_actionable_needs_open_close_execution, intraday_not_negative_just_smaller, effect_not_robust_across_windows, survivorship_inflates_overnight, gap_open_microstructure_contamination",
+    "outcome_vs_prediction": "matched: intraday_not_negative_just_smaller + effect_not_robust_across_windows. Overnight and intraday statistically indistinguishable (diff t=0.11); overnight share only 55.7pct."
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260601_009"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260601_009_overnight_intraday_decomposition.py",
+    "quant/test_exp_20260601_009_overnight_intraday.py",
+    "data/experiments/exp-20260601-009/overnight_intraday_decomposition.json",
+    "experiments/artifacts/exp-20260601-009_overnight_intraday_decomposition.md",
+    "experiments/logs/exp-20260601-009.json",
+    "experiments/tickets/exp-20260601-009.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "overnight_intraday_decomposition_v1",
+  "single_causal_variable": "overnight_vs_intraday_return_component_means",
+  "status": "observed_only",
+  "timestamp": "2026-06-01T14:00:00+00:00",
+  "trial_family": "overnight_intraday_decomposition",
+  "trial_variant_id": "exp-20260601-009"
+}

@@ -1,6 +1,6 @@
 ﻿# Current State
 
-Last updated: 2026-05-31.
+Last updated: 2026-06-01.
 
 The current accepted core stack includes the 2026-05-17 stock-only ample-slot
 rank-1 post-sizing top-up from `exp-20260517-009`, layered on top of the
@@ -48,13 +48,19 @@ Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
-## 2026-06-01 Alpha Search Update
+## 2026-06-01 Experiment Consolidation
+
+Today's work produced one accepted default-off paper adapter and one accepted
+measurement repair. No live/default order path was enabled, no core alpha rule
+was promoted, and no LLM/news authority changed. The main alpha conclusion is
+that the best current leads are now blocked by baseline parity, not by a lack
+of candidate-pool ideas.
 
 `exp-20260601-001` promoted the positive `exp-20260531-030` source-agnostic
-free-data consensus lead into a shared default-off adapter,
-`ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER`. It admits only same-date
-same-ticker agreement across at least two accepted free-data sleeves among
-`FUNDAMENTAL_GROWTH_RS_PAPER`, `VOLUME_BREADTH_BREAKOUT_PAPER`,
+free-data consensus lead into the shared default-off
+`ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter. It admits only
+same-date same-ticker agreement across at least two accepted free-data sleeves
+among `FUNDAMENTAL_GROWTH_RS_PAPER`, `VOLUME_BREADTH_BREAKOUT_PAPER`,
 `FINRA_IWM_CONFIRMED_PAPER`, and `ALPHA_SCORE_MARKET_REGIME_PAPER`, with fixed
 `$4,000` paper notional, top-1/day, a seven-calendar-day same-ticker cooldown,
 next-open paper entry, and 10-trading-day close exit. The replay evidence from
@@ -65,6 +71,70 @@ and core ranking, sizing, exits, LLM/news, and watchlists are unchanged. The
 next valid work is forward replacement-value accumulation and activation
 blocker monitoring, not source-count/cooldown/notional retuning on the frozen
 windows.
+
+`exp-20260601-014` accepted a measurement repair for production entry-capacity
+accounting. Production core entry planning now uses core-strategy slot
+capacity: legacy/manual/FOMO/pilot/paper holdings do not silently consume core
+entry slots unless they explicitly set a core `slot_policy`, while all real
+positions still count toward account heat, cash, and risk. The daily report and
+operator review now show both production core slots and total-account shadow
+capacity. Focused parity tests were added, and `docs/production_backtest_parity.md`
+was updated. Treat this as a parity/capacity-accounting repair, not new alpha.
+
+`exp-20260601-016` and `exp-20260601-022` record the current Gate 1 blocker:
+current-code canonical replay does not match the accepted metrics in
+`docs/backtesting.md`. The audit shows current aggregate EV/PnL
+`6.3596` / `$192,538.61` versus documented accepted `7.8941` /
+`$234,850.99`, with the mismatch concentrated in `late_strong` and `old_thin`.
+Until this is resolved or explicitly accepted, positive replay-only leads must
+not be retained or promoted.
+
+Companyfacts quality is the strongest blocked alpha lead. `exp-20260601-021`
+gross-margin quality improved all three windows with aggregate EV `+6.3389`
+and PnL `+$107,596.26` across `265` target trades, passed alpha/risk/sample
+checks, and failed retention only because `baseline_matches_docs=false`.
+`exp-20260601-019` free-cash-flow yield was also positive (`EV +2.7877`,
+PnL `+$50,918.82`) but failed concentration and baseline-retention checks.
+`exp-20260601-004` earnings-yield value similarly failed concentration despite
+large raw gains. Next valid work is baseline parity, then a shared default-off
+gross-margin adapter if the lead reproduces; do not retune nearby Companyfacts
+value/quality thresholds on the frozen windows.
+
+Accepted free-data consensus capacity/source refinements are observation-only
+until baseline parity is clean. `exp-20260601-015` no-core-entry-day capacity
+and `exp-20260601-018` core-capacity-available gate both improved all three
+windows (`EV +0.8900` / `+$20,028.83` and `EV +1.1099` / `+$22,063.58`), but
+both were blocked by the same baseline mismatch and were not retained.
+`exp-20260601-017` liquidity-efficiency gating was rejected outright
+(`EV -0.1410`, PnL `-$4,092.84`). `exp-20260601-020` alpha-score plus
+Fundamental Growth source-pair was positive (`EV +0.8352`, PnL `+$13,929.58`)
+but failed drawdown/concentration and baseline caveats. Do not continue
+consensus capacity/source-pair retunes until baseline parity is resolved or
+new forward replacement-value rows exist.
+
+Broad-universe `alpha_score` and OHLCV-only pattern mining should stay
+read-only. `exp-20260601-003` showed the narrow watchlist `alpha_score` edge
+was mostly momentum/relative-strength. `exp-20260601-006` broadened the test to
+a 1,446-ticker all-windows-full-liquid universe and found no robust 5-day
+composite or component edge. `exp-20260601-007`, `008`, and `009` rejected
+short-horizon reversal, 10-day continuation incremental to `ret20`, and
+overnight/intraday decomposition as promotable alpha. `exp-20260601-010`,
+`011`, and `012` rejected gap-up/hold/high-close, stock-only gap governance,
+and undercut/reclaim absorption candidate pools. Do not keep renaming broad
+OHLCV price-shape pools without a new PIT information source or direct
+replacement-value evidence.
+
+Read-only SEC filing sidecars were added for future attribution only:
+`exp-20260531-027` adds `source_credibility_bucket` and
+`text_direction_vs_price_bucket`; `exp-20260531-028` adds
+`predictability_mosaic_bucket` and `low_volume_predictability_bucket`.
+These fields do not change entries, exits, ranking, sizing, LLM/news, or
+orders.
+
+Regression status for this consolidation run: temporary `data/tmp` files and
+stale caches were cleaned, the stale `exp-20260601-014` log lock was removed,
+and full unit tests passed: `1082 passed in 54.81s`. No additional bug fix was
+required by the regression pass.
 
 ## 2026-05-31 Experiment Consolidation
 

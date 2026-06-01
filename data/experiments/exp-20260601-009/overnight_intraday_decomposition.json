@@ -1,0 +1,60 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "caveat": "Structural decomposition, not a tradeable edge: capturing the overnight premium requires buying at/near close and selling at/near open every day, which incurs heavy turnover cost, spread, and is the exact regime the overnight anomaly literature debates as hard to monetize. Warehouse all_windows_full_liquid survivorship; raw prices; no costs; gap-open microstructure partly mitigated by a 50pct component clip; the 3 windows are one contiguous 18-month period.",
+  "decision": "observed_only_no_robust_overnight_structure",
+  "experiment_id": "exp-20260601-009",
+  "gates": {
+    "all_passed": false,
+    "gate1": {
+      "name": "daily_cross_section_collected",
+      "passed": true,
+      "total_days": 388
+    },
+    "gate2": {
+      "component_clip": 0.5,
+      "min_names_per_day": 50,
+      "name": "component_clip_applied_microstructure_guard",
+      "passed": true
+    },
+    "gate3": {
+      "name": "survival_rate_not_affected_read_only_attribution",
+      "passed": true
+    },
+    "gate4": {
+      "close_to_close_mean_daily": 0.000782,
+      "decision_rule": "Accept the overnight-premium STRUCTURE (not a tradeable edge) if mean overnight daily return has t>=2, majority-positive windows, AND overnight-minus-intraday has t>=2. Tradeable-edge claims would additionally require an open/close execution and cost study, which this attribution does not perform.",
+      "intraday_mean_daily": 0.00036,
+      "intraday_tstat": 0.6727,
+      "name": "robust_overnight_premium_vs_intraday",
+      "overnight_mean_daily": 0.000436,
+      "overnight_minus_intraday_tstat": 0.1083,
+      "overnight_positive_windows": "2/3",
+      "overnight_share_of_close_to_close": 0.5575,
+      "overnight_tstat": 1.1456,
+      "passed": false,
+      "per_window": {
+        "late_strong": {
+          "intraday": 0.000533,
+          "n_days": 123,
+          "overnight": 0.000193
+        },
+        "mid_weak": {
+          "intraday": 0.000582,
+          "n_days": 127,
+          "overnight": 0.001316
+        },
+        "old_thin": {
+          "intraday": 2e-06,
+          "n_days": 138,
+          "overnight": -0.000156
+        }
+      },
+      "status": "observed_only_no_robust_overnight_structure",
+      "tstat_floor": 2.0
+    }
+  },
+  "rule_version": "overnight_intraday_decomposition_v1",
+  "runtime_seconds": 153.6,
+  "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+  "universe_size": 1446
+}

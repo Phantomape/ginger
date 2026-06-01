@@ -1,6 +1,6 @@
 # Alpha Optimization Playbook
 
-Last refreshed: 2026-05-31.
+Last refreshed: 2026-06-01.
 
 This is Ginger's long-lived alpha research playbook. It is not an experiment
 log and should not repeat every trial. Detailed records belong in
@@ -128,6 +128,12 @@ Recent repository evidence supports this priority:
   and AI optical low-close support. The durable lesson is that "reasonable"
   OHLCV pattern names are not enough; new pools need either a clearly new
   production-visible information source or immediate replacement-value evidence.
+  The 2026-06-01 broad-universe OHLCV scouts reinforce this: gap-up/hold/high-
+  close (`exp-20260601-010`), stock-only governance on the same pattern
+  (`exp-20260601-011`), and undercut/reclaim absorption (`exp-20260601-012`)
+  all failed Gate 4. Do not keep renaming OHLCV price-shape patterns as new
+  candidate pools unless the trial adds a new information-transfer, cost,
+  liquidity, or replacement-value mechanism.
 - Kova/CANSLIM-style intraday, base, pocket-pivot, distribution-day, 13F, and
   RS fields are useful context sidecars, but recent tests repeatedly failed to
   justify new gates, exits, pyramids, or notional scalars on the frozen sample.
@@ -548,6 +554,12 @@ Unified close-out of the broad-universe cross-sectional line (do not re-mine):
   double-sort residual that is BOTH above cost AND statistically significant
   (t>=2); a positive residual point estimate alone is not evidence
   (`exp-20260601-008` caught and corrected exactly this).
+- Time-of-day structure is not a near-term lever on the current broad liquid
+  universe. `exp-20260601-009` decomposed close-to-close returns into overnight
+  and intraday components and found no robust overnight premium: overnight mean
+  +0.044pct/day, t=1.15; overnight-minus-intraday t=0.11; only `2/3` windows
+  positive. Reopening this direction requires a small/micro-cap universe or a
+  much longer multi-regime sample plus explicit open/close turnover costs.
 
 ### 4b. Pattern-Name Candidate Pools
 
@@ -556,6 +568,14 @@ VWAP reclaim, long-base breadth confirmation, industry leadership, sector
 breadth agreement, and ticker accumulation-quality breakout are plausible
 descriptions, but the frozen evidence says they are not sufficient candidate
 sources by themselves.
+
+2026-06-01 update: the broader warehouse did not rescue the same family. Gap-up
+hold high-close improved aggregate EV but failed because one window regressed
+and drawdown drift was too high (`exp-20260601-010`). Stock-only governance
+removed ETF/ETN/proxy noise but made aggregate PnL negative and still regressed
+two windows (`exp-20260601-011`). Undercut/reclaim absorption was materially
+different from gap chasing, but aggregate EV and PnL fell, only `old_thin`
+improved, and baseline drift blocked any promotion (`exp-20260601-012`).
 
 Valid retry requires one of:
 
@@ -572,6 +592,9 @@ Do not:
   same windows;
 - use high-close or VWAP reclaim as a broad candidate-pool source without a
   separate information-transfer or liquidity mechanism;
+- retry broad gap-up/hold/high-close, stock-only gap governance, or
+  undercut/reclaim absorption on the same frozen warehouse without new
+  replacement-value evidence or a new PIT data source;
 - promote Form 4 role quality, multi-filer owner count, or AI optical low-close
   support from the current thin or replacement-negative samples.
 
@@ -755,6 +778,12 @@ survivorship, split timing, universe handling, and execution semantics are
 often missing or incomparable. Ginger should borrow the audit checklist, not
 delegate trading authority to agents.
 
+Live-agent benchmarking points to the same boundary from the other side:
+general LLM capability does not automatically become trading capability, and
+risk control is the differentiator across markets. For Ginger, this means
+agent benchmarks are useful for evaluation design, not as permission to let an
+agent own entries, exits, or sizing.
+
 Agent workflows are useful as research operators: they can propose hypotheses,
 retrieve source packets, run attribution scripts, and write a replayable
 evidence ledger. They are not strategy controllers. Any agent-produced
@@ -785,6 +814,8 @@ Source:
 
 - Agentic Trading: When LLM Agents Meet Financial Markets, 2026:
   <https://arxiv.org/abs/2605.19337>
+- AI-Trader: Benchmarking Autonomous Agents in Real-Time Financial Markets,
+  2025/2026: <https://arxiv.org/abs/2512.10971>
 
 ### Event Graphs And Multi-Modal Market Context
 
@@ -792,6 +823,13 @@ New financial forecasting research increasingly treats news, fundamentals,
 prices, and relational spillovers as graphs or multi-modal state. For Ginger,
 this supports event-interaction and theme-propagation fields, not free-form LLM
 trade calls.
+
+The latest multimodal stock-forecasting work is moving beyond flat feature
+concatenation toward cross-attention, gated fusion, and graph/market-structure
+representations. The usable lesson is not to add a neural forecaster to live
+orders; it is to persist relation-aware fields that can be replayed:
+peer/sector hierarchy, covariance-network state, text/price alignment quality,
+and whether a modality helped or hurt after costs.
 
 Recent peer-information and graph-learning work points to two practical
 directions: characteristic-similarity peer groups and early-peer earnings
@@ -820,6 +858,12 @@ Useful fields:
 - `peer_edge_weight`
 - `peer_edge_sparsification_bucket`
 - `peer_relation_pit_valid_flag`
+- `modality_alignment_window_id`
+- `text_price_alignment_bucket`
+- `market_structure_graph_bucket`
+- `graph_edge_construction_method`
+- `modality_contribution_after_cost_bucket`
+- `cross_modal_negative_transfer_bucket`
 
 Local update: `exp-20260530-006` tested the simplest raw SEC filing interaction
 field, `sec_same_event_family_burst_count_v1`, and rejected it. The sample was
@@ -854,6 +898,8 @@ Sources:
   2026: <https://link.springer.com/article/10.1007/s41109-025-00755-2>
 - Algorithmic trading and intra-industry information transfer, 2026:
   <https://link.springer.com/article/10.1007/s11142-026-09954-3>
+- Hyperbolic cross-attention multimodal stock forecasting, 2026:
+  <https://link.springer.com/article/10.1007/s00521-026-12118-8>
 
 ### Regime-Aware Predictability And Friction-Aware Control
 
@@ -880,6 +926,12 @@ Local evidence now matches this: pre-earnings surprise/RS and full-universe
 or monotonicity. The practical next step is not more top-N selection; it is
 state-conditioned attribution that says when the score is allowed to matter.
 
+Recent ML+Markowitz work is also relevant as an engineering pattern: keep
+return estimation, covariance/risk, constraints, and final allocation in one
+auditable pipeline. For Ginger, any future optimizer-like component should
+emit its expected-return source, covariance window, constraint shadow prices,
+and displacement cost before it can influence capital.
+
 Useful fields:
 
 - `predictability_mosaic_bucket`
@@ -898,6 +950,11 @@ Useful fields:
 - `rank_score_validity_regime_bucket`
 - `full_universe_rank_ladder_status`
 - `replacement_candidate_score_gap`
+- `expected_return_model_id`
+- `covariance_estimation_window_id`
+- `constraint_shadow_price_bucket`
+- `optimizer_turnover_penalty_id`
+- `allocation_displacement_cost_bucket`
 
 Engineering rule: regime-aware allocation belongs first in read-only
 attribution and default-off sleeves. A live sizing or cap change must be a
@@ -912,6 +969,8 @@ Sources:
   <https://www.nber.org/papers/w35158>
 - Machine learning portfolio optimization comparative study, 2026:
   <https://link.springer.com/article/10.1186/s40854-026-00927-8>
+- Machine Learning Meets Markowitz, NBER 2026:
+  <https://www.nber.org/papers/w34861>
 
 ### Transaction-Cost-Aware Allocation
 
@@ -984,11 +1043,18 @@ production-visible field:
 - raw full-universe `alpha_score` top-N promotion or score-weight tuning before
   component-level attribution shows a monotonic ladder, regime stability, and
   cost-adjusted replacement value;
+- broad-universe OHLCV cross-sectional factor mining that only re-discovers
+  momentum, including short-horizon reversal retries, 5d/10d continuation
+  promotion without ret20-incremental evidence, or time-of-day overnight
+  premium retries on the same 1,446-ticker warehouse sample;
 - imminent pre-earnings surprise/RS threshold, revision, top-N, hold-period, or
   pre-event-exit retries on the same frozen windows;
 - VWAP-reclaim, long-base, industry-leadership, sector-breadth-agreement, or
   accumulation-quality candidate-pool retries on the same OHLCV-only frozen
   sample;
+- gap-up/hold/high-close, stock-only gap-governance, or undercut/reclaim
+  absorption candidate-pool retries on the same broad warehouse windows without
+  a new PIT source or exact same-day replacement-value test;
 - raw SEC same-family burst, first/follow-on, same-ticker cross-family
   transition, sector-event breadth transfer, exact-industry Item 2.02 peer
   transfer, small same-family burst, or Form 4 owner-count retries without a

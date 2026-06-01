@@ -1,0 +1,41 @@
+{
+  "experiment_id": "exp-20260601-014",
+  "artifact_type": "measurement_repair_before",
+  "scenario": "2026-05-31 production entry capacity accounting",
+  "source_artifacts": [
+    "data/daily/signals/quant/quant_signals_20260531.json",
+    "operator_inputs/open_positions.json"
+  ],
+  "measurement_blocker": "Production entry_execution_plan counted all positive broker-account positions as core entry slots, so legacy/fomo/pilot holdings silently reduced core strategy available slots to zero.",
+  "before_policy": {
+    "capacity_scope": "all_positive_account_positions",
+    "active_positions": 11,
+    "max_positions": 5,
+    "available_slots": 0,
+    "signals_before_entry_plan": 2,
+    "signals_after_deferral": 1,
+    "signals_after_entry_plan": 0,
+    "deferred_breakout_tickers": [
+      "MSFT"
+    ],
+    "slot_sliced_tickers": [
+      "SNOW"
+    ]
+  },
+  "known_good_shadow": {
+    "core_strategy_active_positions": 1,
+    "core_strategy_available_slots": 4,
+    "operator_review_count": 2
+  },
+  "production_impact": {
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": true,
+    "shared_policy_changed": true,
+    "run_adapter_changed": true,
+    "backtester_adapter_changed": false,
+    "replay_only": false
+  }
+}
