@@ -1,0 +1,135 @@
+{
+  "after_metrics": {
+    "total_observations": 3551,
+    "component_5d_top_minus_bottom": {
+      "relative_strength": 0.00809,
+      "breadth_alignment": 0.0088,
+      "trend": -0.001349,
+      "theme_participation": -0.006721,
+      "expectation_revision": -0.007416,
+      "post_earnings_drift": -0.007416
+    },
+    "component_within_day_variance_share": {
+      "relative_strength": 0.8712,
+      "breadth_alignment": 0.6583,
+      "trend": 0.9252,
+      "theme_participation": 0.9804,
+      "expectation_revision": null,
+      "post_earnings_drift": null
+    },
+    "residual_5d_spread_vs_rs": {
+      "breadth_alignment": 0.003425,
+      "trend": -0.000527,
+      "theme_participation": -0.000483,
+      "expectation_revision": 0.002042,
+      "post_earnings_drift": 0.002042
+    },
+    "near_constant_components": ["expectation_revision", "post_earnings_drift"],
+    "momentum_components_with_edge": ["relative_strength"],
+    "non_momentum_univariate_edges": ["breadth_alignment"],
+    "momentum_collinear_components": ["breadth_alignment"],
+    "non_momentum_incremental_edges": [],
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260531-006 found a top-quantile-concentrated composite alpha_score edge (Q5-Q1 5d +0.56pp) but could not say which components drive it. This decomposes by component with within/across-day variance and an RS double-sort control.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Decomposes the composite alpha_score forward-return edge by component on the same 3551 full-universe (day,ticker) observations across the canonical 3 windows. Three discriminators: (1) univariate quintile spread, (2) within-day vs across-day variance share (cross-sectional vs market-timing), (3) RS double-sort control (within relative_strength quintile bands). Result: relative_strength is the only robust cross-sectional driver (+0.81pp 5d, 3/3 windows, within-day share 0.87). breadth_alignment had a univariate +0.88pp spread but its residual after RS control collapses to +0.34pp (below floor) -> RS-collinear, not incremental. expectation_revision and post_earnings_drift are perfectly constant (0.5, distinct=1) -> 30pct of composite weight is inert. Conclusion: alpha_score is repackaged momentum; no component beats relative_strength, which the core entry rule already trades on.",
+  "change_type": "read_only_alpha_score_component_decomposition_forward_return",
+  "changed_variable": "per_component_score_quantile_forward_return_spread",
+  "component": "quant/experiments/exp_20260601_003_alpha_score_component_decomposition_forward_return.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_momentum_only_edge",
+  "decision_rule": "A non-momentum component is incremental only if its pooled 5d top-minus-bottom quintile spread >= 0.005 AND within-day-dominant variation AND majority-positive windows AND the spread survives RS double-sort (residual_5d_spread_vs_rs >= 0.005). Accept if >=1 non-momentum component qualifies. If only trend/RS or RS-collinear components qualify -> observed_only_momentum_only_edge. If none -> observed_only_no_component_edge.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "relative_strength_5d_spread": 0.00809,
+    "breadth_univariate_5d_spread": 0.0088,
+    "breadth_residual_5d_vs_rs": 0.003425,
+    "inert_weight_share": 0.30
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260601-003",
+  "gate1": {"name": "observations_collected", "passed": true, "total_observations": 3551},
+  "gate2": {"name": "components_have_dispersion", "passed": true, "near_constant_components": ["expectation_revision", "post_earnings_drift"]},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "incremental_non_momentum_component_edge",
+    "passed": false,
+    "status": "observed_only_momentum_only_edge",
+    "momentum_components_with_edge": ["relative_strength"],
+    "non_momentum_univariate_edges": ["breadth_alignment"],
+    "momentum_collinear_components": ["breadth_alignment"],
+    "non_momentum_components_with_edge": [],
+    "near_constant_components": ["expectation_revision", "post_earnings_drift"],
+    "market_timing_confound_components": []
+  },
+  "gate_questions": {
+    "what_hypothesis": "Is the composite alpha_score top-quantile forward-return edge driven by core momentum (trend+RS) or by independent non-momentum components?",
+    "prior_similar_experiments": "exp-20260531-006 (composite top-quantile edge, non-monotonic); exp-20260530-022 (filled-trade degenerate); exp-20260528-007 (expectation increment to ranking, no edge).",
+    "single_independent_variable": "Per-component score quantile vs forward return, with RS double-sort control.",
+    "success_failure_criteria": ">=1 non-momentum component with a clean cross-sectional 5d spread that survives controlling for relative_strength.",
+    "reproducibility": "Deterministic: load 3 ohlcv snapshots, sample every 5th day, score full universe PIT, decompose by component. 8 unit tests cover dispersion, within/across-day variance, RS double-sort, and judge branches."
+  },
+  "hypothesis": "The full-universe top-quantile alpha_score forward-return edge found in exp-20260531-006 is driven primarily by the momentum components (trend 0.30 + relative_strength 0.25) that the core entry rule already trades on, not by the expectation_revision / post_earnings_drift / theme_participation / breadth_alignment components.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "alpha_search",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": ["exp-20260531-006", "exp-20260530-022", "exp-20260528-007", "exp-20260517-009"],
+  "new_evidence_type": "per_component_forward_return_spread_isolation",
+  "next_evidence_needed": "Close the cross-sectional ranking direction for NEW alpha: alpha_score = momentum (relative_strength), which the core entry already trades on, so there is no incremental edge to capture by reweighting. expectation_revision and post_earnings_drift are constant (0.5) in this universe -- 30pct inert weight; reviving the ranking surface needs genuinely populated non-momentum components (a data-population problem, same blocker as the frozen expectation direction), not a weighting change. This explains why raw monotonic alpha_score ranking failed promotion in the parallel paper-adapter line (exp-20260531-005): middle ranks carry only momentum-collinear noise.",
+  "parameters": {
+    "rule_version": "alpha_score_component_decomposition_forward_return_v1",
+    "sample_step_trading_days": 5,
+    "forward_horizons": [5, 10, 20],
+    "primary_horizon": 5,
+    "quintile": 5,
+    "edge_floor": 0.005,
+    "min_distinct_values": 5,
+    "min_bucket_obs": 30,
+    "momentum_components": ["trend", "relative_strength"],
+    "non_momentum_components": ["expectation_revision", "post_earnings_drift", "theme_participation", "breadth_alignment"],
+    "composite_weights": {"trend": 0.30, "relative_strength": 0.25, "expectation_revision": 0.20, "post_earnings_drift": 0.10, "theme_participation": 0.10, "breadth_alignment": 0.05}
+  },
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.0,
+    "main_failure_modes": "only_trend_rs_carry_signal_no_incremental, all_components_flat, component_collinearity_makes_isolation_ambiguous, one_window_negative, constant_components_zero_dispersion",
+    "outcome_vs_prediction": "matched: only relative_strength carries a robust edge; the one non-momentum challenger (breadth) is RS-collinear; expectation/PEAD are constant. Landed as observed_only_momentum_only_edge."
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260601_003"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260601_003_alpha_score_component_decomposition_forward_return.py",
+    "quant/test_exp_20260601_003_alpha_score_component_decomposition.py",
+    "data/experiments/exp-20260601-003/alpha_score_component_decomposition_forward_return.json",
+    "experiments/artifacts/exp-20260601-003_alpha_score_component_decomposition_forward_return.md",
+    "experiments/logs/exp-20260601-003.json",
+    "experiments/tickets/exp-20260601-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "alpha_score_component_decomposition_forward_return_v1",
+  "single_causal_variable": "per_component_score_quantile_forward_return_spread",
+  "status": "observed_only",
+  "timestamp": "2026-06-01T06:00:00+00:00",
+  "trial_family": "cross_sectional_ranking_attribution",
+  "trial_variant_id": "exp-20260601-003"
+}
