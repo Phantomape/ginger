@@ -47,6 +47,8 @@ def test_cross_source_consensus_requires_two_accepted_sources():
             }
         ],
         state=empty_free_data_cross_source_consensus_paper_state(),
+        core_active_position_count=0,
+        max_core_positions=5,
         persist=False,
     )
 
@@ -77,6 +79,8 @@ def test_cross_source_consensus_admits_same_ticker_same_date_without_orders():
             },
         ],
         state=empty_free_data_cross_source_consensus_paper_state(),
+        core_active_position_count=4,
+        max_core_positions=5,
         persist=False,
     )
 
@@ -86,6 +90,9 @@ def test_cross_source_consensus_admits_same_ticker_same_date_without_orders():
     assert candidate["ticker"] == "WIN"
     assert candidate["rule_version"] == RULE_VERSION
     assert candidate["cross_source_consensus_candidate_pool"] is True
+    assert candidate["core_capacity_rule_version"] == "accepted_free_data_consensus_core_capacity_available_gate_v1"
+    assert candidate["active_core_positions_after_signal_close"] == 4
+    assert candidate["available_core_slots_after_signal_close"] == 1
     assert candidate["source_count"] == 2
     assert candidate["source_names"] == [
         "FINRA_IWM_CONFIRMED_PAPER",
@@ -94,6 +101,67 @@ def test_cross_source_consensus_admits_same_ticker_same_date_without_orders():
     assert candidate["intended_notional"] == 4_000.0
     assert candidate["alters_orders"] is False
     assert snapshot["new_pending_entries"][0]["notional"] == 4_000.0
+    assert snapshot["core_capacity_gate"]["passed"] is True
+    assert snapshot["trade_enabled"] is False
+
+
+def test_cross_source_consensus_rejects_when_core_capacity_full():
+    as_of = "2026-01-12"
+    snapshot = build_free_data_cross_source_consensus_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"WIN": _rows(base=80.0), "SPY": _rows(base=100.0)},
+        source_snapshots=[
+            {
+                "sleeve": "VOLUME_BREADTH_BREAKOUT_PAPER",
+                "asof_date": as_of,
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            },
+            {
+                "sleeve": "FINRA_IWM_CONFIRMED_PAPER",
+                "asof_date": as_of,
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            },
+        ],
+        state=empty_free_data_cross_source_consensus_paper_state(),
+        core_active_position_count=5,
+        max_core_positions=5,
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["core_capacity_gate"]["passed"] is False
+    assert snapshot["core_capacity_gate"]["reasons"] == ["core_capacity_full"]
+    assert snapshot["rejected_candidates"][0]["reasons"] == ["core_capacity_full"]
+    assert snapshot["trade_enabled"] is False
+
+
+def test_cross_source_consensus_rejects_missing_core_capacity_context():
+    as_of = "2026-01-12"
+    snapshot = build_free_data_cross_source_consensus_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker={"WIN": _rows(base=80.0), "SPY": _rows(base=100.0)},
+        source_snapshots=[
+            {
+                "sleeve": "VOLUME_BREADTH_BREAKOUT_PAPER",
+                "asof_date": as_of,
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            },
+            {
+                "sleeve": "FINRA_IWM_CONFIRMED_PAPER",
+                "asof_date": as_of,
+                "candidates": [{"ticker": "WIN", "signal_date": as_of}],
+            },
+        ],
+        state=empty_free_data_cross_source_consensus_paper_state(),
+        persist=False,
+    )
+
+    assert snapshot["candidate_count"] == 0
+    assert snapshot["new_pending_count"] == 0
+    assert snapshot["core_capacity_gate"]["passed"] is False
+    assert snapshot["core_capacity_gate"]["reasons"] == ["missing_core_capacity_context"]
+    assert snapshot["rejected_candidates"][0]["reasons"] == ["missing_core_capacity_context"]
     assert snapshot["trade_enabled"] is False
 
 

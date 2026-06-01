@@ -33,6 +33,7 @@ from constants import (
     ATR_TARGET_MULT,
     BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
     BREAKOUT_RANK_BY_52W_HIGH,
+    MAX_POSITIONS,
     REGIME_AWARE_EXIT,
 )
 from data_paths import daily_artifact_path, atomic_write_json, atomic_write_text
@@ -2221,6 +2222,8 @@ def main():
                 ],
                 open_prices=current_open_prices,
                 current_prices=current_prices,
+                core_active_position_count=strategy_active_positions,
+                max_core_positions=MAX_POSITIONS,
             )
         )
         if (

@@ -27,7 +27,7 @@ try:
         _safe,
         _single_ticker_positive_share,
     )
-    from constants import ROUND_TRIP_COST_PCT
+    from constants import MAX_POSITIONS, ROUND_TRIP_COST_PCT
     from data_paths import data_artifact_path
     from fill_model import SLIPPAGE_BPS_TARGET, apply_entry_fill, apply_slippage
 except ImportError:  # pragma: no cover - package-style imports in tests
@@ -42,7 +42,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
         _safe,
         _single_ticker_positive_share,
     )
-    from quant.constants import ROUND_TRIP_COST_PCT
+    from quant.constants import MAX_POSITIONS, ROUND_TRIP_COST_PCT
     from quant.data_paths import data_artifact_path
     from quant.fill_model import SLIPPAGE_BPS_TARGET, apply_entry_fill, apply_slippage
 
@@ -50,6 +50,7 @@ except ImportError:  # pragma: no cover - package-style imports in tests
 SLEEVE_NAME = "ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER"
 RULE_VERSION = "accepted_free_data_cross_source_consensus_shared_v1"
 CONSENSUS_RULE_VERSION = "accepted_free_data_cross_source_consensus_candidate_pool_v1"
+CORE_CAPACITY_RULE_VERSION = "accepted_free_data_consensus_core_capacity_available_gate_v1"
 REPLACEMENT_VALUE_RULE_VERSION = (
     "accepted_free_data_cross_source_consensus_forward_replacement_value_v1"
 )
@@ -79,6 +80,8 @@ DEFAULT_CONFIG = {
     "hold_days": 10,
     "same_ticker_cooldown_days": 7,
     "accepted_source_names": sorted(ACCEPTED_SOURCE_NAMES),
+    "require_core_capacity_available": True,
+    "max_core_positions": MAX_POSITIONS,
     "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
     "forward_gate_min_closed_trades": 20,
     "forward_gate_positive_net_pnl": True,
@@ -184,6 +187,8 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
     ohlcv_by_ticker: dict[str, Any] | None = None,
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
+    core_active_position_count: int | None = None,
+    max_core_positions: int | None = None,
     state: dict[str, Any] | None = None,
     config: dict[str, Any] | None = None,
     persist: bool = True,
@@ -256,6 +261,8 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         active_tickers=active_tickers,
         pending_tickers=pending_tickers,
         state=working_state,
+        core_active_position_count=core_active_position_count,
+        max_core_positions=max_core_positions,
         config=cfg,
     )
 
@@ -311,6 +318,11 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
             2,
         ),
         "source_consensus": source_summary,
+        "core_capacity_gate": _core_capacity_gate_summary(
+            core_active_position_count=core_active_position_count,
+            max_core_positions=max_core_positions,
+            config=cfg,
+        ),
         "same_ticker_cooldown": cooldown_summary,
         "candidates": deepcopy(candidates),
         "rejected_candidates": deepcopy(rejected[:50]),
@@ -486,17 +498,31 @@ def _consensus_candidates(
     active_tickers: set[str],
     pending_tickers: set[str],
     state: dict[str, Any],
+    core_active_position_count: int | None,
+    max_core_positions: int | None,
     config: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     rejected: list[dict[str, Any]] = []
     cooldown_rejected = 0
     min_source_count = int(config["min_source_count"])
+    capacity = _core_capacity_context(
+        core_active_position_count=core_active_position_count,
+        max_core_positions=max_core_positions,
+        config=config,
+    )
     for (signal_date, ticker), source_rows in sorted(source_rows_by_key.items()):
         source_names = sorted(source_rows)
         base = _candidate_from_sources(signal_date, ticker, source_rows, config)
+        base.update(_candidate_capacity_fields(capacity))
         if len(source_names) < min_source_count:
             rejected.append({**base, "reasons": ["insufficient_source_count"]})
+            continue
+        if capacity["required"] and not capacity["known"]:
+            rejected.append({**base, "reasons": ["missing_core_capacity_context"]})
+            continue
+        if capacity["required"] and not capacity["available"]:
+            rejected.append({**base, "reasons": ["core_capacity_full"]})
             continue
         if ticker in active_tickers or ticker in pending_tickers:
             rejected.append({**base, "reasons": ["already_pending_or_open"]})
@@ -743,6 +769,85 @@ def _source_consensus_summary(
     }
 
 
+def _core_capacity_context(
+    *,
+    core_active_position_count: int | None,
+    max_core_positions: int | None,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    required = bool(config.get("require_core_capacity_available", True))
+    max_positions = int(max_core_positions or config.get("max_core_positions") or MAX_POSITIONS)
+    active = _non_negative_int(core_active_position_count)
+    available_slots = max(0, max_positions - active) if active is not None else None
+    return {
+        "rule_version": CORE_CAPACITY_RULE_VERSION,
+        "required": required,
+        "known": active is not None,
+        "active_core_positions_after_signal_close": active,
+        "max_core_positions": max_positions,
+        "available_core_slots_after_signal_close": available_slots,
+        "available": (available_slots is not None and available_slots > 0)
+        if required
+        else True,
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+
+
+def _candidate_capacity_fields(capacity: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "core_capacity_rule_version": capacity["rule_version"],
+        "capacity_gate": "core_capacity_available_after_signal_close",
+        "core_capacity_required": capacity["required"],
+        "active_core_positions_after_signal_close": capacity[
+            "active_core_positions_after_signal_close"
+        ],
+        "available_core_slots_after_signal_close": capacity[
+            "available_core_slots_after_signal_close"
+        ],
+        "max_core_positions": capacity["max_core_positions"],
+    }
+
+
+def _core_capacity_gate_summary(
+    *,
+    core_active_position_count: int | None,
+    max_core_positions: int | None,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    capacity = _core_capacity_context(
+        core_active_position_count=core_active_position_count,
+        max_core_positions=max_core_positions,
+        config=config,
+    )
+    status = "passed" if capacity["available"] else "blocked"
+    if capacity["required"] and not capacity["known"]:
+        status = "blocked"
+        reasons = ["missing_core_capacity_context"]
+    elif capacity["required"] and not capacity["available"]:
+        reasons = ["core_capacity_full"]
+    else:
+        reasons = []
+    return {
+        "rule_version": CORE_CAPACITY_RULE_VERSION,
+        "required": capacity["required"],
+        "status": status,
+        "passed": not reasons,
+        "reasons": reasons,
+        "metrics": {
+            "active_core_positions_after_signal_close": capacity[
+                "active_core_positions_after_signal_close"
+            ],
+            "available_core_slots_after_signal_close": capacity[
+                "available_core_slots_after_signal_close"
+            ],
+            "max_core_positions": capacity["max_core_positions"],
+        },
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
+
+
 def _forward_paper_gate(
     closed_positions: list[dict[str, Any]],
     config: dict[str, Any],
@@ -811,6 +916,16 @@ def _entry_notional(entry: dict[str, Any], config: dict[str, Any]) -> float:
     return float(config["paper_notional_usd"])
 
 
+def _non_negative_int(value: Any) -> int | None:
+    try:
+        if value is None:
+            return None
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return None
+    return max(0, parsed)
+
+
 def _last_selected_date(state: dict[str, Any], ticker: str) -> str | None:
     dates: list[str] = []
     for bucket in ("pending_entries", "open_positions", "closed_positions", "skipped_entries"):
@@ -863,6 +978,10 @@ def _config(config: dict[str, Any] | None) -> dict[str, Any]:
     cfg["trade_enabled"] = False
     cfg["accepted_source_names"] = sorted(
         {str(name).upper() for name in cfg.get("accepted_source_names") or []}
+    )
+    cfg["max_core_positions"] = int(cfg.get("max_core_positions") or MAX_POSITIONS)
+    cfg["require_core_capacity_available"] = bool(
+        cfg.get("require_core_capacity_available", True)
     )
     return cfg
 

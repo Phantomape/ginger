@@ -1,0 +1,163 @@
+{
+  "acceptance_rule": "docs/backtesting.md three-window Gate 1-4; retain only if aggregate EV/PnL and all three windows improve, sample/concentration/risk pass, and shared adapter remains default-off with trade_enabled=false.",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+    "docs/current_state.md",
+    "docs/production_backtest_parity.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/data_edge_context_layers.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/logs",
+    "experiments/cards",
+    "experiments/tickets",
+    "data/experiments"
+  ],
+  "artifact": "data/experiments/exp-20260601-028/exp_20260601_028_accepted_consensus_core_capacity_available_current_baseline.json",
+  "baseline_result_file": "data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json",
+  "card_file": "experiments/cards/exp-20260601-028.md",
+  "change_type": "default_off_paper_capacity_gate",
+  "changed_variable": "accepted_free_data_consensus_core_capacity_available_gate_v2_current_baseline",
+  "claimed_at": "2026-06-01T19:11:26+00:00",
+  "completed_at": "2026-06-01T19:24:54Z",
+  "created_at": "2026-06-01T19:11:01+00:00",
+  "decision": "accepted_default_off_consensus_core_capacity_available_adapter",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260601-028",
+  "experiment_uid": "expuid-0515957670bf413b",
+  "gate4": {
+    "alpha_checks_passed": true,
+    "decision": "accepted_default_off_consensus_core_capacity_available_adapter",
+    "ev_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "extra_capacity_target_trade_count": 11,
+    "failed_gates": [],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "baseline_matches_docs": true,
+      "concentration_guard_passed": true,
+      "distinct_from_no_core_gate": true,
+      "drawdown_drift_passed": true,
+      "shared_default_off_adapter_present": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": -0.002,
+    "min_survival_rate": 0.7917,
+    "passed": true,
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "The current PIT-DTE three-window replay improved aggregate EV/PnL and all windows, baseline matched docs/backtesting.md, and the same core-capacity gate now lives in the shared default-off adapter with trade_enabled=false.",
+    "requires_parity_before_promotion": false,
+    "shared_adapter": {
+      "core_capacity_rule_version": "accepted_free_data_consensus_core_capacity_available_gate_v1",
+      "passed": true,
+      "require_core_capacity_available": true,
+      "shared_adapter_file": "quant/free_data_cross_source_consensus_paper_sleeve.py",
+      "trade_enabled": false
+    }
+  },
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260601-028",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-01T19:11:01+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "accepted_consensus_core_capacity_available_current_baseline"
+  },
+  "hypothesis": "Accepted free-data cross-source consensus candidates should have cleaner replacement value when admitted only while core replay capacity is still available under the current PIT-DTE baseline.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "min_source_count",
+    "hold_days",
+    "paper_notional_usd",
+    "same_ticker_cooldown_days",
+    "source_names",
+    "core_signal_generation",
+    "core_ranking",
+    "core_sizing",
+    "core_exits"
+  ],
+  "log": "experiments/logs/exp-20260601-028.json",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/portfolio_engine.py",
+    "quant/risk_engine.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260601-015",
+    "exp-20260601-018",
+    "exp-20260601-001",
+    "exp-20260531-030"
+  ],
+  "new_evidence_type": "current_pit_dte_baseline_retest_with_shared_adapter_promotion_candidate",
+  "owner": "codex",
+  "prediction": {
+    "confidence_reason": "Prior exp-20260601-018 passed alpha checks but was blocked only by obsolete baseline mismatch; current docs now define that replay baseline as canonical.",
+    "expected_ev_delta": 1.1099,
+    "expected_pnl_delta": 22063.58,
+    "main_failure_modes": [
+      "window_regression",
+      "capacity_not_distinct",
+      "concentration_failed",
+      "shared_adapter_parity_gap"
+    ],
+    "recorded_at": "2026-06-01T19:10:35+00:00",
+    "success_probability": 0.48
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "result": {
+    "aggregate_expected_value_delta": 1.1099,
+    "aggregate_strategy_total_pnl_delta": 22063.58
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260601-028.json",
+  "single_causal_variable": "accepted_free_data_consensus_core_capacity_available_gate_v2_current_baseline",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260601-028.json",
+  "trial_family": "accepted_free_data_cross_source_consensus_capacity_gate",
+  "trial_variant_id": "accepted_free_data_consensus_core_capacity_available_gate_v2_current_baseline"
+}

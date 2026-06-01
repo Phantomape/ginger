@@ -2266,6 +2266,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"  Source status: {free_data_cross_source_consensus_paper_sleeve.get('error')}"
             )
         consensus = free_data_cross_source_consensus_paper_sleeve.get("source_consensus") or {}
+        capacity_gate = free_data_cross_source_consensus_paper_sleeve.get("core_capacity_gate") or {}
         cooldown = free_data_cross_source_consensus_paper_sleeve.get("same_ticker_cooldown") or {}
         lines.append(
             "  Cross-source consensus: "
@@ -2278,6 +2279,17 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"  Sources: {consensus.get('source_counts', {})}  |  "
             f"notional=${consensus.get('paper_notional_usd', 0.0):,.0f}"
         )
+        if capacity_gate:
+            metrics = capacity_gate.get("metrics") or {}
+            reasons = capacity_gate.get("reasons") or []
+            reason_text = ", ".join(reasons) if reasons else "none"
+            lines.append(
+                "  Core capacity gate: "
+                f"{capacity_gate.get('status', 'unknown')}  |  "
+                f"active={metrics.get('active_core_positions_after_signal_close')}  |  "
+                f"available={metrics.get('available_core_slots_after_signal_close')}  |  "
+                f"blocked_by={reason_text}"
+            )
         lines.append(
             f"  Candidates: {free_data_cross_source_consensus_paper_sleeve.get('candidate_count', 0)}  |  "
             f"Rejected: {free_data_cross_source_consensus_paper_sleeve.get('rejected_candidate_count', 0)}  |  "

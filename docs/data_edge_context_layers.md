@@ -518,6 +518,11 @@ Evidence boundary:
 - `exp-20260601-001` promoted that fixed candidate definition into a shared
   default-off adapter. It does not change source thresholds, source notional,
   top-N, hold period outside this adapter, live watchlists, or order paths.
+- `exp-20260601-028` added the accepted current-baseline
+  core-capacity-available admission boundary. The adapter now requires the same
+  production-visible core slot context used by entry planning and blocks new
+  paper admissions when that context is missing or when active core positions
+  are already at `MAX_POSITIONS`.
 
 Adapter semantics:
 
@@ -526,16 +531,19 @@ Adapter semantics:
   `ALPHA_SCORE_MARKET_REGIME_PAPER`;
 - admits only candidates whose ticker appears in at least two of those accepted
   free-data sources on the same signal date;
+- admits those candidates only when `active core positions < MAX_POSITIONS`
+  under the production core-slot accounting surface;
 - uses fixed `$4,000` paper notional, top-1/day,
   seven-calendar-day same-ticker admitted-candidate cooldown, next-open paper
   entry, and 10-trading-day paper exit;
 - emits default-off `pending/open/closed` paper ledger, replacement-value
-  report, forward gate, default-off attribution surface, and human-report block.
+  report, core-capacity gate metadata, forward gate, default-off attribution
+  surface, and human-report block.
 
 Agent rule: this sleeve is observe-only. Do not retune the source count, source
-set, cooldown, notional, or hold period on the same frozen windows. Promotion
-to live/core behavior requires closed forward replacement value and a separate
-Gate 1-4 activation experiment.
+set, cooldown, notional, hold period, or nearby capacity variants on the same
+frozen windows. Promotion to live/core behavior requires closed forward
+replacement value and a separate Gate 1-4 activation experiment.
 
 ### `quant/ranking_attribution.py`
 

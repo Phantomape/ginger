@@ -54,7 +54,7 @@ command; canonical acceptance evidence is the three-window artifact above.
 
 ## 2026-06-01 Experiment Consolidation
 
-Today's work produced two accepted default-off paper adapters and one accepted
+Today's work produced three accepted default-off paper adapters and one accepted
 measurement repair. No live/default order path was enabled, no core alpha rule
 was promoted, and no LLM/news authority changed. The main alpha conclusion is
 that filed-date-safe free-data candidate sources remain the highest-value
@@ -75,6 +75,20 @@ and core ranking, sizing, exits, LLM/news, and watchlists are unchanged. The
 next valid work is forward replacement-value accumulation and activation
 blocker monitoring, not source-count/cooldown/notional retuning on the frozen
 windows.
+
+`exp-20260601-028` accepted the strongest previously blocked free-data
+consensus capacity discriminator now that `exp-20260601-025` made the PIT-DTE
+baseline canonical. The shared
+`ACCEPTED_FREE_DATA_CROSS_SOURCE_CONSENSUS_PAPER` adapter now admits same-date
+same-ticker consensus paper candidates only when production-visible core
+capacity is available (`active core positions < MAX_POSITIONS`); missing core
+capacity context blocks admission rather than silently passing. Three-window
+EV improved `6.3596 -> 7.4695` (`+1.1099`) and PnL improved `$192,538.61 ->
+$214,602.19` (`+$22,063.58`), with all windows improving, max drawdown
+improving by `0.20pp`, `36` target paper trades, max single positive share
+`0.370337`, and positive PnL HHI `0.238049`. This is still default-off paper
+only: `trade_enabled=false`, live/default orders remain disabled, and core
+ranking, sizing, exits, LLM/news, and watchlists are unchanged.
 
 `exp-20260601-014` accepted a measurement repair for production entry-capacity
 accounting. Production core entry planning now uses core-strategy slot
@@ -122,17 +136,17 @@ large raw gains. Next valid work is forward replacement-value accumulation or
 orthogonal free-data candidate-source discovery; do not retune nearby
 Companyfacts value/quality thresholds on the frozen windows.
 
-Accepted free-data consensus capacity/source refinements are observation-only
-until baseline parity is clean. `exp-20260601-015` no-core-entry-day capacity
-and `exp-20260601-018` core-capacity-available gate both improved all three
-windows (`EV +0.8900` / `+$20,028.83` and `EV +1.1099` / `+$22,063.58`), but
-both were blocked by the same baseline mismatch and were not retained.
+Free-data consensus capacity/source refinements should not continue as nearby
+frozen-window retunes. `exp-20260601-015` no-core-entry-day capacity remains a
+positive but unretained scout (`EV +0.8900`, PnL `+$20,028.83`).
+`exp-20260601-018` core-capacity-available was superseded by accepted
+`exp-20260601-028` after the PIT-DTE baseline became canonical.
 `exp-20260601-017` liquidity-efficiency gating was rejected outright
 (`EV -0.1410`, PnL `-$4,092.84`). `exp-20260601-020` alpha-score plus
 Fundamental Growth source-pair was positive (`EV +0.8352`, PnL `+$13,929.58`)
 but failed drawdown/concentration and baseline caveats. Do not continue
-consensus capacity/source-pair retunes until baseline parity is resolved or
-new forward replacement-value rows exist.
+consensus capacity/source-pair retunes without new forward replacement-value
+rows or a materially different PIT context surface.
 
 Broad-universe `alpha_score` and OHLCV-only pattern mining should stay
 read-only. `exp-20260601-003` showed the narrow watchlist `alpha_score` edge
@@ -155,8 +169,9 @@ orders.
 
 Regression status for this consolidation run: temporary `data/tmp` files and
 stale caches were cleaned, the stale `exp-20260601-014` log lock was removed,
-and full unit tests passed: `1082 passed in 54.81s`. No additional bug fix was
-required by the regression pass.
+and full unit tests passed after the exp028 shared-adapter update:
+`1088 passed in 38.69s`. No additional bug fix was required by the regression
+pass.
 
 ## 2026-05-31 Experiment Consolidation
 

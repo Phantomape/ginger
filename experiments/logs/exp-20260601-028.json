@@ -1,0 +1,199 @@
+{
+  "accepted": true,
+  "after_metrics": {
+    "expected_value_score": 7.4695,
+    "strategy_total_pnl": 214602.19,
+    "total_pnl": 214602.19
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 6.3596,
+    "strategy_total_pnl": 192538.61,
+    "total_pnl": 192538.61
+  },
+  "calibration": {
+    "actual_decision": "accepted_default_off_consensus_core_capacity_available_adapter",
+    "actual_ev_delta": 1.1099,
+    "actual_pnl_delta": 22063.58,
+    "actual_success": 1,
+    "brier_score": 0.2704,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "window_regression",
+      "capacity_not_distinct",
+      "concentration_failed",
+      "shared_adapter_parity_gap"
+    ],
+    "predicted_success_probability": 0.48,
+    "realized_failure_mode": []
+  },
+  "change_summary": "Promoted the accepted free-data cross-source consensus paper queue's core-capacity-available discriminator into the shared default-off adapter.",
+  "change_type": "default_off_paper_capacity_gate",
+  "changed_variable": "accepted_free_data_consensus_core_capacity_available_gate_v2_current_baseline",
+  "decision": "accepted_default_off_consensus_core_capacity_available_adapter",
+  "decision_basis": {
+    "alpha_checks_passed": true,
+    "decision": "accepted_default_off_consensus_core_capacity_available_adapter",
+    "ev_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "extra_capacity_target_trade_count": 11,
+    "failed_gates": [],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "baseline_matches_docs": true,
+      "concentration_guard_passed": true,
+      "distinct_from_no_core_gate": true,
+      "drawdown_drift_passed": true,
+      "shared_default_off_adapter_present": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": -0.002,
+    "min_survival_rate": 0.7917,
+    "passed": true,
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "The current PIT-DTE three-window replay improved aggregate EV/PnL and all windows, baseline matched docs/backtesting.md, and the same core-capacity gate now lives in the shared default-off adapter with trade_enabled=false.",
+    "requires_parity_before_promotion": false,
+    "shared_adapter": {
+      "core_capacity_rule_version": "accepted_free_data_consensus_core_capacity_available_gate_v1",
+      "passed": true,
+      "require_core_capacity_available": true,
+      "shared_adapter_file": "quant/free_data_cross_source_consensus_paper_sleeve.py",
+      "trade_enabled": false
+    }
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 1.1099,
+    "expected_value_score_delta_pct": 0.174524,
+    "extra_capacity_target_trade_count": 11,
+    "max_drawdown_delta": -0.002,
+    "max_single_positive_share": 0.370337,
+    "positive_pnl_hhi": 0.238049,
+    "strategy_total_pnl_delta": 22063.58,
+    "strategy_total_pnl_delta_pct": 0.114593,
+    "target_trade_count": 36,
+    "total_pnl_delta": 22063.58
+  },
+  "experiment_id": "exp-20260601-028",
+  "hypothesis": "Accepted free-data consensus candidates should have cleaner replacement value when admitted only on dates where the core replay still leaves unused position capacity after signal-date close.",
+  "lane": "alpha_search",
+  "mechanism_family": "default_off_paper_candidate_pool",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": [
+    "exp-20260601-015",
+    "exp-20260601-018",
+    "exp-20260601-001",
+    "exp-20260531-030"
+  ],
+  "new_evidence_type": "current_pit_dte_baseline_retest_with_shared_adapter",
+  "next_retry_requires": [
+    "closed forward replacement-value rows before any trade-enabled activation",
+    "do not retune source-count, source-set, cooldown, hold, or notional on frozen windows",
+    "new PIT replacement-value surface before any nearby consensus capacity retry"
+  ],
+  "parameters": {
+    "base_notional_usd": 4000.0,
+    "capacity_gate": "admit only if active core positions after signal-date close are below MAX_POSITIONS",
+    "hold_days": 10,
+    "max_core_positions": 5,
+    "max_paper_trades_per_day": 1,
+    "rule_version": "accepted_free_data_consensus_core_capacity_available_gate_v2_current_baseline",
+    "same_ticker_cooldown_days": 7,
+    "shared_adapter_rule_version": "accepted_free_data_consensus_core_capacity_available_gate_v1",
+    "source_adapter_experiment_id": "exp-20260601-001",
+    "source_replay_experiment_id": "exp-20260531-030"
+  },
+  "prediction": {
+    "confidence_reason": "Prior exp-20260601-018 passed alpha checks but was blocked only by obsolete baseline mismatch; current docs now define that replay baseline as canonical.",
+    "expected_ev_delta": 1.1099,
+    "expected_pnl_delta": 22063.58,
+    "main_failure_modes": [
+      "window_regression",
+      "capacity_not_distinct",
+      "concentration_failed",
+      "shared_adapter_parity_gap"
+    ],
+    "recorded_at": "2026-06-01T19:10:35+00:00",
+    "success_probability": 0.48
+  },
+  "prior_trial_count": 2,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": true,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": true,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260601_028_accepted_consensus_core_capacity_available_current_baseline.py",
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+    "docs/production_backtest_parity.md",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/data_edge_context_layers.md",
+    "data/experiments/exp-20260601-028/exp_20260601_028_accepted_consensus_core_capacity_available_current_baseline.json",
+    "data/experiments/exp-20260601-028/exp_20260601_028_accepted_consensus_core_capacity_available_current_baseline_before.json",
+    "data/experiments/exp-20260601-028/exp_20260601_028_accepted_consensus_core_capacity_available_current_baseline_after.json",
+    "experiments/logs/exp-20260601-028.json",
+    "experiments/cards/exp-20260601-028.md",
+    "experiments/tickets/exp-20260601-028.json"
+  ],
+  "status": "accepted_default_off_consensus_core_capacity_available_adapter",
+  "timestamp": "2026-06-01T19:24:54Z",
+  "trial_family": "accepted_free_data_cross_source_consensus_capacity_gate",
+  "trial_variant_id": "accepted_free_data_consensus_core_capacity_available_gate_v2_current_baseline",
+  "windows": [
+    {
+      "expected_value_after": 4.6936,
+      "expected_value_before": 4.1082,
+      "expected_value_delta": 0.5854,
+      "extra_capacity_target_trade_count": 2,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 6225.27,
+      "target_trade_count": 9
+    },
+    {
+      "expected_value_after": 2.5227,
+      "expected_value_before": 2.1405,
+      "expected_value_delta": 0.3822,
+      "extra_capacity_target_trade_count": 2,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 6819.65,
+      "target_trade_count": 14
+    },
+    {
+      "expected_value_after": 0.2532,
+      "expected_value_before": 0.1109,
+      "expected_value_delta": 0.1423,
+      "extra_capacity_target_trade_count": 7,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 9018.66,
+      "target_trade_count": 13
+    }
+  ]
+}
