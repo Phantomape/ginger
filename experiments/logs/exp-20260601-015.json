@@ -1,0 +1,179 @@
+{
+  "accepted": false,
+  "after_metrics": {
+    "expected_value_score": 7.2496,
+    "strategy_total_pnl": 212567.44,
+    "total_pnl": 212567.44
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "expected_value_score": 6.3596,
+    "strategy_total_pnl": 192538.61,
+    "total_pnl": 192538.61
+  },
+  "calibration": {
+    "actual_decision": "positive_replay_lead_not_promoted_requires_clean_baseline_and_shared_adapter",
+    "actual_ev_delta": 0.89,
+    "actual_pnl_delta": 20028.83,
+    "actual_success": 0,
+    "brier_score": 0.2025,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "predicted_success_probability": 0.45,
+    "realized_failure_mode": [
+      "baseline_matches_docs"
+    ]
+  },
+  "change_summary": "Filtered the accepted free-data cross-source consensus replay to signal dates with zero same-day core entries.",
+  "change_type": "default_off_paper_capacity_gate",
+  "changed_variable": "accepted_free_data_consensus_no_core_entry_day_capacity_gate_v1",
+  "decision": "positive_replay_lead_not_promoted_requires_clean_baseline_and_shared_adapter",
+  "decision_basis": {
+    "alpha_checks_passed": true,
+    "decision": "positive_replay_lead_not_promoted_requires_clean_baseline_and_shared_adapter",
+    "ev_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "failed_gates": [
+      "baseline_matches_docs"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "baseline_matches_docs": false,
+      "concentration_guard_passed": true,
+      "drawdown_drift_passed": true,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": -0.0019,
+    "min_survival_rate": 0.7917,
+    "passed": false,
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "rationale": "The no-core capacity gate improved all three windows and passed risk/sample guards, but current-code baseline metrics drift from docs/backtesting.md; no production/shared behavior is retained until baseline parity and a shared adapter are in place.",
+    "requires_parity_before_promotion": true
+  },
+  "delta_metrics": {
+    "expected_value_score_delta": 0.89,
+    "expected_value_score_delta_pct": 0.139946,
+    "max_drawdown_delta": -0.0019,
+    "max_single_positive_share": 0.388782,
+    "positive_pnl_hhi": 0.248957,
+    "strategy_total_pnl_delta": 20028.83,
+    "strategy_total_pnl_delta_pct": 0.104025,
+    "target_trade_count": 38,
+    "total_pnl_delta": 20028.83
+  },
+  "experiment_id": "exp-20260601-015",
+  "hypothesis": "Accepted free-data consensus candidates should have cleaner activation value when admitted only on signal dates with no same-day core entry, avoiding core displacement while preserving multi-source confirmation.",
+  "lane": "alpha_search",
+  "mechanism_family": "default_off_paper_capacity_gate",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260531-030",
+    "exp-20260601-001",
+    "exp-20260531-029"
+  ],
+  "new_evidence_type": "new_replacement_value_capacity_discriminator",
+  "next_retry_requires": [
+    "clean current-code baseline parity versus docs/backtesting.md",
+    "shared production/backtest capacity adapter before retention",
+    "forward closed replacement-value rows before activation",
+    "do not retune source count, cooldown, hold, or notional on the frozen windows"
+  ],
+  "parameters": {
+    "base_notional_usd": 4000.0,
+    "capacity_gate": "admit only if baseline core replay has zero entries on signal_date",
+    "hold_days": 10,
+    "max_drawdown_worse": 0.005,
+    "max_paper_trades_per_day": 1,
+    "max_positive_hhi": 0.3,
+    "max_single_positive_share": 0.5,
+    "min_target_trades": 20,
+    "rule_version": "accepted_free_data_consensus_no_core_entry_day_capacity_gate_v1",
+    "same_ticker_cooldown_days": 7,
+    "source_adapter_experiment_id": "exp-20260601-001",
+    "source_replay_experiment_id": "exp-20260531-030"
+  },
+  "prediction": {
+    "confidence_reason": "Builds on the accepted cross-source consensus adapter but changes only core-displacement capacity eligibility; production can know same-day core entry/capacity before paper admission.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "concentration_failed"
+    ],
+    "recorded_at": "2026-06-01T07:13:32+00:00",
+    "success_probability": 0.45
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "production_watchlist_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": "baseline_matches_docs",
+  "related_files": [
+    "quant/experiments/exp_20260601_015_accepted_consensus_no_core_capacity.py",
+    "data/experiments/exp-20260601-015/exp_20260601_015_accepted_consensus_no_core_capacity.json",
+    "experiments/logs/exp-20260601-015.json",
+    "experiments/cards/exp-20260601-015.md",
+    "experiments/tickets/exp-20260601-015.json"
+  ],
+  "status": "positive_replay_lead_not_promoted_requires_clean_baseline_and_shared_adapter",
+  "timestamp": "2026-06-01T07:19:13Z",
+  "trial_family": "accepted_free_data_cross_source_consensus_capacity_gate",
+  "trial_variant_id": "accepted_free_data_consensus_no_core_entry_day_capacity_gate_v1",
+  "windows": [
+    {
+      "expected_value_after": 4.6728,
+      "expected_value_before": 4.1082,
+      "expected_value_delta": 0.5646,
+      "label": "late_strong",
+      "strategy_total_pnl_delta": 5993.92,
+      "target_trade_count": 8
+    },
+    {
+      "expected_value_after": 2.2769,
+      "expected_value_before": 2.1405,
+      "expected_value_delta": 0.1364,
+      "label": "mid_weak",
+      "strategy_total_pnl_delta": 2621.31,
+      "target_trade_count": 20
+    },
+    {
+      "expected_value_after": 0.2999,
+      "expected_value_before": 0.1109,
+      "expected_value_delta": 0.189,
+      "label": "old_thin",
+      "strategy_total_pnl_delta": 11413.6,
+      "target_trade_count": 10
+    }
+  ]
+}
