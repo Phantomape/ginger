@@ -1,0 +1,115 @@
+{
+  "after_metrics": {
+    "universe_size": 1446,
+    "long_only_top_quintile_excess_gross_10d": 0.00819,
+    "long_only_top_quintile_excess_net_10d": 0.00469,
+    "excess_tstat": 2.8245,
+    "excess_per_window": {"late_strong": 0.003107, "mid_weak": 0.011063, "old_thin": 0.009838},
+    "excess_positive_windows": "3/3",
+    "ret20_double_sort_residual_mean_10d": 0.004711,
+    "ret20_double_sort_residual_tstat": 1.003,
+    "one_round_trip_cost": 0.0035,
+    "ret5_quintile_fwd_ladder": [0.001735, 0.001445, 0.004571, 0.004706, 0.013358],
+    "strategy_behavior_changed": false
+  },
+  "anti_js": "No JavaScript was used.",
+  "before_metrics": {
+    "comment": "exp-20260601-007 incidental lead: 5d winners continue over 10d (top quintile +1.34pct/10d, 3/3 windows, t=2.15), flagged not-promoted for 4 reasons. This pre-registered follow-up tests long-only excess and incrementality over core 20d momentum.",
+    "strategy_behavior_changed": false
+  },
+  "change_summary": "Pre-registered (f5/h10, selection inherited from exp-007) long-only test on the broad 1446-ticker universe: top-quintile of 5d-formation winners, 10d skip-day hold, excess over universe equal-weight mean, with a ret20 double-sort incrementality test and one-round-trip (0.35pct) cost. Result: the long-only excess is real (+0.82pct gross / +0.47pct net per 10d, t=2.82, 3/3 windows -- clears even the 6-cell Bonferroni floor 2.64). But the ret20 double-sort residual (5d top-minus-bottom within ret20 bands) is +0.47pct point estimate with t=1.00 -- NOT significant. After controlling for core 20-day momentum the short-formation-specific component is indistinguishable from zero. The continuation is a genuine long-only momentum tilt but is NOT shown incremental over core momentum; most plausibly the same momentum at a correlated shorter horizon. NOTE: the first run's judge accepted incrementality on the residual point estimate alone; it was corrected to require the residual t>=2, flipping accept -> observed_only.",
+  "change_type": "read_only_long_only_short_formation_continuation_incrementality",
+  "changed_variable": "ret5_top_quintile_10d_excess_return_incremental_to_ret20",
+  "component": "quant/experiments/exp_20260601_008_long_only_continuation_incrementality.py",
+  "date_range": {
+    "late_strong": "2025-10-23 -> 2026-04-21",
+    "mid_weak": "2025-04-23 -> 2025-10-22",
+    "old_thin": "2024-10-02 -> 2025-04-22"
+  },
+  "decision": "observed_only_continuation_not_incremental_over_ret20",
+  "decision_rule": "Accept only if (a) long-only top-quintile excess over universe mean net of one round trip (0.35pct) > 0 with majority-positive windows AND (b) the ret20 double-sort residual ret5 top-minus-bottom > one round trip AND significant (t>=2). A positive residual point estimate with insignificant t does NOT establish incrementality. If (a) holds but (b) fails -> continuation_not_incremental_over_ret20. Else no_long_only_excess. Excess t-stat inherits exp-007 multiple-testing debt; the ret20 residual significance is load-bearing.",
+  "delta_metrics": {
+    "expected_value_score_delta": 0.0,
+    "long_only_excess_net_10d": 0.00469,
+    "excess_tstat": 2.8245,
+    "ret20_residual_tstat": 1.003
+  },
+  "expected_value_score_delta": 0.0,
+  "experiment_id": "exp-20260601-008",
+  "gate1": {"name": "cross_section_collected", "passed": true},
+  "gate2": {"name": "skip_day_and_long_only_cost", "passed": true, "skip_days": 1, "long_only_cost": 0.0035},
+  "gate3": {"name": "survival_rate_not_affected_read_only_attribution", "passed": true},
+  "gate4": {
+    "name": "long_only_excess_and_ret20_incremental",
+    "passed": false,
+    "status": "observed_only_continuation_not_incremental_over_ret20",
+    "long_only_top_quintile_excess_gross": 0.00819,
+    "long_only_top_quintile_excess_net": 0.00469,
+    "excess_tstat_inherits_007_multiple_testing_debt": 2.8245,
+    "excess_positive_windows": "3/3",
+    "ret20_double_sort_residual_mean": 0.004711,
+    "ret20_double_sort_residual_tstat": 1.003,
+    "one_round_trip_cost": 0.0035
+  },
+  "gate_questions": {
+    "what_hypothesis": "Is the long-only 5d-winner top quintile excess over the universe mean incremental over core 20-day momentum?",
+    "prior_similar_experiments": "exp-20260601-007 (reversal rejected, continuation incidental); exp-20260601-006 (broad-universe momentum weak); exp-20260601-003 (component decomposition).",
+    "single_independent_variable": "ret5 top-quintile 10d excess return, controlled for ret20 via double-sort.",
+    "success_failure_criteria": "long-only net excess > 0 majority windows AND ret20 double-sort residual > cost AND t>=2.",
+    "reproducibility": "Deterministic: warehouse all_windows_full_liquid, ret5/ret20/skip-day-10d, quintile + ret20 double-sort, t-stats. 5 unit tests including the residual-significance gate fix."
+  },
+  "hypothesis": "Confirmatory refinement of the exp-20260601-007 incidental lead: a long-only top-quintile of 5-day-formation winners held 10 trading days (skip-day) earns positive excess over the broad-universe equal-weight mean net of one round-trip cost in a majority of windows; the decisive new test is incrementality over core momentum (ret20 double-sort). f5/h10 selection inherited from exp-007 carries multiple-testing debt, so the per-day excess t-stat is reported but not treated as independent confirmation.",
+  "lane": "alpha_discovery",
+  "llm_metrics": {"used_llm": false},
+  "mechanism_family": "cross_sectional_continuation",
+  "multiple_testing_risk_bucket": "moderate",
+  "nearby_prior_experiments": ["exp-20260601-007", "exp-20260601-006", "exp-20260601-003"],
+  "new_evidence_type": "long_only_short_formation_continuation_excess_and_ret20_double_sort",
+  "next_evidence_needed": "Do not promote 5d-continuation as a distinct edge: not shown incremental over core 20d momentum (ret20 residual t=1.00). The long-only top-quintile momentum tilt itself (t=2.82, 3/3 windows) is real but overlaps the core momentum entry. A genuinely useful follow-up is a direct replacement-value test versus the actual same-day core candidates (not a ret20 proxy): does the top-quintile name beat the specific core candidate it would displace? That needs the core candidate set per day on the broad universe. True confirmation needs forward / out-of-sample data (3 windows are one contiguous 18-month period; f5/h10 selected from exp-007 grid).",
+  "parameters": {
+    "rule_version": "long_only_short_formation_continuation_incrementality_v1",
+    "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+    "universe_size": 1446,
+    "formation": 5,
+    "core_momentum_control": 20,
+    "hold": 10,
+    "skip_days": 1,
+    "quintile": 5,
+    "tstat_floor": 2.0,
+    "long_only_cost": 0.0035
+  },
+  "prediction": {
+    "success_probability": 0.35,
+    "expected_ev_delta": 0.0,
+    "main_failure_modes": "continuation_collapses_after_ret20_control_just_momentum, excess_over_universe_thin_after_cost, one_window_carries_it, tstat_inherits_007_multiple_testing_debt, survivorship_inflates_top_quintile",
+    "outcome_vs_prediction": "matched: continuation_collapses_after_ret20_control. Long-only excess real (t=2.82, 3/3 windows) but ret20-incremental residual insignificant (t=1.00)."
+  },
+  "prior_trial_count": 1,
+  "production_impact": {
+    "alters_entries": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "default_off": true,
+    "read_only_attribution": true,
+    "scope": "experiment_artifact_only_data_experiments_exp_20260601_008"
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/experiments/exp_20260601_008_long_only_continuation_incrementality.py",
+    "quant/test_exp_20260601_008_continuation_incrementality.py",
+    "data/experiments/exp-20260601-008/long_only_continuation_incrementality.json",
+    "experiments/artifacts/exp-20260601-008_long_only_continuation_incrementality.md",
+    "experiments/logs/exp-20260601-008.json",
+    "experiments/tickets/exp-20260601-008.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "rule_version": "long_only_short_formation_continuation_incrementality_v1",
+  "single_causal_variable": "ret5_top_quintile_10d_excess_return_incremental_to_ret20",
+  "status": "observed_only",
+  "timestamp": "2026-06-01T12:00:00+00:00",
+  "trial_family": "short_horizon_reversal_attribution",
+  "trial_variant_id": "exp-20260601-008"
+}

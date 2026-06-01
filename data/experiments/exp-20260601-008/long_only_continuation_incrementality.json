@@ -1,0 +1,59 @@
+{
+  "anti_js": "No JavaScript was used.",
+  "caveat": "f5/h10 cell selection is inherited from exp-20260601-007's 6-cell grid, so the excess t-stat carries multiple-testing debt and is not independent confirmation. Warehouse all_windows_full_liquid survivorship; raw close-to-close; long-only cost is one flat round trip and ignores impact; the 3 windows are one contiguous 18-month period, not independent regimes. True confirmation needs forward / out-of-sample data.",
+  "decision": "observed_only_continuation_not_incremental_over_ret20",
+  "experiment_id": "exp-20260601-008",
+  "gates": {
+    "all_passed": false,
+    "gate1": {
+      "name": "cross_section_collected",
+      "passed": true,
+      "sampled_days": 36
+    },
+    "gate2": {
+      "long_only_cost": 0.0035,
+      "name": "skip_day_and_long_only_cost",
+      "passed": true,
+      "skip_days": 1
+    },
+    "gate3": {
+      "name": "survival_rate_not_affected_read_only_attribution",
+      "passed": true
+    },
+    "gate4": {
+      "decision_rule": "Accept only if (a) long-only top-quintile excess over universe mean net of one round trip (0.35pct) > 0 with majority-positive windows AND (b) the ret20 double-sort residual ret5 top-minus-bottom > one round trip AND is significant (t >= 2) -- a positive residual point estimate with an insignificant t-stat does NOT establish incrementality. If (a) holds but (b) fails -> continuation_not_incremental_over_ret20. Else no_long_only_excess. The excess t-stat is reported but inherits exp-007 multiple-testing debt and is not independent confirmation; the ret20 residual significance is load-bearing.",
+      "excess_per_window": {
+        "late_strong": 0.003107,
+        "mid_weak": 0.011063,
+        "old_thin": 0.009838
+      },
+      "excess_positive_windows": "3/3",
+      "excess_tstat_inherits_007_multiple_testing_debt": 2.8245,
+      "long_only_top_quintile_excess_gross": 0.00819,
+      "long_only_top_quintile_excess_net": 0.00469,
+      "name": "long_only_excess_and_ret20_incremental",
+      "one_round_trip_cost": 0.0035,
+      "passed": false,
+      "ret20_double_sort_residual_mean": 0.004711,
+      "ret20_double_sort_residual_tstat": 1.003,
+      "ret5_quintile_fwd_ladder": [
+        0.001735,
+        0.001445,
+        0.004571,
+        0.004706,
+        0.013358
+      ],
+      "status": "observed_only_continuation_not_incremental_over_ret20"
+    }
+  },
+  "pre_registered_cell": {
+    "core_momentum_control": 20,
+    "formation_days": 5,
+    "hold_days": 10,
+    "skip_days": 1
+  },
+  "rule_version": "long_only_short_formation_continuation_incrementality_v1",
+  "runtime_seconds": 16.7,
+  "universe": "exp-20260519-030 warehouse all_windows_full_liquid",
+  "universe_size": 1446
+}
