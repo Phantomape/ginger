@@ -1,0 +1,107 @@
+{
+  "acceptance_rule": "Gate 4: aggregate EV/PnL positive, all three windows EV/PnL improve versus PIT-DTE core baseline, max drawdown worsening <=0.5pp, target trades >=20 across all three windows, max single positive share <=0.50, positive PnL HHI <=0.30; if positive but high-repeat, retain as lead only.",
+  "allowed_write_scope": [
+    "quant/experiments/;data/experiments/;experiments/logs/;experiments/cards/;experiments/artifacts/;experiments/tickets/;docs/experiment_log.jsonl;docs/experiment_registry.json",
+    "quant/experiments/exp_20260601_032_rs_line_low_participation_cooldown.py",
+    "data/experiments/exp-20260601-032/exp_20260601_032_rs_line_low_participation_cooldown.json",
+    "data/experiments/exp-20260601-032/rs_line_low_participation_cooldown_before_aggregate.json",
+    "data/experiments/exp-20260601-032/rs_line_low_participation_cooldown_after_aggregate.json",
+    "experiments/logs/exp-20260601-032.json",
+    "experiments/cards/exp-20260601-032.md",
+    "experiments/artifacts/exp-20260601-032_rs_line_low_participation_cooldown.md",
+    "experiments/tickets/exp-20260601-032.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "experiments/manifests/exp-20260601-032.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260601-005/exp_20260601_005_rs_line_accepted_source_consensus.json",
+  "card_file": "experiments/cards/exp-20260601-032.md",
+  "change_type": "default_off_paper_candidate_pool",
+  "changed_variable": "rs_line_accepted_source_low_participation_cooldown_candidate_source_v1",
+  "claimed_at": "2026-06-01T23:14:01+00:00",
+  "completed_at": "2026-06-01T23:25:58+00:00",
+  "created_at": "2026-06-01T23:13:52+00:00",
+  "decision": "rejected_rs_line_low_participation_cooldown_candidate_pool",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260601-032",
+  "experiment_uid": "expuid-0cc3d06e5d78413f",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260601-032",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-01T23:13:52+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "rs_line_low_participation_cooldown"
+  },
+  "hypothesis": "RS-line new-high candidates confirmed by an accepted free-data source may have cleaner replacement value when signal-day participation is orderly and repeated same-ticker crowding is de-clustered.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "RS-line source exp-20260527-013; accepted-source confirmation exp-20260601-005; fixed 10000 paper notional; next-open entry; 10 trading-day close exit"
+  ],
+  "mechanism_family": "rs_line_accepted_source_candidate_pool",
+  "multiple_testing_risk_bucket": "high",
+  "must_not_touch": [
+    "quant/*_paper_sleeve.py",
+    "quant/run.py",
+    "quant/portfolio_engine.py"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260527-013",
+    "exp-20260528-024",
+    "exp-20260601-005"
+  ],
+  "new_evidence_type": "production_visible_ohlcv_participation_plus_same_ticker_declustering_on_rejected_rs_line_source",
+  "owner": "alpha-search",
+  "prediction": {
+    "confidence_reason": "Exploratory source rows show low-participation de-clustered RS-line consensus has positive raw PnL in all windows, but it is a composite refinement of a rejected RS-line source and sample/concentration risk remains high.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 6000.0,
+    "main_failure_modes": [
+      "late_strong_regression",
+      "concentration_failed",
+      "drawdown_drift",
+      "composite_overfit",
+      "thin_sample"
+    ],
+    "recorded_at": "2026-06-01T23:13:26+00:00",
+    "success_probability": 0.24
+  },
+  "prior_trial_count": 2,
+  "result": {
+    "accepted": false,
+    "alpha_passed": false,
+    "artifact": "data/experiments/exp-20260601-032/exp_20260601_032_rs_line_low_participation_cooldown.json",
+    "gate4_failed_gates": [
+      "drawdown_drift_passed"
+    ],
+    "log": "experiments/logs/exp-20260601-032.json",
+    "metrics": {
+      "expected_value_score_delta": 0.3248,
+      "max_single_positive_share": 0.450114,
+      "positive_pnl_hhi": 0.26707,
+      "target_trade_count": 22,
+      "total_pnl_delta": 6320.11
+    },
+    "promotable_now": false,
+    "report_file": "experiments/artifacts/exp-20260601-032_rs_line_low_participation_cooldown.md"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260601-032.json",
+  "single_causal_variable": "rs_line_accepted_source_low_participation_cooldown_candidate_source_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260601-032.json",
+  "trial_family": "rs_line_accepted_source_low_participation_cooldown",
+  "trial_variant_id": "low_participation_lte_1p2_same_ticker_10d_cooldown"
+}
