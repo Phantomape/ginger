@@ -1,0 +1,72 @@
+{
+  "acceptance_rule": "Accept if: (1) runs without error in production, (2) both fields appear in sec_filing_features output rows for each filing event, (3) alters_orders=False on all records, (4) no change to any core strategy entry/exit/ranking/sizing metric.",
+  "allowed_write_scope": [
+    "quant/sec_filing_features.py",
+    "quant/test_sec_filing_features.py",
+    "experiments/tickets/exp-20260531-028.json",
+    "experiments/cards/exp-20260531-028.md",
+    "experiments/manifests/exp-20260531-028.json",
+    "experiments/logs/exp-20260531-028.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "change_type": "read_only_attribution_sidecar",
+  "changed_variable": "predictability_mosaic_bucket_and_low_volume_predictability_bucket_v1",
+  "created_at": "2026-05-31T17:10:00+00:00",
+  "experiment_id": "exp-20260531-028",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260531-028",
+    "reserved_at": "2026-05-31T17:10:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "predictability_mosaic_attribution_fields"
+  },
+  "hypothesis": "Adding predictability_mosaic_bucket and low_volume_predictability_bucket as read-only attribution fields to SEC filing feature rows enables forward attribution of whether large earnings surprises, high earnings-price ratio, and low-volume regimes combinatorially predict signal quality. These fields are pure sidecars that do not alter entry/exit/ranking/sizing logic.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "core signal generation",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "portfolio heat",
+    "LLM/news",
+    "live/default orders"
+  ],
+  "mechanism_family": "earnings_quality_predictability_mosaic",
+  "must_not_touch": [
+    "signal_engine.py",
+    "risk_engine.py",
+    "portfolio_engine.py",
+    "production_parity.py",
+    "entry logic",
+    "exit logic"
+  ],
+  "nearby_prior_experiments": ["exp-20260531-027"],
+  "new_evidence_type": "earnings_quality_predictability_mosaic_sidecar_fields",
+  "owner": "cowork-session",
+  "prediction": {
+    "confidence_reason": "Pure read-only attribution sidecar add; no strategy change. Success probability is high because the fields do not affect any trade logic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": ["import_error", "eps_surprise_not_available_in_backtest"],
+    "recorded_at": "2026-05-31T17:10:00+00:00",
+    "success_probability": 0.95
+  },
+  "production_impact": {
+    "alters_orders": false,
+    "alters_ranking": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "notes": "Read-only attribution fields added to sec_filing_features output rows. No production or backtest trading policy changed.",
+    "parity_test_added": false,
+    "production_impact": "replay_only",
+    "run_adapter_changed": false,
+    "shared_policy_changed": false
+  },
+  "single_causal_variable": "predictability_mosaic_bucket_and_low_volume_predictability_bucket_v1",
+  "status": "proposed",
+  "summary": "Add predictability_mosaic_bucket and low_volume_predictability_bucket read-only attribution fields to sec_filing_features.py. predictability_mosaic_bucket combines: large eps_surprise (if available), high gross_margin (as earnings-quality proxy), and low relative volume (from filing.volume_ratio if present). low_volume_predictability_bucket marks whether the filing event occurred in a low-volume regime. Both fields are read-only sidecars; no entry/exit/ranking/sizing changes.",
+  "ticket_file": "experiments/tickets/exp-20260531-028.json",
+  "trial_family": "earnings_quality_predictability_mosaic_attribution",
+  "updated_at": "2026-05-31T17:10:00+00:00"
+}

@@ -124,12 +124,29 @@ def build_filing_feature_rows(
         )
 
         pit_safe = bool(accepted_at and usable_trade_date)
+        form_type = filing.get("form_type") or filing.get("form")
+        eight_k_item = _eight_k_item_type(filing)
+        source_credibility_bucket = _source_credibility_bucket(form_type, eight_k_item)
+        text_direction = filing.get("text_direction") or filing.get("text_sentiment")
+        price_direction = filing.get("price_direction") or filing.get("day_price_direction")
+        text_direction_vs_price_bucket = _text_direction_vs_price_bucket(
+            text_direction, price_direction
+        )
+        eps_surprise = filing.get("eps_surprise")
+        volume_ratio = filing.get("volume_ratio") or filing.get("volume_ratio_20d")
+        predictability_mosaic_bucket = _predictability_mosaic_bucket(
+            eps_surprise=eps_surprise,
+            gross_margin=gross_margin,
+            volume_ratio=volume_ratio,
+        )
+        low_volume_predictability_bucket = _low_volume_predictability_bucket(volume_ratio)
+
         row = {
             "schema_version": 1,
             "ticker": ticker or None,
             "event_date": usable_trade_date,
             "usable_trade_date": usable_trade_date,
-            "form_type": filing.get("form_type") or filing.get("form"),
+            "form_type": form_type,
             "accepted_datetime": accepted_at,
             "filing_date": filing.get("filing_date"),
             "source_accession": accession,
@@ -141,7 +158,14 @@ def build_filing_feature_rows(
             "inventory_growth": _growth(current.get("inventory"), prior.get("inventory")),
             "receivables_growth": _growth(current.get("receivables"), prior.get("receivables")),
             "guidance_raise_cut": None,
-            "eight_k_item_type": _eight_k_item_type(filing),
+            "eight_k_item_type": eight_k_item,
+            # --- Read-only attribution sidecars (exp-20260531-027) ---
+            "source_credibility_bucket": source_credibility_bucket,
+            "text_direction_vs_price_bucket": text_direction_vs_price_bucket,
+            # --- Read-only attribution sidecars (exp-20260531-028) ---
+            "predictability_mosaic_bucket": predictability_mosaic_bucket,
+            "low_volume_predictability_bucket": low_volume_predictability_bucket,
+            # --------------------------------------------------------
             "data_source": "sec_filing_text_plus_companyfacts",
             "pit_safe": pit_safe,
             "field_availability": {
@@ -155,6 +179,10 @@ def build_filing_feature_rows(
                 "inventory_growth": _state(_growth(current.get("inventory"), prior.get("inventory"))),
                 "receivables_growth": _state(_growth(current.get("receivables"), prior.get("receivables"))),
                 "guidance_raise_cut": "missing_no_structured_guidance_source",
+                "source_credibility_bucket": "derived" if source_credibility_bucket else "missing",
+                "text_direction_vs_price_bucket": "derived" if text_direction_vs_price_bucket else "missing",
+                "predictability_mosaic_bucket": "derived" if predictability_mosaic_bucket else "missing",
+                "low_volume_predictability_bucket": "derived" if low_volume_predictability_bucket else "missing",
             },
             "gap_reasons": _gap_reasons(
                 accepted_at=accepted_at,
@@ -316,6 +344,133 @@ def _state(value: Any) -> str:
     return "derived" if value is not None else "missing"
 
 
+def _predictability_mosaic_bucket(
+    *,
+    eps_surprise: Any,
+    gross_margin: Any,
+    volume_ratio: Any,
+) -> str | None:
+    """Read-only attribution: composite earnings-quality predictability score.
+
+    Combines three independently-observable signals (exp-20260531-028 sidecar):
+      - Large earnings surprise (|eps_surprise| >= 0.10, i.e. >=10% beat/miss)
+      - High earnings quality (gross_margin >= 0.40, proxy for pricing power)
+      - Low relative volume (volume_ratio <= 0.80, quiet market = less noise)
+
+    Buckets:
+      high   - all three signals present
+      medium - two of three signals present
+      low    - one signal present
+      none   - zero signals present or all inputs missing
+      missing - not enough data to classify (eps_surprise and gross_margin both None)
+    """
+    if eps_surprise is None and gross_margin is None:
+        return "missing"
+    signals = 0
+    eps_f = _float_or_none(eps_surprise)
+    if eps_f is not None and abs(eps_f) >= 0.10:
+        signals += 1
+    gm_f = _float_or_none(gross_margin)
+    if gm_f is not None and gm_f >= 0.40:
+        signals += 1
+    vr_f = _float_or_none(volume_ratio)
+    if vr_f is not None and vr_f <= 0.80:
+        signals += 1
+    if signals == 3:
+        return "high"
+    if signals == 2:
+        return "medium"
+    if signals == 1:
+        return "low"
+    return "none"
+
+
+def _low_volume_predictability_bucket(volume_ratio: Any) -> str | None:
+    """Read-only attribution: low-volume regime predictability marker.
+
+    Buckets (exp-20260531-028 sidecar — does not alter any trade logic):
+      very_low  - volume_ratio <= 0.50 (unusually quiet)
+      low       - volume_ratio <= 0.80
+      normal    - volume_ratio <= 1.30
+      elevated  - volume_ratio > 1.30
+      missing   - volume_ratio not available
+    """
+    vr_f = _float_or_none(volume_ratio)
+    if vr_f is None:
+        return "missing"
+    if vr_f <= 0.50:
+        return "very_low"
+    if vr_f <= 0.80:
+        return "low"
+    if vr_f <= 1.30:
+        return "normal"
+    return "elevated"
+
+
+def _source_credibility_bucket(form_type: Any, eight_k_item_type: Any) -> str | None:
+    """Read-only attribution: classify filing source credibility.
+
+    Buckets (exp-20260531-027 sidecar — does not alter any trade logic):
+      high    - 10-K, 10-Q (annual/quarterly reports with auditor review)
+      medium  - 8-K with earnings item (2.02) or guidance (2.05)
+      low     - 8-K other items, DEF 14A, S-1, other
+      unknown - form_type unavailable
+    """
+    if not form_type:
+        return "unknown"
+    ft = str(form_type).upper().strip()
+    if ft in ("10-K", "10-K/A", "10-Q", "10-Q/A"):
+        return "high"
+    if ft in ("8-K", "8-K/A"):
+        item = str(eight_k_item_type or "").strip()
+        # Item 2.02 = results of operations (earnings); 2.05 = material charge/guidance
+        if "2.02" in item or "2.05" in item:
+            return "medium"
+        # Item 7.01/8.01 = voluntary disclosure (press release)
+        if "7.01" in item or "8.01" in item:
+            return "low_voluntary"
+        return "low"
+    if ft in ("DEF 14A", "DEF14A", "S-1", "S-1/A", "424B4"):
+        return "low"
+    return "low"
+
+
+def _text_direction_vs_price_bucket(
+    text_direction: Any, price_direction: Any
+) -> str | None:
+    """Read-only attribution: classify agreement between SEC text direction and price direction.
+
+    Buckets (exp-20260531-027 sidecar — does not alter any trade logic):
+      agrees_positive   - text positive AND price positive
+      agrees_negative   - text negative AND price negative
+      disagrees_pos_neg - text positive but price negative (bearish divergence)
+      disagrees_neg_pos - text negative but price positive (bullish divergence)
+      neutral_text      - text neutral (no directional signal)
+      missing           - one or both inputs unavailable
+    """
+    if not text_direction or not price_direction:
+        return "missing"
+    td = str(text_direction).lower().strip()
+    pd = str(price_direction).lower().strip()
+
+    text_pos = td in ("positive", "bullish", "pos", "up")
+    text_neg = td in ("negative", "bearish", "neg", "down")
+    price_pos = pd in ("positive", "up", "pos", "bullish")
+    price_neg = pd in ("negative", "down", "neg", "bearish")
+
+    if not text_pos and not text_neg:
+        return "neutral_text"
+    if text_pos and price_pos:
+        return "agrees_positive"
+    if text_neg and price_neg:
+        return "agrees_negative"
+    if text_pos and price_neg:
+        return "disagrees_pos_neg"
+    if text_neg and price_pos:
+        return "disagrees_neg_pos"
+    return "missing"
+
+
 def _eight_k_item_type(filing: dict[str, Any]) -> str | None:
     codes = filing.get("eight_k_item_codes")
     if isinstance(codes, list) and codes:
@@ -348,6 +503,10 @@ def _field_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
         "fcf_to_net_income_gap",
         "inventory_growth",
         "receivables_growth",
+        "source_credibility_bucket",
+        "text_direction_vs_price_bucket",
+        "predictability_mosaic_bucket",
+        "low_volume_predictability_bucket",
     )
     return {
         field: sum(1 for row in rows if row.get(field) is not None)
