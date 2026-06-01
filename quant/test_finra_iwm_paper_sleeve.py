@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.finra_iwm_paper_sleeve import (
     COOLDOWN_RULE_VERSION,
+    COST_LIQUIDITY_SUPPORT_RULE_VERSION,
     MARKET_CONFIRMATION_RULE_VERSION,
     RULE_VERSION,
     build_finra_iwm_paper_sleeve_snapshot,
@@ -122,8 +123,14 @@ def test_finra_iwm_snapshot_admits_top_candidate_without_orders():
     assert candidate["rule_version"] == RULE_VERSION
     assert candidate["finra_short_pressure_score"] >= 0.70
     assert candidate["same_ticker_cooldown_rule_version"] == COOLDOWN_RULE_VERSION
+    assert candidate["finra_iwm_cost_liquidity_rule_version"] == COST_LIQUIDITY_SUPPORT_RULE_VERSION
+    assert candidate["finra_iwm_cost_liquidity_pass_v1"] is True
+    assert candidate["finra_iwm_cost_liquidity_support_scalar"] == 1.05
+    assert candidate["intended_notional"] == 10_500.0
     assert candidate["trade_enabled"] is False
     assert candidate["alters_orders"] is False
+    assert snapshot["cost_liquidity_support"]["supported_candidate_count"] == 1
+    assert snapshot["new_pending_entries"][0]["notional"] == 10_500.0
 
 
 def test_same_ticker_cooldown_blocks_recent_admitted_candidate():

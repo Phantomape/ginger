@@ -61,9 +61,13 @@ Recent repository evidence supports this priority:
   adding a seven-calendar-day same-ticker admitted-candidate cooldown
   (`exp-20260530-007`) reduced concentration and passed the paper gate, then
   `exp-20260530-010` promoted the route into a shared default-off forward
-  adapter. Treat it like Fundamental Growth RS and VBB: forward replacement
-  rows first, no FINRA score / IWM threshold / cooldown / top-N retunes on the
-  same frozen windows.
+  adapter. `exp-20260601-029` added the only retained support increment so far:
+  `1.05x` paper notional when selected FINRA/IWM candidates have signal-day
+  `dollar_volume >= $200m` and `(high-low)/close <= 0.10`, improving all three
+  canonical windows by `+0.0072` EV / `+$314.56`. Treat it like Fundamental
+  Growth RS and VBB: forward replacement rows first, no FINRA score / IWM
+  threshold / cooldown / top-N / hold / cost-liquidity threshold or scalar
+  retunes on the same frozen windows.
 - Full-universe ranking is promising as attribution, and now has one
   default-off paper queue. Raw `alpha_score` remains unsuitable for live/core
   ranking, but the market-regime-gated safe-notional route passed Gate 4 and

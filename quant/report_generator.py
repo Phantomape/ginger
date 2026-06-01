@@ -2429,6 +2429,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         source = finra_iwm_paper_sleeve.get("data_source") or {}
         market = finra_iwm_paper_sleeve.get("market_confirmation") or {}
         cooldown = finra_iwm_paper_sleeve.get("same_ticker_cooldown") or {}
+        cost_liquidity = finra_iwm_paper_sleeve.get("cost_liquidity_support") or {}
         lines.append(
             "  FINRA rows: "
             f"{source.get('row_count', 0)}  |  "
@@ -2447,6 +2448,13 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"Open: {finra_iwm_paper_sleeve.get('open_position_count', 0)}  |  "
             f"Closed today: {finra_iwm_paper_sleeve.get('closed_count_today', 0)}"
         )
+        if cost_liquidity:
+            lines.append(
+                "  Cost-liquidity support: "
+                f"{cost_liquidity.get('supported_candidate_count', 0)}/"
+                f"{cost_liquidity.get('candidate_count', 0)} candidates  |  "
+                f"scalar={cost_liquidity.get('notional_scalar')} (paper only)"
+            )
         gate = finra_iwm_paper_sleeve.get("forward_paper_gate") or {}
         if gate:
             metrics = gate.get("metrics") or {}
@@ -2467,6 +2475,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"score={candidate.get('finra_short_pressure_score')} "
                 f"dtc={candidate.get('finra_days_to_cover')} "
                 f"rs20={candidate.get('rs20_vs_spy')} "
+                f"cost-liquidity={candidate.get('finra_iwm_cost_liquidity_pass_v1')} "
                 f"notional={notional_text} (paper only)"
             )
 

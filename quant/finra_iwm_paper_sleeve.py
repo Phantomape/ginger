@@ -74,6 +74,7 @@ SOURCE_RULE_VERSION = "finra_short_pressure_breakout_candidate_source_v1"
 MARKET_CONFIRMATION_RULE_VERSION = "iwm_spy_20d_risk_appetite_v1"
 COOLDOWN_RULE_VERSION = "finra_iwm_same_ticker_signal_cooldown_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "finra_iwm_forward_replacement_value_v1"
+COST_LIQUIDITY_SUPPORT_RULE_VERSION = "finra_iwm_cost_liquidity_support_v1"
 STATE_SCHEMA_VERSION = 1
 
 FINRA_CSV_URL = "https://cdn.finra.org/equity/otcmarket/biweekly/shrt{yyyymmdd}.csv"
@@ -158,6 +159,10 @@ DEFAULT_CONFIG = {
     "market_confirmation_days": 20,
     "min_iwm_minus_spy_ret20": 0.003,
     "same_ticker_cooldown_calendar_days": 7,
+    "cost_liquidity_support_enabled": True,
+    "cost_liquidity_min_dollar_volume": 200_000_000.0,
+    "cost_liquidity_max_signal_day_range_pct": 0.10,
+    "cost_liquidity_notional_scalar": 1.05,
     "daily_entry_slots": 1,
     "max_active_positions": 5,
     "hold_days": 10,
@@ -567,6 +572,7 @@ def build_finra_iwm_paper_sleeve_snapshot(
         },
         "market_confirmation": market_context,
         "same_ticker_cooldown": cooldown_audit,
+        "cost_liquidity_support": _cost_liquidity_support_summary(filtered_candidates, cfg),
         "candidate_reject_counts": dict(sorted(reject_counts.items())),
         "candidates": deepcopy(filtered_candidates),
         "raw_candidates_sample": deepcopy(candidates[:10]),
@@ -682,6 +688,15 @@ def _build_candidates(
             + min(volume_ratio_20d / 10.0, 0.25)
             + min(close_location / 10.0, 0.10)
         )
+        base_notional = float(config["paper_notional_usd"])
+        cost_liquidity = _cost_liquidity_support_context(
+            close=close,
+            high=high,
+            low=low,
+            dollar_volume=dollar_volume,
+            base_notional=base_notional,
+            config=config,
+        )
         candidates.append(
             {
                 "sleeve": SLEEVE_NAME,
@@ -721,10 +736,11 @@ def _build_candidates(
                 "finra_source_url": finra_row.get("source_url"),
                 "candidate_selection_score": _round(selection_score, 6),
                 "known_at": "after_signal_date_close_with_latest_published_finra_before_next_open_paper_entry",
-                "base_paper_notional_usd": float(config["paper_notional_usd"]),
-                "intended_notional": float(config["paper_notional_usd"]),
+                "base_paper_notional_usd": base_notional,
+                "intended_notional": cost_liquidity["finra_iwm_cost_liquidity_supported_notional_usd"],
                 "trade_enabled": False,
                 "alters_orders": False,
+                **cost_liquidity,
             }
         )
 
@@ -739,6 +755,73 @@ def _build_candidates(
         )
     )
     return candidates, rejects, market
+
+
+def _cost_liquidity_support_context(
+    *,
+    close: float,
+    high: float,
+    low: float,
+    dollar_volume: float,
+    base_notional: float,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    range_pct = max(0.0, (high - low) / close) if close > 0 else None
+    support_enabled = bool(config.get("cost_liquidity_support_enabled", True))
+    min_dollar_volume = float(config["cost_liquidity_min_dollar_volume"])
+    max_range_pct = float(config["cost_liquidity_max_signal_day_range_pct"])
+    support_scalar = float(config["cost_liquidity_notional_scalar"])
+    passed = (
+        support_enabled
+        and range_pct is not None
+        and dollar_volume >= min_dollar_volume
+        and range_pct <= max_range_pct
+    )
+    if not support_enabled:
+        status = "disabled"
+    elif passed:
+        status = "supported"
+    elif dollar_volume < min_dollar_volume:
+        status = "dollar_volume_below_threshold"
+    else:
+        status = "range_above_threshold"
+    scalar = support_scalar if passed else 1.0
+    return {
+        "finra_iwm_cost_liquidity_rule_version": COST_LIQUIDITY_SUPPORT_RULE_VERSION,
+        "finra_iwm_cost_liquidity_known_at": "signal-day OHLCV known after close before next-open paper entry",
+        "finra_iwm_cost_liquidity_trade_enabled": False,
+        "finra_iwm_cost_liquidity_alters_orders": False,
+        "finra_iwm_cost_liquidity_status": status,
+        "finra_iwm_cost_liquidity_pass_v1": passed,
+        "finra_iwm_cost_liquidity_min_dollar_volume": min_dollar_volume,
+        "finra_iwm_cost_liquidity_max_range_pct": max_range_pct,
+        "finra_iwm_cost_liquidity_dollar_volume": _round(dollar_volume, 2),
+        "finra_iwm_cost_liquidity_signal_day_range_pct": _round(range_pct, 6),
+        "finra_iwm_cost_liquidity_support_scalar": scalar,
+        "finra_iwm_cost_liquidity_base_notional_usd": _round(base_notional, 2),
+        "finra_iwm_cost_liquidity_supported_notional_usd": _round(base_notional * scalar, 2),
+    }
+
+
+def _cost_liquidity_support_summary(
+    candidates: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    supported = [
+        row for row in candidates
+        if row.get("finra_iwm_cost_liquidity_pass_v1") is True
+    ]
+    return {
+        "rule_version": COST_LIQUIDITY_SUPPORT_RULE_VERSION,
+        "enabled": bool(config.get("cost_liquidity_support_enabled", True)),
+        "supported_candidate_count": len(supported),
+        "candidate_count": len(candidates),
+        "min_dollar_volume": float(config["cost_liquidity_min_dollar_volume"]),
+        "max_signal_day_range_pct": float(config["cost_liquidity_max_signal_day_range_pct"]),
+        "notional_scalar": float(config["cost_liquidity_notional_scalar"]),
+        "trade_enabled": False,
+        "alters_orders": False,
+    }
 
 
 def _market_confirmation(

@@ -1,0 +1,121 @@
+{
+  "acceptance_rule": "docs/backtesting.md canonical three-window before/after; aggregate EV and PnL positive; all three windows EV and PnL improve; supported sample >=10 across all 3 windows; drawdown drift <=0.5pp; survival >=5%; concentration guards pass.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260601_029_finra_iwm_cost_liquidity_support.py",
+    "data/experiments/exp-20260601-029/",
+    "experiments/logs/exp-20260601-029.json",
+    "experiments/tickets/exp-20260601-029.json",
+    "experiments/cards/exp-20260601-029.md",
+    "experiments/artifacts/exp-20260601-029_finra_iwm_cost_liquidity_support.md",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "quant/finra_iwm_paper_sleeve.py",
+    "quant/test_finra_iwm_paper_sleeve.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/report_generator.py",
+    "docs/current_state.md",
+    "docs/alpha-optimization-playbook.md",
+    "docs/production_backtest_parity.md",
+    "docs/data_edge_context_layers.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_20260531.json",
+  "card_file": "experiments/cards/exp-20260601-029.md",
+  "change_type": "default_off_paper_allocation",
+  "changed_variable": "finra_iwm_cost_liquidity_support_v1",
+  "claimed_at": "2026-06-01T20:13:16+00:00",
+  "completed_at": "2026-06-01T20:25:18+00:00",
+  "created_at": "2026-06-01T20:13:09+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260601-029",
+  "experiment_uid": "expuid-8536cbd504af4549",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260601-029",
+    "reservation_rule": "Create the ticket under registry lock before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-06-01T20:13:09+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "finra_iwm_cost_liquidity_support"
+  },
+  "hypothesis": "Accepted FINRA/IWM same-ticker cooldown paper candidates with high signal-day dollar liquidity and contained signal-day range may have better cost-adjusted replacement value without retuning FINRA score, IWM confirmation, cooldown, ranking, or hold.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "FINRA score threshold",
+    "IWM confirmation threshold",
+    "same-ticker cooldown",
+    "top-1 ranking",
+    "next-open entry",
+    "10-day exit",
+    "base paper notional"
+  ],
+  "mechanism_family": "production_visible_default_off_paper_adapter_for_candidate_pool_alpha",
+  "multiple_testing_risk_bucket": "moderate",
+  "must_not_touch": [
+    "core signal rules",
+    "core ranking",
+    "core sizing",
+    "core exits",
+    "LLM/news replay",
+    "live/default orders",
+    "FINRA score threshold",
+    "IWM confirmation threshold",
+    "cooldown",
+    "hold days"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260530-007",
+    "exp-20260530-010",
+    "exp-20260529-004",
+    "exp-20260601-017"
+  ],
+  "new_evidence_type": "production_visible_free_ohlcv_cost_liquidity_field_on_accepted_finra_iwm_adapter",
+  "owner": "codex-alpha-search",
+  "prediction": {
+    "confidence_reason": "Playbook freezes FINRA score/IWM/cooldown retunes but explicitly leaves cost-adjusted liquidity/fill-delay diagnostics open; accepted FINRA sample is only 38 rows, so incremental edge may be thin.",
+    "expected_ev_delta": 0.05,
+    "expected_pnl_delta": 400.0,
+    "main_failure_modes": [
+      "sample_too_thin",
+      "window_regression",
+      "pnl_cut_too_much",
+      "hidden_nearby_liquidity_retry"
+    ],
+    "recorded_at": "2026-06-01T20:12:56+00:00",
+    "success_probability": 0.34
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "accepted": true,
+    "alpha_passed": true,
+    "artifact": "data/experiments/exp-20260601-029/exp_20260601_029_finra_iwm_cost_liquidity_support.json",
+    "decision": "accepted_shared_finra_iwm_cost_liquidity_support",
+    "failed_gates": [],
+    "log": "experiments/logs/exp-20260601-029.json",
+    "metrics": {
+      "aggregate_expected_value_delta": 0.0072,
+      "aggregate_total_pnl_delta": 314.56,
+      "max_single_positive_share": 0.209295,
+      "positive_pnl_hhi": 0.148869,
+      "target_trade_count": 34
+    },
+    "promotable_now": false
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260601-029.json",
+  "single_causal_variable": "finra_iwm_cost_liquidity_support_v1",
+  "status": "completed",
+  "ticket_file": "experiments/tickets/exp-20260601-029.json",
+  "trial_family": "finra_iwm_cost_liquidity_support",
+  "trial_variant_id": "dvol_gte_200m_range_lte_0p10_scalar_1p05"
+}

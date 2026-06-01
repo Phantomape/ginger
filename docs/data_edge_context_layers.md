@@ -961,16 +961,23 @@ Candidate route:
   `IWM 20d return - SPY 20d return >= 0.003`.
 - Applies the accepted seven-calendar-day same-ticker admitted-candidate
   cooldown from `exp-20260530-007`.
-- Tracks fixed `$10k` paper notional, next-open paper entry,
-  10-trading-day paper hold, closed outcomes, and concentration blockers only.
+- Applies the accepted `exp-20260601-029` cost-liquidity support scalar:
+  selected candidates with signal-day `dollar_volume >= $200m` and
+  `(high-low)/close <= 0.10` receive `1.05x` default-off paper notional.
+- Tracks fixed `$10k` base paper notional, supported paper notional,
+  next-open paper entry, 10-trading-day paper hold, closed outcomes, and
+  concentration blockers only.
 
 Agent rule: this sleeve may collect forward replacement-value evidence for the
 accepted alpha. It must not enable orders, expand the core universe, alter live
 ranking, sizing, exits, LLM/news, or consume live capital without a separate
 Gate 1-4 activation experiment and parity update. Do not retune the FINRA
-score, IWM/SPY threshold, cooldown length, top-N, hold-day, or notional on the
-frozen sample without forward rows or a stronger borrow-cost/availability
-field.
+score, IWM/SPY threshold, cooldown length, top-N, hold-day, base notional, or
+cost-liquidity threshold/scalar on the frozen sample without forward rows or a
+stronger borrow-cost/availability field.
+The adapter emits `cost_liquidity_support` snapshot summary metadata plus
+per-candidate `finra_iwm_cost_liquidity_*` fields; these fields are known after
+signal-day close before next-open paper entry and never enable live orders.
 
 ### `quant/default_off_alpha_attribution.py`
 

@@ -409,6 +409,9 @@ def build_default_off_alpha_attribution_report(
                 "finra_rows": (
                     ((finra_iwm_paper_sleeve or {}).get("data_source") or {}).get("row_count")
                 ),
+                "cost_liquidity_supported": (
+                    ((finra_iwm_paper_sleeve or {}).get("cost_liquidity_support") or {}).get("supported_candidate_count")
+                ),
             },
         ),
     ]
