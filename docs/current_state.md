@@ -81,13 +81,19 @@ operator review now show both production core slots and total-account shadow
 capacity. Focused parity tests were added, and `docs/production_backtest_parity.md`
 was updated. Treat this as a parity/capacity-accounting repair, not new alpha.
 
-`exp-20260601-016` and `exp-20260601-022` record the current Gate 1 blocker:
-current-code canonical replay does not match the accepted metrics in
-`docs/backtesting.md`. The audit shows current aggregate EV/PnL
+`exp-20260601-016` and `exp-20260601-022` recorded the Gate 1 blocker:
+current-code canonical replay did not match the accepted metrics in
+`docs/backtesting.md`. The audit showed current aggregate EV/PnL
 `6.3596` / `$192,538.61` versus documented accepted `7.8941` /
 `$234,850.99`, with the mismatch concentrated in `late_strong` and `old_thin`.
-Until this is resolved or explicitly accepted, positive replay-only leads must
-not be retained or promoted.
+`exp-20260601-023` then attributed the drift to the PIT earnings snapshot
+`days_to_earnings` replay change: restoring the earlier calendar-only DTE
+semantics reproduced the documented baseline exactly across all three windows.
+The next required decision is deliberate protocol versioning: either accept the
+more production-faithful PIT snapshot DTE replay and update the canonical
+baseline, or explicitly keep/version the old calendar-DTE baseline. Until that
+decision is recorded, positive replay-only leads must not be retained or
+promoted.
 
 Companyfacts quality is the strongest blocked alpha lead. `exp-20260601-021`
 gross-margin quality improved all three windows with aggregate EV `+6.3389`
