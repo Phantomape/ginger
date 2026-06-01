@@ -34,17 +34,21 @@ signal-day own-green candle sizing promotion from `exp-20260513-007`, the
 2026-05-10 TRIP sector taxonomy completion from `exp-20260510-015`, and the
 RS20 entry-state shared sizing promotion from `exp-20260510-012`. These are
 documented in `docs/backtesting.md` and
-`docs/alpha-optimization-playbook.md`. Canonical fixed-window core metrics are:
+`docs/alpha-optimization-playbook.md`. As of `exp-20260601-025`, canonical
+fixed-window core metrics use PIT earnings snapshot `days_to_earnings` replay
+when archived production snapshots exist:
 
 | Window | EV | Return | Sharpe daily | Max DD | Trades | Survival |
 |---|---:|---:|---:|---:|---:|---:|
-| `late_strong` | 5.1628 | 117.07% | 4.41 | 6.65% | 18 | 80.39% |
-| `mid_weak` | 2.1402 | 78.11% | 2.74 | 11.19% | 21 | 79.25% |
-| `old_thin` | 0.5911 | 39.67% | 1.49 | 10.01% | 22 | 86.67% |
+| `late_strong` | 4.1082 | 100.20% | 4.10 | 6.65% | 18 | 81.40% |
+| `mid_weak` | 2.1405 | 78.12% | 2.74 | 11.19% | 20 | 79.17% |
+| `old_thin` | 0.1109 | 14.22% | 0.78 | 14.09% | 20 | 93.62% |
 
 Latest accepted three-window artifact:
-`data/experiments/exp-20260517-009/`.
-Aggregate core EV is now `7.8941`; aggregate PnL is `$234,850.99`.
+`data/experiments/exp-20260601-025/exp_20260601_025_pit_dte_baseline_protocol.json`.
+Aggregate core EV is now `6.3596`; aggregate PnL is `$192,538.61`.
+`exp-20260517-009` remains the latest core strategy promotion artifact; its
+`7.8941` / `$234,850.99` aggregate was the older calendar-DTE baseline version.
 Latest saved single-window backtest artifacts can reflect only the most recent
 command; canonical acceptance evidence is the three-window artifact above.
 
@@ -81,24 +85,23 @@ operator review now show both production core slots and total-account shadow
 capacity. Focused parity tests were added, and `docs/production_backtest_parity.md`
 was updated. Treat this as a parity/capacity-accounting repair, not new alpha.
 
-`exp-20260601-016` and `exp-20260601-022` recorded the Gate 1 blocker:
-current-code canonical replay did not match the accepted metrics in
-`docs/backtesting.md`. The audit showed current aggregate EV/PnL
-`6.3596` / `$192,538.61` versus documented accepted `7.8941` /
-`$234,850.99`, with the mismatch concentrated in `late_strong` and `old_thin`.
-`exp-20260601-023` then attributed the drift to the PIT earnings snapshot
-`days_to_earnings` replay change: restoring the earlier calendar-only DTE
-semantics reproduced the documented baseline exactly across all three windows.
-The next required decision is deliberate protocol versioning: either accept the
-more production-faithful PIT snapshot DTE replay and update the canonical
-baseline, or explicitly keep/version the old calendar-DTE baseline. Until that
-decision is recorded, positive replay-only leads must not be retained or
-promoted.
+`exp-20260601-016` and `exp-20260601-022` recorded a Gate 1 blocker:
+current-code canonical replay did not match the previous accepted metrics in
+`docs/backtesting.md`. `exp-20260601-023` attributed the mismatch to the PIT
+earnings snapshot `days_to_earnings` replay change: restoring the earlier
+calendar-only DTE semantics reproduced the old `7.8941` / `$234,850.99`
+baseline exactly. `exp-20260601-025` resolved the blocker by accepting the
+more production-faithful PIT snapshot DTE replay as canonical. Future alpha
+before/after comparisons must use `6.3596` aggregate EV and `$192,538.61`
+aggregate PnL as the Gate 1 baseline unless a later protocol-versioning
+experiment supersedes it.
 
 Companyfacts quality is the strongest blocked alpha lead. `exp-20260601-021`
 gross-margin quality improved all three windows with aggregate EV `+6.3389`
 and PnL `+$107,596.26` across `265` target trades, passed alpha/risk/sample
-checks, and failed retention only because `baseline_matches_docs=false`.
+checks, and failed retention under the old baseline-mismatch state. It now
+needs a clean before/after rerun against the PIT-DTE baseline before any
+promotion decision.
 `exp-20260601-019` free-cash-flow yield was also positive (`EV +2.7877`,
 PnL `+$50,918.82`) but failed concentration and baseline-retention checks.
 `exp-20260601-004` earnings-yield value similarly failed concentration despite
@@ -459,7 +462,7 @@ These counts are experiment records, not unique independent strategies.
 
 | Surface | Default execution status | Current evidence | What limits realized return | Aggressive activation lever | Main risk if enabled |
 |---|---|---|---|---|---|
-| Core live stack | Trade-enabled default path | Accepted core stack EV `7.8941`, PnL `$234,850.99` across the three canonical windows; latest live-grade increment `exp-20260517-009` added only `+0.0356` EV / `+$1,232.90` | Returns are capped by conservative heat, slots, position caps, and small accepted sizing increments; paper sleeves do not consume capital | Separate Gate 1-4 experiment for higher caps, more slots, or larger accepted-state risk budgets | Drawdown and concentration rise quickly; broad cap/slot sweeps have often failed |
+| Core live stack | Trade-enabled default path | Accepted core stack EV `6.3596`, PnL `$192,538.61` across the PIT-DTE three canonical windows; latest live-grade strategy increment `exp-20260517-009` added only `+0.0356` EV / `+$1,232.90` under the then-current protocol | Returns are capped by conservative heat, slots, position caps, and small accepted sizing increments; paper sleeves do not consume capital | Separate Gate 1-4 experiment for higher caps, more slots, or larger accepted-state risk budgets | Drawdown and concentration rise quickly; broad cap/slot sweeps have often failed |
 | Pilot / `AI_INFRA_AGGRESSIVE` | Production can emit `pilot_signals`; canonical core backtest stays core-only unless `--include-pilot-sleeve` is used | Fixed historical windows predate pilot activation, so zero pilot entries can be correct PIT behavior | Return is capped by explicit sleeve isolation and limited post-activation forward evidence | Enable bounded pilot slots or include pilot sleeve in an explicit validation run | Thin forward sample, implementation risk, and no old-window evidence |
 | `STATE_SURFACE_SATELLITE` | Default-off paper only; live/default orders disabled | Many accepted paper refinements; latest low-extension increment `exp-20260520-001` added `+0.2368` EV / `+$4,925.64` with 9 adjusted paper trades | No trade-enabled adapter; tail-aware forward gate and concentration controls still block promotion | Trade-enabled satellite sleeve with small slots, max notional, and kill switch after a dedicated activation experiment | Paper overfit, rank-profile mining, and winner concentration |
 | `BROAD_MARKET_LEADERSHIP_PAPER` | Default-off paper only; live/default orders disabled | Shared adapter plus accepted refinements add about `+1.2236` paper EV / `+$28,975.55` across documented increments; 90 selected paper trades in the base adapter | Static all-market feed is still optional, but `exp-20260524-008` added a conservative `universe_state` fallback feed; still needs closed replacement-value outcomes and explicit trade adapter before core expansion | Small broad-market sleeve with fixed or governance-derived feed and replacement-value monitoring | Universe/feed leakage, all-market crowding, and hidden beta exposure |
@@ -535,8 +538,9 @@ warehouse, then attaches sector / industry context to the accepted
 `exp-20260520-004` baseline replay. Frozen-list coverage on the 712 tickers
 used at e20-004 time is `99.86%` (`711/712` ok, only `LKNCY` unresolved);
 diagnostic coverage on the current 1446-ticker warehouse is `88.46%`
-(`154` `fetch_error` remnants from yfinance rate limiting). Gate 1 core EV
-`7.8941` and PnL `$234,850.99` reproduce exactly (drift `0.0` on both);
+(`154` `fetch_error` remnants from yfinance rate limiting). Under the
+then-canonical calendar-DTE Gate 1 protocol, core EV `7.8941` and PnL
+`$234,850.99` reproduced exactly (drift `0.0` on both);
 broad-market PnL per window matches the source artifact exactly
 (`$10,307.76` / `$14,607.88` / `$4,059.90`); selected-trade count
 (`90`) is unchanged. The 90 trades cover 11 unique sectors with the
@@ -560,8 +564,8 @@ outcomes. The `LKNCY` gap is acceptable; full warehouse coverage above
 Latest accepted state-surface promotion-readiness repair: `exp-20260525-035`
 joins the accepted default-off state-surface paper sleeve trades (from
 `exp-20260520-001`, `24` selected paper trades totaling `$164,570.94`) with
-same-window core entries from a fresh canonical three-window backtest, which
-reproduced the canonical accepted aggregate EV `7.8941` and aggregate PnL
+same-window core entries from a fresh three-window backtest, which reproduced
+the then-canonical calendar-DTE aggregate EV `7.8941` and aggregate PnL
 `$234,850.99` exactly (drift `0.0` on both). At trading-day lookbacks N=0/3/5,
 the share of state-surface paper PnL coming from tickers core also entered in
 the same window is `5.13%` / `21.23%` / `36.26%` (positive-only PnL share
