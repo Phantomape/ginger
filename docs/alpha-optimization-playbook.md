@@ -305,6 +305,10 @@ Frozen without new evidence:
 - low-capex intensity, dual growth, gross-margin expansion, operating-margin
   durability, working-capital discipline, liquidity sweet spot, and recent VBB
   source-agreement notional support on the current frozen Companyfacts sample;
+- earnings-price / earnings-yield value thresholds or support scalars on the
+  current frozen Companyfacts + RS sample. `exp-20260601-004` found strong
+  three-window paper PnL but rejected the field because positive PnL HHI stayed
+  above the concentration guard, with APP/MU dominating the lift;
 - any new Companyfacts scalar whose best case still depends on the already
   accepted operating-profit + RS stack rather than a new candidate source;
 - score-tercile/rank monotonicity changes until forward rows show stable
