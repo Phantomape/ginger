@@ -1,0 +1,2289 @@
+{
+  "accepted": false,
+  "aggregate": {
+    "after": {
+      "expected_value_score": 7.1948,
+      "strategy_total_pnl": 206468.19,
+      "total_pnl": 206468.19
+    },
+    "before": {
+      "expected_value_score": 6.3596,
+      "strategy_total_pnl": 192538.61,
+      "total_pnl": 192538.61
+    },
+    "comparison": {
+      "expected_value_score_delta": 0.8352,
+      "expected_value_score_delta_pct": 0.131329,
+      "strategy_total_pnl_delta": 13929.58,
+      "strategy_total_pnl_delta_pct": 0.072347,
+      "total_pnl_delta": 13929.58
+    }
+  },
+  "anti_js": "No JavaScript was used.",
+  "baseline_caveat": {
+    "baseline_matches_docs": false,
+    "canonical_docs_ev": 7.8941,
+    "canonical_docs_pnl": 234850.99,
+    "current_replay_ev": 6.3596,
+    "current_replay_pnl": 192538.61,
+    "ev_delta_vs_docs": -1.5345,
+    "note": "Current replay baseline differs from docs/backtesting.md accepted baseline. Positive replay results are observation-only until the clean baseline/parity decision is resolved.",
+    "pnl_delta_vs_docs": -42312.38
+  },
+  "completed_at": "2026-06-01T12:15:35+00:00",
+  "created_at": "2026-06-01T12:15:35+00:00",
+  "decision": "rejected_accepted_consensus_alpha_fundamental_pair",
+  "experiment_id": "exp-20260601-020",
+  "gate1": {
+    "baseline_artifact": "data/experiments/exp-20260601-020/accepted_consensus_alpha_fundamental_pair_before_aggregate.json",
+    "baseline_caveat": {
+      "baseline_matches_docs": false,
+      "canonical_docs_ev": 7.8941,
+      "canonical_docs_pnl": 234850.99,
+      "current_replay_ev": 6.3596,
+      "current_replay_pnl": 192538.61,
+      "ev_delta_vs_docs": -1.5345,
+      "note": "Current replay baseline differs from docs/backtesting.md accepted baseline. Positive replay results are observation-only until the clean baseline/parity decision is resolved.",
+      "pnl_delta_vs_docs": -42312.38
+    },
+    "passed": true
+  },
+  "gate2": {
+    "missing_entry_date_tickers": [],
+    "missing_target_price_tickers": [],
+    "passed": true,
+    "path": "operator_inputs/open_positions.json",
+    "position_count": 14
+  },
+  "gate3": {
+    "note": "No production filter was added; survival is inherited from canonical core replay plus paper overlay.",
+    "passed": true,
+    "signals_generated_survived_by_window": {
+      "late_strong": {
+        "signals_generated": 43,
+        "signals_survived": 35,
+        "survival_rate": 0.814
+      },
+      "mid_weak": {
+        "signals_generated": 48,
+        "signals_survived": 38,
+        "survival_rate": 0.7917
+      },
+      "old_thin": {
+        "signals_generated": 47,
+        "signals_survived": 44,
+        "survival_rate": 0.9362
+      }
+    }
+  },
+  "gate4": {
+    "alpha_failed_gates": [
+      "drawdown_drift_passed",
+      "concentration_guard_passed"
+    ],
+    "alpha_passed": false,
+    "decision": "rejected_accepted_consensus_alpha_fundamental_pair",
+    "ev_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "failed_gates": [
+      "drawdown_drift_passed",
+      "concentration_guard_passed",
+      "baseline_matches_docs_for_retention"
+    ],
+    "gates": {
+      "aggregate_expected_value_positive": true,
+      "aggregate_pnl_positive": true,
+      "all_windows_expected_value_improved": true,
+      "all_windows_pnl_improved": true,
+      "baseline_matches_docs_for_retention": false,
+      "concentration_guard_passed": false,
+      "drawdown_drift_passed": false,
+      "survival_floor_passed": true,
+      "target_trade_count_passed": true,
+      "target_window_count_passed": true
+    },
+    "max_drawdown_delta": 0.0108,
+    "min_survival_rate": 0.7917,
+    "passed": false,
+    "pnl_windows_improved": [
+      "late_strong",
+      "mid_weak",
+      "old_thin"
+    ],
+    "promotable_now": false,
+    "rationale": "One or more Gate 4 alpha checks failed, so no strategy change is retained.",
+    "requires_clean_baseline_before_promotion": false,
+    "requires_parity_before_promotion": false
+  },
+  "interpretation": "One or more Gate 4 alpha checks failed, so no strategy change is retained.",
+  "lane": "alpha_search",
+  "next_retry_requires": [
+    "clean current-vs-docs baseline/parity decision before any positive replay promotion",
+    "shared live/backtest source-pair adapter before order impact",
+    "new forward replacement rows before nearby consensus filter/cap retries"
+  ],
+  "preflight": {
+    "acceptance_criteria": {
+      "aggregate_expected_value_delta": "> 0",
+      "aggregate_pnl_delta": "> 0",
+      "baseline_matches_docs_for_retention": true,
+      "max_drawdown_drift": 0.005,
+      "max_single_positive_share": 0.5,
+      "minimum_target_trades": 20,
+      "minimum_target_windows": 3,
+      "per_window_expected_value_delta": "3 of 3 windows > 0",
+      "per_window_pnl_delta": "3 of 3 windows > 0",
+      "positive_pnl_hhi_max": 0.3,
+      "source": "docs/backtesting.md canonical three-window replay",
+      "survival_rate_floor": 0.05
+    },
+    "alpha_hypothesis": "entry / candidate_pool: accepted free-data consensus candidates backed by both alpha-score market-regime and Fundamental Growth + RS may provide cleaner replacement value than the full consensus queue.",
+    "category": "entry / candidate_pool",
+    "history_check": {
+      "exp-20260531-030": "Accepted free-data cross-source consensus candidate pool.",
+      "exp-20260601-001": "Accepted shared default-off free-data consensus adapter.",
+      "exp-20260601-015": "Positive no-core-entry capacity lead, not promotable due baseline drift.",
+      "exp-20260601-017": "Rejected liquidity-efficiency gate; do not retry nearby liquidity/range filters.",
+      "exp-20260601-018": "Positive core-capacity-available lead, not promotable due baseline drift."
+    },
+    "playbook_alignment": "Uses a production-visible default-off paper adapter family and free data; avoids LLM soft-ranking, state-surface scalar retunes, broad alpha_score retunes, and Companyfacts FCF threshold retries.",
+    "reproducibility": "Run .venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260601_020_accepted_consensus_alpha_fundamental_pair.py",
+    "single_causal_variable": "accepted_free_data_consensus_alpha_fundamental_pair_v1"
+  },
+  "production_impact": {
+    "alters_candidate_ranking": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "alters_signal_generation": false,
+    "alters_sizing": false,
+    "backtester_adapter_changed": false,
+    "default_off_paper_only": true,
+    "llm_used": false,
+    "parity_test_added": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "replay_only": true,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "related_files": [
+    "quant/experiments/exp_20260601_020_accepted_consensus_alpha_fundamental_pair.py",
+    "data/experiments/exp-20260601-020/accepted_consensus_alpha_fundamental_pair.json",
+    "experiments/logs/exp-20260601-020.json",
+    "experiments/artifacts/exp-20260601-020_accepted_consensus_alpha_fundamental_pair.md",
+    "experiments/cards/exp-20260601-020.md",
+    "experiments/tickets/exp-20260601-020.json"
+  ],
+  "required_sources": [
+    "ALPHA_SCORE_MARKET_REGIME_PAPER",
+    "FUNDAMENTAL_GROWTH_RS_PAPER"
+  ],
+  "results": [
+    {
+      "after": {
+        "expected_value_score": 4.7677,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.064,
+        "sharpe_daily": 4.44,
+        "signals_generated": 43,
+        "signals_survived": 35,
+        "strategy_total_return_pct": 1.0738,
+        "survival_rate": 0.814,
+        "tail_loss_share": 0.5118,
+        "total_pnl": 107384.44,
+        "trade_count": 18,
+        "win_rate": 0.7778,
+        "worst_trade_pct": -0.0397
+      },
+      "before": {
+        "expected_value_score": 4.1082,
+        "max_consecutive_losses": 2,
+        "max_drawdown_pct": 0.0665,
+        "sharpe_daily": 4.1,
+        "signals_generated": 43,
+        "signals_survived": 35,
+        "strategy_total_return_pct": 1.002,
+        "survival_rate": 0.814,
+        "tail_loss_share": 0.5118,
+        "total_pnl": 100203.06,
+        "trade_count": 18,
+        "win_rate": 0.7778,
+        "worst_trade_pct": -0.0397
+      },
+      "comparison": {
+        "expected_value_score_delta": 0.6595,
+        "max_drawdown_delta": -0.0025,
+        "raw_delta": {
+          "expected_value_score": 0.6595,
+          "max_drawdown_pct": -0.0025,
+          "sharpe_daily": 0.34,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "strategy_total_return_pct": 0.0718,
+          "survival_rate": 0.0,
+          "total_pnl": 7181.38,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "strategy_total_pnl_delta": 7181.38,
+        "total_pnl_delta": 7181.38
+      },
+      "end": "2026-04-21",
+      "label": "late_strong",
+      "raw_consensus_candidate_count": 16,
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20251023_20260421.json",
+      "source_pair_candidate_count": 14,
+      "start": "2025-10-23",
+      "target_diagnostics": {
+        "raw_consensus_candidates": 14,
+        "rejection_counts": {
+          "same_ticker_cooldown": 7
+        },
+        "selected_target_trades": 7,
+        "selected_trade_dates": [
+          "2025-10-24",
+          "2025-12-09",
+          "2025-12-10",
+          "2025-12-19",
+          "2026-01-06",
+          "2026-01-16",
+          "2026-01-23"
+        ],
+        "source_combo_counts_selected": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 5,
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 2
+        },
+        "source_pair_filter": {
+          "raw_consensus_candidates": 16,
+          "raw_source_combo_counts": {
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_IWM_CONFIRMED_PAPER": 2,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 11,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 3
+          },
+          "rejection_counts": {
+            "missing_required_alpha_fundamental_pair": 2
+          },
+          "source_pair_candidate_count": 14
+        }
+      },
+      "target_trade_count": 7,
+      "target_trade_pnl_usd": 7181.38
+    },
+    {
+      "after": {
+        "expected_value_score": 2.2505,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1114,
+        "sharpe_daily": 2.81,
+        "signals_generated": 48,
+        "signals_survived": 38,
+        "strategy_total_return_pct": 0.8009,
+        "survival_rate": 0.7917,
+        "tail_loss_share": 0.5515,
+        "total_pnl": 80094.09,
+        "trade_count": 20,
+        "win_rate": 0.55,
+        "worst_trade_pct": -0.0897
+      },
+      "before": {
+        "expected_value_score": 2.1405,
+        "max_consecutive_losses": 6,
+        "max_drawdown_pct": 0.1119,
+        "sharpe_daily": 2.74,
+        "signals_generated": 48,
+        "signals_survived": 38,
+        "strategy_total_return_pct": 0.7812,
+        "survival_rate": 0.7917,
+        "tail_loss_share": 0.5515,
+        "total_pnl": 78119.38,
+        "trade_count": 20,
+        "win_rate": 0.55,
+        "worst_trade_pct": -0.0897
+      },
+      "comparison": {
+        "expected_value_score_delta": 0.11,
+        "max_drawdown_delta": -0.0005,
+        "raw_delta": {
+          "expected_value_score": 0.11,
+          "max_drawdown_pct": -0.0005,
+          "sharpe_daily": 0.07,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "strategy_total_return_pct": 0.0197,
+          "survival_rate": 0.0,
+          "total_pnl": 1974.71,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "strategy_total_pnl_delta": 1974.71,
+        "total_pnl_delta": 1974.71
+      },
+      "end": "2025-10-22",
+      "label": "mid_weak",
+      "raw_consensus_candidate_count": 26,
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20250423_20251022.json",
+      "source_pair_candidate_count": 17,
+      "start": "2025-04-23",
+      "target_diagnostics": {
+        "raw_consensus_candidates": 17,
+        "rejection_counts": {
+          "same_ticker_cooldown": 3
+        },
+        "selected_target_trades": 14,
+        "selected_trade_dates": [
+          "2025-05-02",
+          "2025-06-24",
+          "2025-07-10",
+          "2025-07-18",
+          "2025-07-28",
+          "2025-08-18",
+          "2025-08-25",
+          "2025-08-28",
+          "2025-09-04",
+          "2025-09-10",
+          "2025-09-11",
+          "2025-09-18",
+          "2025-09-19",
+          "2025-09-26"
+        ],
+        "source_combo_counts_selected": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 13,
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 1
+        },
+        "source_pair_filter": {
+          "raw_consensus_candidates": 26,
+          "raw_source_combo_counts": {
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_IWM_CONFIRMED_PAPER": 4,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 16,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 1,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 4,
+            "FINRA_IWM_CONFIRMED_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 1
+          },
+          "rejection_counts": {
+            "missing_required_alpha_fundamental_pair": 9
+          },
+          "source_pair_candidate_count": 17
+        }
+      },
+      "target_trade_count": 14,
+      "target_trade_pnl_usd": 1974.71
+    },
+    {
+      "after": {
+        "expected_value_score": 0.1766,
+        "max_consecutive_losses": 9,
+        "max_drawdown_pct": 0.1517,
+        "sharpe_daily": 0.93,
+        "signals_generated": 47,
+        "signals_survived": 44,
+        "strategy_total_return_pct": 0.1899,
+        "survival_rate": 0.9362,
+        "tail_loss_share": 0.417,
+        "total_pnl": 18989.66,
+        "trade_count": 20,
+        "win_rate": 0.3,
+        "worst_trade_pct": -0.0718
+      },
+      "before": {
+        "expected_value_score": 0.1109,
+        "max_consecutive_losses": 9,
+        "max_drawdown_pct": 0.1409,
+        "sharpe_daily": 0.78,
+        "signals_generated": 47,
+        "signals_survived": 44,
+        "strategy_total_return_pct": 0.1422,
+        "survival_rate": 0.9362,
+        "tail_loss_share": 0.417,
+        "total_pnl": 14216.17,
+        "trade_count": 20,
+        "win_rate": 0.3,
+        "worst_trade_pct": -0.0718
+      },
+      "comparison": {
+        "expected_value_score_delta": 0.0657,
+        "max_drawdown_delta": 0.0108,
+        "raw_delta": {
+          "expected_value_score": 0.0657,
+          "max_drawdown_pct": 0.0108,
+          "sharpe_daily": 0.15,
+          "signals_generated": 0,
+          "signals_survived": 0,
+          "strategy_total_return_pct": 0.0477,
+          "survival_rate": 0.0,
+          "total_pnl": 4773.49,
+          "trade_count": 0,
+          "win_rate": 0.0
+        },
+        "strategy_total_pnl_delta": 4773.49,
+        "total_pnl_delta": 4773.49
+      },
+      "end": "2025-04-22",
+      "label": "old_thin",
+      "raw_consensus_candidate_count": 21,
+      "snapshot": "data/ohlcv/ohlcv_snapshot_20241002_20250422.json",
+      "source_pair_candidate_count": 11,
+      "start": "2024-10-02",
+      "target_diagnostics": {
+        "raw_consensus_candidates": 11,
+        "rejection_counts": {
+          "same_ticker_cooldown": 4
+        },
+        "selected_target_trades": 7,
+        "selected_trade_dates": [
+          "2024-10-08",
+          "2024-11-05",
+          "2024-11-07",
+          "2024-11-18",
+          "2024-11-26",
+          "2024-12-03",
+          "2025-02-10"
+        ],
+        "source_combo_counts_selected": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_IWM_CONFIRMED_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 1,
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 5,
+          "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 1
+        },
+        "source_pair_filter": {
+          "raw_consensus_candidates": 21,
+          "raw_source_combo_counts": {
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_IWM_CONFIRMED_PAPER": 2,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FINRA_IWM_CONFIRMED_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 1,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER": 9,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 1,
+            "ALPHA_SCORE_MARKET_REGIME_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 6,
+            "FUNDAMENTAL_GROWTH_RS_PAPER+VOLUME_BREADTH_BREAKOUT_PAPER": 2
+          },
+          "rejection_counts": {
+            "missing_required_alpha_fundamental_pair": 10
+          },
+          "source_pair_candidate_count": 11
+        }
+      },
+      "target_trade_count": 7,
+      "target_trade_pnl_usd": 4773.49
+    }
+  ],
+  "rule": {
+    "base_consensus_min_source_count": 2,
+    "base_notional_usd": 4000.0,
+    "hold_days": 10,
+    "max_paper_trades_per_day": 1,
+    "required_sources": [
+      "ALPHA_SCORE_MARKET_REGIME_PAPER",
+      "FUNDAMENTAL_GROWTH_RS_PAPER"
+    ],
+    "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+    "same_ticker_cooldown_days": 7
+  },
+  "source_files": {
+    "ALPHA_SCORE_MARKET_REGIME_PAPER": "data/experiments/exp-20260531-021/exp_20260531_021_full_universe_alpha_score_market_regime_safe_notional.json",
+    "FINRA_IWM_CONFIRMED_PAPER": "data/experiments/exp-20260530-007/exp_20260530_007_finra_iwm_same_ticker_cooldown_candidate_pool.json",
+    "FUNDAMENTAL_GROWTH_RS_PAPER": "data/experiments/exp-20260528-017/fundamental_growth_rs_low_liability_support.json",
+    "VOLUME_BREADTH_BREAKOUT_PAPER": "data/experiments/exp-20260529-004/exp_20260529_004_vbb_cost_liquidity_support.json"
+  },
+  "status": "rejected_accepted_consensus_alpha_fundamental_pair",
+  "target_summary": {
+    "max_single_positive_share": 0.478792,
+    "pnl_by_window": {
+      "late_strong": 7181.38,
+      "mid_weak": 1974.71,
+      "old_thin": 4773.49
+    },
+    "positive_pnl_hhi": 0.34233,
+    "positive_pnl_total_usd": 24622.01,
+    "target_trade_count": 28,
+    "target_trade_pnl_usd": 13929.58,
+    "ticker_rows": [
+      {
+        "paper_pnl_usd": 9074.87,
+        "positive_pnl_share": 0.478792,
+        "positive_pnl_usd": 11788.81,
+        "ticker": "APP",
+        "trade_count": 10
+      },
+      {
+        "paper_pnl_usd": 7237.51,
+        "positive_pnl_share": 0.296603,
+        "positive_pnl_usd": 7302.97,
+        "ticker": "MU",
+        "trade_count": 7
+      },
+      {
+        "paper_pnl_usd": 694.25,
+        "positive_pnl_share": 0.131798,
+        "positive_pnl_usd": 3245.12,
+        "ticker": "CRDO",
+        "trade_count": 5
+      },
+      {
+        "paper_pnl_usd": -212.05,
+        "positive_pnl_share": 0.0,
+        "positive_pnl_usd": 0.0,
+        "ticker": "AMD",
+        "trade_count": 1
+      },
+      {
+        "paper_pnl_usd": -339.19,
+        "positive_pnl_share": 0.087866,
+        "positive_pnl_usd": 2163.43,
+        "ticker": "PLTR",
+        "trade_count": 3
+      },
+      {
+        "paper_pnl_usd": -2525.81,
+        "positive_pnl_share": 0.004942,
+        "positive_pnl_usd": 121.68,
+        "ticker": "COIN",
+        "trade_count": 2
+      }
+    ],
+    "trades_by_window": {
+      "late_strong": 7,
+      "mid_weak": 14,
+      "old_thin": 7
+    }
+  },
+  "target_trades_by_window": {
+    "late_strong": [
+      {
+        "alpha_score": 0.75406,
+        "alters_orders": false,
+        "date": "2025-10-24",
+        "entry_date": "2025-10-27",
+        "entry_price": 224.7372,
+        "entry_raw_open": 224.6249,
+        "exit_date": "2025-11-07",
+        "exit_price": 237.6052,
+        "exit_raw_close": 237.7241,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-10-24T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 537.58,
+        "pnl": 537.58,
+        "pnl_pct_net": 0.053758,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-10-24",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.75406,
+            "date": "2025-10-24",
+            "entry_date": "2025-10-27",
+            "signal_date": "2025-10-24",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2025-10-24",
+            "entry_date": "2025-10-27",
+            "signal_date": "2025-10-24",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.63197,
+        "alters_orders": false,
+        "date": "2025-12-09",
+        "entry_date": "2025-12-10",
+        "entry_price": 717.5186,
+        "entry_raw_open": 717.16,
+        "exit_date": "2025-12-23",
+        "exit_price": 728.0858,
+        "exit_raw_close": 728.45,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-12-09T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 112.27,
+        "pnl": 112.27,
+        "pnl_pct_net": 0.011227,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-12-09",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.63197,
+            "date": "2025-12-09",
+            "entry_date": "2025-12-10",
+            "signal_date": "2025-12-09",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2025-12-09",
+            "entry_date": "2025-12-10",
+            "signal_date": "2025-12-09",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.681725,
+        "alters_orders": false,
+        "date": "2025-12-10",
+        "entry_date": "2025-12-11",
+        "entry_price": 261.4453,
+        "entry_raw_open": 261.3146,
+        "exit_date": "2025-12-24",
+        "exit_price": 286.3007,
+        "exit_raw_close": 286.4439,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-12-10T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 915.69,
+        "pnl": 915.69,
+        "pnl_pct_net": 0.091569,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-12-10",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.681725,
+            "date": "2025-12-10",
+            "entry_date": "2025-12-11",
+            "signal_date": "2025-12-10",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2025-12-10",
+            "entry_date": "2025-12-11",
+            "signal_date": "2025-12-10",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.722765,
+        "alters_orders": false,
+        "date": "2025-12-19",
+        "entry_date": "2025-12-22",
+        "entry_price": 277.0602,
+        "entry_raw_open": 276.9217,
+        "exit_date": "2026-01-06",
+        "exit_price": 343.1141,
+        "exit_raw_close": 343.2858,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-12-19T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 2349.1,
+        "pnl": 2349.1,
+        "pnl_pct_net": 0.23491,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-12-19",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 3,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017",
+          "VOLUME_BREADTH_BREAKOUT_PAPER": "exp-20260529-004"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER",
+          "VOLUME_BREADTH_BREAKOUT_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.722765,
+            "date": "2025-12-19",
+            "entry_date": "2025-12-22",
+            "signal_date": "2025-12-19",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2025-12-19",
+            "entry_date": "2025-12-22",
+            "signal_date": "2025-12-19",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2025-12-19",
+            "entry_date": "2025-12-22",
+            "signal_date": "2025-12-19",
+            "source_experiment_id": "exp-20260529-004",
+            "source_name": "VOLUME_BREADTH_BREAKOUT_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.720065,
+        "alters_orders": false,
+        "date": "2026-01-06",
+        "entry_date": "2026-01-07",
+        "entry_price": 340.7372,
+        "entry_raw_open": 340.5669,
+        "exit_date": "2026-01-21",
+        "exit_price": 388.7521,
+        "exit_raw_close": 388.9466,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2026-01-06T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 1374.15,
+        "pnl": 1374.15,
+        "pnl_pct_net": 0.137415,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2026-01-06",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 3,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017",
+          "VOLUME_BREADTH_BREAKOUT_PAPER": "exp-20260529-004"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER",
+          "VOLUME_BREADTH_BREAKOUT_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.720065,
+            "date": "2026-01-06",
+            "entry_date": "2026-01-07",
+            "signal_date": "2026-01-06",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2026-01-06",
+            "entry_date": "2026-01-07",
+            "signal_date": "2026-01-06",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2026-01-06",
+            "entry_date": "2026-01-07",
+            "signal_date": "2026-01-06",
+            "source_experiment_id": "exp-20260529-004",
+            "source_name": "VOLUME_BREADTH_BREAKOUT_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.71958,
+        "alters_orders": false,
+        "date": "2026-01-16",
+        "entry_date": "2026-01-20",
+        "entry_price": 364.7091,
+        "entry_raw_open": 364.5269,
+        "exit_date": "2026-02-02",
+        "exit_price": 437.3973,
+        "exit_raw_close": 437.6161,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2026-01-16T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 1958.05,
+        "pnl": 1958.05,
+        "pnl_pct_net": 0.195805,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2026-01-16",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.71958,
+            "date": "2026-01-16",
+            "entry_date": "2026-01-20",
+            "signal_date": "2026-01-16",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2026-01-16",
+            "entry_date": "2026-01-20",
+            "signal_date": "2026-01-16",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.736285,
+        "alters_orders": false,
+        "date": "2026-01-23",
+        "entry_date": "2026-01-26",
+        "entry_price": 395.5316,
+        "entry_raw_open": 395.3339,
+        "exit_date": "2026-02-06",
+        "exit_price": 394.327,
+        "exit_raw_close": 394.5243,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2026-01-23T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -65.46,
+        "pnl": -65.46,
+        "pnl_pct_net": -0.006546,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2026-01-23",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.736285,
+            "date": "2026-01-23",
+            "entry_date": "2026-01-26",
+            "signal_date": "2026-01-23",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2026-01-23",
+            "entry_date": "2026-01-26",
+            "signal_date": "2026-01-23",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      }
+    ],
+    "mid_weak": [
+      {
+        "alpha_score": 0.711355,
+        "alters_orders": false,
+        "date": "2025-05-02",
+        "entry_date": "2025-05-05",
+        "entry_price": 123.7618,
+        "entry_raw_open": 123.7,
+        "exit_date": "2025-05-16",
+        "exit_price": 129.4552,
+        "exit_raw_close": 129.52,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-05-02T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 425.03,
+        "pnl": 425.03,
+        "pnl_pct_net": 0.042503,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-05-02",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.711355,
+            "date": "2025-05-02",
+            "entry_date": "2025-05-05",
+            "signal_date": "2025-05-02",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "PLTR"
+          },
+          {
+            "date": "2025-05-02",
+            "entry_date": "2025-05-05",
+            "signal_date": "2025-05-02",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "PLTR"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "PLTR",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.792275,
+        "alters_orders": false,
+        "date": "2025-06-24",
+        "entry_date": "2025-06-25",
+        "entry_price": 94.6173,
+        "entry_raw_open": 94.57,
+        "exit_date": "2025-07-09",
+        "exit_price": 97.5412,
+        "exit_raw_close": 97.59,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-06-24T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 274.02,
+        "pnl": 274.02,
+        "pnl_pct_net": 0.027402,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-06-24",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.792275,
+            "date": "2025-06-24",
+            "entry_date": "2025-06-25",
+            "signal_date": "2025-06-24",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "CRDO"
+          },
+          {
+            "date": "2025-06-24",
+            "entry_date": "2025-06-25",
+            "signal_date": "2025-06-24",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "CRDO"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "CRDO",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.722005,
+        "alters_orders": false,
+        "date": "2025-07-10",
+        "entry_date": "2025-07-11",
+        "entry_price": 390.3851,
+        "entry_raw_open": 390.19,
+        "exit_date": "2025-07-24",
+        "exit_price": 396.5017,
+        "exit_raw_close": 396.7,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-07-10T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 121.68,
+        "pnl": 121.68,
+        "pnl_pct_net": 0.012168,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-07-10",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.722005,
+            "date": "2025-07-10",
+            "entry_date": "2025-07-11",
+            "signal_date": "2025-07-10",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "COIN"
+          },
+          {
+            "date": "2025-07-10",
+            "entry_date": "2025-07-11",
+            "signal_date": "2025-07-10",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "COIN"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "COIN",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.721045,
+        "alters_orders": false,
+        "date": "2025-07-18",
+        "entry_date": "2025-07-21",
+        "entry_price": 425.7628,
+        "entry_raw_open": 425.55,
+        "exit_date": "2025-08-01",
+        "exit_price": 314.5327,
+        "exit_raw_close": 314.69,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-07-18T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -2647.49,
+        "pnl": -2647.49,
+        "pnl_pct_net": -0.264749,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-07-18",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.721045,
+            "date": "2025-07-18",
+            "entry_date": "2025-07-21",
+            "signal_date": "2025-07-18",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "COIN"
+          },
+          {
+            "date": "2025-07-18",
+            "entry_date": "2025-07-21",
+            "signal_date": "2025-07-18",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "COIN"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "COIN",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.72304,
+        "alters_orders": false,
+        "date": "2025-07-28",
+        "entry_date": "2025-07-29",
+        "entry_price": 175.2976,
+        "entry_raw_open": 175.21,
+        "exit_date": "2025-08-11",
+        "exit_price": 172.1939,
+        "exit_raw_close": 172.28,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-07-28T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -212.05,
+        "pnl": -212.05,
+        "pnl_pct_net": -0.021205,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-07-28",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.72304,
+            "date": "2025-07-28",
+            "entry_date": "2025-07-29",
+            "signal_date": "2025-07-28",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "AMD"
+          },
+          {
+            "date": "2025-07-28",
+            "entry_date": "2025-07-29",
+            "signal_date": "2025-07-28",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "AMD"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "AMD",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.55822,
+        "alters_orders": false,
+        "date": "2025-08-18",
+        "entry_date": "2025-08-19",
+        "entry_price": 116.3481,
+        "entry_raw_open": 116.29,
+        "exit_date": "2025-09-02",
+        "exit_price": 124.2079,
+        "exit_raw_close": 124.27,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-08-18T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 640.54,
+        "pnl": 640.54,
+        "pnl_pct_net": 0.064054,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-08-18",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.55822,
+            "date": "2025-08-18",
+            "entry_date": "2025-08-19",
+            "signal_date": "2025-08-18",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "CRDO"
+          },
+          {
+            "date": "2025-08-18",
+            "entry_date": "2025-08-19",
+            "signal_date": "2025-08-18",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "CRDO"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "CRDO",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.518685,
+        "alters_orders": false,
+        "date": "2025-08-25",
+        "entry_date": "2025-08-26",
+        "entry_price": 448.234,
+        "entry_raw_open": 448.01,
+        "exit_date": "2025-09-09",
+        "exit_price": 557.8909,
+        "exit_raw_close": 558.17,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-08-25T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 2411.42,
+        "pnl": 2411.42,
+        "pnl_pct_net": 0.241142,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-08-25",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.518685,
+            "date": "2025-08-25",
+            "entry_date": "2025-08-26",
+            "signal_date": "2025-08-25",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2025-08-25",
+            "entry_date": "2025-08-26",
+            "signal_date": "2025-08-25",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.668635,
+        "alters_orders": false,
+        "date": "2025-08-28",
+        "entry_date": "2025-08-29",
+        "entry_price": 130.9354,
+        "entry_raw_open": 130.87,
+        "exit_date": "2025-09-12",
+        "exit_price": 161.909,
+        "exit_raw_close": 161.99,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-08-28T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 2330.56,
+        "pnl": 2330.56,
+        "pnl_pct_net": 0.233056,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-08-28",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.668635,
+            "date": "2025-08-28",
+            "entry_date": "2025-08-29",
+            "signal_date": "2025-08-28",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "CRDO"
+          },
+          {
+            "date": "2025-08-28",
+            "entry_date": "2025-08-29",
+            "signal_date": "2025-08-28",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "CRDO"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "CRDO",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.68495,
+        "alters_orders": false,
+        "date": "2025-09-04",
+        "entry_date": "2025-09-05",
+        "entry_price": 506.253,
+        "entry_raw_open": 506.0,
+        "exit_date": "2025-09-18",
+        "exit_price": 621.2093,
+        "exit_raw_close": 621.52,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-09-04T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 2235.73,
+        "pnl": 2235.73,
+        "pnl_pct_net": 0.223573,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-09-04",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.68495,
+            "date": "2025-09-04",
+            "entry_date": "2025-09-05",
+            "signal_date": "2025-09-04",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2025-09-04",
+            "entry_date": "2025-09-05",
+            "signal_date": "2025-09-04",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.74989,
+        "alters_orders": false,
+        "date": "2025-09-10",
+        "entry_date": "2025-09-11",
+        "entry_price": 168.3141,
+        "entry_raw_open": 168.23,
+        "exit_date": "2025-09-24",
+        "exit_price": 149.3053,
+        "exit_raw_close": 149.38,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-09-10T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -1164.36,
+        "pnl": -1164.36,
+        "pnl_pct_net": -0.116436,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-09-10",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.74989,
+            "date": "2025-09-10",
+            "entry_date": "2025-09-11",
+            "signal_date": "2025-09-10",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "CRDO"
+          },
+          {
+            "date": "2025-09-10",
+            "entry_date": "2025-09-11",
+            "signal_date": "2025-09-10",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "CRDO"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "CRDO",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.66139,
+        "alters_orders": false,
+        "date": "2025-09-11",
+        "entry_date": "2025-09-12",
+        "entry_price": 153.4042,
+        "entry_raw_open": 153.3275,
+        "exit_date": "2025-09-25",
+        "exit_price": 156.5245,
+        "exit_raw_close": 156.6028,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-09-11T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 168.4,
+        "pnl": 168.4,
+        "pnl_pct_net": 0.01684,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-09-11",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.66139,
+            "date": "2025-09-11",
+            "entry_date": "2025-09-12",
+            "signal_date": "2025-09-11",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "MU"
+          },
+          {
+            "date": "2025-09-11",
+            "entry_date": "2025-09-12",
+            "signal_date": "2025-09-11",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "MU"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "MU",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.75822,
+        "alters_orders": false,
+        "date": "2025-09-18",
+        "entry_date": "2025-09-19",
+        "entry_price": 172.9264,
+        "entry_raw_open": 172.84,
+        "exit_date": "2025-10-02",
+        "exit_price": 149.5552,
+        "exit_raw_close": 149.63,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-09-18T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -1386.51,
+        "pnl": -1386.51,
+        "pnl_pct_net": -0.138651,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-09-18",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.75822,
+            "date": "2025-09-18",
+            "entry_date": "2025-09-19",
+            "signal_date": "2025-09-18",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "CRDO"
+          },
+          {
+            "date": "2025-09-18",
+            "entry_date": "2025-09-19",
+            "signal_date": "2025-09-18",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "CRDO"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "CRDO",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.78702,
+        "alters_orders": false,
+        "date": "2025-09-19",
+        "entry_date": "2025-09-22",
+        "entry_price": 647.3735,
+        "entry_raw_open": 647.05,
+        "exit_date": "2025-10-03",
+        "exit_price": 682.4186,
+        "exit_raw_close": 682.76,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-09-19T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 506.34,
+        "pnl": 506.34,
+        "pnl_pct_net": 0.050634,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-09-19",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 3,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017",
+          "VOLUME_BREADTH_BREAKOUT_PAPER": "exp-20260529-004"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER",
+          "VOLUME_BREADTH_BREAKOUT_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.78702,
+            "date": "2025-09-19",
+            "entry_date": "2025-09-22",
+            "signal_date": "2025-09-19",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2025-09-19",
+            "entry_date": "2025-09-22",
+            "signal_date": "2025-09-19",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2025-09-19",
+            "entry_date": "2025-09-22",
+            "signal_date": "2025-09-19",
+            "source_experiment_id": "exp-20260529-004",
+            "source_name": "VOLUME_BREADTH_BREAKOUT_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.644345,
+        "alters_orders": false,
+        "date": "2025-09-26",
+        "entry_date": "2025-09-29",
+        "entry_price": 685.7427,
+        "entry_raw_open": 685.4,
+        "exit_date": "2025-10-10",
+        "exit_price": 569.6051,
+        "exit_raw_close": 569.89,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-09-26T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -1728.6,
+        "pnl": -1728.6,
+        "pnl_pct_net": -0.17286,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-09-26",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.644345,
+            "date": "2025-09-26",
+            "entry_date": "2025-09-29",
+            "signal_date": "2025-09-26",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2025-09-26",
+            "entry_date": "2025-09-29",
+            "signal_date": "2025-09-26",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      }
+    ],
+    "old_thin": [
+      {
+        "alpha_score": 0.74302,
+        "alters_orders": false,
+        "date": "2024-10-08",
+        "entry_date": "2024-10-09",
+        "entry_price": 143.0315,
+        "entry_raw_open": 142.96,
+        "exit_date": "2024-10-22",
+        "exit_price": 158.8705,
+        "exit_raw_close": 158.95,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2024-10-08T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 1072.38,
+        "pnl": 1072.38,
+        "pnl_pct_net": 0.107238,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2024-10-08",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.74302,
+            "date": "2024-10-08",
+            "entry_date": "2024-10-09",
+            "signal_date": "2024-10-08",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2024-10-08",
+            "entry_date": "2024-10-09",
+            "signal_date": "2024-10-08",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.736575,
+        "alters_orders": false,
+        "date": "2024-11-05",
+        "entry_date": "2024-11-06",
+        "entry_price": 53.4667,
+        "entry_raw_open": 53.44,
+        "exit_date": "2024-11-19",
+        "exit_price": 62.9485,
+        "exit_raw_close": 62.98,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2024-11-05T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 1738.4,
+        "pnl": 1738.4,
+        "pnl_pct_net": 0.17384,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2024-11-05",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 3,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017",
+          "VOLUME_BREADTH_BREAKOUT_PAPER": "exp-20260529-004"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER",
+          "VOLUME_BREADTH_BREAKOUT_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.736575,
+            "date": "2024-11-05",
+            "entry_date": "2024-11-06",
+            "signal_date": "2024-11-05",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "PLTR"
+          },
+          {
+            "date": "2024-11-05",
+            "entry_date": "2024-11-06",
+            "signal_date": "2024-11-05",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "PLTR"
+          },
+          {
+            "date": "2024-11-05",
+            "entry_date": "2024-11-06",
+            "signal_date": "2024-11-05",
+            "source_experiment_id": "exp-20260529-004",
+            "source_name": "VOLUME_BREADTH_BREAKOUT_PAPER",
+            "ticker": "PLTR"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "PLTR",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.786055,
+        "alters_orders": false,
+        "date": "2024-11-07",
+        "entry_date": "2024-11-08",
+        "entry_price": 249.2145,
+        "entry_raw_open": 249.09,
+        "exit_date": "2024-11-21",
+        "exit_price": 318.0809,
+        "exit_raw_close": 318.24,
+        "finra_candidate_selection_score": 1.710134,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2024-11-07T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 2728.34,
+        "pnl": 2728.34,
+        "pnl_pct_net": 0.272834,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2024-11-07",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 3,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FINRA_IWM_CONFIRMED_PAPER": "exp-20260530-007",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FINRA_IWM_CONFIRMED_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.786055,
+            "date": "2024-11-07",
+            "entry_date": "2024-11-08",
+            "signal_date": "2024-11-07",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "candidate_selection_score": 1.710134,
+            "date": "2024-11-07",
+            "entry_date": "2024-11-08",
+            "signal_date": "2024-11-07",
+            "source_experiment_id": "exp-20260530-007",
+            "source_name": "FINRA_IWM_CONFIRMED_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2024-11-07",
+            "entry_date": "2024-11-08",
+            "signal_date": "2024-11-07",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.64649,
+        "alters_orders": false,
+        "date": "2024-11-18",
+        "entry_date": "2024-11-19",
+        "entry_price": 295.4276,
+        "entry_raw_open": 295.28,
+        "exit_date": "2024-12-03",
+        "exit_price": 366.3667,
+        "exit_raw_close": 366.55,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2024-11-18T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 2366.23,
+        "pnl": 2366.23,
+        "pnl_pct_net": 0.236623,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2024-11-18",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.64649,
+            "date": "2024-11-18",
+            "entry_date": "2024-11-19",
+            "signal_date": "2024-11-18",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2024-11-18",
+            "entry_date": "2024-11-19",
+            "signal_date": "2024-11-18",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.648415,
+        "alters_orders": false,
+        "date": "2024-11-26",
+        "entry_date": "2024-11-27",
+        "entry_price": 325.3176,
+        "entry_raw_open": 325.155,
+        "exit_date": "2024-12-11",
+        "exit_price": 338.0409,
+        "exit_raw_close": 338.21,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2024-11-26T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": 356.1,
+        "pnl": 356.1,
+        "pnl_pct_net": 0.03561,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2024-11-26",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.648415,
+            "date": "2024-11-26",
+            "entry_date": "2024-11-27",
+            "signal_date": "2024-11-26",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2024-11-26",
+            "entry_date": "2024-11-27",
+            "signal_date": "2024-11-26",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.75726,
+        "alters_orders": false,
+        "date": "2024-12-03",
+        "entry_date": "2024-12-04",
+        "entry_price": 373.1865,
+        "entry_raw_open": 373.0,
+        "exit_date": "2024-12-17",
+        "exit_price": 337.7211,
+        "exit_raw_close": 337.89,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2024-12-03T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -985.34,
+        "pnl": -985.34,
+        "pnl_pct_net": -0.098534,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2024-12-03",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.75726,
+            "date": "2024-12-03",
+            "entry_date": "2024-12-04",
+            "signal_date": "2024-12-03",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "APP"
+          },
+          {
+            "date": "2024-12-03",
+            "entry_date": "2024-12-04",
+            "signal_date": "2024-12-03",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "APP"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "APP",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      },
+      {
+        "alpha_score": 0.75606,
+        "alters_orders": false,
+        "date": "2025-02-10",
+        "entry_date": "2025-02-11",
+        "entry_price": 116.5582,
+        "entry_raw_open": 116.5,
+        "exit_date": "2025-02-25",
+        "exit_price": 87.7961,
+        "exit_raw_close": 87.84,
+        "finra_candidate_selection_score": null,
+        "fundamental_growth_rs_score": null,
+        "hold_days": 10,
+        "known_at": "2025-02-10T21:00:00Z",
+        "paper_notional_usd": 4000.0,
+        "paper_pnl": -2502.62,
+        "pnl": -2502.62,
+        "pnl_pct_net": -0.250262,
+        "required_source_pair": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "rule_version": "accepted_free_data_consensus_alpha_fundamental_pair_v1",
+        "same_ticker_cooldown_days": 7,
+        "signal_date": "2025-02-10",
+        "source_agreement_rule": "same_date_ticker_selected_by_at_least_two_accepted_free_data_sleeves",
+        "source_composition_rule": "requires_alpha_score_market_regime_and_fundamental_growth_rs",
+        "source_count": 2,
+        "source_experiment_ids": {
+          "ALPHA_SCORE_MARKET_REGIME_PAPER": "exp-20260531-021",
+          "FUNDAMENTAL_GROWTH_RS_PAPER": "exp-20260528-017"
+        },
+        "source_names": [
+          "ALPHA_SCORE_MARKET_REGIME_PAPER",
+          "FUNDAMENTAL_GROWTH_RS_PAPER"
+        ],
+        "source_rows": [
+          {
+            "alpha_score": 0.75606,
+            "date": "2025-02-10",
+            "entry_date": "2025-02-11",
+            "signal_date": "2025-02-10",
+            "source_experiment_id": "exp-20260531-021",
+            "source_name": "ALPHA_SCORE_MARKET_REGIME_PAPER",
+            "ticker": "PLTR"
+          },
+          {
+            "date": "2025-02-10",
+            "entry_date": "2025-02-11",
+            "signal_date": "2025-02-10",
+            "source_experiment_id": "exp-20260528-017",
+            "source_name": "FUNDAMENTAL_GROWTH_RS_PAPER",
+            "ticker": "PLTR"
+          }
+        ],
+        "strategy": "accepted_consensus_alpha_fundamental_pair",
+        "ticker": "PLTR",
+        "trade_enabled": false,
+        "volume_breadth_breakout_score": null
+      }
+    ]
+  }
+}
