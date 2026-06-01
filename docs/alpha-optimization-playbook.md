@@ -525,6 +525,30 @@ Do not:
   non-momentum component (the current expectation/PEAD inputs are constant on
   broad tickers), not a reweighting of the existing OHLCV-momentum components.
 
+Unified close-out of the broad-universe cross-sectional line (do not re-mine):
+
+- The broad 1,446-ticker warehouse cross-section was probed three ways and
+  the only robust signal each time was momentum the core already trades:
+  composite `alpha_score` reduces to `relative_strength`
+  (`exp-20260601-003/006`); short-horizon **reversal is rejected**
+  (`exp-20260601-007` -- with a skip-day and t-stat, every formation/hold
+  cell is continuation, not reversal); and the incidental short-formation
+  **continuation is a real long-only momentum tilt but NOT incremental over
+  ret20** (`exp-20260601-008` -- top-quintile excess +0.47pct/10d net,
+  t=2.82, 3/3 windows, but the ret20 double-sort residual is t=1.00,
+  insignificant).
+- Durable lesson: broad-universe OHLCV cross-sectional structure = momentum,
+  and the core entry already trades momentum, so factor-mining the broad
+  warehouse keeps rediscovering it. A new cross-sectional edge needs either a
+  populated NON-momentum field (data-population problem) or a direct
+  replacement-value test versus the actual same-day core candidate a name
+  would displace (not a ret20/alpha_score proxy). Do not open another
+  broad-universe OHLCV cross-sectional factor probe without one of those.
+- Method note worth keeping: require any "incremental over X" claim to pass a
+  double-sort residual that is BOTH above cost AND statistically significant
+  (t>=2); a positive residual point estimate alone is not evidence
+  (`exp-20260601-008` caught and corrected exactly this).
+
 ### 4b. Pattern-Name Candidate Pools
 
 Mechanism: the last batch of OHLCV pattern-name pools did not survive Gate 4.
