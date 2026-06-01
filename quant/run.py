@@ -1049,16 +1049,25 @@ def main():
         )
 
     strategy_active_positions = count_core_strategy_positions(open_positions)
+    total_accounting_signals, total_accounting_entry_execution_plan = plan_entry_candidates(
+        deepcopy(advisory_entry_signals),
+        open_positions,
+        market_context=market_context,
+        active_positions_scope="total_account_positive_positions_shadow",
+    )
     strategy_accounting_signals, strategy_entry_execution_plan = plan_entry_candidates(
         deepcopy(advisory_entry_signals),
         open_positions,
         market_context=market_context,
         active_positions_count=strategy_active_positions,
+        active_positions_scope="core_strategy_slot_accounting",
     )
     signals, entry_execution_plan = plan_entry_candidates(
         signals,
         open_positions,
         market_context=market_context,
+        active_positions_count=strategy_active_positions,
+        active_positions_scope="core_strategy_slot_accounting",
     )
     entry_candidate_review = build_entry_candidate_review(
         advisory_entry_signals,
@@ -1066,6 +1075,8 @@ def main():
         live_entry_execution_plan=entry_execution_plan,
         strategy_selected_signals=strategy_accounting_signals,
         strategy_entry_execution_plan=strategy_entry_execution_plan,
+        total_account_selected_signals=total_accounting_signals,
+        total_account_entry_execution_plan=total_accounting_entry_execution_plan,
         open_positions=open_positions,
         live_heat_blocked=live_heat_blocked,
     )

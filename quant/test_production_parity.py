@@ -17,6 +17,7 @@ from production_parity import (  # noqa: E402
     filter_entry_signal_candidates,
     partial_reduce_shares,
     plan_entry_candidates,
+    position_consumes_core_slot,
     production_trailing_stop_price,
     risk_pct_for_market_state,
     suggested_reduce_pct_for_rules,
@@ -26,6 +27,7 @@ import constants  # noqa: E402
 import production_parity  # noqa: E402
 from portfolio_engine import size_signals  # noqa: E402
 from risk_engine import enrich_signals  # noqa: E402
+from report_generator import generate_daily_report  # noqa: E402
 
 
 def _ohlcv(closes):
@@ -116,6 +118,29 @@ def test_slot_accounting_counts_only_core_strategy_positions():
         row["ticker"]
         for row in summary["non_strategy_positions_ignored_for_strategy_slots"]
     ] == ["NVDA", "COHR", "RKLB"]
+    assert summary["capacity_policy"] == "core_strategy_slots_only"
+    assert summary["core_slot_active_positions"] == 1
+    assert summary["total_account_active_positions"] == 4
+
+
+def test_core_slot_policy_honors_explicit_sleeve_and_slot_policy():
+    assert position_consumes_core_slot(
+        {"ticker": "AAPL", "shares": 1, "sleeve": "core"}
+    )
+    assert position_consumes_core_slot(
+        {"ticker": "AAPL", "shares": 1, "slot_policy": "consumes_core_slot"}
+    )
+    assert not position_consumes_core_slot(
+        {
+            "ticker": "NVDA",
+            "shares": 1,
+            "opened_by_strategy": "breakout_long",
+            "slot_policy": "does_not_consume_core_slot",
+        }
+    )
+    assert not position_consumes_core_slot(
+        {"ticker": "RKLB", "shares": 1, "sleeve": "fomo"}
+    )
 
 
 def test_entry_candidate_review_surfaces_backtest_buy_live_slot_deferred():
@@ -161,6 +186,118 @@ def test_entry_candidate_review_surfaces_backtest_buy_live_slot_deferred():
     assert review["backtest_accounting_buy_count"] == 2
     assert review["candidates"][0]["live_accounting"]["reason"] == "slot_sliced"
     assert review["candidates"][0]["backtest_accounting"]["decision"] == "buy"
+
+
+def test_entry_candidate_review_surfaces_total_account_shadow_blocker():
+    open_positions = {
+        "positions": [
+            {"ticker": "LEG1", "shares": 10, "opened_by_strategy": "legacy"},
+            {"ticker": "LEG2", "shares": 10, "opened_by_strategy": "legacy"},
+            {"ticker": "FOMO", "shares": 10, "opened_by_strategy": "fomo"},
+            {"ticker": "PILOT", "shares": 10, "opened_by_strategy": "pilot_breakout_long"},
+            {"ticker": "CORE", "shares": 10, "opened_by_strategy": "trend_long"},
+        ]
+    }
+    signals = [
+        {"ticker": "GS", "strategy": "trend_long", "entry_price": 100.0},
+        {"ticker": "SNOW", "strategy": "trend_long", "entry_price": 50.0},
+    ]
+    core_count = count_core_strategy_positions(open_positions)
+
+    total_selected, total_plan = plan_entry_candidates(
+        signals,
+        open_positions,
+        max_positions=5,
+        active_positions_scope="total_account_positive_positions_shadow",
+    )
+    live_selected, live_plan = plan_entry_candidates(
+        signals,
+        open_positions,
+        max_positions=5,
+        active_positions_count=core_count,
+        active_positions_scope="core_strategy_slot_accounting",
+    )
+    review = build_entry_candidate_review(
+        signals,
+        live_selected_signals=live_selected,
+        live_entry_execution_plan=live_plan,
+        strategy_selected_signals=live_selected,
+        strategy_entry_execution_plan=live_plan,
+        total_account_selected_signals=total_selected,
+        total_account_entry_execution_plan=total_plan,
+        open_positions=open_positions,
+        max_positions=5,
+    )
+
+    assert [row["ticker"] for row in live_selected] == ["GS", "SNOW"]
+    assert total_selected == []
+    assert review["live_buy_count"] == 2
+    assert review["total_accounting_buy_count"] == 0
+    assert review["operator_review_count"] == 2
+    assert (
+        review["candidates"][0]["operator_review_reason"]
+        == "total_account_would_defer_but_core_capacity_allows"
+    )
+    assert review["candidates"][0]["total_accounting_shadow"]["reason"] == "slot_sliced"
+
+
+def test_report_renders_core_slots_and_total_account_shadow():
+    entry_plan = {
+        "available_slots": 4,
+        "active_positions_scope": "core_strategy_slot_accounting",
+        "deferred_breakout_signals": [],
+        "slot_sliced_signals": [],
+    }
+    review = {
+        "candidate_count": 1,
+        "slot_accounting": {
+            "max_positions": 5,
+            "live_active_positions": 11,
+            "live_available_slots": 0,
+            "strategy_active_positions": 1,
+            "strategy_available_slots": 4,
+            "non_strategy_positions_ignored_for_strategy_slots": [
+                {"ticker": "NVDA"},
+                {"ticker": "RKLB"},
+            ],
+        },
+        "candidates": [
+            {
+                "rank": 1,
+                "ticker": "SNOW",
+                "strategy": "trend_long",
+                "live_accounting": {
+                    "decision": "buy",
+                    "reason": "selected_by_entry_plan",
+                },
+                "backtest_accounting": {
+                    "decision": "buy",
+                    "reason": "selected_by_entry_plan",
+                },
+                "total_accounting_shadow": {
+                    "decision": "deferred",
+                    "reason": "slot_sliced",
+                },
+                "operator_review_reason": (
+                    "total_account_would_defer_but_core_capacity_allows"
+                ),
+            }
+        ],
+    }
+
+    report = generate_daily_report(
+        [],
+        portfolio_heat={"portfolio_heat_pct": 0.01, "can_add_new_positions": True},
+        market_regime={"regime": "BULL", "note": "test"},
+        entry_execution_plan=entry_plan,
+        entry_candidate_review=review,
+    )
+
+    assert "ENTRY SLOTS (core strategy): 4 available" in report
+    assert "Production core slots: 4/5 available (1 core active)" in report
+    assert "Total-account shadow slots: 0/5 available (11 active)" in report
+    assert "Non-core positions not consuming core slots: NVDA, RKLB" in report
+    assert "total_shadow=deferred:slot_sliced" in report
 
 
 def test_plan_entry_candidates_topups_rank1_when_single_slot(monkeypatch):

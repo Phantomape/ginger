@@ -278,9 +278,15 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
 
     if entry_execution_plan:
         slots = entry_execution_plan.get("available_slots")
+        scope = entry_execution_plan.get("active_positions_scope")
+        scope_label = (
+            "core strategy"
+            if scope == "core_strategy_slot_accounting"
+            else "account"
+        )
         deferred = entry_execution_plan.get("deferred_breakout_signals") or []
         sliced = entry_execution_plan.get("slot_sliced_signals") or []
-        lines.append(f"\nENTRY SLOTS: {slots} available")
+        lines.append(f"\nENTRY SLOTS ({scope_label}): {slots} available")
         if deferred:
             tickers = ", ".join(d.get("ticker", "?") for d in deferred)
             lines.append(f"  Deferred breakout(s): {tickers}")
@@ -294,14 +300,14 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         ignored = accounting.get("non_strategy_positions_ignored_for_strategy_slots") or []
         lines.append("\nENTRY CANDIDATE REVIEW (operator decision)")
         lines.append(
-            "  Live slots: "
-            f"{accounting.get('live_available_slots')}/"
-            f"{accounting.get('max_positions')} available "
-            f"({accounting.get('live_active_positions')} active)  |  "
-            "Backtest-accounting slots: "
+            "  Production core slots: "
             f"{accounting.get('strategy_available_slots')}/"
             f"{accounting.get('max_positions')} available "
-            f"({accounting.get('strategy_active_positions')} core active)"
+            f"({accounting.get('strategy_active_positions')} core active)  |  "
+            "Total-account shadow slots: "
+            f"{accounting.get('live_available_slots')}/"
+            f"{accounting.get('max_positions')} available "
+            f"({accounting.get('live_active_positions')} active)"
         )
         if ignored:
             ignored_tickers = ", ".join(
@@ -310,22 +316,30 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             if len(ignored) > 12:
                 ignored_tickers += ", ..."
             lines.append(
-                "  Ignored for backtest-accounting slots: "
+                "  Non-core positions not consuming core slots: "
                 f"{ignored_tickers}"
             )
         for row in candidates[:10]:
             live = row.get("live_accounting") or {}
             bt = row.get("backtest_accounting") or {}
+            total_shadow = row.get("total_accounting_shadow") or {}
             review_flag = (
                 "  OPERATOR REVIEW"
                 if row.get("operator_review_reason")
                 else ""
             )
+            total_text = ""
+            if total_shadow:
+                total_text = (
+                    f"  total_shadow={total_shadow.get('decision')}:"
+                    f"{total_shadow.get('reason')}"
+                )
             lines.append(
                 f"  {row.get('rank')}. {row.get('ticker', '?')} "
                 f"{row.get('strategy', '?')}: "
                 f"live={live.get('decision')}:{live.get('reason')}  "
                 f"backtest={bt.get('decision')}:{bt.get('reason')}"
+                f"{total_text}"
                 f"{review_flag}"
             )
 

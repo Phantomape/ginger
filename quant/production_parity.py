@@ -49,6 +49,34 @@ CORE_STRATEGY_POSITION_TAGS = frozenset({
     "breakout_long",
     "earnings_event_long",
 })
+CORE_SLOT_POLICIES = frozenset({
+    "core",
+    "core_slot",
+    "consumes_core_slot",
+    "consume_core_slot",
+})
+NON_CORE_SLOT_POLICIES = frozenset({
+    "none",
+    "no_core_slot",
+    "does_not_consume_core_slot",
+    "do_not_consume_core_slot",
+    "ignore_core_slot",
+})
+CORE_SLEEVES = frozenset({
+    "core",
+    "core_strategy",
+})
+NON_CORE_SLEEVES = frozenset({
+    "legacy",
+    "manual",
+    "discretionary",
+    "fomo",
+    "pilot",
+    "paper",
+    "paper_shadow",
+    "observation",
+    "observe_only",
+})
 
 
 def position_was_spy_relative_leader(pos, ticker_df=None, spy_df=None, entry_idx=None, spy_entry_idx=None):
@@ -96,10 +124,45 @@ def _position_strategy_tag(position):
     return None
 
 
+def _normalised_text(value):
+    return str(value or "").strip().lower()
+
+
+def _position_sleeve(position):
+    sleeve = _normalised_text(position.get("sleeve"))
+    if sleeve:
+        return sleeve
+    tag = _normalised_text(_position_strategy_tag(position))
+    if tag in CORE_STRATEGY_POSITION_TAGS:
+        return "core"
+    if tag.startswith("pilot"):
+        return "pilot"
+    if tag in NON_CORE_SLEEVES:
+        return tag
+    return "unknown"
+
+
+def position_consumes_core_slot(position):
+    """Return whether a live position should consume core strategy capacity."""
+    slot_policy = _normalised_text(position.get("slot_policy"))
+    if slot_policy in CORE_SLOT_POLICIES:
+        return True
+    if slot_policy in NON_CORE_SLOT_POLICIES:
+        return False
+
+    sleeve = _position_sleeve(position)
+    if sleeve in CORE_SLEEVES:
+        return True
+    if sleeve in NON_CORE_SLEEVES:
+        return False
+
+    tag = _normalised_text(_position_strategy_tag(position))
+    return tag in CORE_STRATEGY_POSITION_TAGS
+
+
 def is_core_strategy_position(position):
     """Return whether a live ledger position should consume core strategy slots."""
-    tag = _position_strategy_tag(position)
-    return str(tag or "").lower() in CORE_STRATEGY_POSITION_TAGS
+    return position_consumes_core_slot(position)
 
 
 def count_core_strategy_positions(open_positions):
@@ -117,12 +180,16 @@ def build_slot_accounting_summary(open_positions, max_positions=MAX_POSITIONS):
     core_positions = []
     ignored_positions = []
     for position in positions:
+        consumes_core_slot = position_consumes_core_slot(position)
         row = {
             "ticker": position.get("ticker"),
             "opened_by_strategy": _position_strategy_tag(position),
+            "sleeve": _position_sleeve(position),
+            "slot_policy": position.get("slot_policy"),
+            "consumes_core_slot": consumes_core_slot,
             "shares": position.get("shares"),
         }
-        if is_core_strategy_position(position):
+        if consumes_core_slot:
             core_positions.append(row)
         else:
             ignored_positions.append(row)
@@ -130,12 +197,23 @@ def build_slot_accounting_summary(open_positions, max_positions=MAX_POSITIONS):
     live_active = len(positions)
     strategy_active = len(core_positions)
     return {
+        "capacity_policy": "core_strategy_slots_only",
+        "accounting_note": (
+            "All real positions count toward account heat/cash/risk, but only "
+            "positions with core sleeve/strategy policy consume core entry slots."
+        ),
         "max_positions": max_positions,
         "live_active_positions": live_active,
         "live_available_slots": max(0, max_positions - live_active),
+        "total_account_active_positions": live_active,
+        "total_account_available_slots_shadow": max(0, max_positions - live_active),
         "strategy_active_positions": strategy_active,
         "strategy_available_slots": max(0, max_positions - strategy_active),
+        "core_slot_active_positions": strategy_active,
+        "core_slot_available_slots": max(0, max_positions - strategy_active),
         "core_strategy_position_tags": sorted(CORE_STRATEGY_POSITION_TAGS),
+        "core_sleeves": sorted(CORE_SLEEVES),
+        "non_core_sleeves": sorted(NON_CORE_SLEEVES),
         "core_strategy_positions": core_positions,
         "non_strategy_positions_ignored_for_strategy_slots": ignored_positions,
     }
@@ -204,6 +282,8 @@ def build_entry_candidate_review(
     live_entry_execution_plan,
     strategy_selected_signals,
     strategy_entry_execution_plan,
+    total_account_selected_signals=None,
+    total_account_entry_execution_plan=None,
     open_positions=None,
     live_heat_blocked=False,
     max_positions=MAX_POSITIONS,
@@ -222,11 +302,20 @@ def build_entry_candidate_review(
             strategy_selected_signals,
             strategy_entry_execution_plan,
         )
+        total_account_decision = None
+        if total_account_entry_execution_plan is not None:
+            total_account_decision = _decision_for_signal(
+                signal,
+                total_account_selected_signals,
+                total_account_entry_execution_plan,
+            )
         row = {
             **_compact_signal_for_review(signal, rank),
             "live_accounting": live_decision,
             "backtest_accounting": strategy_decision,
         }
+        if total_account_decision is not None:
+            row["total_accounting_shadow"] = total_account_decision
         if (
             live_decision.get("decision") != "buy"
             and strategy_decision.get("decision") == "buy"
@@ -234,15 +323,23 @@ def build_entry_candidate_review(
             row["operator_review_reason"] = (
                 "backtest_accounting_buy_but_live_accounting_deferred"
             )
+        elif (
+            total_account_decision is not None
+            and live_decision.get("decision") == "buy"
+            and total_account_decision.get("decision") != "buy"
+        ):
+            row["operator_review_reason"] = (
+                "total_account_would_defer_but_core_capacity_allows"
+            )
         candidates.append(row)
 
     return {
         "diagnostic_only": True,
         "orders_changed": False,
         "description": (
-            "Read-only operator surface: live accounting counts every positive "
-            "ledger position; backtest accounting counts only core strategy "
-            "positions from opened_by_strategy."
+            "Read-only operator surface: production live accounting uses core "
+            "strategy slot capacity; total account positions still count toward "
+            "heat/cash/risk and are shown as a shadow capacity check."
         ),
         "slot_accounting": build_slot_accounting_summary(
             open_positions,
@@ -254,6 +351,11 @@ def build_entry_candidate_review(
         ),
         "backtest_accounting_buy_count": sum(
             1 for row in candidates if row["backtest_accounting"]["decision"] == "buy"
+        ),
+        "total_accounting_buy_count": sum(
+            1
+            for row in candidates
+            if (row.get("total_accounting_shadow") or {}).get("decision") == "buy"
         ),
         "operator_review_count": sum(
             1 for row in candidates if row.get("operator_review_reason")
@@ -488,6 +590,7 @@ def plan_entry_candidates(
     defer_breakout_when_slots_lte=DEFER_BREAKOUT_WHEN_SLOTS_LTE,
     defer_breakout_max_min_index_pct_from_ma=DEFER_BREAKOUT_MAX_MIN_INDEX_PCT_FROM_MA,
     active_positions_count=None,
+    active_positions_scope=None,
 ):
     """Apply the backtester's scarce-slot breakout deferral and slot slicing."""
     market_context = market_context or {}
@@ -496,6 +599,11 @@ def plan_entry_candidates(
         int(active_positions_count)
         if active_positions_count is not None
         else len(_positive_positions(open_positions))
+    )
+    active_positions_scope = active_positions_scope or (
+        "provided_active_positions_count"
+        if active_positions_count is not None
+        else "all_positive_account_positions"
     )
     slots = max(0, max_positions - active_positions)
 
@@ -551,6 +659,7 @@ def plan_entry_candidates(
 
     return planned, {
         "active_positions": active_positions,
+        "active_positions_scope": active_positions_scope,
         "max_positions": max_positions,
         "available_slots": slots,
         "signals_before_entry_plan": len(input_signals),
