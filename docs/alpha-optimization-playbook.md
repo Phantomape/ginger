@@ -44,10 +44,10 @@ Recent repository evidence supports this priority:
 - `FUNDAMENTAL_GROWTH_RS_PAPER` is the current best candidate-pool lead:
   Companyfacts growth + positive operating-profit quality + OHLCV RS produced a
   large three-window paper improvement, then became a shared default-off adapter.
-  Accepted low-volume, filing-recency, low-liability balance-sheet, and
-  filing-timeliness support improved the shared default-off paper adapter, but
-  the sleeve is now mature enough that nearby frozen-sample scalar retunes
-  should stop; collect forward replacement-value rows first.
+  Accepted low-volume, filing-recency, low-liability balance-sheet,
+  filing-timeliness, and cost-liquidity support improved the shared default-off
+  paper adapter, but the sleeve is now mature enough that nearby frozen-sample
+  scalar retunes should stop; collect forward replacement-value rows first.
 - `VOLUME_BREADTH_BREAKOUT_PAPER` and QQQ-confirmed VCP show that free OHLCV
   market-confirmation fields can produce useful paper sleeves. Their next step
   is forward maturation, not another breadth/QQQ/top-N sweep. The latest
@@ -318,6 +318,12 @@ operating-income filings made within `45` days of quarter end or `75` days of
 annual period end receive a `1.05x` default-off paper-notional scalar. It
 improved the gross-margin adapter EV `12.6985 -> 13.0745` and PnL
 `$300,134.87 -> $305,514.70`, with all three windows improved.
+`exp-20260601-030` accepted a production-visible Companyfacts/OHLCV
+cost-liquidity support field: already-selected candidates with signal-day
+`avg_dollar_volume_20 >= $200m` and `(high-low)/close <= 0.10` receive a
+`1.05x` default-off paper-notional scalar. It improved the accepted
+filing-timeliness adapter EV `13.0745 -> 13.4753` and PnL
+`$305,514.70 -> $311,052.25`, with all three windows improved.
 
 Keep fixed:
 
@@ -332,6 +338,8 @@ Keep fixed:
 - closed-ledger profit cap / drawdown governor.
 - accepted filing-timeliness support: `10-Q <= 45` days and `10-K <= 75` days
   from fiscal period end to filed date, `1.05x` paper notional.
+- accepted cost-liquidity support: `avg_dollar_volume_20 >= $200m` and
+  signal-day `(high-low)/close <= 0.10`, `1.05x` paper notional.
 
 Next valid fields:
 
@@ -339,7 +347,8 @@ Next valid fields:
 - operating-margin durability only with new forward evidence or an orthogonal
   data field;
 - restatement/disclosure-quality context;
-- cost-adjusted liquidity state.
+- cost-adjusted replacement-value attribution beyond the accepted coarse
+  cost-liquidity state.
 
 Frozen without new evidence:
 
@@ -354,8 +363,11 @@ Frozen without new evidence:
   retunes around the accepted `exp-20260601-026` candidate source;
 - filing-timeliness threshold/form/scalar retunes around the accepted
   `exp-20260601-027` support field;
-- any new Companyfacts scalar whose best case still depends on the already
-  accepted operating-profit + RS stack rather than a new candidate source;
+- cost-liquidity threshold/scalar retunes around the accepted
+  `exp-20260601-030` support field;
+- any new nearby Companyfacts scalar whose best case still depends on the
+  already accepted operating-profit + RS stack rather than a new candidate
+  source or a genuinely new PIT data field;
 - score-tercile/rank monotonicity changes until forward rows show stable
   replacement value, not just partial in-sample ordering.
 

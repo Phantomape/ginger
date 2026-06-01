@@ -54,7 +54,7 @@ command; canonical acceptance evidence is the three-window artifact above.
 
 ## 2026-06-01 Experiment Consolidation
 
-Today's work produced four accepted default-off paper adapters and one accepted
+Today's work produced five accepted default-off paper adapters and one accepted
 measurement repair. No live/default order path was enabled, no core alpha rule
 was promoted, and no LLM/news authority changed. The main alpha conclusion is
 that filed-date-safe free-data candidate sources remain the highest-value
@@ -129,12 +129,24 @@ rows, max single positive share `0.4065`, and positive PnL HHI `0.236293`.
 The retained implementation is shared default-off paper-only metadata in
 `quant/fundamental_growth_rs_paper_sleeve.py`; no live/default orders, core
 ranking, sizing, exits, LLM/news, or watchlists changed.
+`exp-20260601-030` accepted another orthogonal Companyfacts/OHLCV support
+field on top of the same shared adapter: already-selected candidates receive
+`1.05x` default-off paper notional only when signal-day
+`avg_dollar_volume_20 >= $200m` and `(high-low)/close <= 0.10`. Three-window
+EV improved `13.0745 -> 13.4753` (`+0.4008`) and PnL improved
+`$305,514.70 -> $311,052.25` (`+$5,537.55`), with all three windows
+improving, max drawdown drifting only `+0.0007`, minimum survival `79.17%`,
+`252` adjusted paper rows, max single positive share `0.427643`, and positive
+PnL HHI `0.252329`. The retained implementation is shared default-off
+paper-only metadata in `quant/fundamental_growth_rs_paper_sleeve.py`; no
+live/default orders, core ranking, sizing, exits, LLM/news, or watchlists
+changed.
 `exp-20260601-019` free-cash-flow yield was also positive (`EV +2.7877`,
 PnL `+$50,918.82`) but failed concentration and baseline-retention checks.
 `exp-20260601-004` earnings-yield value similarly failed concentration despite
 large raw gains. Next valid work is forward replacement-value accumulation or
 orthogonal free-data candidate-source discovery; do not retune nearby
-Companyfacts value/quality thresholds on the frozen windows.
+Companyfacts value/quality/cost-liquidity thresholds on the frozen windows.
 
 `exp-20260601-029` accepted the FINRA/IWM cost-liquidity support scalar as a
 shared default-off paper adapter increment. Already-selected

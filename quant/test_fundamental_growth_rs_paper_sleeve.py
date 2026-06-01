@@ -4,6 +4,7 @@ from datetime import date, timedelta
 
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 from quant.fundamental_growth_rs_paper_sleeve import (
+    COST_LIQUIDITY_RULE_VERSION,
     FILING_RECENCY_RULE_VERSION,
     FILING_TIMELINESS_RULE_VERSION,
     GOVERNOR_RULE_VERSION,
@@ -368,6 +369,67 @@ def test_low_liability_support_scales_paper_notional_without_orders():
     assert candidate["closed_ledger_notional_scalar"] == 1.157625
     assert candidate["intended_notional"] == 11_576.25
     assert snapshot["low_liability"]["supported_candidate_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_cost_liquidity_support_scales_paper_notional_without_orders():
+    ohlcv = _ohlcv()
+    for row in ohlcv["AMD"]:
+        row["volume"] = 2_000_000.0
+    as_of = ohlcv["SPY"][125]["date"]
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["cost_liquidity_rule_version"] == COST_LIQUIDITY_RULE_VERSION
+    assert candidate["avg_dollar_volume_20"] >= 200_000_000.0
+    assert candidate["signal_day_range_pct"] == 0.02
+    assert candidate["cost_liquidity_pass_v1"] is True
+    assert candidate["cost_liquidity_notional_scalar"] == 1.05
+    assert candidate["filing_recency_pass_v1"] is True
+    assert candidate["filing_timeliness_pass_v1"] is True
+    assert candidate["closed_ledger_notional_scalar"] == 1.157625
+    assert candidate["intended_notional"] == 11_576.25
+    assert snapshot["cost_liquidity"]["supported_candidate_count"] == 1
+    assert snapshot["trade_enabled"] is False
+    assert snapshot["production_impact"]["production_orders_changed"] is False
+
+
+def test_cost_liquidity_requires_contained_signal_day_range_without_orders():
+    ohlcv = _ohlcv()
+    for row in ohlcv["AMD"]:
+        row["volume"] = 2_000_000.0
+    as_of = ohlcv["SPY"][125]["date"]
+    close = ohlcv["AMD"][125]["close"]
+    ohlcv["AMD"][125]["high"] = round(close * 1.08, 4)
+    ohlcv["AMD"][125]["low"] = round(close * 0.92, 4)
+
+    snapshot = build_fundamental_growth_rs_paper_sleeve_snapshot(
+        as_of=as_of,
+        ohlcv_by_ticker=ohlcv,
+        companyfacts_rows=_facts(),
+        candidate_universe=["AMD", "AAPL"],
+        state=empty_fundamental_growth_rs_paper_state(),
+        persist=False,
+    )
+
+    candidate = snapshot["candidates"][0]
+    assert candidate["cost_liquidity_rule_version"] == COST_LIQUIDITY_RULE_VERSION
+    assert candidate["avg_dollar_volume_20"] >= 200_000_000.0
+    assert candidate["signal_day_range_pct"] == 0.16
+    assert candidate["cost_liquidity_pass_v1"] is False
+    assert candidate["cost_liquidity_notional_scalar"] == 1.0
+    assert candidate["closed_ledger_notional_scalar"] == 1.1025
+    assert candidate["intended_notional"] == 11_025.0
+    assert snapshot["cost_liquidity"]["supported_candidate_count"] == 0
     assert snapshot["trade_enabled"] is False
     assert snapshot["production_impact"]["production_orders_changed"] is False
 

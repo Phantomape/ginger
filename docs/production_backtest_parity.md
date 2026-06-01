@@ -55,6 +55,19 @@ fixtures may omit price-date maps for backward compatibility; production must
 provide them so weekend, holiday, and data-lag runs cannot fill, advance, or
 close paper ledgers with stale latest-prior prices.
 
+## Companyfacts Cost-Liquidity Paper Support
+
+`exp-20260601-030` promoted the Companyfacts cost-liquidity support field into
+`quant/fundamental_growth_rs_paper_sleeve.py`. Backtests and production must
+use the same shared default-off paper adapter semantics: already-selected
+`FUNDAMENTAL_GROWTH_RS_PAPER` candidates receive `1.05x` paper notional only
+when the signal-day OHLCV row shows `avg_dollar_volume_20 >= $200m` and
+`(high-low)/close <= 0.10`. The adapter emits `cost_liquidity_*` candidate
+metadata and a `cost_liquidity` snapshot summary. It remains observe-only:
+`trade_enabled=false`, live/default orders disabled, and no core universe,
+ranking, sizing, exit, LLM/news, or watchlist path may diverge between replay
+and production.
+
 ## Decision Matrix
 
 | Decision point | Shared source | Backtester use | Production use | Allowed difference |

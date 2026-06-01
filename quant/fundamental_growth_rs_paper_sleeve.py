@@ -37,6 +37,7 @@ LOW_VOLUME_PARTICIPATION_RULE_VERSION = "fundamental_growth_rs_low_volume_partic
 FILING_RECENCY_RULE_VERSION = "fundamental_growth_rs_filing_recency_support_v1"
 FILING_TIMELINESS_RULE_VERSION = "fundamental_growth_rs_filing_timeliness_support_v1"
 LOW_LIABILITY_RULE_VERSION = "fundamental_growth_rs_low_liability_support_v1"
+COST_LIQUIDITY_RULE_VERSION = "fundamental_growth_rs_cost_liquidity_support_v1"
 REPLACEMENT_VALUE_RULE_VERSION = "fundamental_growth_rs_forward_replacement_value_v1"
 STATE_SCHEMA_VERSION = 1
 
@@ -101,6 +102,9 @@ DEFAULT_CONFIG = {
     "filing_timeliness_notional_scalar": 1.05,
     "low_liability_assets_max": 0.35,
     "low_liability_notional_scalar": 1.05,
+    "cost_liquidity_min_avg_dollar_volume_20": 200_000_000.0,
+    "cost_liquidity_max_signal_day_range_pct": 0.10,
+    "cost_liquidity_notional_scalar": 1.05,
     "forward_gate_min_closed_trades": 30,
     "forward_gate_positive_net_pnl": True,
     "forward_gate_min_win_rate": 0.50,
@@ -220,6 +224,13 @@ def empty_fundamental_growth_rs_paper_sleeve_snapshot(
         },
         "low_liability": {
             "rule_version": LOW_LIABILITY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "supported_candidate_count": 0,
+        },
+        "cost_liquidity": {
+            "rule_version": COST_LIQUIDITY_RULE_VERSION,
             "read_only": True,
             "trade_enabled": False,
             "alters_orders": False,
@@ -455,6 +466,18 @@ def build_fundamental_growth_rs_paper_sleeve_snapshot(
             "paper_notional_scalar": float(cfg["low_liability_notional_scalar"]),
             "supported_candidate_count": sum(
                 1 for row in candidates if row.get("low_liability_pass_v1")
+            ),
+        },
+        "cost_liquidity": {
+            "rule_version": COST_LIQUIDITY_RULE_VERSION,
+            "read_only": True,
+            "trade_enabled": False,
+            "alters_orders": False,
+            "min_avg_dollar_volume_20": float(cfg["cost_liquidity_min_avg_dollar_volume_20"]),
+            "max_signal_day_range_pct": float(cfg["cost_liquidity_max_signal_day_range_pct"]),
+            "paper_notional_scalar": float(cfg["cost_liquidity_notional_scalar"]),
+            "supported_candidate_count": sum(
+                1 for row in candidates if row.get("cost_liquidity_pass_v1")
             ),
         },
         "candidates": deepcopy(candidates),
@@ -1165,6 +1188,21 @@ def _candidate_for_ticker(
     low_liability_scalar = (
         float(config["low_liability_notional_scalar"]) if low_liability_pass else 1.0
     )
+    signal_day_high = _positive_float(rows[idx].get("high"))
+    signal_day_low = _positive_float(rows[idx].get("low"))
+    signal_day_range_pct = (
+        (signal_day_high - signal_day_low) / close
+        if signal_day_high is not None and signal_day_low is not None and signal_day_high >= signal_day_low
+        else None
+    )
+    cost_liquidity_pass = (
+        signal_day_range_pct is not None
+        and avg_dollar_volume >= float(config["cost_liquidity_min_avg_dollar_volume_20"])
+        and signal_day_range_pct <= float(config["cost_liquidity_max_signal_day_range_pct"])
+    )
+    cost_liquidity_scalar = (
+        float(config["cost_liquidity_notional_scalar"]) if cost_liquidity_pass else 1.0
+    )
     notional_scalar = (
         ticker_profit_scalar
         * global_drawdown_scalar
@@ -1172,6 +1210,7 @@ def _candidate_for_ticker(
         * filing_recency_scalar
         * filing_timeliness_scalar
         * low_liability_scalar
+        * cost_liquidity_scalar
     )
     intended_notional = float(config["paper_notional_usd"]) * notional_scalar
     return {
@@ -1245,6 +1284,21 @@ def _candidate_for_ticker(
         "liabilities_assets_bucket": _liabilities_assets_bucket(liabilities_assets_ratio, config),
         "low_liability_pass_v1": low_liability_pass,
         "low_liability_notional_scalar": low_liability_scalar,
+        "cost_liquidity_rule_version": COST_LIQUIDITY_RULE_VERSION,
+        "cost_liquidity_known_at": "daily OHLCV dollar volume and range with date <= signal_date",
+        "cost_liquidity_trade_enabled": False,
+        "cost_liquidity_alters_orders": False,
+        "cost_liquidity_min_avg_dollar_volume_20": float(
+            config["cost_liquidity_min_avg_dollar_volume_20"]
+        ),
+        "cost_liquidity_max_signal_day_range_pct": float(
+            config["cost_liquidity_max_signal_day_range_pct"]
+        ),
+        "signal_day_high": _round(signal_day_high, 4),
+        "signal_day_low": _round(signal_day_low, 4),
+        "signal_day_range_pct": _round(signal_day_range_pct, 6),
+        "cost_liquidity_pass_v1": cost_liquidity_pass,
+        "cost_liquidity_notional_scalar": cost_liquidity_scalar,
         "closed_ledger_notional_scalar": _round(notional_scalar, 6),
         "intended_notional": _round(intended_notional, 2),
         "same_ticker_core_overlap": False,
