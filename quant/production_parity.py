@@ -44,6 +44,11 @@ except ImportError:  # pragma: no cover - package-style imports in tests
     from quant.price_asof_guard import date10, normalise_price_dates
 
 TRAILING_PARTIAL_REDUCE_ENABLED = False
+CORE_STRATEGY_POSITION_TAGS = frozenset({
+    "trend_long",
+    "breakout_long",
+    "earnings_event_long",
+})
 
 
 def position_was_spy_relative_leader(pos, ticker_df=None, spy_df=None, entry_idx=None, spy_entry_idx=None):
@@ -76,6 +81,185 @@ def _positive_positions(open_positions):
         p for p in (open_positions or {}).get("positions", [])
         if p.get("ticker") and (p.get("shares") or 0) > 0
     ]
+
+
+def _position_strategy_tag(position):
+    for key in (
+        "opened_by_strategy",
+        "strategy",
+        "entry_strategy",
+        "source_strategy",
+    ):
+        value = position.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
+def is_core_strategy_position(position):
+    """Return whether a live ledger position should consume core strategy slots."""
+    tag = _position_strategy_tag(position)
+    return str(tag or "").lower() in CORE_STRATEGY_POSITION_TAGS
+
+
+def count_core_strategy_positions(open_positions):
+    """Count live positions opened by the core strategies replayed by backtests."""
+    return sum(
+        1
+        for position in _positive_positions(open_positions)
+        if is_core_strategy_position(position)
+    )
+
+
+def build_slot_accounting_summary(open_positions, max_positions=MAX_POSITIONS):
+    """Expose live-vs-strategy slot accounting for operator review."""
+    positions = _positive_positions(open_positions)
+    core_positions = []
+    ignored_positions = []
+    for position in positions:
+        row = {
+            "ticker": position.get("ticker"),
+            "opened_by_strategy": _position_strategy_tag(position),
+            "shares": position.get("shares"),
+        }
+        if is_core_strategy_position(position):
+            core_positions.append(row)
+        else:
+            ignored_positions.append(row)
+
+    live_active = len(positions)
+    strategy_active = len(core_positions)
+    return {
+        "max_positions": max_positions,
+        "live_active_positions": live_active,
+        "live_available_slots": max(0, max_positions - live_active),
+        "strategy_active_positions": strategy_active,
+        "strategy_available_slots": max(0, max_positions - strategy_active),
+        "core_strategy_position_tags": sorted(CORE_STRATEGY_POSITION_TAGS),
+        "core_strategy_positions": core_positions,
+        "non_strategy_positions_ignored_for_strategy_slots": ignored_positions,
+    }
+
+
+def _signal_key(signal):
+    return (
+        str((signal or {}).get("ticker") or "").upper(),
+        str((signal or {}).get("strategy") or ""),
+    )
+
+
+def _decision_for_signal(signal, selected_signals, entry_execution_plan, *, heat_blocked=False):
+    key = _signal_key(signal)
+    plan = entry_execution_plan or {}
+    base = {
+        "active_positions": plan.get("active_positions"),
+        "max_positions": plan.get("max_positions"),
+        "available_slots": plan.get("available_slots"),
+    }
+    if heat_blocked:
+        return {
+            **base,
+            "decision": "deferred",
+            "reason": "portfolio_heat_blocked",
+        }
+
+    selected = {_signal_key(row) for row in selected_signals or []}
+    deferred_breakouts = {
+        _signal_key(row) for row in plan.get("deferred_breakout_signals") or []
+    }
+    slot_sliced = {_signal_key(row) for row in plan.get("slot_sliced_signals") or []}
+
+    if key in selected:
+        return {**base, "decision": "buy", "reason": "selected_by_entry_plan"}
+    if key in deferred_breakouts:
+        return {**base, "decision": "deferred", "reason": "scarce_slot_breakout_deferred"}
+    if key in slot_sliced:
+        return {**base, "decision": "deferred", "reason": "slot_sliced"}
+    return {**base, "decision": "deferred", "reason": "not_selected_by_entry_plan"}
+
+
+def _compact_signal_for_review(signal, rank):
+    sizing = signal.get("sizing") or {}
+    return {
+        "rank": rank,
+        "ticker": signal.get("ticker"),
+        "strategy": signal.get("strategy"),
+        "sector": signal.get("sector", "Unknown"),
+        "entry_price": signal.get("entry_price"),
+        "stop_price": signal.get("stop_price"),
+        "target_price": signal.get("target_price"),
+        "risk_reward_ratio": signal.get("risk_reward_ratio"),
+        "trade_quality_score": signal.get("trade_quality_score"),
+        "confidence_score": signal.get("confidence_score"),
+        "days_to_earnings": signal.get("days_to_earnings"),
+        "shares_to_buy": sizing.get("shares_to_buy"),
+        "position_value_usd": sizing.get("position_value_usd"),
+    }
+
+
+def build_entry_candidate_review(
+    candidate_signals,
+    *,
+    live_selected_signals,
+    live_entry_execution_plan,
+    strategy_selected_signals,
+    strategy_entry_execution_plan,
+    open_positions=None,
+    live_heat_blocked=False,
+    max_positions=MAX_POSITIONS,
+):
+    """Build a read-only surface showing live and backtest-style slot decisions."""
+    candidates = []
+    for rank, signal in enumerate(candidate_signals or [], 1):
+        live_decision = _decision_for_signal(
+            signal,
+            live_selected_signals,
+            live_entry_execution_plan,
+            heat_blocked=live_heat_blocked,
+        )
+        strategy_decision = _decision_for_signal(
+            signal,
+            strategy_selected_signals,
+            strategy_entry_execution_plan,
+        )
+        row = {
+            **_compact_signal_for_review(signal, rank),
+            "live_accounting": live_decision,
+            "backtest_accounting": strategy_decision,
+        }
+        if (
+            live_decision.get("decision") != "buy"
+            and strategy_decision.get("decision") == "buy"
+        ):
+            row["operator_review_reason"] = (
+                "backtest_accounting_buy_but_live_accounting_deferred"
+            )
+        candidates.append(row)
+
+    return {
+        "diagnostic_only": True,
+        "orders_changed": False,
+        "description": (
+            "Read-only operator surface: live accounting counts every positive "
+            "ledger position; backtest accounting counts only core strategy "
+            "positions from opened_by_strategy."
+        ),
+        "slot_accounting": build_slot_accounting_summary(
+            open_positions,
+            max_positions=max_positions,
+        ),
+        "candidate_count": len(candidates),
+        "live_buy_count": sum(
+            1 for row in candidates if row["live_accounting"]["decision"] == "buy"
+        ),
+        "backtest_accounting_buy_count": sum(
+            1 for row in candidates if row["backtest_accounting"]["decision"] == "buy"
+        ),
+        "operator_review_count": sum(
+            1 for row in candidates if row.get("operator_review_reason")
+        ),
+        "candidates": candidates,
+    }
 
 
 def filter_entry_signal_candidates(

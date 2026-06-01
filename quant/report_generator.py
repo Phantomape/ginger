@@ -41,6 +41,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            market_state_snapshot=None,
                            dropped_signals=None, addon_actions=None,
                            entry_execution_plan=None,
+                           entry_candidate_review=None,
                            pilot_attribution=None,
                            ai_infra_aggressive_attribution=None,
                            default_off_alpha_attribution=None,
@@ -87,6 +88,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         open_positions   (dict):        Raw open_positions.json content
         dropped_signals  (list[dict]):  Signals dropped by risk_engine (ATR/R:R gates)
         addon_actions    (list[dict]):  Code-determined follow-through add-ons
+        entry_candidate_review (dict): Read-only live vs backtest slot accounting surface
         pilot_attribution (dict):       Pilot direct/replacement-value summary
         ai_infra_aggressive_attribution (dict): AI infra sleeve daily surface
         default_off_alpha_attribution (dict): Read-only default-off alpha blocker surface
@@ -285,6 +287,47 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
         if sliced:
             tickers = ", ".join(d.get("ticker", "?") for d in sliced)
             lines.append(f"  Slot-sliced candidate(s): {tickers}")
+
+    if entry_candidate_review and entry_candidate_review.get("candidate_count"):
+        accounting = entry_candidate_review.get("slot_accounting") or {}
+        candidates = entry_candidate_review.get("candidates") or []
+        ignored = accounting.get("non_strategy_positions_ignored_for_strategy_slots") or []
+        lines.append("\nENTRY CANDIDATE REVIEW (operator decision)")
+        lines.append(
+            "  Live slots: "
+            f"{accounting.get('live_available_slots')}/"
+            f"{accounting.get('max_positions')} available "
+            f"({accounting.get('live_active_positions')} active)  |  "
+            "Backtest-accounting slots: "
+            f"{accounting.get('strategy_available_slots')}/"
+            f"{accounting.get('max_positions')} available "
+            f"({accounting.get('strategy_active_positions')} core active)"
+        )
+        if ignored:
+            ignored_tickers = ", ".join(
+                str(row.get("ticker", "?")) for row in ignored[:12]
+            )
+            if len(ignored) > 12:
+                ignored_tickers += ", ..."
+            lines.append(
+                "  Ignored for backtest-accounting slots: "
+                f"{ignored_tickers}"
+            )
+        for row in candidates[:10]:
+            live = row.get("live_accounting") or {}
+            bt = row.get("backtest_accounting") or {}
+            review_flag = (
+                "  OPERATOR REVIEW"
+                if row.get("operator_review_reason")
+                else ""
+            )
+            lines.append(
+                f"  {row.get('rank')}. {row.get('ticker', '?')} "
+                f"{row.get('strategy', '?')}: "
+                f"live={live.get('decision')}:{live.get('reason')}  "
+                f"backtest={bt.get('decision')}:{bt.get('reason')}"
+                f"{review_flag}"
+            )
 
     if platform_rs20_watch and (
         platform_rs20_watch.get("candidate_count", 0) > 0

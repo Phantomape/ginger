@@ -7,10 +7,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from production_parity import (  # noqa: E402
     TRAILING_PARTIAL_REDUCE_ENABLED,
+    build_entry_candidate_review,
     build_early_relative_weakness_exit_actions,
     build_followthrough_addon_actions,
+    build_slot_accounting_summary,
     cap_followthrough_addon_shares,
     classify_entry_open_cancel,
+    count_core_strategy_positions,
     filter_entry_signal_candidates,
     partial_reduce_shares,
     plan_entry_candidates,
@@ -88,6 +91,76 @@ def test_plan_entry_candidates_accepts_backtester_position_count():
     assert [s["ticker"] for s in planned] == ["AAPL"]
     assert [s["ticker"] for s in plan["slot_sliced_signals"]] == ["NVDA"]
     assert plan["available_slots"] == 1
+
+
+def test_slot_accounting_counts_only_core_strategy_positions():
+    open_positions = {
+        "positions": [
+            {"ticker": "NVDA", "shares": 10, "opened_by_strategy": "legacy"},
+            {"ticker": "AMD", "shares": 5, "opened_by_strategy": "breakout_long"},
+            {"ticker": "COHR", "shares": 3, "opened_by_strategy": "pilot_breakout_long"},
+            {"ticker": "RKLB", "shares": 7, "opened_by_strategy": "fomo"},
+            {"ticker": "CASH", "shares": 0, "opened_by_strategy": "trend_long"},
+        ]
+    }
+
+    summary = build_slot_accounting_summary(open_positions, max_positions=5)
+
+    assert count_core_strategy_positions(open_positions) == 1
+    assert summary["live_active_positions"] == 4
+    assert summary["live_available_slots"] == 1
+    assert summary["strategy_active_positions"] == 1
+    assert summary["strategy_available_slots"] == 4
+    assert [row["ticker"] for row in summary["core_strategy_positions"]] == ["AMD"]
+    assert [
+        row["ticker"]
+        for row in summary["non_strategy_positions_ignored_for_strategy_slots"]
+    ] == ["NVDA", "COHR", "RKLB"]
+
+
+def test_entry_candidate_review_surfaces_backtest_buy_live_slot_deferred():
+    open_positions = {
+        "positions": [
+            {"ticker": "LEG1", "shares": 10, "opened_by_strategy": "legacy"},
+            {"ticker": "LEG2", "shares": 10, "opened_by_strategy": "legacy"},
+            {"ticker": "FOMO", "shares": 10, "opened_by_strategy": "fomo"},
+            {"ticker": "PILOT", "shares": 10, "opened_by_strategy": "pilot_breakout_long"},
+            {"ticker": "CORE", "shares": 10, "opened_by_strategy": "trend_long"},
+        ]
+    }
+    signals = [
+        {"ticker": "GS", "strategy": "trend_long", "entry_price": 100.0},
+        {"ticker": "SNOW", "strategy": "breakout_long", "entry_price": 50.0},
+    ]
+
+    live_selected, live_plan = plan_entry_candidates(
+        signals,
+        open_positions,
+        max_positions=5,
+    )
+    strategy_selected, strategy_plan = plan_entry_candidates(
+        signals,
+        open_positions,
+        max_positions=5,
+        active_positions_count=count_core_strategy_positions(open_positions),
+    )
+    review = build_entry_candidate_review(
+        signals,
+        live_selected_signals=live_selected,
+        live_entry_execution_plan=live_plan,
+        strategy_selected_signals=strategy_selected,
+        strategy_entry_execution_plan=strategy_plan,
+        open_positions=open_positions,
+        max_positions=5,
+    )
+
+    assert live_selected == []
+    assert [row["ticker"] for row in strategy_selected] == ["GS", "SNOW"]
+    assert review["operator_review_count"] == 2
+    assert review["live_buy_count"] == 0
+    assert review["backtest_accounting_buy_count"] == 2
+    assert review["candidates"][0]["live_accounting"]["reason"] == "slot_sliced"
+    assert review["candidates"][0]["backtest_accounting"]["decision"] == "buy"
 
 
 def test_plan_entry_candidates_topups_rank1_when_single_slot(monkeypatch):

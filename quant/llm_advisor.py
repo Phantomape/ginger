@@ -100,6 +100,16 @@ def _build_archive_context(date_str, data_dir):
             ticker = item.get("ticker")
             if isinstance(ticker, str) and ticker.strip():
                 signal_tickers.append(ticker.strip().upper())
+        review = quant_signals.get("entry_candidate_review") or {}
+        if isinstance(review, dict):
+            for item in review.get("candidates", []) or []:
+                if not isinstance(item, dict):
+                    continue
+                ticker = item.get("ticker")
+                if isinstance(ticker, str) and ticker.strip():
+                    signal_tickers.append(ticker.strip().upper())
+            if source is None and review.get("candidate_count"):
+                source = "quant_signals.entry_candidate_review"
 
     if source is None:
         return None
@@ -124,6 +134,18 @@ def _build_archive_context(date_str, data_dir):
         context["account_state"] = account_state
     if lock_reason:
         context["lock_reason"] = lock_reason
+    if isinstance(quant_signals, dict):
+        review = quant_signals.get("entry_candidate_review") or {}
+        if isinstance(review, dict):
+            context["entry_candidate_review_count"] = int(
+                review.get("candidate_count") or 0
+            )
+            context["entry_candidate_operator_review_count"] = int(
+                review.get("operator_review_count") or 0
+            )
+            context["entry_candidate_backtest_buy_count"] = int(
+                review.get("backtest_accounting_buy_count") or 0
+            )
     return context
 
 
@@ -275,6 +297,9 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
     # --- 3a: Pre-computed quant signals (new trade candidates) ---
     quant_signals = trend_signals.get("quant_signals", []) if trend_signals else []
     addon_actions = trend_signals.get("addon_actions", []) if trend_signals else []
+    entry_candidate_review = (
+        trend_signals.get("entry_candidate_review") if trend_signals else None
+    )
     if quant_signals:
         sections_3 += (
             f"\n\n3a) 量化信号 QUANT SIGNALS（预计算完成，直接使用）：\n"
@@ -292,6 +317,25 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
             f"{json.dumps(addon_actions, indent=2)}\n"
         )
 
+    if (
+        isinstance(entry_candidate_review, dict)
+        and entry_candidate_review.get("candidate_count")
+    ):
+        review_payload = {
+            "diagnostic_only": True,
+            "orders_changed": False,
+            "slot_accounting": entry_candidate_review.get("slot_accounting"),
+            "operator_review_count": entry_candidate_review.get("operator_review_count"),
+            "candidates": (entry_candidate_review.get("candidates") or [])[:10],
+        }
+        sections_3 += (
+            "\n\n3a-review) ENTRY CANDIDATE REVIEW "
+            "(operator-only; do not treat deferred rows as automatic orders):\n"
+            "Use this to flag news/LLM risk for candidates that live slot "
+            "accounting deferred but backtest-accounting would buy.\n"
+            f"{json.dumps(review_payload, indent=2)}\n"
+        )
+
     # --- 3b: Technical context - only tickers with open positions that have triggered exits ---
     raw_signals = trend_signals.get('signals', {}) if trend_signals else {}
     attention_tickers = set()
@@ -305,7 +349,14 @@ def build_prompt(trade_news, open_positions, trend_signals=None):
         a["ticker"] for a in addon_actions
         if isinstance(a, dict) and a.get("ticker")
     }
-    relevant_tickers = attention_tickers | signal_tickers | addon_tickers
+    review_tickers = set()
+    if isinstance(entry_candidate_review, dict):
+        review_tickers = {
+            row["ticker"]
+            for row in entry_candidate_review.get("candidates") or []
+            if isinstance(row, dict) and row.get("ticker")
+        }
+    relevant_tickers = attention_tickers | signal_tickers | addon_tickers | review_tickers
 
     if relevant_tickers:
         filtered = {t: raw_signals[t] for t in relevant_tickers if t in raw_signals}
@@ -625,6 +676,11 @@ def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
     try:
         quant_signals = trend_signals.get("quant_signals", []) if trend_signals else []
         signals_presented = [s["ticker"] for s in quant_signals]
+        entry_candidate_review = (
+            trend_signals.get("entry_candidate_review")
+            if isinstance(trend_signals, dict)
+            else None
+        )
 
         # Extract machine-state context from the preflight data embedded in
         # trend_signals (injected by build_prompt -> preflight_validator).
@@ -664,6 +720,7 @@ def _save_decision_log(date_str, trade_news, trend_signals, data_dir=None):
                 }
                 for s in quant_signals
             ],
+            "entry_candidate_review": entry_candidate_review,
             "news_summary": tier_counts,
             "has_actionable_news": tier_counts["T1"] > 0,
             "new_trade_locked": new_trade_locked,

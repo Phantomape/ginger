@@ -23,6 +23,7 @@ Usage:
 import json
 import logging
 import os
+from copy import deepcopy
 from datetime import datetime
 
 import pandas as pd
@@ -198,7 +199,9 @@ def main():
     from price_asof_guard   import latest_ohlcv_dates
     from portfolio_engine   import size_signals, compute_portfolio_heat
     from production_parity  import (
+        build_entry_candidate_review,
         build_followthrough_addon_actions,
+        count_core_strategy_positions,
         filter_entry_signal_candidates,
         plan_entry_candidates,
         risk_pct_for_market_state,
@@ -1032,10 +1035,39 @@ def main():
             risk_pct=_trade_risk_pct,
         )
 
+    advisory_entry_signals = list(signals or [])
+    live_heat_blocked = bool(heat_blocked_signals)
+    if live_heat_blocked:
+        advisory_entry_signals = (
+            size_signals(
+                deepcopy(heat_blocked_signals),
+                portfolio_value,
+                risk_pct=_trade_risk_pct,
+            )
+            if portfolio_value
+            else deepcopy(heat_blocked_signals)
+        )
+
+    strategy_active_positions = count_core_strategy_positions(open_positions)
+    strategy_accounting_signals, strategy_entry_execution_plan = plan_entry_candidates(
+        deepcopy(advisory_entry_signals),
+        open_positions,
+        market_context=market_context,
+        active_positions_count=strategy_active_positions,
+    )
     signals, entry_execution_plan = plan_entry_candidates(
         signals,
         open_positions,
         market_context=market_context,
+    )
+    entry_candidate_review = build_entry_candidate_review(
+        advisory_entry_signals,
+        live_selected_signals=signals,
+        live_entry_execution_plan=entry_execution_plan,
+        strategy_selected_signals=strategy_accounting_signals,
+        strategy_entry_execution_plan=strategy_entry_execution_plan,
+        open_positions=open_positions,
+        live_heat_blocked=live_heat_blocked,
     )
     pilot_signals = apply_pilot_sizing_policy(pilot_signals, pilot_records)
     pilot_signals, pilot_entry_execution_plan = select_pilot_entry_candidates(
@@ -1085,6 +1117,11 @@ def main():
             "Position slots kept %d/%d signal(s)",
             entry_execution_plan["signals_after_entry_plan"],
             entry_execution_plan["signals_before_entry_plan"],
+        )
+    if entry_candidate_review.get("operator_review_count"):
+        log.info(
+            "Operator review: %d candidate(s) are backtest-accounting buys but live-accounting deferred",
+            entry_candidate_review["operator_review_count"],
         )
 
     try:
@@ -2319,6 +2356,8 @@ def main():
     trend_signals_dict["addon_actions"] = addon_actions
     trend_signals_dict["entry_filter_audit"] = entry_filter_audit
     trend_signals_dict["entry_execution_plan"] = entry_execution_plan
+    trend_signals_dict["strategy_entry_execution_plan"] = strategy_entry_execution_plan
+    trend_signals_dict["entry_candidate_review"] = entry_candidate_review
     trend_signals_dict["market_state_snapshot"] = market_state_snapshot
     trend_signals_dict["pilot_entry_filter_audit"] = pilot_entry_filter_audit
     trend_signals_dict["pilot_entry_execution_plan"] = pilot_entry_execution_plan
@@ -2371,6 +2410,7 @@ def main():
         dropped_signals  = last_dropped_signals or None,
         addon_actions    = addon_actions,
         entry_execution_plan = entry_execution_plan,
+        entry_candidate_review = entry_candidate_review,
         pilot_attribution = pilot_attribution,
         ai_infra_aggressive_attribution = ai_infra_aggressive_attribution,
         default_off_alpha_attribution = default_off_alpha_attribution,
@@ -2418,6 +2458,8 @@ def main():
         "addon_audit":    addon_audit,
         "entry_filter_audit": entry_filter_audit,
         "entry_execution_plan": entry_execution_plan,
+        "strategy_entry_execution_plan": strategy_entry_execution_plan,
+        "entry_candidate_review": entry_candidate_review,
         "market_state_snapshot": market_state_snapshot,
         "pilot_entry_filter_audit": pilot_entry_filter_audit,
         "pilot_entry_execution_plan": pilot_entry_execution_plan,
